@@ -34,85 +34,48 @@ export default class BackImgLayerControl extends IDEE.Control {
     titles,
     previews,
     layers,
-    numColumns,
     empty,
     order,
   }) {
     const impl = new IDEE.impl.Control();
-    let numColumnsV;
     super(impl, 'BackImgLayer');
     map.getBaseLayers().forEach((layer) => {
       layer.on(IDEE.evt.LOAD, map.removeLayers(layer));
     });
     this.layers = [];
+    
+    const idsArray = ids.split(',');
+    const titlesArray = titles.split(',');
+    const previewArray = previews.split(',');
+    const layersArray = layers.split(',');
+    layersArray.forEach((baseLayer, idx) => {
+      let backgroundLayers = baseLayer.split('sumar');
 
-    map._plugins.filter((element) => {
-      /* eslint no-underscore-dangle: 0 */
-      return (map._plugins[map._plugins.indexOf(element)].name === 'backimglayer');
-    }).map((element) => {
-      numColumnsV = numColumns;
-      return numColumnsV;
+      backgroundLayers = backgroundLayers.map((urlLayer) => {
+        let aux = null;
+        if (/QUICK.*/.test(urlLayer)) {
+          aux = IDEE.getQuickLayers(urlLayer.replace('QUICK*', ''));
+        }
+        let apiIdeeLayer;
+        if (!IDEE.utils.isNullOrEmpty(aux)) {
+          apiIdeeLayer = aux;
+          if (typeof apiIdeeLayer === 'string') {
+            apiIdeeLayer = new IDEE.layer.WMTS(apiIdeeLayer);
+          }
+        } else {
+          apiIdeeLayer = new IDEE.layer.WMTS(urlLayer);
+        }
+        return apiIdeeLayer;
+      });
+
+      const apiIdeeLyrsObject = {
+        id: idsArray[idx],
+        title: titlesArray[idx],
+        preview: previewArray[idx],
+        layers: backgroundLayers,
+      };
+      this.layers.push(apiIdeeLyrsObject);
     });
-
-    if (layerOpts !== undefined) {
-      const layerOptsModified = layerOpts;
-
-      layerOpts.filter((element) => {
-        /* eslint no-underscore-dangle: 0 */
-        return (((layerOpts.indexOf(element)) !== 0)
-          && (layerOpts.indexOf(element) % (numColumnsV) === 0));
-      }).map((element) => {
-        const elementIndex = layerOpts.indexOf(element);
-
-        const temp = { ...element };
-        temp.firstElement = true;
-        layerOptsModified[elementIndex] = temp;
-        return temp;
-      });
-      // Array<Object> => Object: { id, title, preview, Array<apiIdeeLayer>}
-      this.layers = layerOptsModified.slice(0);
-    } else {
-      const idsArray = ids.split(',');
-      const titlesArray = titles.split(',');
-      const previewArray = previews.split(',');
-      const layersArray = layers.split(',');
-      layersArray.forEach((baseLayer, idx) => {
-        let backgroundLayers = baseLayer.split('sumar');
-
-        backgroundLayers = backgroundLayers.map((urlLayer) => {
-          let aux = null;
-          if (/QUICK.*/.test(urlLayer)) {
-            aux = IDEE.getQuickLayers(urlLayer.replace('QUICK*', ''));
-          }
-          let apiIdeeLayer;
-          if (!IDEE.utils.isNullOrEmpty(aux)) {
-            apiIdeeLayer = aux;
-            if (typeof apiIdeeLayer === 'string') {
-              apiIdeeLayer = new IDEE.layer.WMTS(apiIdeeLayer);
-            }
-          } else {
-            apiIdeeLayer = new IDEE.layer.WMTS(urlLayer);
-          }
-          return apiIdeeLayer;
-        });
-
-        const apiIdeeLyrsObject = {
-          id: idsArray[idx],
-          title: titlesArray[idx],
-          preview: previewArray[idx],
-          layers: backgroundLayers,
-        };
-        this.layers.push(apiIdeeLyrsObject);
-      });
-    }
-
-    if (numColumns > this.layers.length) {
-      this.numeroColumnas = this.layers.length * 110;
-    } else {
-      this.numeroColumnas = numColumns * 110;
-    }
-
-    this.numeroColumnas += 'px';
 
     this.flattedLayers = this.layers.reduce((current, next) => current.concat(next.layers), []);
     this.activeLayer = -1;
@@ -170,7 +133,7 @@ export default class BackImgLayerControl extends IDEE.Control {
   }
 
   showEmptyLayer(html) {
-    const elem = html.querySelector('#m-backimglayer-previews div.activeBackimglayerDiv');
+    const elem = html.querySelector('#backimglayer-previews div.activeBackimglayerDiv');
     if (elem !== null) {
       elem.click();
     }
@@ -191,7 +154,7 @@ export default class BackImgLayerControl extends IDEE.Control {
     this.visible = false;
     const { layers } = layersInfo;
     const isActivated = e.currentTarget.parentElement
-      .querySelector(`#m-backimglayer-lyr-${layersInfo.id}`)
+      .querySelector(`#backimglayer-lyr-${layersInfo.id}`)
       .classList.contains('activeBackimglayerDiv');
 
     layers.forEach((layer, index, array) => {
@@ -205,7 +168,7 @@ export default class BackImgLayerControl extends IDEE.Control {
       }
     });
 
-    e.currentTarget.parentElement.querySelectorAll('div[id^="m-backimglayer-lyr-"]').forEach((imgContainer) => {
+    e.currentTarget.parentElement.querySelectorAll('div[id^="backimglayer-lyr-"]').forEach((imgContainer) => {
       if (imgContainer.classList.contains('activeBackimglayerDiv')) {
         imgContainer.classList.remove('activeBackimglayerDiv');
       }
@@ -214,7 +177,7 @@ export default class BackImgLayerControl extends IDEE.Control {
       this.visible = true;
       this.activeLayer = i;
       e.currentTarget.parentElement
-        .querySelector(`#m-backimglayer-lyr-${layersInfo.id}`).classList.add('activeBackimglayerDiv');
+        .querySelector(`#backimglayer-lyr-${layersInfo.id}`).classList.add('activeBackimglayerDiv');
       // IDEE.proxy(false);
       this.map.addLayers(layers);
       // setTimeout(() => {
@@ -226,7 +189,7 @@ export default class BackImgLayerControl extends IDEE.Control {
         */
       // }, 1000);
     } else if (this.empty) {
-      e.currentTarget.parentElement.querySelector('#m-backimglayer-lyr-empty').classList.add('activeBackimglayerDiv');
+      e.currentTarget.parentElement.querySelector('#backimglayer-lyr-empty').classList.add('activeBackimglayerDiv');
     }
     this.fire('backimglayer:activeChanges', [{ activeLayerId: this.activeLayer }]);
   }
@@ -256,9 +219,8 @@ export default class BackImgLayerControl extends IDEE.Control {
    */
   listen(html) {
     // eslint-disable-next-line no-param-reassign
-    html.querySelector('#m-backimglayer-previews').style.width = this.numeroColumnas;
-    html.querySelectorAll('div[id^="m-backimglayer-lyr-"]').forEach((b, i) => {
-      if (b.id === 'm-backimglayer-lyr-empty') {
+    html.querySelectorAll('div[id^="backimglayer-lyr-"]').forEach((b, i) => {
+      if (b.id === 'backimglayer-lyr-empty') {
         b.addEventListener('click', this.showEmptyLayer.bind(this, html));
         b.addEventListener('keydown', ({ key }) => {
           if (key === 'Enter') this.showEmptyLayer(html);

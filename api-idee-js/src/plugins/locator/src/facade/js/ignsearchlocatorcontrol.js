@@ -225,7 +225,10 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
           },
         },
       });
-      document.querySelector('#div-contenedor-locator').appendChild(panel);
+      const contenedorLocator = document.querySelector('#div-contenedor-locator');
+      if (contenedorLocator) {
+        contenedorLocator.appendChild(panel);
+      }
       this.resultsBox = this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-results');
       this.searchInput = this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-search-input');
       this.addEvents();
@@ -256,14 +259,20 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
    * @api
    */
   addEvents() {
-    this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-search-input').addEventListener('keyup', (e) => this.createTimeout(e));
-    this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-search-input').addEventListener('click', () => this.openRecentsResults());
-    if (this.reverse) {
-      this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-search-input').style.width = '160px';
-      this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-locate-button').addEventListener('click', this.activateDeactivateReverse.bind(this));
-      this.clickReverseEvent = this.map.on(IDEE.evt.CLICK, (e) => this.showReversePopUp(e));
+    const ingsearchPanel = this.html_.querySelector('#m-ignsearch-panel');
+    if (ingsearchPanel) {
+      const searchInput = ingsearchPanel.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-search-input');
+      if (searchInput) {
+        searchInput.addEventListener('keyup', (e) => this.createTimeout(e));
+        searchInput.addEventListener('click', () => this.openRecentsResults());
+        if (this.reverse) {
+          searchInput.style.width = '160px';
+          this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-locate-button').addEventListener('click', this.activateDeactivateReverse.bind(this));
+          this.clickReverseEvent = this.map.on(IDEE.evt.CLICK, (e) => this.showReversePopUp(e));
+        }
+        this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-clean-button').addEventListener('click', () => this.clearResults());
+      }
     }
-    this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-clean-button').addEventListener('click', () => this.clearResults());
   }
 
   /**

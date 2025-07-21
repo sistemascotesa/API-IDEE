@@ -421,7 +421,11 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Esta función renderiza la plantilla
   async render() {
-    const listLayer = document.getElementById('m-layerswitcher-content').childElementCount;
+    let listLayer = 0;
+    const layerswitcherContent = document.getElementById('m-layerswitcher-content');
+    if (layerswitcherContent) {
+      listLayer = layerswitcherContent.childElementCount;
+    }
 
     if (listLayer === 0) {
       this.statusShowHideAllLayers = this.map_.getLayers().find((layer) => {

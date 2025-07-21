@@ -1,6 +1,7 @@
 /**
  * @module IDEE/plugin/VectorsManagement
  */
+
 import '../assets/css/vectorsmanagement';
 import VectorsManagementControl from './vectorsmanagementcontrol';
 import myhelp from '../../templates/myhelp';
@@ -22,19 +23,6 @@ export default class VectorsManagement extends IDEE.Plugin {
    */
   constructor(options = {}) {
     super();
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map_ = null;
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls_ = [];
 
     /**
      * Plugin name
@@ -42,6 +30,34 @@ export default class VectorsManagement extends IDEE.Plugin {
      * @type {String}
      */
     this.name = 'vectorsmanagement';
+
+    /**
+     * Facade of the map
+     * @private
+     * @type {IDEE.Map}
+     */
+    this.map = null;
+
+    /**
+     * Button of the plugin
+     * @private
+     * @type {IDEE.ui.Button}
+     */
+    this.button = null;
+
+    /**
+     * Panel of the plugin
+     * @private
+     * @type {IDEE.ui.Panel}
+     */
+    this.panel = null;
+
+    /**
+     * Array of controls
+     * @private
+     * @type {Array<IDEE.Control>}
+     */
+    this.controls = [];
 
     /**
      * Plugin parameters
@@ -54,9 +70,9 @@ export default class VectorsManagement extends IDEE.Plugin {
      * Position of the plugin
      *
      * @private
-     * @type {Enum} TL | TR | BL | BR
+     * @type {Enum} left | right
      */
-    this.position_ = options.position || 'TR';
+    this.position = options.position || 'right';
 
     /**
      * @private
@@ -139,7 +155,7 @@ export default class VectorsManagement extends IDEE.Plugin {
     this.style = options.style !== undefined ? options.style : true;
 
     // Tooltip
-    this.tooltip_ = options.tooltip || getValue('tooltip');
+    this.tooltip = options.tooltip || getValue('tooltip');
 
     // Determina si el plugin es draggable o no
     this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
@@ -172,7 +188,26 @@ export default class VectorsManagement extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.controls_.push(new VectorsManagementControl({
+    this.map = map;
+
+    this.button = new IDEE.ui.Button(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+    });
+    map.addButtons(this.button);
+
+    this.panel = new IDEE.ui.Panel(this.name, {
+      collapsible: this.collapsible,
+      collapsed: this.collapsed,
+      position: IDEE.ui.position[this.position],
+      className: 'm-plugin-vectorsmanagement',
+      tooltip: this.tooltip,
+      collapsedButtonClass: 'vectorsmanagement-icon-vectors',
+      order: this.order,
+    });
+    map.addPanels(this.panel);
+
+    this.controls.push(new VectorsManagementControl({
       map,
       selection: this.selection,
       addlayer: this.addlayer,
@@ -185,23 +220,16 @@ export default class VectorsManagement extends IDEE.Plugin {
       isDraggable: this.isDraggable,
       order: this.order,
     }));
-    this.map_ = map;
-    this.panel_ = new IDEE.ui.Panel('VectorsManagement', {
-      collapsible: this.collapsible,
-      collapsed: this.collapsed,
-      position: IDEE.ui.position[this.position_],
-      className: 'm-plugin-vectorsmanagement',
-      tooltip: this.tooltip_,
-      collapsedButtonClass: 'vectorsmanagement-icon-vectors',
-      order: this.order,
-    });
 
-    this.controls_[0].on('vectorsmanagement:activeChanges', (data) => {
+    this.controls[0].on('vectorsmanagement:activeChanges', (data) => {
       this.layerId = data.activeLayerId;
     });
 
-    this.panel_.addControls(this.controls_);
-    map.addPanels(this.panel_);
+    this.panel.addControls(this.controls);
+    // map.addPanels(this.panel_); */
+
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
   }
 
   /**
@@ -214,7 +242,7 @@ export default class VectorsManagement extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position_}*${this.collapsed}*${this.collapsible}*${this.selection}*${this.addlayer}*${this.analysis}*${this.creation}*${this.download}*${this.edition}*${this.help}*${this.style}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.selection}*${this.addlayer}*${this.analysis}*${this.creation}*${this.download}*${this.edition}*${this.help}*${this.style}`;
   }
 
   /**
@@ -236,11 +264,11 @@ export default class VectorsManagement extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
-    this.map_.removeControls(this.controls_);
-    this.map_ = null;
+    this.map.removeControls(this.controls);
+    this.map = null;
     this.control_ = null;
-    this.controls_ = null;
-    this.panel_ = null;
+    this.controls = null;
+    this.panel = null;
     this.name = null;
     this.layerOpts = null;
   }

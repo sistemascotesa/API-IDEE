@@ -129,7 +129,6 @@ export default class LocatorControl extends IDEE.Control {
     return new Promise((success, fail) => {
       const html = IDEE.template.compileSync(template, {
         vars: {
-          showTitle: this.position !== 'TC',
           byParcelCadastre: this.byParcelCadastre_,
           byCoordinates: this.byCoordinates_,
           byPlaceAddressPostal: this.byPlaceAddressPostal_,

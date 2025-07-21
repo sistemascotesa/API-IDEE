@@ -1,6 +1,7 @@
 /**
  * @module IDEE/Map
  */
+
 import MapImpl from 'impl/Map';
 import Base from './Base';
 import { getQuickLayers } from './api-idee';
@@ -12,7 +13,6 @@ import { addFileToMap } from './util/LoadFiles';
 import { getValue } from './i18n/language';
 import Exception from './exception/exception';
 import Label from './Label';
-// import Popup from './Popup';
 import Parameters from './parameter/Parameters';
 import * as parameter from './parameter/parameter';
 import * as EventType from './event/eventtype';
@@ -40,6 +40,7 @@ import MVT from './layer/MVT';
 import OGCAPIFeatures from './layer/OGCAPIFeatures';
 import GenericRaster from './layer/GenericRaster';
 import GenericVector from './layer/GenericVector';
+import Button from './ui/Button';
 import Panel from './ui/Panel';
 import * as Position from './ui/position';
 import GeoJSON from './layer/GeoJSON';
@@ -110,8 +111,9 @@ class Map extends Base {
 
     // calls the super constructor
     super();
-    const impl = new MapImpl(params.container, this, dpi, opts, viewVendorOptions);
-    // impl.setFacadeMap(this);
+
+    this.createPanels(params.container);
+    const impl = new MapImpl(this.mapPanel, this, dpi, opts, viewVendorOptions);
     this.setImpl(impl);
 
     // checks if the param is null or empty
@@ -160,19 +162,19 @@ class Map extends Base {
     };
 
     /**
-     * Map: Panel del mapa.
+     * Map: Botones del mapa.
      */
-    this._panels = [];
+    this.buttons = [];
+
+    /**
+     * Map: Paneles del mapa.
+     */
+    this.panels = [];
 
     /**
      * Map: Plugins incorporados al mapa.
      */
-    this._plugins = [];
-
-    /**
-     * Map: Areas del contenedor.
-     */
-    this._areasContainer = null;
+    this.plugins = [];
 
     /**
      * Map: "Popup".
@@ -250,16 +252,10 @@ class Map extends Base {
     this.controlAttributions = null; // Contiene el control de atribuciones
     this._attributionsMap = [];
 
-    // adds class to the container
-    params.container.classList.add('m-api-idee-container');
-
     impl.on(EventType.COMPLETED, () => {
       this._finishedMapImpl = true;
       this._checkCompleted();
     });
-
-    // creates main panels
-    this.createMainPanels_();
 
     /**
      * Manejador de objetos geográficos.
@@ -428,7 +424,7 @@ class Map extends Base {
    * @function
    */
   addDropFileEvent() {
-    const container = this.getContainer().closest('.m-api-idee-container');
+    const container = this.mapPanel;
     container.addEventListener('dragover', (e) => {
       e.preventDefault();
     }, false);
@@ -3699,10 +3695,10 @@ class Map extends Base {
 
     // parse to Array
     if (names.length === 0) {
-      plugins = this._plugins;
+      plugins = this.plugins;
     } else {
       names.forEach((name) => {
-        plugins = plugins.concat(this._plugins.filter((plugin) => {
+        plugins = plugins.concat(this.plugins.filter((plugin) => {
           return (name === plugin.name);
         }));
       });
@@ -3731,9 +3727,14 @@ class Map extends Base {
       Exception(getValue('exception').no_add_plugin_to_map);
     }
 
+    // checks if the plugin is already added to the map
+    if (this.plugins.some((p) => p.name === plugin.name)) {
+      Exception(getValue('exception').plugin_already_added);
+    }
+
     try {
       plugin.addTo(this);
-      this._plugins.push(plugin);
+      this.plugins.push(plugin);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.warn(e);
@@ -3765,7 +3766,7 @@ class Map extends Base {
       // removes controls from their panels
       plugins.forEach((plugin) => {
         plugin.destroy();
-        this._plugins = this._plugins.filter((plugin2) => plugin.name !== plugin2.name);
+        this.plugins = this.plugins.filter((plugin2) => plugin.name !== plugin2.name);
       });
     }
 
@@ -4075,6 +4076,22 @@ class Map extends Base {
     return this;
   }
 
+  addButtons(buttonsVar) {
+    let buttons = buttonsVar;
+    if (!isNullOrEmpty(buttons)) {
+      if (!isArray(buttons)) {
+        buttons = [buttons];
+      }
+      buttons.forEach((button) => {
+        if (button instanceof Button && !this.buttons.includes(button)) {
+          this.buttons.push(button);
+          button.addTo(this);
+        }
+      });
+    }
+    return this;
+  }
+
   /**
    * Añade los paneles.
    *
@@ -4089,12 +4106,10 @@ class Map extends Base {
         panels = [panels];
       }
       panels.forEach((panel) => {
-        const isIncluded = this._panels.some((panel2) => panel2.equals(panel));
+        const isIncluded = this.panels.some((panel2) => panel2.equals(panel));
         if ((panel instanceof Panel) && !isIncluded) {
-          this._panels.push(panel);
-          const queryArea = 'div.m-area'.concat(panel.position);
-          const areaContainer = this._areasContainer.querySelector(queryArea);
-          panel.addTo(this, areaContainer);
+          this.panels.push(panel);
+          panel.addTo(this);
         }
       });
     }
@@ -4114,7 +4129,7 @@ class Map extends Base {
     }
     if (panel instanceof Panel) {
       panel.destroy();
-      this._panels = this._panels.filter((panel2) => !panel2.equals(panel));
+      this.panels = this.panels.filter((panel2) => !panel2.equals(panel));
     }
 
     return this;
@@ -4133,13 +4148,13 @@ class Map extends Base {
 
     // parses parameters to Array
     if (isNullOrEmpty(names)) {
-      panels = this._panels;
+      panels = this.panels;
     } else {
       if (!isArray(names)) {
         names = [names];
       }
       names.forEach((name) => {
-        const filteredPanels = this._panels.filter((panel) => panel.name === name);
+        const filteredPanels = this.panels.filter((panel) => panel.name === name);
         filteredPanels.forEach((panel) => {
           if (!isNullOrEmpty(panel)) {
             panels.push(panel);
@@ -4158,39 +4173,157 @@ class Map extends Base {
    * @function
    * @api
    */
-  createMainPanels_() {
-    // areas container
-    this._areasContainer = document.createElement('div');
-    this._areasContainer.classList.add('m-areas');
+  createPanels(container) {
+    this.minPanelWidth = 256;
+    this.maxPanelWidth = 360;
 
-    // top-left area
-    const tlArea = document.createElement('div');
-    tlArea.classList.add('m-area');
-    tlArea.classList.add('m-top');
-    tlArea.classList.add('m-left');
-    // top-right area
-    const trArea = document.createElement('div');
-    trArea.classList.add('m-area');
-    trArea.classList.add('m-top');
-    trArea.classList.add('m-right');
+    container.classList.add('api-idee-container');
 
-    // bottom-left area
-    const blArea = document.createElement('div');
-    blArea.classList.add('m-area');
-    blArea.classList.add('m-bottom');
-    blArea.classList.add('m-left');
-    // bottom-right area
-    const brArea = document.createElement('div');
-    brArea.classList.add('m-area');
-    brArea.classList.add('m-bottom');
-    brArea.classList.add('m-right');
+    this.leftPanel = document.createElement('left-panel');
+    this.leftPanel.id = 'leftPanel';
+    this.leftPanel.classList.add('api-idee-left-panel');
+    container.appendChild(this.leftPanel);
 
-    this._areasContainer.appendChild(tlArea);
-    this._areasContainer.appendChild(trArea);
-    this._areasContainer.appendChild(blArea);
-    this._areasContainer.appendChild(brArea);
+    this.leftHandle = document.createElement('left-handle');
+    this.leftHandle.id = 'leftHandle';
+    this.leftHandle.classList.add('api-idee-left-handle');
+    this.leftHandle.style.visibility = 'hidden';
+    this.leftPanel.appendChild(this.leftHandle);
 
-    this.getContainer().appendChild(this._areasContainer);
+    this.leftButtons = document.createElement('left-buttons');
+    this.leftButtons.id = 'leftButtons';
+    this.leftButtons.classList.add('api-idee-left-buttons');
+    container.appendChild(this.leftButtons);
+
+    this.mapPanel = document.createElement('map-panel');
+    this.mapPanel.id = 'mapPanel';
+    this.mapPanel.classList.add('api-idee-map-panel');
+    container.appendChild(this.mapPanel);
+
+    this.rightButtons = document.createElement('right-buttons');
+    this.rightButtons.id = 'rightButtons';
+    this.rightButtons.classList.add('api-idee-right-buttons');
+    container.appendChild(this.rightButtons);
+
+    this.rightPanel = document.createElement('right-panel');
+    this.rightPanel.id = 'rightPanel';
+    this.rightPanel.classList.add('api-idee-right-panel');
+    container.appendChild(this.rightPanel);
+
+    this.rightHandle = document.createElement('right-handle');
+    this.rightHandle.id = 'rightHandle';
+    this.rightHandle.classList.add('api-idee-right-handle');
+    this.rightHandle.style.visibility = 'hidden';
+    this.rightPanel.appendChild(this.rightHandle);
+
+    this.isResizingLeft = false;
+    this.isResizingRight = false;
+
+    this.leftHandle.addEventListener('mousedown', (event) => {
+      event.preventDefault();
+
+      this.isResizingLeft = true;
+      document.body.style.userSelect = 'none';
+    });
+
+    this.rightHandle.addEventListener('mousedown', (event) => {
+      event.preventDefault();
+
+      this.isResizingRight = true;
+      document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mouseup', () => {
+      this.isResizingLeft = false;
+      this.isResizingRight = false;
+      document.body.style.userSelect = 'auto';
+    });
+
+    document.addEventListener('mousemove', (event) => {
+      if (!this.isResizingLeft && !this.isResizingRight) {
+        return;
+      }
+
+      if (this.isResizingLeft) {
+        const containerRect = container.getBoundingClientRect();
+        let newWidth = Math.max(event.clientX - containerRect.left, 0);
+        newWidth = Math.min(newWidth, this.maxPanelWidth);
+        newWidth = Math.max(newWidth, this.minPanelWidth);
+        this.leftPanel.style.width = `${newWidth}px`;
+        this.leftButtons.style.left = `${newWidth}px`;
+      } else {
+        const containerRect = container.getBoundingClientRect();
+        let newWidth = Math.max(containerRect.right - event.clientX, 0);
+        newWidth = Math.min(newWidth, this.maxPanelWidth);
+        newWidth = Math.max(newWidth, this.minPanelWidth);
+        this.rightPanel.style.width = `${newWidth}px`;
+        this.rightButtons.style.right = `${newWidth}px`;
+      }
+    });
+  }
+
+  /* eslint-disable no-param-reassign */
+  openPanel(side) {
+    const panel = side === 'left' ? this.leftPanel : this.rightPanel;
+    const handle = panel === this.leftPanel ? this.leftHandle : this.rightHandle;
+    const buttons = panel === this.leftPanel ? this.leftButtons : this.rightButtons;
+
+    if (panel.style.width === '') {
+      panel.style.width = '0px';
+    }
+
+    this.addTransition(panel, handle, buttons);
+
+    setTimeout(() => {
+      panel.style.width = `${this.minPanelWidth}px`;
+      if (panel === this.leftPanel) {
+        buttons.style.left = panel.style.width;
+      } else {
+        buttons.style.right = panel.style.width;
+      }
+
+      handle.style.visibility = 'visible';
+
+      this.removeTransition(panel, handle, buttons);
+    }, 1);
+  }
+
+  /* eslint-disable no-param-reassign */
+  closePanel(side) {
+    const panel = side === 'left' ? this.leftPanel : this.rightPanel;
+    const handle = panel === this.leftPanel ? this.leftHandle : this.rightHandle;
+    const buttons = panel === this.leftPanel ? this.leftButtons : this.rightButtons;
+
+    this.addTransition(panel, handle, buttons);
+
+    setTimeout(() => {
+      panel.style.width = '0px';
+      if (panel === this.leftPanel) {
+        buttons.style.left = panel.style.width;
+      } else {
+        buttons.style.right = panel.style.width;
+      }
+
+      handle.style.visibility = 'hidden';
+
+      this.removeTransition(panel, handle, buttons);
+    }, 1);
+  }
+
+  /* eslint-disable no-param-reassign */
+  addTransition(panel, handle, buttons) {
+    panel.style.transition = 'width 0.3s ease-in-out';
+    handle.style.transition = 'visibility 0.3s ease-in-out';
+    buttons.style.transition = panel === this.leftPanel ? 'left 0.3s ease-in-out' : 'right 0.3s ease-in-out';
+  }
+
+  /* eslint-disable no-param-reassign */
+  removeTransition(panel, handle, buttons) {
+    setTimeout(() => {
+      panel.style.transition = '';
+      handle.style.transition = '';
+      buttons.style.transition = '';
+    }, 300);
   }
 
   /**
@@ -4513,7 +4646,7 @@ class Map extends Base {
    */
   setBGColorContainer(color) {
     if (!isNullOrEmpty(color)) {
-      const containerStyle = this.getContainer().closest('.m-api-idee-container').style;
+      const containerStyle = this.mapPanel.style;
       containerStyle.backgroundColor = color;
       containerStyle.backgroundImage = 'unset';
     }
@@ -4526,7 +4659,7 @@ class Map extends Base {
    * @returns {String} Devuelve el color del fondo del mapa
    */
   getBGColorContainer() {
-    return this.getContainer().closest('.m-api-idee-container').style.backgroundColor;
+    return this.mapPanel.style.backgroundColor;
   }
 
   /**

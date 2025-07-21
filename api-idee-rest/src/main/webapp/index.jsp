@@ -40,7 +40,7 @@
 </head>
 
 <body>
-    <div id="map" class="m-container"></div>
+    <div id="map"></div>
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
     <script type="text/javascript" src="js/apiidee.<%=library%>.min.js"></script>
     <script type="text/javascript" src="js/configuration.js"></script>

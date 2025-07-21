@@ -1,0 +1,62 @@
+.api-idee-left-buttons,
+.api-idee-right-buttons {
+    position: absolute;
+    width: 48px;
+    height: 100%;
+    z-index: 2;
+}
+
+.api-idee-left-buttons {
+    left: 0;
+    margin-left: 16px;
+}
+
+.api-idee-right-buttons {
+    right: 0;
+    margin-right: 16px;
+}
+
+.api-idee-button {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    color: #fff;
+    background-color: #70a8d3;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin-top: 8px;
+    transition: all 0.3s ease;
+}
+
+.api-idee-button:hover {
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+}
+
+.api-idee-button.active-left,
+.api-idee-button.active-right {
+    color: #fff;
+    background-color: #1e5aa0;
+    border: 2px solid #fff;
+    transition: all 0.3s ease;
+}
+
+.api-idee-button svg {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+}
+
+.api-idee-button.active-left svg {
+    transform: rotate(360deg);
+    transition: transform 0.3s ease;
+}
+
+.api-idee-button.active-right svg {
+    transform: rotate(-360deg);
+    transition: transform 0.3s ease;
+}

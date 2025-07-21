@@ -1,24 +1,16 @@
-<div id="div-contenedor" class="m-control m-container m-backimglayer">
-
-    <div role="heading" tabindex="0" aria-label="{{translations.headertitle}}" id="m-backimglayer-titulo">{{translations.headertitle}}</div>
-    <div id="m-backimglayer-previews">
+<div id="plugin-panel-content-backimglayer" class="plugin-panel-content backimglayer">
+    <div id="backimglayer-previews">
         {{#each layers}}
-            {{#if this.firstElement}}
-                </br>
-            {{/if}}
-
-            <div tabindex="0" role="button" id="m-backimglayer-lyr-{{this.id}}" title="{{this.title}}">
-                <img src="{{this.preview}}" tabindex="-1" alt="{{this.title}}" height="100px" width="100px" />
-                <span aria-hidden="true" tabindex="-1">{{this.title}}</span>
-            </div>
-
+        <div id="backimglayer-lyr-{{this.id}}" title="{{this.title}}" role="button" tabindex="0" aria-label="{{this.title}}">
+            <img src="{{this.preview}}" alt="{{this.title}}" tabindex="-1" />
+            <span aria-hidden="true" tabindex="-1">{{this.title}}</span>
+        </div>
         {{/each}}
         {{#if empty}}
-          <div  tabindex="0" role="button" id="m-backimglayer-lyr-empty" title="{{translations.none}}">
-              <div height="100px" width="100px"></div>
-              <span>{{translations.none}}</span>
-          </div>
+        <div id="backimglayer-lyr-empty" title="{{translations.none}}" role="button" tabindex="0" aria-label="{{translations.none}}">
+            <div height="100px" width="100px" tabindex="-1"></div>
+            <span tabindex="-1">{{translations.none}}</span>
+        </div>
         {{/if}}
-        <!-- <button class="m-backimglayer-unique-btn" id="m-backimglayer-unique-btn" title="Selección de capa de fondo"></button> -->
     </div>
 </div>

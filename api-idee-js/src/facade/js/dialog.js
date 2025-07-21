@@ -68,11 +68,9 @@ export const show = (message, title, severity, order = 300, configuration = {}) 
   const html = compileTemplate(dialogTemplate, {
     vars,
   });
-  // removes previous dialogs
-  // remove();
 
   // append new dialog
-  const apiIdeeContainer = document.querySelector('div.m-api-idee-container');
+  const apiIdeeContainer = document.querySelector('div.api-idee-container');
 
   // adds listener to close the dialog
   const okButton = html.querySelector('div.m-button > button');

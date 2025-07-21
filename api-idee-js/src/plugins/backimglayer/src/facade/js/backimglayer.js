@@ -1,7 +1,7 @@
 /**
  * @module IDEE/plugin/BackImgLayer
  */
-// import '/assets/css/backimglayer';
+
 import '../assets/css/backimglayer';
 import api from '../../api';
 import myhelp from '../../templates/myhelp';
@@ -24,19 +24,6 @@ export default class BackImgLayer extends IDEE.Plugin {
    */
   constructor(options = {}) {
     super();
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map_ = null;
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls_ = [];
 
     /**
      * Plugin name
@@ -44,6 +31,34 @@ export default class BackImgLayer extends IDEE.Plugin {
      * @type {String}
      */
     this.name = 'backimglayer';
+
+    /**
+     * Facade of the map
+     * @private
+     * @type {IDEE.Map}
+     */
+    this.map = null;
+
+    /**
+     * Button of the plugin
+     * @private
+     * @type {IDEE.ui.Button}
+     */
+    this.button = null;
+
+    /**
+     * Panel of the plugin
+     * @private
+     * @type {IDEE.ui.Panel}
+     */
+    this.panel = null;
+
+    /**
+     * Array of controls
+     * @private
+     * @type {Array<IDEE.Control>}
+     */
+    this.controls = [];
 
     /**
      * Plugin parameters
@@ -56,9 +71,9 @@ export default class BackImgLayer extends IDEE.Plugin {
      * Position of the plugin
      *
      * @private
-     * @type {Enum} TL | TR | BL | BR
+     * @type {Enum} left | right
      */
-    this.position_ = options.position || 'TR';
+    this.position = options.position || 'right';
 
     /**
      * Position of current background layer on layers array.
@@ -86,21 +101,21 @@ export default class BackImgLayer extends IDEE.Plugin {
      * @public
      * @type {String}
      */
-    this.ids = options.ids || 'wmts';
+    this.ids = options.ids || 'wmts1,wmts2,wmts3,wmts4,wmts5,wmts6,wmts7,wmts8';
 
     /**
      * Layers titles separated by ','.
      * @public
      * @type {String}
      */
-    this.titles = options.titles || 'IGNBaseTodo';
+    this.titles = options.titles || 'IGNBaseTodo,CallejeroGris,LandCoverSurfaces,ElevationGridCoverage,MTN,OrthoimageCoverage,GridCoverageDSM,MancelliMadrid,PNOA';
 
     /**
      * Layers preview urls separated by ','.
      * @public
      * @type {String}
      */
-    this.previews = options.previews || 'https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqmapa.png';
+    this.previews = options.previews || 'plugins/backimglayer/images/svqmapa.png,plugins/backimglayer/images/svqimagen.png,plugins/backimglayer/images/svqlidar.png,plugins/backimglayer/images/svqimagen.png,plugins/backimglayer/images/svqimagen.png,plugins/backimglayer/images/svqimagen.png,plugins/backimglayer/images/svqimagen.png,plugins/backimglayer/images/svqimagen.png';
 
     /**
      * Layers separated by ','.
@@ -109,7 +124,7 @@ export default class BackImgLayer extends IDEE.Plugin {
      * @public
      * @type {String}
      */
-    this.layers = options.layers || 'QUICK*BASE_MapaBase_IGNBaseTodo_WMTS';
+    this.layers = options.layers || 'QUICK*BASE_MapaBase_IGNBaseTodo_WMTS,QUICK*MapaBase_CallejeroGris_WMTS,QUICK*OcupacionSuelo_LandCoverSurfaces_WMTS,QUICK*MDT_ElevationGridCoverage_WMTS,QUICK*CartografiaRaster_MTN_WMTS,QUICK*PNOA_MA_OrthoimageCoverage_WMTS,QUICK*MapaLiDAR_GridCoverageDSM_WMTS,QUICK*Planos_Historicos_MadridMancelliMadrid_WMTS';
 
     /**
      * @private
@@ -154,7 +169,7 @@ export default class BackImgLayer extends IDEE.Plugin {
      * @private
      * @type {string}
      */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
+    this.tooltip = options.tooltip || getValue('tooltip');
 
     /**
      *@private
@@ -189,7 +204,26 @@ export default class BackImgLayer extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.controls_.push(new BackImgLayerControl({
+    this.map = map;
+
+    this.button = new IDEE.ui.Button(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+    });
+    map.addButtons(this.button);
+
+    this.panel = new IDEE.ui.Panel(this.name, {
+      collapsible: this.collapsible,
+      collapsed: this.collapsed,
+      position: this.position,
+      className: 'm-plugin-backimglayer',
+      tooltip: this.tooltip,
+      collapsedButtonClass: 'backimglyr-simbolo-cuadros',
+      order: this.order,
+    });
+    map.addPanels(this.panel);
+
+    this.controls.push(new BackImgLayerControl({
       map,
       visible: this.visible,
       layerOpts: this.layerOpts,
@@ -199,27 +233,16 @@ export default class BackImgLayer extends IDEE.Plugin {
       titles: this.titles,
       previews: this.previews,
       layers: this.layers,
-      numColumns: this.columnsNumber,
       empty: this.empty,
       order: this.order,
     }));
-    this.map_ = map;
-    this.panel_ = new IDEE.ui.Panel('BackImgLayer', {
-      collapsible: this.collapsible,
-      collapsed: this.collapsed,
-      position: IDEE.ui.position[this.position_],
-      className: 'm-plugin-backimglayer',
-      tooltip: this.tooltip_,
-      collapsedButtonClass: 'backimglyr-simbolo-cuadros',
-      order: this.order,
-    });
-
-    this.controls_[0].on('backimglayer:activeChanges', (data) => {
+    this.controls[0].on('backimglayer:activeChanges', (data) => {
       this.layerId = data.activeLayerId;
     });
+    this.panel.addControls(this.controls);
 
-    this.panel_.addControls(this.controls_);
-    map.addPanels(this.panel_);
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
   }
 
   /**
@@ -233,7 +256,7 @@ export default class BackImgLayer extends IDEE.Plugin {
     const layers = this.layerOpts === undefined
       ? `${this.ids}*!${this.titles}*!${this.previews}*!${this.layers}`
       : this.turnLayerOptsIntoUrl();
-    return `${this.name}=${this.position_}*!${this.collapsed}*!${this.collapsible}*!${this.tooltip_}*!${this.layerVisibility}*!${this.layerId}*!${this.columnsNumber}*!${this.empty}*!${layers}`;
+    return `${this.name}=${this.position}*!${this.collapsed}*!${this.collapsible}*!${this.tooltip}*!${this.layerVisibility}*!${this.layerId}*!${this.columnsNumber}*!${this.empty}*!${layers}`;
   }
 
   /**
@@ -313,11 +336,11 @@ export default class BackImgLayer extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
-    this.map_.removeControls(this.controls_);
-    this.map_ = null;
+    this.map.removeControls(this.controls);
+    this.map = null;
     this.control_ = null;
-    this.controls_ = null;
-    this.panel_ = null;
+    this.controls = null;
+    this.panel = null;
     this.name = null;
     this.layerOpts = null;
   }

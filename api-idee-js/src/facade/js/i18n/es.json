@@ -191,6 +191,7 @@
     "setprojection_method": "La implementación usada no posee el método setProjection.",
     "no_plugins": "No ha especificado ningún plugin.",
     "no_add_plugin_to_map": "El plugin no puede añadirse al mapa.",
+    "plugin_already_added": "El plugin ya está añadido al mapa.",
     "no_plugin_to_remove": "No ha especificado ningún plugin a eliminar.",
     "destroy_method": "La implementación usada no posee el método destroy.",
     "addlabel_method": "La implementación usada no posee el método addLabel.",

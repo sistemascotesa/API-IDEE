@@ -168,7 +168,10 @@ export default class InfoCatastroControl extends IDEE.Control {
           },
         },
       });
-      document.querySelector('#div-contenedor-locator').appendChild(panel);
+      const contenedorLocator = document.querySelector('#div-contenedor-locator');
+      if (contenedorLocator) {
+        contenedorLocator.appendChild(panel);
+      }
 
       // Tabs
       this.tabs = this.html_.querySelectorAll('[role=tab]');

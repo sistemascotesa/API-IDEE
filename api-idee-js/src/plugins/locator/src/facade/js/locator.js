@@ -1,12 +1,14 @@
 /**
  * @module IDEE/plugin/Locator
  */
+
 import '../assets/css/locator';
 import LocatorControl from './locatorcontrol';
-import es from './i18n/es';
-import en from './i18n/en';
 import { getValue } from './i18n/language';
 import myhelp from '../../templates/myhelp';
+
+import es from './i18n/es';
+import en from './i18n/en';
 
 export default class Locator extends IDEE.Plugin {
   /**
@@ -21,19 +23,6 @@ export default class Locator extends IDEE.Plugin {
    */
   constructor(options = {}) {
     super();
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map_ = null;
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls_ = [];
 
     /**
      * Plugin name
@@ -43,9 +32,37 @@ export default class Locator extends IDEE.Plugin {
     this.name = 'locator';
 
     /**
+     * Facade of the map
+     * @private
+     * @type {IDEE.Map}
+     */
+    this.map = null;
+
+    /**
+     * Button of the plugin
+     * @private
+     * @type {IDEE.ui.Button}
+     */
+    this.button = null;
+
+    /**
+     * Panel of the plugin
+     * @private
+     * @type {IDEE.ui.Panel}
+     */
+    this.panel = null;
+
+    /**
+     * Array of controls
+     * @private
+     * @type {Array<IDEE.Control>}
+     */
+    this.controls = [];
+
+    /**
      * Plugin parameters
      * @public
-     * @type {Object}
+     * @type {object}
      */
     this.options = options;
 
@@ -53,9 +70,9 @@ export default class Locator extends IDEE.Plugin {
      * Position of the plugin
      *
      * @private
-     * @type {String} TL | TR | BL | BR | TC
+     * @type {Enum} left | right
      */
-    this.position_ = options.position || 'TR';
+    this.position = options.position || 'right';
 
     /**
      * Option to allow the plugin to be collapsed or not
@@ -76,7 +93,7 @@ export default class Locator extends IDEE.Plugin {
      * @private
      * @type {String}
      */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
+    this.tooltip = options.tooltip || getValue('tooltip');
 
     /**
      * Option to allow the plugin to be draggable or not
@@ -173,11 +190,30 @@ export default class Locator extends IDEE.Plugin {
    * @api
    */
   addTo(map) {
+    this.map = map;
+
+    this.button = new IDEE.ui.Button(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+    });
+    map.addButtons(this.button);
+
+    this.panel = new IDEE.ui.Panel(this.name, {
+      collapsible: this.collapsible,
+      collapsed: this.collapsed,
+      position: IDEE.ui.position[this.position],
+      className: 'm-plugin-locator',
+      tooltip: this.tooltip,
+      collapsedButtonClass: 'locator-icon-localizacion2',
+      order: this.order,
+    });
+    map.addPanels(this.panel);
+
     if (this.byCoordinates === false && this.byParcelCadastre === false
-        && this.byPlaceAddressPostal === false) {
+      && this.byPlaceAddressPostal === false) {
       IDEE.dialog.error(getValue('exception.no_controls'));
     }
-    this.controls_.push(new LocatorControl(
+    this.controls.push(new LocatorControl(
       this.isDraggable,
       this.zoom,
       this.pointStyle,
@@ -187,26 +223,17 @@ export default class Locator extends IDEE.Plugin {
       this.order,
       this.useProxy,
       this.statusProxy,
-      this.position_,
+      this.position,
     ));
-    this.map_ = map;
-    if (this.position_ === 'TC') {
+
+    if (this.position === 'TC') {
       this.collapsible = false;
     }
-    this.panel_ = new IDEE.ui.Panel('panelLocator', {
-      collapsible: this.collapsible,
-      collapsed: this.collapsed,
-      position: IDEE.ui.position[this.position_],
-      className: 'm-plugin-locator',
-      tooltip: this.tooltip_,
-      collapsedButtonClass: 'locator-icon-localizacion2',
-      order: this.order,
-    });
 
-    this.panel_.addControls(this.controls_);
-    map.addPanels(this.panel_);
+    this.panel.addControls(this.controls);
+    // map.addPanels(this.panel_);
 
-    this.locatorControl = this.controls_.find((obj) => obj.name === 'Locator');
+    this.locatorControl = this.controls.find((obj) => obj.name === 'Locator');
 
     this.locatorControl.on('xylocator:locationCentered', (data) => {
       this.fire('xylocator:locationCentered', data);
@@ -219,6 +246,9 @@ export default class Locator extends IDEE.Plugin {
     this.locatorControl.on('infocatastro:locationCentered', (data) => {
       this.fire('infocatastro:locationCentered', data);
     });
+
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
   }
 
   /**
@@ -295,7 +325,7 @@ export default class Locator extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position_}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.zoom}*${this.pointStyle}*${this.isDraggable}*${!!this.byParcelCadastre}*${!!this.byCoordinates}*${!!this.byPlaceAddressPostal}*${this.useProxy}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip}*${this.zoom}*${this.pointStyle}*${this.isDraggable}*${!!this.byParcelCadastre}*${!!this.byCoordinates}*${!!this.byPlaceAddressPostal}*${this.useProxy}`;
   }
 
   /**
@@ -317,10 +347,10 @@ export default class Locator extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map_.removeControls(this.controls_);
-    this.map_ = null;
-    this.controls_ = null;
-    this.panel_ = null;
+    this.map.removeControls(this.controls);
+    this.map = null;
+    this.controls = null;
+    this.panel = null;
     this.name = null;
   }
 

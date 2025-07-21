@@ -1,7 +1,7 @@
-/* eslint-disable indent */
 /**
  * @module IDEE/plugin/Layerswitcher
  */
+
 import '../assets/css/layerswitcher';
 import '../assets/css/fonts';
 import LayerswitcherControl from './layerswitchercontrol';
@@ -174,20 +174,56 @@ const PRECHARGED = {
 export default class Layerswitcher extends IDEE.Plugin {
   constructor(options = {}) {
     super();
-    // Fachada del mapa
-    this.map_ = null;
 
-    // Controles del plugin
-    this.controls_ = [];
-
-    // Nombre del plugin
+    /**
+     * Plugin name
+     * @public
+     * @type {String}
+     */
     this.name_ = 'layerswitcher';
 
-    // Parámetros del plugin
+    /**
+     * Facade of the map
+     * @private
+     * @type {IDEE.Map}
+     */
+    this.map = null;
+
+    /**
+     * Button of the plugin
+     * @private
+     * @type {IDEE.ui.Button}
+     */
+    this.button = null;
+
+    /**
+     * Panel of the plugin
+     * @private
+     * @type {IDEE.ui.Panel}
+     */
+    this.panel = null;
+
+    /**
+     * Array of controls
+     * @private
+     * @type {Array<IDEE.Control>}
+     */
+    this.controls = [];
+
+    /**
+     * Plugin parameters
+     * @public
+     * @type {object}
+     */
     this.options = options;
 
-    // Posición del plugin
-    this.position_ = options.position || 'TR';
+    /**
+     * Position of the plugin
+     *
+     * @private
+     * @type {Enum} left | right
+     */
+    this.position_ = options.position || 'right';
 
     // Permite saber si el plugin está colapsado o no
     this.collapsed_ = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
@@ -221,7 +257,7 @@ export default class Layerswitcher extends IDEE.Plugin {
 
     // Mostrar tipo de capa
     this.displayLabel = !IDEE.utils.isUndefined(options.displayLabel)
-    ? options.displayLabel : false;
+      ? options.displayLabel : false;
 
     //  Metadatos
     this.metadata_ = api.metadata;
@@ -264,10 +300,15 @@ export default class Layerswitcher extends IDEE.Plugin {
 
   // Esta función añade el plugin al mapa
   addTo(map) {
-    this.map_ = map;
+    this.map = map;
 
-    // creamos panel
-    const panel = new IDEE.ui.Panel('Layerswitcher', {
+    this.button = new IDEE.ui.Button(this.name, {
+      position: this.position_,
+      tooltip: this.tooltip_,
+    });
+    map.addButtons(this.button);
+
+    this.panel = new IDEE.ui.Panel(this.name, {
       className: 'm-plugin-layerswitcher',
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
@@ -276,11 +317,9 @@ export default class Layerswitcher extends IDEE.Plugin {
       tooltip: this.tooltip_,
       order: this.order,
     });
+    map.addPanels(this.panel);
 
-    this.panel_ = panel;
-
-    // creamos control
-    const control = new LayerswitcherControl({
+    this.controls.push(new LayerswitcherControl({
       isDraggable: this.isDraggable,
       modeSelectLayers: this.modeSelectLayers,
       tools: this.tools,
@@ -297,20 +336,18 @@ export default class Layerswitcher extends IDEE.Plugin {
       statusProxy: this.statusProxy,
       useAttributions: this.useAttributions,
       displayLabel: this.displayLabel,
-    });
-    this.control_ = control;
+    }));
 
-    this.controls_.push(this.control_);
-
-    // se dispara evento cuando se añade al mapa
-    this.control_.on(IDEE.evt.ADDED_TO_MAP, () => {
+    this.controls[0].on(IDEE.evt.ADDED_TO_MAP, () => {
       this.fire(IDEE.evt.ADDED_TO_MAP);
     });
 
-    this.panel_.addControls(this.controls_);
-    this.map_.addPanels(this.panel_);
+    this.panel.addControls(this.controls);
 
-    control.addEventPanel(panel);
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
+
+    // control.addEventPanel(panel);
   }
 
   // Esta función devuelve la posición del plugin
@@ -325,7 +362,7 @@ export default class Layerswitcher extends IDEE.Plugin {
 
   // Esta función devuelve si el panel es collapsible o no
   get collapsed() {
-    return this.panel_.isCollapsed();
+    return this.panel.isCollapsed();
   }
 
   // Devuelve la cadena API-REST del plugin
@@ -344,12 +381,12 @@ export default class Layerswitcher extends IDEE.Plugin {
   }
 
   getPanel() {
-    return this.panel_;
+    return this.panel;
   }
 
   // Esta función elimina el plugin del mapa
   destroy() {
-    this.map_.removeControls(this.controls_);
+    this.map.removeControls(this.controls);
     [this.control_] = [null];
   }
 

@@ -107,7 +107,10 @@ export default class XYLocatorControl extends IDEE.Control {
           },
         },
       });
-      document.querySelector('#div-contenedor-locator').appendChild(panel);
+      const contenedorLocator = document.querySelector('#div-contenedor-locator');
+      if (contenedorLocator) {
+        contenedorLocator.appendChild(panel);
+      }
       this.html_.querySelector('button#m-xylocator-limpiar').addEventListener('click', () => this.clearResults());
       this.html_.querySelector('select#m-xylocator-srs').addEventListener('change', (evt) => this.manageInputs_(evt));
       this.html_.querySelector('button#m-xylocator-loc').addEventListener('click', (evt) => this.calculate_());
