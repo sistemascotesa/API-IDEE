@@ -45,13 +45,13 @@ export const TRANSLATIONS_INFO_LAYER = {
 };
 
 // Selector de cambio de nombre
-const SELECTOR_CHANGE_NAME = 'div.m-api-idee-container div.m-dialog #m-layer-change-name input';
+const SELECTOR_CHANGE_NAME = 'div.api-idee-container div.m-dialog #layer-change-name input';
 
 // Contenedor de diálogo
-const SELECTOR_DIALOG = 'div.m-api-idee-container div.m-dialog';
+const SELECTOR_DIALOG = 'div.api-idee-container div.m-dialog';
 
 // Botón de cambio de nombre
-const ID_SELECTOR_CHANGE_NAME_BUTTON = '#m-layer-change-name button';
+const ID_SELECTOR_CHANGE_NAME_BUTTON = '#layer-change-name button';
 
 // Botón de cerrar diálogo
 const ID_SELECTOR_CLOSE_DIALOG = 'div.m-dialog.info div.m-button > button';
@@ -81,7 +81,7 @@ const changeLayerLegend = (layer, target) => {
 };
 
 export const showModalChangeName = (layer, target, order) => {
-  if (target.className.indexOf('m-layerswitcher-title-box') > -1
+  if (target.className.indexOf('layerswitcher-title-box') > -1
   || target.className.indexOf('m-layerswitcher-sectionPanel-header-text') > -1) {
     const changeName = IDEE.template.compileSync(changeNameTemplate, {
       jsonp: true,
@@ -371,7 +371,7 @@ const changeLayerConfig = (layer, otherStyles) => {
         }
       }
     }
-    document.querySelector('div.m-api-idee-container div.m-dialog').remove();
+    document.querySelector('div.api-idee-container div.m-dialog').remove();
   }
 };
 
@@ -412,7 +412,7 @@ export const styleLayers = (layer, order, evt) => {
       document.querySelector(selector).addEventListener('click', () => {
         changeLayerConfig(layer, otherStyles);
       });
-      document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
+      document.querySelector('div.api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
       const button = document.querySelector('div.m-dialog.info div.m-button > button');
       button.innerHTML = getValue('close');
       button.style.width = '75px';

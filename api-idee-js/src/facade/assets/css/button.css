@@ -16,7 +16,7 @@
     margin-right: 16px;
 }
 
-.api-idee-button {
+.plugin-button {
     cursor: pointer;
     width: 40px;
     height: 40px;
@@ -32,31 +32,24 @@
     transition: all 0.3s ease;
 }
 
-.api-idee-button:hover {
-    transform: scale(0.8);
+.plugin-button:hover {
+    background-color: #1470db;
     transition: all 0.3s ease;
 }
 
-.api-idee-button.active-left,
-.api-idee-button.active-right {
+.plugin-button.active {
     color: #fff;
-    background-color: #1e5aa0;
+    background-color: #1d5a9e;
     border: 2px solid #fff;
     transition: all 0.3s ease;
 }
 
-.api-idee-button svg {
+.plugin-button svg {
     width: 24px;
     height: 24px;
     transition: transform 0.3s ease;
 }
 
-.api-idee-button.active-left svg {
-    transform: rotate(360deg);
-    transition: transform 0.3s ease;
-}
-
-.api-idee-button.active-right svg {
-    transform: rotate(-360deg);
+.plugin-button.active svg {
     transition: transform 0.3s ease;
 }

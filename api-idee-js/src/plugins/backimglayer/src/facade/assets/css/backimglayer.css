@@ -1,4 +1,4 @@
-div[id^="backimglayer-lyr-"] {
+div[id^="backimglayer-layer-"] {
     position: relative;
     height: 48px;
     margin-bottom: 16px;
@@ -8,19 +8,19 @@ div[id^="backimglayer-lyr-"] {
     transition: all 0.3s ease;
 }
 
-div[id^="backimglayer-lyr-"]:hover {
-    transform: scale(0.9);
+div[id^="backimglayer-layer-"]:hover {
+    border: 2px solid #1470db;
     transition: all 0.3s ease;
 }
 
-div[id^="backimglayer-lyr-"]>img {
+div[id^="backimglayer-layer-"]>img {
     width: 100%;
     height: 100%;
     padding: 2px;
     box-sizing: border-box;
 }
 
-div[id^="backimglayer-lyr-"]>span {
+div[id^="backimglayer-layer-"]>span {
     position: absolute;
     top: 0;
     left: 0;
@@ -32,7 +32,7 @@ div[id^="backimglayer-lyr-"]>span {
     align-items: center;
     justify-content: flex-start;
     padding-left: 8px;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .activeBackimglayerDiv {

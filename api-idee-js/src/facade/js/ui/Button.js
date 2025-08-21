@@ -119,7 +119,7 @@ class Button extends MObject {
     }
 
     this.pressed = true;
-    this.element.classList.add(`active-${this.position}`);
+    this.element.classList.add('active');
   }
 
   closePanel() {
@@ -133,7 +133,7 @@ class Button extends MObject {
     }
 
     this.pressed = false;
-    this.element.classList.remove(`active-${this.position}`);
+    this.element.classList.remove('active');
   }
 }
 

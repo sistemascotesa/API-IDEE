@@ -30,8 +30,8 @@
             <table>
                 <tbody>
                     <tr>
-                        <td><span {{#if displayLabel}}style="display: none"{{/if}} aria-label="Tipo de servicio {{type}}" tabindex="0" class="m-layerswitcher-type">{{type}}</span></td>
-                        <td><span tabindex="0"  data-layer-id="{{idLayer}}" data-layer-type="{{type}}" title="{{translations.changeName}}" data-layer-name="{{id}}" data-layer-url="{{url}}" class="m-layerswitcher-title-box">{{title}}</span></td>
+                        <td><span {{#if displayLabel}}style="display: none"{{/if}} aria-label="Tipo de servicio {{type}}" tabindex="0" class="layerswitcher-type">{{type}}</span></td>
+                        <td><span tabindex="0"  data-layer-id="{{idLayer}}" data-layer-type="{{type}}" title="{{translations.changeName}}" data-layer-name="{{id}}" data-layer-url="{{url}}" class="layerswitcher-title-box">{{title}}</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -50,7 +50,7 @@
         <div class="m-layerswitcher-tools">
             {{#if isTransparency}}
                 <div class="m-layerswitcher-opacity">
-                    <input tabindex="0" type="range" data-layer-id="{{idLayer}}" data-layer-type="{{type}}" data-layer-name="{{id}}" data-layer-url="{{url}}" class="m-layerswitcher-transparency" min="0" max="1" step="0.1" value="{{opacity}}" {{#unless visible}} disabled {{/unless}} {{#if outOfRange}} disabled {{/if}} />
+                    <input tabindex="0" type="range" data-layer-id="{{idLayer}}" data-layer-type="{{type}}" data-layer-name="{{id}}" data-layer-url="{{url}}" class="layerswitcher-transparency" min="0" max="1" step="0.1" value="{{opacity}}" {{#unless visible}} disabled {{/unless}} {{#if outOfRange}} disabled {{/if}} />
                 </div>
             {{/if}}
             <div class="m-layerswitcher-action-tools">

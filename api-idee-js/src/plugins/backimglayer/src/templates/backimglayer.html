@@ -1,13 +1,13 @@
 <div id="plugin-panel-content-backimglayer" class="plugin-panel-content backimglayer">
     <div id="backimglayer-previews">
         {{#each layers}}
-        <div id="backimglayer-lyr-{{this.id}}" title="{{this.title}}" role="button" tabindex="0" aria-label="{{this.title}}">
+        <div id="backimglayer-layer-{{this.id}}" title="{{this.title}}" role="button" tabindex="0" aria-label="{{this.title}}">
             <img src="{{this.preview}}" alt="{{this.title}}" tabindex="-1" />
             <span aria-hidden="true" tabindex="-1">{{this.title}}</span>
         </div>
         {{/each}}
         {{#if empty}}
-        <div id="backimglayer-lyr-empty" title="{{translations.none}}" role="button" tabindex="0" aria-label="{{translations.none}}">
+        <div id="backimglayer-layer-empty" title="{{translations.none}}" role="button" tabindex="0" aria-label="{{translations.none}}">
             <div height="100px" width="100px" tabindex="-1"></div>
             <span tabindex="-1">{{translations.none}}</span>
         </div>

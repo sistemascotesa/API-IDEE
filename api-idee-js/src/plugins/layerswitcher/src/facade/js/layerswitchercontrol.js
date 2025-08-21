@@ -229,8 +229,8 @@ export default class LayerswitcherControl extends IDEE.Control {
         this.template_.addEventListener('input', this.inputLayer.bind(this), false);
 
         this.getImpl().registerEvent(map);
-        this.template_.querySelector('#m-layerswitcher-addlayers').addEventListener('click', this.openAddServices.bind(this), false);
-        this.template_.querySelector('#m-layerswitcher-addlayers').addEventListener('touchstart', this.openAddServices.bind(this), false);
+        this.template_.querySelector('#layerswitcher-add-layer').addEventListener('click', this.openAddServices.bind(this), false);
+        this.template_.querySelector('#layerswitcher-add-layer').addEventListener('touchstart', this.openAddServices.bind(this), false);
         this.accessibilityTab(this.template_);
 
         success(this.template_);
@@ -301,6 +301,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         remove_layer: getValue('remove_layer'),
         change_style: getValue('change_style'),
         add: getValue('add'),
+        add_service: getValue('add_service'),
       },
       allVisible: !this.statusShowHideAllLayers,
       isRadio: this.modeSelectLayers === 'radio',
@@ -366,11 +367,11 @@ export default class LayerswitcherControl extends IDEE.Control {
         // eslint-disable-next-line no-await-in-loop
         const layerGroupHTML = await this.recursiveLayerGroupTemplate_(layer);
 
-        [...layerGroupHTML.querySelectorAll('.m-layerswitcher-ullayersGroup')].forEach((group) => {
+        [...layerGroupHTML.querySelectorAll('.layerswitcher-ul-layersGroup')].forEach((group) => {
           this.orderLayers(group);
         });
 
-        this.template_.querySelector('.m-layerswitcher-ullayers').appendChild(layerGroupHTML);
+        this.template_.querySelector('.layerswitcher-ul-layers').appendChild(layerGroupHTML);
       }
     }
   }
@@ -395,7 +396,7 @@ export default class LayerswitcherControl extends IDEE.Control {
             .map((sublayer) => {
               if (sublayer instanceof IDEE.layer.LayerGroup) {
                 return this.recursiveLayerGroupTemplate_(sublayer).then((subLayerGroupHTML) => {
-                  html.querySelector('.m-layerswitcher-ullayersGroup').appendChild(subLayerGroupHTML);
+                  html.querySelector('.layerswitcher-ul-layersGroup').appendChild(subLayerGroupHTML);
                 });
               }
               return this.parseLayerForTemplate_(sublayer).then((varsSubLayer) => {
@@ -407,7 +408,7 @@ export default class LayerswitcherControl extends IDEE.Control {
                   },
                 });
 
-                html.querySelector('.m-layerswitcher-ullayersGroup').appendChild(li);
+                html.querySelector('.layerswitcher-ul-layersGroup').appendChild(li);
               });
             });
 
@@ -422,7 +423,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   // Esta función renderiza la plantilla
   async render() {
     let listLayer = 0;
-    const layerswitcherContent = document.getElementById('m-layerswitcher-content');
+    const layerswitcherContent = document.getElementById('layerswitcher-layers');
     if (layerswitcherContent) {
       listLayer = layerswitcherContent.childElementCount;
     }
@@ -445,28 +446,28 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     const templateVars = await this.getTemplateVariables(this.map_);
     let scroll;
-    if (document.querySelector('.m-plugin-layerswitcher.opened ul.m-layerswitcher-ullayers') !== null) {
-      scroll = document.querySelector('.m-plugin-layerswitcher.opened ul.m-layerswitcher-ullayers').scrollTop;
+    if (document.querySelector('.m-plugin-layerswitcher.opened ul.layerswitcher-ul-layers') !== null) {
+      scroll = document.querySelector('.m-plugin-layerswitcher.opened ul.layerswitcher-ul-layers').scrollTop;
     }
 
     const html = IDEE.template.compileSync(templateAux, {
       vars: templateVars,
     });
 
-    this.template_.querySelector('#m-layerswitcher-content').innerHTML = html.innerHTML;
+    this.template_.querySelector('#layerswitcher-layers').innerHTML = html.innerHTML;
 
     await this.generateTemplateLayerGroup();
 
-    const ulContainer = this.template_.querySelector('.m-layerswitcher-ullayers');
+    const ulContainer = this.template_.querySelector('.layerswitcher-ul-layers');
     this.orderLayers(ulContainer);
 
-    const layerList = this.template_.querySelector('.m-layerswitcher-ullayers');
+    const layerList = this.template_.querySelector('.layerswitcher-ul-layers');
 
     if (layerList !== null && this.isMoveLayers) { // ??¿?¿ isMoveLayers
       generateSortable(this.map_, this.overlayLayers);
     }
     if (scroll !== undefined) {
-      const aux = document.querySelector('.m-plugin-layerswitcher.opened ul.m-layerswitcher-ullayers');
+      const aux = document.querySelector('.m-plugin-layerswitcher.opened ul.layerswitcher-ul-layers');
       if (aux !== null) {
         aux.scrollTop = scroll;
       }
@@ -511,7 +512,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   clickLayer(evtParameter) {
     const evt = (evtParameter || window.event);
 
-    if (evt.target.id === 'm-layerswitcher-hsalllayers') {
+    if (evt.target.id === 'layerswitcher-hide-show-all-layers') {
       this.showHideAllLayers();
     } else {
       const layer = this.findLayer(evt)[0];

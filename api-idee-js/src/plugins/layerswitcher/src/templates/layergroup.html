@@ -31,7 +31,7 @@
             title="{{changeName}}"
             data-layer-url="{{url}}">
                 <span {{#if displayLabel}}style="display: none" {{/if}} aria-label="Tipo de servicio {{type}}"
-                    tabindex="0" class="m-layerswitcher-type">{{type}}</span>
+                    tabindex="0" class="layerswitcher-type">{{type}}</span>
                 {{title}}
             </p>
         </div>
@@ -54,5 +54,5 @@
             {{/if}}
         </div>
     </section>
-    <ul style="display: {{#if displayGroup}}block{{else}}none{{/if}}" tabindex="0" class="m-layerswitcher-ullayersGroup nested-sortable" data-layer-name="{{id}}" data-layer-id="{{idLayer}}"></ul>
+    <ul style="display: {{#if displayGroup}}block{{else}}none{{/if}}" tabindex="0" class="layerswitcher-ul-layersGroup nested-sortable" data-layer-name="{{id}}" data-layer-id="{{idLayer}}"></ul>
 </li>

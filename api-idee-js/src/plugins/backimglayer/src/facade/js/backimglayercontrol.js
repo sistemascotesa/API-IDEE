@@ -154,7 +154,7 @@ export default class BackImgLayerControl extends IDEE.Control {
     this.visible = false;
     const { layers } = layersInfo;
     const isActivated = e.currentTarget.parentElement
-      .querySelector(`#backimglayer-lyr-${layersInfo.id}`)
+      .querySelector(`#backimglayer-layer-${layersInfo.id}`)
       .classList.contains('activeBackimglayerDiv');
 
     layers.forEach((layer, index, array) => {
@@ -168,7 +168,7 @@ export default class BackImgLayerControl extends IDEE.Control {
       }
     });
 
-    e.currentTarget.parentElement.querySelectorAll('div[id^="backimglayer-lyr-"]').forEach((imgContainer) => {
+    e.currentTarget.parentElement.querySelectorAll('div[id^="backimglayer-layer-"]').forEach((imgContainer) => {
       if (imgContainer.classList.contains('activeBackimglayerDiv')) {
         imgContainer.classList.remove('activeBackimglayerDiv');
       }
@@ -177,7 +177,7 @@ export default class BackImgLayerControl extends IDEE.Control {
       this.visible = true;
       this.activeLayer = i;
       e.currentTarget.parentElement
-        .querySelector(`#backimglayer-lyr-${layersInfo.id}`).classList.add('activeBackimglayerDiv');
+        .querySelector(`#backimglayer-layer-${layersInfo.id}`).classList.add('activeBackimglayerDiv');
       // IDEE.proxy(false);
       this.map.addLayers(layers);
       // setTimeout(() => {
@@ -189,7 +189,7 @@ export default class BackImgLayerControl extends IDEE.Control {
         */
       // }, 1000);
     } else if (this.empty) {
-      e.currentTarget.parentElement.querySelector('#backimglayer-lyr-empty').classList.add('activeBackimglayerDiv');
+      e.currentTarget.parentElement.querySelector('#backimglayer-layer-empty').classList.add('activeBackimglayerDiv');
     }
     this.fire('backimglayer:activeChanges', [{ activeLayerId: this.activeLayer }]);
   }
@@ -219,8 +219,8 @@ export default class BackImgLayerControl extends IDEE.Control {
    */
   listen(html) {
     // eslint-disable-next-line no-param-reassign
-    html.querySelectorAll('div[id^="backimglayer-lyr-"]').forEach((b, i) => {
-      if (b.id === 'backimglayer-lyr-empty') {
+    html.querySelectorAll('div[id^="backimglayer-layer-"]').forEach((b, i) => {
+      if (b.id === 'backimglayer-layer-empty') {
         b.addEventListener('click', this.showEmptyLayer.bind(this, html));
         b.addEventListener('keydown', ({ key }) => {
           if (key === 'Enter') this.showEmptyLayer(html);

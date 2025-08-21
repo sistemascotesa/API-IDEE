@@ -19,7 +19,7 @@ const setZIndex = (maxZIndex, parentElem, layers) => {
     [...children].forEach((c) => {
       if (!c.classList.contains('m-layerswitcher-sectionPanel-header')) {
         if (c.getAttribute('data-layer-type') === 'LayerGroup'
-        || c.classList.contains('m-layerswitcher-ullayersGroup')) {
+        || c.classList.contains('layerswitcher-ul-layersGroup')) {
           zindex = setZIndex(zindex, c, layers);
         } else {
           const id = c.getAttribute('data-layer-id');
@@ -46,8 +46,8 @@ const setZIndex = (maxZIndex, parentElem, layers) => {
 
 const handleOnAdd = (map) => (evt) => {
   // De mapa a mapa (no se hace nada)
-  if (evt.to.classList.contains('m-layerswitcher-ullayers')
-        && evt.from.classList.contains('m-layerswitcher-ullayers')) {
+  if (evt.to.classList.contains('layerswitcher-ul-layers')
+        && evt.from.classList.contains('layerswitcher-ul-layers')) {
     return;
   }
 
@@ -56,16 +56,16 @@ const handleOnAdd = (map) => (evt) => {
   const idTo = evt.to.getAttribute('data-layer-id');
 
   // De grupo a mapa
-  const isToMap = (evt.to.classList.contains('m-layerswitcher-ullayers')
-      && evt.from.classList.contains('m-layerswitcher-ullayersGroup'));
+  const isToMap = (evt.to.classList.contains('layerswitcher-ul-layers')
+      && evt.from.classList.contains('layerswitcher-ullayersGroup'));
 
   // De mapa a grupo
-  const isFromMap = (evt.from.classList.contains('m-layerswitcher-ullayers')
-      && evt.to.classList.contains('m-layerswitcher-ullayersGroup'));
+  const isFromMap = (evt.from.classList.contains('layerswitcher-ul-layers')
+      && evt.to.classList.contains('layerswitcher-ullayersGroup'));
 
   // De grupo a grupo
-  const isGroupToGroup = (evt.from.classList.contains('m-layerswitcher-ullayersGroup')
-      && evt.to.classList.contains('m-layerswitcher-ullayersGroup'));
+  const isGroupToGroup = (evt.from.classList.contains('layerswitcher-ullayersGroup')
+      && evt.to.classList.contains('layerswitcher-ullayersGroup'));
 
   const groupFrom = isToMap || isGroupToGroup
     ? map.getLayerGroup().find((g) => g.idLayer === idFrom) : null;
@@ -107,7 +107,7 @@ const handleOnEnd = (map, overlayLayers) => (evt) => {
   maxZIndex = Math.max(...(filterLayers.map((l) => {
     return l.getZIndex();
   })));
-  const root = document.querySelector('.m-layerswitcher-ullayers');
+  const root = document.querySelector('.layerswitcher-ul-layers');
   setZIndex(maxZIndex, root, filterLayers);
 };
 

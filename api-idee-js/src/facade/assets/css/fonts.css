@@ -1,8 +1,4 @@
-@font-face {
-    font-family: 'Muli';
-    src: url('../fonts/Muli-Regular-webfont.eot');
-    src: url('../fonts/Muli-Regular-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/Muli-Regular-webfont.woff') format('woff'), url('../fonts/Muli-Regular-webfont.ttf') format('truetype'), url('../fonts/Muli-Regular-webfont.svg#Muli') format('svg');
-}
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
 
 @font-face {
     font-family: 'g-cartografia';
