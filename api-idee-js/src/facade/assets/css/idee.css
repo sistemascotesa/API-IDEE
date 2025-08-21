@@ -1,7 +1,7 @@
 /***********************
      CONTAINER
 ************************/
-.api-idee-container {
+.m-api-idee-container {
     position: relative;
     width: 100%;
     height: 100%;
@@ -11,7 +11,7 @@
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAMAAAC6V+0/AAAABlBMVEUAAAD///+l2Z/dAAAAAnRSTlMICLCRzwIAAAAVSURBVBjTY2CEAwYEGNKCw8QbCEEApbQAyTWv+7EAAAAASUVORK5CYII=);
 }
 
-.api-idee-map-panel {
+.m-api-idee-map-panel {
     position: absolute;
     top: 0;
     left: 0;
@@ -20,8 +20,8 @@
     z-index: 1;
 }
 
-.api-idee-left-panel,
-.api-idee-right-panel {
+.m-api-idee-left-panel,
+.m-api-idee-right-panel {
     position: absolute;
     top: 0;
     height: 100%;
@@ -29,18 +29,18 @@
     z-index: 3;
 }
 
-.api-idee-left-panel {
+.m-api-idee-left-panel {
     left: 0;
     box-shadow: 5px 0 10px rgba(0, 0, 0, 0.3);
 }
 
-.api-idee-right-panel {
+.m-api-idee-right-panel {
     right: 0;
     box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3);
 }
 
-.api-idee-left-handle,
-.api-idee-right-handle {
+.m-api-idee-left-handle,
+.m-api-idee-right-handle {
     position: absolute;
     top: 50%;
     width: 16px;
@@ -54,40 +54,40 @@
     z-index: 4;
 }
 
-.api-idee-left-handle {
+.m-api-idee-left-handle {
     right: -8px;
     box-shadow: 5px 0 10px rgba(0, 0, 0, 0.3);
 }
 
-.api-idee-right-handle {
+.m-api-idee-right-handle {
     left: -8px;
     box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3);
 }
 
-.api-idee-left-handle:hover,
-.api-idee-right-handle:hover {
+.m-api-idee-left-handle:hover,
+.m-api-idee-right-handle:hover {
     background-color: #1470db;
     transition: all 0.3s ease;
 }
 
-.plugin-panel {
+.m-plugin-panel {
     width: 100%;
     height: 100%;
 }
 
-.plugin-panel-title {
+.m-plugin-panel-title {
     padding: 16px;
     font-size: 18px;
     font-weight: bold;
     color: #1d5a9e;
 }
 
-.plugin-panel-content {
+.m-plugin-panel-content {
     height: 100%;
     padding: 0 16px;
 }
 
-.button {
+button {
     height: 32px;
     color: white;
     background-color: #71a7d3;
@@ -99,7 +99,7 @@
     transition: all 0.3s ease;
 }
 
-.button:hover {
+button:hover {
     background-color: #1470db;
     border: 2px solid #1470db;
     transition: all 0.3s ease;

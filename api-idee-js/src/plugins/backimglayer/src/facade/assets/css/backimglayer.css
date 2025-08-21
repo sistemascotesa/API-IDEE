@@ -35,10 +35,10 @@ div[id^="backimglayer-layer-"]>span {
     font-size: 16px;
 }
 
-.activeBackimglayerDiv {
+.m-backimglayer-active {
     border: 2px solid #1d5a9e !important;
  }
 
-.activeBackimglayerDiv>span {
+.m-backimglayer-active>span {
     font-weight: bold;
 }

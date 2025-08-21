@@ -4320,42 +4320,42 @@ class Map extends Base {
     this.minPanelWidth = 256;
     this.maxPanelWidth = 360;
 
-    container.classList.add('api-idee-container');
+    container.classList.add('m-api-idee-container');
 
     this.leftPanel = document.createElement('left-panel');
     this.leftPanel.id = 'leftPanel';
-    this.leftPanel.classList.add('api-idee-left-panel');
+    this.leftPanel.classList.add('m-api-idee-left-panel');
     container.appendChild(this.leftPanel);
 
     this.leftHandle = document.createElement('left-handle');
     this.leftHandle.id = 'leftHandle';
-    this.leftHandle.classList.add('api-idee-left-handle');
+    this.leftHandle.classList.add('m-api-idee-left-handle');
     this.leftHandle.style.visibility = 'hidden';
     this.leftPanel.appendChild(this.leftHandle);
 
     this.leftButtons = document.createElement('left-buttons');
     this.leftButtons.id = 'leftButtons';
-    this.leftButtons.classList.add('api-idee-left-buttons');
+    this.leftButtons.classList.add('m-api-idee-left-buttons');
     container.appendChild(this.leftButtons);
 
     this.mapPanel = document.createElement('map-panel');
     this.mapPanel.id = 'mapPanel';
-    this.mapPanel.classList.add('api-idee-map-panel');
+    this.mapPanel.classList.add('m-api-idee-map-panel');
     container.appendChild(this.mapPanel);
 
     this.rightButtons = document.createElement('right-buttons');
     this.rightButtons.id = 'rightButtons';
-    this.rightButtons.classList.add('api-idee-right-buttons');
+    this.rightButtons.classList.add('m-api-idee-right-buttons');
     container.appendChild(this.rightButtons);
 
     this.rightPanel = document.createElement('right-panel');
     this.rightPanel.id = 'rightPanel';
-    this.rightPanel.classList.add('api-idee-right-panel');
+    this.rightPanel.classList.add('m-api-idee-right-panel');
     container.appendChild(this.rightPanel);
 
     this.rightHandle = document.createElement('right-handle');
     this.rightHandle.id = 'rightHandle';
-    this.rightHandle.classList.add('api-idee-right-handle');
+    this.rightHandle.classList.add('m-api-idee-right-handle');
     this.rightHandle.style.visibility = 'hidden';
     this.rightPanel.appendChild(this.rightHandle);
 

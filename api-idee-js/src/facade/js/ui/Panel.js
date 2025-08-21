@@ -222,7 +222,7 @@ class Panel extends MObject {
 
     const panelTitle = document.createElement('div');
     panelTitle.id = `plugin-panel-title-${this.name}`;
-    panelTitle.classList.add('plugin-panel-title');
+    panelTitle.classList.add('m-plugin-panel-title');
     panelTitle.role = 'heading';
     panelTitle.ariaLabel = this._tooltip;
     panelTitle.tabIndex = 'null';

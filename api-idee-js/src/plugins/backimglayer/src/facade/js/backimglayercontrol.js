@@ -124,7 +124,7 @@ export default class BackImgLayerControl extends IDEE.Control {
 
         if (visible === false) {
           this.map.removeLayers(this.map.getBaseLayers());
-          this.html.querySelector('.activeBackimglayerDiv').classList.remove('activeBackimglayerDiv');
+          this.html.querySelector('.m-backimglayer-active').classList.remove('m-backimglayer-active');
         }
       });
 
@@ -133,7 +133,7 @@ export default class BackImgLayerControl extends IDEE.Control {
   }
 
   showEmptyLayer(html) {
-    const elem = html.querySelector('#backimglayer-previews div.activeBackimglayerDiv');
+    const elem = html.querySelector('#backimglayer-previews div.m-backimglayer-active');
     if (elem !== null) {
       elem.click();
     }
@@ -155,7 +155,7 @@ export default class BackImgLayerControl extends IDEE.Control {
     const { layers } = layersInfo;
     const isActivated = e.currentTarget.parentElement
       .querySelector(`#backimglayer-layer-${layersInfo.id}`)
-      .classList.contains('activeBackimglayerDiv');
+      .classList.contains('m-backimglayer-active');
 
     layers.forEach((layer, index, array) => {
       let sumIndex = index;
@@ -169,15 +169,15 @@ export default class BackImgLayerControl extends IDEE.Control {
     });
 
     e.currentTarget.parentElement.querySelectorAll('div[id^="backimglayer-layer-"]').forEach((imgContainer) => {
-      if (imgContainer.classList.contains('activeBackimglayerDiv')) {
-        imgContainer.classList.remove('activeBackimglayerDiv');
+      if (imgContainer.classList.contains('m-backimglayer-active')) {
+        imgContainer.classList.remove('m-backimglayer-active');
       }
     });
     if (!isActivated) {
       this.visible = true;
       this.activeLayer = i;
       e.currentTarget.parentElement
-        .querySelector(`#backimglayer-layer-${layersInfo.id}`).classList.add('activeBackimglayerDiv');
+        .querySelector(`#backimglayer-layer-${layersInfo.id}`).classList.add('m-backimglayer-active');
       // IDEE.proxy(false);
       this.map.addLayers(layers);
       // setTimeout(() => {
@@ -189,7 +189,7 @@ export default class BackImgLayerControl extends IDEE.Control {
         */
       // }, 1000);
     } else if (this.empty) {
-      e.currentTarget.parentElement.querySelector('#backimglayer-layer-empty').classList.add('activeBackimglayerDiv');
+      e.currentTarget.parentElement.querySelector('#backimglayer-layer-empty').classList.add('m-backimglayer-active');
     }
     this.fire('backimglayer:activeChanges', [{ activeLayerId: this.activeLayer }]);
   }

@@ -61,7 +61,7 @@ export const show = (message, severity, icon, order = 300, time = 4000) => {
   });
 
   // append new toast
-  const apiIdeeContainer = document.querySelector('div.api-idee-container');
+  const apiIdeeContainer = document.querySelector('div.m-api-idee-container');
   let toastContainer = document.querySelector('div.m-toasts-container');
   if (!toastContainer) {
     toastContainer = document.createElement('div');
