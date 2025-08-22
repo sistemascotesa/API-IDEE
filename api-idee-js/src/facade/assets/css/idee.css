@@ -85,6 +85,7 @@
 .m-plugin-panel-content {
     height: 100%;
     padding: 0 16px;
+    overflow-y: auto;
 }
 
 button {
@@ -100,6 +101,7 @@ button {
 }
 
 button:hover {
+    color: #fff;
     background-color: #1470db;
     border: 2px solid #1470db;
     transition: all 0.3s ease;
@@ -107,8 +109,8 @@ button:hover {
 
 input[type="text"],
 textarea {
-    margin: 5px;
-    padding: 5px;
+    margin: 4px;
+    padding: 4px;
     background-color: transparent;
     cursor: auto;
     border-radius: 4px;

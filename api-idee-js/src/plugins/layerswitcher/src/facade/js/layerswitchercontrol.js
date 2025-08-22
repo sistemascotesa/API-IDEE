@@ -302,6 +302,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         change_style: getValue('change_style'),
         add: getValue('add'),
         add_service: getValue('add_service'),
+        load_layers: getValue('load_layers'),
       },
       allVisible: !this.statusShowHideAllLayers,
       isRadio: this.modeSelectLayers === 'radio',
@@ -936,11 +937,8 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     IDEE.dialog.info(info, getValue('layer_info'), this.order);
     setTimeout(() => {
-      document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
-      const button = document.querySelector('div.m-dialog.info div.m-button > button');
+      const button = document.querySelector(BT_CLOSE_MODAL);
       button.innerHTML = getValue('close');
-      button.style.width = '75px';
-      button.style.backgroundColor = '#71a7d3';
     }, 10);
   }
 
@@ -1389,7 +1387,6 @@ export default class LayerswitcherControl extends IDEE.Control {
   changeClodeButtonModal() {
     // Elements
     const button = document.querySelector(BT_CLOSE_MODAL);
-
     button.innerHTML = getValue('close');
   }
 
@@ -1796,6 +1793,7 @@ export default class LayerswitcherControl extends IDEE.Control {
           show_service_info: getValue('show_service_info'),
           addAllLayers: getValue('addAllLayers'),
           add_service: getValue('add_service'),
+          load_layers: getValue('load_layers'),
         },
       };
 
@@ -1843,7 +1841,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       if (!IDEE.utils.isNull(selAllWFS)) {
         selAllWFS.addEventListener('click', (evt) => this.registerCheckWFS(evt));
       }
-      container.querySelector('.m-layerswitcher-addservices-add').addEventListener('click', (evt) => this.addSelected_WMS_WMTS_WFS(evt));
+      container.querySelector('.m-layerswitcher-add-services-add-button').addEventListener('click', (evt) => this.addSelected_WMS_WMTS_WFS(evt));
       const elem = container.querySelector('.m-layerswitcher-show-capabilities');
       if (!IDEE.utils.isNull(elem)) {
         elem.addEventListener('click', () => {
@@ -2454,11 +2452,9 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   setOnClickCloseBtn() {
-    const buttonClose = document.querySelector('div.m-dialog.info div.m-button > button');
-    buttonClose.innerHTML = getValue('close');
-    buttonClose.style.width = '75px';
-    buttonClose.style.backgroundColor = '#71a7d3';
-    buttonClose.addEventListener('click', () => {
+    const button = document.querySelector(BT_CLOSE_MODAL);
+    button.innerHTML = getValue('close');
+    button.addEventListener('click', () => {
       try {
         document.querySelector('div.m-dialog.info').parentNode.removeChild(document.querySelector('div.m-dialog.info'));
       } catch (error) { /* Continue */ }
@@ -2582,23 +2578,21 @@ export default class LayerswitcherControl extends IDEE.Control {
         setTimeout(() => {
           const temp = document.querySelector('div.m-api-idee-container div.m-dialog div.m-title');
           temp.style.backgroundColor = '#71a7d3';
-          const button = document.querySelector('div.m-dialog.info div.m-button > button');
+          const button = document.querySelector(BT_CLOSE_MODAL);
           button.innerHTML = getValue('close');
-          button.style.width = '75px';
-          button.style.backgroundColor = '#71a7d3';
           button.style.display = 'none';
           const buttons = document.querySelector('div.m-dialog.info div.m-button');
 
           btnBack.textContent = getValue('close');
-          btnBack.style.width = '75px';
-          btnBack.style.backgroundColor = '#71a7d3';
+          // btnBack.style.width = '75px'; // 75pxfix
+          // btnBack.style.backgroundColor = '#71a7d3';
           btnBack.style.marginLeft = '4px';
           btnBack.setAttribute('data-link', urlInput);
           btnBack.setAttribute('data-service-type', 'OGCAPIFeatures');
           buttons.insertBefore(btnBack, buttons.firstChild);
 
           btnApplyFilters.textContent = getValue('apply_btn');
-          btnApplyFilters.style.width = '75px';
+          btnApplyFilters.style.width = '75px'; // 75pxfix
           btnApplyFilters.style.backgroundColor = '#71a7d3';
           btnApplyFilters.setAttribute('data-link', urlInput);
           btnApplyFilters.setAttribute('data-service-type', 'OGCAPIFeatures');

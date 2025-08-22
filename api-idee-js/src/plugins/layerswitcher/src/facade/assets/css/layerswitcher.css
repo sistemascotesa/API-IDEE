@@ -2,6 +2,12 @@
     width: 100%;
 }
 
+.m-layerswitcher-add-services-add-button {
+    position: absolute;
+    bottom: 8px;
+    right: 80px;
+}
+
 /* PANEL */
 
 .m-panel.m-plugin-layerswitcher {
@@ -148,7 +154,6 @@ div.m-areas div.m-area .m-panel.m-plugin-layerswitcher.opened {
     list-style: none;
     padding: 0px;
     background-color: white;
-    max-height: 50vh;
     overflow-y: auto;
 }
 
@@ -339,7 +344,7 @@ div.m-areas div.m-area .m-panel.m-plugin-layerswitcher.opened {
 .layerswitcher-change-name-button {
     position: absolute;
     bottom: 8px;
-    right: 90px;
+    right: 80px;
 }
 
 .m-layerswitcher-sectionPanel-header div input[type="radio"] {
@@ -542,19 +547,6 @@ div.m-layerswitcher-legend>img {
     text-decoration: underline;
 }
 
-.m-layerswitcher-common-btn {
-    padding: 8px 7px;
-    background-color: #71a7d3;
-    cursor: pointer;
-    border-radius: 4px;
-    border: 1px solid #71a7d3;
-    color: white;
-    font-weight: bold;
-    margin-right: 10px;
-    outline: none;
-    text-decoration: none;
-}
-
 /* style */
 .m-layerswitcher-style-container {
     text-align: center;
@@ -601,14 +593,10 @@ div.m-layerswitcher-legend>img {
     height: 10px;
 }
 
-.m-layerswitcher-style-common-btn {
-    padding: 8px 7px;
-    background-color: #71a7d3;
-    cursor: pointer;
-    border-radius: 4px;
-    border: 1px solid #71a7d3;
-    color: white;
-    font-weight: bold;
+.m-layerswitcher-style-change-button {
+    position: absolute;
+    bottom: 8px;
+    right: 80px;
 }
 
 .m-layerswitcher-gray-shadow {
@@ -928,6 +916,7 @@ div#m-layerswitcher-layerContainer>p {
 button.m-layerswitcher-suggestion-caret,
 button.m-layerswitcher-suggestion {
     text-align: start;
+    width: 100%;
 }
 
 .g-cartografia-flecha-derecha.m-layerswitcher-hidden,
@@ -1058,19 +1047,6 @@ table#m-layerswitcher-table.m-layerswitcher-tablepagination tbody tr:hover {
 #m-layerswitcher-layerContainer>div.button {
     margin-top: 1rem;
     text-align: center;
-}
-
-.m-layerswitcher-common-btn {
-    padding: 8px 7px;
-    background-color: #71a7d3;
-    cursor: pointer;
-    border-radius: 4px;
-    border: 1px solid #71a7d3;
-    color: #fff;
-    font-weight: 700;
-    margin-right: 10px;
-    outline: none;
-    text-decoration: none;
 }
 
 #m-layerswitcher-addservices-selectall,
@@ -1405,4 +1381,3 @@ li[data-layer-type="LayerGroup"]:not(:has(> section div input[type="radio"]:chec
     background-color: #9a9a9a !important;
     border-color: #9a9a9a !important;
 }
-

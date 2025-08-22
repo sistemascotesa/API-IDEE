@@ -4,12 +4,6 @@ import { fiendLayerInGroup } from './groupLayers';
 import configTemplate from '../../templates/config';
 import { focusModal } from './utils';
 
-/* CHANGE NAME */
-// I18N - Traducciones
-const I18N_CHANGE = 'change';
-const I18N_CHANGE_NAME = 'change_name';
-const I18N_CLOSE = 'close';
-
 // I18N - Traducciones INFO LAYER
 export const TRANSLATIONS_OGCAPIFEATURES_WMS_WMTS = {
   title: getValue('title'),
@@ -55,8 +49,6 @@ const ID_SELECTOR_CHANGE_NAME_BUTTON = '#layer-change-name button';
 
 // Botón de cerrar diálogo
 const ID_SELECTOR_CLOSE_DIALOG = 'div.m-dialog.info div.m-button > button';
-const WIDTH_BUTTON = '75px';
-const COLOR_BUTTON = '#71a7d3';
 
 /* EYE SELECT LAYER */
 const CLASS_CHECK = 'm-layerswitcher-check';
@@ -89,22 +81,20 @@ export const showModalChangeName = (layer, target, order) => {
       vars: {
         name: layer.legend || layer.name,
         translations: {
-          change: getValue(I18N_CHANGE),
+          change: getValue('change'),
         },
         order,
       },
     });
 
-    IDEE.dialog.info(changeName, getValue(I18N_CHANGE_NAME), order);
+    IDEE.dialog.info(changeName, getValue('change_name'), order);
 
     document.querySelector(ID_SELECTOR_CHANGE_NAME_BUTTON).addEventListener('click', () => {
       changeLayerLegend(layer, target);
     });
 
     const button = document.querySelector(ID_SELECTOR_CLOSE_DIALOG);
-    button.innerHTML = getValue(I18N_CLOSE);
-    button.style.width = WIDTH_BUTTON;
-    button.style.backgroundColor = COLOR_BUTTON;
+    button.innerHTML = getValue('close');
   }
 };
 
@@ -415,8 +405,8 @@ export const styleLayers = (layer, order, evt) => {
       document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
       const button = document.querySelector('div.m-dialog.info div.m-button > button');
       button.innerHTML = getValue('close');
-      button.style.width = '75px';
-      button.style.backgroundColor = '#71a7d3';
+      // button.style.width = '75px'; // 75pxfix
+      // button.style.backgroundColor = '#71a7d3';
       setTimeout(() => {
         document.querySelector('.m-layerswitcher-style-container').focus();
       }, 500);
