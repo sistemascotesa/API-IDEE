@@ -2,6 +2,25 @@
     width: 100%;
 }
 
+.m-layerswitcher-empty-content {
+    position: absolute;
+    top: 45%;
+    left: 0;
+    text-align: center;
+}
+
+.m-layerswitcher-empty-content-image {
+    width: 92px;
+    height: 92px;
+    padding: 16px
+}
+
+.m-layerswitcher-empty-content-text {
+    font-size: 14px;
+    color: #6c6c6c;
+    text-align: center;
+}
+
 .m-layerswitcher-add-services-add-button {
     position: absolute;
     bottom: 8px;
@@ -69,7 +88,7 @@ div.m-areas div.m-area .m-panel.m-plugin-layerswitcher.opened {
     background-color: #f4f4f4;
 }
 
-.layerswitcher-title-box {
+.m-layerswitcher-title-box {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -78,7 +97,7 @@ div.m-areas div.m-area .m-panel.m-plugin-layerswitcher.opened {
     font-size: 16px;
 }
 
-.layerswitcher-title-box:hover {
+.m-layerswitcher-title-box:hover {
     cursor: pointer;
     color: #71a7d3;
 }
@@ -483,7 +502,7 @@ input[type=range].layerswitcher-transparency:focus {
 }
 
 .m-layerswitcher-suggestion {
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .m-layerswitcher-icons-image:hover,
@@ -636,24 +655,19 @@ div.m-layerswitcher-legend>img {
     float: right;
 }
 
-.m-layerswitcher-addservices .m-layerswitcher-search-panel .input-container {
+.m-layerswitcher-addservices .m-layerswitcher-search-panel .m-layerswitcher-input-container {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
 }
 
-.m-layerswitcher-addservices .m-layerswitcher-search-panel .input-container input {
-    width: 70%;
+.m-layerswitcher-addservices .m-layerswitcher-search-panel .m-layerswitcher-input-container input {
+    width: 100%;
 }
 
-.m-layerswitcher-addservices .m-layerswitcher-search-panel .input-container span button {
-    padding: 0px;
-    cursor: pointer;
-    color: #6c6c6c !important;
-    opacity: 1 !important;
-    font-size: 16px !important;
-    width: 23px;
+.m-layerswitcher-input-container-buttons {
+    width: 100%;
 }
 
 .m-layerswitcher-addservices-suggestions {
@@ -685,9 +699,15 @@ div.m-layerswitcher-legend>img {
     font-weight: 700;
 
     background-color: #ffffff;
-    border: none;
     color: #6c6c6c;
-    font-size: 15px;
+    font-size: 16px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row-reverse;
+    width: 100%;
+    padding: 0 8px;
 }
 
 .m-layerswitcher-suggestion-group.active {
@@ -699,8 +719,10 @@ div.m-layerswitcher-legend>img {
 }
 
 .m-layerswitcher-suggestion-group {
+    list-style: none;
     display: none;
     margin: 0;
+    padding-left: 8px;
 }
 
 #m-layerswitcher-addservices-results {
@@ -913,10 +935,20 @@ div#m-layerswitcher-layerContainer>p {
     text-align: center;
 }
 
+button.m-layerswitcher-suggestion-caret {
+    background: #e9ecef;
+    border: 2px solid #e9ecef;
+}
+
 button.m-layerswitcher-suggestion-caret,
 button.m-layerswitcher-suggestion {
     text-align: start;
     width: 100%;
+}
+
+button.m-layerswitcher-suggestion-caret:hover {
+    color: #6c6c6c;
+    border: 2px solid #1470db;
 }
 
 .g-cartografia-flecha-derecha.m-layerswitcher-hidden,

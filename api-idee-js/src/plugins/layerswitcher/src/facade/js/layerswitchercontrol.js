@@ -6,6 +6,7 @@
 import LayerswitcherImplControl from 'impl/layerswitchercontrol';
 import template from '../../templates/layerswitcher';
 import templateAux from '../../templates/layerswitchercontent';
+import templateEmpty from '../../templates/emptycontent';
 import { getValue } from './i18n/language';
 import infoTemplate from '../../templates/information';
 import infoTemplateOGC from '../../templates/informationogc';
@@ -156,7 +157,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     this.stateSelectAll = false;
 
     // active codsi
-    this.codsiActive = options.showCatalog;
+    this.codsiActive = true; // options.showCatalog;
 
     // Determina si se desea usar proxy en las peticiones
     this.useProxy = options.useProxy;
@@ -303,6 +304,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         add: getValue('add'),
         add_service: getValue('add_service'),
         load_layers: getValue('load_layers'),
+        load_ext_services_empty: getValue('load_ext_services_empty'),
       },
       allVisible: !this.statusShowHideAllLayers,
       isRadio: this.modeSelectLayers === 'radio',
@@ -426,7 +428,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     let listLayer = 0;
     const layerswitcherContent = document.getElementById('layerswitcher-layers');
     if (layerswitcherContent) {
-      listLayer = layerswitcherContent.childElementCount;
+      listLayer = Math.max(layerswitcherContent.childElementCount - 2, 0);
     }
 
     if (listLayer === 0) {
@@ -442,8 +444,16 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     // ? NO SE MUESTRA NINGUNA CAPA
     if (this.statusShowHideAllLayers === undefined) {
+      const html = IDEE.template.compileSync(templateEmpty, {
+        vars: {
+          text: this.getTemplateVariablesValues().translations.load_ext_services_empty,
+        },
+      });
+      this.template_.querySelector('#layerswitcher-layers').innerHTML = '';
+      this.template_.querySelector('#layerswitcher-layers-empty').innerHTML = html.outerHTML;
       return;
     }
+    this.template_.querySelector('#layerswitcher-layers-empty').innerHTML = '';
 
     const templateVars = await this.getTemplateVariables(this.map_);
     let scroll;
@@ -1393,7 +1403,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   addGroupLayersEvent() {
     const button = document.querySelector(LAYER_GROUP);
     const addSuggestions = document.querySelector(ADDSERVICES_SUGGESTIONS);
-    const navBarModal = document.querySelector('.input-container');
+    const navBarModal = document.querySelector('.m-layerswitcher-input-container');
 
     button.addEventListener('click', (evt) => {
       this.printLayerModal('', 'layerGroup');

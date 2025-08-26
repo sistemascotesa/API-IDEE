@@ -1,8 +1,7 @@
 <div class="m-layerswitcher-addservices">
     <div class="m-layerswitcher-search-panel">
-        <div class="input-container">
-            <input tabindex="0" type="text" id="m-layerswitcher-addservices-search-input" placeholder="{{translations.url_service}}" class="m-layerswitcher-input-search" />
-            <span>
+        <div class="m-layerswitcher-input-container">
+            <div class="m-layerswitcher-input-container-buttons">
                 <button tabindex="0" id="m-layerswitcher-addservices-search-btn" class="m-layerswitcher-icons-zoom m-search-btn" title="{{translations.query}}"></button>
                 <button tabindex="0" id="m-layerswitcher-layerGroup" class="m-layerswitcher-icons-layer-group m-search-btn" title="{{translations.group}}"></button>
                 <!--<button tabindex="0" id="m-layerswitcher-addservices-fileurl-btn" class="m-layerswitcher-icons-doc-text m-search-btn" title="{{translations.query}}"></button>-->
@@ -15,7 +14,8 @@
                 {{/if}}
                 <label tabindex="0" id="labelFileInput" for="m-layerswitcher-addservices-file-input" class="m-layerswitcher-icons-upload" title="{{translations.upload_file}}"></label>
                 <input tabindex="0" type="file" id="m-layerswitcher-addservices-file-input" accept="{{accept}}" style="display: none;">
-            </span>
+            </div>
+            <input tabindex="0" type="text" id="m-layerswitcher-addservices-search-input" placeholder="{{translations.url_service}}" class="m-layerswitcher-input-search" />
         </div>
         <div id="m-layerswitcher-ogcCContainer"></div>
         <div id="m-layerswitcher-layerContainer"></div>
