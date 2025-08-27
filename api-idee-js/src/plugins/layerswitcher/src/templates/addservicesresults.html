@@ -2,7 +2,7 @@
     <div class="m-layerswitcher-service-capabilities">
         <section id="m-layerswitcher-groups-fields" class="m-layerswitcher-groups-fields-container"></section>
         {{#if showgeneral}}
-            <p tabindex="0" class="m-layerswitcher-show-capabilities"><button tabindex="0" class="m-layerswitcher-icons-desplegar"></button>&nbsp;{{translations.show_service_info}} {{type}}</p>
+            <p tabindex="0" class="m-layerswitcher-show-capabilities"><span tabindex="0" class="m-layerswitcher-icons-desplegar"></span>&nbsp;{{translations.show_service_info}} {{type}}</p>
             <div class="m-layerswitcher-capabilities-container">
                 {{#if serviceCapabilities.title}}
                     <p><span tabindex="0">{{translations.title}}:</span></p>
@@ -48,7 +48,7 @@
             </div>
         {{/if}}
         {{#if isWFS}}
-            <p tabindex="0" class="m-layerswitcher-show-capabilities-wfs"><button tabindex="0" class="m-layerswitcher-icons-desplegar"></button>&nbsp;{{translations.show_service_info}} WFS</p>
+            <p tabindex="0" class="m-layerswitcher-show-capabilities-wfs"><span tabindex="0" class="m-layerswitcher-icons-desplegar"></span>&nbsp;{{translations.show_service_info}} WFS</p>
             <div class="m-layerswitcher-capabilities-container-wfs">
                 {{#if serviceCapabilitieswfs.title}}
                     <p><span tabindex="0">{{translations.title}}:</span></p>
