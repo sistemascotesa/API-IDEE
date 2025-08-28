@@ -402,11 +402,8 @@ export const styleLayers = (layer, order, evt) => {
       document.querySelector(selector).addEventListener('click', () => {
         changeLayerConfig(layer, otherStyles);
       });
-      document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
       const button = document.querySelector('div.m-dialog.info div.m-button > button');
       button.innerHTML = getValue('close');
-      // button.style.width = '75px'; // 75pxfix
-      // button.style.backgroundColor = '#71a7d3';
       setTimeout(() => {
         document.querySelector('.m-layerswitcher-style-container').focus();
       }, 500);

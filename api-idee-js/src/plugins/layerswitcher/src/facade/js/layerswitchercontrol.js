@@ -2586,8 +2586,6 @@ export default class LayerswitcherControl extends IDEE.Control {
         const btnApplyFilters = document.createElement('button');
         const btnBack = document.createElement('button');
         setTimeout(() => {
-          const temp = document.querySelector('div.m-api-idee-container div.m-dialog div.m-title');
-          temp.style.backgroundColor = '#71a7d3';
           const button = document.querySelector(BT_CLOSE_MODAL);
           button.innerHTML = getValue('close');
           button.style.display = 'none';
@@ -2603,7 +2601,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
           btnApplyFilters.textContent = getValue('apply_btn');
           btnApplyFilters.style.width = '75px'; // 75pxfix
-          btnApplyFilters.style.backgroundColor = '#71a7d3';
+          // btnApplyFilters.style.backgroundColor = '#71a7d3';
           btnApplyFilters.setAttribute('data-link', urlInput);
           btnApplyFilters.setAttribute('data-service-type', 'OGCAPIFeatures');
           buttons.insertBefore(btnApplyFilters, buttons.firstChild);

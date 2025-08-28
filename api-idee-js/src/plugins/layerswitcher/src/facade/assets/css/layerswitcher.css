@@ -265,17 +265,13 @@ div.m-areas div.m-area .m-panel.m-plugin-layerswitcher.opened {
 }
 
 .m-layerswitcher-visible-control-button {
-    border: 1px solid rgba(0,0,0,.1) !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,.3);
     cursor: pointer;
     background-color: transparent;
 }
 
 .m-layerswitcher-visible-control > button {
-    border: 1px solid rgba(0,0,0,.1) !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,.3);
     cursor: pointer;
- }
+}
 
 .m-layerswitcher-visible-typeContent {
     width: 83%;
@@ -297,6 +293,13 @@ div.m-areas div.m-area .m-panel.m-plugin-layerswitcher.opened {
 
 .m-layerswitcher-input-container-buttons button {
     border: none;
+    color: #1470db;
+    background-color: transparent;
+}
+
+.m-layerswitcher-input-container-buttons button:hover {
+    border: none;
+    color: #1470db;
     background-color: transparent;
 }
 
@@ -311,8 +314,8 @@ div.m-areas div.m-area .m-panel.m-plugin-layerswitcher.opened {
 .m-layerswitcher-icons-ver,
 .m-layerswitcher-icons-ocultar {
     margin: 0 5px;
-    border: none;
-    background-color: transparent;
+    border: none !important;
+    background-color: transparent !important;
 }
 
 .layerswitcher-hide-show-all-layers {
@@ -326,6 +329,12 @@ div.m-areas div.m-area .m-panel.m-plugin-layerswitcher.opened {
     right: 8px;
     cursor: pointer;
     font-size: 20px;
+    background-color: transparent;
+}
+
+.layerswitcher-hide-show-all-layers:hover {
+    border: none;
+    color: #1470db !important;
     background-color: transparent;
 }
 
@@ -524,8 +533,6 @@ input[type=range].layerswitcher-transparency:focus {
 .m-layerswitcher-icons-target:hover,
 .m-layerswitcher-icons-info:hover,
 .m-layerswitcher-icons-style:hover,
-.m-layerswitcher-icons-ocultar:hover,
-.m-layerswitcher-icons-ver:hover,
 .m-layerswitcher-icons-zoom:hover,
 .m-layerswitcher-icons-codsi:hover,
 .m-layerswitcher-icons-lista:hover,
@@ -591,7 +598,6 @@ div.m-layerswitcher-legend>img {
 /* style */
 .m-layerswitcher-style-container {
     text-align: center;
-    padding: 10px;
 }
 
 .m-layerswitcher-style-btn-container {
@@ -603,16 +609,11 @@ div.m-layerswitcher-legend>img {
 
 #m-layerswitcher-ogc-vectors-select,
 #m-layerswitcher-style-select {
-    background-color: white;
     padding: 5px;
     width: 100%;
-    border: solid 1px #222;
-    -webkit-appearance: none;
-    color: #222;
 }
 
-#m-layerswitcher-ogcCContainer>div:after,
-.m-layerswitcher-style-container:after {
+#m-layerswitcher-ogcCContainer>div:after {
     content: '\0025BC';
     font: normal normal normal 12px/1 FontAwesome;
     color: black;
@@ -629,15 +630,15 @@ div.m-layerswitcher-legend>img {
 }
 
 .m-layerswitcher-style-container:after {
-    right: 27px;
-    top: 72px;
+    right: 20px;
+    top: 60px;
     height: 10px;
 }
 
 .m-layerswitcher-style-change-button {
     position: absolute;
-    bottom: 8px;
-    right: 80px;
+    bottom: 16px;
+    right: 96px;
 }
 
 .m-layerswitcher-gray-shadow {
@@ -1284,8 +1285,9 @@ table#m-layerswitcher-table.m-layerswitcher-tablepagination tbody tr:hover {
 }
 
 #m-layerswitcher-layer-button {
-    margin-top: 18px;
-    margin-bottom: 10px;
+    position: absolute;
+    bottom: 16px;
+    right: 96px;
 }
 
 /* check others */
@@ -1410,8 +1412,8 @@ button.g-cartografia-flecha-derecha + div .layerswitcher-ul-layersGroup {
 }
 
 .m-layerswitcher-groups-fields {
-    padding: 5px;
-    margin-top: 5px;
+    padding: 4px;
+    margin-top: 4px;
     width: 100%;
 }
 
