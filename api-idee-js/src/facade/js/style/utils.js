@@ -1,3 +1,7 @@
+/**
+ * @module M/style/utils
+ */
+
 import chroma from 'chroma-js';
 import StylePoint from './Point';
 import StyleLine from './Line';
@@ -13,7 +17,7 @@ import StyleGeneric from './Generic';
  * @param {IDEE.layer.Vector} layer Capa a la que se le aplicará.
  * @return {IDEE.style.Simple} Nuevo estilo.
  */
-const generateStyleLayer = (options, layer) => {
+export const generateStyleLayer = (options, layer) => {
   let style;
   switch (layer.getGeometryType()) {
     case 'Point':
@@ -35,6 +39,70 @@ const generateStyleLayer = (options, layer) => {
 };
 
 /**
+ * This functions returns random simple style
+ * @function
+ * @private
+ * @param {M.Feature} feature
+ * @return {M.style.Simple}
+ */
+export const generateRandomStyle = (opts) => {
+  const radius = opts.radius;
+  const fillColor = chroma.random().hex();
+  const strokeColor = opts.strokeColor;
+  const strokeWidth = opts.strokeWidth;
+  const geometry = opts.feature
+    .getGeometry()
+    .type;
+  let style;
+  let options;
+  switch (geometry) {
+    case 'Point':
+    case 'MultiPoint':
+      options = {
+        radius,
+        fill: {
+          color: fillColor,
+        },
+        stroke: {
+          color: strokeColor,
+          width: strokeWidth,
+        },
+      };
+      style = new StylePoint(options);
+      break;
+    case 'LineString':
+    case 'MultiLineString':
+      options = {
+        fill: {
+          color: fillColor,
+        },
+        stroke: {
+          color: strokeColor,
+          width: strokeWidth,
+        },
+      };
+      style = new StyleLine(options);
+      break;
+    case 'Polygon':
+    case 'MultiPolygon':
+      options = {
+        fill: {
+          color: fillColor,
+        },
+        stroke: {
+          color: strokeColor,
+          width: strokeWidth,
+        },
+      };
+      style = new StylePolygon(options);
+      break;
+    default:
+      style = null;
+  }
+  return style;
+};
+
+/**
  * Genera un estilo aleatorio.
  * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
  * @function
@@ -42,7 +110,7 @@ const generateStyleLayer = (options, layer) => {
  * @param {Object} opts Opciones de "radius", "strokeColor" y "strokeWidth".
  * @return {StyleGeneric} Nuevo estilo genérico.
  */
-const generateRandomGenericStyle = (opts) => {
+export const generateRandomGenericStyle = (opts) => {
   const radius = opts.radius;
   const fillColor = chroma.random().hex();
   const strokeColor = opts.strokeColor;
@@ -79,16 +147,3 @@ const generateRandomGenericStyle = (opts) => {
   };
   return new StyleGeneric(options);
 };
-
-/**
- * @public
- * @constant
- * @type {Object}
- * @api
- */
-const Utils = {
-  generateStyleLayer,
-  generateRandomGenericStyle,
-};
-
-export default Utils;
