@@ -9,7 +9,7 @@ import {
 import Exception from '../exception/exception';
 import StyleProportional from './Proportional';
 import StyleCluster from './Cluster';
-import generateRandomGenericStyle from './utils';
+import { generateRandomGenericStyle } from './utils';
 import { getValue } from '../i18n/language';
 
 /**
