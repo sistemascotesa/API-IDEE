@@ -4426,10 +4426,18 @@ class Map extends Base {
       this.maxPanelWidth = maxWidth;
     }
 
+    this.openPanelWidth = panel.offsetWidth;
+    if (this.openPanelWidth < this.minPanelWidth) {
+      this.openPanelWidth = this.minPanelWidth;
+    }
+    if (this.openPanelWidth > this.maxPanelWidth) {
+      this.openPanelWidth = this.maxPanelWidth;
+    }
+
     this.addTransition(panel, handle, buttons);
 
     setTimeout(() => {
-      panel.style.width = `${this.minPanelWidth}px`;
+      panel.style.width = `${this.openPanelWidth}px`;
       if (panel === this.leftPanel) {
         buttons.style.left = panel.style.width;
       } else {
