@@ -4406,13 +4406,24 @@ class Map extends Base {
   }
 
   /* eslint-disable no-param-reassign */
-  openPanel(side) {
+  openPanel(side, minWidth, maxWidth) {
     const panel = side === 'left' ? this.leftPanel : this.rightPanel;
     const handle = panel === this.leftPanel ? this.leftHandle : this.rightHandle;
     const buttons = panel === this.leftPanel ? this.leftButtons : this.rightButtons;
 
     if (panel.style.width === '') {
       panel.style.width = '0px';
+    }
+
+    this.minPanelWidth = 256;
+    this.maxPanelWidth = 360;
+
+    if (minWidth >= this.minPanelWidth && minWidth <= this.maxPanelWidth) {
+      this.minPanelWidth = minWidth;
+    }
+
+    if (maxWidth >= this.minPanelWidth && maxWidth <= this.maxPanelWidth) {
+      this.maxPanelWidth = maxWidth;
     }
 
     this.addTransition(panel, handle, buttons);

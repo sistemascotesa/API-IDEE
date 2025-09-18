@@ -213,11 +213,13 @@ export default class BackImgLayer extends IDEE.Plugin {
     map.addButtons(this.button);
 
     this.panel = new IDEE.ui.Panel(this.name, {
+      tooltip: this.tooltip,
+      position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
+      className: 'm-plugin-backimglayer',
       collapsible: this.collapsible,
       collapsed: this.collapsed,
-      position: this.position,
-      className: 'm-plugin-backimglayer',
-      tooltip: this.tooltip,
       collapsedButtonClass: 'backimglyr-simbolo-cuadros',
       order: this.order,
     });

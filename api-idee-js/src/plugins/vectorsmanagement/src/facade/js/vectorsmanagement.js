@@ -197,11 +197,13 @@ export default class VectorsManagement extends IDEE.Plugin {
     map.addButtons(this.button);
 
     this.panel = new IDEE.ui.Panel(this.name, {
+      tooltip: this.tooltip,
+      position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
+      className: 'm-plugin-vectorsmanagement',
       collapsible: this.collapsible,
       collapsed: this.collapsed,
-      position: IDEE.ui.position[this.position],
-      className: 'm-plugin-vectorsmanagement',
-      tooltip: this.tooltip,
       collapsedButtonClass: 'vectorsmanagement-icon-vectors',
       order: this.order,
     });

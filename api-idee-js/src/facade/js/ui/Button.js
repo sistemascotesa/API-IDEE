@@ -109,7 +109,7 @@ class Button extends MObject {
       button.closePanel();
     });
 
-    this.map.openPanel(this.position);
+    this.map.openPanel(this.position, this.panel.minWidth, this.panel.maxWidth);
     if (this.position === Position.LEFT) {
       if (!this.map.leftPanel.contains(this.panel.element)) {
         this.map.leftPanel.appendChild(this.panel.element);

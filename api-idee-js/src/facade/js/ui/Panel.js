@@ -60,13 +60,6 @@ class Panel extends MObject {
 
     /**
      * @private
-     * @type {array}
-     * @expose
-     */
-    this.controls = [];
-
-    /**
-     * @private
      * @type {HTMLElement}
      * @expose
      */
@@ -74,13 +67,10 @@ class Panel extends MObject {
 
     /**
      * @private
-     * @type {boolean}
+     * @type {array}
      * @expose
      */
-    this._collapsible = false;
-    if (!isNullOrEmpty(options.collapsible)) {
-      this._collapsible = options.collapsible;
-    }
+    this.controls = [];
 
     /**
      * @type {Position}
@@ -90,6 +80,34 @@ class Panel extends MObject {
     this.position = Position.RIGHT;
     if (!isNullOrEmpty(options.position)) {
       this.position = options.position;
+    }
+
+    /**
+     * @type {Number}
+     * @api
+     * @expose
+     */
+    if (!isNullOrEmpty(options.minWidth)) {
+      this.minWidth = options.minWidth;
+    }
+
+    /**
+     * @type {Number}
+     * @api
+     * @expose
+     */
+    if (!isNullOrEmpty(options.maxWidth)) {
+      this.maxWidth = options.maxWidth;
+    }
+
+    /**
+     * @private
+     * @type {boolean}
+     * @expose
+     */
+    this._collapsible = false;
+    if (!isNullOrEmpty(options.collapsible)) {
+      this._collapsible = options.collapsible;
     }
 
     /**

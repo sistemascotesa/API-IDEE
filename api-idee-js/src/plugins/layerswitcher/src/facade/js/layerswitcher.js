@@ -180,7 +180,7 @@ export default class Layerswitcher extends IDEE.Plugin {
      * @public
      * @type {String}
      */
-    this.name_ = 'layerswitcher';
+    this.name = 'layerswitcher';
 
     /**
      * Facade of the map
@@ -223,7 +223,7 @@ export default class Layerswitcher extends IDEE.Plugin {
      * @private
      * @type {Enum} left | right
      */
-    this.position_ = options.position || 'right';
+    this.position = options.position || 'right';
 
     // Permite saber si el plugin está colapsado o no
     this.collapsed_ = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
@@ -232,7 +232,7 @@ export default class Layerswitcher extends IDEE.Plugin {
     this.collapsible_ = !IDEE.utils.isUndefined(options.collapsible) ? options.collapsible : true;
 
     // Tooltip
-    this.tooltip_ = options.tooltip || getValue('tooltip');
+    this.tooltip = options.tooltip || getValue('tooltip');
 
     // Determina si el plugin es draggable o no
     this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
@@ -303,18 +303,20 @@ export default class Layerswitcher extends IDEE.Plugin {
     this.map = map;
 
     this.button = new IDEE.ui.Button(this.name, {
-      position: this.position_,
-      tooltip: this.tooltip_,
+      position: this.position,
+      tooltip: this.tooltip,
     });
     map.addButtons(this.button);
 
     this.panel = new IDEE.ui.Panel(this.name, {
+      tooltip: this.tooltip,
+      position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
       className: 'm-plugin-layerswitcher',
-      collapsed: this.collapsed_,
       collapsible: this.collapsible_,
-      position: IDEE.ui.position[this.position_],
+      collapsed: this.collapsed_,
       collapsedButtonClass: 'm-layerswitcher-icons-layers',
-      tooltip: this.tooltip_,
       order: this.order,
     });
     map.addPanels(this.panel);
@@ -350,24 +352,9 @@ export default class Layerswitcher extends IDEE.Plugin {
     // control.addEventPanel(panel);
   }
 
-  // Esta función devuelve la posición del plugin
-  get position() {
-    return this.position_;
-  }
-
-  //  Esta función devuelve el nombre del plugin
-  get name() {
-    return this.name_;
-  }
-
-  // Esta función devuelve si el panel es collapsible o no
-  get collapsed() {
-    return this.panel.isCollapsed();
-  }
-
   // Devuelve la cadena API-REST del plugin
   getAPIRest() {
-    return `${this.name}=${this.position_}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.isDraggable}*${this.isMoveLayers}*${this.modeSelectLayers}*${this.tools}*${this.http}*${this.https}*${this.showCatalog}*${this.useProxy}*${this.displayLabel}*${this.addLayers}*${this.statusLayers}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip}*${this.isDraggable}*${this.isMoveLayers}*${this.modeSelectLayers}*${this.tools}*${this.http}*${this.https}*${this.showCatalog}*${this.useProxy}*${this.displayLabel}*${this.addLayers}*${this.statusLayers}`;
   }
 
   // Devuelve la cadena API-REST del plugin en base64

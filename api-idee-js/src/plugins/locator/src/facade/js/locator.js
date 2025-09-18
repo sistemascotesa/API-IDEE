@@ -199,11 +199,13 @@ export default class Locator extends IDEE.Plugin {
     map.addButtons(this.button);
 
     this.panel = new IDEE.ui.Panel(this.name, {
+      tooltip: this.tooltip,
+      position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
+      className: 'm-plugin-locator',
       collapsible: this.collapsible,
       collapsed: this.collapsed,
-      position: IDEE.ui.position[this.position],
-      className: 'm-plugin-locator',
-      tooltip: this.tooltip,
       collapsedButtonClass: 'locator-icon-localizacion2',
       order: this.order,
     });
