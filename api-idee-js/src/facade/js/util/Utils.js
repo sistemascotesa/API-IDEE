@@ -7,6 +7,7 @@ import { get as remoteGet } from 'IDEE/util/Remote';
 import chroma from 'chroma-js';
 import Draggabilly from 'draggabilly';
 import reproj from 'impl/util/reprojection';
+import getImplWMTSCapabilities from 'impl/util/GetCapabilities';
 import { getValue } from '../i18n/language';
 import { DOTS_PER_INCH, INCHES_PER_UNIT } from '../units';
 import * as WKT from '../geom/WKT';
@@ -279,7 +280,7 @@ export const generateRandom = (prefix, sufix) => {
  * @returns {String} Devuelve los metadatos.
  * @api
  */
-export const getWMSGetCapabilitiesUrl = (serverUrl, version, ticket = false) => {
+export const getWMSGetCapabilitiesUrl = (serverUrl, version, ticket) => {
   let wmsGetCapabilitiesUrl = serverUrl;
 
   // request
@@ -294,9 +295,7 @@ export const getWMSGetCapabilitiesUrl = (serverUrl, version, ticket = false) => 
 
   // PATCH: En api-idee 3 no se manda luego aquí tampoco. Hay servicios que dan error....
   //       version
-  wmsGetCapabilitiesUrl = addParameters(wmsGetCapabilitiesUrl, {
-    version,
-  });
+  wmsGetCapabilitiesUrl = addParameters(wmsGetCapabilitiesUrl, `version=${version}`);
 
   return wmsGetCapabilitiesUrl;
 };
@@ -755,7 +754,13 @@ export const enableTouchScroll = (elem) => {
  * @api
  */
 export const rgbToHex = (rgbColor) => {
-  const hexColor = chroma(rgbColor).hex();
+  let hexColor;
+  // eslint-disable-next-line no-useless-catch
+  try {
+    hexColor = chroma(rgbColor).hex();
+  } catch (err) {
+    throw err;
+  }
   return hexColor;
 };
 
@@ -768,7 +773,13 @@ export const rgbToHex = (rgbColor) => {
  * @api
  */
 export const rgbaToHex = (rgbaColor) => {
-  const hexColor = chroma(rgbaColor).hex();
+  let hexColor;
+  // eslint-disable-next-line no-useless-catch
+  try {
+    hexColor = chroma(rgbaColor).hex();
+  } catch (err) {
+    throw err;
+  }
   return hexColor;
 };
 
@@ -1066,6 +1077,53 @@ export const defineFunctionFromString = (objParam) => {
 };
 
 /**
+ * Esta función elimina el elemento html de un elemento padre.
+ * @public
+ * @param {HTMLElement} element Elemento html a eliminar
+ * @function
+ * @api
+ */
+export const removeHTML = (element) => {
+  if (element) {
+    const parent = element.parentElement;
+    if (parent) {
+      parent.removeChild(element);
+    }
+  }
+};
+
+/**
+ * Esta función añade o elimina una clase a un elemento html
+ * @function
+ * @public
+ * @param {htmlElement} htmlElement Elemento html para añadir/eliminar la clase
+ * @param {string} className Clase a añadir/eliminar
+ * @api
+ */
+export const classToggle = (htmlElement, className) => {
+  const classList = htmlElement.classList;
+  if (classList.contains(className)) {
+    classList.remove(className);
+  } else {
+    classList.add(className);
+  }
+};
+
+/**
+ * Esta función reemplaza un nodo HTML por otro
+ * @function
+ * @param {Node} newNode Nuevo nodo HTML
+ * @param {Node} oldNode Antiguo nodo HTML
+ * @api
+ */
+export const replaceNode = (newNode, oldNode) => {
+  const parent = oldNode.parentNode;
+  if (parent) {
+    parent.replaceChild(newNode, oldNode);
+  }
+};
+
+/**
  * Esta función devuelve verdadero si algún valor de objeto es función o "{{*}}".
  * @function
  * @public
@@ -1088,7 +1146,7 @@ export const isDynamic = (obj) => {
  * @const
  * @type {string}
  */
-let dynamicLegend = 'https://componentes.idee.es/estaticos/imagenes/leyenda/dynamic_legend.jpg';
+let dynamicLegend = 'https://componentes.idee.es/estaticos/imagenes/leyenda/dynamic_legend.png';
 
 /**
  * Esta función establece la leyenda dinámica constante.
@@ -1786,6 +1844,21 @@ export const getSystem = () => {
   }
 
   return env;
+};
+
+/**
+ * Este método recupera la información descriptiva del servicio WMTS.
+ *
+ * @function
+ * @public
+ * @param {string} url URL del servicio WMTS (debe incluir el parámetro service=WMTS y
+ *  request=GetCapabilities)
+ * @returns {Promise<Object>} Promesa que se resuelve con un objeto que contiene
+ *  las capacidades del servicio WMTS.
+ * @api
+ */
+export const getWMTSCapabilities = (url) => {
+  return getImplWMTSCapabilities(url);
 };
 
 /**
