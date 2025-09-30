@@ -13,6 +13,19 @@ import { DOTS_PER_INCH, INCHES_PER_UNIT } from '../units';
 import * as WKT from '../geom/WKT';
 
 /**
+ * Este método obtiene las extensiones de los objetos geográficos especificados
+ *
+ * @function
+ * @param {Array<ol.Feature>} features Objetos geográficos.
+ * @param {String} projectionCode Código de proyección
+ * @returns {Array<ol.Extent>} Extensiones de los objetos geográficos.
+ * @api
+ */
+export const getFeaturesExtent = (features, projectionCode) => {
+  return IDEE.impl.utils.getFeaturesExtent(features, projectionCode);
+};
+
+/**
  * Devuelve verdadero si es valor que se le pasa por
  * parámetros es indefinido.
  * @function
@@ -934,6 +947,23 @@ export const getRgba = (color, opacity) => {
   return chroma(color)
     .alpha(opacity)
     .css();
+};
+
+/**
+ * Esta función devuelve si dos arrays son iguales independientemente del orden de los elementos.
+ * @function
+ * @public
+ * @param {Array} array Primer array a comparar.
+ * @param {Array} array2 Segundo array a comparar.
+ * @return {Boolean}
+ * @api
+ */
+export const setEquals = (array, array2) => {
+  let equals = false;
+  if (array.length === array2.length) {
+    equals = array.every((e) => array2.some((e2) => (typeof e2.equals === 'function' ? e2.equals(e) : e2 === e)));
+  }
+  return equals;
 };
 
 /**
