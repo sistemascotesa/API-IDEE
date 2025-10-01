@@ -113,6 +113,15 @@ button:hover {
     transition: all 0.3s ease;
 }
 
+button:disabled {
+    color: #c5c5c5;
+}
+
+button:disabled:hover {
+    color: #c5c5c5;
+    cursor: default;
+}
+
 input[type="text"],
 textarea {
     margin: 4px;
@@ -140,8 +149,21 @@ textarea:focus {
     border: 1px solid #1d5a9e;
 }
 
+input[type="checkbox"] {
+    cursor: pointer;
+    color: #6c6c6c;
+    transform: scale(1.5);
+}
+
+input[type="checkbox"]:hover {
+    color: #1470db
+}
+
+input[type="checkbox"]:focus {
+    color: #1d5a9e;
+}
+
 select {
-    padding: 4px;
     cursor: pointer;
     border-radius: 4px;
     background: #e9ecef;

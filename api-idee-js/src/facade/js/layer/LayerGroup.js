@@ -102,6 +102,10 @@ class LayerGroup extends LayerBase {
    */
   setVisible(visibility) {
     this.getImpl().setVisible(visibility);
+
+    this.getLayers().forEach((layer) => {
+      layer.setVisible(visibility);
+    });
   }
 
   /**

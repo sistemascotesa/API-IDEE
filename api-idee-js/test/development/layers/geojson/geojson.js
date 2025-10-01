@@ -70,7 +70,7 @@ export const geojson_001 = new GeoJSON({
 
 export const geojson_002 = new GeoJSON({
   name: 'jsonejemplo',
-  url: 'http://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
+  url: 'https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
   extract: false,
 });
 

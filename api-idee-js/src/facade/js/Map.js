@@ -3886,6 +3886,33 @@ class Map extends Base {
     return this;
   }
 
+  removePlugin(plugin) {
+    // checks if the param is null or empty
+    if (isNullOrEmpty(plugin)) {
+      Exception(getValue('exception').no_plugins);
+    }
+
+    // checks if the plugin can be removed from the map
+    if (isUndefined(plugin.destroy)) {
+      Exception(getValue('exception').no_remove_plugin_from_map);
+    }
+
+    try {
+      plugin.destroy();
+      this.plugins = this.plugins.filter((plugin2) => plugin2.name !== plugin.name);
+
+      const plugins = this.plugins.filter((plugin2) => plugin2.position === plugin.position);
+      if (plugins.length === 0) {
+        this.closePanel(plugin.position);
+      }
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn(e);
+    }
+
+    return this;
+  }
+
   /**
    * Este método elimina los complementos especificados del mapa.
    *
@@ -3896,22 +3923,14 @@ class Map extends Base {
    */
   removePlugins(pluginsParam) {
     let plugins = pluginsParam;
-    // checks if the parameter is null or empty
-    if (isNullOrEmpty(plugins)) {
-      Exception(getValue('exception').no_plugin_to_remove);
-    }
     if (!isArray(plugins)) {
       plugins = [plugins];
     }
 
     plugins = [].concat(plugins);
-    if (plugins.length > 0) {
-      // removes controls from their panels
-      plugins.forEach((plugin) => {
-        plugin.destroy();
-        this.plugins = this.plugins.filter((plugin2) => plugin.name !== plugin2.name);
-      });
-    }
+    plugins.forEach((plugin) => {
+      this.removePlugin(plugin);
+    });
 
     return this;
   }
@@ -4236,6 +4255,22 @@ class Map extends Base {
   }
 
   /**
+   * Elimina un botón del mapa.
+   *
+   * @function
+   * @api
+   * @returns {Map} Devuelve el estado del mapa.
+   */
+  removeButton(button) {
+    if (button instanceof Button) {
+      button.destroy();
+      this.buttons = this.buttons.filter((button2) => !button.equals(button));
+    }
+
+    return this;
+  }
+
+  /**
    * Añade los paneles.
    *
    * @function
@@ -4267,9 +4302,6 @@ class Map extends Base {
    * @returns {Map} Devuelve el estado del mapa.
    */
   removePanel(panel) {
-    if (panel.getControls().length > 0) {
-      Exception(getValue('exception').remove_control_from_panel);
-    }
     if (panel instanceof Panel) {
       panel.destroy();
       this.panels = this.panels.filter((panel2) => !panel2.equals(panel));

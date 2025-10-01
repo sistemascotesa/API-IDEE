@@ -43,10 +43,8 @@ html, body {
 	<div>
 		<label for="selectPosicion">Selector de posición del plugin</label> <select
 			name="position" id="selectPosicion">
-			<option value="TL">Arriba Izquierda (TL)</option>
-			<option value="TR" selected="selected">Arriba Derecha (TR)</option>
-			<option value="BR">Abajo Derecha (BR)</option>
-			<option value="BL">Abajo Izquierda (BL)</option>
+			<option value="left">Izquierda</option>
+			<option value="right" selected="selected">Derecha</option>
 		</select> 
 		<label for="inputTooltip">Parámetro tooltip</label>
         <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Capas de fondo">
@@ -78,7 +76,7 @@ html, body {
    	
 		<label for="ncolumn">Número de columnas:</label> 
 		<input type="text"id="ncolumn" name="ncolumn" value="2"> 
-		<input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar">
+		<button name="eliminar" id="botonEliminar">Eliminar Plugin</button>
 	</div>
 
 	<div id="mapjs" class="m-container"></div>
@@ -148,8 +146,9 @@ html, body {
 			//objeto.empty = objeto.empty != true ? objeto.empty : false;			
  			objeto.empty = (selectEmpty.options[selectEmpty.selectedIndex].value === 'true');
 
-
-            map.removePlugins(mp);
+            if (mp !== null) {
+                map.removePlugins(mp);
+            }
             crearPlugin(objeto);
         }
 

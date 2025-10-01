@@ -153,11 +153,8 @@ export default class LayerswitcherControl extends IDEE.Control {
     // Filtro
     this.filterName = undefined;
 
-    // Determina si se han seleccionado todas las capas o no
-    this.stateSelectAll = false;
-
     // active codsi
-    this.codsiActive = true; // options.showCatalog;
+    this.codsiActive = options.showCatalog;
 
     // Determina si se desea usar proxy en las peticiones
     this.useProxy = options.useProxy;
@@ -425,25 +422,33 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Esta función renderiza la plantilla
   async render() {
-    let listLayer = 0;
-    const layerswitcherContent = document.getElementById('layerswitcher-layers');
-    if (layerswitcherContent) {
-      listLayer = Math.max(layerswitcherContent.childElementCount - 2, 0);
-    }
+    const showLayers = this.map_.getLayers().findIndex((layer) => {
+      return layer.isBase === false && layer.displayInLayerSwitcher;
+    }) > -1;
 
-    if (listLayer === 0) {
-      this.statusShowHideAllLayers = this.map_.getLayers().find((layer) => {
-        if (layer.isBase === false && layer.displayInLayerSwitcher) {
-          // RANGE ¿?
-          // return layer.isVisible();
-          return true;
-        }
-        return false;
+    if (showLayers) {
+      const templateVars = await this.getTemplateVariables(this.map_);
+
+      const html = IDEE.template.compileSync(templateAux, {
+        vars: templateVars,
       });
-    }
 
-    // ? NO SE MUESTRA NINGUNA CAPA
-    if (this.statusShowHideAllLayers === undefined) {
+      this.template_.querySelector('#layerswitcher-layers-empty').innerHTML = '';
+      this.template_.querySelector('#layerswitcher-layers').innerHTML = html.innerHTML;
+
+      await this.generateTemplateLayerGroup();
+
+      const ulContainer = this.template_.querySelector('.layerswitcher-ul-layers');
+      this.orderLayers(ulContainer);
+
+      const layerList = this.template_.querySelector('.layerswitcher-ul-layers');
+
+      if (layerList !== null && this.isMoveLayers) { // ??¿?¿ isMoveLayers
+        generateSortable(this.map_, this.overlayLayers);
+      }
+
+      this.defaultRangeSelect_();
+    } else {
       const html = IDEE.template.compileSync(templateEmpty, {
         vars: {
           text: this.getTemplateVariablesValues().translations.load_ext_services_empty,
@@ -451,41 +456,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       });
       this.template_.querySelector('#layerswitcher-layers').innerHTML = '';
       this.template_.querySelector('#layerswitcher-layers-empty').innerHTML = html.outerHTML;
-      return;
     }
-    this.template_.querySelector('#layerswitcher-layers-empty').innerHTML = '';
-
-    const templateVars = await this.getTemplateVariables(this.map_);
-    let scroll;
-    if (document.querySelector('.m-plugin-layerswitcher.opened ul.layerswitcher-ul-layers') !== null) {
-      scroll = document.querySelector('.m-plugin-layerswitcher.opened ul.layerswitcher-ul-layers').scrollTop;
-    }
-
-    const html = IDEE.template.compileSync(templateAux, {
-      vars: templateVars,
-    });
-
-    this.template_.querySelector('#layerswitcher-layers').innerHTML = html.innerHTML;
-
-    await this.generateTemplateLayerGroup();
-
-    const ulContainer = this.template_.querySelector('.layerswitcher-ul-layers');
-    this.orderLayers(ulContainer);
-
-    const layerList = this.template_.querySelector('.layerswitcher-ul-layers');
-
-    if (layerList !== null && this.isMoveLayers) { // ??¿?¿ isMoveLayers
-      generateSortable(this.map_, this.overlayLayers);
-    }
-    if (scroll !== undefined) {
-      const aux = document.querySelector('.m-plugin-layerswitcher.opened ul.layerswitcher-ul-layers');
-      if (aux !== null) {
-        aux.scrollTop = scroll;
-      }
-    }
-
-    // si el modo de selección es radio y no se ha seleccionado ninguna capa se marca la primera
-    this.defaultRangeSelect_();
   }
 
   defaultRangeSelect_() {
@@ -1402,12 +1373,16 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   addGroupLayersEvent() {
     const button = document.querySelector(LAYER_GROUP);
-    const addSuggestions = document.querySelector(ADDSERVICES_SUGGESTIONS);
+    const suggestions = document.querySelector(ADDSERVICES_SUGGESTIONS);
+    const codsi = document.querySelector(CODSI);
+    const results = document.querySelector(ADDSERVICES_RESULTS);
     const navBarModal = document.querySelector('.m-layerswitcher-input-container');
 
     button.addEventListener('click', (evt) => {
       this.printLayerModal('', 'layerGroup');
-      addSuggestions.style.display = 'none';
+      suggestions.style.display = 'none';
+      codsi.style.display = 'none';
+      results.style.display = 'none';
       navBarModal.style.display = 'none';
     });
   }
@@ -1820,12 +1795,12 @@ export default class LayerswitcherControl extends IDEE.Control {
       container.innerHTML = html.innerHTML;
       createSelectGroup(this.map_);
 
-      const results = container.querySelectorAll('span.m-check-layerswitcher-addservices');
+      const results = container.querySelectorAll('input.m-check-layerswitcher-addservices');
       for (let i = 0; i < results.length; i += 1) {
         results[i].addEventListener('click', (evt) => this.registerCheck(evt));
       }
 
-      const resultsWFS = container.querySelectorAll('span.m-check-layerswitcher-addservices-wfs');
+      const resultsWFS = container.querySelectorAll('input.m-check-layerswitcher-addservices-wfs');
       for (let i = 0; i < resultsWFS.length; i += 1) {
         resultsWFS[i].addEventListener('click', (evt) => this.registerCheckWFS(evt));
       }
@@ -1928,33 +1903,13 @@ export default class LayerswitcherControl extends IDEE.Control {
   // Registra los checks de las capas
   registerCheck(evt) {
     const e = (evt || window.event);
-    if (!IDEE.utils.isNullOrEmpty(e.target) && e.target.classList.contains('m-check-layerswitcher-addservices')) {
-      const container = document.querySelector(ADDSERVICES_RESULTS);
-      let numNotChecked = container.querySelectorAll('.m-check-layerswitcher-addservices.m-layerswitcher-icons-check').length;
-      numNotChecked += (e.target.classList.contains('m-layerswitcher-icons-check') ? -1 : 1);
-      e.stopPropagation();
-      e.target.classList.toggle('m-layerswitcher-icons-check');
-      e.target.classList.toggle('m-layerswitcher-icons-check-seleccionado');
-      if (numNotChecked > 0) {
-        this.stateSelectAll = false;
-        document.querySelector('#m-layerswitcher-addservices-selectall').classList.remove('m-layerswitcher-icons-check-seleccionado');
-        document.querySelector('#m-layerswitcher-addservices-selectall').classList.add('m-layerswitcher-icons-check');
-      } else if (numNotChecked === 0) {
-        this.stateSelectAll = true;
-        document.querySelector('#m-layerswitcher-addservices-selectall').classList.remove('m-layerswitcher-icons-check');
-        document.querySelector('#m-layerswitcher-addservices-selectall').classList.add('m-layerswitcher-icons-check-seleccionado');
-      }
-    } else if (!IDEE.utils.isNullOrEmpty(e.target) && e.target.id === 'm-layerswitcher-addservices-selectall') {
-      if (this.stateSelectAll) {
-        e.target.classList.remove('m-layerswitcher-icons-check-seleccionado');
-        e.target.classList.add('m-layerswitcher-icons-check');
-        this.unSelect();
-        this.stateSelectAll = false;
-      } else {
-        e.target.classList.remove('m-layerswitcher-icons-check');
-        e.target.classList.add('m-layerswitcher-icons-check-seleccionado');
+    e.stopPropagation();
+    if (!IDEE.utils.isNullOrEmpty(e.target) && e.target.id === 'm-layerswitcher-addservices-selectall') {
+      const selectAll = e.target.checked;
+      if (selectAll) {
         this.select();
-        this.stateSelectAll = true;
+      } else {
+        this.unselect();
       }
     }
   }
@@ -1962,33 +1917,13 @@ export default class LayerswitcherControl extends IDEE.Control {
   // Registra los checks de las WFS
   registerCheckWFS(evt) {
     const e = (evt || window.event);
-    if (!IDEE.utils.isNullOrEmpty(e.target) && e.target.classList.contains('m-check-layerswitcher-addservices-wfs')) {
-      const container = document.querySelector(ADDSERVICES_RESULTS);
-      let numNotChecked = container.querySelectorAll('.m-check-layerswitcher-addservices-wfs.m-layerswitcher-icons-check').length;
-      numNotChecked += (e.target.classList.contains('m-layerswitcher-icons-check') ? -1 : 1);
-      e.stopPropagation();
-      e.target.classList.toggle('m-layerswitcher-icons-check');
-      e.target.classList.toggle('m-layerswitcher-icons-check-seleccionado');
-      if (numNotChecked > 0) {
-        this.stateSelectAll = false;
-        document.querySelector('#m-layerswitcher-addservices-selectall-wfs').classList.remove('m-layerswitcher-icons-check-seleccionado');
-        document.querySelector('#m-layerswitcher-addservices-selectall-wfs').classList.add('m-layerswitcher-icons-check');
-      } else if (numNotChecked === 0) {
-        this.stateSelectAll = true;
-        document.querySelector('#m-layerswitcher-addservices-selectall-wfs').classList.remove('m-layerswitcher-icons-check');
-        document.querySelector('#m-layerswitcher-addservices-selectall-wfs').classList.add('m-layerswitcher-icons-check-seleccionado');
-      }
-    } else if (!IDEE.utils.isNullOrEmpty(e.target) && e.target.id === 'm-layerswitcher-addservices-selectall-wfs') {
-      if (this.stateSelectAll) {
-        e.target.classList.remove('m-layerswitcher-icons-check-seleccionado');
-        e.target.classList.add('m-layerswitcher-icons-check');
-        this.unSelectWFS();
-        this.stateSelectAll = false;
-      } else {
-        e.target.classList.remove('m-layerswitcher-icons-check');
-        e.target.classList.add('m-layerswitcher-icons-check-seleccionado');
+    e.stopPropagation();
+    if (!IDEE.utils.isNullOrEmpty(e.target) && e.target.id === 'm-layerswitcher-addservices-selectall-wfs') {
+      const selectAll = e.target.checked;
+      if (selectAll) {
         this.selectWFS();
-        this.stateSelectAll = true;
+      } else {
+        this.unselectWFS();
       }
     }
   }
@@ -2035,15 +1970,34 @@ export default class LayerswitcherControl extends IDEE.Control {
   addSelected_WMS_WMTS_WFS(evt) {
     evt.preventDefault();
     const layers = [];
-    const elmSel = document.querySelectorAll('#m-layerswitcher-addservices-results #m-layerswitcher-all .m-layerswitcher-icons-check-seleccionado');
-    const elmSelWFS = document.querySelectorAll('#m-layerswitcher-addservices-results #m-layerswitcher-wfs .m-layerswitcher-icons-check-seleccionado');
-    if (elmSel.length === 0 && elmSelWFS.length === 0) {
+
+    const checksWMSchecked = [];
+    const checksWMS = document.querySelectorAll('#m-layerswitcher-addservices-results #m-layerswitcher-all tr td input');
+    if (checksWMS.length > 1) {
+      for (let i = 1; i < checksWMS.length; i += 1) {
+        if (checksWMS[i].checked) {
+          checksWMSchecked.push(checksWMS[i]);
+        }
+      }
+    }
+
+    const checksWFSchecked = [];
+    const checksWFS = document.querySelectorAll('#m-layerswitcher-addservices-results #m-layerswitcher-wfs tr td input');
+    if (checksWFS.length > 1) {
+      for (let i = 1; i < checksWFS.length; i += 1) {
+        if (checksWFS[i].checked) {
+          checksWFSchecked.push(checksWFS[i]);
+        }
+      }
+    }
+
+    if (checksWMSchecked.length === 0 && checksWFSchecked.length === 0) {
       IDEE.dialog.error(getValue('exception.select_layer'), undefined, this.order);
     } else {
-      for (let i = 0; i < elmSel.length; i += 1) {
+      for (let i = 0; i < checksWMSchecked.length; i += 1) {
         for (let j = 0; j < this.capabilities.length; j += 1) {
           const name = this.capabilities[j].name;
-          if (elmSel[i].id === name || elmSel[i].name === name) {
+          if (checksWMSchecked[i].id === name || checksWMSchecked[i].name === name) {
             const limit = parseInt(this.serviceCapabilities.MaxWidth, 10);
             const hasLimit = !Number.isNaN(limit) && limit < 4096;
             const isIDECanarias = this.serviceCapabilities.Title !== undefined && this.serviceCapabilities.Title.toLowerCase().indexOf('idecanarias') > -1;
@@ -2067,7 +2021,7 @@ export default class LayerswitcherControl extends IDEE.Control {
                 if (meta.style !== undefined && meta.style.length > 0) {
                   meta.style.forEach((s) => {
                     if (s.isDefault === true && s.LegendURL !== undefined
-                        && s.LegendURL.length > 0) {
+                      && s.LegendURL.length > 0) {
                       const urlDefaultStyle = s.LegendURL[0].href;
                       this.capabilities[j].setLegendURL(urlDefaultStyle);
                     }
@@ -2080,8 +2034,8 @@ export default class LayerswitcherControl extends IDEE.Control {
           }
         }
       }
-      if (elmSelWFS.length > 0) {
-        this.addLayersWFS(elmSelWFS);
+      if (checksWFSchecked.length > 0) {
+        this.addLayersWFS(checksWFSchecked);
       }
 
       layers.reverse();
@@ -2093,40 +2047,36 @@ export default class LayerswitcherControl extends IDEE.Control {
     }
   }
 
-  // Quita selección a capa
-  unSelect() {
-    const unSelect = document.querySelectorAll('#m-layerswitcher-all tbody span.m-layerswitcher-icons-check-seleccionado');
-    for (let i = 0; i < unSelect.length; i += 1) {
-      unSelect[i].classList.remove('m-layerswitcher-icons-check-seleccionado');
-      unSelect[i].classList.add('m-layerswitcher-icons-check');
-    }
-  }
-
   // Pone selección a capa
   select() {
-    const select = document.querySelectorAll('#m-layerswitcher-all tbody span');
-    for (let i = 0; i < select.length; i += 1) {
-      select[i].classList.remove('m-layerswitcher-icons-check');
-      select[i].classList.add('m-layerswitcher-icons-check-seleccionado');
-    }
+    const checks = document.querySelectorAll('#m-layerswitcher-all tbody tr td input');
+    checks.forEach((check) => {
+      check.checked = true;
+    });
   }
 
-  // Quita selección a capa WFS
-  unSelectWFS() {
-    const unSelect = document.querySelectorAll('#m-layerswitcher-addservices-results #m-layerswitcher-wfs .m-layerswitcher-icons-check-seleccionado');
-    for (let i = 0; i < unSelect.length; i += 1) {
-      unSelect[i].classList.remove('m-layerswitcher-icons-check-seleccionado');
-      unSelect[i].classList.add('m-layerswitcher-icons-check');
-    }
+  // Quita selección a capa
+  unselect() {
+    const checks = document.querySelectorAll('#m-layerswitcher-all tbody tr td input');
+    checks.forEach((check) => {
+      check.checked = false;
+    });
   }
 
   // Pone selección a capa WFS
   selectWFS() {
-    const select = document.querySelectorAll('#m-layerswitcher-addservices-results #m-layerswitcher-wfs .m-layerswitcher-icons-check');
-    for (let i = 0; i < select.length; i += 1) {
-      select[i].classList.remove('m-layerswitcher-icons-check');
-      select[i].classList.add('m-layerswitcher-icons-check-seleccionado');
-    }
+    const checks = document.querySelectorAll('#m-layerswitcher-wfs tbody tr td input');
+    checks.forEach((check) => {
+      check.checked = true;
+    });
+  }
+
+  // Quita selección a capa WFS
+  unselectWFS() {
+    const checks = document.querySelectorAll('#m-layerswitcher-wfs tbody tr td input');
+    checks.forEach((check) => {
+      check.checked = false;
+    });
   }
 
   loadSuggestion(evt) {

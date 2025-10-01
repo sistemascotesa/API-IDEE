@@ -225,6 +225,8 @@ export default class Layerswitcher extends IDEE.Plugin {
      */
     this.position = options.position || 'right';
 
+    this.minPanelWidth = 360;
+
     // Permite saber si el plugin está colapsado o no
     this.collapsed_ = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
 
@@ -238,7 +240,7 @@ export default class Layerswitcher extends IDEE.Plugin {
     this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
 
     // Permite saber si se permite movimiento de capas
-    this.isMoveLayers = options.isMoveLayers || false;
+    this.isMoveLayers = options.isMoveLayers || true;
 
     // Determina el modo de selección de las capas
     this.modeSelectLayers = IDEE.utils.isUndefined(options.modeSelectLayers) ? 'eyes' : options.modeSelectLayers;
@@ -373,8 +375,8 @@ export default class Layerswitcher extends IDEE.Plugin {
 
   // Esta función elimina el plugin del mapa
   destroy() {
-    this.map.removeControls(this.controls);
-    [this.control_] = [null];
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
   }
 
   // Esta función devuelve si el plugin recibido por parámetro es instancia de Layerswitcher

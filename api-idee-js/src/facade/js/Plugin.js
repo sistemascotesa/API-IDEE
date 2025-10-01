@@ -66,6 +66,10 @@ class Plugin extends Base {
    * @api
    */
   getControls() {}
+
+  equals(obj) {
+    return obj instanceof Plugin && obj.name === this.name;
+  }
 }
 
 export default Plugin;

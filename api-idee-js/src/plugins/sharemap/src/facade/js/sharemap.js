@@ -78,6 +78,13 @@ export default class ShareMap extends IDEE.Plugin {
   constructor({ filterLayers = [], ...options }) {
     super();
 
+    /**
+     * Plugin name
+     * @public
+     * @type {String}
+     */
+    this.name = 'sharemap';
+
     if (IDEE.utils.isNullOrEmpty(options.baseUrl)) {
       // eslint-disable-next-line no-console
       console.warn('options.baseUrl is null or undefined.');
@@ -88,7 +95,7 @@ export default class ShareMap extends IDEE.Plugin {
      * @private
      * @type {IDEE.Map}
      */
-    this.map_ = null;
+    this.map = null;
 
     /**
      * Array of controls
@@ -115,7 +122,7 @@ export default class ShareMap extends IDEE.Plugin {
      * @private
      * @type {Enum} TL | TR | BL | BR
      */
-    this.position_ = options.position || 'BR';
+    this.position = options.position || 'right';
 
     /**
      * Title of the modal
@@ -269,11 +276,11 @@ export default class ShareMap extends IDEE.Plugin {
 
     this.controls_.push(this.control);
 
-    this.map_ = map;
+    this.map = map;
 
     this.panel_ = new IDEE.ui.Panel('ShareMap', {
       collapsible: false,
-      position: IDEE.ui.position[this.position_],
+      position: IDEE.ui.position[this.position],
       className: 'm-plugin-sharemap',
       tooltip: getValue('tooltipPanel'),
       order: this.order,
@@ -292,9 +299,9 @@ export default class ShareMap extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map_.removeControls([this.control]);
-    [this.map_, this.control, this.controls_, this.panel_, this.baseUrl_,
-      this.position_, this.title_, this.text_, this.btn_, this.copyBtn_,
+    this.map.removeControls([this.control]);
+    [this.map, this.control, this.controls_, this.panel_, this.baseUrl_,
+      this.position, this.title_, this.text_, this.btn_, this.copyBtn_,
       this.copyBtnHtml_, this.styles_, this.overwriteStyles_, this.tooltip_,
     ] = [null, null, null, null, null, null, null, null, null, null, null, null, null, null];
   }
@@ -311,16 +318,6 @@ export default class ShareMap extends IDEE.Plugin {
   }
 
   /**
-   * Name of the plugin
-   *
-   * @getter
-   * @function
-   */
-  get name() {
-    return 'sharemap';
-  }
-
-  /**
    * This function returns the base url option
    *
    * @public
@@ -329,28 +326,6 @@ export default class ShareMap extends IDEE.Plugin {
    */
   get baseUrl() {
     return this.baseUrl_;
-  }
-
-  /**
-   * This function returns the facade map.
-   *
-   * @public
-   * @return {IDEE.Map}
-   * @api
-   */
-  get map() {
-    return this.map_;
-  }
-
-  /**
-   * This function returns the position
-   *
-   * @public
-   * @return {string}
-   * @api
-   */
-  get position() {
-    return this.position_;
   }
 
   /**

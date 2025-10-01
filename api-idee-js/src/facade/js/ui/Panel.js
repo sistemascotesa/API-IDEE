@@ -218,9 +218,8 @@ class Panel extends MObject {
    */
   destroy() {
     if (this.element != null) {
-      this._areaContainer.removeChild(this.element);
+      this.element.remove();
     }
-    this.element = null;
   }
 
   /**
@@ -458,8 +457,7 @@ class Panel extends MObject {
       controls.forEach((controlParam) => {
         const control = controlParam;
         if ((control instanceof ControlBase) && this.hasControl(control)) {
-          this.controls = this.controls.filter((control2) => !control.equals(control2));
-          control.setPanel(null);
+          this.controls = this.controls.filter((control2) => !control2.equals(control));
         }
       }, this);
       // if this panel hasn't any controls then it's removed
@@ -564,11 +562,7 @@ class Panel extends MObject {
    * @api
    */
   equals(obj) {
-    let equals = false;
-    if (obj instanceof Panel) {
-      equals = (obj.name === this.name);
-    }
-    return equals;
+    return obj instanceof Panel && obj.name === this.name;
   }
 
   /**

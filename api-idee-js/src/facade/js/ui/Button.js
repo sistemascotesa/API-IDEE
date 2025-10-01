@@ -135,6 +135,10 @@ class Button extends MObject {
     this.pressed = false;
     this.element.classList.remove('active');
   }
+
+  equals(obj) {
+    return obj instanceof Button && obj.name === this.name;
+  }
 }
 
 export default Button;

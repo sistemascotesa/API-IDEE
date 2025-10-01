@@ -101,21 +101,21 @@ export default class BackImgLayer extends IDEE.Plugin {
      * @public
      * @type {String}
      */
-    this.ids = options.ids || 'wmts1,wmts2,wmts3,wmts4,wmts5,wmts6,wmts7,wmts8';
+    this.ids = options.ids || 'wmts';
 
     /**
      * Layers titles separated by ','.
      * @public
      * @type {String}
      */
-    this.titles = options.titles || 'IGNBaseTodo,CallejeroGris,LandCoverSurfaces,ElevationGridCoverage,MTN,OrthoimageCoverage,GridCoverageDSM,MancelliMadrid,PNOA';
+    this.titles = options.titles || 'IGNBaseTodo';
 
     /**
      * Layers preview urls separated by ','.
      * @public
      * @type {String}
      */
-    this.previews = options.previews || 'plugins/backimglayer/images/svqmapa.png,plugins/backimglayer/images/svqimagen.png,plugins/backimglayer/images/svqlidar.png,plugins/backimglayer/images/svqimagen.png,plugins/backimglayer/images/svqimagen.png,plugins/backimglayer/images/svqimagen.png,plugins/backimglayer/images/svqimagen.png,plugins/backimglayer/images/svqimagen.png';
+    this.previews = options.previews || 'https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqmapa.png';
 
     /**
      * Layers separated by ','.
@@ -124,7 +124,7 @@ export default class BackImgLayer extends IDEE.Plugin {
      * @public
      * @type {String}
      */
-    this.layers = options.layers || 'QUICK*BASE_MapaBase_IGNBaseTodo_WMTS,QUICK*MapaBase_CallejeroGris_WMTS,QUICK*OcupacionSuelo_LandCoverSurfaces_WMTS,QUICK*MDT_ElevationGridCoverage_WMTS,QUICK*CartografiaRaster_MTN_WMTS,QUICK*PNOA_MA_OrthoimageCoverage_WMTS,QUICK*MapaLiDAR_GridCoverageDSM_WMTS,QUICK*Planos_Historicos_MadridMancelliMadrid_WMTS';
+    this.layers = options.layers || 'QUICK*BASE_MapaBase_IGNBaseTodo_WMTS';
 
     /**
      * @private
@@ -338,13 +338,8 @@ export default class BackImgLayer extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
-    this.map.removeControls(this.controls);
-    this.map = null;
-    this.control_ = null;
-    this.controls = null;
-    this.panel = null;
-    this.name = null;
-    this.layerOpts = null;
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
   }
 
   /**

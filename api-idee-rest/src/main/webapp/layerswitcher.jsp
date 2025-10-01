@@ -42,10 +42,8 @@
     <div>
         <label for="selectPosition">Selector de posición del plugin</label>
         <select name="position" id="selectPosition">
-            <option value="TL">Arriba Izquierda (TL)</option>
-            <option value="TR" selected="selected">Arriba Derecha (TR)</option>
-            <option value="BR">Abajo Derecha (BR)</option>
-            <option value="BL">Abajo Izquierda (BL)</option>
+            <option value="left">Izquierda</option>
+            <option value="right" selected="selected">Derecha</option>
         </select>
         <label for="selectCollapsed">Selector collapsed</label>
         <select name="collapsedValue" id="selectCollapsed">
@@ -113,7 +111,7 @@
             <option value=true>true</option>
             <option value=false>false</option>
         </select>
-        <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar">
+        <button name="eliminar" id="botonEliminar">Eliminar Plugin</button>
     </div>
 
     <div id="mapjs" class="m-container"></div>
@@ -154,7 +152,7 @@
 
         const capaGeoJSON = new IDEE.layer.GeoJSON({
             name: 'Capa GeoJSON',
-            url: 'http://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
+            url: 'https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
             extract: false,
         });
 
@@ -224,6 +222,7 @@
             objeto.showCatalog = (selectShowCatalog.options[selectShowCatalog.selectedIndex].value == 'true');
             objeto.useProxy = (selectProxy.options[selectProxy.selectedIndex].value == 'true');
             objeto.displayLabel = (selectDisplay.options[selectDisplay.selectedIndex].value == 'true');
+
             if (mp !== null) {
                 map.removePlugins(mp);
             }

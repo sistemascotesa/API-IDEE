@@ -57,15 +57,15 @@ const handleOnAdd = (map) => (evt) => {
 
   // De grupo a mapa
   const isToMap = (evt.to.classList.contains('layerswitcher-ul-layers')
-      && evt.from.classList.contains('layerswitcher-ullayersGroup'));
+      && evt.from.classList.contains('layerswitcher-ul-layersGroup'));
 
   // De mapa a grupo
   const isFromMap = (evt.from.classList.contains('layerswitcher-ul-layers')
-      && evt.to.classList.contains('layerswitcher-ullayersGroup'));
+      && evt.to.classList.contains('layerswitcher-ul-layersGroup'));
 
   // De grupo a grupo
-  const isGroupToGroup = (evt.from.classList.contains('layerswitcher-ullayersGroup')
-      && evt.to.classList.contains('layerswitcher-ullayersGroup'));
+  const isGroupToGroup = (evt.from.classList.contains('layerswitcher-ul-layersGroup')
+      && evt.to.classList.contains('layerswitcher-ul-layersGroup'));
 
   const groupFrom = isToMap || isGroupToGroup
     ? map.getLayerGroup().find((g) => g.idLayer === idFrom) : null;
