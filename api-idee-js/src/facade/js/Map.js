@@ -4896,16 +4896,30 @@ class Map extends Base {
   }
 
   /**
-   * Este método controla si la interacción de zoom con la rueda del ratón está activa o no.
-   * El valor por defecto es true
+   * Este método controla si la interacción DragPan está activa o no.
    *
    * @function
+   * @param { Boolean } active determina si se activa o desactiva el panneo.
+   * El valor por defecto es true.
    * @public
    * @api
-   * @param {Boolean} active determina si se activa o desactiva el zoom.
    */
-  enableMouseWheel(active) {
-    this.getImpl().enableMouseWheel(active);
+  enablePan(active) {
+    this.getImpl().enableDrag(active);
+  }
+
+  /**
+   * Este método controla si la interacción DragPan está activa o no.
+   *
+   * @function
+   * @param { Boolean } active determina si se activa o desactiva el panneo.
+   * El valor por defecto es true.
+   * @public
+   * @api
+   * @deprecated usar enablePan en vez enableDrag.
+   */
+  enableDrag(active) {
+    this.enablePan(active);
   }
 }
 

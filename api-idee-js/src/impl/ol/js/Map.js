@@ -6,7 +6,7 @@ import { get as getProj, transform } from 'ol/proj';
 import OLFormatWMTSCapabilities from 'ol/format/WMTSCapabilities';
 import OLProjection from 'ol/proj/Projection';
 import OLInteraction from 'ol/interaction/Interaction';
-import { MouseWheelZoom } from 'ol/interaction';
+import { DragPan } from 'ol/interaction';
 import MObject from 'IDEE/Object';
 import FacadePanzoombar from 'IDEE/control/Panzoombar';
 import * as LayerType from 'IDEE/layer/Type';
@@ -275,13 +275,13 @@ class Map extends MObject {
     const interactions = this.map_.getInteractions().getArray();
 
     /**
-     * MouseWheelZoom - Interacción
+     * DragPan - Interacción.
      * @private
      * @type {ol.Interaction}
-     * @returns {ol.Interaction.MouseWheelZoom} MouseWheelZoom.
+     * @returns {ol.Interaction} DragPan.
      */
-    this.mouseWheelZoom_ = interactions.find((interaction) => {
-      return interaction instanceof MouseWheelZoom;
+    this.dragPan_ = interactions.find((interaction) => {
+      return interaction instanceof DragPan;
     });
   }
 
@@ -3353,17 +3353,17 @@ class Map extends MObject {
   }
 
   /**
-   * Este método controla si la interacción de zoom con la rueda del ratón está activa o no.
-   * El valor por defecto es true
+   * Este método controla si la interacción DragPan está activa o no.
    *
    * @function
+   * @param { Boolean } active determina si se activa o desactiva el panneo.
+   * El valor por defecto es true.
    * @public
    * @api
-   * @param {Boolean} active determina si se activa o desactiva el zoom con la rueda del ratón.
    */
-  enableMouseWheel(active = true) {
-    if (!isNullOrEmpty(this.mouseWheelZoom_)) {
-      this.mouseWheelZoom_.setActive(active);
+  enableDrag(active = true) {
+    if (!isNullOrEmpty(this.dragPan_)) {
+      this.dragPan_.setActive(active);
     }
   }
 
