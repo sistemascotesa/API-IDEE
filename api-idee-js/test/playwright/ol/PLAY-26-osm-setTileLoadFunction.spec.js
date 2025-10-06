@@ -37,6 +37,7 @@ test('Capa MVT - tileLoadFunction', async ({ page }) => {
         resolve();
       });
       window.mapjs.addLayers([window.osm]);
+      window.osm.setVisible(true);
     });
   });
   await page.waitForTimeout(2000);
