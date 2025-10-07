@@ -6,6 +6,7 @@ import { get as getProj, transform } from 'ol/proj';
 import OLFormatWMTSCapabilities from 'ol/format/WMTSCapabilities';
 import OLProjection from 'ol/proj/Projection';
 import OLInteraction from 'ol/interaction/Interaction';
+import { MouseWheelZoom } from 'ol/interaction';
 import MObject from 'IDEE/Object';
 import FacadePanzoombar from 'IDEE/control/Panzoombar';
 import * as LayerType from 'IDEE/layer/Type';
@@ -270,6 +271,18 @@ class Map extends MObject {
         return true;
       },
     }));
+
+    const interactions = this.map_.getInteractions().getArray();
+
+    /**
+     * MouseWheelZoom - Interacción
+     * @private
+     * @type {ol.Interaction}
+     * @returns {ol.Interaction} MouseWheelZoom.
+     */
+    this.mouseWheelZoom_ = interactions.find((interaction) => {
+      return interaction instanceof MouseWheelZoom;
+    });
   }
 
   /**
@@ -3337,6 +3350,21 @@ class Map extends MObject {
    */
   setFacadeMap(facadeMap) {
     this.facadeMap_ = facadeMap;
+  }
+
+  /**
+   * Este detodo controla si la interacción MouseWheelZoom está activa o no
+   *
+   * @function
+   * @public
+   * @api
+   * @param { Boolean } active determina si se activa o desactiva el zoom.
+   * El valor por defecto es true
+   */
+  enableMouseWheel(active = true) {
+    if (!isNullOrEmpty(this.mouseWheelZoom_)) {
+      this.mouseWheelZoom_.setActive(active);
+    }
   }
 
   /**

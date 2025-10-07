@@ -4894,6 +4894,19 @@ class Map extends Base {
     }
     this.getImpl().setRotation(rotation * (Math.PI / 180));
   }
+
+  /**
+   * Este detodo controla si la interacción MouseWheelZoom está activa o no
+   *
+   * @function
+   * @public
+   * @api
+   * @param { Boolean } active determina si se activa o desactiva el zoom.
+   * El valor por defecto es true
+   */
+  enableMouseWheel(active) {
+    this.getImpl().enableMouseWheel(active);
+  }
 }
 
 /**
