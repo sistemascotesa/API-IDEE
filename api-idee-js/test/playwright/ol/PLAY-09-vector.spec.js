@@ -25,7 +25,6 @@ test.describe('Vector layers', () => {
         template: temp,
       });
 
-      window.map.addLayers(ogc_001);
       window.ogc_001 = ogc_001;
     }, customTemplate);
 
@@ -34,6 +33,7 @@ test.describe('Vector layers', () => {
         window.ogc_001.on(IDEE.evt.LOAD, () => {
           resolve();
         });
+        window.map.addLayers(window.ogc_001);
       });
     });
 

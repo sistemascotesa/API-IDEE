@@ -98,7 +98,8 @@ class GetCapabilities {
    *
    * @function
    * @param {String} layerName Nombre de la capa.
-   * @param {String} projection Código de la proyección para transformar la extensión devuelta en el método
+   * @param {String} projection Código de la proyección para transformar
+   * la extensión devuelta en el método
    * @return {Array<Number>} Extensión.
    * @public
    * @api
@@ -116,7 +117,8 @@ class GetCapabilities {
    * @function
    * @param {Mx.GetCapabilities} layer Lista de capas disponibles en el servicio.
    * @param {String} layerName Nombre de la capa.
-   * @param { String } tgtProjection Código de la proyección para transformar la extensión devuelta en el método
+   * @param { String } tgtProjection Código de la proyección para transformar la
+   * extensión devuelta en el método
    * @return {Array<Number>} Extensión.
    * @public
    * @api
