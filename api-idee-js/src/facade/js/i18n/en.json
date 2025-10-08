@@ -306,6 +306,7 @@
     "setminzoom_no_apply": "It is not possible to apply minimum zoom to the WMC layer.",
     "setmaxzoom_no_apply": "It is not possible to apply maximum zoom to the WMC layer.",
     "setminscale_no_apply": "It is not possible to apply minimum scale to the WMC layer.",
-    "setmaxscale_no_apply": "It is not possible to apply maximum scale to the WMC layer."
+    "setmaxscale_no_apply": "It is not possible to apply maximum scale to the WMC layer.",
+    "wkt_toCQL_method": "The used implementation can not create WKT formatter so it will not include CQL filters."
   }
 }
