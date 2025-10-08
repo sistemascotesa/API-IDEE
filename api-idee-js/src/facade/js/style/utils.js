@@ -1,5 +1,5 @@
 /**
- * @module M/style/utils
+ * @module IDEE/style/utils
  */
 
 import chroma from 'chroma-js';
@@ -17,7 +17,7 @@ import StyleGeneric from './Generic';
  * @param {IDEE.layer.Vector} layer Capa a la que se le aplicará.
  * @return {IDEE.style.Simple} Nuevo estilo.
  */
-export const generateStyleLayer = (options, layer) => {
+const generateStyleLayer = (options, layer) => {
   let style;
   switch (layer.getGeometryType()) {
     case 'Point':
@@ -45,7 +45,7 @@ export const generateStyleLayer = (options, layer) => {
  * @param {M.Feature} feature
  * @return {M.style.Simple}
  */
-export const generateRandomStyle = (opts) => {
+const generateRandomStyle = (opts) => {
   const radius = opts.radius;
   const fillColor = chroma.random().hex();
   const strokeColor = opts.strokeColor;
@@ -110,7 +110,7 @@ export const generateRandomStyle = (opts) => {
  * @param {Object} opts Opciones de "radius", "strokeColor" y "strokeWidth".
  * @return {StyleGeneric} Nuevo estilo genérico.
  */
-export const generateRandomGenericStyle = (opts) => {
+const generateRandomGenericStyle = (opts) => {
   const radius = opts.radius;
   const fillColor = chroma.random().hex();
   const strokeColor = opts.strokeColor;
@@ -147,3 +147,17 @@ export const generateRandomGenericStyle = (opts) => {
   };
   return new StyleGeneric(options);
 };
+
+/**
+ * @public
+ * @constant
+ * @type {Object}
+ * @api
+ */
+const Utils = {
+  generateStyleLayer,
+  generateRandomStyle,
+  generateRandomGenericStyle,
+};
+
+export default Utils;
