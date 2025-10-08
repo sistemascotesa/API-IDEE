@@ -4896,7 +4896,7 @@ class Map extends Base {
   }
 
   /**
-   * Este detodo controla si la interacción MouseWheelZoom está activa o no
+   * Este método controla si la interacción MouseWheelZoom está activa o no
    *
    * @function
    * @public
