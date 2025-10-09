@@ -4896,30 +4896,15 @@ class Map extends Base {
   }
 
   /**
-   * Este método permite activar o desactivar la interacción de panneo.
-   * El valor por defecto es true.
+   * Método que devuelve las capas que no son base añadidas al mapa.
    *
    * @function
-   * @param {Boolean} active determina si se activa o desactiva el panneo.
-   * @public
+   * @returns {Array<Layer>} capas
    * @api
    */
-  enablePan(active) {
-    this.getImpl().enablePan(active);
-  }
-
-  /**
-   * Este método permite activar o desactivar la interacción de panneo.
-   * El valor por defecto es true.
-   *
-   * @function
-   * @param {Boolean} active determina si se activa o desactiva el panneo.
-   * @public
-   * @api
-   * @deprecated
-   */
-  enableDrag(active) {
-    this.enablePan(active);
+  getOverlayLayers() {
+    const layers = this.getLayers().filter((layer) => layer.name !== '__draw__' && layer.isBase === false);
+    return layers;
   }
 }
 
