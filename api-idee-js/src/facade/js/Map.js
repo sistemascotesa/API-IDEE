@@ -4906,6 +4906,22 @@ class Map extends Base {
     const layers = this.getLayers().filter((layer) => layer.name !== '__draw__' && layer.isBase === false);
     return layers;
   }
+
+  /**
+   * Método que elimina las capas que no son base añadidas al mapa.
+   *
+   * @function
+   * @returns {Object} mapa
+   * @api
+   */
+  removeOverlayLayers() {
+  // gets the layers to remove
+    const layers = this.getOverlayLayers();
+
+    this.removeLayers(layers);
+
+    return this;
+  }
 }
 
 /**
