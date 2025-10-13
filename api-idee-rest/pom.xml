@@ -101,6 +101,7 @@
                         <include>**/*.jsp</include>
                         <include>**/*.html</include>
                         <include>**/*.json</include>
+                        <include>js/plugins.js</include>
                      </includes>
                   </resource>
                </webResources>
