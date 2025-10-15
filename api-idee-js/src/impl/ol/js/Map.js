@@ -278,7 +278,7 @@ class Map extends MObject {
      * MouseWheelZoom - Interacción
      * @private
      * @type {ol.Interaction}
-     * @returns {ol.Interaction} MouseWheelZoom.
+     * @returns {ol.Interaction.MouseWheelZoom} MouseWheelZoom.
      */
     this.mouseWheelZoom_ = interactions.find((interaction) => {
       return interaction instanceof MouseWheelZoom;
@@ -3353,13 +3353,13 @@ class Map extends MObject {
   }
 
   /**
-   * Este detodo controla si la interacción MouseWheelZoom está activa o no
+   * Este método controla si la interacción de zoom con la rueda del ratón está activa o no.
+   * El valor por defecto es true
    *
    * @function
    * @public
    * @api
-   * @param { Boolean } active determina si se activa o desactiva el zoom.
-   * El valor por defecto es true
+   * @param {Boolean} active determina si se activa o desactiva el zoom con la rueda del ratón.
    */
   enableMouseWheel(active = true) {
     if (!isNullOrEmpty(this.mouseWheelZoom_)) {
