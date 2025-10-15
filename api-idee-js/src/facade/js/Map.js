@@ -4896,10 +4896,11 @@ class Map extends Base {
   }
 
   /**
-   * Método que devuelve las capas que no son base añadidas al mapa.
+   * Método que devuelve las capas superpuestas añadidas al mapa.
    *
    * @function
-   * @returns {Array<Layer>} capas
+   * @public
+   * @returns {Array<IDEE.Layers>} capas superpuestas.
    * @api
    */
   getOverlayLayers() {
@@ -4908,18 +4909,16 @@ class Map extends Base {
   }
 
   /**
-   * Método que elimina las capas que no son base añadidas al mapa.
+   * Método que elimina todas las capas superpuestas añadidas al mapa.
    *
    * @function
-   * @returns {Object} mapa
+   * @public
+   * @returns {IDEE.Map} mapa
    * @api
    */
   removeOverlayLayers() {
-  // gets the layers to remove
     const layers = this.getOverlayLayers();
-
     this.removeLayers(layers);
-
     return this;
   }
 }
