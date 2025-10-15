@@ -10,12 +10,12 @@ import StyleGeneric from './Generic';
 
 /**
  * Esta función devuelve el estilo parametrizable.
- * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
  * @function
  * @public
- * @param {object} options Opciones de estilo.
+ * @api
+ * @param {Object} options Opciones de estilo.
  * @param {IDEE.layer.Vector} layer Capa a la que se le aplicará.
- * @return {IDEE.style.Simple} Nuevo estilo.
+ * @return {IDEE.style.Simple} Nuevo estilo generado.
  */
 const generateStyleLayer = (options, layer) => {
   let style;
@@ -39,11 +39,13 @@ const generateStyleLayer = (options, layer) => {
 };
 
 /**
- * This functions returns random simple style
+ * Esta función devuelve un estilo simple aleatorio en función de las opciones proporcionadas
+ * y el tipo de geometría del feature proporcionado.
  * @function
- * @private
- * @param {M.Feature} feature
- * @return {M.style.Simple}
+ * @public
+ * @api
+ * @param {Object} feature y opciones de estilo.
+ * @return {M.style.Simple} Nuevo estilo generado.
  */
 const generateRandomStyle = (opts) => {
   const radius = opts.radius;
@@ -103,12 +105,12 @@ const generateRandomStyle = (opts) => {
 };
 
 /**
- * Genera un estilo aleatorio.
- * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ * Genera un estilo genérico aleatorio.
  * @function
  * @public
+ * @api
  * @param {Object} opts Opciones de "radius", "strokeColor" y "strokeWidth".
- * @return {StyleGeneric} Nuevo estilo genérico.
+ * @return {StyleGeneric} Nuevo estilo genérico generado.
  */
 const generateRandomGenericStyle = (opts) => {
   const radius = opts.radius;
