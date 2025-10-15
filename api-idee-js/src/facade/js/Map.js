@@ -4896,27 +4896,27 @@ class Map extends Base {
   }
 
   /**
-   * Este método controla si la interacción DragPan está activa o no.
+   * Este método permite activar o desactivar la interacción de panneo.
+   * El valor por defecto es true.
    *
    * @function
-   * @param { Boolean } active determina si se activa o desactiva el panneo.
-   * El valor por defecto es true.
+   * @param {Boolean} active determina si se activa o desactiva el panneo.
    * @public
    * @api
    */
   enablePan(active) {
-    this.getImpl().enableDrag(active);
+    this.getImpl().enablePan(active);
   }
 
   /**
-   * Este método controla si la interacción DragPan está activa o no.
+   * Este método permite activar o desactivar la interacción de panneo.
+   * El valor por defecto es true.
    *
    * @function
-   * @param { Boolean } active determina si se activa o desactiva el panneo.
-   * El valor por defecto es true.
+   * @param {Boolean} active determina si se activa o desactiva el panneo.
    * @public
    * @api
-   * @deprecated usar enablePan en vez enableDrag.
+   * @deprecated
    */
   enableDrag(active) {
     this.enablePan(active);

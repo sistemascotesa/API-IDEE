@@ -278,7 +278,7 @@ class Map extends MObject {
      * DragPan - Interacción.
      * @private
      * @type {ol.Interaction}
-     * @returns {ol.Interaction} DragPan.
+     * @returns {ol.Interaction.DragPan} Interacción DragPan.
      */
     this.dragPan_ = interactions.find((interaction) => {
       return interaction instanceof DragPan;
@@ -3353,15 +3353,15 @@ class Map extends MObject {
   }
 
   /**
-   * Este método controla si la interacción DragPan está activa o no.
+   * Este método permite activar o desactivar la interacción de panneo.
+   * El valor por defecto es true.
    *
    * @function
-   * @param { Boolean } active determina si se activa o desactiva el panneo.
-   * El valor por defecto es true.
+   * @param {Boolean} active determina si se activa o desactiva el panneo.
    * @public
    * @api
    */
-  enableDrag(active = true) {
+  enablePan(active = true) {
     if (!isNullOrEmpty(this.dragPan_)) {
       this.dragPan_.setActive(active);
     }
