@@ -48,7 +48,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     this.help_ = help;
     this.style_ = style;
     this.layers_ = allLayers.filter((l) => (l instanceof IDEE.layer.Vector
-      || l instanceof IDEE.layer.GenericVector) && l.displayInLayerSwitcher).map((l) => {
+        || l instanceof IDEE.layer.GenericVector) && l.displayInLayerSwitcher).map((l) => {
       return { value: l.idLayer, text: l.legend || l.idLayer, zIndex: l.getZIndex() };
     }).sort((a, b) => b.zIndex - a.zIndex);
     this.selectedLayer = null;
@@ -528,18 +528,18 @@ export default class VectorsManagementControl extends IDEE.Control {
    */
   refreshLayers() {
     const allLayers = this.map.getLayers().concat(this.map.getImpl().getAllLayerInGroup());
-    this.layers_ = allLayers.filter((l) => (l instanceof IDEE.layer.Vector
-      || l instanceof IDEE.layer.GenericVector) && l.displayInLayerSwitcher).map((l) => {
-      return { value: l.idLayer, text: l.legend || l.idLayer, zIndex: l.getZIndex() };
-    });
+    this.layers_ = allLayers.filter((l) => (
+      l instanceof IDEE.layer.Vector || l instanceof IDEE.layer.GenericVector)
+      && l.displayInLayerSwitcher)
+      .map((l) => {
+        return { value: l.idLayer, text: l.legend || l.idLayer, zIndex: l.getZIndex() };
+      });
     const selector = this.html.querySelector('#m-selectionlayer');
     const selectedLayerName = selector.selectedOptions[0].value;
     const layerExists = this.layers_.filter((l) => l.value === selectedLayerName).length > 0;
 
-    const length = selector.children.length;
-    for (let i = 0; i < length; i += 1) {
-      selector.children[0].remove();
-    }
+    while (selector.firstChild) selector.firstChild.remove();
+
     let option = document.createElement('option');
     option.value = '';
     option.selected = !layerExists;
