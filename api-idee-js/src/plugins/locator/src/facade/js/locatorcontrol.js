@@ -8,6 +8,11 @@ import XYLocatorControl from './xylocatorcontrol';
 import IGNSearchLocatorControl from './ignsearchlocatorcontrol';
 import InfoCatastroControl from './infocatastrocontrol';
 
+const ID_CONTENEDOR_LOCATOR = '#div-contenedor-locator';
+const ID_LOCATOR_INFO_CATASTRO = '#m-locator-infocatastro';
+const ID_LOCATOR_XYLOCATOR = '#m-locator-xylocator';
+const ID_LOCATOR_IGNSEARCH = '#m-locator-ignsearch';
+
 export default class LocatorControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
@@ -104,9 +109,9 @@ export default class LocatorControl extends IDEE.Control {
      * Position of the plugin
      *
      * @private
-     * @type {String} TL | TR | BL | BR | TC
+     * @type {String} 'left' | 'right'
      */
-    this.position = position || 'TR';
+    this.position = position || 'right';
 
     /**
      * Control activated
@@ -151,12 +156,12 @@ export default class LocatorControl extends IDEE.Control {
           this.byParcelCadastre_,
           this.position,
         );
-        html.querySelector('#m-locator-infocatastro').addEventListener('click', () => {
+        html.querySelector(ID_LOCATOR_INFO_CATASTRO).addEventListener('click', () => {
           this.deactive(html, 'infocatastro');
           this.infocatastroControl.active(html);
           this.control = this.infocatastroControl;
         });
-        html.querySelector('#m-locator-infocatastro').addEventListener('keydown', ({ key }) => {
+        html.querySelector(ID_LOCATOR_INFO_CATASTRO).addEventListener('keydown', ({ key }) => {
           if (key === 'Enter') {
             this.deactive(html, 'infocatastro');
             this.infocatastroControl.active(html);
@@ -176,12 +181,12 @@ export default class LocatorControl extends IDEE.Control {
           this.byCoordinates_,
           this.position,
         );
-        html.querySelector('#m-locator-xylocator').addEventListener('click', () => {
+        html.querySelector(ID_LOCATOR_XYLOCATOR).addEventListener('click', () => {
           this.deactive(html, 'xylocator');
           this.xylocatorControl.active(html);
           this.control = this.xylocatorControl;
         });
-        html.querySelector('#m-locator-xylocator').addEventListener('keydown', ({ key }) => {
+        html.querySelector(ID_LOCATOR_XYLOCATOR).addEventListener('keydown', ({ key }) => {
           if (key === 'Enter') {
             this.deactive(html, 'xylocator');
             this.xylocatorControl.active(html);
@@ -206,14 +211,14 @@ export default class LocatorControl extends IDEE.Control {
         this.on(IDEE.evt.ADDED_TO_MAP, () => {
           this.ignsearchControl.initializateAddress(html);
           this.control = this.ignsearchControl;
-          html.querySelector('#m-locator-ignsearch').click();
+          html.querySelector(ID_LOCATOR_IGNSEARCH).click();
         });
-        html.querySelector('#m-locator-ignsearch').addEventListener('click', () => {
+        html.querySelector(ID_LOCATOR_IGNSEARCH).addEventListener('click', () => {
           this.deactive(html, 'ignsearch');
           this.ignsearchControl.active(html);
           this.control = this.ignsearchControl;
         });
-        html.querySelector('#m-locator-ignsearch').addEventListener('keydown', ({ key }) => {
+        html.querySelector(ID_LOCATOR_IGNSEARCH).addEventListener('keydown', ({ key }) => {
           if (key === 'Enter') {
             this.deactive(html, 'ignsearch');
             this.ignsearchControl.active(html);
@@ -224,11 +229,6 @@ export default class LocatorControl extends IDEE.Control {
           this.fire('ignsearchlocator:entityFound', [extent]);
         });
       }
-      this.on(IDEE.evt.ADDED_TO_MAP, () => {
-        if (this.position === 'TC') {
-          document.querySelector('.m-plugin-locator').classList.add('m-plugin-locator-tc');
-        }
-      });
       if (this.isDraggable_) {
         IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-locator-title');
       }
@@ -261,15 +261,11 @@ export default class LocatorControl extends IDEE.Control {
    */
   deactive(html, control) {
     const active = html.querySelector('#m-locator-previews .activated');
-    if (this.position === 'TC') {
-      document.querySelector('.m-plugin-locator').classList.remove('m-plugin-locator-tc-withpanel');
-      document.querySelector('.m-plugin-locator').classList.add('m-plugin-locator-tc');
-    }
     if (active && !active.id.includes(control)) {
       this.control.clearResults();
       active.classList.remove('activated');
-      const container = document.querySelector('#div-contenedor-locator');
-      if (this.position === 'TC' && container && container.children.length > 1) {
+      const container = document.querySelector(ID_CONTENEDOR_LOCATOR);
+      if (container && container.children.length > 1) {
         container.removeChild(container.children[1]);
       } else if (container && container.children.length > 2) {
         container.removeChild(container.children[2]);
