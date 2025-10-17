@@ -42,11 +42,8 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**:  Ubicación del plugin sobre el mapa.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
-  - 'TC': (top center) - Arriba en el centro.
+  - 'left' - Arriba a la izquierda.
+  - 'right - Arriba a la derecha (por defecto).
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
 - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Buscar un lugar.
@@ -143,7 +140,7 @@ URL_API?locator=position*collapsed*collapsible*tooltip*zoom*pointStyle*isDraggab
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>left/right</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -265,7 +262,7 @@ const map = IDEE.map({
 });
 
 const mp = new IDEE.plugin.Locator({
-  position: 'TL',
+  position: 'right',
   collapsible: true,
   collapsed: true,
   zoom: 16,

@@ -1,14 +1,11 @@
-<div id="m-ignsearch-panel">
+<div id="m-ignsearch-panel" class="m-ignsearch-container">
     <input type="text" tabindex="0" id="m-ignsearchlocator-search-input" class="m-input-search" autocomplete="off" title="{{placeholder}}" placeholder="{{placeholder}}" />
     {{#if reverse}}
-    <button type="button" tabindex="0" id="m-ignsearchlocator-locate-button" title="{{translations.get_direction}}">
+    <button type="button" tabindex="0" id="m-ignsearchlocator-locate-button" class="m-ign-search-locate-button" title="{{translations.get_direction}}">
         <i class="locator-icon-locate"></i>
     </button>
     {{/if}}
-    <button type="button" tabindex="0" id="m-ignsearchlocator-clean-button" title="{{translations.clean}}">
-        <i class="locator-icon-remove"></i> {{translations.clean}}
-    </button>
-    <div id="m-ignsearchlocator-results">
+    <div id="m-ignsearchlocator-results" class="m-ignsearch-results">
         <!-- Here goes the list of search results -->
     </div>
 </div>
