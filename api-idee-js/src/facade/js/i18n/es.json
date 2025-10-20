@@ -120,7 +120,7 @@
     "scaleline_method": "La implementación usada no puede crear controles ScaleLine",
     "wmcselector_method": "La implementación usada no puede crear controles WMCSelector",
     "geojson_method": "La implementación usada no puede crear objetos IDEE.impl.format.GeoJSON",
-    "wkt_method": "La implementación usada no puede creat objetos IDEE.impl.format.WKT",
+    "wkt_method": "La implementación usada no puede crear objetos IDEE.impl.format.WKT",
     "getfeaturesbylayer_method": "La implementación usada no posee el método getFeaturesByLayer",
     "geojsonlayer_method": "La implementación usada no puede crear capas GeoJSON",
     "no_param": "No se ha especificado ningun parámetro",
@@ -307,6 +307,7 @@
     "setminzoom_no_apply": "No es posible aplicar el mínimo zoom a la capa WMC.",
     "setmaxzoom_no_apply": "No es posible aplicar el máximo zoom a la capa WMC.",
     "setminscale_no_apply": "No es posible aplicar la mínima escala a la capa WMC.",
-    "setmaxscale_no_apply": "No es posible aplicar la máxima escala a la capa WMC."
+    "setmaxscale_no_apply": "No es posible aplicar la máxima escala a la capa WMC.",
+    "wkt_toCQL_method": "La implementación usada no puede crear el formateador WKT por lo que no incluirá filtros CQL."
   }
 }
