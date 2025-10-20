@@ -33,6 +33,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
     useProxy,
     statusProxy,
     positionPlugin,
+    pluginName,
   ) {
     if (IDEE.utils.isUndefined(IGNSearchLocatorImpl) || (IDEE.utils.isObject(IGNSearchLocatorImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(IGNSearchLocatorImpl)))) {
@@ -168,6 +169,13 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
     this.positionPlugin = positionPlugin;
 
     /**
+     * Name of the plugin
+     * @private
+     * @type {string}
+     */
+    this.pluginName = pluginName || 'locator';
+
+    /**
      * Map
      */
     this.map = map;
@@ -236,6 +244,9 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       this.resultsBox = this.html_.querySelector(ID_IGNSEARCH_RESULTS);
       this.searchInput = this.html_.querySelector(ID_IGNSEARCH_INPUT);
       this.addEvents();
+      if (this.reverse) {
+        IDEE.utils.loadSvgByUrl(this.pluginName, 'ignsearchicon', panel.querySelector(ID_LOCATE_BUTTON));
+      }
     }
   }
 

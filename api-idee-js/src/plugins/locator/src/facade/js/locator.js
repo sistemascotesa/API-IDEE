@@ -226,6 +226,7 @@ export default class Locator extends IDEE.Plugin {
       this.useProxy,
       this.statusProxy,
       this.position,
+      this.name,
     ));
 
     if (this.position === 'TC') {

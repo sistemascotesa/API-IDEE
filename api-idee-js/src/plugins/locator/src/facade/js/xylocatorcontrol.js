@@ -25,6 +25,7 @@ const ID_LATSS = '#LATSS';
 const ID_M_XYLOCATOR_UTM = '#m-xylocator-utm';
 const ID_M_XYLOCATOR_DMS = '#m-xylocator-dms';
 const ID_M_XYLOCATOR_LATLON = '#m-xylocator-latlon';
+const ID_M_XYLOCATOR_HELP_PROJECTIONS = '#m-xylocator-help-projections';
 
 export default class XYLocatorControl extends IDEE.Control {
   /**
@@ -35,7 +36,7 @@ export default class XYLocatorControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api
    */
-  constructor(map, zoom, pointStyle, options, positionPlugin) {
+  constructor(map, zoom, pointStyle, options, positionPlugin, pluginName) {
     if (IDEE.utils.isUndefined(XYLocatorImpl) || (IDEE.utils.isObject(XYLocatorImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(XYLocatorImpl)))) {
       IDEE.exception(getValue('exception.impl_xylocator'));
@@ -85,6 +86,14 @@ export default class XYLocatorControl extends IDEE.Control {
      * @type {String}
      */
     this.positionPlugin = positionPlugin;
+
+    /**
+     * Name of the plugin
+     *
+     * @private
+     * @type {string}
+     */
+    this.pluginName = pluginName || 'locator';
   }
 
   /**
@@ -126,6 +135,9 @@ export default class XYLocatorControl extends IDEE.Control {
       const contenedorLocator = document.querySelector(ID_CONTENEDOR_LOCATOR);
       if (contenedorLocator) {
         contenedorLocator.appendChild(panel);
+      }
+      if (!IDEE.utils.isUndefined(this.help) && IDEE.utils.isUrl(this.help)) {
+        IDEE.utils.loadSvgByUrl(this.pluginName, 'projectionInfo', this.html_.querySelector(ID_M_XYLOCATOR_HELP_PROJECTIONS));
       }
       this.activeDefaultLabel();
       this.html_.querySelector(ID_BUTTON_LIMPIAR).addEventListener('click', () => this.clearResults());

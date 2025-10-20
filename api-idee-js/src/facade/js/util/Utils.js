@@ -2047,6 +2047,27 @@ export const filterList = (inputId, listId) => {
 };
 
 /**
+ * Esta función carga un SVG desde la URL de un plugin
+ *
+ * @param {String} pluginName Nombre del plugin
+ * @param {String} iconName Nombre del icono
+ * @param {HTMLElement} domElement Elemento DOM donde se cargará el SVG
+ * @function
+ * @api
+ */
+export const loadSvgByUrl = (pluginName, iconName, domElement) => {
+  const existingSvgs = domElement.querySelectorAll('svg');
+  existingSvgs.forEach((svg) => svg.remove());
+  const url = `plugins/${pluginName}/images/${iconName}.svg`;
+  fetch(url)
+    .then((response) => response.text())
+    .then((svgContent) => {
+      // eslint-disable-next-line no-param-reassign
+      domElement.innerHTML += svgContent;
+    });
+};
+
+/**
  * Este comentario no se verá, es necesario incluir
  * una exportación por defecto para que el compilador
  * muestre las funciones.
