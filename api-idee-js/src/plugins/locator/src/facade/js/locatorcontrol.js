@@ -33,6 +33,7 @@ export default class LocatorControl extends IDEE.Control {
     useProxy,
     statusProxy,
     position,
+    pluginName,
   ) {
     if (IDEE.utils.isUndefined(LocatorImpl) || (IDEE.utils.isObject(LocatorImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(LocatorImpl)))) {
@@ -113,6 +114,8 @@ export default class LocatorControl extends IDEE.Control {
      */
     this.position = position || 'right';
 
+    this.pluginName = pluginName;
+
     /**
      * Control activated
      * @public
@@ -155,6 +158,7 @@ export default class LocatorControl extends IDEE.Control {
           this.pointStyle_,
           this.byParcelCadastre_,
           this.position,
+          this.pluginName,
         );
         html.querySelector(ID_LOCATOR_INFO_CATASTRO).addEventListener('click', () => {
           this.deactive(html, 'infocatastro');
@@ -180,6 +184,7 @@ export default class LocatorControl extends IDEE.Control {
           this.pointStyle_,
           this.byCoordinates_,
           this.position,
+          this.pluginName,
         );
         html.querySelector(ID_LOCATOR_XYLOCATOR).addEventListener('click', () => {
           this.deactive(html, 'xylocator');
@@ -207,6 +212,7 @@ export default class LocatorControl extends IDEE.Control {
           this.useProxy,
           this.statusProxy,
           this.position,
+          this.pluginName,
         );
         this.on(IDEE.evt.ADDED_TO_MAP, () => {
           this.ignsearchControl.initializateAddress(html);
@@ -233,8 +239,26 @@ export default class LocatorControl extends IDEE.Control {
         IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-locator-title');
       }
       this.accessibilityTab(html);
+      this.addSvgs();
       success(html);
     });
+  }
+
+  /**
+   * This function adds the svgs to the control
+   *
+   * @public
+   * @function
+   * @api
+   */
+  addSvgs() {
+    const ignSearchTab = this.html.querySelector(ID_LOCATOR_IGNSEARCH);
+    const xyLocatorTab = this.html.querySelector(ID_LOCATOR_XYLOCATOR);
+    const infoCatastroTab = this.html.querySelector(ID_LOCATOR_INFO_CATASTRO);
+
+    IDEE.utils.loadSvgByUrl('locator', 'ignsearchicon', ignSearchTab);
+    IDEE.utils.loadSvgByUrl('locator', 'xylocatoricon', xyLocatorTab);
+    IDEE.utils.loadSvgByUrl('locator', 'infocatastroicon', infoCatastroTab);
   }
 
   /**

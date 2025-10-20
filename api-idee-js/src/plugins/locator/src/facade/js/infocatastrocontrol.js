@@ -31,7 +31,7 @@ export default class InfoCatastroControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api
    */
-  constructor(map, zoom, pointStyle, options, positionPlugin) {
+  constructor(map, zoom, pointStyle, options, positionPlugin, pluginName) {
     if (IDEE.utils.isUndefined(InfoCatastroImpl) || (IDEE.utils.isObject(InfoCatastroImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(InfoCatastroImpl)))) {
       IDEE.exception(getValue('exception.impl_infocatastro'));
@@ -139,6 +139,13 @@ export default class InfoCatastroControl extends IDEE.Control {
     this.positionPlugin = positionPlugin;
 
     /**
+     * Name of the plugin
+     * @private
+     * @type {string}
+     */
+    this.pluginName = pluginName || 'locator';
+
+    /**
      * Radio inputs
      * @private
      * @type {NodeList}
@@ -186,6 +193,7 @@ export default class InfoCatastroControl extends IDEE.Control {
       }
 
       this.initParams();
+      IDEE.utils.loadSvgByUrl(this.pluginName, 'consultReference', this.html_.querySelector(ID_CONSULTAR_REF));
 
       this.radioInputs.forEach((radio) => {
         radio.addEventListener('change', (e) => {
