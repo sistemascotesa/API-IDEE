@@ -11,7 +11,7 @@ const map = IDEE.map({
 window.map = map;
 
 const mp = new Infocoordinates({
-  position: 'TR', // TR | TL | BL | BR
+  position: 'right', // TR | TL | BL | BR
   collapsed: true,
   collapsible: true,
   tooltip: 'Información de coordenadas',
