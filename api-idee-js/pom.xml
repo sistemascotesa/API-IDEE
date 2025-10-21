@@ -40,7 +40,7 @@
                   </goals>
                   <phase>generate-resources</phase>
                   <configuration>
-                     <nodeVersion>v18.20.4</nodeVersion>
+                     <nodeVersion>v20.19.0</nodeVersion>
                      <npmVersion>10.7.0</npmVersion>
                      <!--<nodeDownloadRoot>http://nodejs.org/dist/</nodeDownloadRoot>
                         <npmDownloadRoot>http://nodejs.org/dist/</npmDownloadRoot> -->

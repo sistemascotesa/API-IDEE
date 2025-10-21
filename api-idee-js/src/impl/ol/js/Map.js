@@ -6,8 +6,7 @@ import { get as getProj, transform } from 'ol/proj';
 import OLFormatWMTSCapabilities from 'ol/format/WMTSCapabilities';
 import OLProjection from 'ol/proj/Projection';
 import OLInteraction from 'ol/interaction/Interaction';
-import { MouseWheelZoom } from 'ol/interaction';
-import { DragPan } from 'ol/interaction';
+import { MouseWheelZoom, DragPan } from 'ol/interaction';
 import MObject from 'IDEE/Object';
 import FacadePanzoombar from 'IDEE/control/Panzoombar';
 import * as LayerType from 'IDEE/layer/Type';
@@ -283,7 +282,7 @@ class Map extends MObject {
      */
     this.mouseWheelZoom_ = interactions.find((interaction) => {
       return interaction instanceof MouseWheelZoom;
-    }
+    });
 
     /**
      * DragPan - Interacción.
@@ -3379,6 +3378,7 @@ class Map extends MObject {
   enableMouseWheel(active = true) {
     if (!isNullOrEmpty(this.mouseWheelZoom_)) {
       this.mouseWheelZoom_.setActive(active);
+    }
   }
 
   /**

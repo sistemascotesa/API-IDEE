@@ -38,7 +38,7 @@ export default class BackImgLayerControl extends IDEE.Control {
     order,
   }) {
     const impl = new IDEE.impl.Control();
-    super(impl, 'BackImgLayer');
+    super('BackImgLayer', impl);
     map.getBaseLayers().forEach((layer) => {
       layer.on(IDEE.evt.LOAD, map.removeLayers(layer));
     });

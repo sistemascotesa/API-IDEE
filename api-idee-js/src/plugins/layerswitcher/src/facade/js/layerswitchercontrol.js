@@ -73,7 +73,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     }
 
     const impl = new LayerswitcherImplControl();
-    super(impl, 'Layerswitcher');
+    super('Layerswitcher', impl);
 
     // Fachada del control
     impl.facadeControl = this;
