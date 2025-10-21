@@ -2,10 +2,13 @@
  * @module IDEE/Plugin
  */
 import Base from './Base';
-import { isUndefined, isNullOrEmpty } from './util/Utils';
+import Button from './ui/Button';
+import Panel from './ui/Panel';
+
+import { isArray, isNullOrEmpty } from './util/Utils';
+import Control from './control/Control';
+import Tool from './tool/Tool';
 import Exception from './exception/exception';
-import * as EventType from './event/eventtype';
-import { getValue } from './i18n/language';
 
 /**
  * @classdesc
@@ -14,6 +17,23 @@ import { getValue } from './i18n/language';
  * @api
  */
 class Plugin extends Base {
+  constructor(name, options) {
+    super(options);
+
+    this.name = name;
+    this.tooltip = options.tooltip || '';
+    this.position = options.position || 'right';
+    this.svgPath = options.svgPath || null;
+    this.minPanelWidth = 256;
+    this.maxPanelWidth = 360;
+
+    this.map = null;
+    this.button = null;
+    this.panel = null;
+    this.controls = [];
+    this.tools = [];
+  }
+
   /**
    * Este método añade el plugin al mapa.
    *
@@ -23,30 +43,25 @@ class Plugin extends Base {
    * @api
    */
   addTo(map) {
-    // checks if the parameter is null or empty
-    if (isNullOrEmpty(map)) {
-      Exception(getValue('exception').no_map);
-    }
+    this.map = map;
 
-    // checks if the implementation can add itself into the map
-    const impl = this.getImpl();
-    if (isUndefined(impl.addTo)) {
-      Exception(getValue('exception').addto_method);
-    }
+    this.button = new Button(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+      svgPath: this.svgPath,
+    });
+    map.addButtons(this.button);
 
-    const view = this.createView(map);
-    // checks if the view is a promise
-    if (view instanceof Promise) {
-      view.then((html) => {
-        impl.addTo(map, html);
-        // executes load callback
-        this.fire(EventType.ADDED_TO_MAP);
-      });
-    } else { // view is an HTML or text
-      impl.addTo(map, view);
-      // executes load callback
-      this.fire(EventType.ADDED_TO_MAP);
-    }
+    this.panel = new Panel(this.name, {
+      tooltip: this.tooltip,
+      position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
+    });
+    map.addPanels(this.panel);
+
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
   }
 
   /**
@@ -58,6 +73,93 @@ class Plugin extends Base {
    */
   createView(map) {}
 
+  addControl(controlsParamVar) {
+    let controlsParam = controlsParamVar;
+    if (!isNullOrEmpty(controlsParam)) {
+      if (!isArray(controlsParam)) {
+        controlsParam = [controlsParam];
+      }
+
+      controlsParam.forEach((controlParamVar) => {
+        const controlParam = controlParamVar;
+        let control;
+        let panel;
+
+        if (controlParam instanceof Control) {
+          control = controlParam;
+        } else {
+          Exception('El control "'.concat(controlParam).concat('" no es un control válido.'));
+        }
+
+        if (!isNullOrEmpty(panel) && !panel.hasControl(control)) {
+          panel.addControls(control);
+          this.addPanels(panel);
+        } else if (!isNullOrEmpty(control)) {
+          control.addTo(this);
+          this.controls.push(control);
+        }
+      });
+      // this.getImpl().addControls(controls);
+    }
+    return this;
+  }
+
+  addControlToPlugin(control) {
+    if (isNullOrEmpty(this.panel.panelContent)) {
+      this.panel.createContentPanel();
+    }
+
+    this.panel.panelContent.appendChild(control.element);
+  }
+
+  addTool(toolsParamVar) {
+    let toolsParam = toolsParamVar;
+    if (!isNullOrEmpty(toolsParam)) {
+      if (!isArray(toolsParam)) {
+        toolsParam = [toolsParam];
+      }
+
+      toolsParam.forEach((toolParamVar) => {
+        const toolParam = toolParamVar;
+        let tool;
+        let panel;
+
+        if (toolParam instanceof Tool) {
+          tool = toolParam;
+        } else {
+          Exception('El tool "'.concat(toolParam).concat('" no es un tool válido.'));
+        }
+
+        if (!isNullOrEmpty(panel) && !panel.hasTool(tool)) {
+          panel.addTools(tool);
+          this.addPanels(panel);
+        } else if (!isNullOrEmpty(tool)) {
+          tool.addTo(this);
+          this.tools.push(tool);
+        }
+      });
+      // this.getImpl().addControls(controls);
+    }
+    return this;
+  }
+
+  addToolToPlugin(tool) {
+    if (isNullOrEmpty(this.panel.panelContent)) {
+      this.panel.createContentPanel();
+      this.createToolsPanel();
+    }
+
+    const ulElement = this.panel.panelContent.querySelector(`#plugin-panel-tools-${this.name}`);
+    ulElement.appendChild(tool.element);
+  }
+
+  createToolsPanel() {
+    const toolsPanel = document.createElement('ul');
+    toolsPanel.id = `plugin-panel-tools-${this.name}`;
+    this.panel.panelContent.appendChild(toolsPanel);
+    return toolsPanel;
+  }
+
   /**
    * Devuelve los plugins.
    * @public
@@ -65,7 +167,13 @@ class Plugin extends Base {
    * @param {Array} controls Devuelve los plugins.
    * @api
    */
-  getControls() {}
+  getControls() {
+    return this.controls;
+  }
+
+  getTools() {
+    return this.tools;
+  }
 
   equals(obj) {
     return obj instanceof Plugin && obj.name === this.name;

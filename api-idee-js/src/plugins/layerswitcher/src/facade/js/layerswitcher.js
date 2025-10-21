@@ -173,42 +173,10 @@ const PRECHARGED = {
 };
 export default class Layerswitcher extends IDEE.Plugin {
   constructor(options = {}) {
-    super();
-
-    /**
-     * Plugin name
-     * @public
-     * @type {String}
-     */
-    this.name = 'layerswitcher';
-
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map = null;
-
-    /**
-     * Button of the plugin
-     * @private
-     * @type {IDEE.ui.Button}
-     */
-    this.button = null;
-
-    /**
-     * Panel of the plugin
-     * @private
-     * @type {IDEE.ui.Panel}
-     */
-    this.panel = null;
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls = [];
+    super('layerswitcher', {
+      position: options.position || 'right',
+      tooltip: options.tooltip || getValue('tooltip'),
+    });
 
     /**
      * Plugin parameters
@@ -217,14 +185,6 @@ export default class Layerswitcher extends IDEE.Plugin {
      */
     this.options = options;
 
-    /**
-     * Position of the plugin
-     *
-     * @private
-     * @type {Enum} left | right
-     */
-    this.position = options.position || 'right';
-
     this.minPanelWidth = 360;
 
     // Permite saber si el plugin está colapsado o no
@@ -232,9 +192,6 @@ export default class Layerswitcher extends IDEE.Plugin {
 
     // Permite que el plugin sea colapsado o no
     this.collapsible_ = !IDEE.utils.isUndefined(options.collapsible) ? options.collapsible : true;
-
-    // Tooltip
-    this.tooltip = options.tooltip || getValue('tooltip');
 
     // Determina si el plugin es draggable o no
     this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
@@ -307,6 +264,7 @@ export default class Layerswitcher extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
+      svgPath: `plugins/${this.name}/images/icon.svg`,
     });
     map.addButtons(this.button);
 

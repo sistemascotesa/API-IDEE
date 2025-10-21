@@ -54,3 +54,30 @@
 .m-plugin-button.active svg {
     transition: transform 0.3s ease;
 }
+
+.m-control-button {
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    color: #404040;
+    background-color: #e9ecef;
+    border: 2px solid #e9ecef;
+    margin-right: 8px;
+}
+
+.m-control-button:hover {
+    color: #1470db;
+    background-color: #e9ecef;
+}
+
+.m-control-button.active {
+    color: #1d5a9e;
+    border: 2px solid #1d5a9e;
+    transition: all 0.3s ease;
+}
+
+.m-control-button svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+}

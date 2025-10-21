@@ -237,14 +237,7 @@ class Panel extends MObject {
     this.element = compileTemplate(panelTemplate);
     this.element.id = `plugin-panel-${this.name}`;
 
-    const panelTitle = document.createElement('div');
-    panelTitle.id = `plugin-panel-title-${this.name}`;
-    panelTitle.classList.add('m-plugin-panel-title');
-    panelTitle.role = 'heading';
-    panelTitle.ariaLabel = this._tooltip;
-    panelTitle.tabIndex = 'null';
-    panelTitle.textContent = this._tooltip;
-    this.element.appendChild(panelTitle);
+    this.createTitlePanel();
 
     this._tabAccessibility();
 
@@ -252,18 +245,27 @@ class Panel extends MObject {
       this.element.setAttribute('title', this._tooltip);
     }
 
-    /* if (this._collapsed === true) {
-      this.collapse();
-    } else {
-      this.open();
-    } */
-
-    /* if (this._collapsible !== true) {
-      html.classList.add('no-collapsible');
-    } */
-
     this.addControls(this.controls);
     this.fire(EventType.ADDED_TO_MAP, this.element);
+  }
+
+  createTitlePanel() {
+    this.panelTitle = document.createElement('div');
+    this.panelTitle.id = `plugin-panel-title-${this.name}`;
+    this.panelTitle.classList.add('m-plugin-panel-title');
+    this.panelTitle.role = 'heading';
+    this.panelTitle.ariaLabel = this._tooltip;
+    this.panelTitle.tabIndex = 'null';
+    this.panelTitle.textContent = this._tooltip;
+    this.element.appendChild(this.panelTitle);
+  }
+
+  createContentPanel() {
+    this.panelContent = document.createElement('div');
+    this.panelContent.id = `plugin-panel-content-${this.name}`;
+    this.panelContent.classList.add('m-plugin-panel-content');
+    this.panelContent.tabIndex = 'null';
+    this.element.appendChild(this.panelContent);
   }
 
   /**
