@@ -64,6 +64,11 @@ class Button extends MObject {
     if (!isNullOrEmpty(options.tooltip)) {
       this.tooltip = options.tooltip;
     }
+
+    this.svgPath = null;
+    if (!isNullOrEmpty(options.svgPath)) {
+      this.svgPath = options.svgPath;
+    }
   }
 
   destroy() {
@@ -82,12 +87,13 @@ class Button extends MObject {
     this.element.ariaLabel = this.tooltip;
     this.element.tabIndex = '300';
 
-    const svgPath = `plugins/${this.name}/images/icon.svg`;
-    fetch(svgPath)
-      .then((response) => response.text())
-      .then((svgContent) => {
-        this.element.innerHTML = svgContent;
-      });
+    if (this.svgPath) {
+      fetch(this.svgPath)
+        .then((response) => response.text())
+        .then((svgContent) => {
+          this.element.innerHTML = svgContent;
+        });
+    }
 
     if (this.position === Position.LEFT) {
       map.leftButtons.appendChild(this.element);

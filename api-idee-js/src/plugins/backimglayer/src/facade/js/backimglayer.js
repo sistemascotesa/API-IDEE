@@ -23,42 +23,10 @@ export default class BackImgLayer extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super();
-
-    /**
-     * Plugin name
-     * @public
-     * @type {String}
-     */
-    this.name = 'backimglayer';
-
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map = null;
-
-    /**
-     * Button of the plugin
-     * @private
-     * @type {IDEE.ui.Button}
-     */
-    this.button = null;
-
-    /**
-     * Panel of the plugin
-     * @private
-     * @type {IDEE.ui.Panel}
-     */
-    this.panel = null;
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls = [];
+    super('backimglayer', {
+      position: options.position || 'right',
+      tooltip: options.tooltip || getValue('tooltip'),
+    });
 
     /**
      * Plugin parameters
@@ -66,14 +34,6 @@ export default class BackImgLayer extends IDEE.Plugin {
      * @type {object}
      */
     this.options = options;
-
-    /**
-     * Position of the plugin
-     *
-     * @private
-     * @type {Enum} left | right
-     */
-    this.position = options.position || 'right';
 
     /**
      * Position of current background layer on layers array.
@@ -166,12 +126,6 @@ export default class BackImgLayer extends IDEE.Plugin {
     this.metadata_ = api.metadata;
 
     /**
-     * @private
-     * @type {string}
-     */
-    this.tooltip = options.tooltip || getValue('tooltip');
-
-    /**
      *@private
      *@type { Number }
      */
@@ -209,6 +163,7 @@ export default class BackImgLayer extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
+      svgPath: `plugins/${this.name}/images/icon.svg`,
     });
     map.addButtons(this.button);
 

@@ -6,6 +6,7 @@ import Exception from '../exception/exception';
 import Base from '../Base';
 import * as EventType from '../event/eventtype';
 import { getValue } from '../i18n/language';
+import Plugin from '../Plugin';
 
 /**
  * @classdesc
@@ -26,60 +27,19 @@ class Control extends Base {
    * @param {Object} implParam Opciones para generar el control.
    * @param {String} name Nombre del control.
    */
-  constructor(implParam, name) {
-    const impl = implParam;
-    // calls the super constructor
-    super(impl);
+  constructor(name, options = {}) {
+    super(options);
 
-    // checks if the implementation can create WMC layers
-    if (isUndefined(impl.addTo)) {
-      Exception(getValue('exception').addto_method);
-    }
-
-    // checks if the implementation can create WMC layers
-    if (isUndefined(impl.getElement)) {
-      Exception(getValue('exception').getelement_method);
-    }
-
-    // checks if the implementation can create default controls
-    if (isUndefined(impl.isByDefault)) {
-      impl.isByDefault = true;
-    }
-
-    /**
-     * Nombre del control.
-     */
     this.name = name;
+    this.tooltip = options.tooltip || '';
+    this.svgPath = options.svgPath || null;
 
-    /**
-     * Declaración de variable.
-     */
-    this.map_ = null;
-
-    /**
-     * Declaración de variable.
-     */
-    this.element_ = null;
-
-    /**
-     * Declaración de variable.
-     */
-    this.activationBtn_ = null;
-
-    /**
-     * Define si el control esta activado, por defecto falso.
-     */
+    this.map = null;
+    this.panel = null;
+    this.controls = null;
+    this.element = null;
+    this.activationBtn = null;
     this.activated = false;
-
-    /**
-     * Declaración de variable.
-     */
-    this.panel_ = null;
-
-    /**
-     * Declaración de variable.
-     */
-    this.controls_ = null;
   }
 
   /**
@@ -114,19 +74,24 @@ class Control extends Base {
    * @api
    * @export
    */
-  addTo(map) {
-    this.map_ = map;
+  addTo(parent) {
+    this.parent = parent;
     const impl = this.getImpl();
-    const view = this.createView(map);
+    const view = this.createView(parent);
     if (view instanceof Promise) { // the view is a promise
       view.then((html) => {
         this.manageActivation(html);
-        impl.addTo(map, html);
+        impl.addTo(parent, html);
         this.fire(EventType.ADDED_TO_MAP);
       });
     } else { // view is an HTML or text or null
+      if (parent instanceof Plugin) {
+        parent.addControlToPlugin(this);
+      } else {
+        impl.addTo(parent, view);
+      }
+
       this.manageActivation(view);
-      impl.addTo(map, view);
       this.fire(EventType.ADDED_TO_MAP);
     }
   }
@@ -139,7 +104,25 @@ class Control extends Base {
    * @api
    * @export
    */
-  createView(map) {}
+  createView(map) {
+    const element = document.createElement('button');
+    element.classList.add('m-control-button');
+    element.id = `m-control-button-${this.name}`;
+    element.title = this.tooltip;
+    element.role = 'button';
+    element.ariaLabel = this.tooltip;
+
+    if (this.svgPath) {
+      fetch(this.svgPath)
+        .then((response) => response.text())
+        .then((svgContent) => {
+          element.innerHTML = svgContent;
+        });
+    }
+
+    this.element = element;
+    return element;
+  }
 
   /**
    * Este método maneja la activación del control.
@@ -151,17 +134,18 @@ class Control extends Base {
    * @export
    */
   manageActivation(html) {
-    this.element_ = html;
-    this.activationBtn_ = this.getActivationButton(this.element_);
-    if (!isNullOrEmpty(this.activationBtn_)) {
-      this.activationBtn_.addEventListener('click', (evt) => {
+    this.activationBtn = this.getActivationButton(this.element);
+    if (!isNullOrEmpty(this.activationBtn)) {
+      this.activationBtn.addEventListener('click', (evt) => {
         evt.preventDefault();
         if (!this.activated) {
           this.activate();
           this.activated = true;
+          this.element.classList.add('active');
         } else {
           this.deactivate();
           this.activated = false;
+          this.element.classList.remove('active');
         }
       }, false);
     }
@@ -176,7 +160,9 @@ class Control extends Base {
    * @api
    * @export
    */
-  getActivationButton(html) {}
+  getActivationButton(html) {
+    return html;
+  }
 
   /**
    * Método que añade el evento "click".
@@ -187,10 +173,15 @@ class Control extends Base {
    * @export
    */
   activate() {
-    if (!isNullOrEmpty(this.element_)) {
-      this.element_.classList.add('activated');
+    if (!isNullOrEmpty(this.parent)) {
+      this.parent.getControls().forEach((control) => {
+        control.deactivate();
+      });
     }
-    if (!isUndefined(this.getImpl().activate)) {
+    if (!isNullOrEmpty(this.element)) {
+      this.element.classList.add('active');
+    }
+    if (!isUndefined(this.getImpl()) && !isUndefined(this.getImpl().activate)) {
       this.getImpl().activate();
     }
     this.activated = true;
@@ -206,10 +197,10 @@ class Control extends Base {
    * @export
    */
   deactivate() {
-    if (!isNullOrEmpty(this.element_)) {
-      this.element_.classList.remove('activated');
+    if (!isNullOrEmpty(this.element)) {
+      this.element.classList.remove('active');
     }
-    if (!isUndefined(this.getImpl().deactivate)) {
+    if (!isUndefined(this.getImpl()) && !isUndefined(this.getImpl().deactivate)) {
       this.getImpl().deactivate();
     }
     this.activated = false;
@@ -239,7 +230,7 @@ class Control extends Base {
    * @export
    */
   setPanel(panel) {
-    this.panel_ = panel;
+    this.panel = panel;
   }
 
   /**
@@ -252,7 +243,7 @@ class Control extends Base {
    * @export
    */
   getPanel() {
-    return this.panel_;
+    return this.panel;
   }
 
   /**
