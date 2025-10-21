@@ -31,7 +31,7 @@
 }
 
 .div-m-infocoordinates-panel {
-    width: 230px;
+    width: 100%;
 }
 
 .contenedorCoordPunto {
@@ -60,7 +60,7 @@
     z-index: 999;
 }
 
-.m-infocoordinates-title {
+/* .m-infocoordinates-title {
     line-height: 40px;
     background-color: #71a7d3;
 }
@@ -70,7 +70,7 @@
     text-align: center;
     color: white;
     font-weight: bold;
-}
+} */
 
 .m-infocoordinates-tabs {
     overflow-y: auto;
@@ -123,10 +123,10 @@
     border: unset !important;
 }
 
-.m-panel .m-control.m-container.m-infocoordinates {
+/* .m-panel .m-control.m-container.m-infocoordinates {
     cursor: default;
     overflow: visible !important;
-}
+} */
 
 #m-infocoordinates-buttonRemovePoint {
     background-color: transparent;
@@ -286,7 +286,7 @@
     max-width: 120px;
 }
 
-.m-infocoordinates-comboDatum .m-infocoordinates-srs-selector {
+/* .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector {
     display: none;
     position: absolute;
     margin: 5px;
@@ -303,24 +303,24 @@
     font-size: 13px;
     text-align: left;
     border: 1px solid #ddd;
-}
+} */
 
-.m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li {
+/* .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li {
     border-bottom: 1px solid #ddd;
-}
+} */
 
-.m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li a {
+/* .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li a {
     display: block;
     margin-top: -1px;
     padding: 4px 12px;
     text-decoration: none;
     color: #6c6c6c;
-}
+} */
 
-.m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li:hover {
+/* .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li:hover {
     color: #000;
     border: 1px solid #000;
-}
+} */
 
 @-moz-document url-prefix() {
     .m-plugin-infocoordinates .m-infocoordinates-help-td {
@@ -340,4 +340,165 @@
     font-size: 22px;
     -webkit-text-stroke: 1px #71a7d3;
     text-stroke: 1px #71a7d3;
+}
+/*------A PARTIR DE AQUÍ SON MIS CAMBIOS------*/
+
+.m-control.m-container.m-infocoordinates {
+    cursor: default;
+    overflow: visible !important;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+}
+
+/* El contenedor principal solo se encarga de apilar las filas verticalmente */
+.infocoordinates-data-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 8px;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+/* Cada fila es un contenedor flex */
+.grid-row {
+    display: flex;
+    align-items: center; /* Centra todo verticalmente en la fila */
+}
+
+/* 1. LA CLAVE: Todas las etiquetas ocupan el mismo espacio */
+.grid-label {
+    flex-basis: 65px;  /* Dales a todas un ancho base de 90px (ajústalo si es necesario) */
+    flex-shrink: 0;
+    margin-right: 10px;
+    gap: 1px;
+}
+
+/* 3. El botón se empuja al extremo derecho */
+.icon-button {
+    margin-left: auto;
+}
+
+/* Estilos adicionales que ya teníamos */
+.grid-row.has-background {
+    background-color: #f0f2f5;
+}
+
+.gms-row {
+    margin-top: 7px;
+}
+
+.grid-label-gms-row {
+    margin-right: 37px;
+}
+
+.gms-row label {
+    margin-left: 14px;
+}
+.crs-row {
+    margin-top: 7px;
+    position: relative;
+}
+
+.crs-row .grid-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.help-icon {
+    display: flex; /* Para poder centrar el icono '?' que está dentro */
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    margin-left: 2px;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+
+.help-icon img { 
+    width:32px; 
+    height:32px; 
+    display:block; 
+}
+
+.icon-button img {
+    width:32px; 
+    height:32px; 
+    display:block;
+}
+
+.crs-select,
+.crs-select option {
+  font-family: inherit !important;
+  font-size: 0.9rem !important;
+  line-height: 1.4 !important;
+}
+
+.crs-select.open,
+.crs-select.open option {
+  font-family: inherit !important;
+  font-size: 0.9rem !important;
+  line-height: 1.4 !important;
+}
+
+.crs-select {
+    width: 120px;
+    background-color: #f0f2f5;
+    border: 1px solid #d1d5db;
+    border-radius: 2px;
+    padding: 2px;
+    font-size: 0.9rem;
+    /* background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236B7280'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3e%3c/svg%3e"); */
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+}
+
+.crs-select.open {
+    position: absolute;
+    z-index: 1000;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    overflow-y: auto;
+    width: 120px;
+    font-size: 0.9rem;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.crs-select.open option {
+  line-height: 1.8;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+.crs-select.open option:hover,
+.crs-select.open option:focus {
+  background: #e8f2ff;
+}
+
+.crs-select option[disabled] {
+  color: #9aa0a6;
+}
+
+.coordx-row {
+    margin-top: 4px;
+}
+
+.crs-input{
+  width:120px;
+  background:#fff;
+  border:1px solid #d1d5db;
+  border-radius:2px;
+  padding:2px 6px;
+  font: inherit;
+  box-sizing:border-box;
 }
