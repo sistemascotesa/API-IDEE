@@ -6,6 +6,22 @@ import template from 'templates/infocatastro';
 import InfoCatastroImpl from 'impl/infocatastrocontrol';
 import { getValue } from './i18n/language';
 
+const ID_CONTENEDOR_LOCATOR = '#div-contenedor-locator';
+const ID_INFOCATASTRO = '#m-locator-infocatastro';
+const ID_CATASTRO_PANEL = '#m-infocatastro-panel';
+const ID_CATASTRO_PANEL_PARCELA = '#m-infocatastro-parcela-panel';
+const ID_CATASTRO_PANEL_CATASTRO = '#m-infocatastro-catastro-panel';
+const ID_SEARCH_PARAMS = '#m-infocatastro-searchParams';
+const ID_PARCELA_LIMPIAR = '#m-infocatastro-parcela-limpiar';
+const ID_REF_CATASTRAL = '#m-infocatastro-refCatastral';
+const ID_CONSULTAR_REF = '#m-infocatastro-consulRef';
+const ID_CATASTRO_LIMPIAR = '#m-infocatastro-catastro-limpiar';
+const ID_SELECT_PROVINCIA = '#m-searchParamsProvincia-select';
+const ID_SELECT_MUNICIPIO = '#m-searchParamsMunicipio-select';
+const ID_INPUT_POLIGONO = '#m-searchParamsPoligono-input';
+const ID_INPUT_PARCELA = '#m-searchParamsParcela-input';
+const ID_INPUT_REFCATASTRAL = '#m-refCatastral-input';
+
 export default class InfoCatastroControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
@@ -15,7 +31,7 @@ export default class InfoCatastroControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api
    */
-  constructor(map, zoom, pointStyle, options, positionPlugin) {
+  constructor(map, zoom, pointStyle, options, positionPlugin, pluginName) {
     if (IDEE.utils.isUndefined(InfoCatastroImpl) || (IDEE.utils.isObject(InfoCatastroImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(InfoCatastroImpl)))) {
       IDEE.exception(getValue('exception.impl_infocatastro'));
@@ -123,11 +139,18 @@ export default class InfoCatastroControl extends IDEE.Control {
     this.positionPlugin = positionPlugin;
 
     /**
-     * Tabs
+     * Name of the plugin
+     * @private
+     * @type {string}
      */
-    this.tabs = null;
-    this.tabpanels = null;
-    this.activeTab = null;
+    this.pluginName = pluginName || 'locator';
+
+    /**
+     * Radio inputs
+     * @private
+     * @type {NodeList}
+     */
+    this.radioInputs = null;
   }
 
   /**
@@ -140,14 +163,10 @@ export default class InfoCatastroControl extends IDEE.Control {
    */
   active(html) {
     this.html_ = html;
-    const infocatastroactive = html.querySelector('#m-locator-infocatastro').classList.contains('activated');
+    const infocatastroactive = html.querySelector(ID_INFOCATASTRO).classList.contains('activated');
     this.deactive();
     if (!infocatastroactive) {
-      if (this.positionPlugin === 'TC') {
-        document.querySelector('.m-plugin-locator').classList.remove('m-plugin-locator-tc');
-        document.querySelector('.m-plugin-locator').classList.add('m-plugin-locator-tc-withpanel');
-      }
-      this.html_.querySelector('#m-locator-infocatastro').classList.add('activated');
+      this.html_.querySelector(ID_INFOCATASTRO).classList.add('activated');
       const panel = IDEE.template.compileSync(template, {
         vars: {
           translations: {
@@ -168,77 +187,71 @@ export default class InfoCatastroControl extends IDEE.Control {
           },
         },
       });
-      const contenedorLocator = document.querySelector('#div-contenedor-locator');
+      const contenedorLocator = document.querySelector(ID_CONTENEDOR_LOCATOR);
       if (contenedorLocator) {
         contenedorLocator.appendChild(panel);
       }
 
-      // Tabs
-      this.tabs = this.html_.querySelectorAll('[role=tab]');
-      this.activeTab = this.html_.querySelector('[role=tab][aria-selected=true]');
-      this.tabpanels = this.html_.querySelectorAll('[role=tabpanel]');
-
-      for (const tab of this.tabs) {
-        tab.addEventListener('click', (e) => {
-          e.preventDefault();
-          this.setActiveTab(tab.getAttribute('aria-controls'));
-        });
-        tab.addEventListener('keyup', (e) => {
-          if (e.keyCode === 13 || e.keyCode === 32) { // return or space
-            e.preventDefault();
-            this.setActiveTab(tab.getAttribute('aria-controls'));
-          }
-        });
-      }
       this.initParams();
+      IDEE.utils.loadSvgByUrl(this.pluginName, 'consultReference', this.html_.querySelector(ID_CONSULTAR_REF));
+
+      this.radioInputs.forEach((radio) => {
+        radio.addEventListener('change', (e) => {
+          this.setActivePanel(e.target.value);
+        });
+      });
+
+      const defaultRadio = this.html_.querySelector('input[name="infocatastro-mode"]:checked');
+      if (defaultRadio) {
+        this.setActivePanel(defaultRadio.value);
+      }
 
       // Buscar parcela
-      const buttonParcelSearch = this.html_.querySelector('button#m-infocatastro-searchParams');
+      const buttonParcelSearch = this.html_.querySelector(ID_SEARCH_PARAMS);
       buttonParcelSearch.addEventListener('click', (e) => this.onParamsSearch(e));
 
       // Limpiar (tab parcela)
-      const buttonParcelClean = this.html_.querySelector('button#m-infocatastro-parcela-limpiar');
+      const buttonParcelClean = this.html_.querySelector(ID_PARCELA_LIMPIAR);
       buttonParcelClean.addEventListener('click', () => this.clearResults(true, false));
 
       // Buscar catastro
-      const buttonCatastroSearch = this.html_.querySelector('button#m-infocatastro-refCatastral');
+      const buttonCatastroSearch = this.html_.querySelector(ID_REF_CATASTRAL);
       buttonCatastroSearch.addEventListener('click', this.onRCSearch.bind(this));
 
       // Consultar referencia
-      const buttonParamsConsultRef = this.html_.querySelector('button#m-infocatastro-consulRef');
+      const buttonParamsConsultRef = this.html_.querySelector(ID_CONSULTAR_REF);
       buttonParamsConsultRef.addEventListener('click', this.onRCConsult.bind(this));
 
       // Eliminar catastro
-      const buttonCatastro = this.html_.querySelector('button#m-infocatastro-catastro-limpiar');
+      const buttonCatastro = this.html_.querySelector(ID_CATASTRO_LIMPIAR);
       buttonCatastro.addEventListener('click', () => this.clearResults(false, true));
     }
   }
 
   /**
-   * This function change active tab
+   * This function changes active panel based on radio selection
    *
    * @function
    * @public
    * @api
-   * @param {string} id ID of tab click
+   * @param {string} value - Value of the selected radio input ('parcela' or 'catastro')
    */
-  setActiveTab(id) {
-    for (const tab of this.tabs) {
-      if (tab.getAttribute('aria-controls') === id) {
-        tab.setAttribute('aria-selected', 'true');
-        tab.focus();
-        this.activeTab = tab;
-      } else {
-        tab.setAttribute('aria-selected', 'false');
-      }
-    }
+  setActivePanel(value) {
+    const parcelaPanel = this.html_.querySelector(ID_CATASTRO_PANEL_PARCELA);
+    const catastroPanel = this.html_.querySelector(ID_CATASTRO_PANEL_CATASTRO);
 
-    for (const tabpanel of this.tabpanels) {
-      if (tabpanel.getAttribute('id') === id) {
-        tabpanel.setAttribute('aria-expanded', 'true');
-      } else {
-        tabpanel.setAttribute('aria-expanded', 'false');
-      }
+    if (value === 'parcela') {
+      parcelaPanel.style.display = 'flex';
+      catastroPanel.style.display = 'none';
+      this.clearResults(false, true);
+      this.html_.querySelector(ID_CONSULTAR_REF).classList.remove('activated');
+      document.body.style.cursor = '';
+      document.removeEventListener('keyup', this.desactivateRCConsult);
+      this.map.un(IDEE.evt.CLICK, this.buildUrl_, this);
+    } else if (value === 'catastro') {
+      parcelaPanel.style.display = 'none';
+      catastroPanel.style.display = 'flex';
+      this.clearResults(true, false);
     }
   }
 
@@ -251,11 +264,11 @@ export default class InfoCatastroControl extends IDEE.Control {
    * @api
    */
   deactive() {
-    this.html_.querySelector('#m-locator-infocatastro').classList.remove('activated');
-    const panel = this.html_.querySelector('#m-infocatastro-panel');
+    this.html_.querySelector(ID_INFOCATASTRO).classList.remove('activated');
+    const panel = this.html_.querySelector(ID_CATASTRO_PANEL);
     if (panel) {
       this.clearResults(true, true);
-      document.querySelector('#div-contenedor-locator').removeChild(panel);
+      document.querySelector(ID_CONTENEDOR_LOCATOR).removeChild(panel);
     }
   }
 
@@ -267,16 +280,17 @@ export default class InfoCatastroControl extends IDEE.Control {
    * @api
    */
   initParams() {
-    this.selectProvincias = this.html_.querySelector('#m-infocatastro-coordinatesSystemParcela>select#m-searchParamsProvincia-select');
+    this.radioInputs = this.html_.querySelectorAll('input[name="infocatastro-mode"]');
+    this.selectProvincias = this.html_.querySelector(ID_SELECT_PROVINCIA);
     this.selectProvincias.addEventListener('change', (evt) => this.onProvinciaSelect(evt, null));
     if (this.provincecode !== null) {
       this.onProvinciaSelect(null, this.provincecode, this.selectMunicipios);
     }
 
-    this.selectMunicipios = this.html_.querySelector('#m-infocatastro-coordinatesSystemParcela>select#m-searchParamsMunicipio-select');
-    this.inputPoligono = this.html_.querySelector('#m-infocatastro-estatePlot>#m-searchParamsPoligono-input');
-    this.inputParcela = this.html_.querySelector('#m-infocatastro-estatePlot>#m-searchParamsParcela-input');
-    this.inputRefCatastral = this.html_.querySelector('#m-infocatastro-coordinatesSystemRefCatastral>#m-refCatastral-input');
+    this.selectMunicipios = this.html_.querySelector(ID_SELECT_MUNICIPIO);
+    this.inputPoligono = this.html_.querySelector(ID_INPUT_POLIGONO);
+    this.inputParcela = this.html_.querySelector(ID_INPUT_PARCELA);
+    this.inputRefCatastral = this.html_.querySelector(ID_INPUT_REFCATASTRAL);
   }
 
   /**
@@ -314,8 +328,10 @@ export default class InfoCatastroControl extends IDEE.Control {
    * @api
    */
   destroy() {
-    if (this.html_ && this.html_.querySelector('button#m-infocatastro-consulRef')) {
-      this.html_.querySelector('button#m-infocatastro-consulRef').removeEventListener('click', this.onRCConsult);
+    if (this.html_ && this.html_.querySelector(ID_CONSULTAR_REF)) {
+      this.html_.querySelector(ID_CONSULTAR_REF).removeEventListener('click', this.onRCConsult);
+      this.html_.querySelector(ID_INFOCATASTRO).classList.remove('activated');
+      document.body.style.cursor = '';
     }
     const layer = this.map.getLayers().filter((l) => l.name === 'coordinatecatastro' || l.name === 'coordinateparcel');
     this.map.removeLayers(layer);
@@ -360,7 +376,7 @@ export default class InfoCatastroControl extends IDEE.Control {
    * @api
    */
   clearMunicipiosSelect() {
-    this.selectMunicipios = this.html_.querySelector('#m-infocatastro-coordinatesSystemParcela>select#m-searchParamsMunicipio-select');
+    this.selectMunicipios = this.html_.querySelector(ID_SELECT_MUNICIPIO);
     while (this.selectMunicipios.firstChild) {
       this.selectMunicipios.removeChild(this.selectMunicipios.firstChild);
     }
@@ -410,8 +426,8 @@ export default class InfoCatastroControl extends IDEE.Control {
   onParamsSearch(evt) {
     evt.preventDefault();
     this.clearResults(false, true);
-    this.inputPoligono = this.html_.querySelector('#m-infocatastro-estatePlot>#m-searchParamsPoligono-input');
-    this.inputParcela = this.html_.querySelector('#m-infocatastro-estatePlot>#m-searchParamsParcela-input');
+    this.inputPoligono = this.html_.querySelector(ID_INPUT_POLIGONO);
+    this.inputParcela = this.html_.querySelector(ID_INPUT_PARCELA);
 
     if ((evt.type !== 'keyup') || (evt.keyCode === 13)) {
       if (IDEE.utils.isNullOrEmpty(this.selectProvincias.value) || this.selectProvincias.value === '0') {
@@ -692,7 +708,7 @@ export default class InfoCatastroControl extends IDEE.Control {
   onRCSearch(evt) {
     evt.preventDefault();
     this.clearResults(true, false);
-    this.inputRefCatastral = this.html_.querySelector('#m-infocatastro-coordinatesSystemRefCatastral>#m-refCatastral-input');
+    this.inputRefCatastral = this.html_.querySelector(ID_INPUT_REFCATASTRAL);
     let refcatastral = this.inputRefCatastral.value.trim();
     if ((evt.type !== 'keyup') || (evt.keyCode === 13)) {
       if (IDEE.utils.isNullOrEmpty(refcatastral)) {
@@ -814,12 +830,38 @@ export default class InfoCatastroControl extends IDEE.Control {
    */
   onRCConsult(evt) {
     evt.preventDefault();
+    if (evt.currentTarget.classList.contains('activated')) {
+      evt.currentTarget.classList.remove('activated');
+      document.body.style.cursor = '';
+      document.removeEventListener('keyup', this.desactivateRCConsult);
+      this.map.un(IDEE.evt.CLICK, this.buildUrl_, this);
+    } else {
+      evt.currentTarget.classList.add('activated');
 
-    // Se cambia al cursor a una cruz.
-    document.body.style.cursor = 'crosshair';
-    this.clearResults(true, true);
+      // Se cambia al cursor a una cruz.
+      document.body.style.cursor = 'crosshair';
+      document.addEventListener('keyup', this.desactivateRCConsult.bind(this));
+      this.clearResults(true, true);
 
-    this.map.on(IDEE.evt.CLICK, this.buildUrl_, this);
+      this.map.on(IDEE.evt.CLICK, this.buildUrl_, this);
+    }
+  }
+
+  /**
+   * This function checks if the pressed key is ESC to deactivate the
+   * consultar referencia mode
+   *
+   * @public
+   * @function
+   * @param {*} evt - Event
+   * @api
+   */
+  desactivateRCConsult(evt) {
+    if (evt.key === 'Escape') {
+      this.html_.querySelector(ID_CONSULTAR_REF).classList.remove('activated');
+      document.body.style.cursor = '';
+      this.map.un(IDEE.evt.CLICK, this.buildUrl_, this);
+    }
   }
 
   /**
@@ -845,6 +887,7 @@ export default class InfoCatastroControl extends IDEE.Control {
 
       // Se desactiva el evento del click una vez haya encontrado una catastro
       this.map.un(IDEE.evt.CLICK, this.buildUrl_, this);
+      this.html_.querySelector(ID_CONSULTAR_REF).classList.remove('activated');
       document.body.style.cursor = '';
     }, options);
   }

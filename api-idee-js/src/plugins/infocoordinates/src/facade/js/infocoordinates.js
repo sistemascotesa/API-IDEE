@@ -59,7 +59,7 @@ export default class Infocoordinates extends IDEE.Plugin {
      */
     this.controls_ = [];
 
-    this.control_ = null;
+    this.button_ = null;
 
     /**
      * Position of the Plugin
@@ -67,8 +67,8 @@ export default class Infocoordinates extends IDEE.Plugin {
      * Posible values: TR | TL | BL | BR
      * @type {String}
      */
-    const positions = ['TR', 'TL', 'BL', 'BR'];
-    this.position_ = positions.includes(options.position) ? options.position : 'TR';
+    // const positions = ['TR', 'TL', 'BL', 'BR'];
+    this.position_ = 'right';
 
     /**
      * Option to allow the plugin to be collapsed or not
@@ -153,28 +153,37 @@ export default class Infocoordinates extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.control_ = new InfocoordinatesControl(
-      this.decimalGEOcoord_,
-      this.decimalUTMcoord_,
-      this.helpUrl_,
-      this.order,
-      this.outputDownloadFormat_,
-    );
-    this.controls_.push(this.control_);
     this.map_ = map;
-    // panel para agregar control - no obligatorio
+
+    this.button_ = new IDEE.ui.Button('Infocoordinates', {
+      position: this.position_,
+      tooltip: this.tooltip_,
+    });
+    map.addButtons(this.button_);
+
     this.panel_ = new IDEE.ui.Panel('Infocoordinates', {
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
-      position: IDEE.ui.position[this.position_],
+      position: this.position_,
       className: 'm-plugin-infocoordinates',
       collapsedButtonClass: 'icon-target',
       tooltip: this.tooltip_,
       order: this.order,
     });
-    this.panel_.addControls(this.controls_);
 
     map.addPanels(this.panel_);
+
+    this.controls_.push(new InfocoordinatesControl(
+      this.decimalGEOcoord_,
+      this.decimalUTMcoord_,
+      this.helpUrl_,
+      this.order,
+      this.outputDownloadFormat_,
+    ));
+    this.panel_.addControls(this.controls_);
+
+    this.button_.panel = this.panel_;
+    this.panel_.button = this.button_;
   }
 
   /**

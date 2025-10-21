@@ -6,6 +6,27 @@ import template from 'templates/xylocator';
 import XYLocatorImpl from 'impl/xylocatorcontrol';
 import { getValue } from './i18n/language';
 
+const ID_CONTENEDOR_LOCATOR = '#div-contenedor-locator';
+const ID_XYLOCATOR = '#m-locator-xylocator';
+const ID_PANEL_XYLOCATOR = '#m-xylocator-panel';
+const ID_BUTTON_LIMPIAR = '#m-xylocator-limpiar';
+const ID_BUTTON_LOCATE = '#m-xylocator-loc';
+const ID_SELECT_SRS = '#m-xylocator-srs';
+const ID_UTM_X = '#UTM-X';
+const ID_UTM_Y = '#UTM-Y';
+const ID_LON = '#LON';
+const ID_LAT = '#LAT';
+const ID_LONHH = '#LONHH';
+const ID_LONMM = '#LONMM';
+const ID_LONSS = '#LONSS';
+const ID_LATHH = '#LATHH';
+const ID_LATMM = '#LATMM';
+const ID_LATSS = '#LATSS';
+const ID_M_XYLOCATOR_UTM = '#m-xylocator-utm';
+const ID_M_XYLOCATOR_DMS = '#m-xylocator-dms';
+const ID_M_XYLOCATOR_LATLON = '#m-xylocator-latlon';
+const ID_M_XYLOCATOR_HELP_PROJECTIONS = '#m-xylocator-help-projections';
+
 export default class XYLocatorControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
@@ -15,7 +36,7 @@ export default class XYLocatorControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api
    */
-  constructor(map, zoom, pointStyle, options, positionPlugin) {
+  constructor(map, zoom, pointStyle, options, positionPlugin, pluginName) {
     if (IDEE.utils.isUndefined(XYLocatorImpl) || (IDEE.utils.isObject(XYLocatorImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(XYLocatorImpl)))) {
       IDEE.exception(getValue('exception.impl_xylocator'));
@@ -65,6 +86,14 @@ export default class XYLocatorControl extends IDEE.Control {
      * @type {String}
      */
     this.positionPlugin = positionPlugin;
+
+    /**
+     * Name of the plugin
+     *
+     * @private
+     * @type {string}
+     */
+    this.pluginName = pluginName || 'locator';
   }
 
   /**
@@ -77,14 +106,10 @@ export default class XYLocatorControl extends IDEE.Control {
    */
   active(html) {
     this.html_ = html;
-    const xylocatoractive = this.html_.querySelector('#m-locator-xylocator').classList.contains('activated');
+    const xylocatoractive = this.html_.querySelector(ID_XYLOCATOR).classList.contains('activated');
     this.deactive();
     if (!xylocatoractive) {
-      if (this.positionPlugin === 'TC') {
-        document.querySelector('.m-plugin-locator').classList.remove('m-plugin-locator-tc');
-        document.querySelector('.m-plugin-locator').classList.add('m-plugin-locator-tc-withpanel');
-      }
-      this.html_.querySelector('#m-locator-xylocator').classList.add('activated');
+      this.html_.querySelector(ID_XYLOCATOR).classList.add('activated');
       const panel = IDEE.template.compileSync(template, {
         vars: {
           hasHelp: !IDEE.utils.isUndefined(this.help) && IDEE.utils.isUrl(this.help),
@@ -107,13 +132,17 @@ export default class XYLocatorControl extends IDEE.Control {
           },
         },
       });
-      const contenedorLocator = document.querySelector('#div-contenedor-locator');
+      const contenedorLocator = document.querySelector(ID_CONTENEDOR_LOCATOR);
       if (contenedorLocator) {
         contenedorLocator.appendChild(panel);
       }
-      this.html_.querySelector('button#m-xylocator-limpiar').addEventListener('click', () => this.clearResults());
-      this.html_.querySelector('select#m-xylocator-srs').addEventListener('change', (evt) => this.manageInputs_(evt));
-      this.html_.querySelector('button#m-xylocator-loc').addEventListener('click', (evt) => this.calculate_());
+      if (!IDEE.utils.isUndefined(this.help) && IDEE.utils.isUrl(this.help)) {
+        IDEE.utils.loadSvgByUrl(this.pluginName, 'projectionInfo', this.html_.querySelector(ID_M_XYLOCATOR_HELP_PROJECTIONS));
+      }
+      this.activeDefaultLabel();
+      this.html_.querySelector(ID_BUTTON_LIMPIAR).addEventListener('click', () => this.clearResults());
+      this.html_.querySelector(ID_SELECT_SRS).addEventListener('change', (evt) => this.manageInputs_(evt));
+      this.html_.querySelector(ID_BUTTON_LOCATE).addEventListener('click', (evt) => this.calculate_());
     }
   }
 
@@ -125,11 +154,11 @@ export default class XYLocatorControl extends IDEE.Control {
    * @api
    */
   deactive() {
-    this.html_.querySelector('#m-locator-xylocator').classList.remove('activated');
-    const panel = this.html_.querySelector('#m-xylocator-panel');
+    this.html_.querySelector(ID_XYLOCATOR).classList.remove('activated');
+    const panel = this.html_.querySelector(ID_PANEL_XYLOCATOR);
     if (panel) {
       this.clearResults();
-      document.querySelector('#div-contenedor-locator').removeChild(panel);
+      document.querySelector(ID_CONTENEDOR_LOCATOR).removeChild(panel);
     }
   }
 
@@ -152,17 +181,60 @@ export default class XYLocatorControl extends IDEE.Control {
    * @function
    */
   clearResults() {
-    this.html_.querySelector('input#UTM-X').value = '';
-    this.html_.querySelector('input#UTM-Y').value = '';
-    this.html_.querySelector('input#LON').value = '';
-    this.html_.querySelector('input#LAT').value = '';
-    this.html_.querySelector('input#LONHH').value = 0;
-    this.html_.querySelector('input#LONMM').value = 0;
-    this.html_.querySelector('input#LONSS').value = 0;
-    this.html_.querySelector('input#LATHH').value = 0;
-    this.html_.querySelector('input#LATMM').value = 0;
-    this.html_.querySelector('input#LATSS').value = 0;
+    this.html_.querySelector(ID_UTM_X).value = '';
+    this.html_.querySelector(ID_UTM_Y).value = '';
+    this.html_.querySelector(ID_LON).value = '';
+    this.html_.querySelector(ID_LAT).value = '';
+    this.html_.querySelector(ID_LONHH).value = 0;
+    this.html_.querySelector(ID_LONMM).value = 0;
+    this.html_.querySelector(ID_LONSS).value = 0;
+    this.html_.querySelector(ID_LATHH).value = 0;
+    this.html_.querySelector(ID_LATMM).value = 0;
+    this.html_.querySelector(ID_LATSS).value = 0;
     this.map.removeLayers(this.coordinatesLayer);
+  }
+
+  /**
+   * This function sets the active section for the XYLocator control
+   * @param {string} section - The section to activate
+   */
+  setActiveSection(section) {
+    const sections = [
+      ID_M_XYLOCATOR_UTM,
+      ID_M_XYLOCATOR_DMS,
+      ID_M_XYLOCATOR_LATLON,
+    ];
+    sections.forEach((sel) => {
+      const el = this.html_.querySelector(sel);
+      if (el) {
+        el.classList.remove('m-xylocator-active');
+        el.classList.add('m-xylocator-inactive');
+      }
+    });
+    const activeEl = this.html_.querySelector(section);
+    if (activeEl) {
+      activeEl.classList.remove('m-xylocator-inactive');
+      activeEl.classList.add('m-xylocator-active');
+    }
+  }
+
+  /**
+   * This function activates default label depending on SRS
+   *
+   * @private
+   * @function
+   */
+  activeDefaultLabel() {
+    const selectTarget = this.html_.querySelector(ID_SELECT_SRS);
+    const selectedOption = selectTarget.options[selectTarget.selectedIndex];
+    const units = selectedOption.getAttribute('data-units');
+    if (units === 'd') {
+      this.setActiveSection(ID_M_XYLOCATOR_LATLON);
+    } else if (units === 'dms') {
+      this.setActiveSection(ID_M_XYLOCATOR_DMS);
+    } else {
+      this.setActiveSection(ID_M_XYLOCATOR_UTM);
+    }
   }
 
   /**
@@ -175,16 +247,13 @@ export default class XYLocatorControl extends IDEE.Control {
   manageInputs_(evt) {
     const selectTarget = evt.target;
     const selectedOption = selectTarget.options[selectTarget.selectedIndex];
-    this.html_.querySelector('div#m-xylocator-utm').style.display = 'none';
-    this.html_.querySelector('div#m-xylocator-dms').style.display = 'none';
-    this.html_.querySelector('div#m-xylocator-latlon').style.display = 'none';
-
-    if (selectedOption.getAttribute('data-units') === 'd') {
-      this.html_.querySelector('div#m-xylocator-latlon').style.display = 'block';
-    } else if (selectedOption.getAttribute('data-units') === 'dms') {
-      this.html_.querySelector('div#m-xylocator-dms').style.display = 'block';
+    const units = selectedOption.getAttribute('data-units');
+    if (units === 'd') {
+      this.setActiveSection(ID_M_XYLOCATOR_LATLON);
+    } else if (units === 'dms') {
+      this.setActiveSection(ID_M_XYLOCATOR_DMS);
     } else {
-      this.html_.querySelector('div#m-xylocator-utm').style.display = 'block';
+      this.setActiveSection(ID_M_XYLOCATOR_UTM);
     }
   }
 
@@ -197,7 +266,7 @@ export default class XYLocatorControl extends IDEE.Control {
    */
   calculate_() {
     try {
-      const selectTarget = this.html_.querySelector('select#m-xylocator-srs');
+      const selectTarget = this.html_.querySelector(ID_SELECT_SRS);
       const selectedOption = selectTarget.options[selectTarget.selectedIndex];
       const origin = selectedOption.value;
       const unit = selectedOption.getAttribute('data-units');
@@ -205,19 +274,19 @@ export default class XYLocatorControl extends IDEE.Control {
       let y = -1;
       let selectors;
       if (unit !== 'dms') {
-        selectors = unit === 'd' ? ['input#LON', 'input#LAT'] : ['input#UTM-X', 'input#UTM-Y'];
+        selectors = unit === 'd' ? [ID_LON, ID_LAT] : [ID_UTM_X, ID_UTM_Y];
         const xString = this.html_.querySelector(selectors[0]).value.replace(',', '.');
         const yString = this.html_.querySelector(selectors[1]).value.replace(',', '.');
         x = parseFloat(xString);
         y = parseFloat(yString);
       } else {
-        const hhLon = this.html_.querySelector('input#LONHH').value;
-        const mmLon = this.html_.querySelector('input#LONMM').value;
-        const ssLon = this.html_.querySelector('input#LONSS').value;
+        const hhLon = this.html_.querySelector(ID_LONHH).value;
+        const mmLon = this.html_.querySelector(ID_LONMM).value;
+        const ssLon = this.html_.querySelector(ID_LONSS).value;
         const dirLon = this.html_.querySelector('input[name="LONDIR"]:checked').value;
-        const hhLat = this.html_.querySelector('input#LATHH').value;
-        const mmLat = this.html_.querySelector('input#LATMM').value;
-        const ssLat = this.html_.querySelector('input#LATSS').value;
+        const hhLat = this.html_.querySelector(ID_LATHH).value;
+        const mmLat = this.html_.querySelector(ID_LATMM).value;
+        const ssLat = this.html_.querySelector(ID_LATSS).value;
         const dirLat = this.html_.querySelector('input[name="LATDIR"]:checked').value;
 
         if (this.checkDegreeValue_(mmLon) && this.checkDegreeValue_(ssLon)

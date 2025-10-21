@@ -9,6 +9,11 @@ import { getValue } from './i18n/language';
 /* global FileReader */
 /* global MouseEvent */
 const NO_DATA_VALUE = -9999;
+const helpIconUrlInfo = new URL('../assets/icons/info.svg', import.meta.url).href;
+const helpIconUrlPapelera = new URL('../assets/icons/papelera.svg', import.meta.url).href;
+const helpIconUrlCopiar = new URL('../assets/icons/copiar.svg', import.meta.url).href;
+const helpIconUrlImport = new URL('../assets/icons/import.svg', import.meta.url).href;
+const helpIconUrlAllPoints = new URL('../assets/icons/allPoints.svg', import.meta.url).href;
 
 export default class InfocoordinatesControl extends IDEE.Control {
   /**
@@ -83,6 +88,11 @@ export default class InfocoordinatesControl extends IDEE.Control {
           hasHelp: this.helpUrl !== undefined && IDEE.utils.isUrl(this.helpUrl),
           helpUrl: this.helpUrl,
           projections: this.projections,
+          helpIconUrlInfo,
+          helpIconUrlPapelera,
+          helpIconUrlCopiar,
+          helpIconUrlImport,
+          helpIconUrlAllPoints,
           translations: {
             title: getValue('title'),
             point: getValue('point'),
@@ -107,7 +117,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
         },
       };
       const html = IDEE.template.compileSync(template, options);
-      this.initCustomDropdown(html);
+      // this.initCustomDropdown(html);
       // Añadir código dependiente del DOM
       this.accessibilityTab(html);
 
@@ -135,55 +145,55 @@ export default class InfocoordinatesControl extends IDEE.Control {
    * @function
    * @api stable
    */
-  initCustomDropdown(html) {
-    const input = html.querySelector('#m-infocoordinates-epsg-selected');
-    const selector = html.querySelector('#m-infocoordinates-srs-selector');
-    let isEditable = false;
+  // initCustomDropdown(html) {
+  //   const input = html.querySelector('#m-infocoordinates-epsg-selected');
+  //   const selector = html.querySelector('#m-infocoordinates-srs-selector');
+  //   let isEditable = false;
 
-    input.setAttribute('readonly', 'readonly');
-    input.value = this.selectedProjection;
+  //   input.setAttribute('readonly', 'readonly');
+  //   input.value = this.selectedProjection;
 
-    input.addEventListener('focus', () => {
-      if (!isEditable) {
-        selector.style.display = 'block';
-        const list = selector.querySelectorAll('li a');
-        list.forEach((li) => {
-          li.addEventListener('mousedown', (event) => {
-            event.preventDefault();
-            const value = event.target.getAttribute('value');
-            if (value === 'default') {
-              isEditable = true;
-              input.removeAttribute('readonly');
-              input.value = '';
-              input.placeholder = getValue('placeholder_custom_epsg');
-              selector.style.display = 'none';
-              input.focus();
-            } else {
-              input.value = value;
-              this.changeSelectSRSorChangeFormat();
-            }
-          });
-        });
-      }
-    });
+  //   input.addEventListener('focus', () => {
+  //     if (!isEditable) {
+  //       selector.style.display = 'block';
+  //       const list = selector.querySelectorAll('li a');
+  //       list.forEach((li) => {
+  //         li.addEventListener('mousedown', (event) => {
+  //           event.preventDefault();
+  //           const value = event.target.getAttribute('value');
+  //           if (value === 'default') {
+  //             isEditable = true;
+  //             input.removeAttribute('readonly');
+  //             input.value = '';
+  //             input.placeholder = getValue('placeholder_custom_epsg');
+  //             selector.style.display = 'none';
+  //             input.focus();
+  //           } else {
+  //             input.value = value;
+  //             this.changeSelectSRSorChangeFormat();
+  //           }
+  //         });
+  //       });
+  //     }
+  //   });
 
-    input.addEventListener('blur', () => {
-      selector.style.display = 'none';
-      isEditable = false;
-      if (!input.hasAttribute('readonly')) {
-        input.setAttribute('readonly', 'readonly');
-        input.value = this.selectedProjection;
-      }
-    });
+  //   input.addEventListener('blur', () => {
+  //     selector.style.display = 'none';
+  //     isEditable = false;
+  //     if (!input.hasAttribute('readonly')) {
+  //       input.setAttribute('readonly', 'readonly');
+  //       input.value = this.selectedProjection;
+  //     }
+  //   });
 
-    input.addEventListener('keyup', (event) => {
-      if (isEditable && event.key === 'Enter') {
-        isEditable = false;
-        input.setAttribute('readonly', 'readonly');
-        this.changeSelectSRSorChangeFormat();
-      }
-    });
-  }
+  //   input.addEventListener('keyup', (event) => {
+  //     if (isEditable && event.key === 'Enter') {
+  //       isEditable = false;
+  //       input.setAttribute('readonly', 'readonly');
+  //       this.changeSelectSRSorChangeFormat();
+  //     }
+  //   });
+  // }
 
   /**
    * This function is called on the control activation
@@ -244,15 +254,14 @@ export default class InfocoordinatesControl extends IDEE.Control {
 
   addPoint(evt) {
     const numPoint = this.numTabs + 1;
-    document.getElementById('m-infocoordinates-comboDatum').removeAttribute('disabled');
+    document.getElementById('m-infocoordinates-srs-selector').removeAttribute('disabled');
     document.getElementById('m-infocoordinates-buttonConversorFormat').removeAttribute('disabled');
-    document.getElementById('m-infocoordinates-buttonRemovePoint').classList.remove('noDisplay');
-    document.getElementById('m-infocoordinates-copylatlon').classList.remove('noDisplay');
-    document.getElementById('m-infocoordinates-copyxy').classList.remove('noDisplay');
-    document.getElementsByClassName('m-infocoordinates-div-buttonRemoveAllPoints')[0].classList.remove('noDisplay');
-    document.getElementsByClassName('m-infocoordinates-div-buttonImportAllPoints')[0].classList.remove('noDisplay');
-    document.getElementsByClassName('m-infocoordinates-div-buttonCopyAllPoints')[0].classList.remove('noDisplay');
-    document.getElementsByClassName('m-infocoordinates-div-buttonDisplayAllPoints')[0].classList.remove('noDisplay');
+
+    // Mostramos la barra de herramientas inferior
+    const toolbar = document.querySelector('.infocoordinates-toolbar');
+    if (toolbar) {
+      toolbar.style.display = 'flex'; // O como prefieras mostrarla
+    }
 
     // Eliminamos las etiquetas de los puntos
     if (document.getElementsByClassName('icon-displayON').length === 0 && this.map_.getMapImpl().getOverlays().getLength() > 0) {
@@ -429,17 +438,19 @@ export default class InfocoordinatesControl extends IDEE.Control {
       document.getElementsByClassName('contenedorPuntoSelect')[0].classList.replace('contenedorPuntoSelect', 'contenedorPunto');
     }
 
-    const textHTML = `<div class="contenedorPuntoSelect">
-                <table>
-                    <tbody>
-                      <tr>
-                        <td style="font-weight: bold; font-family: arial;">${numPoint}</td></b>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>
-          </div>
-      </div>`;
+    const textHTML = `<div class="point-overlay">${numPoint}</div>`;
+
+    // const textHTML = `<div class="contenedorPuntoSelect">
+    //             <table>
+    //                 <tbody>
+    //                   <tr>
+    //                     <td style="font-weight: bold; font-family: arial;">${numPoint}</td></b>
+    //                   </tr>
+    //                 </tbody>
+    //             </table>
+    //         </div>
+    //       </div>
+    //   </div>`;
 
     const helpTooltipElement = IDEE.template.compileSync(textHTML, {
       jsonp: true,
@@ -485,11 +496,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const datumBox = document.getElementById('m-infocoordinates-datum');
     const coordX = document.getElementById('m-infocoordinates-coordX');
     const coordY = document.getElementById('m-infocoordinates-coordY');
-    const inputSRS = document.querySelector('.m-infocoordinates-input-select');
-    const selector = document.querySelector('#m-infocoordinates-srs-selector');
-
-    // Cojo el srs seleccionado en el select
-    const selectSRS = inputSRS.value;
+    const srsSelector = document.querySelector('#m-infocoordinates-srs-selector');
+    const selectSRS = srsSelector.value;
 
     // Cojo el formato de las coordenadas geográficas
     const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
@@ -522,24 +530,25 @@ export default class InfocoordinatesControl extends IDEE.Control {
           this.decimalGEOcoord,
           this.decimalUTMcoord,
         );
-        inputSRS.value = this.selectedProjection;
+        srsSelector.value = this.selectedProjection;
         IDEE.dialog.error(`${getValue('exception.srs')} ${this.selectedProjection}`);
       }
     }
 
     this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
-    selector.innerHTML = `
-      <li><a class="m-infocoordinates-option-disabled" href="#" value="default" tabindex="-1" disabled>
-          ${getValue('choose_create_epsg')}
-      </a></li>
-      ${this.projections.map((proj) => `
-          <li>
-              <a href="#" value="${proj.codes[0]}">
-                  ${proj.codes[0]}
-              </a>
-          </li>
-      `).join('')}
-    `;
+    // selector.innerHTML = `
+    //   <li>
+    // <a class="m-infocoordinates-option-disabled" href="#" value="default" tabindex="-1" disabled>
+    //       ${getValue('choose_create_epsg')}
+    //   </a></li>
+    //   ${this.projections.map((proj) => `
+    //       <li>
+    //           <a href="#" value="${proj.codes[0]}">
+    //               ${proj.codes[0]}
+    //           </a>
+    //       </li>
+    //   `).join('')}
+    // `;
 
     // pinto
     pointBox.innerHTML = pointDataOutput.NumPoint;
