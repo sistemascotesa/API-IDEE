@@ -6,6 +6,8 @@ import { get as getProj, transform } from 'ol/proj';
 import OLFormatWMTSCapabilities from 'ol/format/WMTSCapabilities';
 import OLProjection from 'ol/proj/Projection';
 import OLInteraction from 'ol/interaction/Interaction';
+import { MouseWheelZoom } from 'ol/interaction';
+import { DragPan } from 'ol/interaction';
 import MObject from 'IDEE/Object';
 import FacadePanzoombar from 'IDEE/control/Panzoombar';
 import * as LayerType from 'IDEE/layer/Type';
@@ -270,6 +272,28 @@ class Map extends MObject {
         return true;
       },
     }));
+
+    const interactions = this.map_.getInteractions().getArray();
+
+    /**
+     * MouseWheelZoom - Interacción
+     * @private
+     * @type {ol.Interaction}
+     * @returns {ol.Interaction.MouseWheelZoom} MouseWheelZoom.
+     */
+    this.mouseWheelZoom_ = interactions.find((interaction) => {
+      return interaction instanceof MouseWheelZoom;
+    }
+
+    /**
+     * DragPan - Interacción.
+     * @private
+     * @type {ol.Interaction}
+     * @returns {ol.Interaction.DragPan} Interacción DragPan.
+     */
+    this.dragPan_ = interactions.find((interaction) => {
+      return interaction instanceof DragPan;
+    });
   }
 
   /**
@@ -939,6 +963,10 @@ class Map extends MObject {
               // extract
               if (!isNullOrEmpty(filterLayer.extract)) {
                 layerMatched = (layerMatched && (filterLayer.extract === kmlLayer.extract));
+              }
+              // template
+              if (!isNullOrEmpty(filterLayer.template)) {
+                layerMatched = (layerMatched && (filterLayer.template === kmlLayer.template));
               }
             }
           } else {
@@ -3337,6 +3365,35 @@ class Map extends MObject {
    */
   setFacadeMap(facadeMap) {
     this.facadeMap_ = facadeMap;
+  }
+
+  /**
+   * Este método controla si la interacción de zoom con la rueda del ratón está activa o no.
+   * El valor por defecto es true
+   *
+   * @function
+   * @public
+   * @api
+   * @param {Boolean} active determina si se activa o desactiva el zoom con la rueda del ratón.
+   */
+  enableMouseWheel(active = true) {
+    if (!isNullOrEmpty(this.mouseWheelZoom_)) {
+      this.mouseWheelZoom_.setActive(active);
+  }
+
+  /**
+   * Este método permite activar o desactivar la interacción de panneo.
+   * El valor por defecto es true.
+   *
+   * @function
+   * @param {Boolean} active determina si se activa o desactiva el panneo.
+   * @public
+   * @api
+   */
+  enablePan(active = true) {
+    if (!isNullOrEmpty(this.dragPan_)) {
+      this.dragPan_.setActive(active);
+    }
   }
 
   /**
