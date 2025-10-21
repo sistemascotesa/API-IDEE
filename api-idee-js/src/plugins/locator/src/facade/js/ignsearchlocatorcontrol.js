@@ -6,6 +6,14 @@ import results from 'templates/ignsearchlocator-results';
 import IGNSearchLocatorImpl from 'impl/ignsearchlocatorcontrol';
 import { getValue } from './i18n/language';
 
+const ID_CONTENEDOR_LOCATOR = '#div-contenedor-locator';
+const ID_IGN_SEARCH = '#m-locator-ignsearch';
+const ID_IGNSEARCH_PANEL = '#m-ignsearch-panel';
+const ID_IGNSEARCH_RESULTS = '#m-ignsearchlocator-results';
+const ID_IGNSEARCH_INPUT = '#m-ignsearchlocator-search-input';
+const ID_LOCATE_BUTTON = '#m-ignsearchlocator-locate-button';
+const ID_RESULTS_LIST = '#m-ignsearchlocator-results-list';
+
 let typingTimer;
 
 export default class IGNSearchLocatorControl extends IDEE.Control {
@@ -25,6 +33,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
     useProxy,
     statusProxy,
     positionPlugin,
+    pluginName,
   ) {
     if (IDEE.utils.isUndefined(IGNSearchLocatorImpl) || (IDEE.utils.isObject(IGNSearchLocatorImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(IGNSearchLocatorImpl)))) {
@@ -160,6 +169,13 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
     this.positionPlugin = positionPlugin;
 
     /**
+     * Name of the plugin
+     * @private
+     * @type {string}
+     */
+    this.pluginName = pluginName || 'locator';
+
+    /**
      * Map
      */
     this.map = map;
@@ -206,14 +222,10 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
    */
   active(html) {
     this.html_ = html;
-    const ignsearchactive = this.html_.querySelector('#m-locator-ignsearch').classList.contains('activated');
+    const ignsearchactive = this.html_.querySelector(ID_IGN_SEARCH).classList.contains('activated');
     this.deactive();
     if (!ignsearchactive) {
-      if (this.positionPlugin === 'TC') {
-        document.querySelector('.m-plugin-locator').classList.remove('m-plugin-locator-tc');
-        document.querySelector('.m-plugin-locator').classList.add('m-plugin-locator-tc-withpanel');
-      }
-      this.html_.querySelector('#m-locator-ignsearch').classList.add('activated');
+      this.html_.querySelector(ID_IGN_SEARCH).classList.add('activated');
       const panel = IDEE.template.compileSync(template, {
         vars: {
           reverse: this.reverse,
@@ -225,13 +237,16 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
           },
         },
       });
-      const contenedorLocator = document.querySelector('#div-contenedor-locator');
+      const contenedorLocator = document.querySelector(ID_CONTENEDOR_LOCATOR);
       if (contenedorLocator) {
         contenedorLocator.appendChild(panel);
       }
-      this.resultsBox = this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-results');
-      this.searchInput = this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-search-input');
+      this.resultsBox = this.html_.querySelector(ID_IGNSEARCH_RESULTS);
+      this.searchInput = this.html_.querySelector(ID_IGNSEARCH_INPUT);
       this.addEvents();
+      if (this.reverse) {
+        IDEE.utils.loadSvgByUrl(this.pluginName, 'ignsearchicon', panel.querySelector(ID_LOCATE_BUTTON));
+      }
     }
   }
 
@@ -243,11 +258,11 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
    * @api
    */
   deactive() {
-    this.html_.querySelector('#m-locator-ignsearch').classList.remove('activated');
-    const panel = this.html_.querySelector('#m-ignsearch-panel');
+    this.html_.querySelector(ID_IGN_SEARCH).classList.remove('activated');
+    const panel = this.html_.querySelector(ID_IGNSEARCH_PANEL);
     if (panel) {
       this.clearResults();
-      document.querySelector('#div-contenedor-locator').removeChild(panel);
+      document.querySelector(ID_CONTENEDOR_LOCATOR).removeChild(panel);
     }
   }
 
@@ -259,41 +274,22 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
    * @api
    */
   addEvents() {
-    const ingsearchPanel = this.html_.querySelector('#m-ignsearch-panel');
+    const ingsearchPanel = this.html_.querySelector(ID_IGNSEARCH_PANEL);
     if (ingsearchPanel) {
-      const searchInput = ingsearchPanel.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-search-input');
+      const searchInput = ingsearchPanel.querySelector(ID_IGNSEARCH_INPUT);
       if (searchInput) {
         searchInput.addEventListener('keyup', (e) => this.createTimeout(e));
         searchInput.addEventListener('click', () => this.openRecentsResults());
         if (this.reverse) {
-          searchInput.style.width = '160px';
-          this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-locate-button').addEventListener('click', this.activateDeactivateReverse.bind(this));
+          this.html_.querySelector(ID_LOCATE_BUTTON).addEventListener('click', () => {
+            const inputEvent = {
+              target: searchInput,
+            };
+            this.searchInputValue(inputEvent);
+          });
           this.clickReverseEvent = this.map.on(IDEE.evt.CLICK, (e) => this.showReversePopUp(e));
         }
-        this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-clean-button').addEventListener('click', () => this.clearResults());
       }
-    }
-  }
-
-  /**
-   * This function toggles reverse geocoder button activation.
-   *
-   * @public
-   * @function
-   * @api
-   */
-  activateDeactivateReverse() {
-    if (!this.reverseActivated) {
-      this.invokeEscKey();
-      this.reverseActivated = true;
-      this.html_.querySelector('#m-ignsearchlocator-locate-button').style.color = '#71a7d3';
-      document.addEventListener('keyup', this.checkEscKey.bind(this));
-      document.getElementsByTagName('body')[0].style.cursor = `url(${IDEE.config.STATIC_RESOURCES_URL}/Simbologia/svg/marcadores/pushpin.svg) 0 20, auto`;
-    } else {
-      this.reverseActivated = false;
-      this.html_.querySelector('#m-ignsearchlocator-locate-button').style.color = '#7A7A73';
-      document.removeEventListener('keyup', this.checkEscKey);
-      document.getElementsByTagName('body')[0].style.cursor = 'auto';
     }
   }
 
@@ -333,7 +329,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
   checkEscKey(evt) {
     if (evt.key === 'Escape') {
       this.reverseActivated = false;
-      this.html_.querySelector('#m-ignsearchlocator-locate-button').style.color = '#7A7A73';
+      this.html_.querySelector(ID_LOCATE_BUTTON).classList.remove('active');
       document.removeEventListener('keyup', this.checkEscKey);
       document.getElementsByTagName('body')[0].style.cursor = 'auto';
     }
@@ -422,8 +418,8 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
    * @api
    */
   openRecentsResults() {
-    if (!this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocator-search-input').value
-      && !this.html_.querySelector('#m-ignsearchlocator-results-list')) {
+    if (!this.html_.querySelector(ID_IGNSEARCH_INPUT).value
+      && !this.html_.querySelector(ID_RESULTS_LIST)) {
       const recents = window.localStorage.getItem('recents');
       if (recents && recents.length > 0) {
         const compiledResult = IDEE.template.compileSync(results, {
@@ -560,7 +556,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
   goToLocation(listElement, isRecentElement = false) {
     this.currentElement = listElement;
     const text = listElement.querySelector('#info').innerHTML;
-    this.html_.querySelector('#m-ignsearchlocator-search-input').value = text;
+    this.html_.querySelector(ID_IGNSEARCH_INPUT).value = text;
     const candidates = isRecentElement ? JSON.parse(window.localStorage.getItem('recents')) : this.allCandidates;
     const selectedObject = candidates.find((element) => element.id === this.currentElement.getAttribute('id'));
     this.setRecents(selectedObject);
@@ -689,7 +685,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
    */
   zoomInLocation(service, type, zoom) {
     if (this.html_) {
-      this.resultsList = this.html_.querySelector('#m-ignsearchlocator-results-list');
+      this.resultsList = this.html_.querySelector(ID_RESULTS_LIST);
     }
     if (this.clickedElementLayer instanceof IDEE.layer.Vector) {
       if (service === 'n' && type === 'Point') {
@@ -933,7 +929,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
     this.searchValue = '';
     if (this.reverse) {
       this.reverseActivated = false;
-      this.html_.querySelector('#m-ignsearchlocator-locate-button').style.color = '#7A7A73';
+      this.html_.querySelector(ID_LOCATE_BUTTON).classList.remove('active');
       document.removeEventListener('keyup', this.checkEscKey);
       document.getElementsByTagName('body')[0].style.cursor = 'auto';
     }

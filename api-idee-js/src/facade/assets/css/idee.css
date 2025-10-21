@@ -122,14 +122,44 @@ button:disabled:hover {
     cursor: default;
 }
 
+button.secondary {
+    height: 32px;
+    color: #71a7d3;
+    background-color: #FFFFFF;
+    border: 1px solid #71a7d3;
+    border-radius: 4px;   
+    cursor: pointer;
+    font-family: 'Roboto', 'sans-serif';
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+button.secondary:hover {
+    color: #1470db;
+    background-color: #f1f3f5;
+    border: 1px solid #1470db;
+}
+
+button.secondary:disabled {
+    color: #c5c5c5;
+}
+
+button.secondary:disabled:hover {
+    color: #c5c5c5;
+    cursor: default;
+}
+
 input[type="text"],
+input[type="number"],
 textarea {
     margin: 4px;
     padding: 4px;
+    height: 40px;
     background-color: transparent;
     cursor: auto;
     border-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -139,11 +169,13 @@ textarea {
 }
 
 input[type="text"]:hover,
+input[type="number"]:hover,
 textarea:hover {
     border: 1px solid #1470db;
 }
 
 input[type="text"]:focus,
+input[type="number"]:focus,
 textarea:focus {
     outline: none;
     border: 1px solid #1d5a9e;
@@ -161,6 +193,54 @@ input[type="checkbox"]:hover {
 
 input[type="checkbox"]:focus {
     color: #1d5a9e;
+}
+
+input[type="radio"] {
+    border-color: #6c6c6c;
+    appearance: none;
+    -webkit-appearance: none;
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    transform: scale(1);
+    background-color: white;
+    vertical-align: middle;
+    margin: 0px;
+    border: 1px solid #6c6c6c;
+    cursor: pointer;
+}
+
+input[type="radio"]::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background-color: #1d5a9eFF;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: scale(0) translate(-50%, -50%);
+  transform-origin: 0px 0px;
+  transition: transform 0.3s ease;
+}
+
+input[type="radio"]:checked {
+  border-color: #1d5a9eFF;
+}
+
+input[type="radio"]:checked::after {
+  transform: scale(1) translate(-50%, -50%);
+}
+
+input[type="radio"]:hover {
+    border-color: #1470db;
+}
+
+input[type="radio"]:hover + label {
+    color: #1470db;
+    cursor: pointer;
 }
 
 select {
