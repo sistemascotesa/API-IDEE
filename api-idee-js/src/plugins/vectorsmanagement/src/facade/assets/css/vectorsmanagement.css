@@ -70,12 +70,22 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     background-color: #e9e8e8;
 }
 
+.flex {
+    display: flex !important;
+}
+
 .closed {
     display: none !important;
 }
 
+.disabled {
+    cursor: auto !important;
+    pointer-events: none !important;
+    user-select: none !important;
+    opacity: 0.5;
+}
+
 .m-vectorsmanagement-selection-layer {
-    overflow: hidden;
     width: 100%;
     width: calc(100% - 14px);
     margin-left: 14px;
@@ -85,28 +95,92 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     gap: .5rem;
 }
 
-#m-selectionlayer {
+.m-control {
+    overflow-y: visible;
+}
+
+#m-vectorsmanagement-layer-selector {
     position: relative;
-    width: 146px;
+    cursor: pointer;
+    width: calc(146px - 25px - 8px);
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    overflow: visible;
+}
+
+#m-vectorsmanagement-layer-selector[class^="vectorsmanagement-icon-selector-arrow-"]:before,
+#m-vectorsmanagement-layer-selector[class^="disabled vectorsmanagement-icon-selector-arrow-"]:before
+{
+    font-size: 13px !important;
+    position: absolute;
+    top: 8px;
+    right: 7px;
+    border: none;
+    color: #757474;
+    background-color: transparent;
+}
+
+#m-vectorsmanagement-layer-selector span,
+#m-vectorsmanagement-layer-selector-options span {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-size: 16px;
+    font-weight: 400;
+    word-spacing: 1.2;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#m-vectorsmanagement-layer-selector-options {
+    width: calc(100% + 1px);
+    position: absolute;
+    top: calc(100% + 3px);
+    left: -1px;
+    border: 1px solid #ced4daFF;
+    border-top: none;
+    border-bottom: none;
+    border-radius: 0 0 4px 4px;
+    background: #fff;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+#m-vectorsmanagement-layer-selector-options:hover {
+    border-color: #71a7d3;
+}
+
+#m-vectorsmanagement-layer-selector-options span {
+    text-align: start;
+    background-color: #e4e4e459;
+    padding: .5rem;
+    max-width: calc(100% - 1rem);
+    border-bottom: 1px solid #ced4daFF;
+}
+
+#m-vectorsmanagement-layer-selector-options span:hover, 
+#m-vectorsmanagement-layer-selector-options .selected {
+    background-color: #f1f1f1;
+    color: #71a7d3;
 }
 
 #m-vectorsmanagement-download-container {
     width: 100%;
 }
 
-.m-vectorsmanagement-selectValues {
-    max-width: 250px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-#m-selectionlayer,
+#m-vectorsmanagement-layer-selector,
 #m-point-coordinates-srs,
 #figuresSelector {
     padding: 0 25px 0 .5rem;
     height: 2rem;
     background-color: #fff;
+    height: 28px;
     border: 2px solid #ced4daFF;
     border-radius: 2px;
     color: #6c6c6c;
@@ -122,9 +196,6 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-vectorsmanagement-selection-layer>div {
-    margin-left: 15px;
-    padding-top: 5px;
-    padding-bottom: 10px;
     font-size: 1.2em;
 }
 

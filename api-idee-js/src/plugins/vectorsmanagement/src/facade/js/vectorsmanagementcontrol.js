@@ -21,6 +21,18 @@ import { changeStyleDialog } from './util';
  * calculate topographic profiles and buffers, and download a layer or feature.
  */
 export default class VectorsManagementControl extends IDEE.Control {
+  get layerSelectorWrapper() {
+    return this.html.querySelector('#m-vectorsmanagement-layer-selector');
+  }
+
+  get layerSelectorSelectedOption() {
+    return this.layerSelectorWrapper.querySelector('#m-vectorsmanagement-layer-selected');
+  }
+
+  get layerSelectorOptionsContainer() {
+    return this.layerSelectorWrapper.querySelector('#m-vectorsmanagement-layer-selector-options');
+  }
+
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
@@ -113,7 +125,7 @@ export default class VectorsManagementControl extends IDEE.Control {
 
       if (this.style_) { this.addStyleControl(html); }
 
-      html.querySelector('#m-selectionlayer').addEventListener('change', this.selectLayerEvent.bind(this));
+      this.initLayerSelect();
 
       this.map.on(IDEE.evt.ADDED_LAYER, this.refreshLayers.bind(this));
       this.map.on(IDEE.evt.REMOVED_LAYER, this.refreshLayers.bind(this));
@@ -124,6 +136,71 @@ export default class VectorsManagementControl extends IDEE.Control {
       this.accessibilityTab(html);
       success(html);
     });
+  }
+
+  getAllLayers() {
+    return this.map.getLayers().concat(this.map.getImpl().getAllLayerInGroup());
+  }
+
+  initLayerSelect() {
+    this.layerSelectorWrapper.setAttribute('tabindex', '0');
+
+    this.layerSelectorWrapper.addEventListener('click', (event) => {
+      const isOpen = !this.layerSelectorOptionsContainer.classList.contains('closed');
+      if (isOpen) {
+        this.layerSelectorOptionsContainer.classList.remove('flex');
+        this.layerSelectorOptionsContainer.classList.add('closed');
+        this.layerSelectorWrapper.classList.replace('vectorsmanagement-icon-selector-arrow-up', 'vectorsmanagement-icon-selector-arrow-down');
+      } else {
+        this.layerSelectorOptionsContainer.classList.remove('closed');
+        this.layerSelectorOptionsContainer.classList.add('flex');
+        this.layerSelectorWrapper.classList.replace('vectorsmanagement-icon-selector-arrow-down', 'vectorsmanagement-icon-selector-arrow-up');
+      }
+      this.layerSelectorWrapper.focus();
+    });
+
+    this.layerSelectorWrapper.addEventListener('selectLayer', (event) => {
+      const { selected } = event.detail;
+      this.selectLayerEvent.bind(this);
+      const selectionLayer = this.layerSelectorSelectedOption;
+      selectionLayer.dataset.value = selected.dataset.value;
+      selectionLayer.textContent = selected.textContent;
+      selectionLayer.title = selected.textContent;
+
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < this.layerSelectorOptionsContainer.children.length; i++) {
+        const option = this.layerSelectorOptionsContainer.children[i];
+        option.selected = option.dataset.value === selected.dataset.value;
+        if (option.selected) {
+          option.classList.add('selected');
+        } else {
+          option.classList.remove('selected');
+        }
+      }
+
+      this.selectLayerEvent();
+    });
+
+    this.layerSelectorWrapper.addEventListener('blur', () => this.closeLayerSelect());
+    this.handleDocumentClick = (e) => {
+      if (!this.layerSelectorWrapper.contains(e.target)) this.closeLayerSelect();
+    };
+    document.addEventListener('click', this.handleDocumentClick);
+
+    if (!this.getAllLayers().some((l) => (
+      l instanceof IDEE.layer.Vector || l instanceof IDEE.layer.GenericVector)
+      && l.displayInLayerSwitcher)) {
+      this.layerSelectorWrapper.classList.add('disabled');
+    }
+  }
+
+  closeLayerSelect() {
+    if (this.layerSelectorOptionsContainer) {
+      this.layerSelectorOptionsContainer.classList.remove('flex');
+      this.layerSelectorOptionsContainer.classList.add('closed');
+      this.layerSelectorWrapper.classList.remove('vectorsmanagement-icon-selector-arrow-up');
+      this.layerSelectorWrapper.classList.add('vectorsmanagement-icon-selector-arrow-down');
+    }
   }
 
   /**
@@ -146,11 +223,11 @@ export default class VectorsManagementControl extends IDEE.Control {
     }
 
     this.html.querySelector('#m-vectorsmanagement-previews').classList.remove('closed');
-    const selector = this.html.querySelector('#m-selectionlayer');
-    const selectedLayerName = selector.selectedOptions[0].value;
+    const selector = this.html.querySelector('#m-vectorsmanagement-layer-selected');
+    const selectedLayerId = selector.dataset.value;
 
     const allLayers = this.map.getLayers().concat(this.map.getImpl().getAllLayerInGroup());
-    this.selectedLayer = allLayers.filter((l) => l.idLayer === selectedLayerName)[0];
+    this.selectedLayer = allLayers.filter((l) => l.idLayer === selectedLayerId)[0];
 
     if (this.selectedLayer.type === 'MVT' || this.selectedLayer.type === 'MBTilesVector') {
       IDEE.toast.warning(getValue('exception.typeLayer'), null, 6000);
@@ -527,37 +604,42 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   refreshLayers() {
-    const allLayers = this.map.getLayers().concat(this.map.getImpl().getAllLayerInGroup());
-    this.layers_ = allLayers.filter((l) => (
+    this.layers_ = this.getAllLayers().filter((l) => (
       l instanceof IDEE.layer.Vector || l instanceof IDEE.layer.GenericVector)
       && l.displayInLayerSwitcher)
-      .map((l) => {
-        return { value: l.idLayer, text: l.legend || l.idLayer, zIndex: l.getZIndex() };
-      });
-    const selector = this.html.querySelector('#m-selectionlayer');
-    const selectedLayerName = selector.selectedOptions[0].value;
-    const layerExists = this.layers_.filter((l) => l.value === selectedLayerName).length > 0;
+      .map((l) => ({ value: l.idLayer, text: l.legend || l.idLayer, zIndex: l.getZIndex() }));
 
-    while (selector.firstChild) selector.firstChild.remove();
+    const layerSelector = this.layerSelectorWrapper;
+    layerSelector.classList.remove('disabled');
+    const selectedLayerSpan = this.layerSelectorSelectedOption;
+    const optionsContainer = this.layerSelectorOptionsContainer;
 
-    let option = document.createElement('option');
-    option.value = '';
-    option.selected = !layerExists;
-    option.disabled = true;
-    option.innerText = `${getValue('selectLayerDefault')}...`;
-    selector.appendChild(option);
+    const layerIdSelected = selectedLayerSpan.dataset.value ?? '';
+    const layerExists = this.layers_.some((l) => l.value === layerIdSelected);
+
+    optionsContainer.innerHTML = '';
 
     const layerOrder = [...this.layers_].sort((a, b) => b.zIndex - a.zIndex);
-
-    layerOrder.forEach((l) => {
-      option = document.createElement('option');
-      option.value = l.value;
-      option.innerText = l.text;
-      option.selected = l.value === selectedLayerName;
-      selector.appendChild(option);
+    layerOrder.forEach((layer, i) => {
+      const span = document.createElement('span');
+      span.textContent = layer.text;
+      span.title = layer.text;
+      span.dataset.value = layer.value;
+      span.addEventListener('click', (event) => {
+        const changeEvent = new CustomEvent('selectLayer', {
+          detail: { selected: event.target },
+          bubbles: true,
+        });
+        layerSelector.dispatchEvent(changeEvent);
+      });
+      optionsContainer.appendChild(span);
     });
 
     if (!layerExists) {
+      layerSelector.classList.add('disabled');
+      selectedLayerSpan.textContent = `${getValue('selectLayerDefault')}...`;
+      selectedLayerSpan.title = selectedLayerSpan.textContent;
+      delete selectedLayerSpan.dataset.value;
       this.html.querySelector('#m-vectorsmanagement-previews').classList.add('closed');
       this.deactive(this.html, '');
     }
@@ -586,6 +668,7 @@ export default class VectorsManagementControl extends IDEE.Control {
   }
 
   destroy() {
+    document.removeEventListener('click', this.handleDocumentClick);
     this.analysisControl.destroy();
   }
 

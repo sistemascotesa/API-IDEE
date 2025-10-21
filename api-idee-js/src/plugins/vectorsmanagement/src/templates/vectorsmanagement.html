@@ -1,12 +1,14 @@
 <div aria-label="Plugin Vectors Management" role="menuitem" id="div-contenedor-vectorsmanagement" class="m-control m-container m-vectorsmanagement">
     <section tabindex="0" class="m-vectorsmanagement-selection-layer">
         <!-- Selección de capa -->
-        <select tabindex="0" role="select" id="m-selectionlayer" class="m-vectorsmanagement-selectValues" title="{{translations.selecctionlayer}}">
-            <option value="" selected disabled>{{translations.selectLayerDefault}}...</option>
-            {{#each layer}}
-                <option value="{{value}}">{{text}}</option>
-            {{/each}}
-        </select>
+        <div id="m-vectorsmanagement-layer-selector" class="vectorsmanagement-icon-selector-arrow-up">
+            <span id="m-vectorsmanagement-layer-selected">{{translations.selectLayerDefault}}...</span>
+            <div id="m-vectorsmanagement-layer-selector-options">
+              {{#each layer}}
+                  <span value="{{value}}">{{text}}</span>
+              {{/each}}
+            </div>
+        </div>
         {{#if addlayer}}
         <button tabindex="0" id="layerdrawing" title="{{translations.creationLayer}}" class="vectorsmanagement-icon-layers"></button>
         {{/if}}
