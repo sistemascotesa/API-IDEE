@@ -18,13 +18,6 @@
     display: none;
 }
 
-.m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened>div.m-panel-controls>div.m-control.m-container.m-vectorsmanagement>div#m-vectorsmanagement-titulo {
-    font-size: 11px;
-    padding-left: 0;
-    padding-right: 0;
-    width: 110px;
-}
-
 .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened>div.m-panel-controls>div.m-control.m-container.m-vectorsmanagement>div#m-vectorsmanagement-previews>div {
     height: 110px;
     width: 110px;
@@ -41,18 +34,6 @@
     line-height: 23px;
     top: 80px;
     width: 100px;
-}
-
-#m-vectorsmanagement-titulo {
-    background-color: #71a7d3;
-    color: white;
-    display: block;
-    font-size: 15px;
-    height: 40px;
-    line-height: 40px;
-    padding: 0 5px;
-    text-align: center;
-    width: auto;
 }
 
 .m-areas>div.m-area>div.m-panel.opened.m-plugin-vectorsmanagement {
@@ -73,6 +54,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-control.m-container.m-vectorsmanagement {
+    width: 100%;
     background-color: #fff !important;
 }
 
@@ -88,37 +70,124 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     background-color: #e9e8e8;
 }
 
+.flex {
+    display: flex !important;
+}
+
 .closed {
     display: none !important;
 }
 
-.m-vectorsmanagement-selection-layer {
-    width: 100%;
-    overflow: hidden;
+.disabled {
+    cursor: auto !important;
+    pointer-events: none !important;
+    user-select: none !important;
+    opacity: 0.5;
 }
 
-#m-selectionlayer,
+.m-vectorsmanagement-selection-layer {
+    width: 100%;
+    width: calc(100% - 14px);
+    margin-left: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .5rem;
+}
+
+.m-control {
+    overflow-y: visible;
+}
+
+#m-vectorsmanagement-layer-selector {
+    position: relative;
+    cursor: pointer;
+    width: calc(146px - 25px - 8px);
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    overflow: visible;
+}
+
+#m-vectorsmanagement-layer-selector[class^="vectorsmanagement-icon-selector-arrow-"]:before,
+#m-vectorsmanagement-layer-selector[class^="disabled vectorsmanagement-icon-selector-arrow-"]:before
+{
+    font-size: 13px !important;
+    position: absolute;
+    top: 8px;
+    right: 7px;
+    border: none;
+    color: #757474;
+    background-color: transparent;
+}
+
+#m-vectorsmanagement-layer-selector span,
+#m-vectorsmanagement-layer-selector-options span {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-size: 16px;
+    font-weight: 400;
+    word-spacing: 1.2;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#m-vectorsmanagement-layer-selector-options {
+    width: calc(100% + 1px);
+    position: absolute;
+    top: calc(100% + 3px);
+    left: -1px;
+    border: 1px solid #ced4daFF;
+    border-top: none;
+    border-bottom: none;
+    border-radius: 0 0 4px 4px;
+    background: #fff;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+#m-vectorsmanagement-layer-selector-options:hover {
+    border-color: #71a7d3;
+}
+
+#m-vectorsmanagement-layer-selector-options span {
+    text-align: start;
+    background-color: #e4e4e459;
+    padding: .5rem;
+    max-width: calc(100% - 1rem);
+    border-bottom: 1px solid #ced4daFF;
+}
+
+#m-vectorsmanagement-layer-selector-options span:hover, 
+#m-vectorsmanagement-layer-selector-options .selected {
+    background-color: #f1f1f1;
+    color: #71a7d3;
+}
+
 #m-vectorsmanagement-download-container {
     width: 100%;
 }
 
-.m-vectorsmanagement-selectValues {
-    max-width: 250px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-#m-selectionlayer,
+#m-vectorsmanagement-layer-selector,
 #m-point-coordinates-srs,
 #figuresSelector {
-    margin: auto 10px;
-    padding: 5px;
+    padding: 0 25px 0 .5rem;
+    height: 2rem;
     background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    height: 28px;
+    border: 2px solid #ced4daFF;
+    border-radius: 2px;
     color: #6c6c6c;
-    font-family: Muli, sans-serif;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-stretch: 100%;
     font-size: 13px;
 }
 
@@ -127,9 +196,6 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-vectorsmanagement-selection-layer>div {
-    margin-left: 15px;
-    padding-top: 5px;
-    padding-bottom: 10px;
     font-size: 1.2em;
 }
 
@@ -219,6 +285,29 @@ button#cancel-clear-btn {
 
 #clean-modal-btns {
     display: flex;
+}
+
+#layerdrawing,
+#m-vectorsmanagement-help,
+#m-vectorsmanagement-creation,
+#m-vectorsmanagement-edition,
+#m-vectorsmanagement-style,
+#m-vectorsmanagement-analysis,
+#m-vectorsmanagement-download {
+    height: 2rem;
+    width: 2rem;
+}
+
+#layerdrawing,
+#m-vectorsmanagement-help {
+    background: #e9ecefFF;
+    border-radius: 4px;
+}
+
+#layerdrawing.activate,
+#m-vectorsmanagement-help.activate {
+    background: #e9ecefFF;
+    border-radius: 4px;
 }
 
 .m-vectorsmanagement-creation-container,
@@ -602,17 +691,17 @@ table#attribute-table>tr>th>button {
 
 @font-face {
     font-family: 'vectorsmanagement';
-    src:  url('../fonts/vectorsmanagement.eot?66977');
-    src:  url('../fonts/vectorsmanagement.eot?66977#iefix') format('embedded-opentype'),
-      url('../fonts/vectorsmanagement.ttf?66977') format('truetype'),
-      url('../fonts/vectorsmanagement.woff?66977') format('woff'),
-      url('../fonts/vectorsmanagement.svg?66977#vectorsmanagement') format('svg');
+    src: url('../fonts/vectorsmanagement.eot?66977');
+    src: url('../fonts/vectorsmanagement.eot?66977#iefix') format('embedded-opentype'),
+        url('../fonts/vectorsmanagement.ttf?66977') format('truetype'),
+        url('../fonts/vectorsmanagement.woff?66977') format('woff'),
+        url('../fonts/vectorsmanagement.svg?66977#vectorsmanagement') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
-  }
-  
-  
+}
+
+
 .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control>button,
 .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.collapsed>button.m-panel-btn,
 [class^="vectorsmanagement-"],
@@ -648,9 +737,7 @@ table#attribute-table>tr>th>button {
     color: #757474;
     font-size: 20px;
     border: none;
-    background-color: #fff;
-    height: 40px;
-    width: 40px;
+    background-color: #ffffff00;
 }
 
 .m-vectorsmanagement-previews>button,
@@ -662,7 +749,6 @@ table#attribute-table>tr>th>button {
 [class^="vectorsmanagement-icon-"]:hover::before {
     color: #71a7d3;
 }
-
 
 .m-vectorsmanagement-toolsContent {
     display: flex;
@@ -688,8 +774,6 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     font-size: 20px;
     border: none;
     background-color: transparent;
-    height: 20px;
-    width: 20px;
 }
 
 .vectorsmanagement-icon-seleccionar {
@@ -702,13 +786,20 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 #creationBtns>button.activated,
 #analysisBtns>div>button.activated,
 #editionBtns>button.activated,
+[class^="vectorsmanagement-icon-"].activated {
+    background-color: #71a7d3 !important;
+}
+
+.m-vectorsmanagement-previews>button.activated,
+.m-vectorsmanagement-previews>div>button.activated,
+.m-vectorsmanagement-selection-layer>button.activated,
+#creationBtns>button.activated,
+#analysisBtns>div>button.activated,
+#editionBtns>button.activated,
 [class^="vectorsmanagement-icon-"].activated:before {
     color: #fff;
     font-size: 20px;
     border: none;
-    background-color: #71a7d3;
-    height: 40px;
-    width: 40px;
 }
 
 .m-vectorsmanagement-previews>button.activated,
@@ -855,6 +946,14 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     content: '\f0ce';
 }
 
+.vectorsmanagement-icon-selector-arrow-up:before {
+    content: '\e904';
+}
+
+.vectorsmanagement-icon-selector-arrow-down:before {
+    content: '\e906';
+}
+
 .vectorsmanagement-icon-json-file:before {
     content: "\e900";
     font-size: 20px;
@@ -878,7 +977,7 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 }
 
 .vectorsmanagement-dialogCode {
-    overflow: auto; 
+    overflow: auto;
     max-height: 50vh;
 }
 
@@ -1077,8 +1176,8 @@ div#popup-box {
     font-weight: bold;
 }
 
-#options-content input[type=number]{
- width: 50px;
+#options-content input[type=number] {
+    width: 50px;
 }
 
 @media (max-width: 600px) {
