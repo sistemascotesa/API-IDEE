@@ -107,6 +107,10 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     overflow: visible;
 }
 
+#m-vectorsmanagement-layer-selector:hover {
+    border-color: #0f0f0f;
+}
+
 #m-vectorsmanagement-layer-selector[class^="vectorsmanagement-icon-selector-arrow-"]:before,
 #m-vectorsmanagement-layer-selector[class^="disabled vectorsmanagement-icon-selector-arrow-"]:before {
     font-size: 13px !important;
@@ -137,7 +141,6 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     top: calc(100% + 3px);
     left: -1px;
     border: 1px solid #ced4daFF;
-    border-top: none;
     border-bottom: none;
     border-radius: 0 0 4px 4px;
     background: #fff;
