@@ -233,6 +233,10 @@ export default class Locator extends IDEE.Plugin {
       this.collapsible = false;
     }
 
+    this.controls[0].on(IDEE.evt.ADDED_TO_MAP, () => {
+      this.fire(IDEE.evt.ADDED_TO_MAP);
+    });
+
     this.panel.addControls(this.controls);
     // map.addPanels(this.panel_);
 
