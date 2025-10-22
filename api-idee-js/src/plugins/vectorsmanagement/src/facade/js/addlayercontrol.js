@@ -65,33 +65,52 @@ export default class AddLayerControl extends IDEE.Control {
    */
   showLayerDialog() {
     IDEE.dialog.info(
-      `<div id="chooseLayerName">
-        <label for="layer-name">${getValue('layerName')}: </label>
-        <input type="text" id="layer-name" style="width: 10rem;">
-      </div>`,
+      `<div 
+        id="chooseLayerName" 
+        style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; row-gap: .5rem;"
+      >
+        <label 
+          for="layer-name" 
+          style="width: 93px;"
+        >
+          ${getValue('layerName')}
+        </label>
+        <input 
+          type="text" 
+          id="layer-name"
+          style="width: calc(14rem - 8px); margin: 0; border-radius: 2px; border: 1px solid #ced4da"
+        >
+      </div>
+      <hr/ 
+        style="width: 100%; margin:1rem 0 0 0; border: none; border-bottom: 1px solid #ced4da"
+      >
+      `,
       getValue('title_new_layer'),
     );
+
     const color = '#71a7d3';
     const dialog = document.querySelector('.m-dialog > div.m-modal > div.m-content');
+    dialog.style['min-width'] = '16rem';
+    dialog.style.padding = '0';
+    const message = dialog.querySelector('.m-message');
+    message.style.padding = '1rem 1rem 0 1rem';
     const buttons = dialog.querySelector('.m-button');
+    buttons.style.padding = '1rem 1rem 1.5rem';
     const cancel = document.createElement('button');
     cancel.type = 'button';
     cancel.innerHTML = getValue('cancel');
     cancel.style.width = 'auto';
     cancel.style.backgroundColor = '#71a7d3';
     buttons.appendChild(cancel);
-    dialog.style.minWidth = 'auto';
-    cancel.type = 'button';
-    cancel.innerHTML = getValue('cancel');
-    cancel.style.width = 'auto';
-    cancel.style.backgroundColor = '#71a7d3';
-    buttons.appendChild(cancel);
     const title = document.querySelector('.m-modal .m-title');
+    title.style.height = '41px';
     title.style.backgroundColor = color;
+    title.style.color = 'white';
+    title.style['border-radius'] = '4px 4px 0 0';
     const btn = document.querySelector('.m-button button');
     const inputName = document.querySelector('div.m-modal input#layer-name');
-    // const inputLegend = document.querySelector('div.m-modal input#layer-legend');
     btn.style.backgroundColor = color;
+
     btn.addEventListener('click', () => {
       this.addLayer(inputName.value);
       IDEE.toast.info(getValue('creationLayer_done'), null, 6000);
@@ -103,6 +122,7 @@ export default class AddLayerControl extends IDEE.Control {
       });
       layerSelector.dispatchEvent(changeEvent);
     });
+
     cancel.addEventListener('click', () => {
       const modal = document.querySelector('.m-dialog');
       const parent = modal.parentNode;
