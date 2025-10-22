@@ -220,13 +220,18 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     font-size: 14px;
 }
 
-#m-point-coordinates>div>.m-point-coordinates-container>.m-point-coordinates-panel {
+#m-point-coordinates {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     width: fit-content;
-    padding: 0 1rem;
+}
+
+#m-point-coordinates>div {
+    width: calc(100% - 2rem);
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 #m-point-coordinates label {
@@ -240,10 +245,21 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 #m-point-coordinates input,
 #m-point-coordinates-srs.dropdown {
-    margin: 4px 4px .5rem 4px;
+    margin: 4px 4px .75rem 4px;
     padding: 4px;
     border-radius: 4px;
+    border-color: #ced4da;
+}
+
+#m-point-coordinates input:hover,
+#m-point-coordinates-srs.dropdown:hover {
     border-color: #0f0f0f;
+}
+
+#m-point-coordinates-coordinatesSystem,
+#m-point-coordinates-utm,
+#m-point-coordinates-latlon {
+    width: 100%;
 }
 
 .m-vectorsmanagement-style-container>button#set-style-btn {
