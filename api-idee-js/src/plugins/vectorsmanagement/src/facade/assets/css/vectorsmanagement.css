@@ -54,10 +54,10 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
-    width: calc(100% - 2rem);
+    width: calc(100% - 1rem);
     min-width: calc(2rem * 6 + .5rem * 5);
     overflow-y: visible;
-    padding: 0 1rem;
+    padding: 0 .5rem;
     background-color: #fff !important;
 }
 
