@@ -4,6 +4,7 @@
  */
 import 'assets/css/fonts';
 import 'assets/css/animations';
+import 'assets/css/tabs';
 import 'impl/projections';
 import MapImpl from 'impl/Map';
 import Map from 'IDEE/Map';
