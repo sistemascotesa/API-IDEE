@@ -109,10 +109,6 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     overflow: visible;
 }
 
-#m-vectorsmanagement-layer-selector:hover {
-    border-color: #0f0f0f;
-}
-
 #m-vectorsmanagement-layer-selector[class^="vectorsmanagement-icon-selector-arrow-"]:before,
 #m-vectorsmanagement-layer-selector[class^="disabled vectorsmanagement-icon-selector-arrow-"]:before {
     font-size: 13px !important;
@@ -190,6 +186,13 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     font-size: 13px;
 }
 
+#m-vectorsmanagement-layer-selector:hover,
+#m-point-coordinates-srs.dropdown:hover,
+#m-point-coordinates input:hover,
+#figuresSelector:hover {
+    border-color: #0f0f0f;
+}
+
 #m-point-coordinates-srs:hover {
     border-color: #71a7d3;
 }
@@ -249,11 +252,6 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     padding: 4px;
     border-radius: 4px;
     border-color: #ced4da;
-}
-
-#m-point-coordinates input:hover,
-#m-point-coordinates-srs.dropdown:hover {
-    border-color: #0f0f0f;
 }
 
 #m-point-coordinates-coordinatesSystem,
