@@ -2,10 +2,6 @@
     z-index: 99999;
 }
 
-.m-panel.m-plugin-infocoordinates {
-    z-index: 99999;
-}
-
 /*Para que los números de los puntos no se vean por encima de los popups de info*/
 .m-popup {
     z-index: 999999999;
@@ -111,23 +107,6 @@
     text-align: justify;
 }
 
-#tabContent table {
-    border-collapse: inherit !important;
-    margin-bottom: inherit !important;
-    font-size: inherit !important;
-}
-
-#tabContent table,
-#tabContent th,
-#tabContent td {
-    border: unset !important;
-}
-
-/* .m-panel .m-control.m-container.m-infocoordinates {
-    cursor: default;
-    overflow: visible !important;
-} */
-
 #m-infocoordinates-buttonRemovePoint {
     background-color: transparent;
     border: none;
@@ -198,10 +177,6 @@
     max-height: 305px;
 }
 
-.m-infocoordinates-tabContent table{
-    user-select: text;
-}
-
 #m-infocoordinates-buttonRemovePoint:hover,
 #m-infocoordinates-copylatlon:hover,
 #m-infocoordinates-copyxy:hover,
@@ -250,92 +225,6 @@
     display: none;
 }
 
-.m-panel.m-plugin-infocoordinates.opened #tabContent table tbody tr td:first-child {
-    min-width: 80px;
-}
-
-.m-plugin-infocoordinates .m-infocoordinates-help {
-    position: relative;
-    left: 24px;
-    top: 0px;
-}
-
-.m-plugin-infocoordinates .m-infocoordinates-help a {
-    color: #71a7d3 !important;
-    font-size: 20px;
-}
-
-.m-plugin-infocoordinates .m-infocoordinates-help-td {
-    display: flex;
-    align-items: center;
-}
-
-.m-plugin-infocoordinates .m-infocoordinates-comboDatum {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
-.m-infocoordinates-comboDatum .m-infocoordinates-input-select {
-    box-sizing: border-box;
-    color: black;
-    background-color: #fff;
-    cursor: pointer;
-    padding: 0 !important;
-    margin: 0 5px 0 5px;
-    max-width: 120px;
-}
-
-/* .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector {
-    display: none;
-    position: absolute;
-    margin: 5px;
-    top: 90%;
-    padding: 1px 0;
-    margin-top: 0;
-    max-height: 200px;
-    max-width: 120px;
-    overflow-y: auto;
-    list-style: none;
-    z-index: 1000;
-    color: #000;
-    background-color: white;
-    font-size: 13px;
-    text-align: left;
-    border: 1px solid #ddd;
-} */
-
-/* .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li {
-    border-bottom: 1px solid #ddd;
-} */
-
-/* .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li a {
-    display: block;
-    margin-top: -1px;
-    padding: 4px 12px;
-    text-decoration: none;
-    color: #6c6c6c;
-} */
-
-/* .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li:hover {
-    color: #000;
-    border: 1px solid #000;
-} */
-
-@-moz-document url-prefix() {
-    .m-plugin-infocoordinates .m-infocoordinates-help-td {
-        height: 33px;
-    }
-
-    .m-plugin-infocoordinates .m-infocoordinates-help {
-        left: 22px;
-    }
-
-    .m-plugin-infocoordinates .m-infocoordinates-help a {
-        font-size: 22px !important;
-    }
-}
-
 .m-plugin-infocoordinates .icon-target:before {
     font-size: 22px;
     -webkit-text-stroke: 1px #71a7d3;
@@ -368,12 +257,12 @@
 /* Cada fila es un contenedor flex */
 .grid-row {
     display: flex;
-    align-items: center; /* Centra todo verticalmente en la fila */
+    align-items: center;
 }
 
 /* 1. LA CLAVE: Todas las etiquetas ocupan el mismo espacio */
 .grid-label {
-    flex-basis: 65px;  /* Dales a todas un ancho base de 90px (ajústalo si es necesario) */
+    flex-basis: 65px;
     flex-shrink: 0;
     margin-right: 10px;
     gap: 1px;
@@ -412,7 +301,7 @@
 }
 
 .help-icon {
-    display: flex; /* Para poder centrar el icono '?' que está dentro */
+    display: flex;
     width: 24px;
     height: 24px;
     border-radius: 4px;

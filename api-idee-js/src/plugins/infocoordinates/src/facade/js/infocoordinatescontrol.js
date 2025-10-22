@@ -438,19 +438,19 @@ export default class InfocoordinatesControl extends IDEE.Control {
       document.getElementsByClassName('contenedorPuntoSelect')[0].classList.replace('contenedorPuntoSelect', 'contenedorPunto');
     }
 
-    const textHTML = `<div class="point-overlay">${numPoint}</div>`;
+    // const textHTML = `<div class="point-overlay">${numPoint}</div>`;
 
-    // const textHTML = `<div class="contenedorPuntoSelect">
-    //             <table>
-    //                 <tbody>
-    //                   <tr>
-    //                     <td style="font-weight: bold; font-family: arial;">${numPoint}</td></b>
-    //                   </tr>
-    //                 </tbody>
-    //             </table>
-    //         </div>
-    //       </div>
-    //   </div>`;
+    const textHTML = `<div class="contenedorPuntoSelect">
+                <table>
+                    <tbody>
+                      <tr>
+                        <td style="font-weight: bold; font-family: arial;">${numPoint}</td></b>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+          </div>
+      </div>`;
 
     const helpTooltipElement = IDEE.template.compileSync(textHTML, {
       jsonp: true,
@@ -629,7 +629,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const lat = document.getElementById('m-infocoordinates-latitude').innerHTML.replace(',', '.');
     const long = document.getElementById('m-infocoordinates-longitude').innerHTML.replace(',', '.');
     const alt = document.getElementById('m-infocoordinates-altitude').innerHTML.replace(',', '.');
-    let proj = document.getElementById('m-infocoordinates-comboDatum').value;
+    let proj = document.getElementById('m-infocoordinates-srs-selector').value;
     if (proj.indexOf('25829') > -1 || proj.indexOf('25830') > -1 || proj.indexOf('25831') > -1) {
       proj = 'EPSG:4258';
     } else {
@@ -644,7 +644,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const x = document.getElementById('m-infocoordinates-coordX').innerHTML.replaceAll('.', '').replace(',', '.');
     const y = document.getElementById('m-infocoordinates-coordY').innerHTML.replaceAll('.', '').replace(',', '.');
     const alt = document.getElementById('m-infocoordinates-altitude').innerHTML.replaceAll('.', '').replace(',', '.');
-    const proj = document.getElementById('m-infocoordinates-comboDatum').value;
+    const proj = document.getElementById('m-infocoordinates-srs-selector').value;
     const result = `${x},${y},${alt},${proj}`;
     navigator.clipboard.writeText(result);
     IDEE.toast.success(getValue('clipboard'));
@@ -657,7 +657,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       const alt = featureSelected.getAttributes().Altitude !== undefined ? parseFloat(featureSelected.getAttributes().Altitude) : '-';
 
       // Cojo el srs seleccionado en el select
-      const selectSRS = document.querySelector('.m-infocoordinates-input-select').value;
+      const selectSRS = document.querySelector('#m-infocoordinates-srs-selector').value;
 
       // Cojo el formato de las coordenadas geográficas
       const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
@@ -708,7 +708,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       const alt = featureSelected.getAttributes().Altitude !== undefined ? parseFloat(featureSelected.getAttributes().Altitude) : '-';
 
       // Cojo el srs seleccionado en el select
-      const selectSRS = document.querySelector('.m-infocoordinates-input-select').value;
+      const selectSRS = document.querySelector('#m-infocoordinates-srs-selector').value;
 
       // Cojo el formato de las coordenadas geográficas
       const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
@@ -823,7 +823,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
   calculateUTMcoordinates(numPoint) {
     const featureSelected = this.layerFeatures.getFeatureById(numPoint);
     // Cojo el srs seleccionado en el select
-    const selectSRS = document.querySelector('.m-infocoordinates-input-select').value;
+    const selectSRS = document.querySelector('#m-infocoordinates-srs-selector').value;
 
     // Cojo el formato de las coordenadas geográficas
     const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
