@@ -1,9 +1,5 @@
 /* Opening & closing buttons */
 
-.m-panel.m-plugin-vectorsmanagement.collapsed {
-    height: 40px;
-}
-
 .m-plugin-vectorsmanagement.opened .m-panel-btn.g-cartografia-flecha-derecha,
 .m-plugin-vectorsmanagement.opened .m-panel-btn.g-cartografia-flecha-izquierda {
     background-color: white !important;
@@ -54,6 +50,10 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-control.m-container.m-vectorsmanagement {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
     width: calc(100% - 2rem);
     min-width: calc(2rem * 6 + .5rem * 5);
     overflow-y: visible;
@@ -89,6 +89,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-vectorsmanagement-selection-layer {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -98,7 +99,8 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 #m-vectorsmanagement-layer-selector {
-    width: calc(146px - 25px - 8px - 2px);
+    padding: 0 25px 0 .5rem;
+    width: calc(146px - 25px - 8px - 1.6px);
     position: relative;
     cursor: pointer;
     display: flex;
@@ -158,7 +160,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 #m-vectorsmanagement-layer-selector-options span {
     text-align: start;
-    background-color: #e4e4e459;
+    background-color: #ffffff;
     padding: .5rem;
     max-width: calc(100% - 1rem);
     border-bottom: 1px solid #ced4daFF;
@@ -166,7 +168,6 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 #m-vectorsmanagement-layer-selector-options span:hover,
 #m-vectorsmanagement-layer-selector-options .selected {
-    background-color: #f1f1f1;
     color: #71a7d3;
 }
 
@@ -177,7 +178,6 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 #m-vectorsmanagement-layer-selector,
 #m-point-coordinates-srs,
 #figuresSelector {
-    padding: 0 25px 0 .5rem;
     background-color: #fff;
     height: 30px;
     border: 1px solid #ced4da;
@@ -190,8 +190,8 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     font-size: 13px;
 }
 
-#m-point-coordinates-srs {
-    margin: 0px 0px 0px 5px;
+#m-point-coordinates-srs:hover {
+    border-color: #71a7d3;
 }
 
 .m-vectorsmanagement-selection-layer>div {
@@ -215,11 +215,18 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-vectorsmanagement-style-container,
-#m-point-coordinates-coordinatesSystem,
-#m-point-coordinates-utm,
-#m-point-coordinates-latlon {
-    padding: 10px;
-    font-size: 1.2em;
+#m-point-coordinates {
+    padding-top: 1rem;
+    font-size: 14px;
+}
+
+#m-point-coordinates>div>.m-point-coordinates-container>.m-point-coordinates-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: fit-content;
+    padding: 0 1rem;
 }
 
 #m-point-coordinates label {
@@ -227,6 +234,17 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     display: inline-block;
 }
 
+#m-point-coordinates-srs.dropdown {
+    width: 184px;
+}
+
+#m-point-coordinates input,
+#m-point-coordinates-srs.dropdown {
+    margin: 4px 4px .5rem 4px;
+    padding: 4px;
+    border-radius: 4px;
+    border-color: #0f0f0f;
+}
 
 .m-vectorsmanagement-style-container>button#set-style-btn {
     width: 60px;
@@ -321,6 +339,7 @@ button#cancel-clear-btn {
 #m-vectorsmanagement-previews,
 #m-figuretools,
 #edition-attributes-container {
+    width: 100%;
     border-top: solid 1px #ced4daFF;
 }
 
@@ -332,7 +351,7 @@ button#cancel-clear-btn {
 }
 
 #m-figuretools {
-    padding: 20px;
+    padding-top: 1rem;
 }
 
 #m-vectorsmanagement-download-format {
@@ -1156,6 +1175,11 @@ th .vectorsmanagement-icon-papelera {
     gap: 5px;
 }
 
+.m-vectorsmanagement-controls,
+.m-vectorsmanagement-controls .m-point-coordinates-panel {
+    width: 100%;
+}
+
 .m-vectorsmanagement-editionBtns,
 .m-vectorsmanagement-creationBtns {
     display: flex;
@@ -1167,7 +1191,6 @@ th .vectorsmanagement-icon-papelera {
     border: 1px solid #71a7d344;
     padding: 5px;
 }
-
 
 .m-areas>div.m-area>div.m-plugin-vectorsmanagement.opened div.m-vectorsmanagement-controls>div {
     width: auto;
