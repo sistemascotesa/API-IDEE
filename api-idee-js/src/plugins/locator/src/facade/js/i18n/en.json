@@ -38,7 +38,7 @@
     "help14": "The information relevant to the extension and its possible parameterization is documented in",
     "help15": "The example of use of its parameters can be seen in"
   },
-  "tooltip": "Find a place",
+  "tooltip": "Locator",
   "xylocator": "Search by coordinates",
   "geographic": "Geographic",
   "zone": "zone",

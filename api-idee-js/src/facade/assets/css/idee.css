@@ -267,6 +267,31 @@ option {
     font-size: 16px;
 }
 
+label {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+li {
+    color: #ADB5BD;
+    font-size: 12px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow-wrap: break-word;
+    white-space: pre-line;
+    line-height: 1.2;
+}
+
+li:hover {
+    color: #000000;
+}
+
+svg {
+    width: 24px;
+    height: 24px;
+}
+
 /***********************
      CONTROLES
 ************************/
