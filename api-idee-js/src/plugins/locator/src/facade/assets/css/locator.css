@@ -13,11 +13,6 @@
     padding: 0 16px;
 }
 
-.m-control.m-container.m-locator label {
-    font-size: 14px;
-    font-weight: 400;
-}
-
 .locator-icon-ignsearch, 
 .locator-icon-catastro,
 .locator-icon-coordsearch {
@@ -47,13 +42,6 @@
     color: #1d5a9eFF !important;
     border-color: #1d5a9eFF;
     background: #f1f3f5FF;
-}
-
-.locator-icon-ignsearch svg, 
-.locator-icon-catastro svg,
-.locator-icon-coordsearch svg {
-    width: 24px;
-    height: 24px;
 }
 
 .m-xylocator-container,
@@ -257,21 +245,6 @@
     overflow-y: auto;
     margin-top: 16px;
     padding-left: 0.5em;
-}
-
-.m-ignsearch-results > .m-ignsearch-results-list li {
-    color: #ADB5BD;
-    font-size: 12px;
-    font-weight: 400;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    overflow-wrap: break-word;
-    white-space: pre-line;
-    line-height: 1.2;
-}
-
-.m-ignsearch-results > .m-ignsearch-results-list li:hover {
-    color: #000000;
 }
 
 .m-ignsearch-results > .m-ignsearchlocator-noresults {
