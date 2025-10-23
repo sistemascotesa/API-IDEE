@@ -44,7 +44,7 @@ class Tool extends Base {
     }
   }
 
-  createView(map) {
+  createView(plugin) {
     const element = document.createElement('li');
     element.classList.add('m-tool-button');
     element.id = `m-tool-button-${this.name}`;
