@@ -111,9 +111,9 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 #m-vectorsmanagement-layer-selector[class^="vectorsmanagement-icon-selector-arrow-"]:before,
 #m-vectorsmanagement-layer-selector[class^="disabled vectorsmanagement-icon-selector-arrow-"]:before {
-    font-size: 13px !important;
+    font-size: 10px !important;
     position: absolute;
-    top: 8px;
+    top: 10px;
     right: 7px;
     border: none;
     color: #8b8b8b;

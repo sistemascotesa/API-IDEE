@@ -88,30 +88,50 @@ export default class AddLayerControl extends IDEE.Control {
       getValue('title_new_layer'),
     );
 
-    const color = '#71a7d3';
+    const colorPrimary = '#71a7d3';
     const dialog = document.querySelector('.m-dialog > div.m-modal > div.m-content');
-    dialog.style['min-width'] = '16rem';
+    dialog.style.minWidth = '16rem';
     dialog.style.padding = '0';
-    const message = dialog.querySelector('.m-message');
-    message.style.padding = '1rem 1rem 0 1rem';
-    const buttons = dialog.querySelector('.m-button');
-    buttons.style.padding = '1rem 1rem 1.5rem';
-    const cancel = document.createElement('button');
-    cancel.type = 'button';
-    cancel.innerHTML = getValue('cancel');
-    cancel.style.width = 'auto';
-    cancel.style.backgroundColor = '#71a7d3';
-    buttons.appendChild(cancel);
+
     const title = document.querySelector('.m-modal .m-title');
     title.style.height = '41px';
-    title.style.backgroundColor = color;
+    title.style.backgroundColor = colorPrimary;
     title.style.color = 'white';
-    title.style['border-radius'] = '4px 4px 0 0';
-    const btn = document.querySelector('.m-button button');
-    const inputName = document.querySelector('div.m-modal input#layer-name');
-    btn.style.backgroundColor = color;
+    title.style.borderRadius = '4px 4px 0 0';
 
-    btn.addEventListener('click', () => {
+    const message = dialog.querySelector('.m-message');
+    message.style.padding = '1rem 1rem 0 1rem';
+
+    const btnContainerSubmmit = dialog.querySelector('.m-button');
+    btnContainerSubmmit.style.padding = '1rem';
+
+    const footerSubmmit = document.createElement('footer');
+    footerSubmmit.style.display = 'flex';
+    footerSubmmit.style.flexDirection = 'row';
+    footerSubmmit.style.alignItems = 'center';
+    footerSubmmit.style.justifyContent = 'flex-end';
+    footerSubmmit.style.columnGap = '1rem';
+
+    btnContainerSubmmit.appendChild(footerSubmmit);
+
+    const btnSuccess = document.querySelector('.m-button button');
+    btnSuccess.style.type = 'button';
+    btnSuccess.style.width = '4.5rem';
+    btnSuccess.parentNode.removeChild(btnSuccess);
+
+    const btnCancel = document.createElement('button');
+    btnCancel.type = 'button';
+    btnCancel.width = '4.5rem';
+    btnCancel.innerHTML = getValue('cancel');
+    btnCancel.style.borderColor = colorPrimary;
+    btnCancel.style.color = colorPrimary;
+    btnCancel.style.backgroundColor = 'white';
+
+    footerSubmmit.appendChild(btnSuccess);
+    footerSubmmit.appendChild(btnCancel);
+
+    const inputName = document.querySelector('div.m-modal input#layer-name');
+    btnSuccess.addEventListener('click', () => {
       this.addLayer(inputName.value);
       IDEE.toast.info(getValue('creationLayer_done'), null, 6000);
       const layerSelector = document.querySelector('#m-vectorsmanagement-layer-selector');
@@ -123,7 +143,7 @@ export default class AddLayerControl extends IDEE.Control {
       layerSelector.dispatchEvent(changeEvent);
     });
 
-    cancel.addEventListener('click', () => {
+    btnCancel.addEventListener('click', () => {
       const modal = document.querySelector('.m-dialog');
       const parent = modal.parentNode;
       parent.removeChild(modal);
