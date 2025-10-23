@@ -41,7 +41,7 @@ class Panzoombar extends ControlBase {
     const impl = new PanzoombarImpl(vendorOptions);
 
     // calls the super constructor
-    super(impl, Panzoombar.NAME);
+    super(Panzoombar.NAME, impl);
   }
 
   /**

@@ -58,7 +58,7 @@ class ScaleLine extends ControlBase {
     const impl = new ScaleLineImpl(vendorOptions);
 
     // calls the super constructor
-    super(impl, ScaleLine.NAME);
+    super(ScaleLine.NAME, impl);
   }
 
   /**

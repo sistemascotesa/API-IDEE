@@ -43,7 +43,7 @@ export default class BackImgLayerControl extends IDEE.Control {
       layer.on(IDEE.evt.LOAD, map.removeLayers(layer));
     });
     this.layers = [];
-    
+
     const idsArray = ids.split(',');
     const titlesArray = titles.split(',');
     const previewArray = previews.split(',');
@@ -163,6 +163,7 @@ export default class BackImgLayerControl extends IDEE.Control {
         sumIndex += 16;
       }
 
+      /* eslint-disable no-underscore-dangle */
       if (layer.zindex_) {
         layer.setZIndex(sumIndex);
       }

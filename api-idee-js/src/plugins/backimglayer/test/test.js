@@ -36,7 +36,7 @@ const mp = new BackImgLayer({
   collapsed: false, // true,
   collapsible: true,
   tooltip:
-    'Tooltip de texto "Capas de fondo" que aparece al hacer hover sobre él.',
+    'Capas de fondo',
   layerVisibility: false,
   columnsNumber: 3,
   empty: false,

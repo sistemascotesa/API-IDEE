@@ -36,7 +36,7 @@ class Rotate extends ControlBase {
     const impl = new RotateImpl();
 
     // calls the super constructor
-    super(impl, Rotate.NAME);
+    super(Rotate.NAME, impl);
   }
 
   /**

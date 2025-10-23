@@ -36,7 +36,7 @@ class WMCSelector extends ControlBase {
     const impl = new WMCSelectorImpl();
 
     // calls the super constructor
-    super(impl, WMCSelector.NAME);
+    super(WMCSelector.NAME, impl);
   }
 
   /**

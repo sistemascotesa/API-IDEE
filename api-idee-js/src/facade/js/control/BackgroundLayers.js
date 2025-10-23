@@ -50,7 +50,7 @@ class BackgroundLayers extends ControlBase {
    */
   constructor(map, idLayer, visible) {
     const impl = new ControlImpl();
-    super(impl, BackgroundLayers.NAME);
+    super(BackgroundLayers.NAME, impl);
     map.getBaseLayers().forEach((layer) => {
       layer.on(LOAD, map.removeLayers(layer));
     });

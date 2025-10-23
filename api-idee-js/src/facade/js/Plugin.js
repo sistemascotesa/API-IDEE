@@ -17,7 +17,7 @@ import Exception from './exception/exception';
  * @api
  */
 class Plugin extends Base {
-  constructor(name, options) {
+  constructor(name, options = {}) {
     super(options);
 
     this.name = name;
@@ -147,6 +147,7 @@ class Plugin extends Base {
     if (isNullOrEmpty(this.panel.panelContent)) {
       this.panel.createContentPanel();
       this.createToolsPanel();
+      this.createToolPanel();
     }
 
     const ulElement = this.panel.panelContent.querySelector(`#plugin-panel-tools-${this.name}`);
@@ -158,6 +159,13 @@ class Plugin extends Base {
     toolsPanel.id = `plugin-panel-tools-${this.name}`;
     this.panel.panelContent.appendChild(toolsPanel);
     return toolsPanel;
+  }
+
+  createToolPanel() {
+    const toolPanel = document.createElement('div');
+    toolPanel.id = `plugin-panel-tool-${this.name}`;
+    this.panel.panelContent.appendChild(toolPanel);
+    return toolPanel;
   }
 
   /**
