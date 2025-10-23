@@ -117,7 +117,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
         },
       };
       const html = IDEE.template.compileSync(template, options);
-      // this.initCustomDropdown(html);
+      this.initCustomDropdown(html);
       // Añadir código dependiente del DOM
       this.accessibilityTab(html);
 
@@ -145,55 +145,62 @@ export default class InfocoordinatesControl extends IDEE.Control {
    * @function
    * @api stable
    */
-  // initCustomDropdown(html) {
-  //   const input = html.querySelector('#m-infocoordinates-epsg-selected');
-  //   const selector = html.querySelector('#m-infocoordinates-srs-selector');
-  //   let isEditable = false;
+  initCustomDropdown(html) {
+    const input = html.querySelector('#m-infocoordinates-epsg-selected');
+    const selector = html.querySelector('#m-infocoordinates-srs-selector');
+    const arrow = html.querySelector('.arrow-down');
+    let isEditable = false;
 
-  //   input.setAttribute('readonly', 'readonly');
-  //   input.value = this.selectedProjection;
+    input.setAttribute('readonly', 'readonly');
+    input.value = this.selectedProjection;
 
-  //   input.addEventListener('focus', () => {
-  //     if (!isEditable) {
-  //       selector.style.display = 'block';
-  //       const list = selector.querySelectorAll('li a');
-  //       list.forEach((li) => {
-  //         li.addEventListener('mousedown', (event) => {
-  //           event.preventDefault();
-  //           const value = event.target.getAttribute('value');
-  //           if (value === 'default') {
-  //             isEditable = true;
-  //             input.removeAttribute('readonly');
-  //             input.value = '';
-  //             input.placeholder = getValue('placeholder_custom_epsg');
-  //             selector.style.display = 'none';
-  //             input.focus();
-  //           } else {
-  //             input.value = value;
-  //             this.changeSelectSRSorChangeFormat();
-  //           }
-  //         });
-  //       });
-  //     }
-  //   });
+    const openDropdown = () => {
+      if (!isEditable) {
+        selector.classList.remove('noDisplay');
+        arrow.classList.add('arrow-up');
+      }
+    };
 
-  //   input.addEventListener('blur', () => {
-  //     selector.style.display = 'none';
-  //     isEditable = false;
-  //     if (!input.hasAttribute('readonly')) {
-  //       input.setAttribute('readonly', 'readonly');
-  //       input.value = this.selectedProjection;
-  //     }
-  //   });
+    const closeDropdown = () => {
+      selector.classList.add('noDisplay');
+      arrow.classList.remove('arrow-up');
+    };
 
-  //   input.addEventListener('keyup', (event) => {
-  //     if (isEditable && event.key === 'Enter') {
-  //       isEditable = false;
-  //       input.setAttribute('readonly', 'readonly');
-  //       this.changeSelectSRSorChangeFormat();
-  //     }
-  //   });
-  // }
+    input.addEventListener('focus', openDropdown);
+    input.addEventListener('blur', () => {
+      // We need a small delay to allow the mousedown on an option to fire
+      setTimeout(closeDropdown, 200);
+    });
+
+    selector.addEventListener('mousedown', (event) => {
+      const { target } = event;
+      if (target.tagName === 'A') {
+        event.preventDefault();
+        const value = target.getAttribute('value');
+        if (value === 'default') {
+          isEditable = true;
+          input.removeAttribute('readonly');
+          input.value = '';
+          input.placeholder = getValue('placeholder_custom_epsg');
+          closeDropdown();
+          input.focus();
+        } else if (value) {
+          input.value = value;
+          this.changeSelectSRSorChangeFormat();
+          closeDropdown();
+          input.blur();
+        }
+      }
+    });
+
+    input.addEventListener('keyup', (event) => {
+      if (isEditable && event.key === 'Enter') {
+        isEditable = false;
+        input.setAttribute('readonly', 'readonly');
+        this.changeSelectSRSorChangeFormat();
+      }
+    });
+  }
 
   /**
    * This function is called on the control activation
@@ -438,19 +445,19 @@ export default class InfocoordinatesControl extends IDEE.Control {
       document.getElementsByClassName('contenedorPuntoSelect')[0].classList.replace('contenedorPuntoSelect', 'contenedorPunto');
     }
 
-    const textHTML = `<div class="point-overlay">${numPoint}</div>`;
+    // const textHTML = `<div class="point-overlay">${numPoint}</div>`;
 
-    // const textHTML = `<div class="contenedorPuntoSelect">
-    //             <table>
-    //                 <tbody>
-    //                   <tr>
-    //                     <td style="font-weight: bold; font-family: arial;">${numPoint}</td></b>
-    //                   </tr>
-    //                 </tbody>
-    //             </table>
-    //         </div>
-    //       </div>
-    //   </div>`;
+    const textHTML = `<div class="contenedorPuntoSelect">
+                <table>
+                    <tbody>
+                      <tr>
+                        <td style="font-weight: bold; font-family: arial;">${numPoint}</td></b>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+          </div>
+      </div>`;
 
     const helpTooltipElement = IDEE.template.compileSync(textHTML, {
       jsonp: true,
@@ -496,8 +503,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const datumBox = document.getElementById('m-infocoordinates-datum');
     const coordX = document.getElementById('m-infocoordinates-coordX');
     const coordY = document.getElementById('m-infocoordinates-coordY');
-    const srsSelector = document.querySelector('#m-infocoordinates-srs-selector');
-    const selectSRS = srsSelector.value;
+    const srsSelector = document.getElementById('m-infocoordinates-epsg-selected').value;
+    // const selectSRS = srsSelector.value;
 
     // Cojo el formato de las coordenadas geográficas
     const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
@@ -507,17 +514,17 @@ export default class InfocoordinatesControl extends IDEE.Control {
     try {
       pointDataOutput = this.getImpl().getCoordinates(
         featureSelected,
-        selectSRS,
+        srsSelector,
         formatGMS,
         this.decimalGEOcoord,
         this.decimalUTMcoord,
       );
     } catch (error) {
       try {
-        await IDEE.impl.ol.js.projections.setNewProjection(selectSRS);
+        await IDEE.impl.ol.js.projections.setNewProjection(srsSelector);
         pointDataOutput = this.getImpl().getCoordinates(
           featureSelected,
-          selectSRS,
+          srsSelector,
           formatGMS,
           this.decimalGEOcoord,
           this.decimalUTMcoord,
@@ -629,7 +636,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const lat = document.getElementById('m-infocoordinates-latitude').innerHTML.replace(',', '.');
     const long = document.getElementById('m-infocoordinates-longitude').innerHTML.replace(',', '.');
     const alt = document.getElementById('m-infocoordinates-altitude').innerHTML.replace(',', '.');
-    let proj = document.getElementById('m-infocoordinates-comboDatum').value;
+    let proj = document.getElementById('m-infocoordinates-epsg-selected').value;
     if (proj.indexOf('25829') > -1 || proj.indexOf('25830') > -1 || proj.indexOf('25831') > -1) {
       proj = 'EPSG:4258';
     } else {
@@ -644,7 +651,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const x = document.getElementById('m-infocoordinates-coordX').innerHTML.replaceAll('.', '').replace(',', '.');
     const y = document.getElementById('m-infocoordinates-coordY').innerHTML.replaceAll('.', '').replace(',', '.');
     const alt = document.getElementById('m-infocoordinates-altitude').innerHTML.replaceAll('.', '').replace(',', '.');
-    const proj = document.getElementById('m-infocoordinates-comboDatum').value;
+    const proj = document.getElementById('m-infocoordinates-epsg-selected').value;
     const result = `${x},${y},${alt},${proj}`;
     navigator.clipboard.writeText(result);
     IDEE.toast.success(getValue('clipboard'));
@@ -657,7 +664,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       const alt = featureSelected.getAttributes().Altitude !== undefined ? parseFloat(featureSelected.getAttributes().Altitude) : '-';
 
       // Cojo el srs seleccionado en el select
-      const selectSRS = document.querySelector('.m-infocoordinates-input-select').value;
+      const selectSRS = document.getElementById('m-infocoordinates-epsg-selected').value;
 
       // Cojo el formato de las coordenadas geográficas
       const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
@@ -708,7 +715,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       const alt = featureSelected.getAttributes().Altitude !== undefined ? parseFloat(featureSelected.getAttributes().Altitude) : '-';
 
       // Cojo el srs seleccionado en el select
-      const selectSRS = document.querySelector('.m-infocoordinates-input-select').value;
+      const selectSRS = document.getElementById('m-infocoordinates-epsg.selected').value;
 
       // Cojo el formato de las coordenadas geográficas
       const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
@@ -823,7 +830,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
   calculateUTMcoordinates(numPoint) {
     const featureSelected = this.layerFeatures.getFeatureById(numPoint);
     // Cojo el srs seleccionado en el select
-    const selectSRS = document.querySelector('.m-infocoordinates-input-select').value;
+    const selectSRS = document.getElementById('m-infocoordinates-epsg-selected').value;
 
     // Cojo el formato de las coordenadas geográficas
     const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;

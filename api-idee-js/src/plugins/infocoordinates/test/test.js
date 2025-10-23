@@ -14,7 +14,7 @@ const mp = new Infocoordinates({
   position: 'right', // TR | TL | BL | BR
   collapsed: true,
   collapsible: true,
-  tooltip: 'Información de coordenadas',
+  tooltip: 'Información coordenadas',
   decimalGEOcoord: 12,
   decimalUTMcoord: 12,
   helpUrl: 'https://www.ign.es/',
