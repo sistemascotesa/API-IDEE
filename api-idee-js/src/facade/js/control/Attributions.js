@@ -61,7 +61,7 @@ class Attributions extends ControlBase {
     }
 
     const impl = new AttributionsImpl();
-    super(impl, Attributions.NAME);
+    super(Attributions.NAME, impl);
 
     this.position = options.position;
     this.closePanel = options.closePanel;

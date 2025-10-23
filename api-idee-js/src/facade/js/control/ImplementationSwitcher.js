@@ -26,7 +26,7 @@ class ImplementationSwitcher extends ControlBase {
       Exception(getValue('exception').implementationswitcher_method);
     }
 
-    super(new ImplementationSwitcherImpl(), ImplementationSwitcher.NAME);
+    super(ImplementationSwitcher.NAME, new ImplementationSwitcherImpl());
 
     if (!window.implementations) {
       window.implementations = IDEE.config.implementationswitcher;

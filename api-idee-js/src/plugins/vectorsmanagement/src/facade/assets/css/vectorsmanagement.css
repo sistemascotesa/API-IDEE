@@ -1,9 +1,5 @@
 /* Opening & closing buttons */
 
-.m-panel.m-plugin-vectorsmanagement.collapsed {
-    height: 40px;
-}
-
 .m-plugin-vectorsmanagement.opened .m-panel-btn.g-cartografia-flecha-derecha,
 .m-plugin-vectorsmanagement.opened .m-panel-btn.g-cartografia-flecha-izquierda {
     background-color: white !important;
@@ -49,12 +45,19 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     justify-content: center;
 }
 
-.m-vectorsmanagement-controls {
-    background-color: #fff;
+#m-vectorsmanagement-previews {
+    padding: 1rem 0;
 }
 
 .m-control.m-container.m-vectorsmanagement {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: calc(100% - 1.5rem);
+    min-width: calc(2rem * 6 + .5rem * 5);
+    overflow-y: visible;
+    padding: 0 .75rem;
     background-color: #fff !important;
 }
 
@@ -87,22 +90,19 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 .m-vectorsmanagement-selection-layer {
     width: 100%;
-    width: calc(100% - 14px);
-    margin-left: 14px;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: .5rem;
-}
-
-.m-control {
-    overflow-y: visible;
+    padding-bottom: 1rem;
 }
 
 #m-vectorsmanagement-layer-selector {
+    padding: 0 25px 0 .5rem;
+    width: calc(146px - 25px - 8px - 1.6px);
     position: relative;
     cursor: pointer;
-    width: calc(146px - 25px - 8px);
     display: flex;
     align-items: center;
     justify-content: start;
@@ -110,14 +110,13 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 #m-vectorsmanagement-layer-selector[class^="vectorsmanagement-icon-selector-arrow-"]:before,
-#m-vectorsmanagement-layer-selector[class^="disabled vectorsmanagement-icon-selector-arrow-"]:before
-{
-    font-size: 13px !important;
+#m-vectorsmanagement-layer-selector[class^="disabled vectorsmanagement-icon-selector-arrow-"]:before {
+    font-size: 10px !important;
     position: absolute;
-    top: 8px;
+    top: 10px;
     right: 7px;
     border: none;
-    color: #757474;
+    color: #8b8b8b;
     background-color: transparent;
 }
 
@@ -135,12 +134,11 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 #m-vectorsmanagement-layer-selector-options {
-    width: calc(100% + 1px);
+    width: 100%;
     position: absolute;
     top: calc(100% + 3px);
     left: -1px;
     border: 1px solid #ced4daFF;
-    border-top: none;
     border-bottom: none;
     border-radius: 0 0 4px 4px;
     background: #fff;
@@ -158,15 +156,14 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 #m-vectorsmanagement-layer-selector-options span {
     text-align: start;
-    background-color: #e4e4e459;
+    background-color: #ffffff;
     padding: .5rem;
     max-width: calc(100% - 1rem);
     border-bottom: 1px solid #ced4daFF;
 }
 
-#m-vectorsmanagement-layer-selector-options span:hover, 
+#m-vectorsmanagement-layer-selector-options span:hover,
 #m-vectorsmanagement-layer-selector-options .selected {
-    background-color: #f1f1f1;
     color: #71a7d3;
 }
 
@@ -177,11 +174,9 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 #m-vectorsmanagement-layer-selector,
 #m-point-coordinates-srs,
 #figuresSelector {
-    padding: 0 25px 0 .5rem;
-    height: 2rem;
     background-color: #fff;
-    height: 28px;
-    border: 2px solid #ced4daFF;
+    height: 30px;
+    border: 1px solid #ced4da;
     border-radius: 2px;
     color: #6c6c6c;
     font-family: 'Roboto';
@@ -191,8 +186,15 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     font-size: 13px;
 }
 
-#m-point-coordinates-srs {
-    margin: 0px 0px 0px 5px;
+#m-vectorsmanagement-layer-selector:hover,
+#m-point-coordinates-srs.dropdown:hover,
+#m-point-coordinates input:hover,
+#figuresSelector:hover {
+    border-color: #0f0f0f;
+}
+
+#m-point-coordinates-srs:hover {
+    border-color: #71a7d3;
 }
 
 .m-vectorsmanagement-selection-layer>div {
@@ -216,11 +218,23 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-vectorsmanagement-style-container,
-#m-point-coordinates-coordinatesSystem,
-#m-point-coordinates-utm,
-#m-point-coordinates-latlon {
-    padding: 10px;
-    font-size: 1.2em;
+#m-point-coordinates {
+    padding-top: 1rem;
+    font-size: 14px;
+}
+
+#m-point-coordinates {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: fit-content;
+}
+
+#m-point-coordinates>div {
+    width: calc(100% - 2rem);
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 #m-point-coordinates label {
@@ -228,6 +242,23 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     display: inline-block;
 }
 
+#m-point-coordinates-srs.dropdown {
+    width: 184px;
+}
+
+#m-point-coordinates input,
+#m-point-coordinates-srs.dropdown {
+    margin: 4px 4px .75rem 4px;
+    padding: 4px;
+    border-radius: 4px;
+    border-color: #ced4da;
+}
+
+#m-point-coordinates-coordinatesSystem,
+#m-point-coordinates-utm,
+#m-point-coordinates-latlon {
+    width: 100%;
+}
 
 .m-vectorsmanagement-style-container>button#set-style-btn {
     width: 60px;
@@ -322,7 +353,8 @@ button#cancel-clear-btn {
 #m-vectorsmanagement-previews,
 #m-figuretools,
 #edition-attributes-container {
-    border-top: solid 1px #757474;
+    width: 100%;
+    border-top: solid 1px #ced4daFF;
 }
 
 .m-vectorsmanagement-text-draw {
@@ -333,7 +365,7 @@ button#cancel-clear-btn {
 }
 
 #m-figuretools {
-    padding: 20px;
+    padding-top: 1rem;
 }
 
 #m-vectorsmanagement-download-format {
@@ -719,12 +751,13 @@ table#attribute-table>tr>th>button {
     -moz-osx-font-smoothing: grayscale;
 }
 
-.m-vectorsmanagement-previews>button:first-child {
-    margin: 0px 0px 0px 0px;
-}
-
-.m-vectorsmanagement-previews>button {
-    margin: 0px 0px 0px 4px;
+.m-vectorsmanagement-previews {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .5rem;
 }
 
 .m-vectorsmanagement-previews>button,
@@ -734,29 +767,29 @@ table#attribute-table>tr>th>button {
 #analysisBtns>div>button,
 #editionBtns>button,
 [class^="vectorsmanagement-icon-"]:before {
-    color: #757474;
-    font-size: 20px;
+    font-size: 18px;
     border: none;
-    background-color: #ffffff00;
+}
+
+.m-vectorsmanagement-selection-layer>button[class^="vectorsmanagement-icon-"]:before {
+    color: #757474;
+}
+
+.m-vectorsmanagement-selection-layer>button[class^="vectorsmanagement-icon-"]:hover:before {
+    color: #71a7d3;
 }
 
 .m-vectorsmanagement-previews>button,
 .m-vectorsmanagement-previews>div>button,
-.m-vectorsmanagement-selection-layer>button,
-#creationBtns>button,
-#analysisBtns>div>button,
-#editionBtns>button,
-[class^="vectorsmanagement-icon-"]:hover::before {
-    color: #71a7d3;
+[class^="vectorsmanagement-icon-"]:before {
+    color: white;
 }
 
 .m-vectorsmanagement-toolsContent {
     display: flex;
-    justify-content: center;
     align-items: center;
-    width: 100%;
-    border-left: 2px solid #757474;
-    gap: 5px;
+    justify-content: flex-start;
+    gap: .5rem;
 }
 
 table#attribute-table>tr>th>button,
@@ -776,32 +809,6 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     background-color: transparent;
 }
 
-.vectorsmanagement-icon-seleccionar {
-    width: 90px !important;
-}
-
-.m-vectorsmanagement-previews>button.activated,
-.m-vectorsmanagement-previews>div>button.activated,
-.m-vectorsmanagement-selection-layer>button.activated,
-#creationBtns>button.activated,
-#analysisBtns>div>button.activated,
-#editionBtns>button.activated,
-[class^="vectorsmanagement-icon-"].activated {
-    background-color: #71a7d3 !important;
-}
-
-.m-vectorsmanagement-previews>button.activated,
-.m-vectorsmanagement-previews>div>button.activated,
-.m-vectorsmanagement-selection-layer>button.activated,
-#creationBtns>button.activated,
-#analysisBtns>div>button.activated,
-#editionBtns>button.activated,
-[class^="vectorsmanagement-icon-"].activated:before {
-    color: #fff;
-    font-size: 20px;
-    border: none;
-}
-
 .m-vectorsmanagement-previews>button.activated,
 .m-vectorsmanagement-previews>div>button.activated,
 .m-vectorsmanagement-selection-layer>button.activated,
@@ -810,6 +817,62 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 #editionBtns>button.activated,
 [class^="vectorsmanagement-icon-"]:hover {
     cursor: pointer;
+}
+
+.m-vectorsmanagement-previews>button.activated,
+.m-vectorsmanagement-previews>div>button.activated,
+.m-vectorsmanagement-selection-layer>button.activated,
+[class^="vectorsmanagement-icon-"].activated {
+    background-color: #1d5a9e !important;
+}
+
+.m-vectorsmanagement-previews>button.activated,
+.m-vectorsmanagement-previews>div>button.activated,
+.m-vectorsmanagement-selection-layer>button.activated,
+[class^="vectorsmanagement-icon-"].activated:before {
+    color: #fff !important;
+}
+
+#creationBtns,
+#analysisBtns>div,
+#editionBtns {
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    column-gap: .25rem;
+}
+
+#creationBtns,
+#creationBtns>button,
+#creationBtns>button.activated,
+#analysisBtns,
+#analysisBtns>button,
+#analysisBtns>button.activated,
+#editionBtns,
+#editionBtns>button,
+#editionBtns>button.activated {
+    background-color: transparent !important;
+}
+
+#creationBtns>button:before,
+#analysisBtns>button:before,
+#editionBtns>button:before {
+    color: #757474 !important;
+    background-color: transparent !important;
+}
+
+#creationBtns>button:hover:before,
+#analysisBtns>button:hover:before,
+#editionBtns>button:hover:before {
+    color: #71a7d3 !important;
+}
+
+#creationBtns>button.activated:before,
+#analysisBtns>button.activated:before,
+#editionBtns>button.activated:before {
+    color: #1d5a9e !important;
 }
 
 .m-vectorsmanagement-analysis-content {
@@ -900,9 +963,6 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 
 .vectorsmanagement-icon-seleccionar:before {
     content: "\e901";
-    font-size: 20px;
-    font-weight: bold;
-    top: 3px;
     position: relative;
 }
 
@@ -1129,6 +1189,11 @@ th .vectorsmanagement-icon-papelera {
     gap: 5px;
 }
 
+.m-vectorsmanagement-controls,
+.m-vectorsmanagement-controls .m-point-coordinates-panel {
+    width: 100%;
+}
+
 .m-vectorsmanagement-editionBtns,
 .m-vectorsmanagement-creationBtns {
     display: flex;
@@ -1140,7 +1205,6 @@ th .vectorsmanagement-icon-papelera {
     border: 1px solid #71a7d344;
     padding: 5px;
 }
-
 
 .m-areas>div.m-area>div.m-plugin-vectorsmanagement.opened div.m-vectorsmanagement-controls>div {
     width: auto;

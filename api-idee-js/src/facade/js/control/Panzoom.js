@@ -47,7 +47,7 @@ class Panzoom extends ControlBase {
     const impl = new PanzoomImpl(vendorOptions);
 
     // calls the super constructor
-    super(impl, Panzoom.NAME);
+    super(Panzoom.NAME, impl);
   }
 
   /**

@@ -38,7 +38,7 @@ class GetFeatureInfo extends ControlBase {
     // implementation of this control
     const impl = new GetFeatureInfoImpl(activated, options);
     // calls the super constructor
-    super(impl, GetFeatureInfo.NAME);
+    super(GetFeatureInfo.NAME, impl);
   }
 
   /**

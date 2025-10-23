@@ -147,7 +147,7 @@ export default class VectorsManagementControl extends IDEE.Control {
 
     this.layerSelectorWrapper.addEventListener('click', (event) => {
       const isOpen = !this.layerSelectorOptionsContainer.classList.contains('closed');
-      if (isOpen) {
+      if (isOpen && this.layerSelectorOptionsContainer.children.length > 0) {
         this.layerSelectorOptionsContainer.classList.remove('flex');
         this.layerSelectorOptionsContainer.classList.add('closed');
         this.layerSelectorWrapper.classList.replace('vectorsmanagement-icon-selector-arrow-up', 'vectorsmanagement-icon-selector-arrow-down');

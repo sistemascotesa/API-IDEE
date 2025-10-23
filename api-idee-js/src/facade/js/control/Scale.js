@@ -40,7 +40,7 @@ class Scale extends ControlBase {
     const impl = new ScaleImpl(options);
 
     // calls the super constructor
-    super(impl, Scale.NAME);
+    super(Scale.NAME, impl);
 
     /**
      * Order: Orden que tendrá con respecto al

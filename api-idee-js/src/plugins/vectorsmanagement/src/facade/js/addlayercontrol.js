@@ -65,34 +65,64 @@ export default class AddLayerControl extends IDEE.Control {
    */
   showLayerDialog() {
     IDEE.dialog.info(
-      `<div id="chooseLayerName">
-        <label for="layer-name">${getValue('layerName')}: </label>
-        <input type="text" id="layer-name" style="width: 10rem;">
-      </div>`,
+      `<div 
+        id="chooseLayerName" 
+        style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; row-gap: .5rem;"
+      >
+        <label 
+          for="layer-name" 
+          style="width: 93px;"
+        >
+          ${getValue('layerName')}
+        </label>
+        <input 
+          type="text" 
+          id="layer-name"
+          style="width: calc(14rem - 8px); margin: 0; border-radius: 2px; border: 1px solid #ced4da"
+        >
+      </div>
+      <hr/
+        style="width: 100%; margin:1rem 0 0 0; border: none; border-bottom: 1px solid #ced4da"
+      >
+      `,
       getValue('title_new_layer'),
     );
-    const color = '#71a7d3';
+
+    const colorPrimary = '#71a7d3';
     const dialog = document.querySelector('.m-dialog > div.m-modal > div.m-content');
-    const buttons = dialog.querySelector('.m-button');
-    const cancel = document.createElement('button');
-    cancel.type = 'button';
-    cancel.innerHTML = getValue('cancel');
-    cancel.style.width = 'auto';
-    cancel.style.backgroundColor = '#71a7d3';
-    buttons.appendChild(cancel);
-    dialog.style.minWidth = 'auto';
-    cancel.type = 'button';
-    cancel.innerHTML = getValue('cancel');
-    cancel.style.width = 'auto';
-    cancel.style.backgroundColor = '#71a7d3';
-    buttons.appendChild(cancel);
+    dialog.style.minWidth = '15rem';
+
     const title = document.querySelector('.m-modal .m-title');
-    title.style.backgroundColor = color;
-    const btn = document.querySelector('.m-button button');
+    title.style.height = '41px';
+
+    const btnContainerSubmmit = dialog.querySelector('.m-button');
+
+    const footerSubmmit = document.createElement('footer');
+    footerSubmmit.style.display = 'flex';
+    footerSubmmit.style.flexDirection = 'row';
+    footerSubmmit.style.alignItems = 'center';
+    footerSubmmit.style.justifyContent = 'flex-end';
+    footerSubmmit.style.columnGap = '.5rem';
+
+    btnContainerSubmmit.appendChild(footerSubmmit);
+
+    const btnSuccess = document.querySelector('.m-button button');
+    btnSuccess.style.type = 'button';
+    btnSuccess.style.width = '4.5rem';
+    btnSuccess.parentNode.removeChild(btnSuccess);
+
+    const btnCancel = document.createElement('button');
+    btnCancel.type = 'button';
+    btnCancel.width = '4.5rem';
+    btnCancel.innerHTML = getValue('cancel');
+    btnCancel.style.color = colorPrimary;
+    btnCancel.style.backgroundColor = 'white';
+
+    footerSubmmit.appendChild(btnSuccess);
+    footerSubmmit.appendChild(btnCancel);
+
     const inputName = document.querySelector('div.m-modal input#layer-name');
-    // const inputLegend = document.querySelector('div.m-modal input#layer-legend');
-    btn.style.backgroundColor = color;
-    btn.addEventListener('click', () => {
+    btnSuccess.addEventListener('click', () => {
       this.addLayer(inputName.value);
       IDEE.toast.info(getValue('creationLayer_done'), null, 6000);
       const layerSelector = document.querySelector('#m-vectorsmanagement-layer-selector');
@@ -103,7 +133,8 @@ export default class AddLayerControl extends IDEE.Control {
       });
       layerSelector.dispatchEvent(changeEvent);
     });
-    cancel.addEventListener('click', () => {
+
+    btnCancel.addEventListener('click', () => {
       const modal = document.querySelector('.m-dialog');
       const parent = modal.parentNode;
       parent.removeChild(modal);
