@@ -38,7 +38,7 @@
     "help14": "La información relevante a la extensión y su posible parametrización está documentada en",
     "help15": "El ejemplo de uso de sus parámetros puede comprobarse en"
   },
-  "tooltip": "Buscar un lugar",
+  "tooltip": "Locator",
   "xylocator": "Buscar por coordenadas",
   "geographic": "Geográficas",
   "zone": "huso",

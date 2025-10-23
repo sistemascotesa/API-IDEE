@@ -4896,6 +4896,19 @@ class Map extends Base {
   }
 
   /**
+   * Este método controla si la interacción de zoom con la rueda del ratón está activa o no.
+   * El valor por defecto es true
+   *
+   * @function
+   * @public
+   * @api
+   * @param {Boolean} active determina si se activa o desactiva el zoom.
+   */
+  enableMouseWheel(active) {
+    this.getImpl().enableMouseWheel(active);
+  }
+
+  /**
    * Método que devuelve las capas superpuestas añadidas al mapa.
    *
    * @function
