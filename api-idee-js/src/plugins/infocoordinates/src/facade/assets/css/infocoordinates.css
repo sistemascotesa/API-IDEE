@@ -1,5 +1,6 @@
 .m-panel.m-plugin-infocoordinates {
     z-index: 99999;
+    pointer-events: none;
 }
 
 /*Para que los números de los puntos no se vean por encima de los popups de info*/
@@ -28,6 +29,7 @@
 
 .div-m-infocoordinates-panel {
     width: 100%;
+    pointer-events: auto;
 }
 
 .contenedorCoordPunto {
@@ -323,71 +325,89 @@
     display:block;
 }
 
-.crs-select,
-.crs-select option {
-  font-family: inherit !important;
-  font-size: 0.9rem !important;
-  line-height: 1.4 !important;
-}
-
-.crs-select.open,
-.crs-select.open option {
-  font-family: inherit !important;
-  font-size: 0.9rem !important;
-  line-height: 1.4 !important;
-}
-
-.crs-select {
-    width: 120px;
-    background-color: #f0f2f5;
-    border: 1px solid #d1d5db;
-    border-radius: 2px;
-    padding: 2px;
-    font-size: 0.9rem;
-    /* background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236B7280'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3e%3c/svg%3e"); */
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-}
-
-.crs-select.open {
-    position: absolute;
-    z-index: 1000;
-    background: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    overflow-y: auto;
-    width: 120px;
-    font-size: 0.9rem;
-
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-}
-
-.crs-select.open option {
-  line-height: 1.8;
-  padding: 4px 8px;
-  white-space: nowrap;
-}
-
-.crs-select.open option:hover,
-.crs-select.open option:focus {
-  background: #e8f2ff;
-}
-
-.crs-select option[disabled] {
-  color: #9aa0a6;
-}
-
 .coordx-row {
     margin-top: 4px;
 }
 
-.crs-input{
-  width:120px;
-  background:#fff;
-  border:1px solid #d1d5db;
-  border-radius:2px;
-  padding:2px 6px;
-  font: inherit;
-  box-sizing:border-box;
+.m-infocoordinates-input-select {
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 2px;
+    padding: 2px 6px;
+    font-family: inherit;
+    font-size: 0.7rem;
+    line-height: inherit;
 }
+
+.m-infocoordinates-comboDatum {
+    position: relative;
+    width: 120px;
+}
+
+.arrow-down {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #6B7280;
+  pointer-events: none;
+}
+
+.arrow-up {
+  border-top: none;
+  border-bottom: 5px solid #6B7280;
+}
+
+.m-infocoordinates-srs-selector {
+    font-size: 0.8rem;
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 140px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-top: none;
+    z-index: 1001;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.m-infocoordinates-srs-selector.noDisplay {
+  display: none;
+}
+
+.m-infocoordinates-srs-selector li a {
+  display: block;
+  padding: 4px 8px;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.8rem;
+  line-height: 1.8;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.m-infocoordinates-srs-selector li a:hover {
+  background: #e8f2ff;
+}
+
+.m-infocoordinates-srs-selector li a[value="default"] {
+  color: #005a9e;
+  font-style: italic;
+}
+
+.m-infocoordinates-epsg-selected {
+    width: 80%;
+}
+
