@@ -81,7 +81,7 @@ export default class AddLayerControl extends IDEE.Control {
           style="width: calc(14rem - 8px); margin: 0; border-radius: 2px; border: 1px solid #ced4da"
         >
       </div>
-      <hr/ 
+      <hr/
         style="width: 100%; margin:1rem 0 0 0; border: none; border-bottom: 1px solid #ced4da"
       >
       `,
@@ -90,27 +90,19 @@ export default class AddLayerControl extends IDEE.Control {
 
     const colorPrimary = '#71a7d3';
     const dialog = document.querySelector('.m-dialog > div.m-modal > div.m-content');
-    dialog.style.minWidth = '16rem';
-    dialog.style.padding = '0';
+    dialog.style.minWidth = '15rem';
 
     const title = document.querySelector('.m-modal .m-title');
     title.style.height = '41px';
-    title.style.backgroundColor = colorPrimary;
-    title.style.color = 'white';
-    title.style.borderRadius = '4px 4px 0 0';
-
-    const message = dialog.querySelector('.m-message');
-    message.style.padding = '1rem 1rem 0 1rem';
 
     const btnContainerSubmmit = dialog.querySelector('.m-button');
-    btnContainerSubmmit.style.padding = '1rem';
 
     const footerSubmmit = document.createElement('footer');
     footerSubmmit.style.display = 'flex';
     footerSubmmit.style.flexDirection = 'row';
     footerSubmmit.style.alignItems = 'center';
     footerSubmmit.style.justifyContent = 'flex-end';
-    footerSubmmit.style.columnGap = '1rem';
+    footerSubmmit.style.columnGap = '.5rem';
 
     btnContainerSubmmit.appendChild(footerSubmmit);
 
@@ -123,7 +115,6 @@ export default class AddLayerControl extends IDEE.Control {
     btnCancel.type = 'button';
     btnCancel.width = '4.5rem';
     btnCancel.innerHTML = getValue('cancel');
-    btnCancel.style.borderColor = colorPrimary;
     btnCancel.style.color = colorPrimary;
     btnCancel.style.backgroundColor = 'white';
 
