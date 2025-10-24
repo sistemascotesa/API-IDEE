@@ -366,6 +366,15 @@ button#cancel-clear-btn {
 
 #m-figuretools {
     padding-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    column-gap: .5rem;
+}
+
+#m-figuretools>div>#figuresSelector {
+    margin-right: .5rem;
 }
 
 #m-vectorsmanagement-download-format {
