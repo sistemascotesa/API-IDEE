@@ -12,7 +12,6 @@ import DownloadControl from './downloadcontrol';
 import EditionControl from './editioncontrol';
 import HelpControl from './helpcontrol';
 import StyleControl from './stylecontrol';
-import { changeStyleDialog } from './util';
 
 /**
  * @classdesc
@@ -47,7 +46,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     isDraggable, order,
   }) {
     const impl = new IDEE.impl.Control();
-    super(impl, 'VectorsManagement');
+    super('VectorsManagement', impl);
 
     const allLayers = map.getLayers().concat(map.getImpl().getAllLayerInGroup());
 
@@ -81,7 +80,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   createView(map) {
-    this.map = map;
+    this.map_ = map;
     return new Promise((success, fail) => {
       const html = IDEE.template.compileSync(template, {
         vars: {
@@ -127,8 +126,8 @@ export default class VectorsManagementControl extends IDEE.Control {
 
       this.initLayerSelect();
 
-      this.map.on(IDEE.evt.ADDED_LAYER, this.refreshLayers.bind(this));
-      this.map.on(IDEE.evt.REMOVED_LAYER, this.refreshLayers.bind(this));
+      this.map_.on(IDEE.evt.ADDED_LAYER, this.refreshLayers.bind(this));
+      this.map_.on(IDEE.evt.REMOVED_LAYER, this.refreshLayers.bind(this));
 
       if (this.isDraggable_) {
         IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-vectorsmanagement-titulo');
@@ -139,7 +138,7 @@ export default class VectorsManagementControl extends IDEE.Control {
   }
 
   getAllLayers() {
-    return this.map.getLayers().concat(this.map.getImpl().getAllLayerInGroup());
+    return this.map_.getLayers().concat(this.map_.getImpl().getAllLayerInGroup());
   }
 
   initLayerSelect() {
@@ -226,7 +225,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     const selector = this.html.querySelector('#m-vectorsmanagement-layer-selected');
     const selectedLayerId = selector.dataset.value;
 
-    const allLayers = this.map.getLayers().concat(this.map.getImpl().getAllLayerInGroup());
+    const allLayers = this.map_.getLayers().concat(this.map_.getImpl().getAllLayerInGroup());
     this.selectedLayer = allLayers.filter((l) => l.idLayer === selectedLayerId)[0];
 
     if (this.selectedLayer.type === 'MVT' || this.selectedLayer.type === 'MBTilesVector') {
@@ -407,7 +406,6 @@ export default class VectorsManagementControl extends IDEE.Control {
       if (!clickActivate) {
         this.helpControl.active(html);
         event.target.classList.add('activated');
-        changeStyleDialog();
       }
     });
   }

@@ -27,7 +27,7 @@ export default class DownloadControl extends IDEE.Control {
 
     // 2. implementation of this control
     const impl = new DownloadImplControl(map);
-    super(impl, 'Download');
+    super('Download', impl);
 
     // facade control goes to impl as reference param
     impl.facadeControl = this;

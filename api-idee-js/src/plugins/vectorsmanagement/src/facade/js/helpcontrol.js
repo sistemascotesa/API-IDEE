@@ -108,9 +108,12 @@ export default class HelpControl extends IDEE.Control {
       this.closeEventActive_ = true;
     }
     IDEE.dialog.info(IDEE.utils.htmlToString(this.template), getValue('help_template').title);
-    document.querySelector('.m-dialog.info .m-content').style.overflowX = 'auto';
-    document.querySelector('.m-dialog.info .m-content').style.maxHeight = '70vh';
-    document.querySelector('.m-button button').addEventListener('click', this.deactivate.bind(this));
+
+    const dialogContainer = document.querySelector('.m-dialog .m-content');
+
+    const buttonContainer = dialogContainer.querySelector('.m-button button');
+    buttonContainer.addEventListener('click', this.deactivate.bind(this));
+
     this.managementControl_.accessibilityTab(this.template);
   }
 
@@ -121,7 +124,7 @@ export default class HelpControl extends IDEE.Control {
    * @function
    * @api stable
    */
-  destroy() {}
+  destroy() { }
 
   /**
    * This function is called on the control activation

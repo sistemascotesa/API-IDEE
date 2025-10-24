@@ -259,7 +259,7 @@ export default class Layerswitcher extends IDEE.Plugin {
 
   // Esta función añade el plugin al mapa
   addTo(map) {
-    this.map = map;
+    this.map_ = map;
 
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
@@ -333,8 +333,8 @@ export default class Layerswitcher extends IDEE.Plugin {
 
   // Esta función elimina el plugin del mapa
   destroy() {
-    this.map.removeButton(this.button);
-    this.map.removePanel(this.panel);
+    this.map_.removeButton(this.button);
+    this.map_.removePanel(this.panel);
   }
 
   // Esta función devuelve si el plugin recibido por parámetro es instancia de Layerswitcher

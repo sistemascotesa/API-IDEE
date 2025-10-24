@@ -7,7 +7,6 @@ import removeLayerTemplate from '../../templates/clearlayer';
 import editiontableTemplate from '../../templates/editiontable';
 
 import { getValue } from './i18n/language';
-import { changeStyleDialog } from './util';
 
 export default class EditionControl extends IDEE.Control {
   /**
@@ -299,7 +298,6 @@ export default class EditionControl extends IDEE.Control {
 
     IDEE.dialog.info(templateModal.innerHTML, getValue('title_attribute_table'));
     IDEE.utils.draggabillyElement('.m-dialog .m-modal .m-content', '.m-dialog .m-modal .m-content .m-title');
-    changeStyleDialog();
     document.querySelector('#add-attribute-btn').onclick = () => this.newAttributeColumn();
     document.querySelector('.m-dialog.info .m-modal .m-button button').onclick = () => this.activationManager('isEditAttributeActive', 'editattribute');
   }
@@ -402,7 +400,6 @@ export default class EditionControl extends IDEE.Control {
   }
 
   changeStyleModalClean() {
-    changeStyleDialog();
     document.querySelector('.m-modal .m-content .m-message').style.borderBottom = 'none';
     document.querySelector('.m-modal .m-content .m-button').style.display = 'none';
   }
@@ -757,7 +754,6 @@ export default class EditionControl extends IDEE.Control {
       </div>`,
       getValue('title_popup_attribute'),
     );
-    changeStyleDialog();
     const color = '#71a7d3';
     const dialog = document.querySelector('.m-dialog > div.m-modal > div.m-content');
     dialog.style.minWidth = 'auto';
@@ -952,8 +948,6 @@ export default class EditionControl extends IDEE.Control {
       getValue('title_popup_editAttribute'),
     );
 
-    changeStyleDialog();
-
     const color = '#71a7d3';
     const dialog = document.querySelector('.m-dialog > div.m-modal > div.m-content');
     dialog.style.minWidth = 'auto';
@@ -967,18 +961,6 @@ export default class EditionControl extends IDEE.Control {
       $dialog.style.display = 'block';
       this.updateFeaturesAttributeName(evt.target.name, inputName.value);
     });
-  }
-
-  changeStyleDialog() {
-    document.querySelectorAll('div.m-api-idee-container div.m-dialog div.m-title').forEach((t) => {
-      const title = t;
-      title.style.backgroundColor = '#71a7d3';
-    });
-
-    document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
-
-    const button = document.querySelector('div.m-dialog.info div.m-button > button');
-    button.style.backgroundColor = '#71a7d3';
   }
 
   /**
