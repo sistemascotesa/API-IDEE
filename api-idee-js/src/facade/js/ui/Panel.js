@@ -257,6 +257,7 @@ class Panel extends MObject {
     this.panelTitle.ariaLabel = this._tooltip;
     this.panelTitle.tabIndex = 'null';
     this.panelTitle.textContent = this._tooltip;
+    this.panelTitle.title = this._tooltip;
     this.element.appendChild(this.panelTitle);
   }
 
