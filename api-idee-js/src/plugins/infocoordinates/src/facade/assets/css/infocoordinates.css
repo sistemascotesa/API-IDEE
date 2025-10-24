@@ -1,9 +1,6 @@
 .m-panel.m-plugin-infocoordinates {
     z-index: 99999;
-}
-
-.m-panel.m-plugin-infocoordinates {
-    z-index: 99999;
+    pointer-events: none;
 }
 
 /*Para que los números de los puntos no se vean por encima de los popups de info*/
@@ -32,6 +29,7 @@
 
 .div-m-infocoordinates-panel {
     width: 100%;
+    pointer-events: auto;
 }
 
 .contenedorCoordPunto {
@@ -111,23 +109,6 @@
     text-align: justify;
 }
 
-#tabContent table {
-    border-collapse: inherit !important;
-    margin-bottom: inherit !important;
-    font-size: inherit !important;
-}
-
-#tabContent table,
-#tabContent th,
-#tabContent td {
-    border: unset !important;
-}
-
-/* .m-panel .m-control.m-container.m-infocoordinates {
-    cursor: default;
-    overflow: visible !important;
-} */
-
 #m-infocoordinates-buttonRemovePoint {
     background-color: transparent;
     border: none;
@@ -198,10 +179,6 @@
     max-height: 305px;
 }
 
-.m-infocoordinates-tabContent table{
-    user-select: text;
-}
-
 #m-infocoordinates-buttonRemovePoint:hover,
 #m-infocoordinates-copylatlon:hover,
 #m-infocoordinates-copyxy:hover,
@@ -250,92 +227,6 @@
     display: none;
 }
 
-.m-panel.m-plugin-infocoordinates.opened #tabContent table tbody tr td:first-child {
-    min-width: 80px;
-}
-
-.m-plugin-infocoordinates .m-infocoordinates-help {
-    position: relative;
-    left: 24px;
-    top: 0px;
-}
-
-.m-plugin-infocoordinates .m-infocoordinates-help a {
-    color: #71a7d3 !important;
-    font-size: 20px;
-}
-
-.m-plugin-infocoordinates .m-infocoordinates-help-td {
-    display: flex;
-    align-items: center;
-}
-
-.m-plugin-infocoordinates .m-infocoordinates-comboDatum {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
-.m-infocoordinates-comboDatum .m-infocoordinates-input-select {
-    box-sizing: border-box;
-    color: black;
-    background-color: #fff;
-    cursor: pointer;
-    padding: 0 !important;
-    margin: 0 5px 0 5px;
-    max-width: 120px;
-}
-
-/* .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector {
-    display: none;
-    position: absolute;
-    margin: 5px;
-    top: 90%;
-    padding: 1px 0;
-    margin-top: 0;
-    max-height: 200px;
-    max-width: 120px;
-    overflow-y: auto;
-    list-style: none;
-    z-index: 1000;
-    color: #000;
-    background-color: white;
-    font-size: 13px;
-    text-align: left;
-    border: 1px solid #ddd;
-} */
-
-/* .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li {
-    border-bottom: 1px solid #ddd;
-} */
-
-/* .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li a {
-    display: block;
-    margin-top: -1px;
-    padding: 4px 12px;
-    text-decoration: none;
-    color: #6c6c6c;
-} */
-
-/* .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li:hover {
-    color: #000;
-    border: 1px solid #000;
-} */
-
-@-moz-document url-prefix() {
-    .m-plugin-infocoordinates .m-infocoordinates-help-td {
-        height: 33px;
-    }
-
-    .m-plugin-infocoordinates .m-infocoordinates-help {
-        left: 22px;
-    }
-
-    .m-plugin-infocoordinates .m-infocoordinates-help a {
-        font-size: 22px !important;
-    }
-}
-
 .m-plugin-infocoordinates .icon-target:before {
     font-size: 22px;
     -webkit-text-stroke: 1px #71a7d3;
@@ -368,12 +259,12 @@
 /* Cada fila es un contenedor flex */
 .grid-row {
     display: flex;
-    align-items: center; /* Centra todo verticalmente en la fila */
+    align-items: center;
 }
 
 /* 1. LA CLAVE: Todas las etiquetas ocupan el mismo espacio */
 .grid-label {
-    flex-basis: 65px;  /* Dales a todas un ancho base de 90px (ajústalo si es necesario) */
+    flex-basis: 65px;
     flex-shrink: 0;
     margin-right: 10px;
     gap: 1px;
@@ -412,7 +303,7 @@
 }
 
 .help-icon {
-    display: flex; /* Para poder centrar el icono '?' que está dentro */
+    display: flex;
     width: 24px;
     height: 24px;
     border-radius: 4px;
@@ -434,71 +325,89 @@
     display:block;
 }
 
-.crs-select,
-.crs-select option {
-  font-family: inherit !important;
-  font-size: 0.9rem !important;
-  line-height: 1.4 !important;
-}
-
-.crs-select.open,
-.crs-select.open option {
-  font-family: inherit !important;
-  font-size: 0.9rem !important;
-  line-height: 1.4 !important;
-}
-
-.crs-select {
-    width: 120px;
-    background-color: #f0f2f5;
-    border: 1px solid #d1d5db;
-    border-radius: 2px;
-    padding: 2px;
-    font-size: 0.9rem;
-    /* background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236B7280'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3e%3c/svg%3e"); */
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-}
-
-.crs-select.open {
-    position: absolute;
-    z-index: 1000;
-    background: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    overflow-y: auto;
-    width: 120px;
-    font-size: 0.9rem;
-
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-}
-
-.crs-select.open option {
-  line-height: 1.8;
-  padding: 4px 8px;
-  white-space: nowrap;
-}
-
-.crs-select.open option:hover,
-.crs-select.open option:focus {
-  background: #e8f2ff;
-}
-
-.crs-select option[disabled] {
-  color: #9aa0a6;
-}
-
 .coordx-row {
     margin-top: 4px;
 }
 
-.crs-input{
-  width:120px;
-  background:#fff;
-  border:1px solid #d1d5db;
-  border-radius:2px;
-  padding:2px 6px;
-  font: inherit;
-  box-sizing:border-box;
+.m-infocoordinates-input-select {
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 2px;
+    padding: 2px 6px;
+    font-family: inherit;
+    font-size: 0.7rem;
+    line-height: inherit;
 }
+
+.m-infocoordinates-comboDatum {
+    position: relative;
+    width: 120px;
+}
+
+.arrow-down {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #6B7280;
+  pointer-events: none;
+}
+
+.arrow-up {
+  border-top: none;
+  border-bottom: 5px solid #6B7280;
+}
+
+.m-infocoordinates-srs-selector {
+    font-size: 0.8rem;
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 140px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-top: none;
+    z-index: 1001;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.m-infocoordinates-srs-selector.noDisplay {
+  display: none;
+}
+
+.m-infocoordinates-srs-selector li a {
+  display: block;
+  padding: 4px 8px;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.8rem;
+  line-height: 1.8;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.m-infocoordinates-srs-selector li a:hover {
+  background: #e8f2ff;
+}
+
+.m-infocoordinates-srs-selector li a[value="default"] {
+  color: #005a9e;
+  font-style: italic;
+}
+
+.m-infocoordinates-epsg-selected {
+    width: 80%;
+}
+

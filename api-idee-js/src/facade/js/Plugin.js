@@ -156,6 +156,7 @@ class Plugin extends Base {
 
   createToolsPanel() {
     const toolsPanel = document.createElement('ul');
+    toolsPanel.classList.add('m-api-idee-tabs-container');
     toolsPanel.id = `plugin-panel-tools-${this.name}`;
     this.panel.panelContent.appendChild(toolsPanel);
     return toolsPanel;

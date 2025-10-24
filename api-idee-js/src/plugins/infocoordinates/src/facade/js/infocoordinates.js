@@ -154,13 +154,13 @@ export default class Infocoordinates extends IDEE.Plugin {
    */
   addTo(map) {
     this.map_ = map;
-
+    // Crear el botón por separado
     this.button_ = new IDEE.ui.Button('Infocoordinates', {
       position: this.position_,
       tooltip: this.tooltip_,
     });
     map.addButtons(this.button_);
-
+    // Crear el panel por separado
     this.panel_ = new IDEE.ui.Panel('Infocoordinates', {
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
