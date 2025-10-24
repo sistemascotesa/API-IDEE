@@ -24,7 +24,7 @@ export default class HelpControl extends IDEE.Control {
 
     // 2. implementation of this control
     const impl = new HelpImplControl();
-    super(impl, 'Help');
+    super('Help', impl);
 
     this.map_ = map;
 

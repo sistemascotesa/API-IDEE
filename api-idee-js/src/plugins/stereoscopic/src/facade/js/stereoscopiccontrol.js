@@ -32,7 +32,7 @@ export default class StereoscopicControl extends IDEE.Control {
     }
     // 2. implementation of this control
     const impl = new StereoscopicImplControl();
-    super(impl, 'Stereoscopic');
+    super('Stereoscopic', impl);
     this.active = false;
     this.orbitControls_ = orbitControls;
     this.anaglyphActive_ = anaglyphActive;

@@ -31,7 +31,7 @@ export default class QueryAttributesControl extends IDEE.Control {
     }
 
     const impl = new QueryAttributesImplControl();
-    super(impl, 'QueryAttributes');
+    super('QueryAttributes', impl);
 
     /**
      * api-idee filter with the user's query.

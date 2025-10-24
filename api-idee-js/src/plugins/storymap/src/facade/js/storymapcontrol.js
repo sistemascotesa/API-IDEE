@@ -21,7 +21,7 @@ export default class StoryMapControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl'));
     }
     const impl = new StoryMapControlImplControl();
-    super(impl, 'StoryMapControl');
+    super('StoryMapControl', impl);
     this.content_ = content;
     this.delay = delay;
 

@@ -20,7 +20,7 @@ export default class ZoomPanelControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl_zoompanel'));
     }
     const impl = new ZoomPanelImpl();
-    super(impl, 'ZoomPanelImpl');
+    super('ZoomPanelImpl', impl);
     this.facadeMap_ = map;
   }
 

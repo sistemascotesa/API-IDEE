@@ -41,7 +41,7 @@ export default class LocatorControl extends IDEE.Control {
     }
 
     const impl = new LocatorImpl();
-    super(impl, 'Locator');
+    super('Locator', impl);
     /**
      * Indicates if the control xylocator is added to the plugin
      * @private

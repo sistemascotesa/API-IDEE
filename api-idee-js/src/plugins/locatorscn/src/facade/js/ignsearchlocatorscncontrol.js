@@ -33,7 +33,7 @@ export default class IGNSearchLocatorscnControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl_ignsearchlocatorscn'));
     }
     const impl = new IGNSearchLocatorscnImpl(map);
-    super(impl, 'IGNSearchLocatorscnImpl');
+    super('IGNSearchLocatorscnImpl', impl);
 
     /**
      * Zoom

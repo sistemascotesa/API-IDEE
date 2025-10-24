@@ -21,7 +21,7 @@ export default class ViewHistoryControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl_viewhistory'));
     }
     const impl = new ViewHistoryImpl(map);
-    super(impl, 'ViewHistoryImpl');
+    super('ViewHistoryImpl', impl);
 
     this.registerViewEvents_();
   }

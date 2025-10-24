@@ -27,7 +27,7 @@ export default class TransparencyControl extends IDEE.Control {
 
     // 2. implementation of this control
     const impl = new TransparencyImplControl();
-    super(impl, 'Transparency');
+    super('Transparency', impl);
     impl.addTo(map);
 
     /**

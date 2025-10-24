@@ -26,7 +26,7 @@ export default class MeasureClear extends IDEE.Control {
     const impl = new MeasureClearImpl(measureLengthControl.getImpl(), measureAreaControl.getImpl());
 
     // calls the super constructor
-    super(impl, MeasureClear.NAME);
+    super(MeasureClear.NAME, impl);
 
     this.order = order;
   }

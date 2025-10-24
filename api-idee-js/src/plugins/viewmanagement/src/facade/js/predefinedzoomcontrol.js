@@ -20,7 +20,7 @@ export default class PredefinedZoomControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl_predefinedzoom'));
     }
     const impl = new PredefinedZoomImpl();
-    super(impl, 'PredefinedZoomImpl');
+    super('PredefinedZoomImpl', impl);
 
     this.savedZooms_ = predefinedzoom;
     this.map = map;

@@ -60,7 +60,7 @@ export default class IncicartoControl extends IDEE.Control {
     }
 
     const impl = new IncicartoImplControl();
-    super(impl, 'Incicarto');
+    super('Incicarto', impl);
 
     // facade control goes to impl as reference param
     impl.facadeControl = this;

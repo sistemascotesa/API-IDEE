@@ -28,7 +28,7 @@ export default class PrintViewManagementControl extends IDEE.Control {
     }
 
     const impl = new PrintViewManagementImpl();
-    super(impl, 'PrintViewManagement');
+    super('PrintViewManagement', impl);
     /**
      * Option to allow the plugin to be draggable or not
      * @private

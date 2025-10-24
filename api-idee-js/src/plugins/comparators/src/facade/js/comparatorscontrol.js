@@ -29,7 +29,7 @@ export default class ComparatorsControl extends IDEE.Control {
     }
 
     const impl = new ComparatorsImpl();
-    super(impl, 'Comparators');
+    super('Comparators', impl);
 
     /**
      * Option to allow the plugin to be draggable or not

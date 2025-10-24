@@ -27,7 +27,7 @@ export default class EditionControl extends IDEE.Control {
 
     // 2. implementation of this control
     const impl = new EditionImplControl(map);
-    super(impl, 'Edition');
+    super('Edition', impl);
     impl.facadeControl = this;
 
     this.map_ = map;

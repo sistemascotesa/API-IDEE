@@ -31,7 +31,7 @@ export default class LocatorscnControl extends IDEE.Control {
     }
 
     const impl = new LocatorscnImpl();
-    super(impl, 'Locatorscn');
+    super('Locatorscn', impl);
 
     /**
      * Indicates if the control ignsearchlocatorscn is added to the plugin

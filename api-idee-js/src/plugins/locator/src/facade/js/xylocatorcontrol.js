@@ -42,7 +42,7 @@ export default class XYLocatorControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl_xylocator'));
     }
     const impl = new XYLocatorImpl(map);
-    super(impl, 'XYLocatorImpl');
+    super('XYLocatorImpl', impl);
 
     /**
      * Projections options

@@ -34,7 +34,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
     }
     // 2. implementation of this control
     const impl = new InfocoordinatesImplControl();
-    super(impl, 'Infocoordinates');
+    super('Infocoordinates', impl);
     this.map_ = null;
     this.numTabs = 0;
     this.layerFeatures = new IDEE.layer.Vector();

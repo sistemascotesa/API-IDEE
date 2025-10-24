@@ -37,7 +37,7 @@ export default class MouseSRSControl extends IDEE.Control {
     }
     // eslint-disable-next-line max-len
     const impl = new MouseSRSImplControl(srs, label, precision, geoDD, utmDD, tooltip, activeZ, helpUrl, mode, coveragePrecisions, order, draggableDialog, epsgFormat);
-    super(impl, 'MouseSRS');
+    super('MouseSRS', impl);
     this.tooltip_ = tooltip;
     this.order = order;
   }
