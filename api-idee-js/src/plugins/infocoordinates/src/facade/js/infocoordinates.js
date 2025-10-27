@@ -23,13 +23,10 @@ export default class Infocoordinates extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super();
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map_ = null;
+    super('infocoordinates', {
+      position: options.position || 'right',
+      tooltip: options.tooltip || getValue('tooltip'),
+    });
 
     /**
      *  Decimal digits fixed on geographic coordinates
@@ -44,31 +41,6 @@ export default class Infocoordinates extends IDEE.Plugin {
      * @type {int}
      */
     this.decimalUTMcoord_ = options.decimalUTMcoord || 2;
-
-    /**
-     * Name plugin
-     * @private
-     * @type {String}
-     */
-    this.name_ = 'infocoordinates';
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls_ = [];
-
-    this.button_ = null;
-
-    /**
-     * Position of the Plugin
-     * @public
-     * Posible values: TR | TL | BL | BR
-     * @type {String}
-     */
-    // const positions = ['TR', 'TL', 'BL', 'BR'];
-    this.position_ = 'right';
 
     /**
      * Option to allow the plugin to be collapsed or not
@@ -114,14 +86,6 @@ export default class Infocoordinates extends IDEE.Plugin {
     this.order = options.order >= -1 ? options.order : null;
 
     /**
-     * Tooltip of the UI Plugin
-     *
-     * @private
-     * @type {string}
-     */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
-
-    /**
      * Plugin parameters
      * @public
      * @type {object}
@@ -153,37 +117,45 @@ export default class Infocoordinates extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.map_ = map;
+    this.map = map;
     // Crear el botón por separado
-    this.button_ = new IDEE.ui.Button('Infocoordinates', {
-      position: this.position_,
-      tooltip: this.tooltip_,
+    this.button = new IDEE.ui.Button(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+      svgPath: `plugins/${this.name}/images/icon.svg`,
     });
-    map.addButtons(this.button_);
+    map.addButtons(this.button);
     // Crear el panel por separado
-    this.panel_ = new IDEE.ui.Panel('Infocoordinates', {
+    this.panel = new IDEE.ui.Panel(this.name, {
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
-      position: this.position_,
+      position: this.position,
       className: 'm-plugin-infocoordinates',
       collapsedButtonClass: 'icon-target',
-      tooltip: this.tooltip_,
+      tooltip: this.tooltip,
       order: this.order,
     });
 
-    map.addPanels(this.panel_);
+    map.addPanels(this.panel);
 
-    this.controls_.push(new InfocoordinatesControl(
+    this.controls.push(new InfocoordinatesControl(
       this.decimalGEOcoord_,
       this.decimalUTMcoord_,
       this.helpUrl_,
       this.order,
       this.outputDownloadFormat_,
     ));
-    this.panel_.addControls(this.controls_);
+    this.controls.push(new InfocoordinatesControl({
+      decimalGEOcoord: this.decimalGEOcoord_,
+      decimalUTMcoord: this.decimalUTMcoord_,
+      helpUrl: this.helpUrl_,
+      order: this.order,
+      outputDownloadFormat: this.outputDownloadFormat_,
+    }));
+    this.panel.addControls(this.controls);
 
-    this.button_.panel = this.panel_;
-    this.panel_.button = this.button_;
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
   }
 
   /**
@@ -194,21 +166,10 @@ export default class Infocoordinates extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
-    this.map_.removeControls([this.control_]);
+    this.map.removeControls([this.control_]);
     this.control_.deactivate();
     this.control_.removeLayerFeatures();
-    [this.control_, this.panel_, this.map] = [null, null, null];
-  }
-
-  /**
-   * This function gets name plugin
-   * @getter
-   * @public
-   * @returns {string}
-   * @api stable
-   */
-  get name() {
-    return this.name_;
+    [this.control_, this.panel, this.map] = [null, null, null];
   }
 
   /**
@@ -230,7 +191,7 @@ export default class Infocoordinates extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position_}*${this.collapsed_}*${this.collapsible_}*${this.tooltip_}*${this.decimalGEOcoord_}*${this.decimalUTMcoord_}*${this.helpUrl_}*${this.outputDownloadFormat_}`;
+    return `${this.name}=${this.position}*${this.collapsed_}*${this.collapsible_}*${this.tooltip}*${this.decimalGEOcoord_}*${this.decimalUTMcoord_}*${this.helpUrl_}*${this.outputDownloadFormat_}`;
   }
 
   /**
