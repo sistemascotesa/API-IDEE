@@ -7,7 +7,6 @@ import template from '../../templates/analysis';
 import infoanalysis from '../../templates/infoanalysis';
 import pointProfileTemplate from '../../templates/pointprofile';
 import { getValue } from './i18n/language';
-import { changeStyleDialog } from './util';
 
 export default class AnalysisControl extends IDEE.Control {
   /**
@@ -28,7 +27,7 @@ export default class AnalysisControl extends IDEE.Control {
 
     // 2. implementation of this control
     const impl = new AnalysisImplControl(map);
-    super(impl, 'Analysis');
+    super('Analysis', impl);
 
     impl.facadeControl = this;
 
@@ -156,8 +155,6 @@ export default class AnalysisControl extends IDEE.Control {
       const pre = JSON.stringify(featuresArea.length === 1
         ? featuresArea[0] : featuresArea, null, 2);
       IDEE.dialog.info(`<pre class="vectorsmanagement-dialogCode"><code>${pre}</code></pre>`, 'GeoJSON');
-
-      changeStyleDialog();
     });
   }
 

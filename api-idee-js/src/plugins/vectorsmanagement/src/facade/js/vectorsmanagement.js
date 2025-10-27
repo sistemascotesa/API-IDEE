@@ -36,7 +36,7 @@ export default class VectorsManagement extends IDEE.Plugin {
      * @private
      * @type {IDEE.Map}
      */
-    this.map = null;
+    this.map_ = null;
 
     /**
      * Button of the plugin
@@ -188,7 +188,7 @@ export default class VectorsManagement extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.map = map;
+    this.map_ = map;
 
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
@@ -266,8 +266,8 @@ export default class VectorsManagement extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
-    this.map.removeControls(this.controls);
-    this.map = null;
+    this.map_.removeControls(this.controls);
+    this.map_ = null;
     this.control_ = null;
     this.controls = null;
     this.panel = null;

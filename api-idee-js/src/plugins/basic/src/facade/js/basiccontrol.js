@@ -24,7 +24,7 @@ export default class BasicControl extends IDEE.Control {
     }
     // 2. Crea la implementación del control
     const impl = new BasicImplControl();
-    super(impl, 'Basic');
+    super('Basic', impl);
 
     /**
      * Indicador de si el plugin puede arrastrarse o no

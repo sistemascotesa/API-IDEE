@@ -25,7 +25,7 @@ export default class ContactLinkControl extends IDEE.Control {
     }
     // 2. implementation of this control
     const impl = new ContactLinkImplControl();
-    super(impl, 'ContactLink');
+    super('ContactLink', impl);
 
     /**
      * Link to cnig downloads

@@ -26,6 +26,8 @@
 /**************************/
 
 .m-dialog > div.m-modal > div.m-content {
+   display: flex;
+   flex-direction: column;
    position: relative;
    max-height: 70vh;
    max-width: 70vw;
@@ -48,16 +50,16 @@
    font-weight: bold;
 }
 
-
 /**************************
          MESSAGE
 /**************************/
 
 .m-dialog div.m-message {
+   flex-grow: 1;
+   overflow: auto;
    padding: 8px;
    font-size: 16px;
 }
-
 
 /**************************
          BUTTON

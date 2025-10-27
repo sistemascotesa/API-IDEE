@@ -46,7 +46,7 @@ export default class GeorefimageControl extends IDEE.Control {
       IDEE.exception('La implementación usada no puede crear controles Georefimage');
     }
     const impl = new GeorefimageControlImpl(map);
-    super(impl, GeorefimageControl.NAME);
+    super(GeorefimageControl.NAME, impl);
     this.map_ = map;
 
     if (IDEE.utils.isUndefined(GeorefimageControlImpl.prototype.encodeLayer)) {

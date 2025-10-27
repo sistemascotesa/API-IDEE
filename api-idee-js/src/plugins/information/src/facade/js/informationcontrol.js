@@ -23,7 +23,7 @@ export default class InformationControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl'));
     }
     const impl = new InformationImplControl(format, featureCount, buffer, opened);
-    super(impl, 'Information');
+    super('Information', impl);
     this.tooltip = tooltip;
     this.order = order;
   }

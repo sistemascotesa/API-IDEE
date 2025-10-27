@@ -59,7 +59,7 @@ export default class ShareMapControl extends IDEE.Control {
    */
   constructor(options) {
     const impl = new IDEE.impl.Control();
-    super(impl, 'sharemap');
+    super('sharemap', impl);
     /**
      * Base url of the shared map
      *

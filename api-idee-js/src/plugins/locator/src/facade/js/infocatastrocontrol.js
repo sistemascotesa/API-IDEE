@@ -37,7 +37,7 @@ export default class InfoCatastroControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl_infocatastro'));
     }
     const impl = new InfoCatastroImpl();
-    super(impl, 'InfoCatastroImpl');
+    super('InfoCatastroImpl', impl);
 
     /**
      * CMC_url

@@ -28,7 +28,7 @@ export default class AddLayerControl extends IDEE.Control {
 
     // 2. implementation of this control
     const impl = new AddLayerImplControl();
-    super(impl, 'Help');
+    super('Help', impl);
 
     this.map_ = map;
   }
@@ -92,7 +92,7 @@ export default class AddLayerControl extends IDEE.Control {
     const dialog = document.querySelector('.m-dialog > div.m-modal > div.m-content');
     dialog.style.minWidth = '15rem';
 
-    const title = document.querySelector('.m-modal .m-title');
+    const title = dialog.querySelector('.m-modal .m-title');
     title.style.height = '41px';
 
     const btnContainerSubmmit = dialog.querySelector('.m-button');

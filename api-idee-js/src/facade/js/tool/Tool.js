@@ -46,7 +46,7 @@ class Tool extends Base {
 
   createView(plugin) {
     const element = document.createElement('li');
-    element.classList.add('m-tool-button');
+    element.classList.add('m-api-idee-tab');
     element.id = `m-tool-button-${this.name}`;
     element.title = this.tooltip;
     element.role = 'button';
@@ -72,11 +72,11 @@ class Tool extends Base {
         if (!this.activated) {
           this.activate();
           this.activated = true;
-          this.element.classList.add('active');
+          this.element.classList.add('activated');
         } else {
           this.deactivate();
           this.activated = false;
-          this.element.classList.remove('active');
+          this.element.classList.remove('activated');
         }
       }, false);
     }
@@ -93,7 +93,7 @@ class Tool extends Base {
       });
     }
     if (!isNullOrEmpty(this.element)) {
-      this.element.classList.add('active');
+      this.element.classList.add('activated');
     }
     if (!isUndefined(this.getImpl()) && !isUndefined(this.getImpl().activate)) {
       this.getImpl().activate();
@@ -105,7 +105,7 @@ class Tool extends Base {
 
   deactivate() {
     if (!isNullOrEmpty(this.element)) {
-      this.element.classList.remove('active');
+      this.element.classList.remove('activated');
     }
     if (!isUndefined(this.getImpl()) && !isUndefined(this.getImpl().deactivate)) {
       this.getImpl().deactivate();

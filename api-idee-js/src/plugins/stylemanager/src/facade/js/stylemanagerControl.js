@@ -26,7 +26,7 @@ export default class StyleManagerControl extends IDEE.Control {
 
     // 2. implementation of this control
     const impl = new StyleManagerImplControl();
-    super(impl, 'StyleManager');
+    super('StyleManager', impl);
     this.layer_ = layer;
   }
 

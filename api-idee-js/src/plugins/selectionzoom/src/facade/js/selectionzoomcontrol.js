@@ -59,7 +59,7 @@ export default class SelectionZoomControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl'));
     }
     const impl = new SelectionZoomImpl();
-    super(impl, 'SelectionZoom');
+    super('SelectionZoom', impl);
 
     if (!newparam) {
       // eslint-disable-next-line no-console

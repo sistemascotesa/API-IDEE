@@ -27,7 +27,7 @@ export default class SelectionControl extends IDEE.Control {
 
     // 2. implementation of this control
     const impl = new SelectionImplControl(map);
-    super(impl, 'Selection');
+    super('Selection', impl);
     impl.facadeControl = this;
 
     this.map_ = map;

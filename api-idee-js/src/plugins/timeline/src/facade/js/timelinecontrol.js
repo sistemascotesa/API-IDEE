@@ -25,7 +25,7 @@ export default class TimelineControl extends IDEE.Control {
     }
     // 2. implementation of this control
     const impl = new TimelineImplControl();
-    super(impl, 'Timeline');
+    super('Timeline', impl);
 
     this.timelineType = options.timelineType;
 

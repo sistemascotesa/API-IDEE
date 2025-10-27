@@ -30,7 +30,7 @@ export default class CreationControl extends IDEE.Control {
 
     // 2. implementation of this control
     const impl = new CreationImplControl(map);
-    super(impl, 'Creation');
+    super('Creation', impl);
 
     // facade control goes to impl as reference param
     impl.facadeControl = this;

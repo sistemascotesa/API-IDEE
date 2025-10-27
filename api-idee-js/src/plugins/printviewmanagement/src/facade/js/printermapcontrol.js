@@ -56,7 +56,7 @@ export default class PrinterMapControl extends IDEE.Control {
     }
     const impl = new PrinterMapControlImpl(map);
 
-    super(impl, PrinterMapControl.NAME);
+    super(PrinterMapControl.NAME, impl);
 
     /**
      * Instacia del mapa

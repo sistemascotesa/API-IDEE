@@ -24,7 +24,7 @@ export default class StyleControl extends IDEE.Control {
 
     // 2. implementation of this control
     const impl = new StyleImplControl();
-    super(impl, 'Style');
+    super('Style', impl);
     impl.facadeControl = this;
 
     this.map_ = map;

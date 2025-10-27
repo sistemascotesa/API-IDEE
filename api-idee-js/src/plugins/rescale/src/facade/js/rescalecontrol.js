@@ -25,7 +25,7 @@ export default class RescaleControl extends IDEE.Control {
       IDEE.exception('La implementación usada no puede crear controles RescaleControl');
     }
     const impl = new RescaleImplControl();
-    super(impl, 'Rescale');
+    super('Rescale', impl);
     this.impl_ = impl;
   }
 

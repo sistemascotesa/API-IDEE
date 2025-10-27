@@ -39,7 +39,7 @@ export default class LyrCompareControl extends IDEE.Control {
 
     // 2. implementation of this control
     const impl = new LyrcompareImplControl(map);
-    super(impl, 'LyrCompare');
+    super('LyrCompare', impl);
     impl.addTo(map);
     this.map_ = map;
 
