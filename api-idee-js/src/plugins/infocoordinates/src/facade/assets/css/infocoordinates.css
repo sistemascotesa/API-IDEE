@@ -24,7 +24,8 @@
 }
 
 .m-panel.m-plugin-infocoordinates.collapsed {
-    height: 40px;
+    height: 30px;
+    min-height: 30px; /* Asegura que la altura mínima también sea 30px */
 }
 
 .div-m-infocoordinates-panel {
@@ -57,18 +58,6 @@
     -webkit-text-stroke: 0.8px #2690e7;
     z-index: 999;
 }
-
-/* .m-infocoordinates-title {
-    line-height: 40px;
-    background-color: #71a7d3;
-}
-
-.m-infocoordinates-title>p {
-    margin: 0px;
-    text-align: center;
-    color: white;
-    font-weight: bold;
-} */
 
 .m-infocoordinates-tabs {
     overflow-y: auto;
@@ -267,7 +256,7 @@
 .grid-label {
     flex-basis: 75px;
     flex-shrink: 0;
-    margin-right: 10px;
+    /* margin-right: 10px; */
     gap: 1px;
 }
 
@@ -315,9 +304,9 @@
 }
 
 .help-icon img { 
-    width:32px; 
-    height:32px; 
-    display:block; 
+    width:32px;
+    height:27px;
+    display:block;
 }
 
 .icon-button img {
@@ -335,21 +324,23 @@
     margin-top: 4px;
 }
 
-.m-infocoordinates-input-select {
+#m-infocoordinates-epsg-selected {
     width: 100%;
-    box-sizing: border-box;
-    background: #fff;
+    font-size: 1rem;
+    height: auto;
+    margin: 0;
+    padding: 2px 25px 2px 6px;
     border: 1px solid #d1d5db;
     border-radius: 2px;
-    padding: 2px 6px;
+    /* box-sizing: border-box; */
+    background: #fff;
     font-family: inherit;
-    font-size: 0.7rem;
     line-height: inherit;
 }
 
 .m-infocoordinates-comboDatum {
     position: relative;
-    width: 120px;
+    width: 130px;
 }
 
 .arrow-down {
@@ -362,7 +353,9 @@
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 5px solid #6B7280;
-  pointer-events: none;
+  cursor: pointer; /* Cambia el cursor para indicar que es clicable */
+  pointer-events: auto; /* Permite que la flecha reciba eventos del ratón */
+  z-index: 2; /* Asegura que la flecha esté por encima del input */
 }
 
 .arrow-up {
@@ -413,7 +406,12 @@
   font-style: italic;
 }
 
-.m-infocoordinates-epsg-selected {
-    width: 80%;
+#m-infocoordinates-epsg-selected {
+    width: 100%;
+    font-size: 0.9rem;
+    /* Reseteamos los estilos del tema que interfieren */
+    height: auto;
+    margin: 0;
+    padding: 2px 6px;
+    border: 1px solid #d1d5db;
 }
-

@@ -122,6 +122,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       this.accessibilityTab(html);
 
       this.map.addLayers(this.layerFeatures);
+      // console.log('THIS.PANEL', 'on' in this.panel);
       this.panel.on(IDEE.evt.SHOW, this.activate, this);
       this.panel.on(IDEE.evt.HIDE, this.deactivate, this);
 
@@ -191,6 +192,11 @@ export default class InfocoordinatesControl extends IDEE.Control {
           input.blur();
         }
       }
+    });
+
+    arrow.addEventListener('click', () => {
+      selector.classList.toggle('noDisplay');
+      arrow.classList.toggle('arrow-up');
     });
 
     input.addEventListener('keyup', (event) => {
