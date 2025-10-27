@@ -42,7 +42,7 @@ export default class TemplateCustomizer extends IDEE.Control {
   ) {
     const impl = new TemplateCustomizerImpl(map);
 
-    super(impl);
+    super('TemplateCustomizer', impl);
 
     /**
      * Mapa base

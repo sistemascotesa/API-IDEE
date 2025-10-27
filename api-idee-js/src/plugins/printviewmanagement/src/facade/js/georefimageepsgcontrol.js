@@ -31,7 +31,7 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl'));
     }
     const impl = new Georefimage2ControlImpl(map);
-    super(impl, 'georefimage2control');
+    super('georefimage2control', impl);
 
     /**
      * Instancia del mapa

@@ -11,7 +11,7 @@ export default class Measure extends IDEE.Control {
    * @api stable
    */
   constructor(impl, template, name, order) {
-    super(impl, name);
+    super(name, impl);
 
     /**
      * Template of the control

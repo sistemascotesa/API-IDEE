@@ -271,7 +271,7 @@ export default class WindowSyncControl extends IDEE.Control {
 
     // 2. implementation of this control
     const impl = new WindowSyncImplControl();
-    super(impl, 'WindowSync');
+    super('WindowSync', impl);
     this.implControl_ = impl;
 
     /**

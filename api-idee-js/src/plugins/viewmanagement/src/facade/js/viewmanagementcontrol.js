@@ -25,7 +25,7 @@ export default class ViewManagementControl extends IDEE.Control {
     }
 
     const impl = new ViewManagementImpl();
-    super(impl, 'ViewManagement');
+    super('ViewManagement', impl);
     /**
      * Indicates if the control PredefinedZoom is added to the plugin
      * @private

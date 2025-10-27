@@ -20,7 +20,7 @@ export default class ZoomExtentControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl_zoomextent'));
     }
     const impl = new ZoomExtentImpl();
-    super(impl, 'ZoomExtentImpl');
+    super('ZoomExtentImpl', impl);
     this.getImpl().createInteraction(map);
   }
 

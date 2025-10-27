@@ -28,7 +28,7 @@ export default class MirrorpanelControl extends IDEE.Control {
 
     // 2. implementation of this control
     const impl = new MirrorpanelImplControl();
-    super(impl, 'Mirrorpanel');
+    super('Mirrorpanel', impl);
 
     this.map_ = map;
 

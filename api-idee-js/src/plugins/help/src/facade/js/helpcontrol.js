@@ -25,7 +25,7 @@ export default class HelpControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl'));
     }
     const impl = new HelpImplControl();
-    super(impl, 'help');
+    super('help', impl);
 
     // Opciones
     this.headerImages = options.headerImages;

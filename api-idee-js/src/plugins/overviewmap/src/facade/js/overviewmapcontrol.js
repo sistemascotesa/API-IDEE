@@ -23,7 +23,7 @@ export default class OverviewMapControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl'));
     }
     const impl = new OverviewMapImplControl(options, vendorOptions);
-    super(impl, 'OverviewMap');
+    super('OverviewMap', impl);
 
     impl.facadeControl = this;
   }
