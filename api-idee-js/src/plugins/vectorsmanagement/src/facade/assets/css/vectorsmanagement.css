@@ -218,31 +218,6 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     text-align: center;
 }
 
-.m-vectorsmanagement-style-container,
-.m-vectorsmanagement-style-container>#styleOptions,
-.m-vectorsmanagement-style-container>#styleOptions>div,
-.m-vectorsmanagement-style-container>#styleOptions>div>#options-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-}
-
-.m-vectorsmanagement-style-container #options-content input[type=number] {
-    height: 2rem;
-}
-
-.m-vectorsmanagement-style-container>button#set-style-btn {
-    width: 60px;
-    margin-left: calc(50% - 30px) !important;
-}
-
-.m-vectorsmanagement-style-container,
-#m-point-coordinates {
-    padding-top: 1rem;
-    font-size: 14px;
-}
-
 #m-point-coordinates {
     display: flex;
     flex-direction: column;
@@ -452,6 +427,31 @@ table#attribute-table>tr>th>span,
 table#attribute-table>tr>th>button {
     margin-right: 5px;
     padding: 0;
+}
+
+.m-vectorsmanagement-style-container,
+.m-vectorsmanagement-style-container>#styleOptions,
+.m-vectorsmanagement-style-container>#styleOptions>div,
+.m-vectorsmanagement-style-container>#styleOptions>div>#options-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.m-vectorsmanagement-style-container #options-content input[type=number] {
+    height: 2rem;
+}
+
+.m-vectorsmanagement-style-container>button#set-style-btn {
+    width: 60px;
+    margin-left: calc(50% - 30px) !important;
+}
+
+.m-vectorsmanagement-style-container,
+#m-point-coordinates {
+    padding-top: 1rem;
+    font-size: 14px;
 }
 
 .m-vectorsmanagement-style-container .m-vectorsmanagement-style-options {
