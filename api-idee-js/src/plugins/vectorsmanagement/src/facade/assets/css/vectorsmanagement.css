@@ -62,6 +62,10 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     background-color: #fff !important;
 }
 
+.m-control.m-container.m-vectorsmanagement select {
+    border-radius: 2px;
+}
+
 .m-panel.m-plugin-vectorsmanagement.opened .m-control.m-container.m-vectorsmanagement>div#m-vectorsmanagement-previews>div[id^="m-vectorsmanagement-"] {
     border: 5px solid #e9e8e8;
     box-sizing: border-box;
@@ -169,6 +173,11 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 #m-vectorsmanagement-download-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    column-gap: .5rem;
     width: 100%;
 }
 
@@ -370,8 +379,7 @@ button#cancel-clear-btn {
 }
 
 #m-vectorsmanagement-download-format {
-    background-color: #fff;
-    padding: 5px;
+    padding: 5px 15px 5px 5px;
     display: block;
     margin: 10px auto;
 }
@@ -388,9 +396,10 @@ div#edition-container #featureInfo {
 }
 
 #m-vectorsmanagement-attribute-table-container {
-    max-height: 50vh;
+    display: flex;
+    flex-direction: column;
     overflow: auto;
-    margin: 1rem 0.5rem 0.5rem;
+    min-height: 80px;
 }
 
 table#attribute-table {
@@ -940,8 +949,6 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 10px;
-    gap: 20px;
     padding-bottom: 10px;
 }
 
@@ -1188,11 +1195,6 @@ th .vectorsmanagement-icon-papelera {
 
 #clear-layer-modal>.popup-title {
     margin-top: 0;
-}
-
-#m-vectorsmanagement-attribute-table-container {
-    max-width: 61vw;
-    padding: 0 1vw 1vw;
 }
 
 .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened .m-control.m-container.m-modal>button.m-panel-btn.vectorsmanagement-icon-cancelar:before {

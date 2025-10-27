@@ -81,9 +81,6 @@ export default class AddLayerControl extends IDEE.Control {
           style="width: calc(14rem - 8px); margin: 0; border-radius: 2px; border: 1px solid #ced4da"
         >
       </div>
-      <hr/
-        style="width: 100%; margin:1rem 0 0 0; border: none; border-bottom: 1px solid #ced4da"
-      >
       `,
       getValue('title_new_layer'),
     );
