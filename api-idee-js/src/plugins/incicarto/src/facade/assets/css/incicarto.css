@@ -394,7 +394,7 @@ div.m-incicarto-layer-actions .active-tool {
   right: 2px;
   top: 0px;
   display: block !important;
-  color: #676767;
+  color: #000000;
   border: none;
   background-color: transparent;
 }
@@ -524,7 +524,8 @@ div.m-incicarto-layer-actions .active-tool {
     text-align: center;
     margin: 0;
     font-weight: bold;
-    color: #676767;
+    color: #364b5f;
+    font-size: 16px;
 }
 
 /*OVERLAY POPUP*/

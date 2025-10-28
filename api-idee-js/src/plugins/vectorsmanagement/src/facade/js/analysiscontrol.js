@@ -142,8 +142,8 @@ export default class AnalysisControl extends IDEE.Control {
     this.template.querySelector('#vectorsmanagement-btnCoord').addEventListener('click', (evt) => {
       this.analysisBtnClick(evt.target.id);
       if (evt.target.classList.contains('activated')) {
+        document.querySelector('#vectorsmanagement-analysis-btn-container').classList.add('closed');
         document.querySelector('.m-vectorsmanagement-analysis-featureInfo').style.display = 'block';
-        document.querySelector('#vectorsmanagement-analysis-btn').style.display = 'none';
       }
     });
     this.template.querySelector('#vectorsmanagement-analysis-btn').addEventListener('click', this.calculateAnalysis.bind(this));
@@ -171,7 +171,7 @@ export default class AnalysisControl extends IDEE.Control {
       this.template.querySelector(`#${active.id}`).classList.remove('activated');
     }
     this.template.querySelector(`#${btnClick}`).classList.add('activated');
-    this.template.querySelector('#vectorsmanagement-analysis-btn').style.display = 'block';
+    this.template.querySelector('#vectorsmanagement-analysis-btn-container').classList.remove('closed');
 
     document.querySelector('.m-vectorsmanagement-analysis-featureInfo').style.display = 'none';
   }
@@ -183,10 +183,8 @@ export default class AnalysisControl extends IDEE.Control {
    * @api stable
    */
   getControlActive() {
-    if (this.template.querySelectorAll('.m-vectorsmanagement-analysis>#analysisBtns .activated').length === 0) {
-      return false;
-    }
-    return this.template.querySelectorAll('.m-vectorsmanagement-analysis>#analysisBtns .activated')[0];
+    return this.template.querySelectorAll('.m-vectorsmanagement-analysis>#analysisBtns .activated').length === 0 ? false : this.template
+      .querySelectorAll('.m-vectorsmanagement-analysis>#analysisBtns .activated')[0];
   }
 
   /**
@@ -226,7 +224,7 @@ export default class AnalysisControl extends IDEE.Control {
    */
   calculateAnalysis() {
     const active = this.getControlActive();
-    document.querySelector('#vectorsmanagement-analysis-btn').style.display = 'none';
+    document.querySelector('#vectorsmanagement-analysis-btn-container').classList.add('closed');
     document.querySelector('#vectorsmanagement-analysis-div').innerHTML = getValue('readingAltitude');
     document.querySelector('#vectorsmanagement-analysis-div').style.height = '51px';
     if (active.id === 'topographic-profile-btn') {
@@ -276,11 +274,15 @@ export default class AnalysisControl extends IDEE.Control {
       IDEE.dialog.info(
         `<div id="chooseBuffer">
           <input type="number" id="metreBuffer" value="50" style="width: 10rem;">
-          <div style="padding-top: 0.5rem;text-align: center;">
-            <input type="radio" name="unit" id="metro" value="m" checked="checked"/>
-            <label for="metro">${getValue('unit_m')}</label>
-            <input type="radio" name="unit" id="kilometro" value="km"/>
-            <label for="kilometro">${getValue('unit_km')}</label>
+          <div style="padding-top: 0.5rem; display:flex; flex-direction:column; justify-content:space-between; row-gap:.5rem;">
+            <div style="display:flex; flex-direction:row; align-items:flex-end; column-gap:.25rem;">
+              <input type="radio" name="unit" id="metro" value="m" checked="checked"/>
+              <label for="metro">${getValue('unit_m')}</label>
+            </div>
+            <div style="display:flex; flex-direction:row; align-items:flex-end; column-gap:.25rem;">
+              <input type="radio" name="unit" id="kilometro" value="km"/>
+              <label for="kilometro">${getValue('unit_km')}</label>
+            </div>
           </div>
         </div>`,
         getValue('title_popup_buffer'),
@@ -288,8 +290,6 @@ export default class AnalysisControl extends IDEE.Control {
       const color = '#71a7d3';
       const dialog = document.querySelector('.m-dialog > div.m-modal > div.m-content');
       dialog.style.minWidth = 'auto';
-      const title = document.querySelector('.m-modal .m-title');
-      title.style.backgroundColor = color;
       const btn = document.querySelector('.m-button button');
       const inputBuffer = document.querySelector('div.m-modal input#metreBuffer');
       let distance = 50;
