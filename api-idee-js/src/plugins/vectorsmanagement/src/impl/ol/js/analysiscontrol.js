@@ -132,7 +132,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     // IDEE.proxy(false);
     promesa.then((response) => {
       // IDEE.proxy(true);
-      document.querySelector('#vectorsmanagement-analysis-btn').style.display = 'block';
+      document.querySelector('#vectorsmanagement-analysis-btn-container').classList.add('closed');
       document.querySelector('#vectorsmanagement-analysis-div').innerHTML = '';
       document.querySelector('#vectorsmanagement-analysis-div').style.height = '0';
 
@@ -147,7 +147,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
         this.calculate3DLength(id);
       }
     }).catch(() => {
-      console.warning('Error reading elevation profile'); // eslint-disable-line no-console
+      console.warn('Error reading elevation profile'); // eslint-disable-line no-console
       // IDEE.proxy(true)
     });
   }
@@ -187,7 +187,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     // IDEE.proxy(false);
     promesa.then((response) => {
       // IDEE.proxy(true);
-      document.querySelector('#vectorsmanagement-analysis-btn').style.display = 'block';
+      document.querySelector('#vectorsmanagement-analysis-btn-container').classList.remove('closed');
       document.querySelector('#vectorsmanagement-analysis-div').innerHTML = '';
       document.querySelector('#vectorsmanagement-analysis-div').style.height = '0';
       if (response && response !== NO_DATA_VALUE) {
