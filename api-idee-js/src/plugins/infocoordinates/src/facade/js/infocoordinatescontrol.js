@@ -35,7 +35,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
     // 2. implementation of this control
     const impl = new InfocoordinatesImplControl();
     super('Infocoordinates', impl);
-    this.map_ = null;
+    this.map = null;
     this.numTabs = 0;
     this.layerFeatures = new IDEE.layer.Vector();
     this.layerFeatures.name = 'infocoordinatesLayerFeatures';
@@ -59,8 +59,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
    * @api stable
    */
   createView(map) {
-    this.map_ = map;
-    this.selectedProjection = this.map_.getProjection().code;
+    this.map = map;
+    this.selectedProjection = this.map.getProjection().code;
     if (!IDEE.template.compileSync) { // JGL: retrocompatibilidad API IDEE
       IDEE.template.compileSync = (string, options) => {
         let templateCompiled;
@@ -121,9 +121,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
       // Añadir código dependiente del DOM
       this.accessibilityTab(html);
 
-      this.map_.addLayers(this.layerFeatures);
-      this.panel_.on(IDEE.evt.SHOW, this.activate, this);
-      this.panel_.on(IDEE.evt.HIDE, this.deactivate, this);
+      this.map.addLayers(this.layerFeatures);
+      this.panel.on(IDEE.evt.SHOW, this.activate, this);
+      this.panel.on(IDEE.evt.HIDE, this.deactivate, this);
 
       success(html);
       html.querySelector('#m-infocoordinates-buttonRemoveAllPoints').addEventListener('click', this.removeAllPoints.bind(this));
@@ -193,6 +193,11 @@ export default class InfocoordinatesControl extends IDEE.Control {
       }
     });
 
+    arrow.addEventListener('click', () => {
+      selector.classList.toggle('noDisplay');
+      arrow.classList.toggle('arrow-up');
+    });
+
     input.addEventListener('keyup', (event) => {
       if (isEditable && event.key === 'Enter') {
         isEditable = false;
@@ -211,9 +216,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
    */
   activate() {
     this.invokeEscKey();
-    this.map_.on(IDEE.evt.CLICK, this.addPoint, this);
+    this.map.on(IDEE.evt.CLICK, this.addPoint, this);
     document.body.style.cursor = 'crosshair';
-    this.map_.getFeatureHandler().deactivate();
+    this.map.getFeatureHandler().deactivate();
     document.addEventListener('keyup', this.checkEscKey.bind(this));
     if (this.clickedDeactivate) {
       document.querySelector('div.m-panel.m-plugin-infocoordinates > button').click();
@@ -254,9 +259,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
    */
   deactivate() {
     this.clickedDeactivate = true;
-    this.map_.un(IDEE.evt.CLICK, this.addPoint, this);
+    this.map.un(IDEE.evt.CLICK, this.addPoint, this);
     document.body.style.cursor = 'default';
-    this.map_.getFeatureHandler().activate();
+    this.map.getFeatureHandler().activate();
   }
 
   addPoint(evt) {
@@ -271,7 +276,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
     }
 
     // Eliminamos las etiquetas de los puntos
-    if (document.getElementsByClassName('icon-displayON').length === 0 && this.map_.getMapImpl().getOverlays().getLength() > 0) {
+    if (document.getElementsByClassName('icon-displayON').length === 0 && this.map.getMapImpl().getOverlays().getLength() > 0) {
       this.removeAllDisplaysPoints();
     }
 
@@ -298,7 +303,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
         'coordinates': [coordinates[0], coordinates[1]],
       },
       'properties': {
-        'EPSGcode': this.map_.getProjection().code,
+        'EPSGcode': this.map.getProjection().code,
         'coordinates': [coordinates[0], coordinates[1]],
       },
 
@@ -314,7 +319,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const promesa = new Promise((success) => {
       altitudeBox.innerHTML = getValue('readingAltitude');
       altitudeFromElevationProcess = this.getImpl()
-        .readAltitudeFromElevationProcess(coordinates, this.map_.getProjection().code.split(':')[1]);
+        .readAltitudeFromElevationProcess(coordinates, this.map.getProjection().code.split(':')[1]);
       success(altitudeFromElevationProcess);
     });
 
@@ -416,7 +421,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       });
 
       // Eliminamos las etiquetas de los puntos
-      if (document.getElementsByClassName('icon-displayON').length === 0 && this.map_.getMapImpl().getOverlays().getLength() > 0) {
+      if (document.getElementsByClassName('icon-displayON').length === 0 && this.map.getMapImpl().getOverlays().getLength() > 0) {
         this.removeAllDisplaysPoints();
       }
     } else {
@@ -426,7 +431,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       } catch (err) { /* Continue */ }
 
       // Eliminamos las etiquetas de los puntos
-      if (document.getElementsByClassName('icon-displayON').length === 0 && this.map_.getMapImpl().getOverlays().getLength() > 0) {
+      if (document.getElementsByClassName('icon-displayON').length === 0 && this.map.getMapImpl().getOverlays().getLength() > 0) {
         this.removeAllDisplaysPoints();
       }
     }
@@ -472,7 +477,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
     });
 
     this.helpTooltip_.setPosition(pos);
-    this.map_.getMapImpl().addOverlay(this.helpTooltip_);
+    this.map.getMapImpl().addOverlay(this.helpTooltip_);
   }
 
   activateTab(numPoint) {
@@ -767,7 +772,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
   }
 
   displayAllPoints() {
-    if (document.getElementsByClassName('icon-displayON').length === 0 && this.map_.getMapImpl().getOverlays().getLength() > 0) {
+    if (document.getElementsByClassName('icon-displayON').length === 0 && this.map.getMapImpl().getOverlays().getLength() > 0) {
       this.removeAllDisplaysPoints();
     } else {
       // Modificamos el icono
@@ -822,7 +827,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
         });
 
         this.helpTooltip_.setPosition(pos);
-        this.map_.getMapImpl().addOverlay(this.helpTooltip_);
+        this.map.getMapImpl().addOverlay(this.helpTooltip_);
       }
     }
   }
@@ -860,10 +865,10 @@ export default class InfocoordinatesControl extends IDEE.Control {
     document.getElementsByClassName('contenedorPuntoSelect')[0].style = 'display: block';
 
     // Eliminamos todas las etiquetas de los puntos
-    const numOverlays = this.map_.getMapImpl().getOverlays().getArray().length;
+    const numOverlays = this.map.getMapImpl().getOverlays().getArray().length;
     for (let i = numOverlays - 1; i > -1; i -= 1) {
-      if (this.map_.getMapImpl().getOverlays().getArray()[i].options.element.className === 'm-popup m-collapsed') {
-        this.map_.getMapImpl().removeOverlay(this.map_.getMapImpl().getOverlays().getArray()[i]);
+      if (this.map.getMapImpl().getOverlays().getArray()[i].options.element.className === 'm-popup m-collapsed') {
+        this.map.getMapImpl().removeOverlay(this.map.getMapImpl().getOverlays().getArray()[i]);
       }
     }
   }
@@ -911,9 +916,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
     this.layerFeatures.removeFeatures((this.layerFeatures.getFeatures()));
 
     // Elimino todos los popups del mapa
-    const numOverlays = this.map_.getMapImpl().getOverlays().getArray().length;
+    const numOverlays = this.map.getMapImpl().getOverlays().getArray().length;
     for (let i = numOverlays - 1; i > -1; i -= 1) {
-      this.map_.getMapImpl().removeOverlay(this.map_.getMapImpl().getOverlays().getArray()[i]);
+      this.map.getMapImpl().removeOverlay(this.map.getMapImpl().getOverlays().getArray()[i]);
     }
 
     // Reseteo el contador de tabs
@@ -933,7 +938,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
   }
 
   removeLayerFeatures() {
-    this.map_.removeLayers(this.layerFeatures);
+    this.map.removeLayers(this.layerFeatures);
   }
 
   formatUTMCoordinate(coord) {
