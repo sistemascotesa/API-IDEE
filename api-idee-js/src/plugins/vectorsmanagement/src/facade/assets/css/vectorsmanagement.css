@@ -801,10 +801,7 @@ ol-profil button.profile-download-button::before {
 }
 
 .ol-profil p {
-    text-align: center;
-    margin: 0px;
     font-weight: bold;
-    color: #0f0f0f;
     padding: 10px 0;
     font-size: 16px;
     background-color: hsl(0deg 0% 100%)
