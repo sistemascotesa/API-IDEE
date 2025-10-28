@@ -50,14 +50,15 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-control.m-container.m-vectorsmanagement {
+    padding: 0 .75rem;
+    width: calc(100% - 1.5rem);
+    min-width: calc(2rem * 6 + .5rem * 5);
+    max-height: calc(100% - 54px);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
-    width: calc(100% - 1.5rem);
-    min-width: calc(2rem * 6 + .5rem * 5);
     overflow-y: visible;
-    padding: 0 .75rem;
     background-color: #fff !important;
 }
 
@@ -218,6 +219,25 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-vectorsmanagement-style-container,
+.m-vectorsmanagement-style-container>#styleOptions,
+.m-vectorsmanagement-style-container>#styleOptions>div,
+.m-vectorsmanagement-style-container>#styleOptions>div>#options-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.m-vectorsmanagement-style-container #options-content input[type=number] {
+    height: 2rem;
+}
+
+.m-vectorsmanagement-style-container>button#set-style-btn {
+    width: 60px;
+    margin-left: calc(50% - 30px) !important;
+}
+
+.m-vectorsmanagement-style-container,
 #m-point-coordinates {
     padding-top: 1rem;
     font-size: 14px;
@@ -260,10 +280,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     width: 100%;
 }
 
-.m-vectorsmanagement-style-container>button#set-style-btn {
-    width: 60px;
-    margin-left: calc(50% - 30px) !important;
-}
+
 
 #m-text-draw>div {
     margin-top: 15px;
@@ -366,6 +383,15 @@ button#cancel-clear-btn {
 
 #m-figuretools {
     padding-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    column-gap: .5rem;
+}
+
+#m-figuretools>div>#figuresSelector {
+    margin-right: .5rem;
 }
 
 #m-vectorsmanagement-download-format {
@@ -428,7 +454,22 @@ table#attribute-table>tr>th>button {
     padding: 0;
 }
 
-#options {
+.m-vectorsmanagement-style-container .m-vectorsmanagement-style-options {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: .25rem;
+}
+
+.m-vectorsmanagement-style-container .m-vectorsmanagement-style-options>div {
+    border: 1px solid #71a7d344;
+}
+
+.m-vectorsmanagement-style-container .m-vectorsmanagement-style-options #options-content {
+    padding: 0 .5rem;
+}
+
+.m-vectorsmanagement-style-container #options {
     color: #71a7d3;
     font-size: 14px;
     width: 100%;
@@ -439,43 +480,64 @@ table#attribute-table>tr>th>button {
     font-weight: 700;
 }
 
-.group-row {
+.m-vectorsmanagement-style-container .row-container-title {
+    margin: 0 0 .5rem 0;
+    background-color: #71a7d3;
+    padding: .25rem 0;
+    border-radius: 2px;
+    opacity: 0.85;
+    padding: 0.25rem .5rem;
+}
+
+.m-vectorsmanagement-style-container .row-container-title label {
+    width: 100%;
+    font-weight: bold;
+}
+
+.m-vectorsmanagement-style-container .row-container {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-bottom: .5rem;
+    padding: 0 .5rem;
+}
+
+.m-vectorsmanagement-style-container .row-container select,
+.m-vectorsmanagement-style-container .row-container #textContent {
+    border-radius: 2px;
+    min-width: 120px;
+    width: 100%;
+    height: 2rem;
+}
+
+.m-vectorsmanagement-style-container .row-field {
+    display: flex;
+    align-items: flex-end;
+    column-gap: .25rem;
+    justify-content: flex-start;
+    padding: 0;
+}
+
+.m-vectorsmanagement-style-container .w-100 {
     width: 100%;
 }
 
-.vector-style-col-0,
-.vector-style-col-1,
-.vector-style-col-2 {
-    padding: 0 8px;
-    align-content: center;
-    align-items: left;
-    flex-direction: column;
-    margin-bottom: 5px;
-    float: left;
+.m-vectorsmanagement-style-container .row-field label {
+    min-width: 70px;
 }
 
-.vector-style-col-0 label,
-.vector-style-col-0 input,
-.vector-style-col-1 label,
-.vector-style-col-1 input,
-.vector-style-col-2 label,
-.vector-style-col-2 input {
-    vertical-align: middle;
+.m-vectorsmanagement-style-container .row-field input {
+    margin: 0;
+    height: 2rem;
+    width: 3rem;
+    border-radius: 2px;
 }
 
-.vector-style-col-1,
-.vector-style-col-2 {
-    width: 50%;
-}
-
-.vector-style-col-1 {
-    padding-right: 10px !important;
-}
-
-.vector-style-col-2 {
-    padding-left: 0 !important;
+.m-vectorsmanagement-style-container .row-container #textContent {
+    margin: 0;
 }
 
 #radiusSelector-point,
@@ -733,7 +795,6 @@ table#attribute-table>tr>th>button {
     font-display: block;
 }
 
-
 .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control>button,
 .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.collapsed>button.m-panel-btn,
 [class^="vectorsmanagement-"],
@@ -841,7 +902,7 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    column-gap: .25rem;
+    column-gap: .2rem;
 }
 
 #creationBtns,
@@ -1182,15 +1243,12 @@ th .vectorsmanagement-icon-papelera {
     font-weight: bold;
 }
 
-.m-vectorsmanagement-styleOptions {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-}
-
 .m-vectorsmanagement-controls,
 .m-vectorsmanagement-controls .m-point-coordinates-panel {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: auto;
     width: 100%;
 }
 
@@ -1199,11 +1257,6 @@ th .vectorsmanagement-icon-papelera {
     display: flex;
     justify-content: center;
     gap: 5px
-}
-
-.m-vectorsmanagement-styleOptions>div {
-    border: 1px solid #71a7d344;
-    padding: 5px;
 }
 
 .m-areas>div.m-area>div.m-plugin-vectorsmanagement.opened div.m-vectorsmanagement-controls>div {
@@ -1236,13 +1289,6 @@ div#popup-box {
     max-height: calc(100vh - 175px) !important;
 }
 
-.m-vectos-style-title {
-    font-weight: bold;
-}
-
-#options-content input[type=number] {
-    width: 50px;
-}
 
 @media (max-width: 600px) {
     .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened {
