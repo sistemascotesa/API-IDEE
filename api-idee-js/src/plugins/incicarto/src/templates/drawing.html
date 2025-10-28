@@ -1,16 +1,19 @@
-<div id="drawingtools">
-    <div class="collapsor">{{translations.collapse}}&nbsp;&nbsp;<span class="icon-hide"></span></div>
+<div id="drawingtools" class="m-drawingtools-content">
+    <div class="collapsor" id="collapsorButton"><span>{{translations.collapse}}</span></div>
     <div class="drawingToolsContainer">
         <div id="styleOptions">
-            <label>{{translations.color}}: <input id="colorSelector" type="color" value="#71a7d3"></label>
-            <label>{{translations.thickness}}: <input id="thicknessSelector" type="number" value="6" min="1" max="10"></label><br />
+            <label>{{translations.color}} <input id="colorSelector" type="color" value="#71a7d3"></label>
+            <label>{{translations.thickness}} <input id="thicknessSelector" type="number" value="6" min="1" max="10"></label>
             <div class="stroke-container" style="display: none;">
-              <p class="title">{{translations.line}}:</p>
-              <div class="stroke-options">
-                <div class="stroke-continuous active"></div>
-                <div class="stroke-dots"></div>
-                <div class="stroke-lines"></div>
-                <div class="stroke-dots-lines"></div>
+              <span class="title">{{translations.line}}</span>
+              <div class="stroke-options" id="strokeOptions">
+                <div class="stroke-option-default"></div>
+                <div class="options-select">
+                  <div class="stroke-option stroke-continuous active" data-value="continuous"></div>
+                  <div class="stroke-option stroke-dots" data-value="dots"></div>
+                  <div class="stroke-option stroke-lines" data-value="lines"></div>
+                  <div class="stroke-option stroke-dots-lines" data-value="dots-lines"></div>
+                </div>
               </div>
             </div>
         </div>

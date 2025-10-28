@@ -238,10 +238,8 @@ export default class IncicartoControl extends IDEE.Control {
       this.addEvents(html);
       this.createDrawingTemplate();
       this.createUploadingTemplate();
+      this.addSvgs();
       this.map.addLayers(this.selectionLayer);
-      if (this.isDraggable_) {
-        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-incicarto-title');
-      }
     });
   }
 
@@ -341,7 +339,7 @@ export default class IncicartoControl extends IDEE.Control {
   }
 
   getMaxZIndex() {
-    const filterLayers = this.map_.getLayers().filter((layer) => layer.name !== '__draw__');
+    const filterLayers = this.map.getLayers().filter((layer) => layer.name !== '__draw__');
 
     const maxZIndex = Math.max(...(filterLayers.map((l) => {
       return l.getZIndex();
@@ -377,55 +375,48 @@ export default class IncicartoControl extends IDEE.Control {
     this.drawingTools.querySelector('button.m-incicarto-layer-delete-feature').addEventListener('click', () => this.deleteSingleFeature());
     this.drawingTools.querySelector('button.m-incicarto-layer-profile').addEventListener('click', () => this.getProfile());
     this.drawingTools.querySelector('button').style.display = 'none';
-    this.drawingTools.querySelector('div.stroke-options').addEventListener('click', (e) => {
-      const evt = (e || window.event);
-      const selector = this.drawingTools.querySelector('div.stroke-options');
-      if (evt.target.classList.contains('stroke-continuous')) {
-        selector.querySelectorAll('div').forEach((elem) => {
-          elem.classList.remove('active');
-        });
 
-        selector.querySelector('div.stroke-continuous').classList.add('active');
-        this.currentLineDash = undefined;
-      } else if (evt.target.classList.contains('stroke-dots-lines')) {
-        selector.querySelectorAll('div').forEach((elem) => {
-          elem.classList.remove('active');
-        });
+    const strokeOptionsContainer = this.drawingTools.querySelector('.stroke-options');
+    const strokeOptionDefault = strokeOptionsContainer.querySelector('.stroke-option-default');
+    const strokeOptions = strokeOptionsContainer.querySelectorAll('.stroke-option');
 
-        if (evt.target.classList.contains('active')) {
-          selector.querySelector('div.stroke-continuous').classList.add('active');
+    const defaultOption = strokeOptionsContainer.querySelector('.stroke-option.active');
+    strokeOptionDefault.className = `stroke-option-default ${defaultOption.classList.contains('stroke-continuous') ? 'stroke-continuous' : defaultOption.classList.contains('stroke-dots') ? 'stroke-dots' : defaultOption.classList.contains('stroke-lines') ? 'stroke-lines' : 'stroke-dots-lines'}`;
+    strokeOptionDefault.setAttribute('data-value', defaultOption.getAttribute('data-value'));
+
+    strokeOptionDefault.addEventListener('click', (e) => {
+      strokeOptionsContainer.classList.toggle('active');
+    });
+
+    strokeOptions.forEach((option) => {
+      option.addEventListener('click', (e) => {
+        strokeOptions.forEach((opt) => opt.classList.remove('active'));
+        option.classList.add('active');
+        const value = option.getAttribute('data-value');
+        const strokeClass = option.classList.contains('stroke-continuous') ? 'stroke-continuous' :
+          option.classList.contains('stroke-dots') ? 'stroke-dots' :
+          option.classList.contains('stroke-lines') ? 'stroke-lines' :
+          'stroke-dots-lines';
+        strokeOptionDefault.className = `stroke-option-default ${strokeClass}`;
+        strokeOptionDefault.setAttribute('data-value', value);
+
+        if (value === 'continuous') {
           this.currentLineDash = undefined;
-        } else {
-          selector.querySelector('div.stroke-dots-lines').classList.add('active');
+        } else if (value === 'dots-lines') {
           this.currentLineDash = LINE_POINTS;
-        }
-      } else if (evt.target.classList.contains('stroke-lines')) {
-        selector.querySelectorAll('div').forEach((elem) => {
-          elem.classList.remove('active');
-        });
-
-        if (evt.target.classList.contains('active')) {
-          selector.querySelector('div.stroke-continuous').classList.add('active');
-          this.currentLineDash = undefined;
-        } else {
-          selector.querySelector('div.stroke-lines').classList.add('active');
+        } else if (value === 'lines') {
           this.currentLineDash = LINES;
-        }
-      } else if (evt.target.classList.contains('stroke-dots')) {
-        selector.querySelectorAll('div').forEach((elem) => {
-          elem.classList.remove('active');
-        });
-
-        if (evt.target.classList.contains('active')) {
-          selector.querySelector('div.stroke-continuous').classList.add('active');
-          this.currentLineDash = undefined;
-        } else {
-          selector.querySelector('div.stroke-dots').classList.add('active');
+        } else if (value === 'dots') {
           this.currentLineDash = POINTS;
         }
-      }
 
-      this.styleChange(e);
+        if (strokeOptionsContainer.classList.contains('active')) {
+          strokeOptionsContainer.classList.remove('active');
+        } else {
+          strokeOptionsContainer.classList.add('active');
+        }
+        this.styleChange(e);
+      });
     });
   }
 
@@ -468,6 +459,8 @@ export default class IncicartoControl extends IDEE.Control {
     });
     const inputFile = this.uploadingTemplate.querySelector('#incicarto-uploading>input');
     inputFile.addEventListener('change', (evt) => this.changeFile(evt, inputFile.files[0]));
+    const fileButton = this.uploadingTemplate.querySelector('#incicarto-uploading > button');
+    fileButton.addEventListener('click', () => inputFile.click());
   }
 
   /**
@@ -478,12 +471,31 @@ export default class IncicartoControl extends IDEE.Control {
    * @param {String} html - Geometry buttons template.
    */
   addEvents(html) {
-    document.querySelector('.m-incicarto > button.m-panel-btn').addEventListener('click', this.toogleActivate.bind(this));
     html.querySelector('#incicarto-add-point').addEventListener('click', this.addNewLayer.bind(this, 'Point'));
     html.querySelector('#incicarto-add-line').addEventListener('click', this.addNewLayer.bind(this, 'LineString'));
     html.querySelector('#incicarto-add-poly').addEventListener('click', this.addNewLayer.bind(this, 'Polygon'));
     html.querySelector('#incicarto-upload').addEventListener('click', () => this.openUploadOptions());
+    html.querySelector('#incicarto-hide').addEventListener('click', () => this.hideMethods());
     this.addDragDropEvents();
+  }
+
+  /**
+   * Adds SVG icons to the plugin HTML.
+   * @public
+   * @function
+   * @api
+   */
+  addSvgs() {
+    const hideMethodsElem = this.html.querySelector('#incicarto-hide');
+    const buttonPointInciElem = this.html.querySelector('#incicarto-add-point');
+    const buttonLineInciElem = this.html.querySelector('#incicarto-add-line');
+    const buttonPolyInciElem = this.html.querySelector('#incicarto-add-poly');
+    const buttonUploadInciElem = this.html.querySelector('#incicarto-upload');
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'hidemethods', hideMethodsElem);
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'puntualincident', buttonPointInciElem);
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'linealincident', buttonLineInciElem);
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'superficialincident', buttonPolyInciElem);
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'fileincident', buttonUploadInciElem);
   }
 
   /**
@@ -557,10 +569,6 @@ export default class IncicartoControl extends IDEE.Control {
       // Para configurar la apariencia del botón Cerrar del modal
       const button = document.querySelector('div.m-dialog.info div.m-button > button');
       button.innerHTML = getValue('close');
-      button.style.width = '75px';
-      button.style.backgroundColor = '#71a7d3';
-      const titleModal = document.querySelector('div.m-dialog.info div.m-title');
-      titleModal.style.backgroundColor = '#71a7d3';
     }, 10);
   }
 
@@ -630,10 +638,6 @@ export default class IncicartoControl extends IDEE.Control {
       // Para configurar la apariencia del botón Cerrar del modal
       const button = document.querySelector('div.m-dialog.info div.m-button > button');
       button.innerHTML = getValue('close');
-      button.style.width = '75px';
-      button.style.backgroundColor = '#71a7d3';
-      const titleModal = document.querySelector('div.m-dialog.info div.m-title');
-      titleModal.style.backgroundColor = '#71a7d3';
     }, 10);
   }
 
@@ -763,11 +767,11 @@ export default class IncicartoControl extends IDEE.Control {
     let apiUrl = IDEE.config.API_IDEE_URL;
     let onlyURL = false;
 
-    const { x, y } = this.map_.getCenter();
+    const { x, y } = this.map.getCenter();
     const center = `center=${x},${y}`;
-    const zoom = `&zoom=${this.map_.getZoom()}`;
-    const srs = `&srs=${this.map_.getProjection().code}`;
-    const bgColorContainer = this.map_.getBGColorContainer();
+    const zoom = `&zoom=${this.map.getZoom()}`;
+    const srs = `&srs=${this.map.getProjection().code}`;
+    const bgColorContainer = this.map.getBGColorContainer();
     const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
     const layers = `&layers=${this.getLayersInLayerswitcher().toString()}`;
     const controls = (this.getControlsFormat()) ? `&controls=${this.getControlsFormat()}` : '';
@@ -822,7 +826,7 @@ export default class IncicartoControl extends IDEE.Control {
    * @function
    */
   getLayersInLayerswitcher() {
-    const layers = this.map_.getLayers().filter((layer) => {
+    const layers = this.map.getLayers().filter((layer) => {
       return (layer.displayInLayerSwitcher === true && layer.isBase === false)
         || layer.isBase === true;
     });
@@ -921,7 +925,7 @@ export default class IncicartoControl extends IDEE.Control {
    * @function
    */
   getWMTS(layer) {
-    const { code } = this.map_.getProjection();
+    const { code } = this.map.getProjection();
     let legend = null;
     try {
       legend = layer.getLegend();
@@ -959,7 +963,7 @@ export default class IncicartoControl extends IDEE.Control {
    * This method gets the plugins url parameter
    */
   getPlugins() {
-    return this.map_.getPlugins().map((plugin) => {
+    return this.map.getPlugins().map((plugin) => {
       let newCurrent = '';
       // if (IDEE.utils.isFunction(plugin.getAPIRestBase64)) {
       //   newCurrent = plugin.getAPIRestBase64();
@@ -995,24 +999,24 @@ export default class IncicartoControl extends IDEE.Control {
    * @function
    */
   getControls() {
-    const controls = this.map_.getControls().map((control) => control.name);
+    const controls = this.map.getControls().map((control) => control.name);
 
     const allowedControls = CONTROLS;
     const resolvedControls = controls.filter((control) => allowedControls.includes(control))
       .filter((c) => c !== 'backgroundlayers');
     if (resolvedControls.includes('mouse')) {
-      const mouseControl = this.map_.getControls().find((c) => c.name === 'mouse');
+      const mouseControl = this.map.getControls().find((c) => c.name === 'mouse');
       const { showProj } = mouseControl.getImpl();
       const index = resolvedControls.indexOf('mouse');
       resolvedControls[index] = showProj === true ? 'mouse*true' : 'mouse';
     }
     if (resolvedControls.includes('scale')) {
-      const scaleControl = this.map_.getControls().find((c) => c.name === 'scale');
+      const scaleControl = this.map.getControls().find((c) => c.name === 'scale');
       const { exactScale } = scaleControl.getImpl();
       const index = resolvedControls.indexOf('scale');
       resolvedControls[index] = exactScale === true ? 'scale*true' : 'scale';
     }
-    const backgroundlayers = this.map_.getControls().find((c) => c.name === 'backgroundlayers');
+    const backgroundlayers = this.map.getControls().find((c) => c.name === 'backgroundlayers');
     let backgroundlayersAPI;
     if (!IDEE.utils.isNullOrEmpty(backgroundlayers)) {
       const { visible, activeLayer } = backgroundlayers;
@@ -1264,6 +1268,18 @@ export default class IncicartoControl extends IDEE.Control {
     layer.geometry = geom;
     layer.setZIndex(this.getMaxZIndex() + 1);
     this.map.addLayers(layer);
+    const layerTypeElem = document.querySelector('.m-incicarto-layer-type');
+    switch(geom) {
+      case 'Point':
+        IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'puntualincident', layerTypeElem);
+        break;
+      case 'LineString':
+        IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'linealincident', layerTypeElem);
+        break;
+      case 'Polygon':
+        IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'superficialincident', layerTypeElem);
+        break;
+    }
     setTimeout(() => {
       document.querySelector(`li[name="${layerName}"] span.m-incicarto-layer-add`).click();
     }, 100);
@@ -1426,7 +1442,7 @@ export default class IncicartoControl extends IDEE.Control {
    * @api
    */
   openNotifyOptionsTemplate(layer) {
-    const selector = `.m-incicarto #m-incicarto-list li[name="${layer.name}"] .m-incicarto-layer-actions-container`;
+    const selector = `.m-plugin-panel-content #m-incicarto-list li[name="${layer.name}"] .m-incicarto-layer-actions-container`;
     if (this.isDownloadActive) {
       document.querySelector(selector).innerHTML = '';
       this.isDownloadActive = false;
@@ -1463,6 +1479,19 @@ export default class IncicartoControl extends IDEE.Control {
       document.querySelector('.m-incicarto-general-container').innerHTML = '';
     } else {
       document.querySelector('.m-incicarto-general-container').appendChild(this.uploadingTemplate);
+    }
+  }
+
+  /**
+   * Hides methods container
+   * @public
+   * @function
+   * @api
+   */
+  hideMethods() {
+    const elem = this.html.querySelector('#incicarto-methods-container');
+    if (elem) {
+      elem.style.display = elem.style.display === 'none' ? 'block' : 'none';
     }
   }
 
@@ -1593,7 +1622,7 @@ export default class IncicartoControl extends IDEE.Control {
    */
   downloadLayer(layer) {
     const fileName = layer.legend || layer.name;
-    const selector = `.m-incicarto #m-incicarto-list li[name="${layer.name}"] .m-incicarto-layer-actions-container`;
+    const selector = `.m-plugin-panel-content #m-incicarto-list li[name="${layer.name}"] .m-incicarto-layer-actions-container`;
     const downloadFormat = document.querySelector(selector).querySelector('select').value;
     const geojsonLayer = this.toGeoJSON(layer);
     let arrayContent;
@@ -1656,7 +1685,7 @@ export default class IncicartoControl extends IDEE.Control {
    */
   sendLayerSimpleIncidence(layer) {
     const fileName = layer.legend || layer.name;
-    const selector = `.m-incicarto #m-incicarto-list li[name="${layer.name}"] .m-incicarto-layer-actions-container`;
+    const selector = `.m-plugin-panel-content #m-incicarto-list li[name="${layer.name}"] .m-incicarto-layer-actions-container`;
     const downloadFormat = document.querySelector(selector).querySelector('select').value;
     const geojsonLayer = this.toGeoJSON(layer);
     let arrayContent;
@@ -1713,7 +1742,7 @@ export default class IncicartoControl extends IDEE.Control {
    */
   sendLayerComplexIncidence(layer) {
     const fileName = layer.legend || layer.name;
-    const selector = `.m-incicarto #m-incicarto-list li[name="${layer.name}"] .m-incicarto-layer-actions-container`;
+    const selector = `.m-plugin-panel-content #m-incicarto-list li[name="${layer.name}"] .m-incicarto-layer-actions-container`;
     const downloadFormat = document.querySelector(selector).querySelector('select').value;
     const geojsonLayer = this.toGeoJSON(layer);
     let arrayContent;
@@ -2053,11 +2082,8 @@ export default class IncicartoControl extends IDEE.Control {
         setTimeout(() => {
           const selector = 'div.m-api-idee-container div.m-dialog #m-layer-change-name button';
           document.querySelector(selector).addEventListener('click', this.changeLayerLegend.bind(this, layer));
-          document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
           const button = document.querySelector('div.m-dialog.info div.m-button > button');
           button.innerHTML = getValue('close');
-          button.style.width = '75px';
-          button.style.backgroundColor = '#71a7d3';
         }, 10);
       } else if (evt.target.classList.contains('m-incicarto-layer-add')) {
         this.isDownloadActive = false;
@@ -2157,6 +2183,7 @@ export default class IncicartoControl extends IDEE.Control {
       const selector = `#m-incicarto-list li[name="${layer.name}"] div.m-incicarto-layer-actions-container`;
       const selector2 = `#m-incicarto-list li[name="${layer.name}"] div.m-incicarto-layer-actions .m-incicarto-layer-add`;
       document.querySelector(selector).appendChild(this.drawingTools);
+      this.addSvgDrawingTools();
       document.querySelector(selector2).classList.add('active-tool');
       this.getImpl().addDrawInteraction(layer);
       if (document.querySelector('#drawingtools #featureInfo') !== null) {
@@ -2176,6 +2203,28 @@ export default class IncicartoControl extends IDEE.Control {
       this.isDrawingActive = false;
       this.drawLayer = undefined;
     }
+  }
+
+  addSvgDrawingTools() {
+    const name = this.name.toLowerCase();
+    const addElem = this.html.querySelector('#m-incicarto-action-add');
+    const editLineElem = this.html.querySelector('#m-incicarto-action-edit-line');
+    const editGeomElem = this.html.querySelector('#m-incicarto-action-edit-geom');
+    const zoomElem = this.html.querySelector('#m-incicarto-action-zoom');
+    const deleteElem = this.html.querySelector('#m-incicarto-action-delete');
+    const notifyElem = this.html.querySelector('#m-incicarto-action-notify');
+    const collapsorElem = this.drawingTools.querySelector('#collapsorButton');
+    IDEE.utils.loadSvgByUrl(name, 'addgeom', addElem);
+    if (editLineElem !== null) {
+      IDEE.utils.loadSvgByUrl(name, 'editgeom', editLineElem);
+    }
+    if (editGeomElem !== null) {
+      IDEE.utils.loadSvgByUrl(name, 'editgeom', editGeomElem);
+    }
+    IDEE.utils.loadSvgByUrl(name, 'zoomtoincident', zoomElem);
+    IDEE.utils.loadSvgByUrl(name, 'deleteincident', deleteElem);
+    IDEE.utils.loadSvgByUrl(name, 'notifyincident', notifyElem);
+    IDEE.utils.loadSvgByUrl(name, 'hidemethods', collapsorElem);
   }
 
   openEditOptions(layer) {
@@ -2212,7 +2261,7 @@ export default class IncicartoControl extends IDEE.Control {
    * @api
    */
   deactivateDrawing() {
-    const selector = '.m-incicarto #m-incicarto-list div.m-incicarto-layer-actions-container';
+    const selector = '.m-plugin-panel-content #m-incicarto-list div.m-incicarto-layer-actions-container';
     const selector2 = '#m-incicarto-list div.m-incicarto-layer-actions span';
     document.querySelectorAll(selector).forEach((elem) => {
       // eslint-disable-next-line no-param-reassign
@@ -2261,7 +2310,7 @@ export default class IncicartoControl extends IDEE.Control {
     this.feature = IDEE.impl.Feature.feature2Facade(this.feature);
     this.geometry = this.feature.getGeometry().type;
     this.setFeatureStyle(this.feature, this.geometry);
-    document.querySelector('.m-incicarto #drawingtools button').style.display = 'block';
+    document.querySelector('.m-plugin-panel-content #drawingtools button').style.display = 'block';
     this.drawLayer.addFeatures(this.feature);
     this.emphasizeSelectedFeature();
     this.showFeatureInfo();
@@ -2328,8 +2377,8 @@ export default class IncicartoControl extends IDEE.Control {
         const y = fCoord[1];
         if (infoContainer !== null) {
           document.querySelector('#drawingtools div.stroke-container').style.display = 'none';
-          let html = `<table class="m-incicarto-results-table"><tbody><tr><td><b>${getValue('coordinates')}</b></td>`;
-          html += `<td><b>X:</b> ${Math.round(x * 1000) / 1000}</td><td><b>Y:</b> ${Math.round(y * 1000) / 1000}</td>`;
+          let html = `<table class="m-incicarto-results-table"><tbody><tr><td>${getValue('coordinates')}</td>`;
+          html += `<td>X: ${Math.round(x * 1000) / 1000}</td><td>Y: ${Math.round(y * 1000) / 1000}</td>`;
           html += '</tr></tbody></table>';
           infoContainer.innerHTML = html;
           if (this.feature.getStyle() !== undefined && this.feature.getStyle() !== null) {
@@ -2347,14 +2396,14 @@ export default class IncicartoControl extends IDEE.Control {
         const m = formatNumber(lineLength);
         // const km = formatNumber(lineLength / 1000);
         if (infoContainer !== null) {
-          document.querySelector('#drawingtools div.stroke-container').style.display = 'block';
+          document.querySelector('#drawingtools div.stroke-container').style.display = 'flex';
           const id = `m-incicarto-3d-measure-${this.drawLayer.name.replaceAll(' ', '')}`;
           const attr = this.feature.getAttributes()['3dLength'];
-          let html = `<table class="m-incicarto-results-table"><tbody><tr><td><b>${getValue('length')}</b></td>`;
+          let html = `<table class="m-incicarto-results-table"><tbody><tr><td>${getValue('length')}</td>`;
           if (attr !== undefined && attr.length > 0) {
-            html += `<td><b>2D: </b>${m}m</td><td><b>3D: </b><span>${attr}m</span></td>`;
+            html += `<td>2D: ${m}m</td><td>3D: <span>${attr}m</span></td>`;
           } else {
-            html += `<td><b>2D: </b>${m}m</td><td><b>3D: </b><span class="m-incicarto-3d-measure" id="${id}">${getValue('calculate')}</span></td>`;
+            html += `<td>2D: ${m}m</td><td>3D: <span class="m-incicarto-3d-measure" id="${id}">${getValue('calculate')}</span></td>`;
           }
 
           html += '</tr></tbody></table>';
@@ -2403,7 +2452,7 @@ export default class IncicartoControl extends IDEE.Control {
         // const ha = formatNumber(area / 10000);
         if (infoContainer !== null) {
           document.querySelector('#drawingtools div.stroke-container').style.display = 'none';
-          let html = `<table class="m-incicarto-results-table"><tbody><tr><td><b>${getValue('area')}</b></td>`;
+          let html = `<table class="m-incicarto-results-table"><tbody><tr><td>${getValue('area')}</td>`;
           html += `<td>${m2}m${'2'.sup()}</td><td>${km2}km${'2'.sup()}</td>`;
           html += '</tbody></table>';
           infoContainer.innerHTML = html;
@@ -2432,7 +2481,7 @@ export default class IncicartoControl extends IDEE.Control {
    * @api
    */
   deactivateSelection() {
-    const selector = '.m-incicarto #m-incicarto-list div.m-incicarto-layer-actions-container';
+    const selector = '.m-plugin-panel-content #m-incicarto-list div.m-incicarto-layer-actions-container';
     const selector2 = '#m-incicarto-list div.m-incicarto-layer-actions span';
     document.querySelectorAll(selector).forEach((elem) => {
       // eslint-disable-next-line no-param-reassign
@@ -2463,6 +2512,6 @@ export default class IncicartoControl extends IDEE.Control {
     this.getImpl().calculateProfile(this.feature);
     this.drawingTools.querySelector('.collapsor').click();
     const content = `<div class="m-incicarto-loading"><p>${getValue('generating_profile')}...</p><span class="icon-spinner" /></div>`;
-    document.querySelector('.m-incicarto .m-incicarto-loading-container').innerHTML = content;
+    document.querySelector('.m-plugin-panel-content .m-incicarto-loading-container').innerHTML = content;
   }
 }

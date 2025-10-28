@@ -2,7 +2,6 @@
  * @module IDEE/plugin/Incicarto
  */
 import '../assets/css/incicarto';
-import '../assets/css/fonts';
 import IncicartoControl from './incicartocontrol';
 import api from '../../api';
 import { getValue } from './i18n/language';
@@ -23,27 +22,10 @@ export default class Incicarto extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super();
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map_ = null;
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls_ = [];
-
-    /**
-     * Position of the plugin
-     * @private
-     * @type {String}
-     */
-    this.position_ = options.position || 'TR';
+    super('incicarto', {
+      position: options.position || 'right',
+      tooltip: options.tooltip || getValue('tooltip'),
+    });
 
     /**
      * Option to allow the plugin to be collapsed or not
@@ -98,26 +80,11 @@ export default class Incicarto extends IDEE.Plugin {
     if (this.prefixSubject_ === undefined) this.prefixSubject_ = 'Incidencia cartografía - ';
 
     /**
-     * Name of the plugin
-     * @private
-     * @type {String}
-     */
-    this.name_ = 'incicarto';
-
-    /**
      * Metadata from api.json
      * @private
      * @type {Object}
      */
     this.metadata_ = api.metadata;
-
-    /**
-     * Tooltip of the UI Plugin
-     *
-     * @private
-     * @type {string}
-     */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
 
     /**
      * Option to allow the plugin to be draggable or not
@@ -158,15 +125,24 @@ export default class Incicarto extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.map_ = map;
-    this.panel_ = new IDEE.ui.Panel('panelIncicarto', {
+    this.map = map;
+
+    this.button = new IDEE.ui.Button(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+      svgPath: `plugins/${this.name}/images/icon.svg`,
+    });
+    map.addButtons(this.button);
+
+    this.panel = new IDEE.ui.Panel(this.name, {
       className: 'm-incicarto',
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
-      position: IDEE.ui.position[this.position_],
+      position: IDEE.ui.position[this.position],
       collapsedButtonClass: 'icon-incicarto',
-      tooltip: this.tooltip_,
+      tooltip: this.tooltip,
     });
+    map.addPanels(this.panel);
 
     if (this.controllist_[0].id === 'themeList') {
       this.errThemes_ = this.controllist_[0];
@@ -193,22 +169,22 @@ export default class Incicarto extends IDEE.Plugin {
       isDraggable: this.isDraggable,
     });
 
-    this.controls_.push(this.control_);
+    this.controls.push(this.control_);
+    this.panel.addControls(this.controls);
 
-    this.map_.on(IDEE.evt.ADDED_LAYER, () => {
+    this.map.on(IDEE.evt.ADDED_LAYER, () => {
       if (this.control_ !== null) {
         this.control_.renderLayers();
       }
     });
 
-    this.map_.on(IDEE.evt.REMOVED_LAYER, () => {
+    this.map.on(IDEE.evt.REMOVED_LAYER, () => {
       if (this.control_ !== null) {
         this.control_.renderLayers();
       }
     });
-
-    this.panel_.addControls(this.controls_);
-    map.addPanels(this.panel_);
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
   }
 
   /**
@@ -221,7 +197,7 @@ export default class Incicarto extends IDEE.Plugin {
   getAPIRest() {
     // eslint-disable-next-line max-len
     // *${JSON.stringify(this.buzones_)}*${JSON.stringify(this.controllist_)}*${JSON.stringify(this.themes_)}*${JSON.stringify(this.errors_)}*${JSON.stringify(this.products_)}
-    return `${this.name_}=${this.position_}*${this.collapsed_}*${this.collapsible_}*${this.tooltip_}*${this.wfszoom_}*${this.prefixSubject_}*${this.interfazmode_}*${this.isDraggable}`;
+    return `${this.name}=${this.position}*${this.collapsed_}*${this.collapsible_}*${this.tooltip}*${this.wfszoom_}*${this.prefixSubject_}*${this.interfazmode_}*${this.isDraggable}`;
   }
 
   /**
@@ -232,7 +208,7 @@ export default class Incicarto extends IDEE.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name_}=base64=${IDEE.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -255,8 +231,8 @@ export default class Incicarto extends IDEE.Plugin {
    */
   destroy() {
     this.control_.resetInteractions();
-    this.map_.removeControls([this.control_]);
-    [this.map_, this.control_, this.panel_] = [null, null, null];
+    this.map.removeControls([this.control_]);
+    [this.map, this.control_, this.panel] = [null, null, null];
   }
 
   /**
@@ -268,7 +244,7 @@ export default class Incicarto extends IDEE.Plugin {
    */
   getHelp() {
     return {
-      title: this.name_,
+      title: this.name,
       content: new Promise((success) => {
         const html = IDEE.template.compileSync(myhelp, {
           vars: {

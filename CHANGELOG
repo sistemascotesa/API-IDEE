@@ -1,3 +1,17 @@
+24/10/25 Versión 2.0.0
+- Se añade el método getImageMap para generar la imagen del mapa.
+- Se soluciona problemas con filtros espaciales en Cesium.
+- Se añaden a utilidades los métodos: getWMTSCapabilities.
+- Se soluciona problema en estilos con patrones en polígonos.
+- No se va a tener en cuenta el label para determinar si un estilo es dinámico o no.
+- Mejora la visualización de leyendas.
+- Se elimina el tipo de capa draw (implementación).
+- Se añade el método enableMouseWheel para controlar la interacción de zoom con la rueda del ratón.
+- Se añaden los métodos get y remove OverlayLayers.
+- Se añaden a utilidades los métodos: removeHTML, replaceNode, classToggle, setEquals, getFeaturesExtent
+- Mejoras sobre el método getWMSGetCapabilitiesUrl de utilidades.
+
+
 01/01/25 - Versión 1.0.0
 - Se incluye implementación 3D con Cesium
 - Modificación del contexto API-CNIG a API-IDEE
