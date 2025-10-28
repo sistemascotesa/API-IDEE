@@ -1,31 +1,33 @@
-<div class="m-control m-container m-incicarto">
-    <div class="m-incicarto-title" id="m-incicarto-title">
-        <p>Reportar incidencia de cartografía</p>
+<div class="m-plugin-panel-content m-incicarto">
+    <div id="incicarto-hide" class="m-incicarto-hide-methods">
+        <span>Ocultar Métodos</span>
     </div>
-    <div class="m-plugin-incicarto-html">
-        <span>Método 1</span>
+    <div id="incicarto-methods-container" class="m-incicarto-methods-container">
+        <div class="m-plugin-incicarto-html-title">
+            <span>Método 1</span>
+        </div>
+        <div class="m-plugin-incicarto-html-method m-plugin-separator">
+            <ol>
+                <li>Seleccionar punto, línea o polígono.</li>
+                <li>Dibujar incidencia sobre el mapa.</li>
+                <li>Enviar incidencia.</li>
+            </ol>
+        </div>
+        <div class="m-plugin-incicarto-html-title">
+            <span>Método 2</span>
+        </div>
+        <div class="m-plugin-incicarto-html-method">
+            <ol>
+                <li>Cargue un fichero con la incidencia.</li>
+                <li>Enviar incidencia.</li>
+            </ol>
+        </div>
     </div>
-    <div class="m-plugin-incicarto-html" style="justify-content: left">
-        <ol>
-            <li>Seleccionar punto, línea o polígono.</li>
-            <li>Dibujar incidencia sobre el mapa.</li>
-            <li>Enviar incidencia <i class="m-incicarto icon-notify"></i>.</li>
-        </ol>
-    </div>
-    <div class="m-plugin-incicarto-html">
-        <span>Método 2</span>
-    </div>
-    <div class="m-plugin-incicarto-html" style="justify-content: left">
-        <ol>
-            <li>Cargue un fichero con la incidencia <i class="m-incicarto icon-upload"></i></li>
-            <li>Enviar incidencia <i class="m-incicarto icon-notify"></i>.</li>
-        </ol>
-    </div>
-    <div id="m-incicarto-actions">
-        <button id="incicarto-add-point" class="icon-points" title="{{translations.add_point_layer}}"></button>
-        <button id="incicarto-add-line" class="icon-lines" title="{{translations.add_line_layer}}"></button>
-        <button id="incicarto-add-poly" class="icon-polygon" title="{{translations.add_poly_layer}}"></button>
-        <button id="incicarto-upload" class="icon-upload" title="{{translations.load_layer}}"></button>
+    <div id="m-incicarto-actions" class="m-incicarto-method-types">
+        <button id="incicarto-add-point" class="secondary icon-points" title="{{translations.add_point_layer}}"></button>
+        <button id="incicarto-add-line" class="secondary icon-lines" title="{{translations.add_line_layer}}"></button>
+        <button id="incicarto-add-poly" class="secondary icon-polygon" title="{{translations.add_poly_layer}}"></button>
+        <button id="incicarto-upload" class="secondary icon-upload" title="{{translations.load_layer}}"></button>
     </div>
     <div class="m-incicarto-general-container"></div>
     <div class="m-incicarto-layers-container"></div>

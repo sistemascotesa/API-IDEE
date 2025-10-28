@@ -1274,6 +1274,13 @@ export default class IncicartoControl extends IDEE.impl.Control {
     });
 
     profil.show();
+    IDEE.utils.loadSvgByUrl(this.facadeControl.name.toLowerCase(), 'closeprofile', document.querySelector('.profile-close-button'));
+    IDEE.utils.loadSvgByUrl(this.facadeControl.name.toLowerCase(), 'downloadprofile', document.querySelector('.profile-download-button'));
+    const profilElement = profil.element;
+    if (profilElement) {
+      profilElement.parentNode.removeChild(profilElement);
+      document.querySelector('.m-api-idee-right-buttons').appendChild(profilElement);
+    }
     document.querySelector('.m-incicarto .m-incicarto-loading-container').innerHTML = '';
   }
 

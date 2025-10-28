@@ -154,6 +154,8 @@ button.secondary:disabled:hover {
 
 input[type="text"],
 input[type="number"],
+input[type="email"],
+input[type="color"],
 textarea {
     margin: 4px;
     padding: 4px;
@@ -173,12 +175,16 @@ textarea {
 
 input[type="text"]:hover,
 input[type="number"]:hover,
+input[type="email"]:hover,
+input[type="color"]:hover,
 textarea:hover {
     border: 1px solid #1470db;
 }
 
 input[type="text"]:focus,
 input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="color"]:focus,
 textarea:focus {
     outline: none;
     border: 1px solid #1d5a9e;

@@ -168,7 +168,7 @@ const emailTest = 'alvaroramirez@guadaltel.com';
 const mp = new Incicarto({
   collapsed: false,
   collapsible: true,
-  position: 'TL',
+  position: 'right',
   interfazmode: 'simple', //simple, advance, both
   buzones: [
   {
