@@ -122,8 +122,6 @@ export default class InfocoordinatesControl extends IDEE.Control {
       this.accessibilityTab(html);
 
       this.map.addLayers(this.layerFeatures);
-      // console.log('THIS.PANEL', this.panel); Existe pero no tiene el on.
-      // console.log('THIS.PANEL', Object.hasOwn(this.panel, 'on'));
       this.panel.on(IDEE.evt.SHOW, this.activate, this);
       this.panel.on(IDEE.evt.HIDE, this.deactivate, this);
 
