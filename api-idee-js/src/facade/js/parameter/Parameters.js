@@ -524,12 +524,13 @@ export const parseViewExtent = (parameter) => {
 
 /**
  * Esta función analiza un parámetro de "bgColorContainer" en un formato legible.
- * parámetro a API-IDEE y chequea posibles errores. *
- * @param {string|Mx.parameters.Map} parameter Parámetros.
+ * parámetro a API-IDEE y chequea posibles errores.
+ * @param {String|Mx.parameters.Map} parameter Parámetros.
  * @returns {String} Devuelve el "bgColorContainer".
  * @function
+ * @api
  */
-const parseBGColorContainer = (parameter) => {
+export const parseBGColorContainer = (parameter) => {
   let bgColorContainer;
 
   if (isString(parameter)) {
