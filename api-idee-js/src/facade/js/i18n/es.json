@@ -308,6 +308,7 @@
     "setmaxzoom_no_apply": "No es posible aplicar el máximo zoom a la capa WMC.",
     "setminscale_no_apply": "No es posible aplicar la mínima escala a la capa WMC.",
     "setmaxscale_no_apply": "No es posible aplicar la máxima escala a la capa WMC.",
-    "wkt_toCQL_method": "La implementación usada no puede crear el formateador WKT por lo que no incluirá filtros CQL."
+    "wkt_toCQL_method": "La implementación usada no puede crear el formateador WKT por lo que no incluirá filtros CQL.",
+    "enableDrag_deprecated": "El método enableDrag de la clase Map ha quedado obsoleto, se recomienda usar en su lugar enablePan."
   }
 }
