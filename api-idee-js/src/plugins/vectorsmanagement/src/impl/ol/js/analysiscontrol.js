@@ -196,7 +196,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
         this.facadeControl.showPointProfile(pointXYZ);
       }
     }).catch(() => {
-      console.warning('Error reading elevation profile'); // eslint-disable-line no-console
+      console.warn('Error reading elevation profile'); // eslint-disable-line no-console
       // IDEE.proxy(true)
     });
   }
