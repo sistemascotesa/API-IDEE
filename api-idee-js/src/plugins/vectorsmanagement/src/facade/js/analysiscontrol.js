@@ -273,8 +273,8 @@ export default class AnalysisControl extends IDEE.Control {
     } else {
       IDEE.dialog.info(
         `<div id="chooseBuffer">
-          <input type="number" id="metreBuffer" value="50" style="width: 10rem;">
-          <div style="padding-top: 0.5rem; display:flex; flex-direction:column; justify-content:space-between; row-gap:.5rem;">
+          <input type="number" id="metreBuffer" value="50" style="width: 10rem; margin:0;">
+          <div style="padding: 1rem 0 .5rem 0; display:flex; flex-direction:column; justify-content:space-between; row-gap:.5rem;">
             <div style="display:flex; flex-direction:row; align-items:flex-end; column-gap:.25rem;">
               <input type="radio" name="unit" id="metro" value="m" checked="checked"/>
               <label for="metro">${getValue('unit_m')}</label>
