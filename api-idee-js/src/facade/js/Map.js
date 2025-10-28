@@ -4930,7 +4930,7 @@ class Map extends Base {
   getImageMap(type = 'image/jpeg', canva = undefined, isPromise = false) {
     return getImageMap(this, type, canva, isPromise);
   }
-  
+
   /**
    * Este método controla si la interacción de zoom con la rueda del ratón está activa o no.
    * El valor por defecto es true
