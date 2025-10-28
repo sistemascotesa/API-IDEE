@@ -135,6 +135,7 @@ export default class Infocoordinates extends IDEE.Plugin {
       tooltip: this.tooltip,
       order: this.order,
     });
+    console.log('THIS.PANEL', this.panel);
 
     map.addPanels(this.panel);
 
@@ -145,13 +146,13 @@ export default class Infocoordinates extends IDEE.Plugin {
       this.order,
       this.outputDownloadFormat_,
     ));
-    this.controls.push(new InfocoordinatesControl({
-      decimalGEOcoord: this.decimalGEOcoord_,
-      decimalUTMcoord: this.decimalUTMcoord_,
-      helpUrl: this.helpUrl_,
-      order: this.order,
-      outputDownloadFormat: this.outputDownloadFormat_,
-    }));
+    // this.controls.push(new InfocoordinatesControl({
+    //   decimalGEOcoord: this.decimalGEOcoord_,
+    //   decimalUTMcoord: this.decimalUTMcoord_,
+    //   helpUrl: this.helpUrl_,
+    //   order: this.order,
+    //   outputDownloadFormat: this.outputDownloadFormat_,
+    // }));
     this.panel.addControls(this.controls);
 
     this.button.panel = this.panel;
