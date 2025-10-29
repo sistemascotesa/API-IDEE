@@ -59,7 +59,10 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     align-items: flex-start;
     justify-content: flex-start;
     overflow-y: visible;
-    background-color: #fff !important;
+}
+
+.m-control.m-container.m-vectorsmanagement select {
+    border-radius: 2px;
 }
 
 .m-panel.m-plugin-vectorsmanagement.opened .m-control.m-container.m-vectorsmanagement>div#m-vectorsmanagement-previews>div[id^="m-vectorsmanagement-"] {
@@ -169,7 +172,11 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 #m-vectorsmanagement-download-container {
-    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    column-gap: .5rem;
 }
 
 #m-vectorsmanagement-layer-selector,
@@ -202,45 +209,36 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     font-size: 1.2em;
 }
 
-.m-vectorsmanagement-analysis-featureInfo table {
-    border-collapse: collapse;
-    border: 1px solid black;
+.m-vectorsmanagement-analysis-featureInfo .coords-table-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.m-vectorsmanagement-analysis-featureInfo>section {
-    padding: 10px;
+.m-vectorsmanagement-analysis-featureInfo table {
+    width: 14rem;
+    margin: 0 auto;
+    border-collapse: collapse;
 }
 
 .m-vectorsmanagement-analysis-featureInfo table th,
 .m-vectorsmanagement-analysis-featureInfo table td {
-    border: 1px solid black;
-    padding: 8px;
+    border: 2px solid #8b8b8b;
+    padding: .5rem;
     text-align: center;
 }
 
-.m-vectorsmanagement-style-container,
-.m-vectorsmanagement-style-container>#styleOptions,
-.m-vectorsmanagement-style-container>#styleOptions>div,
-.m-vectorsmanagement-style-container>#styleOptions>div>#options-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
+.m-vectorsmanagement-analysis-featureInfo table th {
+    color: #000000a3;
 }
 
-.m-vectorsmanagement-style-container #options-content input[type=number] {
-    height: 2rem;
+.m-vectorsmanagement-analysis-featureInfo table td {
+    color: #000000d7;
 }
 
-.m-vectorsmanagement-style-container>button#set-style-btn {
-    width: 60px;
-    margin-left: calc(50% - 30px) !important;
-}
-
-.m-vectorsmanagement-style-container,
-#m-point-coordinates {
-    padding-top: 1rem;
-    font-size: 14px;
+.m-vectorsmanagement-analysis-featureInfo table th:empty {
+  background-color: transparent;
+  border: 0;
 }
 
 #m-point-coordinates {
@@ -268,10 +266,16 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 #m-point-coordinates input,
 #m-point-coordinates-srs.dropdown {
-    margin: 4px 4px .75rem 4px;
+    margin: .35rem 0 .5rem 0;
     padding: 4px;
     border-radius: 4px;
     border-color: #ced4da;
+    width: 100%;
+    height: 2rem;
+}
+
+#LON {
+    margin-bottom: 1rem;
 }
 
 #m-point-coordinates-coordinatesSystem,
@@ -280,19 +284,19 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     width: 100%;
 }
 
-
-
 #m-text-draw>div {
-    margin-top: 15px;
+    margin-top: 2rem;
 }
 
 .m-vectorsmanagement-coordinates-buttons {
-    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 #vectorsmanagement-analysis-div {
     text-align: center;
-    padding-top: 18px;
+    padding-top: 1rem;
 }
 
 button#m-vectormanagement-coordinates-draw,
@@ -304,12 +308,10 @@ button#confirm-clear-btn,
 button#cancel-clear-btn,
 button#set-style-btn {
     cursor: pointer;
+    width: 8rem;
     text-align: center;
-    border: none;
-    padding: 8px;
-    background-color: #71a7d3 !important;
-    color: #fff !important;
-    margin: 10px auto;
+    padding: .5rem 0;
+    margin: 1rem auto;
 }
 
 .m-vectorsmanagement-editAttribute {
@@ -333,6 +335,8 @@ button#cancel-clear-btn {
 
 #clean-modal-btns {
     display: flex;
+    justify-content: space-evenly;
+    margin-top: 1.5rem;
 }
 
 #layerdrawing,
@@ -364,6 +368,8 @@ button#cancel-clear-btn {
 .m-vectorsmanagement-style-container,
 .m-container.m-selection.m-selection-container,
 .m-vectorsmanagement-analysis,
+#vectorsmanagement-analysis-btn-container,
+.m-vectorsmanagement-analysis-featureInfo,
 #m-vectorsmanagement-download-container,
 .m-vectorsmanagement-edition-container,
 #edition-container,
@@ -390,15 +396,24 @@ button#cancel-clear-btn {
     column-gap: .5rem;
 }
 
+#m-figuretools>div {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    column-gap: .5rem;
+}
+
 #m-figuretools>div>#figuresSelector {
     margin-right: .5rem;
 }
 
 #m-vectorsmanagement-download-format {
-    background-color: #fff;
+    width: 8rem;
     padding: 5px;
+    margin: 1rem auto;
     display: block;
-    margin: 10px auto;
 }
 
 #m-vectorsmanagement-download-btn:disabled {
@@ -413,15 +428,17 @@ div#edition-container #featureInfo {
 }
 
 #m-vectorsmanagement-attribute-table-container {
-    max-height: 50vh;
+    margin: 1rem 0 0 0;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    max-height: 8rem;
     overflow: auto;
-    margin: 1rem 0.5rem 0.5rem;
 }
 
 table#attribute-table {
     border-collapse: collapse;
     position: relative;
-    margin: 0 auto;
 }
 
 table#attribute-table>tr>th {
@@ -435,7 +452,6 @@ table#attribute-table>tr>th {
     border: 1px solid #71a7d3;
     padding: 8px;
 }
-
 
 table#attribute-table>tr>td {
     border: 1px solid #71a7d3;
@@ -452,6 +468,26 @@ table#attribute-table>tr>th>span,
 table#attribute-table>tr>th>button {
     margin-right: 5px;
     padding: 0;
+}
+
+.m-vectorsmanagement-style-container,
+.m-vectorsmanagement-style-container>#styleOptions,
+.m-vectorsmanagement-style-container>#styleOptions>div,
+.m-vectorsmanagement-style-container>#styleOptions>div>#options-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.m-vectorsmanagement-style-container #options-content input[type=number] {
+    height: 2rem;
+}
+
+.m-vectorsmanagement-style-container,
+#m-point-coordinates {
+    padding-top: 1rem;
+    font-size: 14px;
 }
 
 .m-vectorsmanagement-style-container .m-vectorsmanagement-style-options {
@@ -481,6 +517,7 @@ table#attribute-table>tr>th>button {
 }
 
 .m-vectorsmanagement-style-container .row-container-title {
+    color: white;
     margin: 0 0 .5rem 0;
     background-color: #71a7d3;
     padding: .25rem 0;
@@ -506,7 +543,8 @@ table#attribute-table>tr>th>button {
 }
 
 .m-vectorsmanagement-style-container .row-container select,
-.m-vectorsmanagement-style-container .row-container #textContent {
+.m-vectorsmanagement-style-container .row-container #textContent,
+.m-message #metreBuffer {
     border-radius: 2px;
     min-width: 120px;
     width: 100%;
@@ -600,7 +638,6 @@ table#attribute-table>tr>th>button {
 .ol-control-vector.ol-profil .ol-inner {
     display: block;
     background-color: hsl(0deg 0% 100%);
-    margin: 2px 2px;
 }
 
 .ol-control-vector.ol-profil.ol-collapsed .ol-inner {
@@ -624,13 +661,10 @@ table#attribute-table>tr>th>button {
     display: block !important;
     color: #c40000;
     margin-top: 3px;
-    margin-right: 5px;
+    margin-right: 3px;
+    margin: 3px 3px 0 0;
     border: none;
     background-color: transparent;
-}
-
-.ol-profil button.profile-close-button:hover {
-    transform: scale(1.2);
 }
 
 .ol-profil button.profile-close-button:after {
@@ -643,7 +677,7 @@ table#attribute-table>tr>th>button {
 
 .ol-profil button.profile-download-button {
     position: absolute;
-    right: 22px;
+    right: 1rem;
     top: 0px;
     display: block !important;
     color: #000000;
@@ -667,11 +701,6 @@ table#attribute-table>tr>th>button {
     width: fit-content;
 }
 
-.ol-profil button.profile-download-button:hover,
-.ol-profil button.profile-move-button:hover {
-    transform: scale(1.2);
-}
-
 .ol-profil button.profile-download-button:focus,
 .ol-profil button.profile-move-button:focus {
     outline: none;
@@ -681,10 +710,11 @@ table#attribute-table>tr>th>button {
     cursor: move;
 }
 
-.ol-profil button.profile-move-button img {
-    width: 1.1rem;
+.ol-profil button.profile-move-button img,
+.ol-profil button.profile-close-button:after,
+ol-profil button.profile-download-button::before {
+    color: #adb5bd;
 }
-
 
 .ol-profil.ol-collapsed button {
     position: static;
@@ -772,14 +802,13 @@ table#attribute-table>tr>th>button {
 
 .ol-profil p {
     text-align: center;
-    margin: 2px;
+    margin: 0px;
     font-weight: bold;
-    color: #0f0f0f;
+    color: #1d5a9e;
     padding: 10px 0;
     font-size: 16px;
     background-color: hsl(0deg 0% 100%)
 }
-
 
 /* Icon font */
 
@@ -901,7 +930,7 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
+    align-items: center !important;
     column-gap: .2rem;
 }
 
@@ -909,8 +938,8 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 #creationBtns>button,
 #creationBtns>button.activated,
 #analysisBtns,
-#analysisBtns>button,
-#analysisBtns>button.activated,
+#analysisBtns>div>button,
+#analysisBtns>div>button.activated,
 #editionBtns,
 #editionBtns>button,
 #editionBtns>button.activated {
@@ -918,20 +947,20 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 }
 
 #creationBtns>button:before,
-#analysisBtns>button:before,
+#analysisBtns>div>button:before,
 #editionBtns>button:before {
     color: #757474 !important;
     background-color: transparent !important;
 }
 
 #creationBtns>button:hover:before,
-#analysisBtns>button:hover:before,
+#analysisBtns>div>button:hover:before,
 #editionBtns>button:hover:before {
     color: #71a7d3 !important;
 }
 
 #creationBtns>button.activated:before,
-#analysisBtns>button.activated:before,
+#analysisBtns>div>button.activated:before,
 #editionBtns>button.activated:before {
     color: #1d5a9e !important;
 }
@@ -940,9 +969,6 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 10px;
-    gap: 20px;
-    padding-bottom: 10px;
 }
 
 .vectorsmanagement-icon-font:before {
@@ -983,7 +1009,6 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 
 .vectorsmanagement-icon-design-tool:before {
     content: "\e902";
-    font-weight: bold;
 }
 
 .vectorsmanagement-icon-cancelar:before {
@@ -1077,8 +1102,6 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 
 .vectorsmanagement-icon-json-file:before {
     content: "\e900";
-    font-size: 20px;
-    font-weight: bold;
 }
 
 .vectorsmanagement-icon-resize-full-alt.disabled,
@@ -1090,7 +1113,6 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 .vectorsmanagement-geojson {
     cursor: pointer;
 }
-
 
 .vectorsmanagement-geojson:hover:before {
     color: #71a7d3 !important;
@@ -1156,7 +1178,6 @@ th .vectorsmanagement-icon-papelera {
     margin-left: 20px;
 }
 
-
 #edition-attributes-container {
     position: fixed !important;
     top: 50%;
@@ -1188,11 +1209,6 @@ th .vectorsmanagement-icon-papelera {
 
 #clear-layer-modal>.popup-title {
     margin-top: 0;
-}
-
-#m-vectorsmanagement-attribute-table-container {
-    max-width: 61vw;
-    padding: 0 1vw 1vw;
 }
 
 .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened .m-control.m-container.m-modal>button.m-panel-btn.vectorsmanagement-icon-cancelar:before {

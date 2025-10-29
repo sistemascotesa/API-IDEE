@@ -12,7 +12,7 @@
          MODAL
 /**************************/
 
-.m-dialog > div.m-modal {
+.m-dialog>div.m-modal {
    width: 100%;
    height: 100%;
    background-color: rgba(255, 255, 255, 0.5);
@@ -25,7 +25,7 @@
          CONTENT
 /**************************/
 
-.m-dialog > div.m-modal > div.m-content {
+.m-dialog>div.m-modal>div.m-content {
    display: flex;
    flex-direction: column;
    position: relative;
@@ -56,16 +56,16 @@
 
 .m-dialog div.m-message {
    flex-grow: 1;
-   overflow: auto;
-   padding: 8px;
    font-size: 16px;
+   overflow: auto;
+   padding: .5rem;
 }
 
 /**************************
          BUTTON
 /**************************/
 
-.m-dialog div.m-button > button {
+.m-dialog div.m-button>button {
    background-color: white !important;
    font-size: 14px;
    border: none;
@@ -97,11 +97,13 @@
    font-size: 16px;
    color: #337ceb;
 }
-.m-dialog.info div.m-button > button {
+
+.m-dialog.info div.m-button>button {
    color: #337ceb;
    border: 1px solid #337ceb;
 }
-.m-dialog.info div.m-button > button:hover {
+
+.m-dialog.info div.m-button>button:hover {
    color: white;
    background-color: #337ceb !important;
    border: 1px solid #337ceb;
@@ -115,11 +117,13 @@
    font-size: 16px;
    color: #d9534f;
 }
-.m-dialog.error div.m-button > button {
+
+.m-dialog.error div.m-button>button {
    color: #d9534f;
    border: 1px solid #d9534f;
 }
-.m-dialog.error div.m-button > button:hover {
+
+.m-dialog.error div.m-button>button:hover {
    color: white;
    background-color: #d9534f !important;
    border: 1px solid #d9534f;
@@ -133,11 +137,13 @@
    font-size: 16px;
    color: #67af13;
 }
-.m-dialog.success div.m-button > button {
+
+.m-dialog.success div.m-button>button {
    color: #67af13;
    border: 1px solid #67af13;
 }
-.m-dialog.success div.m-button > button:hover {
+
+.m-dialog.success div.m-button>button:hover {
    color: white;
    background-color: #67af13 !important;
    border: 1px solid #67af13;
