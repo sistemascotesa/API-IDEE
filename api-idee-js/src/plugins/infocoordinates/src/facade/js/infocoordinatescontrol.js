@@ -220,9 +220,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
     document.body.style.cursor = 'crosshair';
     this.map.getFeatureHandler().deactivate();
     document.addEventListener('keyup', this.checkEscKey.bind(this));
-    if (this.clickedDeactivate) {
+    /* if (this.clickedDeactivate) {
       document.querySelector('div.m-panel.m-plugin-infocoordinates > button').click();
-    }
+    } */
   }
 
   checkEscKey(evt) {

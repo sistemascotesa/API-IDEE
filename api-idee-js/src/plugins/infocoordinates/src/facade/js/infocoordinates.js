@@ -135,7 +135,6 @@ export default class Infocoordinates extends IDEE.Plugin {
       tooltip: this.tooltip,
       order: this.order,
     });
-    console.log('THIS.PANEL', this.panel);
 
     map.addPanels(this.panel);
 

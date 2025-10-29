@@ -301,10 +301,10 @@ class Panel extends MObject {
    * @api
    */
   _collapse(html) {
-    html.classList.remove('opened');
+    /* html.classList.remove('opened');
     this.buttonPanel.classList.remove(this._openedButtonClass);
     html.classList.add('collapsed');
-    this.buttonPanel.classList.add(this._collapsedButtonClass);
+    this.buttonPanel.classList.add(this._collapsedButtonClass); */
     this._collapsed = true;
     this.fire(EventType.HIDE);
   }
@@ -317,10 +317,10 @@ class Panel extends MObject {
    * @api
    */
   _open(html) {
-    html.classList.remove('collapsed');
+    /* html.classList.remove('collapsed');
     this.buttonPanel.classList.remove(this._collapsedButtonClass);
     html.classList.add('opened');
-    this.buttonPanel.classList.add(this._openedButtonClass);
+    this.buttonPanel.classList.add(this._openedButtonClass); */
     this._collapsed = false;
     this.fire(EventType.SHOW);
   }
