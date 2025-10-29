@@ -115,13 +115,12 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 #m-vectorsmanagement-layer-selector[class^="vectorsmanagement-icon-selector-arrow-"]:before,
 #m-vectorsmanagement-layer-selector[class^="disabled vectorsmanagement-icon-selector-arrow-"]:before {
-    font-size: 10px !important;
+    width: 10px !important;
     position: absolute;
     top: 10px;
     right: 7px;
     border: none;
     color: #8b8b8b;
-    background-color: transparent;
 }
 
 #m-vectorsmanagement-layer-selector span,
@@ -205,10 +204,6 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     border-color: #71a7d3;
 }
 
-.m-vectorsmanagement-selection-layer>div {
-    font-size: 1.2em;
-}
-
 .m-vectorsmanagement-analysis-featureInfo .coords-table-container {
     display: flex;
     align-items: center;
@@ -237,8 +232,8 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-vectorsmanagement-analysis-featureInfo table th:empty {
-  background-color: transparent;
-  border: 0;
+    background-color: transparent;
+    border: 0;
 }
 
 #m-point-coordinates {
@@ -626,7 +621,7 @@ table#attribute-table>tr>th>button {
 }
 
 .ol-profil button {
-    background-image: none !important;
+    mask-image: none !important;
 }
 
 .ol-profil .ol-inner {
@@ -810,20 +805,6 @@ ol-profil button.profile-download-button::before {
     background-color: hsl(0deg 0% 100%)
 }
 
-/* Icon font */
-
-@font-face {
-    font-family: 'vectorsmanagement';
-    src: url('../fonts/vectorsmanagement.eot?66977');
-    src: url('../fonts/vectorsmanagement.eot?66977#iefix') format('embedded-opentype'),
-        url('../fonts/vectorsmanagement.ttf?66977') format('truetype'),
-        url('../fonts/vectorsmanagement.woff?66977') format('woff'),
-        url('../fonts/vectorsmanagement.svg?66977#vectorsmanagement') format('svg');
-    font-weight: normal;
-    font-style: normal;
-    font-display: block;
-}
-
 .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control>button,
 .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.collapsed>button.m-panel-btn,
 [class^="vectorsmanagement-"],
@@ -857,7 +838,7 @@ ol-profil button.profile-download-button::before {
 #analysisBtns>div>button,
 #editionBtns>button,
 [class^="vectorsmanagement-icon-"]:before {
-    font-size: 18px;
+    width: 2rem;
     border: none;
 }
 
@@ -950,7 +931,6 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 #analysisBtns>div>button:before,
 #editionBtns>button:before {
     color: #757474 !important;
-    background-color: transparent !important;
 }
 
 #creationBtns>button:hover:before,
@@ -971,138 +951,6 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     align-items: center;
 }
 
-.vectorsmanagement-icon-font:before {
-    content: '\e801';
-}
-
-.vectorsmanagement-icon-layers:before {
-    content: '\e802';
-}
-
-.vectorsmanagement-icon-linea:before {
-    content: '\e803';
-}
-
-.vectorsmanagement-icon-poligono:before {
-    content: '\e806';
-}
-
-.vectorsmanagement-icon-pin:before {
-    content: '\e807';
-}
-
-.vectorsmanagement-icon-vectors:before {
-    content: '\e819';
-}
-
-.vectorsmanagement-icon-profile:before {
-    content: '\e81b';
-}
-
-.vectorsmanagement-icon-hole:before {
-    content: '\e81c';
-}
-
-.vectorsmanagement-icon-pin-located:before {
-    content: '\e903';
-}
-
-.vectorsmanagement-icon-design-tool:before {
-    content: "\e902";
-}
-
-.vectorsmanagement-icon-cancelar:before {
-    content: '\e905';
-}
-
-.vectorsmanagement-icon-aceptar:before {
-    content: '\e908';
-}
-
-.vectorsmanagement-icon-radio-vacio:before {
-    content: '\e90b';
-}
-
-.vectorsmanagement-icon-radio-relleno:before {
-    content: '\e90c';
-}
-
-.vectorsmanagement-icon-descargar:before {
-    content: '\e90e';
-}
-
-.vectorsmanagement-icon-editar:before {
-    content: '\e90f';
-}
-
-.vectorsmanagement-icon-editar2:before {
-    content: '\e910';
-}
-
-.vectorsmanagement-icon-estilo:before {
-    content: '\e91c';
-}
-
-.vectorsmanagement-icon-mover:before {
-    content: '\e921';
-}
-
-.vectorsmanagement-icon-seleccionar:before {
-    content: "\e901";
-    position: relative;
-}
-
-.vectorsmanagement-icon-mas:before {
-    content: '\e935';
-}
-
-.vectorsmanagement-icon-medir-area:before {
-    content: '\e936';
-}
-
-.vectorsmanagement-icon-analisis:before {
-    content: '\e938';
-}
-
-.vectorsmanagement-icon-papelera:before {
-    content: '\e93e';
-}
-
-.vectorsmanagement-icon-subir:before {
-    content: '\e95e';
-}
-
-.vectorsmanagement-icon-tamano:before {
-    content: '\e95f';
-}
-
-.vectorsmanagement-icon-ayuda:before {
-    content: '\e981';
-}
-
-.vectorsmanagement-icon-scissors:before {
-    content: '\ea5a';
-}
-
-.vectorsmanagement-icon-resize-full-alt:before {
-    content: '\e800';
-}
-
-.vectorsmanagement-icon-table:before {
-    content: '\f0ce';
-}
-
-.vectorsmanagement-icon-selector-arrow-up:before {
-    content: '\e904';
-}
-
-.vectorsmanagement-icon-selector-arrow-down:before {
-    content: '\e906';
-}
-
-.vectorsmanagement-icon-json-file:before {
-    content: "\e900";
-}
 
 .vectorsmanagement-icon-resize-full-alt.disabled,
 .vectorsmanagement-icon-hole.disabled,
@@ -1305,6 +1153,190 @@ div#popup-box {
     max-height: calc(100vh - 175px) !important;
 }
 
+[class^="vectorsmanagement-icon"]:before {
+    content: '';
+    display: inline-block;
+    max-width: 1.15rem;
+    width: 100%;
+    aspect-ratio: 1;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+}
+
+.m-dialog div.m-message [class^="vectorsmanagement-icon"]:before {
+    color: #1d5a9e;
+}
+
+.vectorsmanagement-icon-font:before {
+    -webkit-mask-image: url('../images/icon_ue801.svg');
+    mask-image: url('../images/icon_ue801.svg');
+}
+
+.vectorsmanagement-icon-layers:before {
+    -webkit-mask-image: url('../images/icon_ue802.svg');
+    mask-image: url('../images/icon_ue802.svg');
+}
+
+.vectorsmanagement-icon-linea:before {
+    -webkit-mask-image: url('../images/icon_ue803.svg');
+    mask-image: url('../images/icon_ue803.svg');
+}
+
+.vectorsmanagement-icon-poligono:before {
+    -webkit-mask-image: url('../images/icon_ue806.svg');
+    mask-image: url('../images/icon_ue806.svg');
+}
+
+.vectorsmanagement-icon-pin:before {
+    -webkit-mask-image: url('../images/icon_ue807.svg');
+    mask-image: url('../images/icon_ue807.svg');
+}
+
+.vectorsmanagement-icon-vectors:before {
+    -webkit-mask-image: url('../images/icon_ue819.svg');
+    mask-image: url('../images/icon_ue819.svg');
+}
+
+.vectorsmanagement-icon-profile:before {
+    -webkit-mask-image: url('../images/icon_ue81b.svg');
+    mask-image: url('../images/icon_ue81b.svg');
+}
+
+.vectorsmanagement-icon-hole:before {
+    -webkit-mask-image: url('../images/icon_ue81c.svg');
+    mask-image: url('../images/icon_ue81c.svg');
+}
+
+.vectorsmanagement-icon-pin-located:before {
+    -webkit-mask-image: url('../images/icon_ue903.svg');
+    mask-image: url('../images/icon_ue903.svg');
+}
+
+.vectorsmanagement-icon-design-tool:before {
+    -webkit-mask-image: url('../images/icon_ue902.svg');
+    mask-image: url('../images/icon_ue902.svg');
+}
+
+.vectorsmanagement-icon-cancelar:before {
+    -webkit-mask-image: url('../images/icon_ue905.svg');
+    mask-image: url('../images/icon_ue905.svg');
+}
+
+.vectorsmanagement-icon-aceptar:before {
+    -webkit-mask-image: url('../images/icon_ue908.svg');
+    mask-image: url('../images/icon_ue908.svg');
+}
+
+.vectorsmanagement-icon-radio-vacio:before {
+    -webkit-mask-image: url('../images/icon_ue90b.svg');
+    mask-image: url('../images/icon_ue90b.svg');
+}
+
+.vectorsmanagement-icon-radio-relleno:before {
+    -webkit-mask-image: url('../images/icon_ue90c.svg');
+    mask-image: url('../images/icon_ue90c.svg');
+}
+
+.vectorsmanagement-icon-descargar:before {
+    -webkit-mask-image: url('../images/icon_ue90e.svg');
+    mask-image: url('../images/icon_ue90e.svg');
+}
+
+.vectorsmanagement-icon-editar:before {
+    -webkit-mask-image: url('../images/icon_ue90f.svg');
+    mask-image: url('../images/icon_ue90f.svg');
+}
+
+.vectorsmanagement-icon-editar2:before {
+    -webkit-mask-image: url('../images/icon_ue910.svg');
+    mask-image: url('../images/icon_ue910.svg');
+}
+
+.vectorsmanagement-icon-estilo:before {
+    -webkit-mask-image: url('../images/icon_ue91c.svg');
+    mask-image: url('../images/icon_ue91c.svg');
+}
+
+.vectorsmanagement-icon-mover:before {
+    -webkit-mask-image: url('../images/icon_ue921.svg');
+    mask-image: url('../images/icon_ue921.svg');
+}
+
+.vectorsmanagement-icon-seleccionar:before {
+    -webkit-mask-image: url('../images/icon_ue901.svg');
+    mask-image: url('../images/icon_ue901.svg');
+    position: relative;
+}
+
+.vectorsmanagement-icon-mas:before {
+    -webkit-mask-image: url('../images/icon_ue935.svg');
+    mask-image: url('../images/icon_ue935.svg');
+}
+
+.vectorsmanagement-icon-medir-area:before {
+    -webkit-mask-image: url('../images/icon_ue936.svg');
+    mask-image: url('../images/icon_ue936.svg');
+}
+
+.vectorsmanagement-icon-analisis:before {
+    -webkit-mask-image: url('../images/icon_ue938.svg');
+    mask-image: url('../images/icon_ue938.svg');
+}
+
+.vectorsmanagement-icon-papelera:before {
+    -webkit-mask-image: url('../images/icon_ue93e.svg');
+    mask-image: url('../images/icon_ue93e.svg');
+}
+
+.vectorsmanagement-icon-subir:before {
+    -webkit-mask-image: url('../images/icon_ue95e.svg');
+    mask-image: url('../images/icon_ue95e.svg');
+}
+
+.vectorsmanagement-icon-tamano:before {
+    -webkit-mask-image: url('../images/icon_ue95f.svg');
+    mask-image: url('../images/icon_ue95f.svg');
+}
+
+.vectorsmanagement-icon-ayuda:before {
+    -webkit-mask-image: url('../images/icon_ue981.svg');
+    mask-image: url('../images/icon_ue981.svg');
+}
+
+.vectorsmanagement-icon-scissors:before {
+    -webkit-mask-image: url('../images/icon_uea5a.svg');
+    mask-image: url('../images/icon_uea5a.svg');
+}
+
+.vectorsmanagement-icon-resize-full-alt:before {
+    -webkit-mask-image: url('../images/icon_ue800.svg');
+    mask-image: url('../images/icon_ue800.svg');
+}
+
+.vectorsmanagement-icon-table:before {
+    -webkit-mask-image: url('../images/icon_uf0ce.svg');
+    mask-image: url('../images/icon_uf0ce.svg');
+}
+
+.vectorsmanagement-icon-selector-arrow-up:before {
+    -webkit-mask-image: url('../images/icon_ue904.svg');
+    mask-image: url('../images/icon_ue904.svg');
+}
+
+.vectorsmanagement-icon-selector-arrow-down:before {
+    -webkit-mask-image: url('../images/icon_ue906.svg');
+    mask-image: url('../images/icon_ue906.svg');
+}
+
+.vectorsmanagement-icon-json-file:before {
+    -webkit-mask-image: url('../images/icon_ue900.svg');
+    mask-image: url('../images/icon_ue900.svg');
+}
 
 @media (max-width: 600px) {
     .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened {
