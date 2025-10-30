@@ -124,6 +124,7 @@ class Button extends MObject {
       this.map.rightPanel.appendChild(this.panel.element);
     }
 
+    this.panel.open();
     this.pressed = true;
     this.element.classList.add('active');
   }
@@ -138,6 +139,7 @@ class Button extends MObject {
       this.map.rightPanel.removeChild(this.panel.element);
     }
 
+    this.panel.collapse();
     this.pressed = false;
     this.element.classList.remove('active');
   }

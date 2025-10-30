@@ -4995,6 +4995,8 @@ class Map extends Base {
    * @deprecated
    */
   enableDrag(active) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').enableDrag_deprecated);
     this.enablePan(active);
   }
 }

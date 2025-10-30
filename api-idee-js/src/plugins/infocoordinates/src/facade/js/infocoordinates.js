@@ -27,20 +27,18 @@ export default class Infocoordinates extends IDEE.Plugin {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
     });
-
     /**
      *  Decimal digits fixed on geographic coordinates
      * @public     *
      * @type {int}
      */
-    this.decimalGEOcoord_ = options.decimalGEOcoord || 4;
-
+    this.decimalGEOcoord_ = 4;
     /**
      *  Decimal digits fixed on projected coordinates
      * @public     *
      * @type {int}
      */
-    this.decimalUTMcoord_ = options.decimalUTMcoord || 2;
+    this.decimalUTMcoord_ = 2;
 
     /**
      * Option to allow the plugin to be collapsed or not
@@ -135,7 +133,6 @@ export default class Infocoordinates extends IDEE.Plugin {
       tooltip: this.tooltip,
       order: this.order,
     });
-    console.log('THIS.PANEL', this.panel);
 
     map.addPanels(this.panel);
 

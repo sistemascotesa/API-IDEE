@@ -757,8 +757,6 @@ export default class EditionControl extends IDEE.Control {
     const color = '#71a7d3';
     const dialog = document.querySelector('.m-dialog > div.m-modal > div.m-content');
     dialog.style.minWidth = 'auto';
-    const title = document.querySelector('.m-modal .m-title');
-    title.style.backgroundColor = color;
     const btn = document.querySelectorAll('.m-button button')[1];
     const inputName = document.querySelector('div.m-modal input#attribute-name');
     btn.style.backgroundColor = color;

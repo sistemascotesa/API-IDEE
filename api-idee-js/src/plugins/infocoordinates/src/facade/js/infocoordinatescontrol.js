@@ -40,8 +40,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
     this.layerFeatures = new IDEE.layer.Vector();
     this.layerFeatures.name = 'infocoordinatesLayerFeatures';
     this.layerFeatures.displayInLayerSwitcher = false;
-    this.decimalGEOcoord = decimalGEOcoord;
-    this.decimalUTMcoord = decimalUTMcoord;
+    this.decimalGEOcoord_ = decimalGEOcoord;
+    this.decimalUTMcoord_ = decimalUTMcoord;
     this.helpUrl = helpUrl;
     this.clickedDeactivate = false;
     this.order = order;
@@ -220,16 +220,23 @@ export default class InfocoordinatesControl extends IDEE.Control {
     document.body.style.cursor = 'crosshair';
     this.map.getFeatureHandler().deactivate();
     document.addEventListener('keyup', this.checkEscKey.bind(this));
-    if (this.clickedDeactivate) {
+    /* if (this.clickedDeactivate) {
       document.querySelector('div.m-panel.m-plugin-infocoordinates > button').click();
-    }
+    } */
   }
 
   checkEscKey(evt) {
-    const opened = document.querySelector('div.m-panel.m-plugin-infocoordinates').classList.contains('opened');
-    if (evt.key === 'Escape' && opened) {
-      document.querySelector('div.m-panel.m-plugin-infocoordinates.opened > button').click();
-      document.removeEventListener('keyup', this.checkEscKey);
+    const panelElement = document.querySelector('div.m-panel.m-plugin-infocoordinates');
+
+    if (panelElement) {
+      const opened = panelElement.classList.contains('opened');
+      if (evt.key === 'Escape' && opened) {
+        const buttonElement = panelElement.querySelector('button');
+        if (buttonElement) {
+          buttonElement.click();
+        }
+        document.removeEventListener('keyup', this.checkEscKey);
+      }
     }
   }
 
@@ -268,6 +275,16 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const numPoint = this.numTabs + 1;
     document.getElementById('m-infocoordinates-srs-selector').removeAttribute('disabled');
     document.getElementById('m-infocoordinates-buttonConversorFormat').removeAttribute('disabled');
+
+    if (this.numTabs === 0) {
+      document.getElementById('m-infocoordinates-buttonRemovePoint').classList.remove('noDisplay');
+      document.getElementById('m-infocoordinates-copylatlon').classList.remove('noDisplay');
+
+      document.getElementsByClassName('m-infocoordinates-div-buttonRemoveAllPoints')[0].classList.remove('noDisplay');
+      document.getElementsByClassName('m-infocoordinates-div-buttonImportAllPoints')[0].classList.remove('noDisplay');
+      document.getElementsByClassName('m-infocoordinates-div-buttonCopyAllPoints')[0].classList.remove('noDisplay');
+      document.getElementsByClassName('m-infocoordinates-div-buttonDisplayAllPoints')[0].classList.remove('noDisplay');
+    }
 
     // Mostramos la barra de herramientas inferior
     const toolbar = document.querySelector('.infocoordinates-toolbar');
@@ -508,7 +525,10 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const datumBox = document.getElementById('m-infocoordinates-datum');
     const coordX = document.getElementById('m-infocoordinates-coordX');
     const coordY = document.getElementById('m-infocoordinates-coordY');
-    const srsSelector = document.getElementById('m-infocoordinates-epsg-selected').value;
+    // const srsSelector = document.getElementById('m-infocoordinates-epsg-selected').value;
+    const srsElement = document.getElementById('m-infocoordinates-epsg-selected');
+    // 2. Obtenemos el VALOR (el string)
+    const srsSelector = srsElement.value;
     // const selectSRS = srsSelector.value;
 
     // Cojo el formato de las coordenadas geográficas
@@ -521,8 +541,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
         featureSelected,
         srsSelector,
         formatGMS,
-        this.decimalGEOcoord,
-        this.decimalUTMcoord,
+        this.decimalGEOcoord_,
+        this.decimalUTMcoord_,
       );
     } catch (error) {
       try {
@@ -531,36 +551,38 @@ export default class InfocoordinatesControl extends IDEE.Control {
           featureSelected,
           srsSelector,
           formatGMS,
-          this.decimalGEOcoord,
-          this.decimalUTMcoord,
+          this.decimalGEOcoord_,
+          this.decimalUTMcoord_,
         );
       } catch (err) {
         pointDataOutput = this.getImpl().getCoordinates(
           featureSelected,
           this.selectedProjection,
           formatGMS,
-          this.decimalGEOcoord,
-          this.decimalUTMcoord,
+          this.decimalGEOcoord_,
+          this.decimalUTMcoord_,
         );
-        srsSelector.value = this.selectedProjection;
+        srsElement.value = this.selectedProjection;
         IDEE.dialog.error(`${getValue('exception.srs')} ${this.selectedProjection}`);
       }
     }
 
     this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
-    // selector.innerHTML = `
-    //   <li>
-    // <a class="m-infocoordinates-option-disabled" href="#" value="default" tabindex="-1" disabled>
-    //       ${getValue('choose_create_epsg')}
-    //   </a></li>
-    //   ${this.projections.map((proj) => `
-    //       <li>
-    //           <a href="#" value="${proj.codes[0]}">
-    //               ${proj.codes[0]}
-    //           </a>
-    //       </li>
-    //   `).join('')}
-    // `;
+    const srsListElement = document.getElementById('m-infocoordinates-srs-selector');
+    if (srsListElement) {
+      srsListElement.innerHTML = `
+        <li>
+          <a href="#" value="default" tabindex="-1">${getValue('choose_create_epsg')}</a>
+        </li>
+        ${this.projections.map((proj) => `
+          <li>
+            <a href="#" value="${proj.codes[0]}">
+              ${proj.codes[0]}
+            </a>
+          </li>
+        `).join('')}
+      `;
+    }
 
     // pinto
     pointBox.innerHTML = pointDataOutput.NumPoint;
@@ -679,8 +701,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
         featureSelected,
         selectSRS,
         formatGMS,
-        this.decimalGEOcoord,
-        this.decimalUTMcoord,
+        this.decimalGEOcoord_,
+        this.decimalUTMcoord_,
       );
       const proj = pointDataOutput.projectionUTM.code;
 
@@ -720,7 +742,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       const alt = featureSelected.getAttributes().Altitude !== undefined ? parseFloat(featureSelected.getAttributes().Altitude) : '-';
 
       // Cojo el srs seleccionado en el select
-      const selectSRS = document.getElementById('m-infocoordinates-epsg.selected').value;
+      const selectSRS = document.getElementById('m-infocoordinates-epsg-selected').value;
 
       // Cojo el formato de las coordenadas geográficas
       const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
@@ -730,8 +752,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
         featureSelected,
         selectSRS,
         formatGMS,
-        this.decimalGEOcoord,
-        this.decimalUTMcoord,
+        this.decimalGEOcoord_,
+        this.decimalUTMcoord_,
       );
       const proj = pointDataOutput.projectionUTM.code;
 
@@ -845,8 +867,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
       featureSelected,
       selectSRS,
       formatGMS,
-      this.decimalGEOcoord,
-      this.decimalUTMcoord,
+      this.decimalGEOcoord_,
+      this.decimalUTMcoord_,
     );
 
     return [pointDataOutput.projectionUTM.coordinatesUTM.coordX,

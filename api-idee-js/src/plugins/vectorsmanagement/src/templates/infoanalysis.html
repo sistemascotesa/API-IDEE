@@ -1,23 +1,32 @@
-<section>
+<section class="coords-table-container">
     {{#if point}}
-        <table>
-            <tr tabindex="0">
-                <td>Coordenadas</td>
-                <td>X: {{point.x}}</td>
-                <td>Y: {{point.y}}</td>
-            </tr>
-        </table>
+    <table>
+        <tr>
+            <th></th>
+            <th>Coordenadas</th>
+        </tr>
+        <tr>
+            <th scope="row">X</th>
+            <td>{{point.x}}</td>
+        </tr>
+        <tr>
+            <th scope="row">Y</th>
+            <td>{{point.y}}</td>
+        </tr>
+    </table>
     {{/if}}
     {{#if line}}
     <table>
         <tr tabindex="0">
+            <th></th>
             <th>Distancia</th>
-            <td>2D</td>
-            <td>3D</td>
         </tr>
         <tr>
-            <td>Elipsoidal</td>
+            <th scope="row">2D</th>
             <td>{{line.length}} {{line.units}}</td>
+        </tr>
+        <tr>
+            <th scope="row">3D</th>
             <td id="ellipsoidal3DLength">Calculando...</td>
         </tr>
     </table>
@@ -25,9 +34,13 @@
     {{#if polygon}}
     <table>
         <tr tabindex="0">
-            <td>Área</td>
-            <td>{{polygon.area}}{{polygon.areaUnits}}<sup>2</sup> </td>
+            <th></th>
+            <th>Área</th>
+        </tr>
+        <tr>
+            <th scope="row">Superficie</th>
+            <td>{{polygon.area}}{{polygon.areaUnits}}<sup>2</sup></td>
         </tr>
     </table>
-{{/if}}
+    {{/if}}
 </section>

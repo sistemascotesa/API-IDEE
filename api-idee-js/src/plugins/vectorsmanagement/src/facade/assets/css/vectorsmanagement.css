@@ -59,7 +59,10 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     align-items: flex-start;
     justify-content: flex-start;
     overflow-y: visible;
-    background-color: #fff !important;
+}
+
+.m-control.m-container.m-vectorsmanagement select {
+    border-radius: 2px;
 }
 
 .m-panel.m-plugin-vectorsmanagement.opened .m-control.m-container.m-vectorsmanagement>div#m-vectorsmanagement-previews>div[id^="m-vectorsmanagement-"] {
@@ -112,13 +115,12 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 #m-vectorsmanagement-layer-selector[class^="vectorsmanagement-icon-selector-arrow-"]:before,
 #m-vectorsmanagement-layer-selector[class^="disabled vectorsmanagement-icon-selector-arrow-"]:before {
-    font-size: 10px !important;
+    width: 10px !important;
     position: absolute;
     top: 10px;
     right: 7px;
     border: none;
     color: #8b8b8b;
-    background-color: transparent;
 }
 
 #m-vectorsmanagement-layer-selector span,
@@ -169,7 +171,11 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 #m-vectorsmanagement-download-container {
-    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    column-gap: .5rem;
 }
 
 #m-vectorsmanagement-layer-selector,
@@ -198,49 +204,36 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     border-color: #71a7d3;
 }
 
-.m-vectorsmanagement-selection-layer>div {
-    font-size: 1.2em;
+.m-vectorsmanagement-analysis-featureInfo .coords-table-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .m-vectorsmanagement-analysis-featureInfo table {
+    width: 14rem;
+    margin: 0 auto;
     border-collapse: collapse;
-    border: 1px solid black;
-}
-
-.m-vectorsmanagement-analysis-featureInfo>section {
-    padding: 10px;
 }
 
 .m-vectorsmanagement-analysis-featureInfo table th,
 .m-vectorsmanagement-analysis-featureInfo table td {
-    border: 1px solid black;
-    padding: 8px;
+    border: 2px solid #8b8b8b;
+    padding: .5rem;
     text-align: center;
 }
 
-.m-vectorsmanagement-style-container,
-.m-vectorsmanagement-style-container>#styleOptions,
-.m-vectorsmanagement-style-container>#styleOptions>div,
-.m-vectorsmanagement-style-container>#styleOptions>div>#options-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
+.m-vectorsmanagement-analysis-featureInfo table th {
+    color: #000000a3;
 }
 
-.m-vectorsmanagement-style-container #options-content input[type=number] {
-    height: 2rem;
+.m-vectorsmanagement-analysis-featureInfo table td {
+    color: #000000d7;
 }
 
-.m-vectorsmanagement-style-container>button#set-style-btn {
-    width: 60px;
-    margin-left: calc(50% - 30px) !important;
-}
-
-.m-vectorsmanagement-style-container,
-#m-point-coordinates {
-    padding-top: 1rem;
-    font-size: 14px;
+.m-vectorsmanagement-analysis-featureInfo table th:empty {
+    background-color: transparent;
+    border: 0;
 }
 
 #m-point-coordinates {
@@ -268,10 +261,16 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 #m-point-coordinates input,
 #m-point-coordinates-srs.dropdown {
-    margin: 4px 4px .75rem 4px;
+    margin: .35rem 0 .5rem 0;
     padding: 4px;
     border-radius: 4px;
     border-color: #ced4da;
+    width: 100%;
+    height: 2rem;
+}
+
+#LON {
+    margin-bottom: 1rem;
 }
 
 #m-point-coordinates-coordinatesSystem,
@@ -280,19 +279,19 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     width: 100%;
 }
 
-
-
 #m-text-draw>div {
-    margin-top: 15px;
+    margin-top: 2rem;
 }
 
 .m-vectorsmanagement-coordinates-buttons {
-    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 #vectorsmanagement-analysis-div {
     text-align: center;
-    padding-top: 18px;
+    padding-top: 1rem;
 }
 
 button#m-vectormanagement-coordinates-draw,
@@ -304,12 +303,10 @@ button#confirm-clear-btn,
 button#cancel-clear-btn,
 button#set-style-btn {
     cursor: pointer;
+    width: 8rem;
     text-align: center;
-    border: none;
-    padding: 8px;
-    background-color: #71a7d3 !important;
-    color: #fff !important;
-    margin: 10px auto;
+    padding: .5rem 0;
+    margin: 1rem auto;
 }
 
 .m-vectorsmanagement-editAttribute {
@@ -333,6 +330,8 @@ button#cancel-clear-btn {
 
 #clean-modal-btns {
     display: flex;
+    justify-content: space-evenly;
+    margin-top: 1.5rem;
 }
 
 #layerdrawing,
@@ -364,6 +363,8 @@ button#cancel-clear-btn {
 .m-vectorsmanagement-style-container,
 .m-container.m-selection.m-selection-container,
 .m-vectorsmanagement-analysis,
+#vectorsmanagement-analysis-btn-container,
+.m-vectorsmanagement-analysis-featureInfo,
 #m-vectorsmanagement-download-container,
 .m-vectorsmanagement-edition-container,
 #edition-container,
@@ -390,15 +391,24 @@ button#cancel-clear-btn {
     column-gap: .5rem;
 }
 
+#m-figuretools>div {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    column-gap: .5rem;
+}
+
 #m-figuretools>div>#figuresSelector {
     margin-right: .5rem;
 }
 
 #m-vectorsmanagement-download-format {
-    background-color: #fff;
+    width: 8rem;
     padding: 5px;
+    margin: 1rem auto;
     display: block;
-    margin: 10px auto;
 }
 
 #m-vectorsmanagement-download-btn:disabled {
@@ -413,15 +423,17 @@ div#edition-container #featureInfo {
 }
 
 #m-vectorsmanagement-attribute-table-container {
-    max-height: 50vh;
+    margin: 1rem 0 0 0;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    max-height: 8rem;
     overflow: auto;
-    margin: 1rem 0.5rem 0.5rem;
 }
 
 table#attribute-table {
     border-collapse: collapse;
     position: relative;
-    margin: 0 auto;
 }
 
 table#attribute-table>tr>th {
@@ -435,7 +447,6 @@ table#attribute-table>tr>th {
     border: 1px solid #71a7d3;
     padding: 8px;
 }
-
 
 table#attribute-table>tr>td {
     border: 1px solid #71a7d3;
@@ -452,6 +463,26 @@ table#attribute-table>tr>th>span,
 table#attribute-table>tr>th>button {
     margin-right: 5px;
     padding: 0;
+}
+
+.m-vectorsmanagement-style-container,
+.m-vectorsmanagement-style-container>#styleOptions,
+.m-vectorsmanagement-style-container>#styleOptions>div,
+.m-vectorsmanagement-style-container>#styleOptions>div>#options-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.m-vectorsmanagement-style-container #options-content input[type=number] {
+    height: 2rem;
+}
+
+.m-vectorsmanagement-style-container,
+#m-point-coordinates {
+    padding-top: 1rem;
+    font-size: 14px;
 }
 
 .m-vectorsmanagement-style-container .m-vectorsmanagement-style-options {
@@ -481,6 +512,7 @@ table#attribute-table>tr>th>button {
 }
 
 .m-vectorsmanagement-style-container .row-container-title {
+    color: white;
     margin: 0 0 .5rem 0;
     background-color: #71a7d3;
     padding: .25rem 0;
@@ -506,7 +538,8 @@ table#attribute-table>tr>th>button {
 }
 
 .m-vectorsmanagement-style-container .row-container select,
-.m-vectorsmanagement-style-container .row-container #textContent {
+.m-vectorsmanagement-style-container .row-container #textContent,
+.m-message #metreBuffer {
     border-radius: 2px;
     min-width: 120px;
     width: 100%;
@@ -569,7 +602,7 @@ table#attribute-table>tr>th>button {
 @media only screen and (max-width: 1228px) {
     .ol-control-vector.ol-profil {
         top: 30%;
-        left: 57%;
+        left: 35%;
     }
 }
 
@@ -588,7 +621,7 @@ table#attribute-table>tr>th>button {
 }
 
 .ol-profil button {
-    background-image: none !important;
+    mask-image: none !important;
 }
 
 .ol-profil .ol-inner {
@@ -600,7 +633,6 @@ table#attribute-table>tr>th>button {
 .ol-control-vector.ol-profil .ol-inner {
     display: block;
     background-color: hsl(0deg 0% 100%);
-    margin: 2px 2px;
 }
 
 .ol-control-vector.ol-profil.ol-collapsed .ol-inner {
@@ -624,13 +656,10 @@ table#attribute-table>tr>th>button {
     display: block !important;
     color: #c40000;
     margin-top: 3px;
-    margin-right: 5px;
+    margin-right: 3px;
+    margin: 3px 3px 0 0;
     border: none;
     background-color: transparent;
-}
-
-.ol-profil button.profile-close-button:hover {
-    transform: scale(1.2);
 }
 
 .ol-profil button.profile-close-button:after {
@@ -643,7 +672,7 @@ table#attribute-table>tr>th>button {
 
 .ol-profil button.profile-download-button {
     position: absolute;
-    right: 22px;
+    right: 1rem;
     top: 0px;
     display: block !important;
     color: #000000;
@@ -667,11 +696,6 @@ table#attribute-table>tr>th>button {
     width: fit-content;
 }
 
-.ol-profil button.profile-download-button:hover,
-.ol-profil button.profile-move-button:hover {
-    transform: scale(1.2);
-}
-
 .ol-profil button.profile-download-button:focus,
 .ol-profil button.profile-move-button:focus {
     outline: none;
@@ -681,10 +705,11 @@ table#attribute-table>tr>th>button {
     cursor: move;
 }
 
-.ol-profil button.profile-move-button img {
-    width: 1.1rem;
+.ol-profil button.profile-move-button img,
+.ol-profil button.profile-close-button:after,
+ol-profil button.profile-download-button::before {
+    color: #adb5bd;
 }
-
 
 .ol-profil.ol-collapsed button {
     position: static;
@@ -772,27 +797,12 @@ table#attribute-table>tr>th>button {
 
 .ol-profil p {
     text-align: center;
-    margin: 2px;
+    margin: 0px;
     font-weight: bold;
-    color: #0f0f0f;
+    color: #1d5a9e;
     padding: 10px 0;
     font-size: 16px;
     background-color: hsl(0deg 0% 100%)
-}
-
-
-/* Icon font */
-
-@font-face {
-    font-family: 'vectorsmanagement';
-    src: url('../fonts/vectorsmanagement.eot?66977');
-    src: url('../fonts/vectorsmanagement.eot?66977#iefix') format('embedded-opentype'),
-        url('../fonts/vectorsmanagement.ttf?66977') format('truetype'),
-        url('../fonts/vectorsmanagement.woff?66977') format('woff'),
-        url('../fonts/vectorsmanagement.svg?66977#vectorsmanagement') format('svg');
-    font-weight: normal;
-    font-style: normal;
-    font-display: block;
 }
 
 .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control>button,
@@ -828,7 +838,7 @@ table#attribute-table>tr>th>button {
 #analysisBtns>div>button,
 #editionBtns>button,
 [class^="vectorsmanagement-icon-"]:before {
-    font-size: 18px;
+    width: 2rem;
     border: none;
 }
 
@@ -901,7 +911,7 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
+    align-items: center !important;
     column-gap: .2rem;
 }
 
@@ -909,8 +919,8 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 #creationBtns>button,
 #creationBtns>button.activated,
 #analysisBtns,
-#analysisBtns>button,
-#analysisBtns>button.activated,
+#analysisBtns>div>button,
+#analysisBtns>div>button.activated,
 #editionBtns,
 #editionBtns>button,
 #editionBtns>button.activated {
@@ -918,20 +928,19 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 }
 
 #creationBtns>button:before,
-#analysisBtns>button:before,
+#analysisBtns>div>button:before,
 #editionBtns>button:before {
     color: #757474 !important;
-    background-color: transparent !important;
 }
 
 #creationBtns>button:hover:before,
-#analysisBtns>button:hover:before,
+#analysisBtns>div>button:hover:before,
 #editionBtns>button:hover:before {
     color: #71a7d3 !important;
 }
 
 #creationBtns>button.activated:before,
-#analysisBtns>button.activated:before,
+#analysisBtns>div>button.activated:before,
 #editionBtns>button.activated:before {
     color: #1d5a9e !important;
 }
@@ -940,146 +949,8 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 10px;
-    gap: 20px;
-    padding-bottom: 10px;
 }
 
-.vectorsmanagement-icon-font:before {
-    content: '\e801';
-}
-
-.vectorsmanagement-icon-layers:before {
-    content: '\e802';
-}
-
-.vectorsmanagement-icon-linea:before {
-    content: '\e803';
-}
-
-.vectorsmanagement-icon-poligono:before {
-    content: '\e806';
-}
-
-.vectorsmanagement-icon-pin:before {
-    content: '\e807';
-}
-
-.vectorsmanagement-icon-vectors:before {
-    content: '\e819';
-}
-
-.vectorsmanagement-icon-profile:before {
-    content: '\e81b';
-}
-
-.vectorsmanagement-icon-hole:before {
-    content: '\e81c';
-}
-
-.vectorsmanagement-icon-pin-located:before {
-    content: '\e903';
-}
-
-.vectorsmanagement-icon-design-tool:before {
-    content: "\e902";
-    font-weight: bold;
-}
-
-.vectorsmanagement-icon-cancelar:before {
-    content: '\e905';
-}
-
-.vectorsmanagement-icon-aceptar:before {
-    content: '\e908';
-}
-
-.vectorsmanagement-icon-radio-vacio:before {
-    content: '\e90b';
-}
-
-.vectorsmanagement-icon-radio-relleno:before {
-    content: '\e90c';
-}
-
-.vectorsmanagement-icon-descargar:before {
-    content: '\e90e';
-}
-
-.vectorsmanagement-icon-editar:before {
-    content: '\e90f';
-}
-
-.vectorsmanagement-icon-editar2:before {
-    content: '\e910';
-}
-
-.vectorsmanagement-icon-estilo:before {
-    content: '\e91c';
-}
-
-.vectorsmanagement-icon-mover:before {
-    content: '\e921';
-}
-
-.vectorsmanagement-icon-seleccionar:before {
-    content: "\e901";
-    position: relative;
-}
-
-.vectorsmanagement-icon-mas:before {
-    content: '\e935';
-}
-
-.vectorsmanagement-icon-medir-area:before {
-    content: '\e936';
-}
-
-.vectorsmanagement-icon-analisis:before {
-    content: '\e938';
-}
-
-.vectorsmanagement-icon-papelera:before {
-    content: '\e93e';
-}
-
-.vectorsmanagement-icon-subir:before {
-    content: '\e95e';
-}
-
-.vectorsmanagement-icon-tamano:before {
-    content: '\e95f';
-}
-
-.vectorsmanagement-icon-ayuda:before {
-    content: '\e981';
-}
-
-.vectorsmanagement-icon-scissors:before {
-    content: '\ea5a';
-}
-
-.vectorsmanagement-icon-resize-full-alt:before {
-    content: '\e800';
-}
-
-.vectorsmanagement-icon-table:before {
-    content: '\f0ce';
-}
-
-.vectorsmanagement-icon-selector-arrow-up:before {
-    content: '\e904';
-}
-
-.vectorsmanagement-icon-selector-arrow-down:before {
-    content: '\e906';
-}
-
-.vectorsmanagement-icon-json-file:before {
-    content: "\e900";
-    font-size: 20px;
-    font-weight: bold;
-}
 
 .vectorsmanagement-icon-resize-full-alt.disabled,
 .vectorsmanagement-icon-hole.disabled,
@@ -1090,7 +961,6 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 .vectorsmanagement-geojson {
     cursor: pointer;
 }
-
 
 .vectorsmanagement-geojson:hover:before {
     color: #71a7d3 !important;
@@ -1156,7 +1026,6 @@ th .vectorsmanagement-icon-papelera {
     margin-left: 20px;
 }
 
-
 #edition-attributes-container {
     position: fixed !important;
     top: 50%;
@@ -1188,11 +1057,6 @@ th .vectorsmanagement-icon-papelera {
 
 #clear-layer-modal>.popup-title {
     margin-top: 0;
-}
-
-#m-vectorsmanagement-attribute-table-container {
-    max-width: 61vw;
-    padding: 0 1vw 1vw;
 }
 
 .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened .m-control.m-container.m-modal>button.m-panel-btn.vectorsmanagement-icon-cancelar:before {
@@ -1289,6 +1153,190 @@ div#popup-box {
     max-height: calc(100vh - 175px) !important;
 }
 
+[class^="vectorsmanagement-icon"]:before {
+    content: '';
+    display: inline-block;
+    max-width: 1.15rem;
+    width: 100%;
+    aspect-ratio: 1;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+}
+
+.m-dialog div.m-message [class^="vectorsmanagement-icon"]:before {
+    color: #1d5a9e;
+}
+
+.vectorsmanagement-icon-font:before {
+    -webkit-mask-image: url('../images/icon_ue801.svg');
+    mask-image: url('../images/icon_ue801.svg');
+}
+
+.vectorsmanagement-icon-layers:before {
+    -webkit-mask-image: url('../images/icon_ue802.svg');
+    mask-image: url('../images/icon_ue802.svg');
+}
+
+.vectorsmanagement-icon-linea:before {
+    -webkit-mask-image: url('../images/icon_ue803.svg');
+    mask-image: url('../images/icon_ue803.svg');
+}
+
+.vectorsmanagement-icon-poligono:before {
+    -webkit-mask-image: url('../images/icon_ue806.svg');
+    mask-image: url('../images/icon_ue806.svg');
+}
+
+.vectorsmanagement-icon-pin:before {
+    -webkit-mask-image: url('../images/icon_ue807.svg');
+    mask-image: url('../images/icon_ue807.svg');
+}
+
+.vectorsmanagement-icon-vectors:before {
+    -webkit-mask-image: url('../images/icon_ue819.svg');
+    mask-image: url('../images/icon_ue819.svg');
+}
+
+.vectorsmanagement-icon-profile:before {
+    -webkit-mask-image: url('../images/icon_ue81b.svg');
+    mask-image: url('../images/icon_ue81b.svg');
+}
+
+.vectorsmanagement-icon-hole:before {
+    -webkit-mask-image: url('../images/icon_ue81c.svg');
+    mask-image: url('../images/icon_ue81c.svg');
+}
+
+.vectorsmanagement-icon-pin-located:before {
+    -webkit-mask-image: url('../images/icon_ue903.svg');
+    mask-image: url('../images/icon_ue903.svg');
+}
+
+.vectorsmanagement-icon-design-tool:before {
+    -webkit-mask-image: url('../images/icon_ue902.svg');
+    mask-image: url('../images/icon_ue902.svg');
+}
+
+.vectorsmanagement-icon-cancelar:before {
+    -webkit-mask-image: url('../images/icon_ue905.svg');
+    mask-image: url('../images/icon_ue905.svg');
+}
+
+.vectorsmanagement-icon-aceptar:before {
+    -webkit-mask-image: url('../images/icon_ue908.svg');
+    mask-image: url('../images/icon_ue908.svg');
+}
+
+.vectorsmanagement-icon-radio-vacio:before {
+    -webkit-mask-image: url('../images/icon_ue90b.svg');
+    mask-image: url('../images/icon_ue90b.svg');
+}
+
+.vectorsmanagement-icon-radio-relleno:before {
+    -webkit-mask-image: url('../images/icon_ue90c.svg');
+    mask-image: url('../images/icon_ue90c.svg');
+}
+
+.vectorsmanagement-icon-descargar:before {
+    -webkit-mask-image: url('../images/icon_ue90e.svg');
+    mask-image: url('../images/icon_ue90e.svg');
+}
+
+.vectorsmanagement-icon-editar:before {
+    -webkit-mask-image: url('../images/icon_ue90f.svg');
+    mask-image: url('../images/icon_ue90f.svg');
+}
+
+.vectorsmanagement-icon-editar2:before {
+    -webkit-mask-image: url('../images/icon_ue910.svg');
+    mask-image: url('../images/icon_ue910.svg');
+}
+
+.vectorsmanagement-icon-estilo:before {
+    -webkit-mask-image: url('../images/icon_ue91c.svg');
+    mask-image: url('../images/icon_ue91c.svg');
+}
+
+.vectorsmanagement-icon-mover:before {
+    -webkit-mask-image: url('../images/icon_ue921.svg');
+    mask-image: url('../images/icon_ue921.svg');
+}
+
+.vectorsmanagement-icon-seleccionar:before {
+    -webkit-mask-image: url('../images/icon_ue901.svg');
+    mask-image: url('../images/icon_ue901.svg');
+    position: relative;
+}
+
+.vectorsmanagement-icon-mas:before {
+    -webkit-mask-image: url('../images/icon_ue935.svg');
+    mask-image: url('../images/icon_ue935.svg');
+}
+
+.vectorsmanagement-icon-medir-area:before {
+    -webkit-mask-image: url('../images/icon_ue936.svg');
+    mask-image: url('../images/icon_ue936.svg');
+}
+
+.vectorsmanagement-icon-analisis:before {
+    -webkit-mask-image: url('../images/icon_ue938.svg');
+    mask-image: url('../images/icon_ue938.svg');
+}
+
+.vectorsmanagement-icon-papelera:before {
+    -webkit-mask-image: url('../images/icon_ue93e.svg');
+    mask-image: url('../images/icon_ue93e.svg');
+}
+
+.vectorsmanagement-icon-subir:before {
+    -webkit-mask-image: url('../images/icon_ue95e.svg');
+    mask-image: url('../images/icon_ue95e.svg');
+}
+
+.vectorsmanagement-icon-tamano:before {
+    -webkit-mask-image: url('../images/icon_ue95f.svg');
+    mask-image: url('../images/icon_ue95f.svg');
+}
+
+.vectorsmanagement-icon-ayuda:before {
+    -webkit-mask-image: url('../images/icon_ue981.svg');
+    mask-image: url('../images/icon_ue981.svg');
+}
+
+.vectorsmanagement-icon-scissors:before {
+    -webkit-mask-image: url('../images/icon_uea5a.svg');
+    mask-image: url('../images/icon_uea5a.svg');
+}
+
+.vectorsmanagement-icon-resize-full-alt:before {
+    -webkit-mask-image: url('../images/icon_ue800.svg');
+    mask-image: url('../images/icon_ue800.svg');
+}
+
+.vectorsmanagement-icon-table:before {
+    -webkit-mask-image: url('../images/icon_uf0ce.svg');
+    mask-image: url('../images/icon_uf0ce.svg');
+}
+
+.vectorsmanagement-icon-selector-arrow-up:before {
+    -webkit-mask-image: url('../images/icon_ue904.svg');
+    mask-image: url('../images/icon_ue904.svg');
+}
+
+.vectorsmanagement-icon-selector-arrow-down:before {
+    -webkit-mask-image: url('../images/icon_ue906.svg');
+    mask-image: url('../images/icon_ue906.svg');
+}
+
+.vectorsmanagement-icon-json-file:before {
+    -webkit-mask-image: url('../images/icon_ue900.svg');
+    mask-image: url('../images/icon_ue900.svg');
+}
 
 @media (max-width: 600px) {
     .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened {
