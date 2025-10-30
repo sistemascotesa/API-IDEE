@@ -147,7 +147,6 @@ class Plugin extends Base {
     if (isNullOrEmpty(this.panel.panelContent)) {
       this.panel.createContentPanel();
       this.createToolsPanel();
-      this.createToolPanel();
     }
 
     const ulElement = this.panel.panelContent.querySelector(`#plugin-panel-tools-${this.name}`);
@@ -155,18 +154,10 @@ class Plugin extends Base {
   }
 
   createToolsPanel() {
-    const toolsPanel = document.createElement('ul');
-    toolsPanel.classList.add('m-api-idee-tabs-container');
-    toolsPanel.id = `plugin-panel-tools-${this.name}`;
-    this.panel.panelContent.appendChild(toolsPanel);
-    return toolsPanel;
-  }
-
-  createToolPanel() {
-    const toolPanel = document.createElement('div');
-    toolPanel.id = `plugin-panel-tool-${this.name}`;
-    this.panel.panelContent.appendChild(toolPanel);
-    return toolPanel;
+    this.toolsPanel = document.createElement('ul');
+    this.toolsPanel.classList.add('m-api-idee-tabs-container');
+    this.toolsPanel.id = `plugin-panel-tools-${this.name}`;
+    this.panel.panelContent.appendChild(this.toolsPanel);
   }
 
   /**
