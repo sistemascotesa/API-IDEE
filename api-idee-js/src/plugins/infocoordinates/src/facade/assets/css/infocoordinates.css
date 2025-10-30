@@ -61,13 +61,12 @@
 
 .m-infocoordinates-tabs {
     overflow-y: auto;
-    background-color: #f1f1f1;
     margin-left: auto;
     max-height: 54px;
 }
 
 .m-infocoordinates-tabs button {
-    background-color: inherit;
+    background-color: #71A7D3;
     float: left;
     border: none;
     outline: none;
@@ -78,23 +77,22 @@
     height: 20px;
     text-align: center;
     border-radius: 5px;
-    box-shadow: 3px 3px 3px 0px rgba(65, 63, 63, 0.4);
 }
 
 .m-infocoordinates-tabs button:hover {
-    background-color: #ddd;
+    background-color: #1470db;
 }
 
 
 .m-infocoordinates-tabs button.active {
-    background-color: #ccc;
+    background-color: #1D5A9E;
 
 }
 
 .m-infocoordinates-tabContent {
     border-top: none;
     width: calc(100% - 20px);
-    padding: 10px;
+    padding: 5px;
     text-align: justify;
 }
 
@@ -182,7 +180,6 @@
 .m-infocoordinates-div-buttonRemoveAllPoints {
     text-align: center;
     padding: 5px;
-    border-top: 1px solid rgb(228, 226, 226);
     width: 19%;
     display: inline-block;
 }
@@ -190,7 +187,6 @@
 .m-infocoordinates-div-buttonImportAllPoints {
     text-align: center;
     padding: 5px;
-    border-top: 1px solid rgb(228, 226, 226);
     width: 19%;
     display: inline-block;
 }
@@ -198,7 +194,6 @@
 .m-infocoordinates-div-buttonCopyAllPoints {
     text-align: center;
     padding: 5px;
-    border-top: 1px solid rgb(228, 226, 226);
     width: 19%;
     display: inline-block;
 }
@@ -206,7 +201,6 @@
 .m-infocoordinates-div-buttonDisplayAllPoints {
     text-align: center;
     padding: 5px;
-    border-top: 1px solid rgb(228, 226, 226);
     width: 19%;
     display: inline-block;
 }
@@ -238,7 +232,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding: 0 8px;
+    padding: 0 5px;
     border-top: 1px solid #e5e7eb;
     border-bottom: 1px solid #e5e7eb;
     padding-top: 16px;
@@ -254,15 +248,21 @@
 
 /* 1. LA CLAVE: Todas las etiquetas ocupan el mismo espacio */
 .grid-label {
-    flex-basis: 75px;
+    flex-basis: 74px;
     flex-shrink: 0;
-    /* margin-right: 10px; */
-    gap: 1px;
+    margin-right: 2px;
 }
 
-/* 3. El botón se empuja al extremo derecho */
-.icon-button {
-    margin-left: auto;
+.grid-value {
+    margin-left: 4px;
+    width: 95px;
+}
+
+.grid-row .icon-button {
+    /* margin-left: 70px; */
+    margin-left: 10px;
+    /* padding-left: 10px; */
+    flex-shrink: 0;
 }
 
 /* Estilos adicionales que ya teníamos */
@@ -313,11 +313,6 @@
     width:32px; 
     height:32px; 
     display:block;
-}
-
-#m-infocoordinates-buttonRemovePoint,
-#m-infocoordinates-copylatlon {
-    margin-left: 72px;
 }
 
 .coordx-row {
