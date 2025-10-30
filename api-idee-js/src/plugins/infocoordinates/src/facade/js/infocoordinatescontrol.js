@@ -525,7 +525,10 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const datumBox = document.getElementById('m-infocoordinates-datum');
     const coordX = document.getElementById('m-infocoordinates-coordX');
     const coordY = document.getElementById('m-infocoordinates-coordY');
-    const srsSelector = document.getElementById('m-infocoordinates-epsg-selected').value;
+    // const srsSelector = document.getElementById('m-infocoordinates-epsg-selected').value;
+    const srsElement = document.getElementById('m-infocoordinates-epsg-selected');
+    // 2. Obtenemos el VALOR (el string)
+    const srsSelector = srsElement.value;
     // const selectSRS = srsSelector.value;
 
     // Cojo el formato de las coordenadas geográficas
@@ -559,25 +562,27 @@ export default class InfocoordinatesControl extends IDEE.Control {
           this.decimalGEOcoord_,
           this.decimalUTMcoord_,
         );
-        srsSelector.value = this.selectedProjection;
+        srsElement.value = this.selectedProjection;
         IDEE.dialog.error(`${getValue('exception.srs')} ${this.selectedProjection}`);
       }
     }
 
     this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
-    // selector.innerHTML = `
-    //   <li>
-    // <a class="m-infocoordinates-option-disabled" href="#" value="default" tabindex="-1" disabled>
-    //       ${getValue('choose_create_epsg')}
-    //   </a></li>
-    //   ${this.projections.map((proj) => `
-    //       <li>
-    //           <a href="#" value="${proj.codes[0]}">
-    //               ${proj.codes[0]}
-    //           </a>
-    //       </li>
-    //   `).join('')}
-    // `;
+    const srsListElement = document.getElementById('m-infocoordinates-srs-selector');
+    if (srsListElement) {
+      srsListElement.innerHTML = `
+        <li>
+          <a href="#" value="default" tabindex="-1">${getValue('choose_create_epsg')}</a>
+        </li>
+        ${this.projections.map((proj) => `
+          <li>
+            <a href="#" value="${proj.codes[0]}">
+              ${proj.codes[0]}
+            </a>
+          </li>
+        `).join('')}
+      `;
+    }
 
     // pinto
     pointBox.innerHTML = pointDataOutput.NumPoint;
