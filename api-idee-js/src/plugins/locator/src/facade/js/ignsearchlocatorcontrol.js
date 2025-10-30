@@ -237,10 +237,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
           },
         },
       });
-      const contenedorLocator = document.querySelector(ID_CONTENEDOR_LOCATOR);
-      if (contenedorLocator) {
-        contenedorLocator.appendChild(panel);
-      }
+      this.html_.appendChild(panel);
       this.resultsBox = this.html_.querySelector(ID_IGNSEARCH_RESULTS);
       this.searchInput = this.html_.querySelector(ID_IGNSEARCH_INPUT);
       this.addEvents();

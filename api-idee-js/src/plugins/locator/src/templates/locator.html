@@ -1,13 +1,13 @@
-<div aria-label="Plugin Locator" role="menuitem" id="div-contenedor-locator" class="m-control m-container m-locator">
-    <ul id="m-locator-previews">
+<div aria-label="Plugin Locator" role="menuitem" id="div-contenedor-locator" class="m-plugin-panel-content">
+    <ul id="m-locator-previews" class="m-api-idee-tabs-container">
         {{#if byPlaceAddressPostal}}
-            <li tabindex="0" id="m-locator-ignsearch" title="{{translations.ignsearch}}" class="locator-icon-ignsearch"></li>
+            <li tabindex="0" id="m-locator-ignsearch" title="{{translations.ignsearch}}" class="m-api-idee-tab locator-icon-ignsearch"></li>
         {{/if}}
         {{#if byParcelCadastre}}
-            <li tabindex="0" id="m-locator-infocatastro" title="{{translations.infocatastro}}" class="locator-icon-catastro"></li>
+            <li tabindex="0" id="m-locator-infocatastro" title="{{translations.infocatastro}}" class="m-api-idee-tab locator-icon-catastro"></li>
         {{/if}}
         {{#if byCoordinates}}
-            <li tabindex="0" id="m-locator-xylocator" title="{{translations.xylocator}}" class="locator-icon-coordsearch"></li>
+            <li tabindex="0" id="m-locator-xylocator" title="{{translations.xylocator}}" class="m-api-idee-tab locator-icon-coordsearch"></li>
         {{/if}}
     </ul>
 </div>

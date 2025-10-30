@@ -22,42 +22,10 @@ export default class Locator extends IDEE.Plugin {
    * @api
    */
   constructor(options = {}) {
-    super();
-
-    /**
-     * Plugin name
-     * @public
-     * @type {String}
-     */
-    this.name = 'locator';
-
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map = null;
-
-    /**
-     * Button of the plugin
-     * @private
-     * @type {IDEE.ui.Button}
-     */
-    this.button = null;
-
-    /**
-     * Panel of the plugin
-     * @private
-     * @type {IDEE.ui.Panel}
-     */
-    this.panel = null;
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls = [];
+    super('locator', {
+      position: options.position || 'right',
+      tooltip: options.tooltip || getValue('tooltip'),
+    });
 
     /**
      * Plugin parameters
@@ -65,14 +33,6 @@ export default class Locator extends IDEE.Plugin {
      * @type {object}
      */
     this.options = options;
-
-    /**
-     * Position of the plugin
-     *
-     * @private
-     * @type {Enum} left | right
-     */
-    this.position = options.position || 'right';
 
     /**
      * Option to allow the plugin to be collapsed or not
@@ -87,13 +47,6 @@ export default class Locator extends IDEE.Plugin {
      * @type {Boolean}
      */
     this.collapsible = !IDEE.utils.isUndefined(options.collapsible) ? options.collapsible : true;
-
-    /**
-     * Tooltip of plugin
-     * @private
-     * @type {String}
-     */
-    this.tooltip = options.tooltip || getValue('tooltip');
 
     /**
      * Option to allow the plugin to be draggable or not
@@ -195,6 +148,7 @@ export default class Locator extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
+      svgPath: `plugins/${this.name}/images/icon.svg`,
     });
     map.addButtons(this.button);
 

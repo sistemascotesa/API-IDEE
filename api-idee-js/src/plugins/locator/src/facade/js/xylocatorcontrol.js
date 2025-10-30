@@ -132,10 +132,7 @@ export default class XYLocatorControl extends IDEE.Control {
           },
         },
       });
-      const contenedorLocator = document.querySelector(ID_CONTENEDOR_LOCATOR);
-      if (contenedorLocator) {
-        contenedorLocator.appendChild(panel);
-      }
+      this.html_.appendChild(panel);
       if (!IDEE.utils.isUndefined(this.help) && IDEE.utils.isUrl(this.help)) {
         IDEE.utils.loadSvgByUrl(this.pluginName, 'projectionInfo', this.html_.querySelector(ID_M_XYLOCATOR_HELP_PROJECTIONS));
       }
