@@ -2,7 +2,6 @@ import { map as Mmap } from 'IDEE/api-idee';
 
 import Plugin from 'IDEE/Plugin';
 import Control from 'IDEE/control/Control';
-// import ControlImpl from 'IDEE/control/Control';
 
 const map = Mmap({
   container: 'map',

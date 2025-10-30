@@ -6,6 +6,16 @@ import Base from '../Base';
 import * as EventType from '../event/eventtype';
 import Plugin from '../Plugin';
 
+/**
+ * @classdesc
+ * Es la clase de la que heredan todas las tools.
+ *
+ * @property {Boolean} activated Define si la tool está activada, por defecto falso.
+ * @property {String} name Nombre de la tool.
+ *
+ * @api
+ * @extends {IDEE.Base}
+ */
 class Tool extends Base {
   constructor(name, options = {}) {
     super(options);
@@ -61,6 +71,7 @@ class Tool extends Base {
     }
 
     this.element = element;
+    this.createToolPanel();
     return element;
   }
 
@@ -99,6 +110,7 @@ class Tool extends Base {
       this.getImpl().activate();
     }
 
+    this.parent.panel.panelContent.appendChild(this.panel);
     this.activated = true;
     this.fire(EventType.ACTIVATED);
   }
@@ -110,8 +122,19 @@ class Tool extends Base {
     if (!isUndefined(this.getImpl()) && !isUndefined(this.getImpl().deactivate)) {
       this.getImpl().deactivate();
     }
+
+    if (this.panel && this.panel.parentNode === this.parent.panel.panelContent) {
+      this.parent.panel.panelContent.removeChild(this.panel);
+    }
+
     this.activated = false;
     this.fire(EventType.DEACTIVATED);
+  }
+
+  createToolPanel() {
+    this.panel = document.createElement('div');
+    this.panel.id = `plugin-panel-tool-${this.name}`;
+    this.panel.innerHTML = this.htmlView;
   }
 }
 
