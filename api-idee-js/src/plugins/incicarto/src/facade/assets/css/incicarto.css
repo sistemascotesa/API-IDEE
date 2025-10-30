@@ -15,7 +15,7 @@
 }
 
 .m-incicarto-hide-methods:hover * {
-    background-color: #e9ecefFF;
+    color: #1470db;
 }
 
 .m-incicarto-hide-methods span {
@@ -25,6 +25,7 @@
 .m-incicarto-hide-methods svg {
   width: 17px;
   height: 17px;
+  transition: all 0.3s ease;
 }
 
 .m-plugin-incicarto-html-title {
@@ -123,6 +124,10 @@
   width: 100%;
 }
 
+.m-incicarto-layer-actions {
+  justify-content: space-between;
+}
+
 .m-incicarto-layer-legend .m-incicarto-layer-type {
   color: #1D5A9E;
 }
@@ -130,6 +135,7 @@
 .m-incicarto-layer-actions span {
   color: #495057;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .m-incicarto-layer-legend .m-incicarto-layer-type,
@@ -140,7 +146,7 @@
 }
 
 .m-incicarto-layer-actions span:hover {
-  background-color: #e9ecefFF;
+  color: #1470db;
 }
 
 .m-incicarto-layer-legend .m-incicarto-layer-type > svg,
@@ -173,11 +179,10 @@
   font-weight: 12px;
   color: #364B5F;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .m-drawingtools-content .collapsor:hover * {
-  background-color: #e9ecefFF;
+  color: #1470db;
 }
 
 .collapsor span {
@@ -187,6 +192,7 @@
 .collapsor svg {
   width: 17px;
   height: 17px;
+  transition: all 0.3s ease;
 }
 
 .m-incicarto-layer-btn-container {
@@ -236,6 +242,10 @@
   position: relative;
 }
 
+.stroke-container .stroke-options:hover {
+  border-color: #1470db;
+}
+
 .stroke-options .stroke-option-default {
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -266,6 +276,7 @@
   left: 0;
   width: fill-available;
   width: -webkit-fill-available;
+  width: -moz-fill-available;
   border: 1px solid #ccc;
   background-color: #fff;
   display: none;
@@ -344,6 +355,10 @@
   cursor: pointer;
 }
 
+.m-incicarto-3d-measure:hover {
+  color: #1d5a9e;
+}
+
 .m-incicarto-layer-btn-container {
   display: flex;
   gap: 16px;
@@ -383,6 +398,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 16px;
 }
 
 .m-incicarto-uploading button {
@@ -428,7 +444,7 @@
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .m-plugin-incicarto-html select {
@@ -626,4 +642,45 @@
     margin: 0;
     font-weight: bold;
     color: #676767;
+}
+
+/*************
+* ICONOS SVG *
+*************/
+.m-icon-layer, .m-incicarto-layer-type {
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+}
+.m-incicarto-layer-add {
+  mask-image: url(../images/addgeom.svg);
+}
+
+.m-incicarto-layer-edit {
+  mask-image: url(../images/editgeom.svg);
+}
+
+.m-incicarto-layer-zoom {
+  mask-image: url(../images/zoomtoincident.svg);
+}
+
+.m-incicarto-layer-delete {
+  mask-image: url(../images/deleteincident.svg);
+}
+
+.m-incicarto-layer-download {
+  mask-image: url(../images/notifyincident.svg);
+}
+
+.m-puntual-incident {
+  mask-image: url(../images/puntualincident.svg);
+}
+
+.m-lineal-incident {
+  mask-image: url(../images/linealincident.svg);
+}
+
+.m-superficial-incident {
+  mask-image: url(../images/superficialincident.svg);
 }

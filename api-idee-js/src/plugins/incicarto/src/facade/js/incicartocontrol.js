@@ -427,13 +427,16 @@ export default class IncicartoControl extends IDEE.Control {
         elem.style.display = 'none';
         const cond = this.drawLayer.getGeometryType() !== null && this.drawLayer.getGeometryType().toLowerCase() === 'linestring';
         if (cond || (this.drawLayer.geometry !== undefined && this.drawLayer.geometry !== '' && this.drawLayer.geometry.toLowerCase() === 'linestring')) {
-          document.querySelector('#drawingtools .collapsor').innerHTML = `${getValue('symbology_profile')}&nbsp;&nbsp;<span class="icon-show"></span>`;
+          document.querySelector('#drawingtools .collapsor span').innerHTML = `${getValue('symbology_profile')}`;
+          document.querySelector('#drawingtools .collapsor svg').style.transform = '';
         } else {
-          document.querySelector('#drawingtools .collapsor').innerHTML = `${getValue('symbology')}&nbsp;&nbsp;<span class="icon-show"></span>`;
+          document.querySelector('#drawingtools .collapsor span').innerHTML = `${getValue('symbology')}`;
+          document.querySelector('#drawingtools .collapsor svg').style.transform = '';
         }
       } else {
         elem.style.display = 'block';
-        document.querySelector('#drawingtools .collapsor').innerHTML = `${getValue('collapse')}&nbsp;&nbsp;<span class="icon-hide"></span>`;
+        document.querySelector('#drawingtools .collapsor span').innerHTML = `${getValue('collapse')}`;
+        document.querySelector('#drawingtools .collapsor svg').style.transform = 'rotate(180deg)';
       }
     }
   }
@@ -1268,18 +1271,9 @@ export default class IncicartoControl extends IDEE.Control {
     layer.geometry = geom;
     layer.setZIndex(this.getMaxZIndex() + 1);
     this.map.addLayers(layer);
-    const layerTypeElem = document.querySelector('.m-incicarto-layer-type');
-    switch(geom) {
-      case 'Point':
-        IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'puntualincident', layerTypeElem);
-        break;
-      case 'LineString':
-        IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'linealincident', layerTypeElem);
-        break;
-      case 'Polygon':
-        IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'superficialincident', layerTypeElem);
-        break;
-    }
+    const name = this.name.toLowerCase();
+    const collapsorElem = this.drawingTools.querySelector('#collapsorButton');
+    IDEE.utils.loadSvgByUrl(name, 'hidemethods', collapsorElem);
     setTimeout(() => {
       document.querySelector(`li[name="${layerName}"] span.m-incicarto-layer-add`).click();
     }, 100);
@@ -1489,9 +1483,17 @@ export default class IncicartoControl extends IDEE.Control {
    * @api
    */
   hideMethods() {
+    const iconHide = this.html.querySelector('#incicarto-hide svg');
     const elem = this.html.querySelector('#incicarto-methods-container');
     if (elem) {
       elem.style.display = elem.style.display === 'none' ? 'block' : 'none';
+    }
+    if (iconHide) {
+      if (!iconHide.style.transform || iconHide.style.transform === '') {
+        iconHide.style.transform = 'rotate(180deg)';
+      } else {
+        iconHide.style.transform = '';
+      }
     }
   }
 
@@ -2183,7 +2185,6 @@ export default class IncicartoControl extends IDEE.Control {
       const selector = `#m-incicarto-list li[name="${layer.name}"] div.m-incicarto-layer-actions-container`;
       const selector2 = `#m-incicarto-list li[name="${layer.name}"] div.m-incicarto-layer-actions .m-incicarto-layer-add`;
       document.querySelector(selector).appendChild(this.drawingTools);
-      this.addSvgDrawingTools();
       document.querySelector(selector2).classList.add('active-tool');
       this.getImpl().addDrawInteraction(layer);
       if (document.querySelector('#drawingtools #featureInfo') !== null) {
@@ -2203,28 +2204,6 @@ export default class IncicartoControl extends IDEE.Control {
       this.isDrawingActive = false;
       this.drawLayer = undefined;
     }
-  }
-
-  addSvgDrawingTools() {
-    const name = this.name.toLowerCase();
-    const addElem = this.html.querySelector('#m-incicarto-action-add');
-    const editLineElem = this.html.querySelector('#m-incicarto-action-edit-line');
-    const editGeomElem = this.html.querySelector('#m-incicarto-action-edit-geom');
-    const zoomElem = this.html.querySelector('#m-incicarto-action-zoom');
-    const deleteElem = this.html.querySelector('#m-incicarto-action-delete');
-    const notifyElem = this.html.querySelector('#m-incicarto-action-notify');
-    const collapsorElem = this.drawingTools.querySelector('#collapsorButton');
-    IDEE.utils.loadSvgByUrl(name, 'addgeom', addElem);
-    if (editLineElem !== null) {
-      IDEE.utils.loadSvgByUrl(name, 'editgeom', editLineElem);
-    }
-    if (editGeomElem !== null) {
-      IDEE.utils.loadSvgByUrl(name, 'editgeom', editGeomElem);
-    }
-    IDEE.utils.loadSvgByUrl(name, 'zoomtoincident', zoomElem);
-    IDEE.utils.loadSvgByUrl(name, 'deleteincident', deleteElem);
-    IDEE.utils.loadSvgByUrl(name, 'notifyincident', notifyElem);
-    IDEE.utils.loadSvgByUrl(name, 'hidemethods', collapsorElem);
   }
 
   openEditOptions(layer) {
