@@ -188,7 +188,7 @@ class KML extends LayerVector {
    * Sobreescribe la URL de la capa.
    *
    * @function
-   * @param {String} newURL Nueva URL de la capa.
+   * @param {String} newURL Nueva URL de la capa.Cambio cualquiera
    * @public
    * @api
    */
