@@ -92,6 +92,7 @@ class Map extends Base {
    * - viewExtent: Extensión de la vista.
    * - zoom: Zoom del mapa.
    * - zoomConstrains: Restricciones de zoom.
+   * - rotation: Rotación del mapa.
    * @param { Mx.parameters.MapOptions } options Opciones personalizadas para la implementación
    * proporcionado por el usuario.
    * - verticalExaggeration: Exageración vertical de la escena. Si se establece a 1 no se aplica
@@ -382,6 +383,13 @@ class Map extends Base {
     } else if (IDEE.config.MAX_ZOOM !== '') {
       const maxZoom = Number(IDEE.config.MAX_ZOOM);
       this.setMaxZoom(maxZoom);
+    }
+
+    // rotation
+    if (!isNullOrEmpty(params.rotation)) {
+      this.once(EventType.COMPLETED, () => {
+        this.setRotation(params.rotation);
+      });
     }
 
     // label
@@ -3010,11 +3018,24 @@ class Map extends Base {
 
                 return;
               case Rotate.NAME:
-                control = new Rotate();
+                const paramsRotate = {};
+                controlParam.forEach((p) => {
+                  if (!isUndefined(p)) {
+                    const bbox = p.split(',');
+                    if (bbox.length === 4) {
+                      paramsRotate.viewInitial = bbox;
+                    }
+                    if (p === 'false') paramsRotate.help = false;
+                    // eslint-disable-next-line no-restricted-globals
+                    if (!isNaN(p)) paramsRotate.order = Number(p);
+                  }
+                });
+                control = new Rotate(paramsRotate);
                 panel = new Panel(Rotate.name, {
                   collapsible: false,
                   className: 'm-rotate',
-                  position: Position.TR,
+                  position: Position.TL,
+                  order: (paramsRotate.order) ? paramsRotate.order : null,
                 });
                 break;
               case BackgroundLayers.NAME:
@@ -4913,6 +4934,18 @@ class Map extends Base {
       Exception(getValue('exception').no_set_rotation_method);
     }
     this.getImpl().setRotation(rotation * (Math.PI / 180));
+  }
+
+  /**
+   * Función que obtiene el nombre de la implementación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @return {string} Devuelve el nombre de la implementación.
+   */
+  getImplementation() {
+    return this.getImpl().getImplementation();
   }
 
   /**

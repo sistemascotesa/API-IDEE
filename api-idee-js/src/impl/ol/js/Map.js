@@ -785,9 +785,9 @@ class Map extends MObject {
   removeLayerGroups(layers) {
     const layerGroupMapLayers = this.getLayerGroups(layers);
     layerGroupMapLayers.forEach((layerGroup) => {
-      layerGroup.fire(EventType.REMOVED_FROM_MAP, [layerGroup]);
       this.layers_ = this.layers_.filter((layer) => !layerGroup.equals(layer));
       layerGroup.getImpl().destroy();
+      layerGroup.fire(EventType.REMOVED_FROM_MAP, [layerGroup]);
     });
 
     return this;
@@ -1125,9 +1125,9 @@ class Map extends MObject {
   removeWMS(layers) {
     const wmsMapLayers = this.getWMS(layers);
     wmsMapLayers.forEach((wmsLayer) => {
-      wmsLayer.fire(EventType.REMOVED_FROM_MAP, [wmsLayer]);
       this.layers_ = this.layers_.filter((layer) => !wmsLayer.equals(layer));
       wmsLayer.getImpl().destroy();
+      wmsLayer.fire(EventType.REMOVED_FROM_MAP, [wmsLayer]);
     });
 
     return this;
@@ -3549,6 +3549,18 @@ class Map extends MObject {
       coord,
       vendor: evt,
     }]);
+  }
+
+  /**
+   * Función que obtiene el nombre de la implementación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @return {string} Devuelve el nombre de la implementación.
+   */
+  getImplementation() {
+    return 'ol';
   }
 }
 

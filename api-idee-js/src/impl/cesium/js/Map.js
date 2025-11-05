@@ -2697,6 +2697,18 @@ class Map extends MObject {
       }
     });
   }
+
+  /**
+   * Función que obtiene el nombre de la implementación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @return {string} Devuelve el nombre de la implementación.
+   */
+  getImplementation() {
+    return 'cesium';
+  }
 }
 
 export default Map;

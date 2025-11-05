@@ -44,6 +44,8 @@ class Feature {
 
     this.hasPropertyIcon_ = false;
 
+    this.isOnlyFeature_ = true;
+
     if (!isNullOrEmpty(geojson)) {
       if (isNullOrEmpty(geojson.type)) {
         geojsonVariable.type = 'Feature';
@@ -71,6 +73,9 @@ class Feature {
           if (feature.length > 1) {
             feature.shift();
             this.othersEntities = feature;
+            this.isOnlyFeature_ = false;
+          } else if (feature.length === 1) {
+            this.isOnlyFeature_ = false;
           }
           this.isLoadCesiumF_ = true;
           return this.cesiumFeature_;
