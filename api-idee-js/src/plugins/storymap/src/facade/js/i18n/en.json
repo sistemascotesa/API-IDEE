@@ -17,5 +17,6 @@
     "help10": "The example of use of its parameters can be checked in"
   },
   "tooltip": "Story Map",
-  "warning": "WARNING"
+  "warning": "WARNING",
+  "instructions": "Navigate by clicking or using your mouse through the chapters and sections on the left to discover all the content."
 }
