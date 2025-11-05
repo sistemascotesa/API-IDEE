@@ -367,7 +367,7 @@ params.forEach((param) => {
           "type": "color",
           "description": "Azul Oscuro"
         },
-        "succes": {
+        "success": {
           "value": "#49d793",
           "type": "color",
           "description": "Éxito"
