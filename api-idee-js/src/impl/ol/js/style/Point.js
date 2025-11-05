@@ -90,7 +90,7 @@ class Point extends Simple {
             }
             styleImg.render();
           }
-          const imageCanvas = styleImg.getImage();
+          const imageCanvas = styleImg.getImage(1);
           if (imageCanvas != null) {
             image = imageCanvas.toDataURL();
           }
