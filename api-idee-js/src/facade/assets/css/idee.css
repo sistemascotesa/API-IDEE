@@ -53,7 +53,7 @@
     height: 48px;
     cursor: ew-resize;
     background-color: white;
-    border: 1px solid #71A7D3;
+    border: 1px solid var(--idee-color-primary);
     border-radius: 4px;
     transform: translateY(-50%);
     transition: all 0.3s ease;
@@ -72,7 +72,7 @@
 
 .m-api-idee-left-handle:hover,
 .m-api-idee-right-handle:hover {
-    background-color: #1470db;
+    background-color: var(--idee-color-primary);
     transition: all 0.3s ease;
 }
 
@@ -85,7 +85,7 @@
     padding: 16px;
     font-size: 18px;
     font-weight: bold;
-    color: #1d5a9e;
+    color: var(--idee-color-primary-dark);
     white-space: nowrap;
     word-break: break-word;
     text-overflow: ellipsis;
@@ -100,8 +100,8 @@
 button {
     height: 32px;
     color: white;
-    background-color: #71a7d3;
-    border: 2px solid #71a7d3;
+    background-color: var(--idee-color-primary);
+    border: 2px solid var(--idee-color-primary);
     border-radius: 4px;   
     cursor: pointer;
     font-family: 'Roboto', 'sans-serif';
@@ -111,8 +111,8 @@ button {
 
 button:hover {
     color: #fff;
-    background-color: #1470db;
-    border: 2px solid #1470db;
+    background-color: var(--idee-color-links);
+    border: 2px solid var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
@@ -127,9 +127,9 @@ button:disabled:hover {
 
 button.secondary {
     height: 32px;
-    color: #71a7d3;
+    color: var(--idee-color-primary);
     background-color: #FFFFFF;
-    border: 1px solid #71a7d3;
+    border: 1px solid var(--idee-color-primary);
     border-radius: 4px;   
     cursor: pointer;
     font-family: 'Roboto', 'sans-serif';
@@ -138,9 +138,9 @@ button.secondary {
 }
 
 button.secondary:hover {
-    color: #1470db;
+    color: var(--idee-color-links);
     background-color: #f1f3f5;
-    border: 1px solid #1470db;
+    border: 1px solid var(--idee-color-links);
 }
 
 button.secondary:disabled {
@@ -178,7 +178,7 @@ input[type="number"]:hover,
 input[type="email"]:hover,
 input[type="color"]:hover,
 textarea:hover {
-    border: 1px solid #1470db;
+    border: 1px solid var(--idee-color-links);
 }
 
 input[type="text"]:focus,
@@ -187,7 +187,7 @@ input[type="email"]:focus,
 input[type="color"]:focus,
 textarea:focus {
     outline: none;
-    border: 1px solid #1d5a9e;
+    border: 1px solid var(--idee-color-primary-dark);
 }
 
 input[type="checkbox"] {
@@ -197,11 +197,11 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]:hover {
-    color: #1470db
+    color: var(--idee-color-links);
 }
 
 input[type="checkbox"]:focus {
-    color: #1d5a9e;
+    color: var(--idee-color-primary-dark);
 }
 
 input[type="radio"] {
@@ -225,7 +225,7 @@ input[type="radio"]::after {
   content: "";
   width: 8px;
   height: 8px;
-  background-color: #1d5a9eFF;
+  background-color: var(--idee-color-primary-dark);
   border-radius: 50%;
   position: absolute;
   top: 50%;
@@ -236,7 +236,7 @@ input[type="radio"]::after {
 }
 
 input[type="radio"]:checked {
-  border-color: #1d5a9eFF;
+  border-color: var(--idee-color-primary-dark);
 }
 
 input[type="radio"]:checked::after {
@@ -244,11 +244,11 @@ input[type="radio"]:checked::after {
 }
 
 input[type="radio"]:hover {
-    border-color: #1470db;
+    border-color: var(--idee-color-links);
 }
 
 input[type="radio"]:hover + label {
-    color: #1470db;
+    color: var(--idee-color-links);
     cursor: pointer;
 }
 
@@ -262,13 +262,13 @@ select {
 }
 
 select:hover {
-    border: 1px solid #1470db;
+    border: 1px solid var(--idee-color-links);
 }
 
 
 select:focus {
     outline: none;
-    border: 1px solid #1d5a9e;
+    border: 1px solid var(--idee-color-primary-dark);
 }
 
 option {

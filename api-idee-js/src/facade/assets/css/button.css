@@ -21,7 +21,7 @@
     width: 40px;
     height: 40px;
     color: #fff;
-    background-color: #70a8d3;
+    background-color: var(--idee-color-primary);
     border: 2px solid #fff;
     border-radius: 50%;
     display: flex;
@@ -33,14 +33,14 @@
 }
 
 .m-plugin-button:hover {
-    background-color: #1470db;
+    background-color: var(--idee-color-links);
     border: 2px solid #fff;
     transition: all 0.3s ease;
 }
 
 .m-plugin-button.active {
     color: #fff;
-    background-color: #1d5a9e;
+    background-color: var(--idee-color-primary-dark);
     border: 2px solid #fff;
     transition: all 0.3s ease;
 }
@@ -66,13 +66,13 @@
 }
 
 .m-control-button:hover {
-    color: #1470db;
+    color: var(--idee-color-links);
     background-color: #e9ecef;
 }
 
 .m-control-button.active {
-    color: #1d5a9e;
-    border: 2px solid #1d5a9e;
+    color: var(--idee-color-primary-dark);
+    border: 2px solid var(--idee-color-primary-dark);
     transition: all 0.3s ease;
 }
 

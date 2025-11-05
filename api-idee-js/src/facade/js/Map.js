@@ -58,6 +58,7 @@ import Terrain from './layer/Terrain';
 import WMC from './layer/WMC';
 import Attributions from './control/Attributions';
 import ImplementationSwitcher from './control/ImplementationSwitcher';
+import applyDesignTokenCssVariables from './theme/tokens';
 
 /**
  * @classdesc
@@ -109,6 +110,9 @@ class Map extends Base {
     const dpi = IDEE.config.DPI;
 
     const opts = { viewExtent: params.viewExtent, ...options };
+
+    // Ensure CSS variables reflect current active token
+    applyDesignTokenCssVariables();
 
     // calls the super constructor
     super();

@@ -20,12 +20,12 @@
 
 .m-api-idee-tabs-container .m-api-idee-tab:hover {
     background: #f1f3f5FF;
-    color: #1470dbFF !important;
+    color: var(--idee-color-links) !important;
 }
 
 .m-api-idee-tabs-container .m-api-idee-tab.activated {
-    color: #1d5a9eFF !important;
-    border-color: #1d5a9eFF;
+    color: var(--idee-color-primary-dark) !important;
+    border-color: var(--idee-color-primary-dark);
     background: #f1f3f5FF;
 }
 
