@@ -104,9 +104,9 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - **countryCode**: Código por defecto del país en la petición a geocoder. Por defecto: 'es'.
   - **reverse**: Valor booleano que indica si la funcionalidad obtener dirección en un punto del mapa está activada (true/false). Por defecto: true.
   - **resultVisibility**: Indica si se muestra o no la geometría del elemento localizado (true/false). Por defecto: true.
-  - **urlCandidates**: Url del servicio candidates de geocoder. Por defecto: 'http://www.cartociudad.es/geocoder/api/geocoder/candidatesJsonp'.
-  - **urlFind**: Url del servicio find de geocoder. Por defecto: 'http://www.cartociudad.es/geocoder/api/geocoder/findJsonp'.
-  - **urlReverse**: Url del servicio geocoding inverso. Por defecto: 'http://www.cartociudad.es/geocoder/api/geocoder/reverseGeocode'.
+  - **urlCandidates**: Url del servicio candidates de geocoder. Por defecto: 'https://www.cartociudad.es/geocoder/api/geocoder/candidatesJsonp'.
+  - **urlFind**: Url del servicio find de geocoder. Por defecto: 'https://www.cartociudad.es/geocoder/api/geocoder/findJsonp'.
+  - **urlReverse**: Url del servicio geocoding inverso. Por defecto: 'https://www.cartociudad.es/geocoder/api/geocoder/reverseGeocode'.
   - **geocoderCoords**: Búsqueda inicial por longitud, latitud, mediante el uso del Servicio REST geocoder-inverso. Se sitúa en la posición indicada al iniciar la extensión. Por defecto: [].
   - **requestStreet**: URL del findJSON de un resultado de búsqueda, para que aparezca cargado al inicio. Por defecto: ''.
 
