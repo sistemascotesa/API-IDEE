@@ -365,9 +365,9 @@ export const resolutions = (resolutionsParam) => {
   let resolutionsVar = [];
 
   // checks if the param is null or empty
-  if (isNullOrEmpty(resolutionsParameter)) {
-    Exception(getValue('exception').no_resolutions);
-  }
+  // if (isNullOrEmpty(resolutionsParameter)) {
+  //   Exception(getValue('exception').no_resolutions);
+  // }
 
   // string
   if (isString(resolutionsParameter)) {

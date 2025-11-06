@@ -235,6 +235,6 @@ Location.POSITION_STYLE = new OLStyle({
  * @public
  * @api stable
  */
-Location.ZOOM = 16; // 12;
+Location.ZOOM = IDEE.config.ZOOM_LOCATION;
 
 export default Location;

@@ -317,6 +317,14 @@ params.forEach((param) => {
   IDEE.config('MIN_ZOOM', '${minZoom}');
 
   /**
+   * Zoom por defecto.
+   *
+   * @public
+   * @type {Number | String}
+   */
+  IDEE.config('DEFAULT_ZOOM', '${defaultZoom}');
+
+  /**
    * Hace el popup y dialog inteligente
    *
    * @private
@@ -347,6 +355,13 @@ params.forEach((param) => {
       audios: ['250px', '40px'],
     },
   });
+
+  /**
+   * Determina el nivel de zoom cuando se usa el control location.
+   * @public
+   * @type {Number}
+   */
+  IDEE.config('ZOOM_LOCATION', '${zoomLocation}');
   window.M = IDEE;
 
   IDEE.config.token = {

@@ -361,7 +361,7 @@ class Map extends Base {
       }
       this.setZoom(zoom, inmeters);
     } else if (isNullOrEmpty(params.bbox)) {
-      this.setZoom(3);
+      this.setZoom(IDEE.config.DEFAULT_ZOOM);
     }
 
     // zoomConstrains
@@ -3739,14 +3739,16 @@ class Map extends Base {
    * @public
    * @function
    * @param {String|Array<String>|Array<Number>} resolutionsParam Las resoluciones.
+   * @param {Boolean} optional Indica si las resoluciones son opcionales.
+   * @param {Boolean} propagateToWMS Indica si las resoluciones se deben propagar a las capas WMS.
    * @returns {Map} Devuelve el estado del mapa.
    * @api
    */
-  setResolutions(resolutionsParam) {
+  setResolutions(resolutionsParam, optional, propagateToWMS = true) {
     // checks if the param is null or empty
-    if (isNullOrEmpty(resolutionsParam)) {
-      Exception(getValue('exception').no_resolutions);
-    }
+    // if (isNullOrEmpty(resolutionsParam)) {
+    //   Exception(getValue('exception').no_resolutions);
+    // }
 
     // checks if the implementation can set the setResolutions
     if (isUndefined(MapImpl.prototype.setResolutions)) {
@@ -3756,7 +3758,7 @@ class Map extends Base {
     // parses the parameter
     const resolutions = parameter.resolutions(resolutionsParam);
 
-    this.getImpl().setResolutions(resolutions);
+    this.getImpl().setResolutions(resolutions, optional, propagateToWMS);
 
     return this;
   }
@@ -4056,6 +4058,21 @@ class Map extends Base {
     // }
 
     return this;
+  }
+
+  /**
+   * Este método devuelve el ticket, si se ha establecido, para controlar capas seguras.
+   *
+   * @public
+   * @function
+   * @returns {String} Devuelve el ticket.
+   * @api
+   */
+  getTicket() {
+    if (!isNullOrEmpty(this.ticket_)) {
+      return this.ticket_;
+    }
+    return IDEE.config.TICKET;
   }
 
   /**
