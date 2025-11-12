@@ -235,6 +235,10 @@ Location.POSITION_STYLE = new OLStyle({
  * @public
  * @api stable
  */
-Location.ZOOM = 16; // 12;
+Object.defineProperty(Location, 'ZOOM', {
+  get() {
+    return IDEE.config.ZOOM_LOCATION;
+  },
+});
 
 export default Location;

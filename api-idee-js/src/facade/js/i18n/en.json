@@ -67,7 +67,29 @@
     "textHelp": {
       "text1": "The rotation tool allows you to return the viewer to a North orientation.",
       "text2": "To be able to rotate the map in the viewer, it is done with the key combination Shit + Alt + left mouse click + move mouse to rotate."
-    }
+    },
+    "titleCesium": "Movement control",
+    "title_help": "Help",
+    "help": {
+      "title": "Gyroscope control",
+      "title1": "Rotate the view",
+      "text1": "Drag the outer circular ring to rotate the map 360º",
+      "title2": "Tilt the view",
+      "text2": "Select the inner circle and slowly drag it to either side to tilt and/or rotate the map.",
+      "text3": "Also, if you double click you return to the initial view.",
+      "text4": "Additionally, if you hold the CTRL key and drag on the map, you can tilt or rotate the map."
+    },
+    "textHelpCesium": {
+      "text1": "This tool allows you to move and control the camera in a 3D environment, exploring the map from different angles.",
+      "text2": "To rotate the map 360º, click and drag the outer circular ring around the control.",
+      "text3": "To tilt and/or rotate the map, select the inner circle and drag it in any direction. You can also hold the CTRL key and drag the map to achieve the same effect.",
+      "text4": "Double-click the inner circle to quickly return to the initial view.",
+      "text5": "If you need help, click the '?' button located on the right side of the control to open a panel with detailed instructions."
+    },
+    "close_not_show_help": "Close and don't show again",
+    "image1_description": "Rotate view icon",
+    "image2_description": "Tilt view icon",
+    "close_btn": "Close help"
   },
   "mouse": {
     "title": "Pointer coordinates"

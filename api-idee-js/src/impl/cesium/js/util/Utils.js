@@ -20,6 +20,9 @@ import {
   Ellipsoid,
   SceneTransforms,
   Cartesian2,
+  defined,
+  Ray,
+  SceneMode,
 } from 'cesium';
 import proj4 from 'proj4';
 
@@ -1096,6 +1099,58 @@ class Utils {
       }
     }
     return coord;
+  }
+
+  /**
+   * Obtiene el punto de enfoque de la cámara.
+   *
+   * @param {Viewer} map Implementación del mapa.
+   * @param {boolean} inWorldCoordinates verdadero para obtener el foco en coordenadas mundiales;
+   * en caso contrario en coordenadas del mapa específicas de la proyección, en metros.
+   * @return {Cartesian3} Punto de enfoque de la cámara.
+   */
+  static getCameraFocus(map, inWorldCoordinates, result) {
+    /* eslint-disable no-param-reassign */
+    const unprojectedScratch = new Cartographic();
+    const rayScratch = new Ray();
+    const scene = map.scene;
+    const camera = scene.camera;
+
+    if (scene.mode === SceneMode.MORPHING) {
+      return undefined;
+    }
+
+    if (!defined(result)) {
+      result = new Cartesian3();
+    }
+
+    if (defined(map.trackedEntity)) {
+      result = map.trackedEntity.position.getValue(map.clock.currentTime, result);
+    } else {
+      rayScratch.origin = camera.positionWC;
+      rayScratch.direction = camera.directionWC;
+      result = scene.globe.pick(rayScratch, scene, result);
+    }
+
+    if (!defined(result)) {
+      return undefined;
+    }
+
+    if (scene.mode === SceneMode.SCENE2D || scene.mode === SceneMode.COLUMBUS_VIEW) {
+      result = camera.worldToCameraCoordinatesPoint(result, result);
+
+      if (inWorldCoordinates) {
+        result = scene.globe.ellipsoid.cartographicToCartesian(
+          scene.mapProjection.unproject(result, unprojectedScratch),
+          result,
+        );
+      }
+    } else if (!inWorldCoordinates) {
+      result = camera.worldToCameraCoordinatesPoint(result, result);
+    }
+
+    return result;
+    /* eslint-enable no-param-reassign */
   }
 }
 

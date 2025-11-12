@@ -317,6 +317,14 @@ params.forEach((param) => {
   IDEE.config('MIN_ZOOM', '${minZoom}');
 
   /**
+   * Zoom por defecto.
+   *
+   * @public
+   * @type {Number | String}
+   */
+  IDEE.config('DEFAULT_ZOOM', '${defaultZoom}');
+
+  /**
    * Hace el popup y dialog inteligente
    *
    * @private
@@ -347,5 +355,108 @@ params.forEach((param) => {
       audios: ['250px', '40px'],
     },
   });
+
+  /**
+   * Determina el nivel de zoom cuando se usa el control location.
+   * @public
+   * @type {Number}
+   */
+  IDEE.config('ZOOM_LOCATION', '${zoomLocation}');
   window.M = IDEE;
+
+  IDEE.config.token = {
+    "cnig": {
+      "color": {
+        "primary": {
+          "value": "#71a7d3",
+          "type": "color",
+          "description": "Azul Primario"
+        },
+        "links": {
+          "value": "#1470db",
+          "type": "color",
+          "description": "Links"
+        },
+        "primary_dark": {
+          "value": "#1d5a9e",
+          "type": "color",
+          "description": "Azul Oscuro"
+        },
+        "success": {
+          "value": "#49d793",
+          "type": "color",
+          "description": "Éxito"
+        },
+        "danger": {
+          "value": "#e65244",
+          "type": "color",
+          "description": "Peligro"
+        },
+        "warning": {
+          "value": "#fc8802",
+          "type": "color",
+          "description": "Atención"
+        }
+      },
+      "typography": {
+        "fontFamily": {
+          "Base": {
+            "value": "'Roboto', sans-serif",
+            "type": "fontFamily",
+            "description": "Fuente principal"
+          },
+          "fontSize": {
+            "caption": {
+              "value": "12px",
+              "type": "fontSize",
+              "description": "Tamaño extra pequeño"
+            },
+            "body_s": {
+              "value": "14px",
+              "type": "fontSize",
+              "description": "Tamaño pequeño"
+            },
+            "body_m": {
+              "value": "16px",
+              "type": "fontSize",
+              "description": "Tamaño normal"
+            },
+            "body_l": {
+              "value": "18px",
+              "type": "fontSize",
+              "description": "Tamaño grande"
+            },
+            "heading_m": {
+              "value": "24px",
+              "type": "fontSize",
+              "description": "Tamaño extra grande"
+            },
+            "heading_l": {
+              "value": "32px",
+              "type": "fontSize",
+              "description": "Tamaño extra súper grande"
+            }
+          },
+          "fontWeight": {
+            "regular": {
+              "value": 400,
+              "type": "fontWeight",
+              "description": "Peso regular"
+            },
+            "bold": {
+              "value": 700,
+              "type": "fontWeight",
+              "description": "Peso negrita"
+            }
+          },
+          "lineHeight": {
+          },
+          "letterSpacing": {
+          }
+        }
+      }
+    },
+  }
+
+  IDEE.config.activeTOKEN = 'cnig';
 }(window.IDEE));

@@ -252,6 +252,14 @@ function fun(IDEE_) {
   IDEE_.config('MAX_ZOOM', '');
 
   /**
+   * Zoom por defecto.
+   *
+   * @private
+   * @type {Number | String}
+   */
+  IDEE_.config('DEFAULT_ZOOM', '3');
+
+  /**
    * Hace el popup inteligente
    *
    * @private
@@ -282,6 +290,13 @@ function fun(IDEE_) {
       audios: ['250px', '40px'],
     },
   });
+
+  /**
+   * Determina el nivel de zoom cuando se usa el control location.
+   * @public
+   * @type {Number}
+   */
+  IDEE.config('ZOOM_LOCATION', 16);
 }
 
 fun(window.IDEE);

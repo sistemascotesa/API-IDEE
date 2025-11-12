@@ -67,8 +67,30 @@
     "title": "Girar al norte",
     "textHelp": {
       "text1": "La herramienta de rotación permite volver a una orientación Norte al visualizador.",
-      "text2": "Para poder girar el mapa en el visualizador, se realiza con la combinación de teclas Shit + Alt + click izquierdo del ratón + mover ratón para girar."
-    }
+      "text2": "Para poder girar el mapa en el visualizador, se realiza con la combinación de teclas Shift + Alt + click izquierdo del ratón + mover ratón para girar."
+    },
+    "titleCesium": "Control de movimiento",
+    "title_help": "Ayuda",
+    "help": {
+      "title": "Control del giroscopio",
+      "title1": "Girar la vista",
+      "text1": "Arrastra el anillo circular exterior para rotar el mapa 360º",
+      "title2": "Inclinar la vista",
+      "text2": "Selecciona el círculo interior y arrastralo lentamente hacia cualquier lado para inclinar y/o girar el mapa.",
+      "text3": "También, si haces doble click vuelves a la vista inicial.",
+      "text4": "Además si bloqueas la tecla CTRL y arrastras sobre el mapa, puedes inclinar o girar el mapa."
+    },
+    "textHelpCesium": {
+      "text1": "Esta herramienta te permite mover y controlar la cámara en un entorno 3D, explorando el mapa desde diferentes ángulos.",
+      "text2": "Para rotar el mapa 360º, haz clic y arrastra el anillo circular exterior alrededor del control.",
+      "text3": "Para inclinar y/o girar el mapa, selecciona el círculo interior y arrástralo en cualquier dirección. También puedes mantener pulsada la tecla CTRL y arrastrar el mapa para lograr el mismo efecto.",
+      "text4": "Haz doble clic en el círculo interior para volver rápidamente a la vista inicial.",
+      "text5": "Si necesitas ayuda, pulsa el botón '?' ubicado a la derecha del control para abrir un panel con instrucciones detalladas."
+    },
+    "close_not_show_help": "Cerrar y no mostrar de nuevo",
+    "image1_description": "Icono girar vista",
+    "image2_description": "Icono inclinar vista",
+    "close_btn": "Cerrar ayuda"
   },
   "mouse": {
     "title": "Coordenadas del puntero"

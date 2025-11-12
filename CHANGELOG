@@ -11,6 +11,8 @@
 - Se añaden a utilidades los métodos: removeHTML, replaceNode, classToggle, setEquals, getFeaturesExtent
 - Mejoras sobre el método getWMSGetCapabilitiesUrl de utilidades.
 - Se elimina replace del método loadInternal_ de JSONP.
+- Se desarrolla la implementación en Cesium del control rotate.
+- Se mejora el lanzamiento del evento REMOVED_FROM_MAP en WMS y LayerGroup.
 
 
 01/01/25 - Versión 1.0.0

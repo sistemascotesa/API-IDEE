@@ -9,10 +9,10 @@
     font-family: 'Roboto', 'sans-serif';
     font-size: 13px;
     background-image: 
-        linear-gradient(45deg, #D6E8F5 25%, transparent 25%), 
-        linear-gradient(-45deg, #D6E8F5 25%, transparent 25%), 
-        linear-gradient(45deg, transparent 75%, #D6E8F5 75%), 
-        linear-gradient(-45deg, transparent 75%, #D6E8F5 75%);
+        linear-gradient(45deg, color-mix(in srgb, var(--idee-color-primary) 25%, transparent) 25%, transparent 25%), 
+        linear-gradient(-45deg, color-mix(in srgb, var(--idee-color-primary) 25%, transparent) 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, color-mix(in srgb, var(--idee-color-primary) 25%, transparent) 75%), 
+        linear-gradient(-45deg, transparent 75%, color-mix(in srgb, var(--idee-color-primary) 25%, transparent) 75%);
     background-size: 16px 16px;
     background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
 }
@@ -37,12 +37,12 @@
 
 .m-api-idee-left-panel {
     left: 0;
-    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
 }
 
 .m-api-idee-right-panel {
     right: 0;
-    box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: -5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
 }
 
 .m-api-idee-left-handle,
@@ -53,7 +53,7 @@
     height: 48px;
     cursor: ew-resize;
     background-color: white;
-    border: 1px solid #71A7D3;
+    border: 1px solid var(--idee-color-primary);
     border-radius: 4px;
     transform: translateY(-50%);
     transition: all 0.3s ease;
@@ -62,17 +62,17 @@
 
 .m-api-idee-left-handle {
     right: -8px;
-    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
 }
 
 .m-api-idee-right-handle {
     left: -8px;
-    box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: -5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
 }
 
 .m-api-idee-left-handle:hover,
 .m-api-idee-right-handle:hover {
-    background-color: #1470db;
+    background-color: var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
@@ -85,7 +85,7 @@
     padding: 16px;
     font-size: 18px;
     font-weight: bold;
-    color: #1d5a9e;
+    color: var(--idee-color-primary-dark);
     white-space: nowrap;
     word-break: break-word;
     text-overflow: ellipsis;
@@ -100,8 +100,8 @@
 button {
     height: 32px;
     color: white;
-    background-color: #71a7d3;
-    border: 2px solid #71a7d3;
+    background-color: var(--idee-color-primary);
+    border: 2px solid var(--idee-color-primary);
     border-radius: 4px;   
     cursor: pointer;
     font-family: 'Roboto', 'sans-serif';
@@ -111,8 +111,8 @@ button {
 
 button:hover {
     color: #fff;
-    background-color: #1470db;
-    border: 2px solid #1470db;
+    background-color: var(--idee-color-links);
+    border: 2px solid var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
@@ -127,9 +127,9 @@ button:disabled:hover {
 
 button.secondary {
     height: 32px;
-    color: #71a7d3;
+    color: var(--idee-color-primary);
     background-color: #FFFFFF;
-    border: 1px solid #71a7d3;
+    border: 1px solid var(--idee-color-primary);
     border-radius: 4px;   
     cursor: pointer;
     font-family: 'Roboto', 'sans-serif';
@@ -138,9 +138,10 @@ button.secondary {
 }
 
 button.secondary:hover {
-    color: #1470db;
+    color: var(--idee-color-links);
     background-color: #f1f3f5;
-    border: 1px solid #1470db;
+    border: 1px solid var(--idee-color-links);
+    transition: all 0.3s ease;
 }
 
 button.secondary:disabled {
@@ -150,6 +151,7 @@ button.secondary:disabled {
 button.secondary:disabled:hover {
     color: #c5c5c5;
     cursor: default;
+    transition: all 0.3s ease;
 }
 
 input[type="text"],
@@ -171,6 +173,7 @@ textarea {
     color: #6C6C6C;
     font-family: 'Roboto', 'sans-serif';
     font-size: 16px;
+    transition: all 0.3s ease;
 }
 
 input[type="text"]:hover,
@@ -178,7 +181,8 @@ input[type="number"]:hover,
 input[type="email"]:hover,
 input[type="color"]:hover,
 textarea:hover {
-    border: 1px solid #1470db;
+    border: 1px solid var(--idee-color-links);
+    transition: all 0.3s ease;
 }
 
 input[type="text"]:focus,
@@ -187,21 +191,21 @@ input[type="email"]:focus,
 input[type="color"]:focus,
 textarea:focus {
     outline: none;
-    border: 1px solid #1d5a9e;
+    border: 1px solid var(--idee-color-primary-dark);
 }
 
 input[type="checkbox"] {
     cursor: pointer;
+    accent-color: var(--idee-color-primary);
     color: #6c6c6c;
     transform: scale(1.5);
+    transition: all 0.3s ease;
 }
 
 input[type="checkbox"]:hover {
-    color: #1470db
-}
-
-input[type="checkbox"]:focus {
-    color: #1d5a9e;
+    color: var(--idee-color-links);
+    accent-color: var(--idee-color-links);
+    transition: all 0.3s ease;
 }
 
 input[type="radio"] {
@@ -219,13 +223,14 @@ input[type="radio"] {
     margin: 0px;
     border: 1px solid #6c6c6c;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 input[type="radio"]::after {
   content: "";
   width: 8px;
   height: 8px;
-  background-color: #1d5a9eFF;
+  background-color: var(--idee-color-primary-dark);
   border-radius: 50%;
   position: absolute;
   top: 50%;
@@ -236,7 +241,7 @@ input[type="radio"]::after {
 }
 
 input[type="radio"]:checked {
-  border-color: #1d5a9eFF;
+  border-color: var(--idee-color-primary-dark);
 }
 
 input[type="radio"]:checked::after {
@@ -244,12 +249,29 @@ input[type="radio"]:checked::after {
 }
 
 input[type="radio"]:hover {
-    border-color: #1470db;
+    border-color: var(--idee-color-links);
+    transition: all 0.3s ease;
 }
 
 input[type="radio"]:hover + label {
-    color: #1470db;
+    color: var(--idee-color-links);
     cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+input[type="range"] {
+    cursor: pointer;
+    accent-color: var(--idee-color-primary);
+    transition: all 0.3s ease;
+}
+
+input[type="range"]:hover {
+    accent-color: var(--idee-color-links);
+    transition: all 0.3s ease;
+}
+
+input[type="range"]:focus {
+    outline: none;
 }
 
 select {
@@ -259,21 +281,43 @@ select {
     border: 1px solid #e9ecef;
     font-family: 'Roboto', 'sans-serif';
     font-size: 16px;
+    transition: all 0.3s ease;
 }
 
 select:hover {
-    border: 1px solid #1470db;
+    border: 1px solid var(--idee-color-links);
+    transition: all 0.3s ease;
 }
-
 
 select:focus {
     outline: none;
-    border: 1px solid #1d5a9e;
+    border: 1px solid var(--idee-color-primary-dark);
 }
 
 option {
     font-family: 'Roboto', 'sans-serif';
     font-size: 16px;
+    cursor: pointer;
+}
+
+a {
+    color: var(--idee-color-primary);
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: var(--idee-color-links);
+    transition: all 0.3s ease;
+}
+
+a:visited {
+    color: var(--idee-color-primary);
+    transition: all 0.3s ease;
+}
+
+a:visited:hover {
+    color: var(--idee-color-links);
+    transition: all 0.3s ease;
 }
 
 /***********************
@@ -534,7 +578,7 @@ div.m-control button[class^=g-cartografia-],
 }
 
 .m-areas>div.m-area>div.m-panel.opened.m-location,
-.m-areas>div.m-area>div.m-panel.opened.m-rotate,
+/* .m-areas>div.m-area>div.m-panel.opened.m-rotate, */
 .m-areas>div.m-area>div.m-panel.opened.m-geosearchbylocation {
     background-color: #71A7D3 !important;
 }

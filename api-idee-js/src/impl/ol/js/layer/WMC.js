@@ -1,7 +1,9 @@
 /**
  * @module IDEE/impl/layer/WMC
  */
-import { isNullOrEmpty, isFunction } from 'IDEE/util/Utils';
+import {
+  isNullOrEmpty, isFunction, fillResolutions, generateResolutionsFromExtent, getResolutionFromScale,
+} from 'IDEE/util/Utils';
 import { get as getRemote } from 'IDEE/util/Remote';
 import * as EventType from 'IDEE/event/eventtype';
 import { getValue } from 'IDEE/i18n/language';
@@ -150,13 +152,104 @@ class WMC extends Layer {
       });
       this.loadContextPromise.then((context) => {
         // set projection with the wmc
+        this.updateResolutionsFromBaseLayer(context.layers);
         if (this.map.defaultProj) {
           const olproj = getProj(context.projection);
-          this.map.setProjection(`${olproj.getCode()}*${olproj.getUnits()}`, true);
+          this.map.setProjection(`${olproj.getCode()}*${olproj.getUnits()}`, false);
         }
         // load layers
         this.loadLayers(context);
         this.map.fire(EventType.CHANGE_WMC, this);
+      });
+    }
+  }
+
+  /**
+   * Este método actualiza las resoluciones del mapa
+   * en función de la capa base.
+   *
+   * @private
+   * @function
+   * @param {Array} layers Capas.
+   */
+  updateResolutionsFromBaseLayer(layers = []) {
+    let resolutions = [];
+
+    // zoom levels
+    let zoomLevels = null;
+
+    // units
+    const units = this.map.getProjection().units;
+
+    // size
+
+    this.map.getMapImpl().updateSize();
+    const size = this.map.getMapImpl().getSize();
+
+    const baseLayer = (!isNullOrEmpty(layers) ? layers : this.map.getBaseLayers()).filter((bl) => {
+      return bl.isBase && bl.isVisible();
+    })[0];
+
+    // gets min/max resolutions from base layer
+    let maxResolution = null;
+    let minResolution = null;
+    if (!isNullOrEmpty(baseLayer)) {
+      const baseImplOptions = baseLayer.getImpl().options;
+      if (baseImplOptions.minScale !== undefined) {
+        minResolution = getResolutionFromScale(baseImplOptions.minScale, units);
+      } else {
+        minResolution = null;
+      }
+      if (baseImplOptions.maxScale !== undefined) {
+        maxResolution = getResolutionFromScale(baseImplOptions.maxScale, units);
+      } else {
+        maxResolution = null;
+      }
+      zoomLevels = baseLayer.getImpl().getNumZoomLevels();
+    }
+
+    zoomLevels = (isNullOrEmpty(zoomLevels) || zoomLevels <= 0)
+      ? (IDEE.config.MAX_ZOOM || 28) - (IDEE.config.MIN_ZOOM || 0)
+      : zoomLevels;
+
+    if (!isNullOrEmpty(minResolution) && !isNullOrEmpty(maxResolution)) {
+      resolutions = fillResolutions(minResolution, maxResolution, zoomLevels);
+      this.map.setResolutions(resolutions, true, false);
+
+      // eslint-disable-next-line no-underscore-dangle
+      this.map._resolutionsBaseLayer = true;
+
+      // checks if it was the first time to
+      // calculate resolutions in that case
+      // fires the completed event
+      // eslint-disable-next-line no-underscore-dangle
+      if (this.map._calculatedResolutions === false) {
+        // eslint-disable-next-line no-underscore-dangle
+        this.map._calculatedResolutions = true;
+        this.map.fire(EventType.COMPLETED);
+      }
+    } else {
+      this.map.calculateMaxExtent().then((extent) => {
+        // eslint-disable-next-line no-underscore-dangle
+        if (!this.map._resolutionsBaseLayer && (this.map.getImpl().userResolutions_ === null)) {
+          resolutions = generateResolutionsFromExtent(extent, size, zoomLevels, units);
+          this.map.setResolutions(resolutions, true, false);
+
+          // eslint-disable-next-line no-underscore-dangle
+          this.map._resolutionsEnvolvedExtent = true;
+
+          // checks if it was the first time to
+          // calculate resolutions in that case
+          // fires the completed event
+          // eslint-disable-next-line no-underscore-dangle
+          if (this.map._calculatedResolutions === false) {
+            // eslint-disable-next-line no-underscore-dangle
+            this.map._calculatedResolutions = true;
+            this.map.fire(EventType.COMPLETED);
+          }
+        }
+      }).catch((error) => {
+        throw error;
       });
     }
   }

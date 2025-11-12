@@ -397,6 +397,29 @@ export const parseTicket = (parameter) => {
 };
 
 /**
+ * Esta función analiza un parámetro de rotación en un formato legible.
+ * parámetro a API-IDEE y chequea posibles errores.
+ *
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|Mx.parameters.Map} parameter Parámetros.
+ * @returns {Number} Devuelve la rotación.
+ * @api
+ */
+export const parseRotation = (parameter) => {
+  let rotation = parameter;
+
+  if (isString(parameter)) {
+    rotation = getParameterValue('rotation', parameter);
+  } else if (isObject(parameter)) {
+    rotation = parameter.rotation;
+  }
+  return rotation;
+};
+
+/**
  * Esta función analiza un parámetro de "zoomConstrains" en un formato legible.
  * parámetro a API-IDEE y chequea posibles errores.
  *
@@ -726,6 +749,13 @@ class Parameters {
      * @api
      */
     this.ticket = parseTicket(userParameters);
+
+    /**
+     * @public
+     * @type {Number}
+     * @api
+     */
+    this.rotation = parseRotation(userParameters);
 
     /**
      * @public
