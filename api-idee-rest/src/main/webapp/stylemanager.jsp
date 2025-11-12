@@ -41,10 +41,8 @@
     <div>
         <label for="selectPosicion">Selector de posición del plugin</label>
         <select name="position" id="selectPosicion">
-            <option value="TL" selected="selected">Arriba Izquierda (TL)</option>
-            <option value="TR">Arriba Derecha (TR)</option>
-            <option value="BR">Abajo Derecha (BR)</option>
-            <option value="BL">Abajo Izquierda (BL)</option>
+            <option value="left">Izquierda</option>
+            <option value="right" selected="selected">Derecha</option>
         </select>
         <label for="selectCollapsed">Selector de collapsed</label>
         <select name="collapsed" id="selectCollapsed">
@@ -67,7 +65,7 @@
             <option value="polygons">polygons</option>
             <option value="allgeoms">allgeoms</option>
         </select>
-        <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar" />
+        <button name="eliminar" id="botonEliminar">Eliminar Plugin</button>
     </div>
     <div id="mapjs" class="m-container"></div>
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>

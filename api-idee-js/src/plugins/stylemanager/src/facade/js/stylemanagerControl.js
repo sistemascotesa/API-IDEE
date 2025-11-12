@@ -188,16 +188,6 @@ export default class StyleManagerControl extends IDEE.Control {
   }
 
   /**
-   * @public
-   * @function
-   * @param {HTMLElement} html to add the plugin
-   * @api stable
-   */
-  getActivationButton(html) {
-    return html.querySelector('button.m-panel-btn');
-  }
-
-  /**
    * @function
    */
   addLayerOption(htmlSelect, name) {
