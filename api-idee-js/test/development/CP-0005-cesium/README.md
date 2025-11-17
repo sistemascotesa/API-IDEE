@@ -36,3 +36,5 @@ CP-006
     [] Example #3: Capa GenericVector con estilos de puntos en el constructor de la capa.
     [] Example #4: Capa GenericVector con estilos genéricos mediante setStyle.
     
+CP-007
+    [] Example #1: Capa GeoJSON de puntos con icono en formato GLB.

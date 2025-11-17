@@ -3829,7 +3829,7 @@ class Map extends Base {
    *
    * @public
    * @function
-   * @param {String|Mx.Projection} projection EL "bbox".
+   * @param {String|Mx.Projection} projectionParam Proyección a aplicar al mapa.
    * @param {Boolean} asDefault Utiliza la proyección por defecto.
    * @returns {Map} Devuelve el estado del mapa.
    * @api
@@ -3850,9 +3850,12 @@ class Map extends Base {
     try {
       const oldProj = this.getProjection();
       projection = parameter.projection(projection);
-      this.getImpl().setProjection(projection);
-      this._defaultProj = (this._defaultProj && (asDefault === true));
-      this.fire(EventType.CHANGE_PROJ, [oldProj, projection]);
+
+      if (oldProj.code !== projection.code) {
+        this.getImpl().setProjection(projection);
+        this._defaultProj = (this._defaultProj && (asDefault === true));
+        this.fire(EventType.CHANGE_PROJ, [oldProj, projection]);
+      }
     } catch (err) {
       Dialog.error(err.toString());
       if (String(err).indexOf('El formato del parámetro projection no es correcto') >= 0) {
@@ -3956,6 +3959,32 @@ class Map extends Base {
       // eslint-disable-next-line no-console
       console.warn(e);
     }
+
+    return this;
+  }
+
+  /**
+   * Este método agrega plugins.
+   *
+   * @public
+   * @function
+   * @param {Array<Plugin>} plugins  Plugins para añadir al mapa.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  addPlugins(plugins) {
+    // checks if the param is null or empty
+    if (isNullOrEmpty(plugins)) {
+      Exception(getValue('exception').no_plugins);
+    }
+    let allPlugins = plugins;
+    if (!isArray(plugins)) {
+      allPlugins = [plugins];
+    }
+
+    allPlugins.forEach((plugin) => {
+      this.addPlugin(plugin);
+    });
 
     return this;
   }

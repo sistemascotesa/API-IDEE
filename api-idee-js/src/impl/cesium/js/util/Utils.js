@@ -188,7 +188,7 @@ const getBoundingExtentFromFeature = (feature) => {
     positions = feature.polygon.hierarchy.getValue().positions;
   } else if (feature.polyline) {
     positions = feature.polyline.positions.getValue();
-  } else if (feature.point || feature.billboard) {
+  } else if (feature.point || feature.billboard || feature.model) {
     // eslint-disable-next-line no-underscore-dangle
     positions = [feature.position._value];
   }
@@ -610,7 +610,7 @@ class Utils {
     }
     if (!isNullOrEmpty(coordinates)) {
       const cartesian = Cartesian3.fromDegrees(coordinates[0], coordinates[1]);
-      const screenPosition = SceneTransforms.wgs84ToWindowCoordinates(map.scene, cartesian);
+      const screenPosition = SceneTransforms.worldToWindowCoordinates(map.scene, cartesian);
       // const canvasCoordinates = map.scene.cartesianToCanvasCoordinates(cartesian);
       pixel = [screenPosition.x, screenPosition.y];
     }
@@ -851,6 +851,10 @@ class Utils {
       geometry = cesiumFeature.billboard;
       // eslint-disable-next-line no-underscore-dangle
       geometry.coordinates = cesiumFeature.position._value;
+    } else if (!isNullOrEmpty(cesiumFeature.model)) {
+      geometry = cesiumFeature.model;
+      // eslint-disable-next-line no-underscore-dangle
+      geometry.coordinates = cesiumFeature.position._value;
     }
     return geometry;
   }
@@ -900,7 +904,8 @@ class Utils {
 
     if (!isNullOrEmpty(feature.polygon)) {
       type = 'Polygon';
-    } else if (!isNullOrEmpty(feature.point) || !isNullOrEmpty(feature.billboard)) {
+    } else if (!isNullOrEmpty(feature.point) || !isNullOrEmpty(feature.billboard)
+      || !isNullOrEmpty(feature.model)) {
       type = 'Point';
     } else if (!isNullOrEmpty(feature.polyline)) {
       type = 'LineString';
@@ -1039,7 +1044,8 @@ class Utils {
         }
       });
       coord = [coordinates];
-    } else if (!isUndefined(feature.point) || !isUndefined(feature.billboard)) {
+    } else if (!isUndefined(feature.point) || !isUndefined(feature.billboard)
+      || !isUndefined(feature.model)) {
       // eslint-disable-next-line no-underscore-dangle
       const cartographic = Cartographic.fromCartesian(feature.position._value);
       if (is2D) {

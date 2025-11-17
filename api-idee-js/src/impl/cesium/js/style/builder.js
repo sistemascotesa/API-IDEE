@@ -25,6 +25,7 @@ import {
   PolylineOutlineMaterialProperty,
   VerticalOrigin,
   HeightReference as CesiumHeightReference,
+  ModelGraphics,
 } from 'cesium';
 import PointFontSymbol from '../point/FontSymbol';
 import Simple from './Simple';
@@ -230,6 +231,34 @@ export const getLabel = (options, featureVariable, layer) => {
 export const iconCache = {};
 
 /**
+ * Esta función devuelve la posición relativa al terreno.
+ * Solo tendrá efecto si el parámetro height de la capa tiene valor.
+ *
+ * @public
+ * @function
+ *
+ * @param {Object} options Opciones.
+ * @param {Object} featureVariable Objetos geográficos.
+ * @param {Object} layer Capas.
+ *
+ * @return {Object} Objeto que indica la posición relativa al terreno.
+ * @api stable
+ */
+export const getHeightReference = (options, featureVariable, layer) => {
+  const opt = { };
+  if (!isNullOrEmpty(options.heightReference)) {
+    const heightReference = Simple.getValue(
+      options.heightReference,
+      featureVariable,
+      layer,
+    );
+    opt.heightReference = Object.values(HeightReference).includes(heightReference)
+      ? CesiumHeightReference[heightReference] : CesiumHeightReference.NONE;
+  }
+  return opt;
+};
+
+/**
  * Esta función devuelve el icono.
  *
  * @public
@@ -267,6 +296,10 @@ export const getIconSrc = (options, featureVariable, layer) => {
   let styleIcon = iconCache[index];
 
   if (!styleIcon) {
+    // Comprueba si es un icono 3D (GLB o GLTF)
+    const lowerSrc = src ? src.toLowerCase() : '';
+    const isIcon3D = lowerSrc.endsWith('.glb') || lowerSrc.endsWith('.gltf');
+
     const anchorOptions = ['bottom-left', 'bottom-right', 'top-left', 'top-right', 'center-left'];
     let origin = options.icon.anchororigin
       && anchorOptions.includes(options.icon.anchororigin)
@@ -276,43 +309,59 @@ export const getIconSrc = (options, featureVariable, layer) => {
     const baseline = origin[0] === 'top' ? 'bottom' : 'top';
     const align = origin[1] === 'left' ? 'right' : 'left';
 
-    styleIcon = new BillboardGraphics({
-      image: Simple.getValue(options.icon.src, featureVariable, layer),
-      color: new Color(
-        1.0,
-        1.0,
-        1.0,
-        Simple.getValue(options.icon.opacity || 1, featureVariable, layer),
-      ),
-      scale: Simple.getValue(options.icon.scale, featureVariable, layer),
-      rotation: Simple.getValue(
-        options.icon.rotation ? -Number(options.icon.rotation) : 0,
-        featureVariable,
-        layer,
-      ),
-      imageSubRegion: !isNullOrEmpty(options.icon.offset) && !isNullOrEmpty(options.icon.size)
-        ? new BoundingRectangle(
-          Simple.getValue(options.icon.offset
-            ? options.icon.offset[0] : undefined, featureVariable, layer),
-          Simple.getValue(options.icon.offset
-            ? options.icon.offset[1] : undefined, featureVariable, layer),
-          Simple.getValue(options.icon.size
-            ? options.icon.size[0] : undefined, featureVariable, layer),
-          Simple.getValue(options.icon.size
-            ? options.icon.size[1] : undefined, featureVariable, layer),
-        ) : undefined,
-      pixelOffset: new Cartesian2(
-        Simple.getValue(options.icon.anchor
-          ? options.icon.anchor[1] : undefined, featureVariable, layer),
-        Simple.getValue(options.icon.anchor
-          ? options.icon.anchor[0] : undefined, featureVariable, layer),
-      ),
-      verticalOrigin: Object.values(Baseline).includes(baseline) && options.icon.anchor
-        ? VerticalOrigin[baseline.toUpperCase()] : VerticalOrigin.CENTER,
-      horizontalOrigin: Object.values(Align).includes(align) && options.icon.anchor
-        ? HorizontalOrigin[align.toUpperCase()] : HorizontalOrigin.CENTER,
-      sizeInMeters: false,
-    });
+    if (isIcon3D) {
+      styleIcon = new ModelGraphics({
+        uri: src,
+        scale: Simple.getValue(options.icon.scale, featureVariable, layer),
+        color: new Color(
+          1.0,
+          1.0,
+          1.0,
+          Simple.getValue(options.icon.opacity || 1, featureVariable, layer),
+        ),
+        minimumPixelSize: Simple.getValue(options.icon.minimumPixelSize, featureVariable, layer),
+        heightReference: getHeightReference(options, featureVariable, layer),
+      });
+      styleIcon.rotation = rotation;
+    } else {
+      styleIcon = new BillboardGraphics({
+        image: Simple.getValue(options.icon.src, featureVariable, layer),
+        color: new Color(
+          1.0,
+          1.0,
+          1.0,
+          Simple.getValue(options.icon.opacity || 1, featureVariable, layer),
+        ),
+        scale: Simple.getValue(options.icon.scale, featureVariable, layer),
+        rotation: Simple.getValue(
+          options.icon.rotation ? -Number(options.icon.rotation) : 0,
+          featureVariable,
+          layer,
+        ),
+        imageSubRegion: !isNullOrEmpty(options.icon.offset) && !isNullOrEmpty(options.icon.size)
+          ? new BoundingRectangle(
+            Simple.getValue(options.icon.offset
+              ? options.icon.offset[0] : undefined, featureVariable, layer),
+            Simple.getValue(options.icon.offset
+              ? options.icon.offset[1] : undefined, featureVariable, layer),
+            Simple.getValue(options.icon.size
+              ? options.icon.size[0] : undefined, featureVariable, layer),
+            Simple.getValue(options.icon.size
+              ? options.icon.size[1] : undefined, featureVariable, layer),
+          ) : undefined,
+        pixelOffset: new Cartesian2(
+          Simple.getValue(options.icon.anchor
+            ? options.icon.anchor[1] : undefined, featureVariable, layer),
+          Simple.getValue(options.icon.anchor
+            ? options.icon.anchor[0] : undefined, featureVariable, layer),
+        ),
+        verticalOrigin: Object.values(Baseline).includes(baseline) && options.icon.anchor
+          ? VerticalOrigin[baseline.toUpperCase()] : VerticalOrigin.CENTER,
+        horizontalOrigin: Object.values(Align).includes(align) && options.icon.anchor
+          ? HorizontalOrigin[align.toUpperCase()] : HorizontalOrigin.CENTER,
+        sizeInMeters: false,
+      });
+    }
     iconCache[index] = styleIcon;
   }
 
@@ -580,34 +629,6 @@ export const getPerPositionHeight = (options, featureVariable, layer) => {
   if (!isNullOrEmpty(options.perPositionHeight)) {
     const perPositionHeight = Simple.getValue(options.perPositionHeight, featureVariable, layer);
     opt.perPositionHeight = perPositionHeight;
-  }
-  return opt;
-};
-
-/**
- * Esta función devuelve la posición relativa al terreno.
- * Solo tendrá efecto si el parámetro height de la capa tiene valor.
- *
- * @public
- * @function
- *
- * @param {Object} options Opciones.
- * @param {Object} featureVariable Objetos geográficos.
- * @param {Object} layer Capas.
- *
- * @return {Object} Objeto que indica la posición relativa al terreno.
- * @api stable
- */
-export const getHeightReference = (options, featureVariable, layer) => {
-  const opt = { };
-  if (!isNullOrEmpty(options.heightReference)) {
-    const heightReference = Simple.getValue(
-      options.heightReference,
-      featureVariable,
-      layer,
-    );
-    opt.heightReference = Object.values(HeightReference).includes(heightReference)
-      ? CesiumHeightReference[heightReference] : CesiumHeightReference.NONE;
   }
   return opt;
 };

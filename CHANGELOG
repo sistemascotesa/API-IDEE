@@ -13,6 +13,17 @@
 - Se elimina replace del método loadInternal_ de JSONP.
 - Se desarrolla la implementación en Cesium del control rotate.
 - Se mejora el lanzamiento del evento REMOVED_FROM_MAP en WMS y LayerGroup.
+- Se añaden a utilidades los métodos: rgbaToHex, rgbToHex
+- Se modifica imagen de dynamicLegend usada en estilos con funciones y se soluciona problemas con estilos genéricos y leyendas con funciones.
+- Se permite añadir nuevas proyecciones con el método addProjections sin tener que ponerlas en forma de array, además se controla el añadido de proyecciones duplicadas.
+- Añadido método hasControl en la clase Map para comprobar si un control está añadido al mapa.
+- Modificado método getMaxExtent de las capas WMS para confirmar que la capa existe antes de aplicarlo.
+- Añadida la función parseRotation a la clase parámetros.
+- En capas MBTilesVectors tileLoadFunction_ pasa a público por lo que ahora se renombra a tileLoadFunction.
+- MBTilesVector hereda de Vector la funcionalidad extract.
+- Se implementa el uso de ticket en WFS.
+- Se añade el metodo generateRandomStyle a utilidades de estilo.
+- Se configura la URL de recursos estáticos para poder personalizar la URL del despliegue del mismo.
 
 
 01/01/25 - Versión 1.0.0

@@ -1,7 +1,7 @@
 /**
  * @module IDEE/impl/layer/MBTiles
  */
-import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import { isNullOrEmpty, isFunction, extend } from 'IDEE/util/Utils';
 import { get as getProj, transformExtent } from 'ol/proj';
 import OLLayerTile from 'ol/layer/Tile';
 import TileGrid from 'ol/tilegrid/TileGrid';
@@ -206,12 +206,20 @@ class MBTiles extends Layer {
 
   /**
    * Devuelve la extensión de la capa.
+   *
+   * @function
+   * @param {Function} callbackFn Función que se ejecuta cuando se obtiene la extensión.
    * @returns {Array} Devuelve la extensión de la capa.
+   * @api
    */
-  getMaxExtent() {
+  getMaxExtent(callbackFn) {
     const extent = this.maxExtent_ || this.getExtentFromProvider();
     if (!extent) {
       this.maxExtent_ = this.map.getExtent();
+    }
+
+    if (isFunction(callbackFn)) {
+      callbackFn(this.maxExtent_);
     }
     return this.maxExtent_;
   }

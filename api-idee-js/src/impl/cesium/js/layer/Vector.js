@@ -19,6 +19,7 @@ import {
   CustomDataSource,
   GeoJsonDataSource,
   ImageMaterialProperty,
+  ModelGraphics,
   PathGraphics,
   PointGraphics,
   PolylineGraphics,
@@ -190,11 +191,11 @@ class Vector extends Layer {
           geometry.color = Color.fromAlpha(currentColor, opacityParsed);
           const currentOutlineColor = geometry.outlineColor.getValue();
           geometry.outlineColor = Color.fromAlpha(currentOutlineColor, opacityParsed);
-        } else if (geometry instanceof BillboardGraphics) {
+        } else if (geometry instanceof BillboardGraphics || geometry instanceof ModelGraphics) {
           geometry.color = new Color(1.0, 1.0, 1.0, opacity);
         } else if (!isNullOrEmpty(geometry)) {
           if (!(geometry instanceof PolylineGraphics) && !(geometry instanceof PathGraphics)
-            && !(geometry instanceof BillboardGraphics)) {
+            && !(geometry instanceof BillboardGraphics) && !(geometry instanceof ModelGraphics)) {
             const currentOutlineColor = geometry.outlineColor.getValue();
             geometry.outlineColor = Color.fromAlpha(currentOutlineColor, opacityParsed);
           }

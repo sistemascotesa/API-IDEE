@@ -125,7 +125,7 @@ class Location extends Control {
         const accuracyGeom = evt.target.get(evt.key);
         this.accuracyFeature_.getImpl().getFeature().setGeometry(accuracyGeom);
       });
-      this.geolocation_.once('change:position', (evt) => {
+      this.geolocation_.on('change:position', (evt) => {
         const newCoord = evt.target.get(evt.key);
         const newPosition = isNullOrEmpty(newCoord)
           ? null
@@ -147,8 +147,8 @@ class Location extends Control {
     }
 
     this.geolocation_.setTracking(true);
-    this.facadeMap_.drawFeatures([this.accuracyFeature_]);
-    // this.facadeMap_.drawFeatures([this.accuracyFeature_, this.positionFeature_]);
+    // this.facadeMap_.drawFeatures([this.accuracyFeature_]);
+    this.facadeMap_.drawFeatures([this.accuracyFeature_, this.positionFeature_]);
   }
 
   /**

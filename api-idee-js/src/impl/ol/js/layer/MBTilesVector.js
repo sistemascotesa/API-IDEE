@@ -2,7 +2,7 @@
 /**
  * @module IDEE/impl/layer/MBTilesVector
  */
-import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import { isNullOrEmpty, extend, isObject } from 'IDEE/util/Utils';
 import { get as getProj, transformExtent } from 'ol/proj';
 // import { inflate } from 'pako';
 // import OLLayerTile from 'ol/layer/Tile';
@@ -14,6 +14,7 @@ import TileProvider from 'IDEE/provider/Tile';
 import * as EventType from 'IDEE/event/eventtype';
 import MVT from 'ol/format/MVT';
 import { getValue } from 'IDEE/i18n/language';
+import TileState from 'ol/TileState';
 // import Feature from 'ol/Feature';
 import ImplMap from '../Map';
 import Vector from './Vector';
@@ -125,11 +126,6 @@ class MBTilesVector extends Vector {
     this.source_ = userParameters.source;
 
     /**
-     * MBTilesVector style: Define el estilo de la capa.
-     */
-    this.style_ = userParameters.style;
-
-    /**
      * MBTilesVector tileSize: Tamaño de la tesela vectorial, por defecto 256.
      */
     this.tileSize_ = typeof userParameters.tileSize === 'number' ? userParameters.tileSize : DEFAULT_TILE_SIZE;
@@ -158,6 +154,12 @@ class MBTilesVector extends Vector {
      * MBTilesVector visibility: Visibilidad de la capa.
      */
     this.visibility = userParameters.visibility === false ? userParameters.visibility : true;
+
+    /**
+     * MBTilesVector fireLoad_.
+     * Controla el disparo del evento LOAD
+     */
+    this.fireLoad_ = false;
   }
 
   /**
@@ -514,20 +516,27 @@ class MBTilesVector extends Vector {
   checkAllTilesLoaded_(evt) {
     const currTileCoord = evt.tile.getTileCoord();
     // eslint-disable-next-line no-underscore-dangle
-    const tileImages = this.olLayer.getSource().sourceTiles_;
+    let tileImages = this.olLayer.getSource().sourceTiles_;
+    if (isObject(tileImages)) {
+      tileImages = Object.values(tileImages);
+    }
     if (Array.isArray(tileImages)) {
-      const loaded = tileImages.some((tile) => {
+      const loaded = tileImages.every((tile) => {
         const tileCoord = tile.getTileCoord();
         const tileState = tile.getState();
         const sameTile = (currTileCoord[0] === tileCoord[0]
           && currTileCoord[1] === tileCoord[1]
           && currTileCoord[2] === tileCoord[2]);
-        const tileLoaded = sameTile || (tileState !== 1);
+        const tileLoaded = sameTile || (tileState !== TileState.LOADING);
         return tileLoaded;
       });
       if (loaded && !this.loaded_) {
         this.loaded_ = true;
+        this.facadeLayer_.fire(EventType.LOAD_ALL_TILES);
+      }
+      if (this.fireLoad_ === false) {
         this.facadeLayer_.fire(EventType.LOAD);
+        this.fireLoad_ = true;
       }
     }
   }

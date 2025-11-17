@@ -13,6 +13,7 @@ import {
   BillboardGraphics,
   PolylineOutlineMaterialProperty,
   ImageMaterialProperty,
+  ModelGraphics,
 } from 'cesium';
 import {
   getValue,
@@ -454,8 +455,10 @@ class Feature {
    */
   clearStyle() {
     if (!isNullOrEmpty(this.referenceFacadeLayer)) {
-      if (this.cesiumFeature_.billboard && !this.cesiumFeature_.point) {
+      if ((this.cesiumFeature_.billboard || this.cesiumFeature_.model)
+        && !this.cesiumFeature_.point) {
         this.cesiumFeature_.billboard = undefined;
+        this.cesiumFeature_.model = undefined;
         this.cesiumFeature_.point = new PointGraphics({
           color: Color.WHITE,
           outlineColor: Color.BLACK,
@@ -515,8 +518,10 @@ class Feature {
           opacity = geometry.outlineColor.getValue().alpha;
         } else if (this.cesiumFeature_.billboard) {
           opacity = this.cesiumFeature_.billboard.color.getValue().alpha;
+        } else if (this.cesiumFeature_.model) {
+          opacity = this.cesiumFeature_.model.color.getValue().alpha;
         }
-      } else if (geometry instanceof BillboardGraphics) {
+      } else if (geometry instanceof BillboardGraphics || geometry instanceof ModelGraphics) {
         if (geometry.color) {
           opacity = geometry.color.getValue().alpha;
         }
