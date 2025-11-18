@@ -55,3 +55,12 @@ export const LEFT = 'left';
  * @api
  */
 export const RIGHT = 'right';
+
+/**
+ * Posición abajo.
+ * @public
+ * @const
+ * @type {string}
+ * @api
+ */
+export const DOWN = 'down';
