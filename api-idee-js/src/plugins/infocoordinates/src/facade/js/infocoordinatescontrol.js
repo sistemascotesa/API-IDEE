@@ -9,11 +9,6 @@ import { getValue } from './i18n/language';
 /* global FileReader */
 /* global MouseEvent */
 const NO_DATA_VALUE = -9999;
-const helpIconUrlInfo = new URL('../assets/icons/info.svg', import.meta.url).href;
-const helpIconUrlPapelera = new URL('../assets/icons/papelera.svg', import.meta.url).href;
-const helpIconUrlCopiar = new URL('../assets/icons/copiar.svg', import.meta.url).href;
-const helpIconUrlImport = new URL('../assets/icons/import.svg', import.meta.url).href;
-const helpIconUrlAllPoints = new URL('../assets/icons/allPoints.svg', import.meta.url).href;
 
 export default class InfocoordinatesControl extends IDEE.Control {
   /**
@@ -48,6 +43,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
     this.outputDownloadFormat = outputDownloadFormat;
     this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
     this.selectedProjection = null;
+
+    this.displayON = false;
   }
 
   /**
@@ -88,11 +85,6 @@ export default class InfocoordinatesControl extends IDEE.Control {
           hasHelp: this.helpUrl !== undefined && IDEE.utils.isUrl(this.helpUrl),
           helpUrl: this.helpUrl,
           projections: this.projections,
-          helpIconUrlInfo,
-          helpIconUrlPapelera,
-          helpIconUrlCopiar,
-          helpIconUrlImport,
-          helpIconUrlAllPoints,
           translations: {
             title: getValue('title'),
             point: getValue('point'),
@@ -134,6 +126,11 @@ export default class InfocoordinatesControl extends IDEE.Control {
       html.querySelector('#m-infocoordinates-buttonRemovePoint').addEventListener('click', this.removePoint.bind(this));
       html.querySelector('#m-infocoordinates-copylatlon').addEventListener('click', this.copylatlon.bind(this));
       html.querySelector('#m-infocoordinates-copyxy').addEventListener('click', this.copyxy.bind(this));
+      html.querySelector('#m-infocoordinates-help-icon').addEventListener('click', this.showHelp.bind(this));
+
+      this.html = html;
+
+      this.addSvgs(html);
     });
   }
 
@@ -293,7 +290,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
     }
 
     // Eliminamos las etiquetas de los puntos
-    if (document.getElementsByClassName('icon-displayON').length === 0 && this.map.getMapImpl().getOverlays().getLength() > 0) {
+    if (this.displayON && this.map.getMapImpl().getOverlays().getLength() > 0) {
       this.removeAllDisplaysPoints();
     }
 
@@ -438,7 +435,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       });
 
       // Eliminamos las etiquetas de los puntos
-      if (document.getElementsByClassName('icon-displayON').length === 0 && this.map.getMapImpl().getOverlays().getLength() > 0) {
+      if (this.displayON && this.map.getMapImpl().getOverlays().getLength() > 0) {
         this.removeAllDisplaysPoints();
       }
     } else {
@@ -448,7 +445,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       } catch (err) { /* Continue */ }
 
       // Eliminamos las etiquetas de los puntos
-      if (document.getElementsByClassName('icon-displayON').length === 0 && this.map.getMapImpl().getOverlays().getLength() > 0) {
+      if (this.displayON && this.map.getMapImpl().getOverlays().getLength() > 0) {
         this.removeAllDisplaysPoints();
       }
     }
@@ -794,12 +791,13 @@ export default class InfocoordinatesControl extends IDEE.Control {
   }
 
   displayAllPoints() {
-    if (document.getElementsByClassName('icon-displayON').length === 0 && this.map.getMapImpl().getOverlays().getLength() > 0) {
+    if (this.displayON && this.map.getMapImpl().getOverlays().getLength() > 0) {
       this.removeAllDisplaysPoints();
     } else {
       // Modificamos el icono
-      document.getElementsByClassName('icon-displayON')[0].classList.replace('icon-displayON', 'icon-displayOFF');
-      document.getElementsByClassName('icon-displayOFF')[0].title = getValue('displayOFFAllPoints');
+      const buttonDisplayAllPointsElem = this.html.querySelector('#m-infocoordinates-buttonDisplayAllPoints');
+      IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'all_points_disabled', buttonDisplayAllPointsElem);
+      buttonDisplayAllPointsElem.title = getValue('displayOFFAllPoints');
 
       // Eliminamos el num sobre el punto
       for (let i = 0; i < document.getElementsByClassName('contenedorPunto').length; i += 1) {
@@ -851,6 +849,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
         this.helpTooltip_.setPosition(pos);
         this.map.getMapImpl().addOverlay(this.helpTooltip_);
       }
+      this.displayON = true;
     }
   }
 
@@ -877,8 +876,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
 
   removeAllDisplaysPoints() {
     // Modificamos el icono
-    document.getElementsByClassName('icon-displayOFF')[0].classList.replace('icon-displayOFF', 'icon-displayON');
-    document.getElementsByClassName('icon-displayON')[0].title = getValue('displayONAllPoints');
+    const buttonDisplayAllPointsElem = this.html.querySelector('#m-infocoordinates-buttonDisplayAllPoints');
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'all_points', buttonDisplayAllPointsElem);
+    buttonDisplayAllPointsElem.title = getValue('displayONAllPoints');
 
     // Mostramos el num sobre el punto
     for (let i = 0; i < document.getElementsByClassName('contenedorPunto').length; i += 1) {
@@ -893,6 +893,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
         this.map.getMapImpl().removeOverlay(this.map.getMapImpl().getOverlays().getArray()[i]);
       }
     }
+    this.displayON = false;
   }
 
   descargarArchivo(contenidoEnBlob, nombreArchivo) {
@@ -970,5 +971,28 @@ export default class InfocoordinatesControl extends IDEE.Control {
 
   accessibilityTab(html) {
     html.querySelectorAll('[tabindex="0"]').forEach((el) => el.setAttribute('tabindex', this.order));
+  }
+
+  addSvgs(html) {
+    const buttonRemovePointElem = html.querySelector('#m-infocoordinates-buttonRemovePoint');
+    const buttonCopyLatLonElem = html.querySelector('#m-infocoordinates-copylatlon');
+    const buttonCopyXyElem = html.querySelector('#m-infocoordinates-copyxy');
+    const buttonRemoveAllPointsElem = html.querySelector('#m-infocoordinates-buttonRemoveAllPoints');
+    const buttonImportAllPointsElem = html.querySelector('#m-infocoordinates-buttonImportAllPoints');
+    const buttonCopyAllPointsElem = html.querySelector('#m-infocoordinates-buttonCopyAllPoints');
+    const buttonDisplayAllPointsElem = html.querySelector('#m-infocoordinates-buttonDisplayAllPoints');
+    const helpIconElem = html.querySelector('#m-infocoordinates-help-icon');
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'trash', buttonRemovePointElem);
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'copy', buttonCopyLatLonElem);
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'copy', buttonCopyXyElem);
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'trash', buttonRemoveAllPointsElem);
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'import', buttonImportAllPointsElem);
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'copy', buttonCopyAllPointsElem);
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'all_points', buttonDisplayAllPointsElem);
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'help', helpIconElem);
+  }
+
+  showHelp() {
+    window.open(this.helpUrl, '_blank');
   }
 }

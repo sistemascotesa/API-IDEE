@@ -25,7 +25,6 @@
     display: block;
     width: 100%;
     margin-top: 3%;
-    height: 40px;
 }
 
 .m-xylocator-datas .button button {
@@ -96,7 +95,7 @@
 
 .m-infocatastro-radio-group input[type="radio"]:checked + label,
 .m-xylocator-dms-radio input[type="radio"]:checked + label {
-    color: #1d5a9e;
+    color: var(--idee-color-primary-dark);
     cursor: pointer;
     height: 16px;
 }
@@ -107,24 +106,12 @@
     gap: 8px;
 }
 
-.m-infocatastro-parcela-container select,
-.m-infocatastro-catastro-container select {
-    height: 40px;
-    appearance: none;
-    background: none;
-    border: 1px solid;
-    color:#ADB5BD;
-}
-
 .m-infocatastro-parcela-container input,
 .m-infocatastro-catastro-container input,
-.m-xylocator-latlon-fields input:not([type="radio"]),
-.m-infocatastro-parcela-container select {
+.m-xylocator-latlon-fields input:not([type="radio"]) {
     margin: 0;
     margin-bottom: 8px;
     padding: 0 8px;
-    border-color: #ADB5BD;
-    color:#ADB5BD;
 }
 
 .m-xylocator-latlon-fields input:not([type="radio"]):last-child {
@@ -146,8 +133,8 @@
 }
 
 .buttonOptions .m-infocatastro-represent.activated {
-    background-color: #1d5a9e;
-    border-color: #1d5a9e;
+    background-color: var(--idee-color-primary-dark);
+    border-color: var(--idee-color-primary-dark);
 }
 
 .buttonOptions .m-infocatastro-represent span {
@@ -166,6 +153,13 @@
     text-align: center;
 }
 
+button[id="m-infocatastro-parcela-limpiar"] {
+    background-color: white;
+}
+
+button[id="m-xylocator-limpiar"] {
+    background-color: white;
+}
 
 /**************************
 * IGNSearchLocatorControl *
@@ -210,10 +204,12 @@
     overflow-wrap: break-word;
     white-space: pre-line;
     line-height: 1.2;
+    transition: all 0.3s ease;
 }
 
 .m-ignsearch-results > .m-ignsearch-results-list li:hover {
-    color: #000000;
+    color: var(--idee-color-primary);
+    transition: all 0.3s ease;
 }
 
 .m-ignsearch-results > .m-ignsearchlocator-noresults {

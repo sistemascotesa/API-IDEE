@@ -6,7 +6,7 @@ import template from 'templates/infocatastro';
 import InfoCatastroImpl from 'impl/infocatastrocontrol';
 import { getValue } from './i18n/language';
 
-const ID_CONTENEDOR_LOCATOR = '#div-contenedor-locator';
+const ID_CONTENEDOR_LOCATOR = '#plugin-panel-content-locator';
 const ID_INFOCATASTRO = '#m-locator-infocatastro';
 const ID_CATASTRO_PANEL = '#m-infocatastro-panel';
 const ID_CATASTRO_PANEL_PARCELA = '#m-infocatastro-parcela-panel';

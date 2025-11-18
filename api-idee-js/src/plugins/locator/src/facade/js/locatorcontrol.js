@@ -8,7 +8,7 @@ import XYLocatorControl from './xylocatorcontrol';
 import IGNSearchLocatorControl from './ignsearchlocatorcontrol';
 import InfoCatastroControl from './infocatastrocontrol';
 
-const ID_CONTENEDOR_LOCATOR = '#div-contenedor-locator';
+const ID_CONTENEDOR_LOCATOR = '#plugin-panel-content-locator';
 const ID_LOCATOR_INFO_CATASTRO = '#m-locator-infocatastro';
 const ID_LOCATOR_XYLOCATOR = '#m-locator-xylocator';
 const ID_LOCATOR_IGNSEARCH = '#m-locator-ignsearch';

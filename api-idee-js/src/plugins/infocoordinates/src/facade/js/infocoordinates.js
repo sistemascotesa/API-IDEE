@@ -1,7 +1,6 @@
 /**
  * @module IDEE/plugin/Infocoordinates
  */
-import 'assets/css/fonts';
 import 'assets/css/infocoordinates';
 import InfocoordinatesControl from './infocoordinatescontrol';
 import api from '../../api';
