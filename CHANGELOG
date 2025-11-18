@@ -24,6 +24,7 @@
 - Se implementa el uso de ticket en WFS.
 - Se añade el metodo generateRandomStyle a utilidades de estilo.
 - Se configura la URL de recursos estáticos para poder personalizar la URL del despliegue del mismo.
+- Se modifica el desarrollo del método getCentroid de utilidades (implementación).
 
 
 01/01/25 - Versión 1.0.0
