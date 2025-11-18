@@ -49,7 +49,7 @@ div.m-areas div.m-area .m-panel.m-plugin-layerswitcher.opened {
 }
 
 .m-panel.m-plugin-layerswitcher.opened button.m-panel-btn {
-    background-color: #71a7d3 !important;
+    background-color: var(--idee-color-primary) !important;
     color: white !important;
 }
 
@@ -103,7 +103,7 @@ div.m-areas div.m-area .m-panel.m-plugin-layerswitcher.opened {
 
 .m-layerswitcher-title-box:hover {
     cursor: pointer;
-    color: #1470db;
+    color: var(--idee-color-links);
 }
 
 /* Título */
@@ -163,7 +163,7 @@ div.m-areas div.m-area .m-panel.m-plugin-layerswitcher.opened {
 
 .m-layerswitcher-sectionPanel-header-text:hover {
     cursor: pointer;
-    color: #71a7d3;
+    color: var(--idee-color-primary);
 }
 
 .m-layerswitcher-sectionPanel-header-text span {
@@ -291,7 +291,7 @@ div.m-areas div.m-area .m-panel.m-plugin-layerswitcher.opened {
 }
 
 .m-layerswitcher-input-container-buttons button:hover {
-    color: #1470db;
+    color: var(--idee-color-links);
     background-color: transparent;
 }
 
@@ -326,7 +326,7 @@ div.m-areas div.m-area .m-panel.m-plugin-layerswitcher.opened {
 
 .layerswitcher-hide-show-all-layers:hover {
     border: none;
-    color: #1470db !important;
+    color: var(--idee-color-links) !important;
     background-color: transparent;
 }
 
@@ -508,6 +508,7 @@ input[type=range].layerswitcher-transparency:focus {
     border: none;
     color: #6c6c6c;
     padding-left: 8px;
+    transition: all 0.3s ease;
 }
 
 .m-layerswitcher-icons-upload {
@@ -536,8 +537,9 @@ input[type=range].layerswitcher-transparency:focus {
 .m-layerswitcher-icons-desplegar:hover,
 .m-layerswitcher-icons-papelera:hover {
     cursor: pointer;
-    color: #1470db;
+    color: var(--idee-color-links);
     border: none;
+    transition: all 0.3s ease;
 }
 
 .m-layerswitcher-icons-delete {
@@ -664,7 +666,7 @@ div.m-layerswitcher-legend>img {
 /* anadir capas */
 .m-layerswitcher-addservice {
     cursor: pointer;
-    background-color: #71a7d3;
+    background-color: var(--idee-color-primary);
     color: #fff;
     line-height: 25px;
     padding: 0 7px;
@@ -740,7 +742,7 @@ div.m-layerswitcher-legend>img {
 }
 
 .m-layerswitcher-suggestion-group.active>li {
-    color: #71a7d3;
+    color: var(--idee-color-primary);
 }
 
 .m-layerswitcher-suggestion-group {
@@ -970,7 +972,7 @@ button.m-layerswitcher-suggestion {
 
 button.m-layerswitcher-suggestion-caret:hover {
     color: #6c6c6c;
-    border: 2px solid #1470db;
+    border: 2px solid var(--idee-color-links);
 }
 
 .g-cartografia-flecha-derecha.m-layerswitcher-hidden,
@@ -1000,7 +1002,7 @@ table#m-layerswitcher-table{
 }
 
 table#m-layerswitcher-table.m-layerswitcher-tablepagination thead tr {
-    background-color: rgb(113, 167, 211);;
+    background-color: var(--idee-color-primary);
     color: white;
     font-size: large;
     padding: 5px 5px 5px 5px;
@@ -1047,7 +1049,7 @@ table#m-layerswitcher-table.m-layerswitcher-tablepagination tbody tr:hover {
 }
 
 #m-layerswitcher-addservices-results .m-layerswitcher-service-capabilities>p:hover {
-    color: #1470db;
+    color: var(--idee-color-links);
 }
 
 #m-layerswitcher-addservices-results .m-layerswitcher-service-capabilities>p>span {
@@ -1120,12 +1122,12 @@ table#m-layerswitcher-table.m-layerswitcher-tablepagination tbody tr:hover {
 
 .m-layerswitcher-table-results .m-layerswitcher-table-container>table>thead>tr>td>label:hover {
     cursor: pointer;
-    color: #1470db
+    color: var(--idee-color-links);
 }
 
 .m-layerswitcher-table-results .m-layerswitcher-table-container>table>tbody>tr>td>label:hover {
     cursor: pointer;
-    color: #1470db
+    color: var(--idee-color-links);
 }
 
 #m-layerswitcher-addservices-results .button ,
@@ -1417,13 +1419,13 @@ div.codsi-no-results {
 
 #m-layerswitcher-addservices-codsi-results > tr > td > span:hover {
     cursor: pointer;
-    color: #1470db;
+    color: var(--idee-color-links);
 }
 
 span.m-layerswitcher-codsi-result::before {
     content: '\2023';
     margin-right: 10px;
-    color: #71a7d3;
+    color: var(--idee-color-primary);
     font-size: 20px;
 }
 

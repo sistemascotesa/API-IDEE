@@ -86,7 +86,7 @@
     font-size: 18px;
     font-weight: bold;
     color: var(--idee-color-primary-dark);
-    white-space: nowrap;
+    white-space: normal;
     word-break: break-word;
     text-overflow: ellipsis;
 }
@@ -128,7 +128,7 @@ button:disabled:hover {
 button.secondary {
     height: 32px;
     color: var(--idee-color-primary);
-    background-color: #FFFFFF;
+    background-color: #e8ecef;
     border: 1px solid var(--idee-color-primary);
     border-radius: 4px;   
     cursor: pointer;
@@ -138,9 +138,8 @@ button.secondary {
 }
 
 button.secondary:hover {
-    color: var(--idee-color-links);
-    background-color: #f1f3f5;
-    border: 1px solid var(--idee-color-links);
+    color: #f1f3f5;
+    background-color: var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
@@ -161,7 +160,7 @@ input[type="color"],
 textarea {
     margin: 4px;
     padding: 4px;
-    height: 40px;
+    height: 32px;
     background-color: transparent;
     cursor: auto;
     border-radius: 4px;
@@ -174,6 +173,10 @@ textarea {
     font-family: 'Roboto', 'sans-serif';
     font-size: 16px;
     transition: all 0.3s ease;
+}
+
+input[type="color"] {
+    cursor: pointer;
 }
 
 input[type="text"]:hover,
@@ -276,11 +279,13 @@ input[type="range"]:focus {
 
 select {
     cursor: pointer;
+    color: #6c6c6c;
     border-radius: 4px;
-    background: #e9ecef;
+    background: none;
     border: 1px solid #e9ecef;
     font-family: 'Roboto', 'sans-serif';
     font-size: 16px;
+    height: 32px;
     transition: all 0.3s ease;
 }
 

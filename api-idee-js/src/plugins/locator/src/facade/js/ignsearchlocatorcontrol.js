@@ -6,7 +6,7 @@ import results from 'templates/ignsearchlocator-results';
 import IGNSearchLocatorImpl from 'impl/ignsearchlocatorcontrol';
 import { getValue } from './i18n/language';
 
-const ID_CONTENEDOR_LOCATOR = '#div-contenedor-locator';
+const ID_CONTENEDOR_LOCATOR = '#plugin-panel-content-locator';
 const ID_IGN_SEARCH = '#m-locator-ignsearch';
 const ID_IGNSEARCH_PANEL = '#m-ignsearch-panel';
 const ID_IGNSEARCH_RESULTS = '#m-ignsearchlocator-results';

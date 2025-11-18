@@ -6,7 +6,7 @@ import template from 'templates/xylocator';
 import XYLocatorImpl from 'impl/xylocatorcontrol';
 import { getValue } from './i18n/language';
 
-const ID_CONTENEDOR_LOCATOR = '#div-contenedor-locator';
+const ID_CONTENEDOR_LOCATOR = '#plugin-panel-content-locator';
 const ID_XYLOCATOR = '#m-locator-xylocator';
 const ID_PANEL_XYLOCATOR = '#m-xylocator-panel';
 const ID_BUTTON_LIMPIAR = '#m-xylocator-limpiar';

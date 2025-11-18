@@ -84,7 +84,7 @@ class Control extends Base {
         impl.addTo(parent, html);
         this.fire(EventType.ADDED_TO_MAP);
       });
-    } else { // view is an HTML or text or null
+    } else { // view is an HTML or text
       if (parent instanceof Plugin) {
         parent.addControlToPlugin(this);
       } else {
