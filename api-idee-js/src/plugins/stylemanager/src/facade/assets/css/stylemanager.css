@@ -1,3 +1,20 @@
+/* ESTILOS NUEVOS */
+.m-stylemanager ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.m-stylemanager-buttons-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.m-stylemanager-buttons-wrap select {
+    height: 32px;
+}
+
 /* BOTONERA */
 
 .m-boxes {
@@ -9,16 +26,7 @@
 
 .m-stylemanager-buttons-wrap>button.m-button-styles,
 .m-add-gradient.m-button-styles {
-    background-color: #71a7d3;
-    border-radius: 5px 5px;
     color: white;
-    padding: 5px 5px;
-    text-align: center;
-    display: inline-block;
-    font: 13px Muli, Arial, sans-serif;
-    font-weight: bold;
-    cursor: pointer;
-    border: 0px;
 }
 
 .m-stylemanager-buttons-wrap {
@@ -210,6 +218,8 @@ input[type="checkbox"].m-input+label.check-inactive:before {
 /* CONTROL */
 
 .m-stylemanager-container-select {
+    display: grid;
+    grid-template-columns: auto 1fr;
     margin: 0;
     top: 0;
     right: 0;
