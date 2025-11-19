@@ -4461,6 +4461,28 @@ class Map extends Base {
     this.leftButtons.classList.add('m-api-idee-left-buttons');
     container.appendChild(this.leftButtons);
 
+    this.upPanel = document.createElement('up-panel');
+    this.upPanel.id = 'upPanel';
+    this.upPanel.classList.add('m-api-idee-up-panel');
+
+    this.upPanelTopLeft = document.createElement('div');
+    this.upPanelTopLeft.classList.add('m-api-idee-up-panel-top-left');
+    this.upPanel.appendChild(this.upPanelTopLeft);
+
+    this.upPanelTopRight = document.createElement('div');
+    this.upPanelTopRight.classList.add('m-api-idee-up-panel-top-right');
+    this.upPanel.appendChild(this.upPanelTopRight);
+
+    this.upPanelBottomLeft = document.createElement('div');
+    this.upPanelBottomLeft.classList.add('m-api-idee-up-panel-bottom-left');
+    this.upPanel.appendChild(this.upPanelBottomLeft);
+
+    this.upPanelBottomRight = document.createElement('div');
+    this.upPanelBottomRight.classList.add('m-api-idee-up-panel-bottom-right');
+    this.upPanel.appendChild(this.upPanelBottomRight);
+
+    container.appendChild(this.upPanel);
+
     this.mapPanel = document.createElement('map-panel');
     this.mapPanel.id = 'mapPanel';
     this.mapPanel.classList.add('m-api-idee-map-panel');
@@ -4481,6 +4503,11 @@ class Map extends Base {
     this.rightHandle.classList.add('m-api-idee-right-handle');
     this.rightHandle.style.visibility = 'hidden';
     this.rightPanel.appendChild(this.rightHandle);
+
+    this.downPanel = document.createElement('down-panel');
+    this.downPanel.id = 'downPanel';
+    this.downPanel.classList.add('m-api-idee-down-panel');
+    container.appendChild(this.downPanel);
 
     this.isResizingLeft = false;
     this.isResizingRight = false;
@@ -4525,7 +4552,51 @@ class Map extends Base {
         this.rightPanel.style.width = `${newWidth}px`;
         this.rightButtons.style.right = `${newWidth}px`;
       }
+
+      this.updateUpDownPanelDimensions();
     });
+  }
+
+  /**
+   * Actualiza el tamaño del panel superior.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   * @api
+   */
+  updateUpPanelDimensions(container = this.getContainer()) {
+    const leftButtonsRight = this.leftButtons.getBoundingClientRect().right;
+    const rightButtonsLeft = this.rightButtons.getBoundingClientRect().left;
+    const upWidth = Math.max(rightButtonsLeft - leftButtonsRight, 0);
+    this.upPanel.style.left = `${leftButtonsRight - container.getBoundingClientRect().left}px`;
+    this.upPanel.style.width = `${upWidth}px`;
+  }
+
+  /**
+   * Actualiza el tamaño del panel inferior.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   * @api
+   */
+  updateDownPanelDimensions(container = this.getContainer()) {
+    const leftPanelRight = this.leftPanel.getBoundingClientRect().right;
+    const rightPanelLeft = this.rightPanel.getBoundingClientRect().left;
+    const downWidth = Math.max(rightPanelLeft - leftPanelRight, 0);
+    this.downPanel.style.left = `${leftPanelRight - container.getBoundingClientRect().left}px`;
+    this.downPanel.style.width = `${downWidth}px`;
+  }
+
+  /**
+   * Actualiza el tamaño de los paneles superior e inferior.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   * @api
+   */
+  updateUpDownPanelDimensions(container = this.getContainer()) {
+    this.updateUpPanelDimensions(container);
+    this.updateDownPanelDimensions(container);
   }
 
   /* eslint-disable no-param-reassign */
@@ -4570,6 +4641,14 @@ class Map extends Base {
       handle.style.visibility = 'visible';
 
       this.removeTransition(panel, handle, buttons);
+
+      const onTransitionEnd = (event) => {
+        if (event.propertyName === 'width') {
+          this.updateUpDownPanelDimensions();
+          panel.removeEventListener('transitionend', onTransitionEnd);
+        }
+      };
+      panel.addEventListener('transitionend', onTransitionEnd);
     }, 1);
   }
 
@@ -4591,7 +4670,13 @@ class Map extends Base {
 
       handle.style.visibility = 'hidden';
 
-      this.removeTransition(panel, handle, buttons);
+      const onTransitionEnd = (event) => {
+        if (event.propertyName === 'width') {
+          this.updateUpDownPanelDimensions();
+          panel.removeEventListener('transitionend', onTransitionEnd);
+        }
+      };
+      panel.addEventListener('transitionend', onTransitionEnd);
     }, 1);
   }
 

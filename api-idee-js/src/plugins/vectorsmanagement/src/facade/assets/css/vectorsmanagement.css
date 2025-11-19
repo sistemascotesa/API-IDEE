@@ -50,6 +50,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-control.m-container.m-vectorsmanagement {
+    z-index: 3;
     padding: 0 .75rem;
     width: calc(100% - 1.5rem);
     min-width: calc(2rem * 6 + .5rem * 5);
