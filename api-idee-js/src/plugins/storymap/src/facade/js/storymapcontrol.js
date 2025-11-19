@@ -21,7 +21,7 @@ export default class StoryMapControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl'));
     }
     const impl = new StoryMapControlImplControl();
-    super('StoryMapControl', impl);
+    super('StoryMap', impl);
     this.content_ = content;
     this.delay = delay;
 
@@ -52,7 +52,7 @@ export default class StoryMapControl extends IDEE.Control {
     return new Promise((success, fail) => {
       let html = IDEE.template.compileSync(template, {
         vars: {
-          title: 'Story Map',
+          instructions: getValue('instructions'),
           speed: (this.delay / 1000),
         },
       });
@@ -61,6 +61,7 @@ export default class StoryMapControl extends IDEE.Control {
       this.scrollEvent(html);
       html = this.createNavPointer(html, this.content_.cap.length);
       html = this.buttonDelay(html);
+      html = this.addSvgIcons(html);
 
       map.on('IDEE.evt.COMPLETED', () => {
         this.createPointerSteps(0);
@@ -95,7 +96,7 @@ export default class StoryMapControl extends IDEE.Control {
         title: indexInContent.title,
         subtitle: indexInContent.subtitle,
         steps: [{
-          html: `${this.createIndex()}<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>`,
+          html: `${this.createIndex()}`,
           js: indexInContent.js,
         }],
       };
@@ -112,15 +113,15 @@ export default class StoryMapControl extends IDEE.Control {
 
     cap.forEach(({ steps }, i) => {
       if (i === 0) {
-        content += `<div id=cap${i} style="display: block;" class="chapters">`;
+        content += `<div id=cap${i} style="display: flex;" class="chapters">`;
       } else {
         content += `<div id=cap${i} style="display: none;" class="chapters">`;
       }
       steps.forEach(({ html, js }, j) => {
         if (j === 0 && i === 0) {
-          content += `<div id="step${j}" class="step" style="display: block;"><br><br>${html}<br><br></div>`;
+          content += `<div id="step${j}" class="step d-flex-column" style="display: flex;">${html}</div>`;
         } else {
-          content += `<div id="step${j}" class="step" style="display: none;"><br><br>${html}<br><br></div>`;
+          content += `<div id="step${j}" class="step d-flex-column" style="display: none;">${html}</div>`;
         }
       });
       content += '</div>';
@@ -129,10 +130,18 @@ export default class StoryMapControl extends IDEE.Control {
 
     // eslint-disable-next-line no-param-reassign
     allhtml.querySelector('#navStep').innerHTML = `<svg id="pointStep0" height="23" width="23" index="0">
-    <circle class="pointerEffect" index="0" stroke="#71a7d3" strokeWidth="1" fill="#71a7d3" cx="50%" cy="50%" r="4" />
+    <circle class="pointerEffect active" index="0" cx="50%" cy="50%" r="4" />
   </svg>`;
 
     return allhtml;
+  }
+
+  addSvgIcons(html) {
+    const playButton = html.querySelector('#play');
+    const pauseButton = html.querySelector('#pause');
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'play', playButton);
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'stop', pauseButton);
+    return html;
   }
 
   disableCap(indexNextCap, indexCap, positionStep) {
@@ -141,13 +150,13 @@ export default class StoryMapControl extends IDEE.Control {
     const steps = caps[indexNextCap].querySelectorAll('.step');
 
     caps[indexCap].style = 'display: none';
-    caps[indexNextCap].style = 'display: block';
+    caps[indexNextCap].style = 'display: flex';
 
     const step = (positionStep) ? steps[0] : steps[steps.length - 1];
 
     this.addJSCap(indexNextCap, (positionStep) ? 0 : steps.length - 1);
 
-    step.style = 'display: block';
+    step.style = 'display: flex';
 
     step.scroll({
       top: 20,
@@ -165,7 +174,7 @@ export default class StoryMapControl extends IDEE.Control {
     });
 
     const stepActive = cap.querySelector(`#step${activate}`);
-    stepActive.style = 'display: block';
+    stepActive.style = 'display: flex';
 
     stepActive.scroll({
       top: 20,
@@ -186,9 +195,9 @@ export default class StoryMapControl extends IDEE.Control {
     const container = document.querySelector(idContainer);
     const divElement = container.querySelectorAll(idElement);
     // eslint-disable-next-line guard-for-in, no-restricted-syntax
-    for (const key in divElement) {
-      if (divElement[key].style.display === 'block' && !Number.isNaN(key)) {
-        const id = divElement[key].id;
+    for (const key of divElement) {
+      if (key.style.display === 'flex') {
+        const id = key.id;
         return Number.parseInt(id.match(/\d+/)[0], 10);
       }
     }
@@ -202,13 +211,13 @@ export default class StoryMapControl extends IDEE.Control {
       if (i === 0) {
         divElement.innerHTML += `
         <svg id="pointerNav${i}" height="23" width="23" index="${i}">
-          <circle class="pointerEffect" index="${i}" stroke="#71a7d3" strokeWidth="1" fill="#71a7d3" cx="50%" cy="50%" r="4" />
+          <circle class="pointerEffect active" index="${i}" strokeWidth="1" cx="50%" cy="50%" r="4" />
         </svg>
         `;
       } else {
         divElement.innerHTML += `
         <svg id="pointerNav${i}" height="23" width="23" index="${i}">
-          <circle index="${i}" stroke="#71a7d3" strokeWidth="1" fill="#71a7d3" cx="50%" cy="50%" r="4" />
+          <circle index="${i}" class="pointerEffect" cx="50%" cy="50%" r="4" />
         </svg>
         `;
       }
@@ -246,11 +255,11 @@ export default class StoryMapControl extends IDEE.Control {
     steps.forEach((s, i) => {
       if (i === 0) {
         stepsPoint += `<svg id="pointStep${i}" height="23" width="23" index="${i}">
-        <circle class="pointerEffect" index="${i}" stroke="#71a7d3" strokeWidth="1" fill="#71a7d3" cx="50%" cy="50%" r="4" />
+        <circle class="pointerEffect active" index="${i}" cx="50%" cy="50%" r="4" />
       </svg>`;
       } else {
         stepsPoint += `<svg id="pointStep${i}" height="23" width="23" index="${i}">
-        <circle index="${i}" stroke="#71a7d3" strokeWidth="1" fill="#71a7d3" cx="50%" cy="50%" r="4" />
+        <circle class="pointerEffect" index="${i}" cx="50%" cy="50%" r="4" />
       </svg>`;
       }
     });
@@ -305,16 +314,15 @@ export default class StoryMapControl extends IDEE.Control {
           // Evitar que ejecute esto cuando es el ultimo capitulo y el ultimo step
           if (Math.abs(target.scrollHeight - target.clientHeight - target.scrollTop) < 1
             && !(navContent[navContent.length - 1].id === cap.id && `step${cap.childElementCount - 1}` === target.id)) {
-            target.scroll({ top: 10, behavior: 'auto' });
             // eslint-disable-next-line no-param-reassign
             target.style = 'display: none';
             const idStep = Number(step.id.replace('step', '')) + 1;
 
             if (cap.querySelectorAll('.step').length - 1 < idStep) {
               const idCap = Number(cap.id.replace('cap', '')) + 1;
-              document.querySelector(`#cap${idCap}`).style = 'display: block';
+              document.querySelector(`#cap${idCap}`).style = 'display: flex';
               const siguienteStep = document.querySelector(`#cap${idCap}`).querySelector('#step0');
-              siguienteStep.style = 'display: block';
+              siguienteStep.style = 'display: flex';
 
               document.querySelector(`#${cap.id}`).style = 'display: none';
               this.addJSCap(idCap, 0);
@@ -325,7 +333,7 @@ export default class StoryMapControl extends IDEE.Control {
             } else {
               const siguienteStep = document.querySelector(`#${cap.id}`).querySelector(`#step${idStep}`);
               const idCap = Number(cap.id.replace('cap', ''));
-              siguienteStep.style = 'display: block';
+              siguienteStep.style = 'display: flex';
               siguienteStep.scrollTop = 1;
               this.addJSCap(idCap, idStep);
               this.effectPointer(idStep, '#pointStep', 'navStep');
@@ -333,17 +341,16 @@ export default class StoryMapControl extends IDEE.Control {
             // ***** Atras *****
           } else if (target.scrollTop === 0 && !(cap.id === 'cap0' && target.id === 'step0')) {
             const idStep = Number(step.id.replace('step', '')) - 1;
-            target.scroll({ top: 10, behavior: 'auto' });
             // eslint-disable-next-line no-param-reassign
             target.style = 'display: none';
 
             if (idStep < 0) {
               const idCap = Number(cap.id.replace('cap', '')) - 1;
               const capNext = document.querySelector(`#cap${idCap}`);
-              capNext.style = 'display: block';
+              capNext.style = 'display: flex';
 
               const siguienteStep = document.querySelector(`#cap${idCap}`).querySelector(`#step${capNext.childElementCount - 1}`);
-              siguienteStep.style = 'display: block';
+              siguienteStep.style = 'display: flex';
               siguienteStep.scrollTop = 10;
 
               document.querySelector(`#${cap.id}`).style = 'display: none';
@@ -355,7 +362,7 @@ export default class StoryMapControl extends IDEE.Control {
             } else {
               const idCap = Number(cap.id.replace('cap', ''));
               const siguienteStep = document.querySelector(`#${cap.id}`).querySelector(`#step${idStep}`);
-              siguienteStep.style = 'display: block';
+              siguienteStep.style = 'display: flex';
               siguienteStep.scrollTop = 10;
               this.addJSCap(idCap, idStep);
               this.effectPointer(idStep, '#pointStep', 'navStep');
@@ -402,7 +409,7 @@ export default class StoryMapControl extends IDEE.Control {
   arrowScrollEffect() {
     setTimeout(() => {
       this.arrowScrollEffect_contador -= 0.1;
-      document.querySelector('.arrowScroll').style = `opacity: ${this.arrowScrollEffect_contador}`;
+      document.querySelector('.m-storymap-instructions').style = `opacity: ${this.arrowScrollEffect_contador}`;
       if (this.arrowScrollEffect_contador >= 0) this.arrowScrollEffect();
     }, 150);
 
@@ -410,15 +417,15 @@ export default class StoryMapControl extends IDEE.Control {
   }
 
   arrowEvent(html) {
-    html.querySelector('.arrowScroll').addEventListener('mouseover', (e) => {
+    html.querySelector('.m-storymap-instructions').addEventListener('mouseover', (e) => {
       document.querySelector('#cap0').querySelector('#step0').scroll({ top: 70, behavior: 'smooth' });
     });
     return html;
   }
 
   effectPointer(indexNext, typeNapID, container) {
-    document.querySelector(`.${container} .pointerEffect`).classList.remove('pointerEffect');
-    document.querySelector(`${typeNapID}${indexNext} > circle`).classList.add('pointerEffect');
+    document.querySelector(`.${container} .pointerEffect.active`).classList.remove('active');
+    document.querySelector(`${typeNapID}${indexNext} > circle`).classList.add('pointerEffect', 'active');
   }
 
   createIndex() {
@@ -430,7 +437,7 @@ export default class StoryMapControl extends IDEE.Control {
       index += `<li index="${i + 1}">${title}. ${subtitle}</li>`;
     });
 
-    index = `<ol id='indexContent'>${index}</ol>`;
+    index = `<ol class='m-storymap-chapters d-flex-column' id='indexContent'>${index}</ol>`;
 
     return index;
   }
@@ -449,11 +456,11 @@ export default class StoryMapControl extends IDEE.Control {
 
   buttonDelay(html) {
     const speed = [
-      { text: '0.5x', value: 0 },
-      { text: '1x', value: 1 },
-      { text: '2x', value: 2 },
-      { text: '3x', value: 3 },
-      { text: '5x', value: 5 },
+      { text: 'x0.5', value: 0 },
+      { text: 'x1', value: 1 },
+      { text: 'x2', value: 2 },
+      { text: 'x3', value: 3 },
+      { text: 'x5', value: 5 },
     ];
     let position = 0;
     html.querySelector('#buttonDelay').addEventListener('click', ({ target }) => {
@@ -464,7 +471,6 @@ export default class StoryMapControl extends IDEE.Control {
       position = (position >= speed.length - 1) ? 0 : position + 1;
       if (position !== 0) {
         // eslint-disable-next-line no-param-reassign
-        target.style = 'width: 23px';
         target.setAttribute('speed', (this.delay / 1000) / speed[position].value);
         document.querySelector('#navStep').style = 'margin-left: 5px;';
       } else {
@@ -530,18 +536,6 @@ export default class StoryMapControl extends IDEE.Control {
     super.deactivate();
   }
 
-  /**
-   * This function gets activation button
-   *
-   * @public
-   * @function
-   * @param {HTML} html of control
-    * @api
-    */
-  getActivationButton(html) {
-    return html.querySelector('.m-storymap button');
-  }
-
   handleMovil() {
     if (document.querySelector('.m-plugin-storymap.opened')) {
       document.querySelectorAll('.m-panel').forEach((p) => {
@@ -554,7 +548,7 @@ export default class StoryMapControl extends IDEE.Control {
       document.querySelectorAll('.m-panel').forEach((p) => {
         if (!p.classList.contains('m-plugin-storymap')) {
         // eslint-disable-next-line no-param-reassign
-          p.style.display = 'block';
+          p.style.display = 'flex';
         }
       });
     }

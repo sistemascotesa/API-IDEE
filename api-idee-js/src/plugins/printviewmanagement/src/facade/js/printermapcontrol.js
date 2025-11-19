@@ -22,7 +22,8 @@ import defaultTemplate from '../../templates/defaultTemplate';
 
 const ID_TITLE = '#m-printermap-title';
 const ID_FORMAT_SELECT = '#m-printermap-format';
-const ID_CUSTOM_TEMPLATE = '#m-printermap-customTemplate';
+const ID_TEMPLATE_UPLOAD_BUTTON = '#m-printermap-upload-button';
+const ID_CUSTOM_TEMPLATE = '#m-printermap-customize-button';
 const ID_PRINTERMAP_BUTTON = '#m-printviewmanagement-printermap';
 const ID_PRINTERMAP_CONTROL = '#m-printviewmanagement-controls';
 const ID_TEMPLATE_UPLOAD = '#m-printermap-template-upload';
@@ -655,13 +656,18 @@ export default class PrinterMapControl extends IDEE.Control {
    */
   addEvents(template) {
     const customizeTemplate = template.querySelector(ID_CUSTOM_TEMPLATE);
-    const templateFile = template.querySelector(ID_TEMPLATE_UPLOAD);
+    const templateFileButton = template.querySelector(ID_TEMPLATE_UPLOAD_BUTTON);
+    const templateFileInput = template.querySelector(ID_TEMPLATE_UPLOAD);
 
     customizeTemplate.addEventListener('click', () => {
       this.openTemplateEditor();
     });
 
-    templateFile.addEventListener('change', () => {
+    templateFileButton.addEventListener('click', () => {
+      templateFileInput.click();
+    });
+
+    templateFileInput.addEventListener('change', () => {
       this.setupTemplateUpload();
     });
   }

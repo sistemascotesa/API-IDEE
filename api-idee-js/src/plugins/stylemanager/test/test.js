@@ -554,7 +554,7 @@ const layerMunicipio = new IDEE.layer.WFS({
 map.addLayers([layerMunicipio]); window.layerMunicipio = layerMunicipio; // */
 
 const mp = new StyleManager({
-  position: 'TL', // 'TL' | 'TR' | 'BR' | 'BL'
+  position: 'right',
   collapsible: true,
   collapsed: true,
   // tooltip: 'TEST TOOLTIP StyleManager',

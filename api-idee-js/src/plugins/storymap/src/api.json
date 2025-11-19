@@ -12,10 +12,8 @@
       "name": "position",
       "position": 0,
       "possibleValues": [
-        "TL",
-        "TR",
-        "BR",
-        "BL"
+        "left",
+        "right"
       ]
     },
     {

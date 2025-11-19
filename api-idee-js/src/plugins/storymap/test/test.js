@@ -13,7 +13,7 @@ const map = IDEE.map({
 window.map = map;
 
 const mp = new StoryMap({
-  position: 'TR', // 'TL' | 'TR' | 'BR' | 'BL'
+  position: 'right',
   collapsible: true,
   collapsed: false,
   isDraggable: false,
