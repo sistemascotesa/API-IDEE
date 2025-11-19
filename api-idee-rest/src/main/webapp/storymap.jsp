@@ -41,10 +41,8 @@
     <div>
         <label for="selectPosicion">Selector de posición del plugin</label>
         <select name="position" id="selectPosicion">
-            <option value="TL">Arriba Izquierda (TL)</option>
-            <option value="TR" selected="selected">Arriba Derecha (TR)</option>
-            <option value="BR">Abajo Derecha (BR)</option>
-            <option value="BL">Abajo Izquierda (BL)</option>
+            <option value="left">Izquierda</option>
+            <option value="right" selected="selected">Derecha</option>
         </select>
 
         <label for="selectCollapsed">Selector collapsed</label>
@@ -67,7 +65,7 @@
         <label for="inputDelay">Parametro delay</label>
         <input type="text" id="inputDelay" value="2000" />
         
-        <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar">
+        <button name="eliminar" id="botonEliminar">Eliminar Plugin</button>
     </div>
 
     <div id="mapjs" class="m-container"></div>

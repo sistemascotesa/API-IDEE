@@ -2,10 +2,11 @@
  * @module IDEE/plugin/StoryMap
  */
 import '../assets/css/storymap';
-import '../assets/css/fonts';
 import api from '../../api';
 import StoryMapControl from './storymapcontrol';
 import myhelp from '../../templates/myhelp';
+import StoryMapJSON1 from '../../../test/StoryMapJSON1';
+import StoryMapJSON2 from '../../../test/StoryMapJSON2';
 import { getValue } from './i18n/language';
 
 import es from './i18n/es';
@@ -19,27 +20,10 @@ export default class StoryMap extends IDEE.Plugin {
    * @api
    */
   constructor(options = {}) {
-    super();
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map_ = null;
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls_ = [];
-
-    /**
-     * Position of the plugin
-     * @private
-     * @type {string}
-     */
-    this.position_ = options.position || 'TR';
+    super('storymap', {
+      position: options.position || 'right',
+      tooltip: options.tooltip || getValue('tooltip'),
+    });
 
     /**
      * This parameter set if the plugin is collapsed
@@ -56,20 +40,12 @@ export default class StoryMap extends IDEE.Plugin {
     this.metadata_ = api.metadata;
 
     /**
-     * Plugin tooltip
-     *
-     * @private
-     * @type {string}
-     */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
-
-    /**
     * JSON HTML
     *
     * @private
     * @type {string}
     */
-    this.content_ = options.content || {};
+    this.content_ = options.content || { es: StoryMapJSON2, en: StoryMapJSON1 };
 
     /**
        * Delay auto move scroll
@@ -133,28 +109,36 @@ export default class StoryMap extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    // TO DO Parametrizar indice y poner que sea un max de x minimo
-    this.control = new StoryMapControl(
+    this.map = map;
+    this.button = new IDEE.ui.Button(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+      svgPath: `plugins/${this.name}/images/icon.svg`,
+    });
+    window.map = map;
+    window.mapjs = map;
+    map.addButtons(this.button);
+    this.panel = new IDEE.ui.Panel(this.name, {
+      tooltip: this.tooltip,
+      position: IDEE.ui.position[this.position],
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
+      className: 'm-plugin-storymap',
+      collapsible: this.collapsible,
+      collapsed: this.collapsed_,
+      collapsedButtonClass: 'icon-capas2',
+    });
+    map.addPanels(this.panel);
+    this.controls.push(new StoryMapControl(
       this.content_[IDEE.language.getLang()],
       this.delay,
       this.indexInContent,
       this.isDraggable,
-    );
-    this.map_ = map;
-    window.map = map;
-    window.mapjs = map;
+    ));
+    this.panel.addControls(this.controls);
 
-    this.panel_ = new IDEE.ui.Panel('panelStoryMap', {
-      collapsible: this.collapsible,
-      position: IDEE.ui.position[this.position_],
-      collapsedButtonClass: 'icon-capas2',
-      className: 'm-plugin-storymap',
-      tooltip: this.tooltip_,
-      collapsed: this.collapsed_,
-    });
-    this.panel_.addControls([this.control]);
-    map.addPanels(this.panel_);
-
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
     // No funciona en el cervantes
     // map.on(IDEE.evt.ADDED_LAYER, () => {
     //   this.control.render();
@@ -163,37 +147,6 @@ export default class StoryMap extends IDEE.Plugin {
     // map.on(IDEE.evt.COMPLETED, () => {
     //   this.control.render();
     // });
-  }
-
-  /**
-   * This function returns the position
-   *
-   * @public
-   * @return {string}
-   * @api
-   */
-  get position() {
-    return this.position_;
-  }
-
-  /**
-   * Name of the plugin
-   *
-   * @getter
-   * @function
-   */
-  get name() {
-    return 'storymap';
-  }
-
-  /**
-   * Collapsed parameter
-   *
-   * @getter
-   * @function
-   */
-  get collapsed() {
-    return this.panel_.isCollapsed();
   }
 
   /**
@@ -249,8 +202,8 @@ export default class StoryMap extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map_.removeControls(this.control);
-    [this.map_, this.control, this.panel_] = [null, null, null];
+    this.map.removeControls(this.control);
+    [this.map, this.control, this.panel] = [null, null, null];
   }
 
   /**
