@@ -47,6 +47,7 @@
     width: calc(100% - 128px);
     height: calc(100% - 72px) !important;
     top: 0;
+    padding: .5em 0;
     left: 64px;
     height: max-content;
 
