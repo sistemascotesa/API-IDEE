@@ -85,13 +85,16 @@ class Control extends Base {
         this.fire(EventType.ADDED_TO_MAP);
       });
     } else { // view is an HTML or text
+      this.manageActivation(view);
+
       if (parent instanceof Plugin) {
         parent.addControlToPlugin(this);
       } else {
+        // eslint-disable-next-line no-console
+        console.log(impl);
         impl.addTo(parent, view);
       }
 
-      this.manageActivation(view);
       this.fire(EventType.ADDED_TO_MAP);
     }
   }

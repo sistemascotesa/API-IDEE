@@ -157,6 +157,11 @@
     left: 0;
     width: 100%;
     min-height: 72px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5em;
 }
 
 .m-plugin-panel {
