@@ -123,6 +123,7 @@ export default class PrintViewManagementControl extends IDEE.Control {
       this.selectElementHTML();
       this.addEvent();
       this.defaultOpenControl_(html);
+      this.addSvgIcons(html);
       success(html);
     });
   }
@@ -183,6 +184,12 @@ export default class PrintViewManagementControl extends IDEE.Control {
       this.deactive(html, 'georefImageEpsg');
       this.georefImageEpsgControl.active(html);
     }
+  }
+
+  addSvgIcons(html) {
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'printermap', html.querySelector('#m-printviewmanagement-printermap'));
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'georefimage', html.querySelector('#m-printviewmanagement-georefImage'));
+    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'georefimageepsg', html.querySelector('#m-printviewmanagement-georefImageEpsg'));
   }
 
   /**

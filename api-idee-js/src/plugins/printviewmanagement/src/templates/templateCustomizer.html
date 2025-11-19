@@ -1,94 +1,78 @@
-<div class="m-customize-template" id="m-customize-template">
-  <div class="m-customize-template-left">
-    <form class="m-customize-template-form">
-      <fieldset>
-      <legend>{{translations.mapElements}}</legend>
-      {{#each templateElements}}
-        <div class="m-customize-template-option">
-          <label class="m-custom-checkbox">
+<div class="m-templateCustomizer-container" id="m-customize-template">
+  <div class="m-templateCustomizer-left-wrapper d-flex">
+    <form class="m-customize-template-form d-flex-column">
+      <div class="m-templateCustomizer-option template-option">
+        <span>{{translations.mapElements}}</span>
+        {{#each templateElements}}
+          <label class="d-flex">
             <input type="checkbox" id="m-show-{{this.id}}" name="m-show-{{this.id}}" checked>
-            <span class="m-checkmark"></span>
-            <span class="m-label-text">{{this.label}}</span>
+            <span>{{this.label}}</span>
           </label>
-        </div>
-      {{/each}}
-    </fieldset>
+        {{/each}}
+      </div>
 
-      <fieldset>
-        <legend>{{translations.mapOrientation}}</legend>
-        <div class="m-customize-template-option">
-          <label class="m-custom-radio">
-            <input type="radio" name="map-orientation" value="vertical">
-            <span class="m-radiomark"></span>
-            <span class="m-label-text">{{translations.vertical}}</span>
-          </label>
-        </div>
-        <div class="m-customize-template-option">
-          <label class="m-custom-radio">
-            <input type="radio" name="map-orientation" value="horizontal" checked>
-            <span class="m-radiomark"></span>
-            <span class="m-label-text">{{translations.horizontal}}</span>
-          </label>
-        </div>
-      </fieldset>
+      <div class="m-templateCustomizer-option template-orientation">
+        <span>{{translations.mapOrientation}}</span>
+        <label class="d-flex">
+          <input type="radio" name="map-orientation" value="vertical">
+          <span>{{translations.vertical}}</span>
+        </label>
+        <label class="d-flex">
+          <input type="radio" name="map-orientation" value="horizontal" checked>
+          <span>{{translations.horizontal}}</span>
+        </label>
+      </div>
 
-      <fieldset>
-        <legend>{{translations.layout}}</legend>
-        <div class="m-customize-template-option">
-          <select id="template-layout">
-            {{#each layoutOptions}}
-              <option value="{{this.value}}" {{#if default}} selected{{/if}}>{{this.label}}</option>
-            {{/each}}
-          </select>
-        </div>
-      </fieldset>
-      
-      <fieldset>
-        <legend>{{translations.scale}}</legend>
-        <div class="m-customize-template-option">
-          <input type="text" id="template-scale" value="1:{{defaultScale}}">
-        </div>
-      </fieldset>
-      
-      <fieldset>
-        <legend>{{translations.epsg}}</legend>
-        <div class="m-customize-template-option m-customize-template-select-editable">
-          <!-- Deshabilitado hasta que se arregle la reproyección de capas -->
-          <input
-            type="text"
-            id="epsg-selected"
-            class="customize-template-input-select"
-            name="epsg-selected"
-            value="{{defaultProjection}}"
-            aria-label="{{translations.select_srs}}"
-            title="{{translations.select_srs}}"
-            tabindex="{{order}}"
-            autocomplete="off"
-            readonly="readonly"
-            disabled
-          />
-          <ul title="{{translations.select_srs}}" id="m-customize-template-srs-selector" class="m-customize-template-srs-selector">
-            <li><a href="#" value="default" tabindex="-1" disabled>{{translations.choose_create_epsg}}</a></li>
-            {{#each projectionsOptions}}
-              <li><a href="#" value="{{this.codes.[0]}}">{{this.codes.[0]}}</a></li>
-            {{/each}}
-          </ul>
-        </div>
-      </fieldset>
-      
-      <fieldset>
-        <legend>{{translations.dpi}}</legend>
-        <div class="m-customize-template-option">
-          <select id="template-dpi">
-            {{#each dpiOptions}}
-              <option value="{{this}}" {{#if default}} selected{{/if}}>{{this}}</option>
-            {{/each}}
-          </select>
-        </div>
-      </fieldset>
+      <div class="m-templateCustomizer-option template-layout">
+        <label for="template-layout">{{translations.layout}}</label>
+        <select id="template-layout">
+          {{#each layoutOptions}}
+            <option value="{{this.value}}" {{#if default}} selected{{/if}}>{{this.label}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <div class="m-templateCustomizer-option template-scale">
+        <label for="template-scale">{{translations.scale}}</label>
+        <input type="text" id="template-scale" value="1:{{defaultScale}}">
+      </div>
+
+      <div class="m-templateCustomizer-option template-srs">
+        <!-- Deshabilitado hasta que se arregle la reproyección de capas -->
+        <label for="epsg-selected">{{translations.select_srs}}</label>
+        <input
+          type="text"
+          id="epsg-selected"
+          class="m-templateCustomizer-input-srs"
+          name="epsg-selected"
+          value="{{defaultProjection}}"
+          aria-label="{{translations.select_srs}}"
+          title="{{translations.select_srs}}"
+          tabindex="{{order}}"
+          autocomplete="off"
+          readonly="readonly"
+          disabled
+        />
+        <ul title="{{translations.select_srs}}" id="m-customize-template-srs-selector" class="m-templateCustomizer-srs-list">
+          <li><a href="#" value="default" tabindex="-1" disabled>{{translations.choose_create_epsg}}</a></li>
+          {{#each projectionsOptions}}
+            <li><a href="#" value="{{this.codes.[0]}}">{{this.codes.[0]}}</a></li>
+          {{/each}}
+        </ul>
+      </div>
+
+      <div class="m-templateCustomizer-option template-dpi">
+        <label for="template-dpi">{{translations.dpi}}</label>
+        <select id="template-dpi">
+          {{#each dpiOptions}}
+            <option value="{{this}}" {{#if default}} selected{{/if}}>{{this}}</option>
+          {{/each}}
+        </select>
+      </div>
     </form>
+    <button id="m-templateCustomizer-download-button" class="templateDownload">{{translations.apply}}</button>
   </div>
-  <div class="m-customize-template-right-wrapper">
-    <div class="m-customize-template-right" id="m-customize-template-right"></div>
+  <div class="m-templateCustomizer-right-wrapper">
+    <div class="m-templateCustomizer-map-preview" id="m-customize-template-right"></div>
   </div>
 </div>

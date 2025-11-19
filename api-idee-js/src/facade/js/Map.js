@@ -118,7 +118,14 @@ class Map extends Base {
     super();
 
     this.createPanels(params.container);
-    const impl = new MapImpl(this.mapPanel, this, dpi, opts, viewVendorOptions);
+
+    let mapContainerElement = this.mapPanel;
+    /* global HTMLElement */
+    if (userParameters.containerTemplate instanceof HTMLElement) {
+      mapContainerElement = userParameters.containerTemplate;
+    }
+
+    const impl = new MapImpl(mapContainerElement, this, dpi, opts, viewVendorOptions);
     this.setImpl(impl);
 
     // checks if the param is null or empty

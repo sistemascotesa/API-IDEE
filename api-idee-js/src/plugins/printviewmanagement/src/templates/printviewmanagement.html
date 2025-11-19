@@ -1,19 +1,17 @@
-<div aria-label="Plugin View Management" role="menuitem" id="div-contenedor-printviewmanagement" class="m-control m-container m-printviewmanagement">
-     <!-- Título del plugin -->
-    <header role="heading" tabindex="0" id="m-printviewmanagement-title" class="m-printviewmanagement-title">{{translations.headertitle}}</header>
+<div aria-label="Plugin View Management" role="menuitem" id="div-contenedor-printviewmanagement" class="m-plugin-panel-content m-printviewmanagement">
 
     <!-- Contenedor de controles -->
-    <section id="m-printviewmanagement-previews" class="m-printviewmanagement-previews">
+    <ul id="m-printviewmanagement-previews" class="m-api-idee-tabs-container">
         {{#if printermap}}
-        <button tabindex="0" id="m-printviewmanagement-printermap" title="{{translations.printermap}}" class="printviewmanagement-icon-flecha-historial"></button>
+        <li tabindex="0" id="m-printviewmanagement-printermap" title="{{translations.printermap}}" class="m-api-idee-tab printviewmanagement-icon-flecha-historial"></li>
         {{/if}}
         {{#if georefImage}}
-        <button tabindex="0" id="m-printviewmanagement-georefImage" title="{{translations.georefImage}}" class="printviewmanagement-icon-zoom-extension"></button>
+        <li tabindex="0" id="m-printviewmanagement-georefImage" title="{{translations.georefImage}}" class="m-api-idee-tab printviewmanagement-icon-zoom-extension"></li>
         {{/if}}
         {{#if georefImageEpsg}}
-        <button tabindex="0" id="m-printviewmanagement-georefImageEpsg" title="{{translations.tooltipGeorefImageEpsg}}" class="printviewmanagement-georefImageEpsg"></button>
+        <li tabindex="0" id="m-printviewmanagement-georefImageEpsg" title="{{translations.tooltipGeorefImageEpsg}}" class="m-api-idee-tab printviewmanagement-georefImageEpsg"></li>
         {{/if}}
-    </section>
+    </ul>
 
      <!-- Contenedor de controles -->
     <section id="m-printviewmanagement-controls" class="m-printviewmanagement-controls"></section>

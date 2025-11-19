@@ -13,9 +13,10 @@ const ID_TEMPLATE_INPUT_SRS = '#epsg-selected';
 const ID_TEMPLATE_SRS_SELECTOR = '#m-customize-template-srs-selector';
 const ID_MAP_CONTAINER_TEMPLATE = '#imagen-mascara';
 const MAP_CONTAINER_TEMPLATE = 'imagen-mascara';
-const CLASS_MAP_CONTAINER = '.m-customize-template-right';
-const MAP_CONTAINER = 'm-customize-template-right';
+const CLASS_MAP_CONTAINER = '.m-templateCustomizer-map-preview';
+const MAP_CONTAINER = 'm-templateCustomizer-map-preview';
 const ID_CONTAINER_DEFAULT_TEMPLATE = '#api-idee-template-container';
+const ID_DOWNLOAD_TEMPLATE_BUTTON = '#m-templateCustomizer-download-button';
 
 export default class TemplateCustomizer extends IDEE.Control {
   /**
@@ -242,49 +243,12 @@ export default class TemplateCustomizer extends IDEE.Control {
     document.querySelector('.m-dialog>div.m-modal>div.m-content').style.minHeight = '80vh';
     document.querySelector('.m-dialog>div.m-modal>div.m-content').style.maxWidth = '80vw';
     document.querySelector('.m-dialog>div.m-modal>div.m-content').style.maxHeight = 'fit-content';
-    document.querySelector('.m-dialog>div.m-modal>div.m-content').style.padding = '0';
-    document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
 
     const buttonContainer = document.querySelector('div.m-dialog.info div.m-button');
-
     const closeButton = buttonContainer.querySelector('button');
     closeButton.innerHTML = getValue('close');
-    closeButton.style.width = '75px';
-    closeButton.style.padding = '8px';
-    closeButton.style.backgroundColor = '#FFF';
-    closeButton.style.color = '#71a7d3';
-    closeButton.style.border = '1px solid #71a7d3';
-    closeButton.style.margin = '10px';
-    closeButton.style.borderRadius = '4px';
-    closeButton.style.transition = 'background-color 0.3s ease';
-    closeButton.addEventListener('mouseover', () => {
-      closeButton.style.backgroundColor = '#1470dbFF';
-      closeButton.style.color = '#FFF';
-    });
-    closeButton.addEventListener('mouseout', () => {
-      closeButton.style.backgroundColor = '#FFF';
-      closeButton.style.color = '#71a7d3';
-    });
 
-    const applyButton = document.createElement('button');
-    applyButton.innerHTML = getValue('apply');
-    applyButton.style.width = '75px';
-    applyButton.style.padding = '8px';
-    applyButton.style.backgroundColor = '#71a7d3';
-    applyButton.style.margin = '10px';
-    applyButton.style.borderRadius = '4px';
-    applyButton.style.transition = 'background-color 0.3s ease';
-    applyButton.addEventListener('mouseover', () => {
-      applyButton.style.backgroundColor = '#1470dbFF';
-    });
-    applyButton.addEventListener('mouseout', () => {
-      applyButton.style.backgroundColor = '#71a7d3';
-    });
-
-    buttonContainer.appendChild(applyButton);
-    buttonContainer.insertBefore(closeButton, applyButton);
-
-    applyButton.addEventListener('click', () => {
+    document.querySelector(ID_DOWNLOAD_TEMPLATE_BUTTON).addEventListener('click', () => {
       const config = this.returnTemplateConfig();
       this.toggleEvent(config);
     });
@@ -349,12 +313,17 @@ export default class TemplateCustomizer extends IDEE.Control {
    */
   createPreviewMap() {
     const imagenMascara = document.querySelector(ID_MAP_CONTAINER_TEMPLATE);
-    const containerId = imagenMascara ? MAP_CONTAINER_TEMPLATE : MAP_CONTAINER;
+    const containerTemplate = imagenMascara || document.querySelector(`.${MAP_CONTAINER}`);
     this.previewMap = new IDEE.Map({
-      container: containerId,
+      container: containerTemplate.id,
       zoom: this.map.getImpl().getZoom(),
       center: Object.values(this.map.getImpl().getCenter()),
+      containerTemplate,
     });
+
+    const mapPanel = containerTemplate.querySelector('#mapPanel');
+    const viewport = containerTemplate.querySelector('.ol-viewport');
+    mapPanel.appendChild(viewport);
 
     this.previewMap.addLayers(this.map.getLayers().map((layer) => layer.clone()));
     this.previewMap.getLayers().forEach((layer) => {
@@ -1152,7 +1121,7 @@ export default class TemplateCustomizer extends IDEE.Control {
     const scaleFactor = this.dpi / 72;
     const newWidth = Math.round(originalSize[0] * scaleFactor);
     const newHeight = Math.round(originalSize[1] * scaleFactor);
-    const maskImageContainer = document.querySelector(`#${MAP_CONTAINER_TEMPLATE}`);
+    const maskImageContainer = document.querySelector(`${ID_MAP_CONTAINER_TEMPLATE} #mapPanel`) || document.querySelector(`.${MAP_CONTAINER} #mapPanel`);
     const originalMapViewport = map.getViewport();
     const parentNode = originalMapViewport.parentNode;
 
@@ -1221,9 +1190,9 @@ export default class TemplateCustomizer extends IDEE.Control {
     img.style.width = '100%';
     img.style.height = '100%';
     const imagenMascara = document.querySelector(ID_MAP_CONTAINER_TEMPLATE);
-    const containerId = imagenMascara ? MAP_CONTAINER_TEMPLATE : MAP_CONTAINER;
-    const maskImageContainer = document.querySelector(`#${containerId}`);
-    maskImageContainer.innerHTML = '';
-    maskImageContainer.appendChild(img);
+    const containerId = imagenMascara || document.querySelector(`.${MAP_CONTAINER}`);
+    const mapPanel = containerId.querySelector('#mapPanel');
+    mapPanel.innerHTML = '';
+    mapPanel.appendChild(img);
   }
 }
