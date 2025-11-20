@@ -5,9 +5,12 @@ import Control from 'IDEE/control/Control';
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
+  // controls: ['rotate'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
 });
+
+map.addControls(['rotate']);
 
 window.mapa = map;
 
@@ -42,5 +45,3 @@ map.addPlugin(new Plugin('MyPluginLeft', {
 // const control2 = new Control('MyControl2', {
 //   position: 'right',
 // });
-
-map.addControls(['rotate']);
