@@ -126,10 +126,11 @@ button:disabled:hover {
 }
 
 button.secondary {
+    width: 32px;
     height: 32px;
     color: var(--idee-color-primary);
     background-color: #e8ecef;
-    border: 1px solid var(--idee-color-primary);
+    border: none;
     border-radius: 4px;   
     cursor: pointer;
     font-family: 'Roboto', 'sans-serif';

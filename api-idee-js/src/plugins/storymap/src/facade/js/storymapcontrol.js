@@ -225,22 +225,20 @@ export default class StoryMapControl extends IDEE.Control {
 
     const pointers = html.querySelectorAll('#navPointer > svg');
     pointers.forEach((pointer, i) => {
-      if (i !== 0 && i !== 1) {
-        pointer.addEventListener('click', ({ target }) => {
-          this.resetScroll();
-          this.disableCap(target.getAttribute('index'), this.capIndex('#contentStoryMap', '.chapters'), true);
-          this.createPointerSteps(target.getAttribute('index'));
-          this.effectPointer(target.getAttribute('index'), '#pointerNav', 'navPointer');
-          this.effectPointer(0, '#pointStep', 'navStep');
-        });
-        pointer.children[0].addEventListener('click', ({ target }) => {
-          this.resetScroll();
-          this.disableCap(target.getAttribute('index'), this.capIndex('#contentStoryMap', '.chapters'), true);
-          this.createPointerSteps(target.getAttribute('index'));
-          this.effectPointer(target.getAttribute('index'), '#pointerNav', 'navPointer');
-          this.effectPointer(0, '#pointStep', 'navStep');
-        });
-      }
+      pointer.addEventListener('click', ({ target }) => {
+        this.resetScroll();
+        this.disableCap(target.getAttribute('index'), this.capIndex('#contentStoryMap', '.chapters'), true);
+        this.createPointerSteps(target.getAttribute('index'));
+        this.effectPointer(target.getAttribute('index'), '#pointerNav', 'navPointer');
+        this.effectPointer(0, '#pointStep', 'navStep');
+      });
+      pointer.children[0].addEventListener('click', ({ target }) => {
+        this.resetScroll();
+        this.disableCap(target.getAttribute('index'), this.capIndex('#contentStoryMap', '.chapters'), true);
+        this.createPointerSteps(target.getAttribute('index'));
+        this.effectPointer(target.getAttribute('index'), '#pointerNav', 'navPointer');
+        this.effectPointer(0, '#pointStep', 'navStep');
+      });
     });
 
     return html;

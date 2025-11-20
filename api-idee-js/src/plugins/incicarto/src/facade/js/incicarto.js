@@ -154,7 +154,7 @@ export default class Incicarto extends IDEE.Plugin {
       this.errProducts_ = this.controllist_[2];
     }
 
-    this.control_ = new IncicartoControl({
+    this.control = new IncicartoControl({
       wfszoom: this.wfszoom_,
       controllist: this.controllist_,
       interfazmode: this.interfazmode_,
@@ -169,18 +169,18 @@ export default class Incicarto extends IDEE.Plugin {
       isDraggable: this.isDraggable,
     });
 
-    this.controls.push(this.control_);
+    this.controls.push(this.control);
     this.panel.addControls(this.controls);
 
     this.map.on(IDEE.evt.ADDED_LAYER, () => {
-      if (this.control_ !== null) {
-        this.control_.renderLayers();
+      if (this.control !== null) {
+        this.control.renderLayers();
       }
     });
 
     this.map.on(IDEE.evt.REMOVED_LAYER, () => {
-      if (this.control_ !== null) {
-        this.control_.renderLayers();
+      if (this.control !== null) {
+        this.control.renderLayers();
       }
     });
     this.button.panel = this.panel;
@@ -230,9 +230,9 @@ export default class Incicarto extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.control_.resetInteractions();
-    this.map.removeControls([this.control_]);
-    [this.map, this.control_, this.panel] = [null, null, null];
+    this.control.resetInteractions();
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
   }
 
   /**

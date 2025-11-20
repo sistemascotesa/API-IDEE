@@ -72,12 +72,6 @@
   padding: 16px;
 }
 
-.m-incicarto-method-types button {
-  border: none;
-  color: var(--idee-color-primary-dark);
-  width: 32px;
-}
-
 .m-incicarto-method-types button svg {
   width: 100%;
   height: 100%;

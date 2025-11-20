@@ -13,7 +13,6 @@
     <title>Visor base</title>
     <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
     <link href="plugins/stylemanager/stylemanager.ol.min.css" rel="stylesheet" />
-    <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
     <link href="plugins/vectors/vectors.ol.min.css" rel="stylesheet" />
     <style type="text/css">
         html,
@@ -72,7 +71,6 @@
     <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="js/configuration.js"></script>
     <script type="text/javascript" src="plugins/stylemanager/stylemanager.ol.min.js"></script>
-    <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
     <script type="text/javascript" src="plugins/vectors/vectors.ol.min.js"></script>
     <%
             String[] jsfiles = PluginsManager.getJSFiles(parameterMap);

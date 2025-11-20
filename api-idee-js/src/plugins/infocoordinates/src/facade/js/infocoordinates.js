@@ -163,10 +163,8 @@ export default class Infocoordinates extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
-    this.map.removeControls([this.control_]);
-    this.control_.deactivate();
-    this.control_.removeLayerFeatures();
-    [this.control_, this.panel, this.map] = [null, null, null];
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
   }
 
   /**

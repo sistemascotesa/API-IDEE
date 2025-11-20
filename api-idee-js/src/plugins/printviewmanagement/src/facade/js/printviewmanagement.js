@@ -270,11 +270,8 @@ export default class PrintViewManagement extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map.removeControls(this.controls);
-    this.map = null;
-    this.controls = null;
-    this.panel = null;
-    this.name = null;
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
   }
 
   /**
