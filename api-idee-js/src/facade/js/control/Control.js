@@ -76,12 +76,12 @@ class Control extends Base {
    */
   addTo(parent) {
     this.parent = parent;
-    const impl = this.getImpl();
+    const controlImpl = this.getImpl();
     const view = this.createView(parent);
     if (view instanceof Promise) { // the view is a promise
       view.then((html) => {
         this.manageActivation(html);
-        impl.addTo(parent, html);
+        controlImpl.addTo(parent, html);
         this.fire(EventType.ADDED_TO_MAP);
       });
     } else { // view is an HTML or text
@@ -91,8 +91,8 @@ class Control extends Base {
         parent.addControlToPlugin(this);
       } else {
         // eslint-disable-next-line no-console
-        console.log(impl);
-        impl.addTo(parent, view);
+        console.log(controlImpl);
+        controlImpl.addTo(parent, view);
       }
 
       this.fire(EventType.ADDED_TO_MAP);

@@ -7,6 +7,8 @@ import buttonTemplate from 'templates/button';
 import * as Position from './position';
 import { isNullOrEmpty } from '../util/Utils';
 import { compileSync as compileTemplate } from '../util/Template';
+import * as Dialog from '../dialog';
+import Exception from '../exception/exception';
 import MObject from '../Object';
 
 /**
@@ -95,10 +97,46 @@ class Button extends MObject {
         });
     }
 
-    if (this.position === Position.LEFT) {
-      map.leftButtons.appendChild(this.element);
-    } else {
-      map.rightButtons.appendChild(this.element);
+    try {
+      switch (this.position) {
+        case Position.LEFT:
+          map.leftButtons.appendChild(this.element);
+          break;
+
+        case Position.RIGHT:
+          map.rightButtons.appendChild(this.element);
+          break;
+
+          /*
+        case Position.DOWN:
+          map.downPanel.appendChild(this.element);
+          break;
+
+        case Position.TL:
+          map.upPanelTopLeft.appendChild(this.element);
+          break;
+
+        case Position.TR:
+          map.upPanelTopRight.appendChild(this.element);
+          break;
+
+        case Position.BL:
+          map.upPanelBottomLeft.appendChild(this.element);
+          break;
+
+        case Position.BR:
+          map.upPanelBottomRight.appendChild(this.element);
+          break;
+        */
+
+        default:
+          Dialog.info(`Posición no soportada para el botón ${this.name}`);
+          break;
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn(err);
+      Exception(`El botón "${this.name}",no se ha podido colocar`);
     }
 
     this.element.addEventListener('click', (evt) => {

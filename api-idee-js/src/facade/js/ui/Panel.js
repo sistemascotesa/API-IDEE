@@ -531,6 +531,8 @@ class Panel extends MObject {
    */
   _moveControlView(control) {
     const controlElem = control.getElement();
+    // eslint-disable-next-line no-console
+    console.log(this.element);
     if (!isNullOrEmpty(this.element)) {
       this.element.appendChild(controlElem);
     }

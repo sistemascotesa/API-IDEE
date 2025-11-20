@@ -5,7 +5,6 @@ import Control from 'IDEE/control/Control';
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
-  controls: ['rotate'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
 });
@@ -18,28 +17,30 @@ const pluginRight = new Plugin('MyPluginRight', {
   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
 });
 
-map.addPlugin(pluginRight);
-
-const pluginRight2 = new Plugin('MyPluginRight2', {
-  tooltip: 'GitHub',
-  position: 'right',
-  svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
-});
-
-map.addPlugin(pluginRight2);
-
-const pluginLeft = new Plugin('MyPluginLeft', {
-  tooltip: 'GitHub',
-  position: 'left',
-  svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
-});
-
-map.addPlugin(pluginLeft);
-
 const control1 = new Control('MyControl1', {
   tooltip: 'spain',
-  position: 'topLeft',
+  position: 'down',
   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg',
 });
 
+map.addPlugin(pluginRight);
+
 pluginRight.addControl(control1);
+
+map.addPlugin(new Plugin('MyPluginRight2', {
+  tooltip: 'GitHub',
+  position: 'right',
+  svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
+}));
+
+map.addPlugin(new Plugin('MyPluginLeft', {
+  tooltip: 'GitHub',
+  position: 'left',
+  svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
+}));
+
+// const control2 = new Control('MyControl2', {
+//   position: 'right',
+// });
+
+map.addControls(['rotate']);

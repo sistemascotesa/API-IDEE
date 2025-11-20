@@ -4472,19 +4472,23 @@ class Map extends Base {
     this.upPanel.id = 'upPanel';
     this.upPanel.classList.add('m-api-idee-up-panel');
 
-    this.upPanelTopLeft = document.createElement('div');
+    this.upPanelTopLeft = document.createElement('up-panel-top-left');
+    this.upPanelTopLeft.id = 'upPanelTopLeft';
     this.upPanelTopLeft.classList.add('m-api-idee-up-panel-top-left');
     this.upPanel.appendChild(this.upPanelTopLeft);
 
-    this.upPanelTopRight = document.createElement('div');
+    this.upPanelTopRight = document.createElement('up-panel-top-right');
+    this.upPanelTopRight.id = 'upPanelTopRight';
     this.upPanelTopRight.classList.add('m-api-idee-up-panel-top-right');
     this.upPanel.appendChild(this.upPanelTopRight);
 
-    this.upPanelBottomLeft = document.createElement('div');
+    this.upPanelBottomLeft = document.createElement('up-panel-bottom-left');
+    this.upPanelBottomLeft.id = 'upPanelBottomLeft';
     this.upPanelBottomLeft.classList.add('m-api-idee-up-panel-bottom-left');
     this.upPanel.appendChild(this.upPanelBottomLeft);
 
-    this.upPanelBottomRight = document.createElement('div');
+    this.upPanelBottomRight = document.createElement('up-panel-bottom-right');
+    this.upPanelBottomRight.id = 'upPanelBottomRight';
     this.upPanelBottomRight.classList.add('m-api-idee-up-panel-bottom-right');
     this.upPanel.appendChild(this.upPanelBottomRight);
 
