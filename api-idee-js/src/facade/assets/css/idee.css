@@ -87,32 +87,32 @@
 
 .m-api-idee-center-panel-top-left,
 .m-api-idee-center-panel-bottom-left {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 0.5em;
-  pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 0.5em;
+    pointer-events: auto;
 }
 
 .m-api-idee-center-panel-top-right,
 .m-api-idee-center-panel-bottom-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-end;
-  gap: 0.5em;
-  pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 0.5em;
+    pointer-events: auto;
 }
 
 .m-api-idee-center-panel-bottom-left,
 .m-api-idee-center-panel-bottom-right {
-  justify-content: flex-end;
+    justify-content: flex-end;
 }
 
 /* Permitir que los controles no se encojan si hay muchos */
-.m-api-idee-center-panel > div > * {
-  flex-shrink: 0;
+.m-api-idee-center-panel>div>* {
+    flex-shrink: 0;
 }
 
 .m-api-idee-right-panel {
@@ -220,7 +220,7 @@ button.secondary {
     color: var(--idee-color-primary);
     background-color: #e8ecef;
     border: none;
-    border-radius: 4px;   
+    border-radius: 4px;
     cursor: pointer;
     font-family: 'Roboto', 'sans-serif';
     font-size: 14px;
@@ -645,6 +645,28 @@ div.m-control button[class^=g-cartografia-],
     height: 40px;
     border-radius: 50%;
     padding: 0;
+}
+
+.m-geosearch.collapsed>button.m-panel-btn:hover,
+.m-searchstreet.collapsed>button.m-panel-btn:hover,
+.m-searchstreetgeosearch.collapsed>button.m-panel-btn:hover,
+.m-attributetable.collapsed>button.m-panel-btn:hover,
+.m-tools.collapsed>button.m-panel-btn:hover,
+.m-edition.collapsed>button.m-panel-btn:hover,
+.m-printer.collapsed>button.m-panel-btn:hover,
+.m-layerswitcher.collapsed>button.m-panel-btn:hover,
+.ol-zoom>button:hover,
+div.m-control button[class*=" g-cartografia-"]:hover,
+div.m-control button[class^=g-cartografia-]:hover,
+.ol-overviewmap.ol-collapsed>button:hover,
+.ol-overviewmap>button:hover,
+.m-wmcselector-select:hover,
+.m-wmcselector-container:before:hover,
+.m-mouse-position:before:hover,
+.m-mouse-position:hover,
+.m-scale-container>.m-unit:before:hover,
+.m-scale-container {
+    color: var(--idee-color-primary-links) !important;
 }
 
 .m-left .m-panel.opened div.m-control button[class^=g-cartografia-] {

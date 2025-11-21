@@ -12,7 +12,7 @@ const map = Mmap({
 });
 
 const rotate = new Rotate({
-  position: 'down',
+  position: 'left',
 });
 
 map.addControls([

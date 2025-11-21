@@ -108,6 +108,6 @@ class Rotate extends Control {
  * @public
  * @api stable
  */
-Rotate.PANEL_ID = 'm-layerswitcher-panel';
+Rotate.PANEL_ID = 'm-rotate-panel';
 
 export default Rotate;

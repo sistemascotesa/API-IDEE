@@ -1,18 +1,19 @@
-.m-rotate-container {
-  top: 20px;
-  left: 600px;
+#m-rotate-button {
+  overflow: hidden;
+}
+
+#m-rotate-button::before {
+  overflow: hidden;
+}
+
+div.m-control.m-rotate-container {
+  overflow: hidden;
 }
 
 .m-left .m-panel.opened div.m-control.m-rotate-container button[class^=g-cartografia-] {
   color: var(--idee-color-primary-links) !important;
   background-color: var(--idee-color-primary-dark) !important;
   opacity: 1;
-}
-
-.m-areas>div.m-area>div.m-panel.opened.m-rotate {
-  background-color: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
 }
 
 .m-rotate-compass {
@@ -62,7 +63,7 @@
   font-size: 40px;
   background-color: white;
   border-radius: 40px;
-  color: #71a7d3;
+  color: var(--idee-color-primary);
 }
 
 .m-rotate-help-button {
@@ -70,7 +71,7 @@
   top: 50%;
   right: 0;
   transform: translateY(-50%);
-  background-color: #71a7d3;
+  background-color: var(--idee-color-primary);
   color: white;
   font-weight: bold;
   border: 2px solid white;
@@ -85,14 +86,14 @@
 }
 
 .m-rotate-help-button:hover {
-  background-color: #2d5e87;
+  background-color: var(--idee-color-primary);
 }
 
 .m-rotate-rotation-maker {
   position: absolute;
   width: 99px;
   height: 99px;
-  fill: #2d5e87;
+  fill: var(--idee-color-primary);
   display: none;
 }
 
