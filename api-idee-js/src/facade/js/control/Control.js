@@ -107,7 +107,7 @@ class Control extends Base {
       this.manageActivation(template);
       const parentContainer = parent.getToolsContainer(this.position);
       this.setParentContainer(parentContainer);
-      controlImpl.addTo(parent, template, parentContainer);
+      controlImpl.addTo(parent, template);
       this.parentContainer.appendChild(template);
     }
     this.fire(EventType.ADDED_TO_MAP);

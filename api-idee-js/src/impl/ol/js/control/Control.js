@@ -25,7 +25,6 @@ class Control extends OLControl {
      * @expose
      */
     this.facadeMap_ = null;
-    this.parentContainer = null;
   }
 
   /**
@@ -35,14 +34,12 @@ class Control extends OLControl {
    * @function
    * @param {IDEE.Map} map Mapa.
    * @param {HTML} template Plantilla del control.
-   * @param {HTML} parentContainer Plantilla del control.
    * @api stable
    * @export
    */
-  addTo(map, template, parentContainer) {
+  addTo(map, template) {
     this.facadeMap_ = map;
     this.element = template;
-    this.parentContainer = parentContainer;
     map.getMapImpl().addControl(this);
   }
 

@@ -37,8 +37,8 @@ class Rotate extends Control {
    * @param {HTML} parentContainer Plantilla del mapa que contiene este control.
    * @api stable
    */
-  addTo(map, element, parentContainer) {
-    super.addTo(map, element, parentContainer);
+  addTo(map, element) {
+    super.addTo(map, element);
     const olMap = map.getMapImpl();
     // panel que envuelve el control, no es padre
     this.panel = element;
