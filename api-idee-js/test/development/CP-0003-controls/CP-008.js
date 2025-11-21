@@ -19,6 +19,8 @@ map.addControls([
   rotate,
 ]);
 
+// map.removeControls(rotate);
+
 // rotate.destroy();
 
 const pluginRight = new Plugin('MyPluginRight', {
