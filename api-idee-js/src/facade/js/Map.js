@@ -2896,7 +2896,7 @@ class Map extends Base {
    * @public
    * @function
    * @param {string|Array<String>} controlsParam Controles de nombre de colección.
-   * @returns {Array<Control>} Matriz de retorno de controles.
+   * @returns {Array<Control> | Array<Plugin>} Matriz de retorno de controles.
    * @api
    */
   getControls(controlsParamVar) {
@@ -3217,16 +3217,7 @@ class Map extends Base {
     // gets the contros to remove
     let controls = this.getControls(controlsParam);
     controls = [].concat(controls);
-    if (controls.length > 0) {
-      // removes controls from their panels
-      controls.forEach((control) => {
-        if (!isNullOrEmpty(control.getPanel())) {
-          control.getPanel().removeControls(control);
-        }
-      });
-      // removes the controls
-      this.getImpl().removeControls(controls);
-    }
+    if (controls.length > 0) this.getImpl().removeControls(controls);
 
     return this;
   }
