@@ -13,7 +13,6 @@
     <title>Visor base</title>
     <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
     <link href="plugins/infocoordinates/infocoordinates.ol.min.css" rel="stylesheet" />
-    <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
     </link>
     <style type="text/css">
         html,
@@ -80,7 +79,7 @@
             <option value="txt" selected>txt</option>
             <option value="csv">csv</option>
         </select>
-        <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar">
+        <button name="eliminar" id="botonEliminar">Eliminar Plugin</button>
     </div>
 
     <div id="mapjs" class="m-container"></div>
@@ -88,7 +87,6 @@
     <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="js/configuration.js"></script>
     <script type="text/javascript" src="plugins/infocoordinates/infocoordinates.ol.min.js"></script>
-    <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
     <%
       String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
       for (int i = 0; i < jsfiles.length; i++) {
@@ -109,11 +107,6 @@
             minZoom: 4,
             center: [-467062.8225, 4683459.6216],
         });
-        let mp2 = new IDEE.plugin.ShareMap({
-            baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
-            position: "TR",
-        });
-        map.addPlugin(mp2);
 
         const selectPosicion = document.getElementById("selectPosicion");
         const inputDecimalGEOcoord = document.getElementById("inputDecimalGEOcoord");

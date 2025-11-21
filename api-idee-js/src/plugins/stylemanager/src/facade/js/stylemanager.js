@@ -126,8 +126,8 @@ export default class StyleManager extends IDEE.Plugin {
    * TODO
    */
   destroy() {
-    this.map.removeControls(this.controls);
-    [this.control, this.panel, this.map] = [null, null, null];
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
   }
 
   /**

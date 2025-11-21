@@ -22,7 +22,10 @@ export default class VectorsManagement extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super();
+    super('vectorsmanagement', {
+      position: options.position || 'right',
+      tooltip: options.tooltip || getValue('tooltip'),
+    });
 
     /**
      * Plugin name
@@ -36,7 +39,7 @@ export default class VectorsManagement extends IDEE.Plugin {
      * @private
      * @type {IDEE.Map}
      */
-    this.map_ = null;
+    this.map = null;
 
     /**
      * Button of the plugin
@@ -48,7 +51,7 @@ export default class VectorsManagement extends IDEE.Plugin {
     /**
      * Panel of the plugin
      * @private
-     * @type {IDEE.ui.Panel}
+     * @type {IDEE.ui.Panel}wq
      */
     this.panel = null;
 
@@ -188,11 +191,12 @@ export default class VectorsManagement extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.map_ = map;
+    this.map = map;
 
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
+      svgPath: `plugins/${this.name}/images/icon.svg`,
     });
     map.addButtons(this.button);
 
@@ -266,13 +270,8 @@ export default class VectorsManagement extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
-    this.map_.removeControls(this.controls);
-    this.map_ = null;
-    this.control_ = null;
-    this.controls = null;
-    this.panel = null;
-    this.name = null;
-    this.layerOpts = null;
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
   }
 
   /**

@@ -95,41 +95,8 @@
     text-align: justify;
 }
 
-#m-infocoordinates-buttonRemovePoint,
-#m-infocoordinates-copylatlon,
-#m-infocoordinates-copyxy,
-#m-infocoordinates-buttonRemoveAllPoints,
-#m-infocoordinates-buttonImportAllPoints,
-#m-infocoordinates-buttonCopyAllPoints,
-#m-infocoordinates-buttonDisplayAllPoints,
-#m-infocoordinates-help-icon {
-    border: none;
-    width: 32px;
-}
-
-#m-infocoordinates-buttonRemoveAllPoints:focus,
-#m-infocoordinates-buttonImportAllPoints:focus,
-#m-infocoordinates-buttonCopyAllPoints:focus,
-#m-infocoordinates-buttonDisplayAllPoints:focus,
-#m-infocoordinates-buttonRemovePoint:focus,
-#m-infocoordinates-copylatlon:focus,
-#m-infocoordinates-copyxy:focus {
-    outline: none !important;
-}
-
 .m-infocoordinates-content {
     max-height: 305px;
-}
-
-#m-infocoordinates-buttonRemovePoint:hover,
-#m-infocoordinates-copylatlon:hover,
-#m-infocoordinates-copyxy:hover,
-#m-infocoordinates-buttonRemoveAllPoints:hover,
-#m-infocoordinates-buttonImportAllPoints:hover,
-#m-infocoordinates-buttonCopyAllPoints:hover,
-#m-infocoordinates-buttonDisplayAllPoints:hover {
-    color: #f1f3f5;
-    transition: 0.3s;
 }
 
 .m-infocoordinates-div-buttonRemoveAllPoints {

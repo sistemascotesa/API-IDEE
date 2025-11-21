@@ -223,7 +223,6 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
   active(html) {
     this.html_ = html;
     const ignsearchactive = this.html_.querySelector(ID_IGN_SEARCH).classList.contains('activated');
-    this.deactive();
     if (!ignsearchactive) {
       this.html_.querySelector(ID_IGN_SEARCH).classList.add('activated');
       const panel = IDEE.template.compileSync(template, {

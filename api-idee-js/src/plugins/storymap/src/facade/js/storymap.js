@@ -139,14 +139,6 @@ export default class StoryMap extends IDEE.Plugin {
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
-    // No funciona en el cervantes
-    // map.on(IDEE.evt.ADDED_LAYER, () => {
-    //   this.control.render();
-    // });
-
-    // map.on(IDEE.evt.COMPLETED, () => {
-    //   this.control.render();
-    // });
   }
 
   /**
@@ -202,8 +194,8 @@ export default class StoryMap extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map.removeControls(this.control);
-    [this.map, this.control, this.panel] = [null, null, null];
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
   }
 
   /**

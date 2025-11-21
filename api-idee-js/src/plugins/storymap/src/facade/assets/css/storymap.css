@@ -97,7 +97,7 @@
   justify-content: flex-start;
   gap: 16px;
   padding-left: 1rem;
-  color: #1470db;
+  color: var(--idee-color-links);
 }
 
 .m-storymap-chapters li {
@@ -108,7 +108,7 @@
 }
 
 .m-storymap-chapters li:hover {
-  color: #1D5A9E;
+  color: var(--idee-color-primary-dark);
 }
 
 .chapters {
@@ -126,18 +126,18 @@
 
 .pointerEffect {
   fill: #FFFFFF;
-  stroke: #1D5A9E;
+  stroke: var(--idee-color-primary-dark);
   stroke-width: 1px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .pointerEffect.active {
-  fill: #1D5A9E;
-  stroke: #1D5A9E;
+  fill: var(--idee-color-primary-dark);
+  stroke: var(--idee-color-primary-dark);
 }
 
 .pointerEffect:hover {
-  fill: #1470DB;
-  stroke: #1470DB;
+  fill: var(--idee-color-links);
+  stroke: var(--idee-color-links);
 }
