@@ -500,7 +500,7 @@ class Map extends Base {
       });
       const panel = new Panel(Attributions.NAME, {
         collapsible: true,
-        position: Position[position] || Position.BR,
+        position: Position[position] || Position.CBR,
         className: 'm-attributions',
         collapsedButtonClass: 'g-cartografia-comentarios',
         tooltip: tooltip || getValue('attributionsControl').tooltip,
@@ -2925,28 +2925,27 @@ class Map extends Base {
    *
    * @public
    * @function
-   * @param {string|Object|Array<String>|Array<Object>} controlsParam
+   * @param {string|Object|Array<String>|Array<Object>} controlTypeObj
    * Colección o nombre de los controles.
    * @returns {Map} Devuelve el estado del mapa.
    * @api
    */
-  addControls(controlsParamVar) {
-    let controlsParam = controlsParamVar;
-    if (!isNullOrEmpty(controlsParam)) {
+  addControls(controlTypeObj) {
+    let controlObj = controlTypeObj;
+    if (!isNullOrEmpty(controlObj)) {
       // checks if the implementation can manage layers
-      if (isUndefined(MapImpl.prototype.addControls)) {
-        Exception(getValue('exception').addcontrols_method);
-      }
+      if (isUndefined(MapImpl.prototype.addControls)) Exception(getValue('exception').addcontrols_method);
 
       // parses parameters to Array
-      if (!isArray(controlsParam)) {
-        controlsParam = [controlsParam];
-      }
+      if (!isArray(controlObj)) controlObj = [controlObj];
 
       // gets the parameters as Control to add them
       const controls = [];
-      // for (let i = 0, ilen = controlsParam.length; i < ilen; i++) {
-      controlsParam.forEach((controlParamVar) => {
+      const throwControlNotFoundException = (controlParam) => {
+        const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);
+        Dialog.error(`El control ${controlParam} no está definido. Consulte los controles disponibles <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
+      };
+      controlObj.forEach((controlParamVar) => {
         let controlParam = controlParamVar;
         let control;
         let panel;
@@ -2967,7 +2966,7 @@ class Map extends Base {
                   panel = new Panel('map-info', {
                     collapsible: false,
                     className: 'm-map-info',
-                    position: Position.BR,
+                    position: Position.CBR,
                     order: (paramsScale.order) ? paramsScale.order : null,
                   });
                   panel.on(EventType.ADDED_TO_MAP, (html) => {
@@ -2983,7 +2982,7 @@ class Map extends Base {
                 panel = new Panel(ScaleLine.NAME, {
                   collapsible: false,
                   className: 'm-scaleline',
-                  position: Position.BL,
+                  position: Position.CBL,
                   tooltip: 'Línea de escala',
                 });
                 panel.on(EventType.ADDED_TO_MAP, (html) => {
@@ -2997,7 +2996,7 @@ class Map extends Base {
                 panel = new Panel(Panzoombar.NAME, {
                   collapsible: false,
                   className: 'm-panzoombar',
-                  position: Position.TL,
+                  position: Position.CTL,
                   tooltip: 'Nivel de zoom',
                 });
                 break;
@@ -3006,16 +3005,16 @@ class Map extends Base {
                 panel = new Panel(Panzoom.NAME, {
                   collapsible: false,
                   className: 'm-panzoom',
-                  position: Position.TL,
+                  position: Position.CTL,
                 });
                 break;
               case Location.NAME:
                 control = new Location();
-                panel = new Panel(Location.NAME, {
-                  collapsible: false,
-                  className: 'm-location',
-                  position: Position.BR,
-                });
+                // panel = new Panel(Location.NAME, {
+                //   collapsible: false,
+                //   className: 'm-location',
+                //   position: Position.CBR,
+                // });
                 break;
               case GetFeatureInfo.NAME:
                 control = new GetFeatureInfo(true);
@@ -3041,19 +3040,20 @@ class Map extends Base {
                     if (!isNaN(p)) paramsRotate.order = Number(p);
                   }
                 });
+                if (!paramsRotate.position) paramsRotate.position = Position.LEFT;
                 control = new Rotate(paramsRotate);
-                panel = new Panel(Rotate.name, {
-                  collapsible: false,
-                  className: 'm-rotate',
-                  position: Position.TL,
-                  order: (paramsRotate.order) ? paramsRotate.order : null,
-                });
+                // panel = new Panel(Rotate.name, {
+                //   collapsible: false,
+                //   className: 'm-rotate',
+                //   position: Position.CTL,
+                //   order: (paramsRotate.order) ? paramsRotate.order : null,
+                // });
                 break;
               case BackgroundLayers.NAME:
                 control = new BackgroundLayers(this);
                 panel = new Panel(BackgroundLayers.NAME, {
                   collapsible: false,
-                  position: Position.TR,
+                  position: Position.CTR,
                   className: 'm-plugin-baselayer',
                 });
                 break;
@@ -3061,7 +3061,7 @@ class Map extends Base {
                 control = new ImplementationSwitcher();
                 panel = new Panel(ImplementationSwitcher.NAME, {
                   collapsible: true,
-                  position: Position.TR,
+                  position: Position.CTR,
                   className: 'm-implementationswitcher',
                   collapsedButtonClass: 'g-cartografia-implementacion',
                   tooltip: getValue('implementationswitcher').title,
@@ -3073,7 +3073,7 @@ class Map extends Base {
                 if (isNullOrEmpty(panel)) {
                   panel = new Panel('map-info', {
                     collapsible: false,
-                    position: Position.BR,
+                    position: Position.CBR,
                     className: 'm-map-info',
                   });
                   panel.on(EventType.ADDED_TO_MAP, () => {
@@ -3092,12 +3092,11 @@ class Map extends Base {
 
                   panel = new Panel(BackgroundLayers.NAME, {
                     collapsible: false,
-                    position: Position.TR,
+                    position: Position.CTR,
                     className: 'm-plugin-baselayer',
                   });
                 } else {
-                  const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);
-                  Dialog.error(`El control ${controlParam} no está definido. Consulte los controles disponibles <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
+                  throwControlNotFoundException(controlParam);
                 }
             }
           } catch (e) {
@@ -3111,10 +3110,7 @@ class Map extends Base {
           Exception('El control "'.concat(controlParam).concat('" no es un control válido.'));
         }
 
-        if (!isNullOrEmpty(panel) && !panel.hasControl(control)) {
-          panel.addControls(control);
-          this.addPanels(panel);
-        } else if (!isNullOrEmpty(control)) {
+        if (!isNullOrEmpty(control)) {
           control.addTo(this);
           controls.push(control);
         }
@@ -3122,6 +3118,60 @@ class Map extends Base {
       this.getImpl().addControls(controls);
     }
     return this;
+  }
+
+  /**
+  * Este método consigue un contenedor habilitado para el uso de herramientas
+  *
+  * @public
+  * @function
+  * @param { Position } position implementación del control
+  * @api stable
+  * @return {HTML} el contenedor previamente declarado
+  */
+  getToolsContainer(position) {
+    let toolContainer = null;
+
+    try {
+      switch (position) {
+        case Position.LEFT:
+          toolContainer = this.leftButtons;
+          break;
+
+        case Position.RIGHT:
+          toolContainer = this.rightButtons;
+          break;
+
+        case Position.DOWN:
+          toolContainer = this.downPanel;
+          break;
+
+        case Position.CTL:
+          toolContainer = this.centerPanelTopLeft;
+          break;
+
+        case Position.CTR:
+          toolContainer = this.centerPanelTopRight;
+          break;
+
+        case Position.CBL:
+          toolContainer = this.centerPanelBottomLeft;
+          break;
+
+        case Position.CBR:
+          toolContainer = this.centerPanelBottomRight;
+          break;
+
+        default:
+          throw new Error(`No existe un contenedor de herramientas para la posición '${position}'`);
+      }
+    } catch (err) {
+      const message = `El control "${this.name}" contiene errores:\n${err}`;
+      // eslint-disable-next-line no-console
+      console.error(message);
+      Exception(err.message);
+    }
+    return toolContainer;
   }
 
   /**
@@ -4468,31 +4518,31 @@ class Map extends Base {
     this.leftButtons.classList.add('m-api-idee-left-buttons');
     container.appendChild(this.leftButtons);
 
-    this.upPanel = document.createElement('up-panel');
-    this.upPanel.id = 'upPanel';
-    this.upPanel.classList.add('m-api-idee-up-panel');
+    this.centerPanel = document.createElement('center-panel');
+    this.centerPanel.id = 'upPanel';
+    this.centerPanel.classList.add('m-api-idee-center-panel');
 
-    this.upPanelTopLeft = document.createElement('up-panel-top-left');
-    this.upPanelTopLeft.id = 'upPanelTopLeft';
-    this.upPanelTopLeft.classList.add('m-api-idee-up-panel-top-left');
-    this.upPanel.appendChild(this.upPanelTopLeft);
+    this.centerPanelTopLeft = document.createElement('center-panel-top-left');
+    this.centerPanelTopLeft.id = 'centerPanelTopLeft';
+    this.centerPanelTopLeft.classList.add('m-api-idee-center-panel-top-left');
+    this.centerPanel.appendChild(this.centerPanelTopLeft);
 
-    this.upPanelTopRight = document.createElement('up-panel-top-right');
-    this.upPanelTopRight.id = 'upPanelTopRight';
-    this.upPanelTopRight.classList.add('m-api-idee-up-panel-top-right');
-    this.upPanel.appendChild(this.upPanelTopRight);
+    this.centerPanelTopRight = document.createElement('center-panel-top-right');
+    this.centerPanelTopRight.id = 'centerPanelTopRight';
+    this.centerPanelTopRight.classList.add('m-api-idee-center-panel-top-right');
+    this.centerPanel.appendChild(this.centerPanelTopRight);
 
-    this.upPanelBottomLeft = document.createElement('up-panel-bottom-left');
-    this.upPanelBottomLeft.id = 'upPanelBottomLeft';
-    this.upPanelBottomLeft.classList.add('m-api-idee-up-panel-bottom-left');
-    this.upPanel.appendChild(this.upPanelBottomLeft);
+    this.centerPanelBottomLeft = document.createElement('center-panel-bottom-left');
+    this.centerPanelBottomLeft.id = 'centerPanelBottomLeft';
+    this.centerPanelBottomLeft.classList.add('m-api-idee-center-panel-bottom-left');
+    this.centerPanel.appendChild(this.centerPanelBottomLeft);
 
-    this.upPanelBottomRight = document.createElement('up-panel-bottom-right');
-    this.upPanelBottomRight.id = 'upPanelBottomRight';
-    this.upPanelBottomRight.classList.add('m-api-idee-up-panel-bottom-right');
-    this.upPanel.appendChild(this.upPanelBottomRight);
+    this.centerPanelBottomRight = document.createElement('center-panel-bottom-right');
+    this.centerPanelBottomRight.id = 'centerPanelBottomRight';
+    this.centerPanelBottomRight.classList.add('m-api-idee-center-panel-bottom-right');
+    this.centerPanel.appendChild(this.centerPanelBottomRight);
 
-    container.appendChild(this.upPanel);
+    container.appendChild(this.centerPanel);
 
     this.mapPanel = document.createElement('map-panel');
     this.mapPanel.id = 'mapPanel';
@@ -4579,8 +4629,8 @@ class Map extends Base {
     const leftButtonsRight = this.leftButtons.getBoundingClientRect().right;
     const rightButtonsLeft = this.rightButtons.getBoundingClientRect().left;
     const upWidth = Math.max(rightButtonsLeft - leftButtonsRight, 0);
-    this.upPanel.style.left = `${leftButtonsRight - container.getBoundingClientRect().left}px`;
-    this.upPanel.style.width = `${upWidth}px`;
+    this.centerPanel.style.left = `${leftButtonsRight - container.getBoundingClientRect().left}px`;
+    this.centerPanel.style.width = `${upWidth}px`;
   }
 
   /**

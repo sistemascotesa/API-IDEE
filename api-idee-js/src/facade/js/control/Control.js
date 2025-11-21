@@ -6,6 +6,7 @@ import Exception from '../exception/exception';
 import Base from '../Base';
 import * as EventType from '../event/eventtype';
 import { getValue } from '../i18n/language';
+import * as Position from '../ui/position';
 import Plugin from '../Plugin';
 
 /**
@@ -33,9 +34,10 @@ class Control extends Base {
     this.name = name;
     this.tooltip = options.tooltip || '';
     this.svgPath = options.svgPath || null;
+    this.position = options.position ?? Position.LEFT;
 
     this.map = null;
-    this.panel = null;
+    this.parentContainer = null;
     this.controls = null;
     this.element = null;
     this.activationBtn = null;
@@ -66,36 +68,69 @@ class Control extends Base {
   }
 
   /**
+   * Consige el contenedor que contiene el control
+   *
+   * @constructor
+   * @returns {HTML} Plantilla del control.
+   * @api stable
+   * @export
+   */
+  getParentContainer() {
+    return this.parentContainer;
+  }
+
+  /**
+   * Asigna el contenedor que contendrá el control
+   *
+   * @param {HTML} parentContainer Plantilla del control.
+   * @api stable
+   * @export
+   */
+  setParentContainer(parentContainer) {
+    this.parentContainer = parentContainer;
+  }
+
+  /**
+  * Este método añade la vista al control impl
+  *
+  * @public
+  * @function
+  * @param { IDEE.Map | Plugin } parent implementación del control
+  * @param { HTML } template plantilla de visualización del control
+  * @api stable
+  */
+  addToImpl(parent, template) {
+    if (parent instanceof Plugin) {
+      parent.addControlToPlugin(this);
+    } else {
+      const controlImpl = this.getImpl();
+      this.manageActivation(template);
+      const parentContainer = parent.getToolsContainer(this.position);
+      this.setParentContainer(parentContainer);
+      controlImpl.addTo(parent, template, parentContainer);
+      this.parentContainer.appendChild(template);
+    }
+    this.fire(EventType.ADDED_TO_MAP);
+  }
+
+  /**
    * Este método añade el control al mapa.
    *
    * @public
    * @function
-   * @param {IDEE.Map} map Mapa.
+   * @param {IDEE.Map | Plugin} parent Mapa o plugin.
    * @api
    * @export
    */
   addTo(parent) {
     this.parent = parent;
-    const controlImpl = this.getImpl();
-    const view = this.createView(parent);
-    if (view instanceof Promise) { // the view is a promise
-      view.then((html) => {
-        this.manageActivation(html);
-        controlImpl.addTo(parent, html);
-        this.fire(EventType.ADDED_TO_MAP);
+    const template = this.createView(parent);
+    if (template instanceof Promise) { // the view is a promise
+      template.then((html) => {
+        this.addToImpl(parent, html);
       });
     } else { // view is an HTML or text
-      this.manageActivation(view);
-
-      if (parent instanceof Plugin) {
-        parent.addControlToPlugin(this);
-      } else {
-        // eslint-disable-next-line no-console
-        console.log(controlImpl);
-        controlImpl.addTo(parent, view);
-      }
-
-      this.fire(EventType.ADDED_TO_MAP);
+      this.addToImpl(parent, template);
     }
   }
 
@@ -224,32 +259,6 @@ class Control extends Base {
   }
 
   /**
-   * Sobrescribe el panel del control.
-   *
-   * @public
-   * @function
-   * @param {IDEE.ui.Panel} panel Panel.
-   * @api
-   * @export
-   */
-  setPanel(panel) {
-    this.panel = panel;
-  }
-
-  /**
-   * Devuelve el panel del control.
-   *
-   * @public
-   * @function
-   * @returns {IDEE.ui.Panel} Panel.
-   * @api
-   * @export
-   */
-  getPanel() {
-    return this.panel;
-  }
-
-  /**
    * Elimina el control.
    *
    * @public
@@ -257,7 +266,9 @@ class Control extends Base {
    * @api
    * @export
    */
-  destroy() {}
+  destroy() {
+    this.parentContainer.removeChild(this.getElement());
+  }
 }
 
 export default Control;

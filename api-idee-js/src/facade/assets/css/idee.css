@@ -40,12 +40,12 @@
     box-shadow: 5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
 }
 
-.m-api-idee-up-panel {
+.m-api-idee-center-panel {
     pointer-events: none;
     /* para que no interfiera con controles */
     position: absolute;
     width: calc(100% - 128px);
-    height: calc(100% - 72px) !important;
+    height: calc(100% - 72px - 1rem) !important;
     top: 0;
     padding: .5em 0;
     left: 64px;
@@ -57,36 +57,36 @@
     gap: .5em;
 }
 
-.m-api-idee-up-panel-top-left {
+.m-api-idee-center-panel-top-left {
     grid-column: 1;
     grid-row: 1;
     position: relative;
     pointer-events: auto;
 }
 
-.m-api-idee-up-panel-top-right {
+.m-api-idee-center-panel-top-right {
     grid-column: 2;
     grid-row: 1;
     position: relative;
     pointer-events: auto;
 }
 
-.m-api-idee-up-panel-bottom-left {
+.m-api-idee-center-panel-bottom-left {
     grid-column: 1;
     grid-row: 2;
     position: relative;
     pointer-events: auto;
 }
 
-.m-api-idee-up-panel-bottom-right {
+.m-api-idee-center-panel-bottom-right {
     grid-column: 2;
     grid-row: 2;
     position: relative;
     pointer-events: auto;
 }
 
-.m-api-idee-up-panel-top-left,
-.m-api-idee-up-panel-bottom-left {
+.m-api-idee-center-panel-top-left,
+.m-api-idee-center-panel-bottom-left {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -95,8 +95,8 @@
   pointer-events: auto;
 }
 
-.m-api-idee-up-panel-top-right,
-.m-api-idee-up-panel-bottom-right {
+.m-api-idee-center-panel-top-right,
+.m-api-idee-center-panel-bottom-right {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -105,13 +105,13 @@
   pointer-events: auto;
 }
 
-.m-api-idee-up-panel-bottom-left,
-.m-api-idee-up-panel-bottom-right {
+.m-api-idee-center-panel-bottom-left,
+.m-api-idee-center-panel-bottom-right {
   justify-content: flex-end;
 }
 
 /* Permitir que los controles no se encojan si hay muchos */
-.m-api-idee-up-panel > div > * {
+.m-api-idee-center-panel > div > * {
   flex-shrink: 0;
 }
 
@@ -153,13 +153,14 @@
 
 .m-api-idee-down-panel {
     position: absolute;
+    padding: .5em;
     bottom: 0;
     left: 0;
-    width: 100%;
-    min-height: 72px;
+    width: calc(100% - 1em);
+    min-height: calc(72px - 1em);
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
     flex-wrap: wrap;
     gap: 0.5em;
 }
@@ -418,12 +419,11 @@ a:visited:hover {
 ************************/
 
 .m-control {
-    position: absolute;
     margin: 0;
     padding: 0;
     z-index: 990;
     overflow-y: hidden;
-    background-color: rgba(255, 255, 255, .4);
+    background-color: transparent;
     border-radius: 4px;
     padding: 2px;
 }

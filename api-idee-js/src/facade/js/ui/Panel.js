@@ -148,9 +148,9 @@ class Panel extends MObject {
     this._collapsedButtonClass = null;
     if (!isNullOrEmpty(options.collapsedButtonClass)) {
       this._collapsedButtonClass = options.collapsedButtonClass;
-    } else if ((this.position === Position.TL) || (this.position === Position.BL)) {
+    } else if ((this.position === Position.CTL) || (this.position === Position.CBL)) {
       this._collapsedButtonClass = 'g-cartografia-flecha-derecha';
-    } else if ((this.position === Position.TR) || (this.position === Position.BR)) {
+    } else if ((this.position === Position.CTR) || (this.position === Position.CBR)) {
       this._collapsedButtonClass = 'g-cartografia-flecha-izquierda';
     }
 
@@ -162,9 +162,9 @@ class Panel extends MObject {
     this._openedButtonClass = null;
     if (!isNullOrEmpty(options.openedButtonClass)) {
       this._openedButtonClass = options.openedButtonClass;
-    } else if ((this.position === Position.TL) || (this.position === Position.BL)) {
+    } else if ((this.position === Position.CTL) || (this.position === Position.CBL)) {
       this._openedButtonClass = 'g-cartografia-flecha-izquierda';
-    } else if ((this.position === Position.TR) || (this.position === Position.BR)) {
+    } else if ((this.position === Position.CTR) || (this.position === Position.CBR)) {
       this._openedButtonClass = 'g-cartografia-flecha-derecha';
     }
 
@@ -398,7 +398,7 @@ class Panel extends MObject {
         if (control instanceof ControlBase) {
           if (!this.hasControl(control)) {
             this.controls.push(control);
-            control.setPanel(this);
+            control.setParentContainer(this);
             control.on(EventType.DESTROY, this._removeControl.bind(this), this);
           }
           if (!isNullOrEmpty(this.element)) {

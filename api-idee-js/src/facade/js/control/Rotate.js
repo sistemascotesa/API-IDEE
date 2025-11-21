@@ -12,6 +12,7 @@ import { compileSync as compileTemplate } from '../util/Template';
 import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
+import * as Position from '../ui/position';
 
 /**
  * @classdesc
@@ -57,6 +58,7 @@ class Rotate extends ControlBase {
      * resto de plugins y controles por pantalla.
      */
     this.order = options.order >= -1 ? options.order : null;
+    this.position = options.position ?? Position.LEFT;
   }
 
   /**
