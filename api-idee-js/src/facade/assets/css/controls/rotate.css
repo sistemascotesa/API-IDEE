@@ -1,21 +1,15 @@
 .m-rotate-container {
-    top: 20px;
-    left: 600px;
+  top: 20px;
+  left: 600px;
 }
 
 .m-left .m-panel.opened div.m-control.m-rotate-container button[class^=g-cartografia-] {
-    color: #fff !important;
-    background-color: #71A7D3 !important;
-    opacity: 1;
+  color: var(--idee-color-primary-links) !important;
+  background-color: var(--idee-color-primary-dark) !important;
+  opacity: 1;
 }
 
-#m-rotate-button {
-    color: #337ceb;
-    border: 2px solid white;
-    border-radius: 20px;
-}
-
-.m-areas > div.m-area > div.m-panel.opened.m-rotate {
+.m-areas>div.m-area>div.m-panel.opened.m-rotate {
   background-color: transparent !important;
   box-shadow: none !important;
   border: none !important;
@@ -76,7 +70,7 @@
   top: 50%;
   right: 0;
   transform: translateY(-50%);
-  background-color: #71a7d3; 
+  background-color: #71a7d3;
   color: white;
   font-weight: bold;
   border: 2px solid white;
@@ -118,7 +112,7 @@
   color: #000;
 }
 
-@media(max-width: 465px){
+@media(max-width: 465px) {
   .m-rotate-help-container {
     position: fixed;
     top: 50%;

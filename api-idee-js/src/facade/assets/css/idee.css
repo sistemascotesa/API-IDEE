@@ -612,14 +612,22 @@ button::-moz-focus-inner {
 
 /* white icons */
 
-.m-areas>div.m-area>div.m-panel.m-geosearch.collapsed>button.m-panel-btn,
+/* .m-areas>div.m-area>div.m-panel.m-geosearch.collapsed>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.m-searchstreet.collapsed>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.m-searchstreetgeosearch.collapsed>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.m-attributetable.collapsed>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.m-tools.collapsed>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.m-edition.collapsed>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.m-printer.collapsed>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-layerswitcher.collapsed>button.m-panel-btn,
+.m-areas>div.m-area>div.m-panel.m-layerswitcher.collapsed>button.m-panel-btn, */
+.m-geosearch.collapsed>button.m-panel-btn,
+.m-searchstreet.collapsed>button.m-panel-btn,
+.m-searchstreetgeosearch.collapsed>button.m-panel-btn,
+.m-attributetable.collapsed>button.m-panel-btn,
+.m-tools.collapsed>button.m-panel-btn,
+.m-edition.collapsed>button.m-panel-btn,
+.m-printer.collapsed>button.m-panel-btn,
+.m-layerswitcher.collapsed>button.m-panel-btn,
 .ol-zoom>button,
 div.m-control button[class*=" g-cartografia-"],
 div.m-control button[class^=g-cartografia-],
@@ -631,7 +639,12 @@ div.m-control button[class^=g-cartografia-],
 .m-mouse-position,
 .m-scale-container>.m-unit:before,
 .m-scale-container {
-    color: #fff !important;
+    color: var(--idee-color-primary);
+    border: 2px solid white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    padding: 0;
 }
 
 .m-left .m-panel.opened div.m-control button[class^=g-cartografia-] {
