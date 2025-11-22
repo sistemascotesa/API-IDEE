@@ -444,7 +444,6 @@ div.m-control button[class*=" g-cartografia-"] {
     opacity: 0.75;
     -webkit-transition: opacity 0.25s ease 0s;
     transition: opacity 0.25s ease 0s;
-    color: #404040;
     margin: 0;
 }
 

@@ -27,6 +27,21 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+[class^="g-cartografia"]:before {
+    content: '';
+    display: block;
+    margin: auto;
+    width: 24px;
+    aspect-ratio: 1;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+}
+
 .g-cartografia-check:before {
     content: "\e801";
 }
@@ -44,7 +59,8 @@
 }
 
 .g-cartografia-brujula-norte:before {
-    content: "\e900";
+    -webkit-mask-image: url('../images/g-cartografia-brujula-norte.svg');
+    mask-image: url('../images/g-cartografia-brujula-norte.svg');
 }
 
 .g-cartografia-capas2:before {
