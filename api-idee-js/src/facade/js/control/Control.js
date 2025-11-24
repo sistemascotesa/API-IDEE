@@ -105,9 +105,9 @@ class Control extends Base {
     } else {
       const controlImpl = this.getImpl();
       this.manageActivation(template);
-      const parentContainer = parent.getToolsContainer(this.position);
-      this.setParentContainer(parentContainer);
-      controlImpl.addTo(parent, template);
+      this.setParentContainer(parent.getToolsContainer(this.position));
+      // Si la implementación es de la clase control
+      if (controlImpl instanceof Control) controlImpl.addTo(parent, template);
       this.parentContainer.appendChild(template);
     }
     this.fire(EventType.ADDED_TO_MAP);
