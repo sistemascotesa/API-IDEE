@@ -19,7 +19,7 @@ map.addControls([
   rotate,
 ]);
 
-// map.removeControls(rotate);
+map.removeControls(rotate);
 
 // rotate.destroy();
 
@@ -38,17 +38,5 @@ const control1 = new Control('MyControl1', {
 });
 
 pluginRight.addControl(control1);
-
-map.addPlugin(new Plugin('MyPluginRight2', {
-  tooltip: 'GitHub',
-  position: 'right',
-  svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
-}));
-
-map.addPlugin(new Plugin('MyPluginLeft', {
-  tooltip: 'GitHub',
-  position: 'left',
-  svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
-}));
 
 window.mapa = map;
