@@ -19,9 +19,7 @@ map.addControls([
   rotate,
 ]);
 
-map.removeControls(rotate);
-
-// rotate.destroy();
+// map.removeControls(rotate);
 
 const pluginRight = new Plugin('MyPluginRight', {
   tooltip: 'GitHub',
