@@ -27,7 +27,7 @@ export const CTR = 'center-top-right';
  * @type {string}
  * @api
  */
-export const CBL = 'center-button-left';
+export const CBL = 'center-bottom-left';
 
 /**
  * Posición zona central, abajo a la derecha.
@@ -36,7 +36,7 @@ export const CBL = 'center-button-left';
  * @type {string}
  * @api
  */
-export const CBR = 'center-button-right';
+export const CBR = 'center-bottom-right';
 
 /**
  * Posición izquierda.

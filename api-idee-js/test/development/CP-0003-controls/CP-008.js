@@ -17,7 +17,7 @@ const rotate = new Rotate({
 
 const control1 = new Control('MyControl1', {
   tooltip: 'spain',
-  position: 'down',
+  position: 'center-bottom-right',
   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg',
 });
 
@@ -27,12 +27,12 @@ const pluginRight = new Plugin('MyPluginRight', {
   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
 });
 
-pluginRight.addControl(control1);
+// pluginRight.addControl(control1);
 map.addPlugin(pluginRight);
 
 map.addControls([
   rotate,
-  // control1,
+  control1,
 ]);
 
 map.removeControls(control1);
