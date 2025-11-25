@@ -47,6 +47,7 @@ import GetCapabilities from './util/WMSCapabilities';
 import View from './View';
 import FormatWMS from './format/WMS';
 import LayerGroup from './layer/LayerGroup';
+import * as MapImplType from '../../common/map-impl-type';
 
 /**
  * @classdesc
@@ -226,6 +227,8 @@ class Map extends MObject {
      * @type {Object}
      */
     this.objectView = viewVendorOptions;
+
+    this.mapType = MapImplType.OL;
 
     if (this.viewExtent !== undefined && this.viewExtent.length === 4) {
       this.objectView.extent = this.viewExtent;

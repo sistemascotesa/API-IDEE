@@ -21,21 +21,20 @@ const control1 = new Control('MyControl1', {
   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg',
 });
 
-map.addControls([
-  rotate,
-  control1,
-]);
-
-// map.removeControls(rotate);
-
 const pluginRight = new Plugin('MyPluginRight', {
   tooltip: 'GitHub',
   position: 'right',
   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
 });
 
+pluginRight.addControl(control1);
 map.addPlugin(pluginRight);
 
-// pluginRight.addControl(control1);
+map.addControls([
+  rotate,
+  // control1,
+]);
+
+map.removeControls(control1);
 
 window.mapa = map;

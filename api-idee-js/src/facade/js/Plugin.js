@@ -39,7 +39,7 @@ class Plugin extends Base {
    *
    * @public
    * @function
-   * @param {Object} map Añade el plugin al mapa.
+   * @param {IDEE.Map} map Añade el plugin al mapa.
    * @api
    */
   addTo(map) {
@@ -59,6 +59,8 @@ class Plugin extends Base {
       maxWidth: this.maxPanelWidth,
     });
     map.addPanels(this.panel);
+
+    map.addControls(this.controls);
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
@@ -95,8 +97,11 @@ class Plugin extends Base {
           panel.addControls(control);
           this.addPanels(panel);
         } else if (!isNullOrEmpty(control)) {
-          control.addTo(this);
+          control.parentPlugin = this;
           this.controls.push(control);
+          if (!isNullOrEmpty(this.map)) {
+            this.map.addControls(this.controls, this);
+          }
         }
       });
       // this.getImpl().addControls(controls);

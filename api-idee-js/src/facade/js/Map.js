@@ -59,6 +59,8 @@ import WMC from './layer/WMC';
 import Attributions from './control/Attributions';
 import ImplementationSwitcher from './control/ImplementationSwitcher';
 import applyDesignTokenCssVariables from './theme/tokens';
+// eslint-disable-next-line no-unused-vars
+import Plugin from './Plugin';
 
 /**
  * @classdesc

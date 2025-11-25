@@ -49,6 +49,7 @@ import {
 import GetCapabilities from './util/WMSCapabilities';
 import FormatWMS from './format/WMS';
 import CesiumFormatWMTSCapabilities from './format/CesiumWMTSCapabilities';
+import * as MapImplType from '../../common/map-impl-type';
 
 /**
  * @classdesc
@@ -247,6 +248,8 @@ class Map extends MObject {
     ];
 
     const mapProjection = new GeographicProjection();
+
+    this.mapType = MapImplType.Cesium;
 
     /**
      * Implementación del mapa.
