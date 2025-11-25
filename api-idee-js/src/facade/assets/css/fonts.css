@@ -96,7 +96,9 @@
 }
 
 .g-cartografia-gps2:before {
-    content: "\e909";
+    /* content: "\e909"; */
+    -webkit-mask-image: url('../images/g-cartografia-gps2.svg');
+    mask-image: url('../images/g-cartografia-gps2.svg');
 }
 
 .g-cartografia-info:before {

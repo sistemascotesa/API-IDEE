@@ -165,7 +165,9 @@ class Location extends Control {
     if (!isNullOrEmpty(this.positionFeature_)) {
       this.facadeMap_.removeFeatures([this.positionFeature_]);
     }
-    this.geolocation_.setTracking(false);
+    if (this.geolocation_) {
+      this.geolocation_.setTracking(false);
+    }
   }
 
   /**

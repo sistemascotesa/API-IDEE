@@ -54,11 +54,15 @@ class Location extends ControlBase {
    * @api
    */
   createView(map) {
-    return compileTemplate(locationTemplate, {
+    const element = compileTemplate(locationTemplate, {
       vars: {
         title: getValue('location').title,
       },
     });
+
+    this.element = element;
+
+    return element;
   }
 
   /**
@@ -73,6 +77,10 @@ class Location extends ControlBase {
    * @export
    */
   getActivationButton(element) {
+    if (!element) {
+      return null;
+    }
+
     return element.querySelector('button#m-location-button');
   }
 
