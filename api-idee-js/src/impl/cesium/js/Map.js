@@ -249,8 +249,6 @@ class Map extends MObject {
 
     const mapProjection = new GeographicProjection();
 
-    this.mapType = MapImplType.Cesium;
-
     /**
      * Implementación del mapa.
      * @private
@@ -2707,10 +2705,10 @@ class Map extends MObject {
    * @function
    * @public
    * @api
-   * @return {string} Devuelve el nombre de la implementación.
+   * @return {MapImplType.Cesium} Devuelve el nombre de la implementación.
    */
   getImplementation() {
-    return 'cesium';
+    return MapImplType.Cesium;
   }
 }
 

@@ -11,7 +11,7 @@ import * as MapImplType from '../../common/map-impl-type';
  * en caso de no encontrarla devolverá null
  */
 const getControlImpl = (mapImpl, options = {}) => {
-  switch (mapImpl.mapType) {
+  switch (mapImpl.getImplementation()) {
     case MapImplType.OL:
       return new ImplOlControl(options);
     case MapImplType.Cesium:

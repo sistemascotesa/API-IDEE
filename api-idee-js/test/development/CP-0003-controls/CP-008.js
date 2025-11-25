@@ -1,6 +1,6 @@
 import { map as Mmap } from 'IDEE/api-idee';
 import Plugin from 'IDEE/Plugin';
-// import Control from 'IDEE/control/Control';
+import Control from 'IDEE/control/Control';
 import Rotate from '../../../src/facade/js/control/Rotate';
 
 const map = Mmap({
@@ -15,11 +15,11 @@ const rotate = new Rotate({
   position: 'down',
 });
 
-// const spainFlatControl = new Control('SpainFlat', {
-//   tooltip: 'spain',
-//   position: 'right',
-//   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg',
-// });
+const spainFlatControl = new Control('SpainFlat', {
+  tooltip: 'spain',
+  position: 'center-top-left',
+  svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg',
+});
 
 const pluginRight = new Plugin('MyPluginRight', {
   tooltip: 'GitHub',
@@ -33,7 +33,7 @@ map.addPlugin(pluginRight);
 
 map.addControls([
   // rotate,
-  // spainFlatControl,
+  spainFlatControl,
 ]);
 
 map.removeControls(rotate);

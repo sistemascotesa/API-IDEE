@@ -228,8 +228,6 @@ class Map extends MObject {
      */
     this.objectView = viewVendorOptions;
 
-    this.mapType = MapImplType.OL;
-
     if (this.viewExtent !== undefined && this.viewExtent.length === 4) {
       this.objectView.extent = this.viewExtent;
     }
@@ -3525,10 +3523,10 @@ class Map extends MObject {
    * @function
    * @public
    * @api
-   * @return {string} Devuelve el nombre de la implementación.
+   * @return {MapImplType.OL} Devuelve el nombre de la implementación.
    */
   getImplementation() {
-    return 'ol';
+    return MapImplType.OL;
   }
 }
 

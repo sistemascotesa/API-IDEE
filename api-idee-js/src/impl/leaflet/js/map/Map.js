@@ -1289,4 +1289,16 @@ export default class Map extends MObject {
       });
     });
   }
+
+  /**
+     * Función que obtiene el nombre de la implementación del mapa.
+     *
+     * @function
+     * @public
+     * @api
+     * @return {MapImplType.Leafet} Devuelve el nombre de la implementación.
+     */
+  getImplementation() {
+    return MapImplType.Leafet;
+  }
 }
