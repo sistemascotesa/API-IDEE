@@ -12,12 +12,12 @@ const map = Mmap({
 });
 
 const rotate = new Rotate({
-  position: 'center-top-right',
+  position: 'down',
 });
 
-const control1 = new Control('MyControl1', {
+const spainFlatControl = new Control('SpainFlat', {
   tooltip: 'spain',
-  position: 'center-bottom-right',
+  position: 'right',
   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg',
 });
 
@@ -27,14 +27,15 @@ const pluginRight = new Plugin('MyPluginRight', {
   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
 });
 
-// pluginRight.addControl(control1);
+pluginRight.addControl(rotate);
+
 map.addPlugin(pluginRight);
 
 map.addControls([
-  rotate,
-  control1,
+  // rotate,
+  // spainFlatControl,
 ]);
 
-map.removeControls(control1);
+map.removeControls(rotate);
 
 window.mapa = map;

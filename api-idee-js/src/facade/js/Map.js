@@ -2942,11 +2942,6 @@ class Map extends Base {
       if (!isArray(controlObj)) controlObj = [controlObj];
 
       // gets the parameters as Control to add them
-      const controls = [];
-      const throwControlNotFoundException = (controlParam) => {
-        const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);
-        Dialog.error(`El control ${controlParam} no está definido. Consulte los controles disponibles <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
-      };
       controlObj.forEach((controlParamVar) => {
         let controlParam = controlParamVar;
         let control;
@@ -3098,7 +3093,9 @@ class Map extends Base {
                     className: 'm-plugin-baselayer',
                   });
                 } else {
-                  throwControlNotFoundException(controlParam);
+                  const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);
+                  const exceptionMessage = getValue('exception').undefined_control;
+                  Dialog.error(`( "${controlParam}" ) ${exceptionMessage} <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
                 }
             }
           } catch (e) {
@@ -3109,15 +3106,20 @@ class Map extends Base {
         } else if (controlParam instanceof Control) {
           control = controlParam;
         } else {
-          Exception('El control "'.concat(controlParam).concat('" no es un control válido.'));
+          Exception(`${getValue('exception').invalid_control} ( ${controlParam} )`);
         }
 
         if (!isNullOrEmpty(control)) {
-          control.addTo(this);
-          controls.push(control);
+          // checks if the control already exists
+          if (this.getControls().some((ctrl) => ctrl.name === control.name)) {
+            const messageError = `( "${control.name}" ): ${getValue('exception').control_already_added}`;
+            Dialog.error(messageError);
+          } else {
+            control.addTo(this);
+            this.getImpl().addControls([control]);
+          }
         }
       });
-      this.getImpl().addControls(controls);
     }
     return this;
   }

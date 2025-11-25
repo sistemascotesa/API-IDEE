@@ -60,10 +60,10 @@ class Plugin extends Base {
     });
     map.addPanels(this.panel);
 
-    map.addControls(this.controls);
-
     this.button.panel = this.panel;
     this.panel.button = this.button;
+
+    map.addControls(this.controls);
   }
 
   /**
@@ -99,12 +99,11 @@ class Plugin extends Base {
         } else if (!isNullOrEmpty(control)) {
           control.parentPlugin = this;
           this.controls.push(control);
-          if (!isNullOrEmpty(this.map)) {
-            this.map.addControls(this.controls, this);
-          }
         }
       });
-      // this.getImpl().addControls(controls);
+      if (!isNullOrEmpty(this.map)) {
+        this.map.addControls(this.controls);
+      }
     }
     return this;
   }
@@ -113,8 +112,7 @@ class Plugin extends Base {
     if (isNullOrEmpty(this.panel.panelContent)) {
       this.panel.createContentPanel();
     }
-
-    this.panel.panelContent.appendChild(control.element);
+    this.panel.panelContent.appendChild(control.getImpl().element);
   }
 
   addTool(toolsParamVar) {
