@@ -59,6 +59,7 @@
 }
 
 .g-cartografia-brujula-norte:before {
+    /* content: "\e900"; */
     -webkit-mask-image: url('../images/g-cartografia-brujula-norte.svg');
     mask-image: url('../images/g-cartografia-brujula-norte.svg');
 }

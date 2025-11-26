@@ -130,7 +130,17 @@ class Features extends Base {
 
       this.layers_.forEach((layer, i) => {
         if (layer.infoEventType === 'click') {
-          const clickedFeatures = impl.getFeaturesByLayer(evt, layer);
+          let clickedFeatures = impl.getFeaturesByLayer(evt, layer);
+          // Filtrar features utilitarias (ej. marcador de Location)
+          clickedFeatures = clickedFeatures.filter((f) => {
+            // f es un Feature Facade y debe tener getImpl()
+            if (f && f.getImpl && f.getImpl().getFeature) {
+              // Verificar en ol/Feature la propiedad 'isUtilityFeature'
+              return f.getImpl().getFeature().get('isUtilityFeature') !== true;
+            }
+            return true;
+          });
+
           const prevFeatures = [...(this.prevSelectedFeatures_[layer.idLayer])];
           // no features selected then unselect prev selected features
           if (i === 1 && prevFeatures[0] === clickedFeatures[0]) {
@@ -171,7 +181,14 @@ class Features extends Base {
       const impl = this.getImpl();
       this.hookStopMoveEvent_(evt).then((e) => {
         this.layers_.forEach((layer) => {
-          const hoveredFeatures = impl.getFeaturesByLayer(evt, layer);
+          let hoveredFeatures = impl.getFeaturesByLayer(evt, layer);
+          // Filtrar features utilitarias (ej. marcador de Location)
+          hoveredFeatures = hoveredFeatures.filter((f) => {
+            if (f && f.getImpl && f.getImpl().getFeature) {
+              return f.getImpl().getFeature().get('isUtilityFeature') !== true;
+            }
+            return true;
+          });
           const prevFeatures = [...this.prevHoverFeatures_[layer.idLayer]];
           // no features selected then unselect prev selected features
           if (hoveredFeatures.length === 0 && prevFeatures.length > 0) {

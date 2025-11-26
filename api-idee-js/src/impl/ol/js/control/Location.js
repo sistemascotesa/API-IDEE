@@ -61,7 +61,9 @@ class Location extends Control {
      * @private
      * @type {OLFeature}
      */
-    this.accuracyFeature_ = Feature.feature2Facade(new OLFeature());
+    const olAccuracyFeature = new OLFeature();
+    olAccuracyFeature.set('isUtilityFeature', true); // No interactivo
+    this.accuracyFeature_ = Feature.feature2Facade(olAccuracyFeature);
 
     /**
      * Seguimiento de localización, por defecto verdadero.
@@ -96,9 +98,10 @@ class Location extends Control {
      * @private
      * @type {OLFeature}
      */
-    this.positionFeature_ = Feature.feature2Facade(new OLFeature({
-      style: Location.POSITION_STYLE,
-    }));
+    const olPositionFeature = new OLFeature();
+    olPositionFeature.setStyle(Location.POSITION_STYLE);
+    olPositionFeature.set('isUtilityFeature', true); // No interactivo
+    this.positionFeature_ = Feature.feature2Facade(olPositionFeature);
   }
 
   /**
