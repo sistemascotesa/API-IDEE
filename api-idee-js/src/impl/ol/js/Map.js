@@ -47,6 +47,7 @@ import GetCapabilities from './util/WMSCapabilities';
 import View from './View';
 import FormatWMS from './format/WMS';
 import LayerGroup from './layer/LayerGroup';
+import * as MapImplType from '../../common/map-impl-type';
 
 /**
  * @classdesc
@@ -3522,10 +3523,10 @@ class Map extends MObject {
    * @function
    * @public
    * @api
-   * @return {string} Devuelve el nombre de la implementación.
+   * @return {MapImplType.OL} Devuelve el nombre de la implementación.
    */
   getImplementation() {
-    return 'ol';
+    return MapImplType.OL;
   }
 }
 

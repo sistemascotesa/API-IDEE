@@ -49,6 +49,7 @@ import {
 import GetCapabilities from './util/WMSCapabilities';
 import FormatWMS from './format/WMS';
 import CesiumFormatWMTSCapabilities from './format/CesiumWMTSCapabilities';
+import * as MapImplType from '../../common/map-impl-type';
 
 /**
  * @classdesc
@@ -2704,10 +2705,10 @@ class Map extends MObject {
    * @function
    * @public
    * @api
-   * @return {string} Devuelve el nombre de la implementación.
+   * @return {MapImplType.Cesium} Devuelve el nombre de la implementación.
    */
   getImplementation() {
-    return 'cesium';
+    return MapImplType.Cesium;
   }
 }
 

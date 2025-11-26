@@ -3,7 +3,6 @@
     position: absolute;
     width: 46px;
     height: calc(100% - 72px);
-    z-index: 2;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -21,7 +20,8 @@
     right: 0;
 }
 
-.m-plugin-button {
+.m-plugin-button, .m-control-button {
+    z-index: 2;
     cursor: pointer;
     width: 40px;
     height: 40px;
@@ -36,52 +36,25 @@
     transition: all 0.3s ease;
 }
 
-.m-plugin-button:hover {
+.m-plugin-button:hover, .m-control-button:hover {
     background-color: var(--idee-color-links);
     border: 2px solid #fff;
     transition: all 0.3s ease;
 }
 
-.m-plugin-button.active {
+.m-plugin-button.active, .m-control-button.active {
     color: #fff;
     background-color: var(--idee-color-primary-dark);
     border: 2px solid #fff;
     transition: all 0.3s ease;
 }
 
-.m-plugin-button svg {
+.m-plugin-button svg, .m-control-button svg {
     width: 24px;
     height: 24px;
     transition: transform 0.3s ease;
 }
 
 .m-plugin-button.active svg {
-    transition: transform 0.3s ease;
-}
-
-.m-control-button {
-    width: 32px;
-    height: 32px;
-    padding: 4px;
-    color: #404040;
-    background-color: #e9ecef;
-    border: 2px solid #e9ecef;
-    margin-right: 8px;
-}
-
-.m-control-button:hover {
-    color: var(--idee-color-links);
-    background-color: #e9ecef;
-}
-
-.m-control-button.active {
-    color: var(--idee-color-primary-dark);
-    border: 2px solid var(--idee-color-primary-dark);
-    transition: all 0.3s ease;
-}
-
-.m-control-button svg {
-    width: 20px;
-    height: 20px;
     transition: transform 0.3s ease;
 }
