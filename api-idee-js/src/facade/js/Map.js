@@ -2976,17 +2976,18 @@ class Map extends Base {
                 break;
               case ScaleLine.NAME:
                 control = new ScaleLine();
-                panel = new Panel(ScaleLine.NAME, {
-                  collapsible: false,
-                  className: 'm-scaleline',
-                  position: Position.CBL,
-                  tooltip: 'Línea de escala',
-                });
-                panel.on(EventType.ADDED_TO_MAP, (html) => {
-                  if (this.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
-                    this.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
-                  }
-                });
+                // panel = new Panel(ScaleLine.NAME, {
+                //   collapsible: false,
+                //   className: 'm-scaleline',
+                //   position: Position.CBL,
+                //   tooltip: 'Línea de escala',
+                // });
+                // panel.on(EventType.ADDED_TO_MAP, (html) => {
+                //   if (this.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
+                //     this.getControls(['scaleline'])[0].getImpl()
+                //      .getElement().classList.add('ol-scale-line-up');
+                //   }
+                // });
                 break;
               case Panzoombar.NAME:
                 control = new Panzoombar();

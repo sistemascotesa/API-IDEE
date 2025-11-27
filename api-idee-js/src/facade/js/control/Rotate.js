@@ -13,6 +13,7 @@ import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
 import * as Position from '../ui/position';
+import * as MapImplType from '../../../impl/common/map-impl-type';
 
 /**
  * @classdesc
@@ -30,6 +31,7 @@ class Rotate extends ControlBase {
    * - viewInitial: Vista inicial. Solo disponible para Cesium.
    * - help: Indica si se muestra la ayuda al crear el control.
    * Por defecto, verdadero. Solo disponible para Cesium.
+   * - position: {@link Position posicion} válida para el control
    * - order: Orden que tendrá con respecto al
    * resto de plugins y controles por pantalla.
    * @api
@@ -74,7 +76,7 @@ class Rotate extends ControlBase {
     this.map = map;
     let compTemplate;
 
-    if (this.map.getImplementation() === 'cesium') {
+    if (this.map.getImplementation() === MapImplType.Cesium) {
       const textHelp = getValue('rotate').help;
       compTemplate = compileTemplate(templateCesium, {
         vars: {

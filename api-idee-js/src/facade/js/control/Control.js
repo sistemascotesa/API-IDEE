@@ -48,6 +48,7 @@ class Control extends Base {
     this.tooltip = options.tooltip || '';
     this.svgPath = options.svgPath || null;
     this.position = options.position ?? Position.LEFT;
+    this.order = options.order ?? 0;
 
     this.controls = null;
     this.element = null;
@@ -113,21 +114,22 @@ class Control extends Base {
   addTo(map) {
     this.map = map;
     const template = this.createView(map);
-
     const buildImpl = (templateReady) => {
       let controlImpl = this.getImpl();
-      this.manageActivation(templateReady);
       if (!isControlImpl(controlImpl)) {
-        // Consige una implementación de control nueva para un mapa impl
+        // Consige una implementación de control nueva para un mapa de implementación concreto
         controlImpl = getControlImpl(this.map.getImpl(), controlImpl);
         super.setImpl(controlImpl);
       }
+      this.manageActivation(templateReady);
       controlImpl.addTo(this.map, templateReady);
       if (this.parentPlugin instanceof Plugin) {
         this.parentPlugin.addControlToPlugin(this);
         this.parentContainer = this.parentPlugin.panel.panelContent;
       } else {
         this.setParentContainer(this.map.getToolsContainer(this.position));
+        // eslint-disable-next-line no-console
+        console.log(templateReady);
         this.parentContainer.appendChild(templateReady);
       }
       this.fire(EventType.ADDED_TO_MAP);

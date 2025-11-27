@@ -74,8 +74,9 @@ class ScaleLine extends OLControlScaleLine {
    * @param {function} template Plantilla del control.
    * @api stable
    */
-  addTo(map, element) {
+  addTo(map, template) {
     this.facadeMap_ = map;
+    this.element = template;
     this.removeChangeListener(UNITS_PROP, this.handleUnitsChanged);
     this.keyEvent_ = this.addChangeListener(UNITS_PROP, this.handleUnitsChanged);
     map.getMapImpl().addControl(this);
