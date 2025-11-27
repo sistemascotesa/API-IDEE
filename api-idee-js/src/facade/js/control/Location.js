@@ -27,6 +27,7 @@ class Location extends ControlBase {
    *
    * @constructor
    * @param {Object} options recibe las opciones de configuración por defecto
+   * position: {@link Position posicion}
    * @example
    * new Location({
    *  position: "left",
