@@ -128,7 +128,9 @@ class Control extends Base {
         this.parentContainer = this.parentPlugin.panel.panelContent;
       } else {
         this.setParentContainer(this.map.getToolsContainer(this.position));
-        this.parentContainer.appendChild(templateReady);
+        if (this.selfDraw !== true) {
+          this.parentContainer.appendChild(templateReady);
+        }
       }
       this.fire(EventType.ADDED_TO_MAP);
     };

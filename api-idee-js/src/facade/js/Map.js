@@ -2990,12 +2990,12 @@ class Map extends Base {
                 break;
               case Panzoombar.NAME:
                 control = new Panzoombar();
-                panel = new Panel(Panzoombar.NAME, {
-                  collapsible: false,
-                  className: 'm-panzoombar',
-                  position: Position.CTL,
-                  tooltip: 'Nivel de zoom',
-                });
+                // panel = new Panel(Panzoombar.NAME, {
+                //   collapsible: false,
+                //   className: 'm-panzoombar',
+                //   position: Position.CTL,
+                //   tooltip: 'Nivel de zoom',
+                // });
                 break;
               case Panzoom.NAME:
                 control = new Panzoom();
