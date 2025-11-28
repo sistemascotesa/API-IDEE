@@ -128,11 +128,12 @@ class Control extends Base {
         this.parentContainer = this.parentPlugin.panel.panelContent;
       } else {
         const mapToolsContainer = this.map.getToolsContainer(this.position);
-        this.setParentContainer(mapToolsContainer);
-        controlImpl.setViewInParentContainer(
-          mapToolsContainer,
-          templateReady,
-        );
+        if (mapToolsContainer) {
+          this.setParentContainer(mapToolsContainer);
+          this.map.addToolToContainer(mapToolsContainer, controlImpl);
+        } else {
+          Exception(getValue('exception').invalid_tool_position);
+        }
       }
       this.fire(EventType.ADDED_TO_MAP);
     };

@@ -84,15 +84,15 @@ class ScaleLine extends OLControlScaleLine {
   }
 
   /**
-   * Guarda la vista en el contenedor de herrramientas seleccionado
+   * Devuelve la vista de implementación
    *
    * @public
    * @function
-   * @param {HTMLElement} parentContainer Contenedor del mapa donde se posicionará
+   * @return {HTMLElement} vista de implementación
    * @api stable
    */
-  setViewInParentContainer(parentContainer, template = this.element) {
-    parentContainer.appendChild(this.element);
+  getView() {
+    return this.element;
   }
 
   /**

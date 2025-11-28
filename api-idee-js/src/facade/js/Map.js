@@ -3168,15 +3168,29 @@ class Map extends Base {
           break;
 
         default:
-          throw new Error(`No existe un contenedor de herramientas para la posición '${position}'`);
+          throw new Error(`${getValue('exception').no_tool_position}, '${position}'`);
       }
     } catch (err) {
-      const message = `El control "${this.name}" contiene errores:\n${err}`;
       // eslint-disable-next-line no-console
-      console.error(message);
+      console.error(err);
       Exception(err.message);
     }
     return toolContainer;
+  }
+
+  /**
+  * Este método recibe una herramienta le asigna un contenedor padre y coloca su vista
+  * de forma ordenada en su interior
+  *
+  * @public
+  * @function
+  * @param { HTMLElement } container contenedor de mapa asignado
+  * @param { Control | Button } toolImpl implementación del control o boton que usa un plugin
+  * @api stable
+  */
+  addToolToContainer(container, toolImpl) {
+    // container.replaceChildren([]);
+    container.appendChild(toolImpl.getView());
   }
 
   /**

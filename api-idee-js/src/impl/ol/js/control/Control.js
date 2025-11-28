@@ -44,16 +44,15 @@ class Control extends OLControl {
   }
 
   /**
-   * Guarda la vista en el contenedor de herrramientas seleccionado
+   * Devuelve la vista de implementación
    *
    * @public
    * @function
-   * @param {HTMLElement} parentContainer Contenedor del mapa donde se posicionará
-   * @param {HTMLElement} template Plantilla del control.
+   * @return {HTMLElement} vista de implementación
    * @api stable
    */
-  setViewInParentContainer(parentContainer, template = this.panel ?? this.element) {
-    parentContainer.appendChild(template);
+  getView() {
+    return this.panel ?? this.element;
   }
 
   /**
