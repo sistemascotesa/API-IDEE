@@ -113,7 +113,7 @@ class Control extends Base {
    */
   addTo(map) {
     this.map = map;
-    const template = this.createView(map);
+
     const buildImpl = (templateReady) => {
       let controlImpl = this.getImpl();
       if (!isControlImpl(controlImpl)) {
@@ -127,14 +127,17 @@ class Control extends Base {
         this.parentPlugin.addControlToPlugin(this);
         this.parentContainer = this.parentPlugin.panel.panelContent;
       } else {
-        this.setParentContainer(this.map.getToolsContainer(this.position));
-        // eslint-disable-next-line no-console
-        console.log(templateReady);
-        this.parentContainer.appendChild(templateReady);
+        const mapToolsContainer = this.map.getToolsContainer(this.position);
+        this.setParentContainer(mapToolsContainer);
+        controlImpl.setViewInParentContainer(
+          mapToolsContainer,
+          templateReady,
+        );
       }
       this.fire(EventType.ADDED_TO_MAP);
     };
 
+    const template = this.createView(map);
     if (template instanceof Promise) {
       template.then((templateReady) => {
         buildImpl(templateReady);

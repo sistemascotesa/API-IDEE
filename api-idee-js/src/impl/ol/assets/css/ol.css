@@ -10,19 +10,19 @@
     position: absolute;
 }
 
+/* ScaleLine */
+
 .ol-scale-line {
-    background: rgba(0, 60, 136, 0.3);
+    z-index: 2;
+    background-color: transparent;
     border-radius: 4px;
-    bottom: 8px;
-    left: 8px;
     padding: 2px;
-    position: absolute;
+    border: 2px solid var(--idee-color-primary);
 }
 
-.ol-scale-line-inner {
-    border: 2px solid #eee;
+.ol-scale-line .ol-scale-line-inner {
+    border: 2px solid #000000;
     border-top: none;
-    color: #eee;
     font-size: 10px;
     text-align: center;
     margin: 1px;
@@ -31,9 +31,7 @@
 }
 
 .ol-scale-bar {
-    position: absolute;
-    bottom: 8px;
-    left: 8px;
+    z-index: 2;
 }
 
 .ol-scale-step-marker {
@@ -45,9 +43,6 @@
 }
 
 .ol-scale-step-text {
-    position: absolute;
-    bottom: -5px;
-    font-size: 12px;
     z-Index: 11;
     color: #000000;
     text-shadow: -2px 0 #FFFFFF, 0 2px #FFFFFF, 2px 0 #FFFFFF, 0 -2px #FFFFFF;
@@ -68,6 +63,8 @@
     z-Index: 9;
     border: 1px solid black;
 }
+
+/* ScaleLine ends */
 
 .ol-unsupported {
     display: none;

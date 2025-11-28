@@ -44,6 +44,19 @@ class Control extends OLControl {
   }
 
   /**
+   * Guarda la vista en el contenedor de herrramientas seleccionado
+   *
+   * @public
+   * @function
+   * @param {HTMLElement} parentContainer Contenedor del mapa donde se posicionará
+   * @param {HTMLElement} template Plantilla del control.
+   * @api stable
+   */
+  setViewInParentContainer(parentContainer, template = this.panel ?? this.element) {
+    parentContainer.appendChild(template);
+  }
+
+  /**
    * Este método destruye este control, limpiando el HTML
    * y anulando el registro de todos los eventos.
    *

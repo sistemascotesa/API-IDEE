@@ -67,19 +67,32 @@ class ScaleLine extends OLControlScaleLine {
 
   /**
    * Este método añade el control al mapa.
+   * (Como este no extiende directamente de open layers debemos tener en cuenta )
    *
    * @public
    * @function
    * @param {IDEE.Map} map Mapa.
-   * @param {function} template Plantilla del control.
+   * @param {HTMLElement} template Plantilla del control.
    * @api stable
    */
   addTo(map, template) {
     this.facadeMap_ = map;
-    this.element = template;
+    this.panel = template;
     this.removeChangeListener(UNITS_PROP, this.handleUnitsChanged);
     this.keyEvent_ = this.addChangeListener(UNITS_PROP, this.handleUnitsChanged);
     map.getMapImpl().addControl(this);
+  }
+
+  /**
+   * Guarda la vista en el contenedor de herrramientas seleccionado
+   *
+   * @public
+   * @function
+   * @param {HTMLElement} parentContainer Contenedor del mapa donde se posicionará
+   * @api stable
+   */
+  setViewInParentContainer(parentContainer, template = this.element) {
+    parentContainer.appendChild(this.element);
   }
 
   /**
