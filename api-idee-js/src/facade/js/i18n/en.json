@@ -188,6 +188,8 @@
     "getxyzs_method": "The used implementation does not have the getXYZs method.",
     "gettms_method": "The used implementation does not have the getTMS method.",
     "undefined_control": "The control is not defined, please refer to the available controls.",
+    "no_tool_position": "There is no tool container for the indicated position",
+    "invalid_tool_position": "The tool position is incorrect",
     "getcontrols_method": "The used implementation does not have the getControls method.",
     "addcontrols_method": "The used implementation does not have the addControls method.",
     "invalid_control": "The specified control is invalid.",

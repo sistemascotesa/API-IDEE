@@ -48,6 +48,7 @@ class Control extends Base {
     this.tooltip = options.tooltip || '';
     this.svgPath = options.svgPath || null;
     this.position = options.position ?? Position.LEFT;
+    this.order = options.order ?? 0;
 
     this.controls = null;
     this.element = null;
@@ -112,29 +113,32 @@ class Control extends Base {
    */
   addTo(map) {
     this.map = map;
-    const template = this.createView(map);
 
     const buildImpl = (templateReady) => {
       let controlImpl = this.getImpl();
-      this.manageActivation(templateReady);
       if (!isControlImpl(controlImpl)) {
-        // Consige una implementación de control nueva para un mapa impl
+        // Consige una implementación de control nueva para un mapa de implementación concreto
         controlImpl = getControlImpl(this.map.getImpl(), controlImpl);
         super.setImpl(controlImpl);
       }
+      this.manageActivation(templateReady);
       controlImpl.addTo(this.map, templateReady);
       if (this.parentPlugin instanceof Plugin) {
         this.parentPlugin.addControlToPlugin(this);
         this.parentContainer = this.parentPlugin.panel.panelContent;
       } else {
-        this.setParentContainer(this.map.getToolsContainer(this.position));
-        if (this.selfDraw !== true) {
-          this.parentContainer.appendChild(templateReady);
+        const mapToolsContainer = this.map.getToolsContainer(this.position);
+        if (mapToolsContainer) {
+          this.setParentContainer(mapToolsContainer);
+          this.map.addToolToContainer(mapToolsContainer, controlImpl);
+        } else {
+          Exception(getValue('exception').invalid_tool_position);
         }
       }
       this.fire(EventType.ADDED_TO_MAP);
     };
 
+    const template = this.createView(map);
     if (template instanceof Promise) {
       template.then((templateReady) => {
         buildImpl(templateReady);

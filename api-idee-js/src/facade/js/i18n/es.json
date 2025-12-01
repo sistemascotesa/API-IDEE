@@ -189,6 +189,8 @@
     "getxyzs_method": "La implementación usada no posee el método getXYZs.",
     "gettms_method": "La implementación usada no posee el método getTMS.",
     "undefined_control": "El control no está definido, consulte los controles disponibles.",
+    "no_tool_position": "No existe un contenedor de herramientas para la posición indicada",
+    "invalid_tool_position": "La posición de la herramienta es incorrecta",
     "getcontrols_method": "La implementación usada no posee el método getControls.",
     "addcontrols_method": "La implementación usada no posee el método addControls.",
     "invalid_control": "El control especificado es inválido",

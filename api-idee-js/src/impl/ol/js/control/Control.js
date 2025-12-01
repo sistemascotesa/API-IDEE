@@ -44,6 +44,18 @@ class Control extends OLControl {
   }
 
   /**
+   * Devuelve la vista de implementación
+   *
+   * @public
+   * @function
+   * @return {HTMLElement} vista de implementación
+   * @api stable
+   */
+  getView() {
+    return this.panel ?? this.element;
+  }
+
+  /**
    * Este método destruye este control, limpiando el HTML
    * y anulando el registro de todos los eventos.
    *

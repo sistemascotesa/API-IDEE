@@ -10,6 +10,7 @@ import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { compileSync as compileTemplate } from '../util/Template';
 import { getValue } from '../i18n/language';
+import * as Position from '../ui/position';
 
 /**
  * @classdesc
@@ -23,7 +24,10 @@ class ScaleLine extends ControlBase {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base, estas opciones
+   * @param {Object} options Objeto de opciones de la fachada que incluye
+   * - position: {@link Position posicion} válida para el control
+   *
+   * - vendorOptions Opciones de proveedor para la biblioteca base, estas opciones
    * se pasarán en formato objeto. Opciones disponibles:
    * - className: Nombre de la clase CSS.
    * El valor predeterminado es ol-scale-bar
@@ -48,7 +52,9 @@ class ScaleLine extends ControlBase {
    * Si no se define, se asumirá el tamaño de píxel de pantalla predeterminado de OGC de 0,28 mm.
    * @api
    */
-  constructor(vendorOptions = {}) {
+  constructor(options = {}) {
+    const vendorOptions = options.vendorOptions ?? {};
+    const position = options.position ?? Position.DOWN;
     if (isUndefined(ScaleLineImpl) || (isObject(ScaleLineImpl)
       && isNullOrEmpty(Object.keys(ScaleLineImpl)))) {
       Exception(getValue('exception').scaleline_method);
@@ -59,6 +65,7 @@ class ScaleLine extends ControlBase {
 
     // calls the super constructor
     super(ScaleLine.NAME, impl);
+    this.position = position;
   }
 
   /**

@@ -37,11 +37,11 @@ class Rotate extends Control {
    * @param {HTML} parentContainer Plantilla del mapa que contiene este control.
    * @api stable
    */
-  addTo(map, element) {
-    super.addTo(map, element);
+  addTo(map, template) {
+    super.addTo(map, template);
     const olMap = map.getMapImpl();
     // panel que envuelve el control, no es padre
-    this.panel = element;
+    this.panel = template;
     // REV_OL
     // El funcionamiento por defecto en OL es mostrar el control oculto
     // En api-idee por defecto vamos a mostrar si alguien lo pone se interpreta
