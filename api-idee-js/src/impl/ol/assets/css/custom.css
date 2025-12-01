@@ -66,6 +66,7 @@ OL3 PERFORMANCE
 .ol-zoomslider {
     height: 198px !important;
     overflow: auto !important;
+    z-index: 999;
 }
 
 .ol-zoomslider>button.ol-zoomslider-thumb {
