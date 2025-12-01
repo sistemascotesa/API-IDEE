@@ -41,11 +41,11 @@ class Panzoombar extends OLControlZoomSlider {
    */
   addTo(map, element) {
     this.facadeMap_ = map;
-    // const olMap = map.getMapImpl();
-    // if (olMap) {
-    //   olMap.addControl(this);
-    // }
-    map.getMapImpl().addControl(this);
+    const olMap = map.getMapImpl();
+
+    this.setMap(olMap);
+
+    olMap.addControl(this);
   }
 
   /**
