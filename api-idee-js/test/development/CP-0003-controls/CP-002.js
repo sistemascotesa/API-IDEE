@@ -12,7 +12,7 @@ const map = Mmap({
 });
 
 const panzoombar = new Panzoombar({
-  position: Position.LEFT,
+  position: Position.RIGHT,
 });
 
 map.addControls([
