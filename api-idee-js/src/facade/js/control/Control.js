@@ -116,11 +116,13 @@ class Control extends Base {
 
     const buildImpl = (templateReady) => {
       let controlImpl = this.getImpl();
+      // if (this.name !== 'panzoombar') {
       if (!isControlImpl(controlImpl)) {
         // Consige una implementación de control nueva para un mapa de implementación concreto
         controlImpl = getControlImpl(this.map.getImpl(), controlImpl);
         super.setImpl(controlImpl);
       }
+      // }
       this.manageActivation(templateReady);
       controlImpl.addTo(this.map, templateReady);
       if (this.parentPlugin instanceof Plugin) {

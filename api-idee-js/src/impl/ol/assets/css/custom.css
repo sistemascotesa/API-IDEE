@@ -70,8 +70,12 @@ OL3 PERFORMANCE
 }
 
 .ol-zoomslider>button.ol-zoomslider-thumb {
-    background-color: #f0f0f0;
-    border: 1px solid rgba(64, 64, 64, 0.4);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none;
+    background-color: #337AB7;
+    border: 1px solid #FFFFFF;
     border-radius: 20px;
     padding: 0px;
     /*margin: 0px;
@@ -81,6 +85,16 @@ OL3 PERFORMANCE
     /*position: absolute !important;*/
     height: 20px !important;
     width: 20px !important;
+}
+
+.ol-zoomslider > button.ol-zoomslider-thumb:hover {
+    background-color: #B0C4DE;
+    cursor: pointer;
+}
+
+.ol-zoomslider-thumb:active,
+.ol-zoomslider-thumb.ol-dragging {
+    background-color: #004499;
 }
 
 /* Position relative for Firefox because it adds
