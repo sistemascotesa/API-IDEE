@@ -10,7 +10,7 @@ const map = Mmap({
 });
 
 const location = new Location({
-  position: 'down',
+  position: 'left',
 });
 
 map.addControls([
