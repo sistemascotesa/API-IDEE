@@ -269,19 +269,70 @@
     display: none;
 }
 
+/****************
+ * PANZOOMBAR (ZoomSlider Track)
+ *****************/
 .ol-zoomslider {
-    top: 4.5em;
-    left: .5em;
-    height: 200px;
-}
-
-.ol-zoomslider button {
     position: relative;
-    height: 10px;
+    left: .5em;
+    
+    /* Dimensiones del Track (Barra vertical blanca) */
+    height: 192px;
+    width: 5px;
+    
+    /* Apariencia de la barra de Penpot (Barra blanca y redonda) */
+    background-color: #FFFFFF;
+    border-radius: 8px; /* Bordes redondeados para la barra */
+    /* overflow: hidden; */
+    z-index: 5;
+    overflow: visible;
 }
 
 .ol-touch .ol-zoomslider {
     top: 5.5em;
+}
+
+.ol-zoomslider button {
+    position: relative;
+}
+
+
+/****************
+ * PANZOOMBAR THUMB (El Círculo Deslizante)
+ *****************/
+
+.ol-zoomslider > button.ol-zoomslider-thumb {
+    position: absolute;
+    /* Reseteo de estilos nativos (de custom.css) */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none;
+    padding: 0px;
+    
+    /* Apariencia Penpot (Círculo azul y blanco) */
+    background-color: #A9C3E3;
+    border: 2px solid #FFFFFF;
+    border-radius: 50%;
+    
+    height: 22px; 
+    width: 22px; 
+    
+    /* Centrado del Thumb en la Barra (Track) */
+    /* La barra es de 15px, el thumb es de 25px. Margen = (25 - 15) / 2 = 5px */
+    margin-left: -8.5px;
+    /* margin-top: 0; */
+    
+}
+
+.ol-zoomslider > button.ol-zoomslider-thumb:hover {
+    background-color: #004499; 
+    cursor: pointer;
+}
+
+.ol-zoomslider-thumb:active,
+.ol-zoomslider-thumb.ol-dragging {
+    background-color: #004499;
 }
 
 .ol-overviewmap {

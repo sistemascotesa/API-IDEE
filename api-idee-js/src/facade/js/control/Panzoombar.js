@@ -44,7 +44,6 @@ class Panzoombar extends ControlBase {
 
     // Asignar la posición
     this.position = position;
-    this.selfDraw = true;
   }
 
   /**

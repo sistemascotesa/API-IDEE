@@ -9,10 +9,12 @@ const map = Mmap({
   // controls: ['panzoombar'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
+  // maxZoom: 20,
+  // minZoom: 1.90,
 });
 
 const panzoombar = new Panzoombar({
-  position: Position.RIGHT,
+  position: Position.LEFT,
 });
 
 map.addControls([

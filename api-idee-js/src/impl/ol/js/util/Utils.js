@@ -24,6 +24,7 @@ import GeometryCollection from 'ol/geom/GeometryCollection';
 import Circle from 'ol/geom/Circle';
 import OlControlImpl from '../control/Control';
 import OlControlScaleLineImpl from '../control/ScaleLine';
+import OLControlZoomSlider from '../control/Panzoombar';
 
 /**
   * Este método obtiene la cantidad de unidades por
@@ -733,7 +734,8 @@ class Utils {
    */
   static isOlControlImpl(controlImpl) {
     return controlImpl instanceof OlControlImpl
-    || controlImpl instanceof OlControlScaleLineImpl;
+    || controlImpl instanceof OlControlScaleLineImpl
+    || controlImpl instanceof OLControlZoomSlider;
   }
 }
 export default Utils;

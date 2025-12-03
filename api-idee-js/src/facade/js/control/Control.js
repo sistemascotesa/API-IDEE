@@ -115,36 +115,21 @@ class Control extends Base {
     this.map = map;
 
     const buildImpl = (templateReady) => {
-      let controlImpl = this.getImpl(); // instancia de panzoombar impl.
-      // if (this.name !== 'panzoombar') {
-      // Panzoombar no es considerado una impl. de control nativa.
-      if (!this.selfDraw && !isControlImpl(controlImpl)) {
+      let controlImpl = this.getImpl();
+      if (!isControlImpl(controlImpl)) {
         // Consige una implementación de control nueva para un mapa de implementación concreto
         controlImpl = getControlImpl(this.map.getImpl(), controlImpl);
         super.setImpl(controlImpl);
       }
-      // }
       this.manageActivation(templateReady);
-      controlImpl.addTo(this.map, templateReady); // Llama a addTo impl/Panzoombar
-
-      if (this.selfDraw === true) { // Añadir esta condición
-        // El control (Panzoombar/ZoomSlider) ya se añadió al mapa OpenLayers
-        // y no debe ser reubicado por los paneles de la fachada.
-        return;
-      }
-
-      if (this.selfDraw) {
-        // Ejecuta la línea final this.fire(EventType.ADDED_TO_MAP);
-      } else if (this.parentPlugin instanceof Plugin) {
+      controlImpl.addTo(this.map, templateReady);
+      if (this.parentPlugin instanceof Plugin) {
         this.parentPlugin.addControlToPlugin(this);
         this.parentContainer = this.parentPlugin.panel.panelContent;
       } else {
-        // Obtiene el contenedor
         const mapToolsContainer = this.map.getToolsContainer(this.position);
         if (mapToolsContainer) {
           this.setParentContainer(mapToolsContainer);
-          // Mueve el elemento del ZoomSlider al contenedor de la fachada.
-          // Solo si `this.selfDraw` NO es true se debería ejecutar la lógica a continuación.
           this.map.addToolToContainer(mapToolsContainer, controlImpl);
         } else {
           Exception(getValue('exception').invalid_tool_position);
