@@ -10,6 +10,7 @@ import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { compileSync as compileTemplate } from '../util/Template';
 import { getValue } from '../i18n/language';
+import * as Position from '../ui/position';
 
 /**
  * @classdesc
@@ -46,7 +47,8 @@ class Scale extends ControlBase {
      * Order: Orden que tendrá con respecto al
      * resto de plugins y controles por pantalla.
      */
-    this.order = options.order;
+    this.order = options.order >= -1 ? options.order : null;
+    this.position = options.position ?? Position.DOWN;
   }
 
   /**

@@ -1,12 +1,21 @@
 /***********************
      CONTAINER
 ************************/
+:root {
+    --font-color: #fff;
+    --button-border-color: #fff;
+    --control-font-family: 'Roboto', 'sans-serif';
+    --control-font-style: normal;
+    --control-font-weight: 400;
+    --control-font-stretch: 100%;
+}
+
 .m-api-idee-container {
     position: relative;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    font-family: 'Roboto', 'sans-serif';
+    font-family: var(--control-font-family);
     font-size: 13px;
     background-image:
         linear-gradient(45deg, color-mix(in srgb, var(--idee-color-primary) 25%, transparent) 25%, transparent 25%),
@@ -188,18 +197,18 @@
 
 button {
     height: 32px;
-    color: white;
+    color: var(--font-color);
     background-color: var(--idee-color-primary);
     border: 2px solid var(--idee-color-primary);
     border-radius: 4px;
     cursor: pointer;
-    font-family: 'Roboto', 'sans-serif';
+    font-family: var(--control-font-family);
     font-size: 14px;
     transition: all 0.3s ease;
 }
 
 button:hover {
-    color: #fff;
+    color: var(--font-color);
     background-color: var(--idee-color-links);
     border: 2px solid var(--idee-color-links);
     transition: all 0.3s ease;
@@ -222,7 +231,7 @@ button.secondary {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-family: 'Roboto', 'sans-serif';
+    font-family: var(--control-font-family);
     font-size: 14px;
     transition: all 0.3s ease;
 }
@@ -260,7 +269,7 @@ textarea {
     -moz-appearance: none;
     appearance: none;
     color: #6C6C6C;
-    font-family: 'Roboto', 'sans-serif';
+    font-family: var(--control-font-family);
     font-size: 16px;
     transition: all 0.3s ease;
 }
@@ -373,7 +382,7 @@ select {
     border-radius: 4px;
     background: none;
     border: 1px solid #e9ecef;
-    font-family: 'Roboto', 'sans-serif';
+    font-family: var(--control-font-family);
     font-size: 16px;
     height: 32px;
     transition: all 0.3s ease;
@@ -390,7 +399,7 @@ select:focus {
 }
 
 option {
-    font-family: 'Roboto', 'sans-serif';
+    font-family: var(--control-font-family);
     font-size: 16px;
     cursor: pointer;
 }
@@ -430,7 +439,7 @@ a:visited:hover {
 }
 
 .m-control>button {
-    color: #404040;
+    color: var(--font-color);
 }
 
 div.m-control button[class^="g-cartografia-"],
@@ -586,26 +595,28 @@ button::-moz-focus-inner {
 /*** CUSTOM THEME COLORS ***/
 /*** LIGHT BLUE from Navbar: #71A7D3 ***/
 /*** DARK BLUE from Header: #364b5f ***/
-/*** ORANGE from Links & h2: #f1832e ***/
+/*** BACKGROUND COLOR : --idee-color-primary ***/
+/*** BACKGROUND COLOR DARK : --idee-color-primary-links ***/
+/*** BACKGROUND COLOR ACTIVE : --idee-color-primary-dark ***/
 
-/* buttons */
+/* Controls */
 
-.m-areas>div.m-area>div.m-panel.collapsed>button.m-panel-btn,
-.ol-zoom>button,
-.m-areas>div.m-area>div.m-panel,
-.ol-zoomslider>button.ol-zoomslider-thumb,
-.ol-overviewmap.ol-collapsed,
-.m-scale-container,
-.m-wmcselector-container,
-.m-areas>div.m-area>div.m-panel>div.m-panel-controls .m-mouse-position,
+/* .m-areas>div.m-area>div.m-panel>div.m-panel-controls .m-mouse-position,
 .m-areas>div.m-area>div.m-panel.m-geosearch>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.m-searchstreet>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.m-searchstreetgeosearch>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.m-tools>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.m-edition>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.m-printer>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-layerswitcher>button.m-panel-btn {
-    background-color: #71A7D3 !important;
+.m-areas>div.m-area>div.m-panel.m-layerswitcher>button.m-panel-btn,
+.m-areas>div.m-area>div.m-panel.collapsed>button.m-panel-btn, */
+.ol-zoom>button,
+.m-areas>div.m-area>div.m-panel,
+.ol-zoomslider>button.ol-zoomslider-thumb,
+.ol-overviewmap.ol-collapsed,
+.m-scale-container,
+.m-wmcselector-container {
+    background-color: var(--idee-color-primary-links) !important;
     opacity: 1;
 }
 
@@ -638,8 +649,10 @@ div.m-control button[class^=g-cartografia-],
 .m-mouse-position,
 .m-scale-container>.m-unit:before,
 .m-scale-container {
-    color: var(--idee-color-primary);
-    border: 2px solid white;
+    font-family: var(--control-font-family);
+    color: var(--font-color);
+    background-color: var(--idee-color-primary);
+    border: 2px solid var(--button-border-color);
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -665,7 +678,7 @@ div.m-control button[class^=g-cartografia-]:hover,
 .m-mouse-position:hover,
 .m-scale-container>.m-unit:before:hover,
 .m-scale-container {
-    color: var(--idee-color-primary-links) !important;
+    background-color: var(--idee-color-primary-links) !important;
 }
 
 .m-left .m-panel.opened div.m-control button[class^=g-cartografia-] {
@@ -677,7 +690,7 @@ div.m-control button[class^=g-cartografia-]:hover,
 /* secondary color */
 
 .m-printer-container>div.button {
-    background-color: #364b5f !important;
+    background-color: var(--idee-color-primary-dark) !important;
 }
 
 /* aditional colors */
@@ -703,12 +716,6 @@ div.m-control button[class^=g-cartografia-]:hover,
 
 .m-areas>div.m-area>div.m-panel>div.m-panel-controls {
     border-radius: 0;
-}
-
-.m-areas>div.m-area>div.m-panel.opened.m-location,
-/* .m-areas>div.m-area>div.m-panel.opened.m-rotate, */
-.m-areas>div.m-area>div.m-panel.opened.m-geosearchbylocation {
-    background-color: #71A7D3 !important;
 }
 
 .layer .m-title {

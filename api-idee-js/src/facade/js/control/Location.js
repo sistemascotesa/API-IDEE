@@ -10,6 +10,7 @@ import ControlBase from './Control';
 import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { compileSync as compileTemplate } from '../util/Template';
+import * as Position from '../ui/position';
 
 /**
  * @classdesc
@@ -25,13 +26,23 @@ class Location extends ControlBase {
    * posición en el mapa.
    *
    * @constructor
-   * @param {Boolean} tracking Seguimiento de localización, por defecto verdadero.
-   * @param {Boolean} highAccuracy Alta precisión del rastreo, por defecto falso.
-   * @param {Object} vendorOptions  Opciones de proveedor para la biblioteca base,
-   * por defecto objeto vacío. Estos valores no son "settable".
+   * @param {Object} options recibe las opciones de configuración por defecto
+   * position: {@link Position posicion}
+   * @example
+   * new Location({
+   *  position: "left",
+   *  tracking: true,
+   *  highAccuracy: false,
+   *  vendorOptions: {}
+   * })
    * @api
    */
-  constructor(tracking = true, highAccuracy = false, vendorOptions = {}) {
+  constructor(options = {}) {
+    const position = options.position ?? Position.LEFT;
+    const tracking = options.tracking ?? true;
+    const highAccuracy = options.highAccuracy ?? false;
+    const vendorOptions = options.vendorOptions ?? {};
+
     if (isUndefined(LocationImpl) || (isObject(LocationImpl)
       && isNullOrEmpty(Object.keys(LocationImpl)))) {
       Exception(getValue('exception').location_method);
@@ -42,6 +53,11 @@ class Location extends ControlBase {
 
     // calls the super constructor
     super(Location.NAME, impl);
+
+    this.position = position;
+    this.tracking = tracking;
+    this.highAccuracy = highAccuracy;
+    this.vendorOptions = vendorOptions;
   }
 
   /**
@@ -54,11 +70,15 @@ class Location extends ControlBase {
    * @api
    */
   createView(map) {
-    return compileTemplate(locationTemplate, {
+    const element = compileTemplate(locationTemplate, {
       vars: {
         title: getValue('location').title,
       },
     });
+
+    this.element = element;
+
+    return element;
   }
 
   /**
@@ -73,6 +93,10 @@ class Location extends ControlBase {
    * @export
    */
   getActivationButton(element) {
+    if (!element) {
+      return null;
+    }
+
     return element.querySelector('button#m-location-button');
   }
 

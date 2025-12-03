@@ -2,6 +2,7 @@ import { map as Mmap } from 'IDEE/api-idee';
 import Panzoombar from 'IDEE/control/Panzoombar';
 import * as Position from 'IDEE/ui/position';
 // import ScaleLine from 'IDEE/control/ScaleLine';
+// import Scale from 'IDEE/control/Scale';
 
 const map = Mmap({
   container: 'map',
@@ -32,3 +33,11 @@ map.addControls([
 // });
 
 // map.addControls(scaleLine);
+
+/** ----------------------------------------------------------------------------------- */
+
+// const scale = new Scale({
+//   position: 'right',
+// });
+
+// map.addControls(scale);

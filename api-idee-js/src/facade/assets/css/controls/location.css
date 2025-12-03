@@ -3,24 +3,21 @@
     left: 600px;
 }
 
-.m-location-container.m-locating>button#m-location-button:before {
+/* .m-location-container.m-locating>button#m-location-button:before {
     animation: mloading 1s linear infinite;
     position: absolute;
-    /* left: 10px;
-    top: 15px; */
     left: 11px;
     top: 11px;
 }
 
 .m-location-container.m-locating>button#m-location-button {
-    /* padding: 0; */
     padding: 8px;
 }
 
 .m-location-container>button#m-location-button {
     border: 2px solid white !important;
     border-radius: 50% !important;
-}
+} */
 
 /* DELETE AFTER FIX */
 
