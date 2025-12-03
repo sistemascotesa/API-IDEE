@@ -1,6 +1,6 @@
 import ImplCesiumControl from '../../cesium/js/control/Control';
 import ImplLeafetControl from '../../leaflet/js/control/Control';
-import Utils from '../../ol/js/util/Utils';
+import OlControlImpl from '../../ol/js/control/Control';
 
 /**
  * @param {null|Object|ImplOlControl|ImplCesiumControl|ImplLeafetControl} control
@@ -10,7 +10,7 @@ import Utils from '../../ol/js/util/Utils';
 const isControlImpl = (control) => {
   return control instanceof ImplLeafetControl
   || control instanceof ImplCesiumControl
-  || Utils.isOlControlImpl(control);
+  || control instanceof OlControlImpl;
 };
 
 export default isControlImpl;

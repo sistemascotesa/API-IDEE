@@ -22,8 +22,6 @@ import MultiLineString from 'ol/geom/MultiLineString';
 import MultiPolygon from 'ol/geom/MultiPolygon';
 import GeometryCollection from 'ol/geom/GeometryCollection';
 import Circle from 'ol/geom/Circle';
-import OlControlImpl from '../control/Control';
-import OlControlScaleLineImpl from '../control/ScaleLine';
 
 /**
   * Este método obtiene la cantidad de unidades por
@@ -720,20 +718,6 @@ class Utils {
       return resolution;
     };
     return calculateResolution(scale);
-  }
-
-  /**
-   * @function
-   * @param {any} controlImpl se espera un control de implementación de open layers
-   * @returns {Boolean} Devuelve verdadero siempre que el control en cuestión sea
-   * una implementación válida para nuestro entorno de implementaciones de control
-   * dado que no todas ellas extienden de la misma clase OlControl
-   * @public
-   * @api
-   */
-  static isOlControlImpl(controlImpl) {
-    return controlImpl instanceof OlControlImpl
-    || controlImpl instanceof OlControlScaleLineImpl;
   }
 }
 export default Utils;

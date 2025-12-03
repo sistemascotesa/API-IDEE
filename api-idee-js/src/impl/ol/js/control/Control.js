@@ -2,6 +2,7 @@
  * @module IDEE/impl/Control
  */
 import OLControl from 'ol/control/Control';
+import ControlBase from '../../../common/control/ControlBase';
 
 /**
  * @classdesc
@@ -9,38 +10,16 @@ import OLControl from 'ol/control/Control';
  * crea el "OLControl".
  * @api
  */
-class Control extends OLControl {
+class Control extends ControlBase {
   /**
-   * Constructor principal de la clase.
-   *
-   * @constructor
-   * @extends {OLControl}
-   * @api stable
-   */
-  constructor() {
-    super({});
-    /**
-     * @private
-     * @type {string}
-     * @expose
-     */
-    this.facadeMap_ = null;
-  }
-
-  /**
-   * Este método añade el control al mapa.
-   *
-   * @public
-   * @function
+   * Este método construye el control de implementación
    * @param {IDEE.Map} map Mapa.
-   * @param {HTML} template Plantilla del control.
-   * @api stable
-   * @export
+   * @param {HTML} view Plantilla del control.
+   * @param {*} controlImpl
    */
-  addTo(map, template) {
+  build(map, view) {
     this.facadeMap_ = map;
-    this.element = template;
-    map.getMapImpl().addControl(this);
+    this.control_ = new OLControl(this.vendorOptions_);
   }
 
   /**
@@ -52,34 +31,8 @@ class Control extends OLControl {
    * @api stable
    */
   getView() {
-    return this.panel ?? this.element;
-  }
-
-  /**
-   * Este método destruye este control, limpiando el HTML
-   * y anulando el registro de todos los eventos.
-   *
-   * @public
-   * @function
-   * @api stable
-   * @export
-   */
-  destroy() {
-    this.facadeMap_.getMapImpl().removeControl(this);
-    this.facadeMap_ = null;
-  }
-
-  /**
-   * Este método retorna los elementos.
-   *
-   * @public
-   * @function
-   * @returns {HTMLElement} Elementos.
-   * @api stable
-   * @export
-   */
-  getElement() {
-    return this.element;
+    const controlImpl = this.getControlImpl();
+    return controlImpl.panel ?? controlImpl.element;
   }
 }
 

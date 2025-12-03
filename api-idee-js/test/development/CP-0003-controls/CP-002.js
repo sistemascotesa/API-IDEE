@@ -5,8 +5,8 @@ import { map as Mmap } from 'IDEE/api-idee';
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
-  controls: ['scale*false', 'scaleline', 'panzoom', 'panzoombar'],
-  // controls: ['scaleline'],
+  // controls: ['scale*false', 'scaleline', 'panzoom', 'panzoombar'],
+  controls: ['scaleline'],
   // controls: ['scale'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
@@ -23,6 +23,7 @@ const map = Mmap({
 // });
 
 // map.addControls(scaleLine);
+// map.removeControls(scaleLine);
 
 /** ----------------------------------------------------------------------------------- */
 

@@ -114,15 +114,16 @@ class Control extends Base {
   addTo(map) {
     this.map = map;
 
-    const buildImpl = (templateReady) => {
+    const buildImpl = (viewReady) => {
       let controlImpl = this.getImpl();
       if (!isControlImpl(controlImpl)) {
         // Consige una implementación de control nueva para un mapa de implementación concreto
         controlImpl = getControlImpl(this.map.getImpl(), controlImpl);
         super.setImpl(controlImpl);
       }
-      this.manageActivation(templateReady);
-      controlImpl.addTo(this.map, templateReady);
+      this.manageActivation(viewReady);
+      controlImpl.build();
+      controlImpl.addTo(this.map, viewReady);
       if (this.parentPlugin instanceof Plugin) {
         this.parentPlugin.addControlToPlugin(this);
         this.parentContainer = this.parentPlugin.panel.panelContent;
@@ -138,13 +139,13 @@ class Control extends Base {
       this.fire(EventType.ADDED_TO_MAP);
     };
 
-    const template = this.createView(map);
-    if (template instanceof Promise) {
-      template.then((templateReady) => {
-        buildImpl(templateReady);
+    const view = this.createView(map);
+    if (view instanceof Promise) {
+      view.then((viewReady) => {
+        buildImpl(viewReady);
       });
     } else { // view is an HTML or text
-      buildImpl(template);
+      buildImpl(view);
     }
   }
 
@@ -268,8 +269,8 @@ class Control extends Base {
    * @api
    * @export
    */
-  getElement() {
-    return this.getImpl().getElement();
+  getView() {
+    return this.getImpl().getView();
   }
 
   /**
@@ -281,7 +282,7 @@ class Control extends Base {
    * @export
    */
   destroy() {
-    this.parentContainer.removeChild(this.getElement());
+    this.parentContainer.removeChild(this.getView());
   }
 }
 

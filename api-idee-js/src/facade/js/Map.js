@@ -2958,21 +2958,22 @@ class Map extends Base {
                   if (!isNaN(p)) paramsScale.order = Number(p);
                 });
                 control = new Scale(paramsScale);
-                panel = this.getPanels('map-info')[0];
-                if (isNullOrEmpty(panel)) {
-                  panel = new Panel('map-info', {
-                    collapsible: false,
-                    className: 'm-map-info',
-                    position: Position.CBR,
-                    order: (paramsScale.order) ? paramsScale.order : null,
-                  });
-                  panel.on(EventType.ADDED_TO_MAP, (html) => {
-                    if (this.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
-                      this.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
-                    }
-                  });
-                }
-                panel.addClassName('m-with-scale');
+                // panel = this.getPanels('map-info')[0];
+                // if (isNullOrEmpty(panel)) {
+                //   panel = new Panel('map-info', {
+                //     collapsible: false,
+                //     className: 'm-map-info',
+                //     position: Position.CBR,
+                //     order: (paramsScale.order) ? paramsScale.order : null,
+                //   });
+                //   panel.on(EventType.ADDED_TO_MAP, (html) => {
+                //     if (this.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
+                // eslint-disable-next-line max-len
+                //     this.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
+                //     }
+                //   });
+                // }
+                // panel.addClassName('m-with-scale');
                 break;
               case ScaleLine.NAME:
                 control = new ScaleLine();
