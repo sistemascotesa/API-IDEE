@@ -1,11 +1,13 @@
 import { map as Mmap } from 'IDEE/api-idee';
 // import ScaleLine from 'IDEE/control/ScaleLine';
+import Scale from 'IDEE/control/Scale';
 
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
   // controls: ['scale*false', 'scaleline', 'panzoom', 'panzoombar'],
-  controls: ['scaleline'],
+  // controls: ['scaleline'],
+  // controls: ['scale'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
 });
@@ -21,3 +23,11 @@ const map = Mmap({
 // });
 
 // map.addControls(scaleLine);
+
+/** ----------------------------------------------------------------------------------- */
+
+const scale = new Scale({
+  // position: 'right',
+});
+
+map.addControls(scale);
