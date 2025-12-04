@@ -52,12 +52,7 @@ class Plugin extends Base {
     });
     map.addButtons(this.button);
 
-    this.panel = new Panel(this.name, {
-      tooltip: this.tooltip,
-      position: this.position,
-      minWidth: this.minPanelWidth,
-      maxWidth: this.maxPanelWidth,
-    });
+    this.createPanel();
     map.addPanels(this.panel);
 
     this.button.panel = this.panel;
@@ -67,13 +62,31 @@ class Plugin extends Base {
   }
 
   /**
+   * Crea un panel para el plugin si no existe
+   *
+   * @public
+   * @function
+   * @api
+   */
+  createPanel() {
+    if (isNullOrEmpty(this.panel)) {
+      this.panel = new Panel(this.name, {
+        tooltip: this.tooltip,
+        position: this.position,
+        minWidth: this.minPanelWidth,
+        maxWidth: this.maxPanelWidth,
+      });
+    }
+  }
+
+  /**
    * Añade la vista al mapa.
    * @public
    * @function
    * @param {IDEE.Map} map Añade la vista al mapa.
    * @api
    */
-  createView(map) {}
+  createView(map) { }
 
   addControl(controlsParamVar) {
     let controlsParam = controlsParamVar;
@@ -109,10 +122,9 @@ class Plugin extends Base {
   }
 
   addControlToPlugin(control) {
-    if (isNullOrEmpty(this.panel.panelContent)) {
-      this.panel.createContentPanel();
-    }
-    this.panel.panelContent.appendChild(control.getImpl().element);
+    this.createPanel();
+    this.panel.createContentPanel();
+    this.panel.panelContent.appendChild(control.getImpl().getView());
   }
 
   addTool(toolsParamVar) {
