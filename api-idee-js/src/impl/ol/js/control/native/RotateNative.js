@@ -1,0 +1,79 @@
+/**
+ * @module IDEE/impl/control/Rotate
+ */
+import OlControl from 'ol/control/Control';
+
+/**
+ * @classdesc
+ * Agrega la funcionalidad para rotar el mapa para que el norte esté arriba.
+ *
+ * @param {Object} vendorOptions Opciones para la biblioteca base.
+ * - element. Contenedor del control.
+ * - target. Elemento donde se va a añadir el control.
+ * - render. Función que devuelve el HTML del control.
+ * @api
+ */
+class RotateNative extends OlControl {
+  /**
+   * Constructor principal de la clase.
+   *
+   * @constructor
+   * @extends {ol.control.Control}
+   * @api stable
+   */
+  constructor(vendorOptions) {
+    super(vendorOptions);
+
+    this.facadeMap_ = null;
+  }
+
+  /**
+   * Este método añade el control al mapa.
+   *
+   * @public
+   * @function
+   * @param {IDEE.Map} map Mapa implementación
+   * @param {function} template Plantilla del control.
+   * @param {HTML} parentContainer Plantilla del mapa que contiene este control.
+   * @api stable
+   */
+  build(map, template) {
+    const olMap = map.getMapImpl();
+    // panel que envuelve el control, no es padre
+    this.panel = template;
+    // REV_OL
+    // El funcionamiento por defecto en OL es mostrar el control oculto
+    // En api-idee por defecto vamos a mostrar si alguien lo pone se interpreta
+    // que es para usarlo en un contexto de uso para su visualización sobre el mapa
+    // if (this.parentContainer) {
+    // this.panel.style.display = 'none';
+    // }
+    this.panel.querySelector('button').addEventListener('click', () => {
+      olMap.getView().setRotation(0);
+    });
+
+    this.addRotationEvent(olMap);
+
+    olMap.on('change:view', (e) => {
+      this.addRotationEvent(e.target);
+    });
+  }
+
+  /**
+   * Gira el icono junto con la vista.
+   * @public
+   * @function
+   * @api
+   * @param {ol.Map} olMap Mapa de OpenLayers.
+   */
+  addRotationEvent(olMap) {
+    olMap.getView().on('change:rotation', (ev) => {
+      const newView = ev.target;
+      const rotation = newView.getRotation();
+      const iconRotation = `rotate(${(rotation * 360) / (2 * Math.PI)}deg)`;
+      this.panel.querySelector('button').style.transform = iconRotation;
+    });
+  }
+}
+
+export default RotateNative;

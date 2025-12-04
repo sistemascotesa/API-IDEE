@@ -61,6 +61,9 @@ class ScaleLineNative extends OLControlScaleLine {
   constructor(vendorOptions) {
     super(vendorOptions);
     this.keyEvent_ = null;
+
+    this.removeChangeListener(UNITS_PROP, this.handleUnitsChanged);
+    this.keyEvent = this.addChangeListener(UNITS_PROP, this.handleUnitsChanged);
   }
 
   /**

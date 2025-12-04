@@ -122,7 +122,6 @@ class Control extends Base {
         super.setImpl(controlImpl);
       }
       this.manageActivation(viewReady);
-      controlImpl.build();
       controlImpl.addTo(this.map, viewReady);
       if (this.parentPlugin instanceof Plugin) {
         this.parentPlugin.addControlToPlugin(this);

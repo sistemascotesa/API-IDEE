@@ -9,51 +9,93 @@
  */
 class ControlBase {
   /**
+   * @returns una instancia del control nativo compatible con la impleementación
+   */
+  get controlNative() {
+    return this.controlNative_;
+  }
+
+  /**
+   * guarda una instancia del control nativo compatible con la implementación
+   */
+  set controlNative(controlImpl) {
+    this.controlNative_ = controlImpl;
+  }
+
+  /**
+   * @returns una estancia del mapa de fachada
+   */
+  get facadeMap() {
+    return this.facadeMap_;
+  }
+
+  /**
+   * guarda una estancia del mapa de fachada
+   */
+  set facadeMap(facadeMap) {
+    this.facadeMap_ = facadeMap;
+  }
+
+  /**
    * Constructor principal de la clase.
-   *
+   * @param {Object} vendorOptions opciones para el control nativo alojado en la implementación
+   * - facadeMap_ mapa de fachada
+   * - view_ vista que representa al control de implementación
+   * - controlNative_ control nativo alojado que opera en el mapa implementado
    * @constructor
    * @api stable
    */
   constructor(vendorOptions = {}) {
-    this.facadeMap_ = null;
-    this.control_ = null;
-    this.view_ = null;
     this.vendorOptions_ = vendorOptions ?? {};
-  }
-
-  /**
-   * @returns una instancia de control de implementación compatible con el mapa de fachada
-   */
-  getControlImpl() {
-    return this.control_;
+    this.facadeMap_ = null;
+    this.view_ = null;
+    this.controlNative_ = null;
   }
 
   /**
    * Este método construye el control de implementación
    *
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
-   * @param {*} controlImpl
+   * @param {IDEE.Map} map Mapa.
+   * @param {HTMLElement} view Plantilla del control.
    */
-  build(controlImpl) {
-    this.control_ = controlImpl;
+  build(map, view) {
+    this.facadeMap = map;
+    this.setView(view);
   }
 
   /**
-  * Este método añade el control al mapa.
+   * Este método construye el control de implementación
+   *
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @param {*} controlNative control nativo compatible con el mapa implementado
+   */
+  buildControlNative(controlNative) {}
+
+  /**
+  * Este método añade el control al mapa implementado.
   *
   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
-  * @param {IDEE.Map} map Mapa.
-  * @param {HTMLElement} view Plantilla del control.
   * @public
   * @function
+  * @param {IDEE.Map} map Mapa.
+  * @param {HTMLElement} view Plantilla del control.
   * @api stable
   * @export
   */
   addTo(map, view) {
-    this.facadeMap_ = map;
-    this.view_ = view;
-    this.facadeMap_.getMapImpl().addControl(this.getControlImpl());
+    this.build(map, view);
+    this.buildControlNative();
+    this.facadeMap.getMapImpl().addControl(this.controlNative);
+    this.afterAddTo();
   }
+
+  /**
+   * Método que se dispara justo después de que el control nativo se agrega al mapa.
+   *
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   */
+  afterAddTo() {}
 
   /**
    * Establece la vista del control de implementación
@@ -73,7 +115,7 @@ class ControlBase {
    *
    * @public
    * @function
-   * @return {HTMLElement} Vista Opciones para el control de implementación
+   * @return {HTMLElement} Vista para el control de implementación
    * @api stable
    */
   getView() {
@@ -103,8 +145,10 @@ class ControlBase {
    * @export
    */
   destroy() {
-    this.facadeMap_.getMapImpl().removeControl(this.control_);
-    this.facadeMap_ = null;
+    this.facadeMap.getMapImpl().removeControl(this.controlNative);
+    this.vendorOptions_ = null;
+    this.controlNative = null;
+    this.facadeMap = null;
   }
 }
 

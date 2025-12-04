@@ -3,7 +3,7 @@
 */
 
 import Control from './Control';
-import ScaleLineNative, { UNITS_PROP } from './control-native/ScaleLineNative';
+import ScaleLineNative from './native/ScaleLineNative';
 
 /**
  * @classdesc
@@ -11,14 +11,13 @@ import ScaleLineNative, { UNITS_PROP } from './control-native/ScaleLineNative';
  * @api
  */
 class ScaleLine extends Control {
-  build() {
-    this.control_ = new ScaleLineNative(this.vendorOptions_);
+  /** Overrides original getView to get native ol view */
+  getView() {
+    return this.controlNative.element;
   }
 
-  addTo(map, view) {
-    this.control_.removeChangeListener(UNITS_PROP, this.handleUnitsChanged);
-    this.control_.keyEvent = this.control_.addChangeListener(UNITS_PROP, this.handleUnitsChanged);
-    super.addTo(map, view);
+  buildControlNative(controlNative) {
+    this.controlNative = new ScaleLineNative(this.vendorOptions_);
   }
 }
 

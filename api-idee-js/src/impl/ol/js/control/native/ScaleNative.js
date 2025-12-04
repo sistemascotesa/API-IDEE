@@ -51,7 +51,14 @@ const updateElement = (container, map) => {
  * Agregar escala numérica.
  * @api
  */
-class Scale extends OlControl {
+class ScaleNative extends OlControl {
+  /**
+   * guarda una estancia del mapa de fachada
+   */
+  set facadeMap(facadeMap) {
+    this.facadeMap_ = facadeMap;
+  }
+
   /**
    * Constructor principal de la clase.
    *
@@ -65,32 +72,27 @@ class Scale extends OlControl {
    */
   constructor(options = {}) {
     super(options);
-    this.facadeMap_ = null;
   }
 
   /**
-   * Este método agrega el control al mapa.
+   * Constructor para gobernar el control
    *
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
    * @param {IDEE.Map} map Mapa.
-   * @param {function} element Plantilla del control.
+   * @param {IDEE.Map} view vista.
    * @api stable
    */
-  addTo(map, element) {
+  build(map, view) {
     const scaleId = 'm-scale-span';
     const zoomLevel = 'm-level-number';
-
     this.facadeMap_ = map;
-    this.scaleContainer_ = element.querySelector('#'.concat(scaleId));
-    this.zoomLevelContainer_ = element.querySelector('#'.concat(zoomLevel));
-    this.element = element;
+    this.scaleContainer_ = view.querySelector('#'.concat(scaleId));
+    this.zoomLevelContainer_ = view.querySelector('#'.concat(zoomLevel));
     this.render = this.renderCB;
     this.target_ = null;
     this.previousScale_ = null;
-    map.getMapImpl().addControl(this);
-    this.addZoomLevelListeners();
-    this.addScaleListeners();
   }
 
   /**
@@ -205,4 +207,4 @@ class Scale extends OlControl {
   }
 }
 
-export default Scale;
+export default ScaleNative;

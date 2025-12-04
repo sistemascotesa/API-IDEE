@@ -2,6 +2,7 @@
  * @module IDEE/impl/control/Rotate
  */
 import Control from './Control';
+import RotateNative from './native/RotateNative';
 
 /**
  * @classdesc
@@ -14,100 +15,15 @@ import Control from './Control';
  * @api
  */
 class Rotate extends Control {
-  /**
-   * Constructor principal de la clase.
-   *
-   * @constructor
-   * @extends {ol.control.Control}
-   * @api stable
-   */
-  constructor(vendorOptions) {
-    super(vendorOptions);
-
-    this.facadeMap_ = null;
+  /** Overrides original getView to get native ol view */
+  getView() {
+    return this.controlNative.panel;
   }
 
-  /**
-   * Este método añade el control al mapa.
-   *
-   * @public
-   * @function
-   * @param {IDEE.Map} map Map.
-   * @param {function} template Plantilla del control.
-   * @param {HTML} parentContainer Plantilla del mapa que contiene este control.
-   * @api stable
-   */
-  addTo(map, template) {
-    super.addTo(map, template);
-    const olMap = map.getMapImpl();
-    // panel que envuelve el control, no es padre
-    this.panel = template;
-    // REV_OL
-    // El funcionamiento por defecto en OL es mostrar el control oculto
-    // En api-idee por defecto vamos a mostrar si alguien lo pone se interpreta
-    // que es para usarlo en un contexto de uso para su visualización sobre el mapa
-    // if (this.parentContainer) {
-    // this.panel.style.display = 'none';
-    // }
-    this.panel.querySelector('button').addEventListener('click', () => {
-      olMap.getView().setRotation(0);
-    });
-
-    this.addRotationEvent(olMap);
-
-    olMap.on('change:view', (e) => {
-      this.addRotationEvent(e.target);
-    });
-  }
-
-  /**
-   * Gira el icono junto con la vista.
-   * @public
-   * @function
-   * @api
-   * @param {ol.Map} olMap Mapa de OpenLayers.
-   */
-  addRotationEvent(olMap) {
-    olMap.getView().on('change:rotation', (ev) => {
-      const newView = ev.target;
-      const rotation = newView.getRotation();
-      const iconRotation = `rotate(${(rotation * 360) / (2 * Math.PI)}deg)`;
-      this.panel.querySelector('button').style.transform = iconRotation;
-    });
-  }
-
-  /**
-   * Retorna los elementos del control.
-   *
-   * @public
-   * @function
-   * @api stable
-   */
-  getElement() {
-    return this.element;
-  }
-
-  /**
-   * Esta función destruye este control, limpiando el HTML y anula el registro de todos los eventos.
-   *
-   * @public
-   * @function
-   * @api stable
-   * @export
-   */
-  destroy() {
-    this.facadeMap_.getMapImpl().removeControl(this);
-    this.facadeMap_ = null;
+  buildControlNative(controlNative) {
+    this.controlNative = new RotateNative(this.vendorOptions_);
+    this.controlNative.build(this.facadeMap, this.view_);
   }
 }
-
-/**
- * ID del panel.
- * @const
- * @type {string}
- * @public
- * @api stable
- */
-Rotate.PANEL_ID = 'm-rotate-panel';
 
 export default Rotate;
