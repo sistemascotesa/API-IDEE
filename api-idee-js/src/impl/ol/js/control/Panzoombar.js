@@ -42,15 +42,6 @@ class Panzoombar extends OLControlZoomSlider {
   addTo(map, element) {
     this.facadeMap_ = map;
     const olMap = map.getMapImpl();
-    const view = olMap.getView();
-    if (view) {
-      view.setMinZoom(1.90);
-      view.setMaxZoom(20);
-
-      // Si la implementación del mapa no maneja esto automáticamente:
-      // map.setMinZoom(1.90);
-      // map.setMaxZoom(20);
-    }
     super.setMap(olMap); // OL añade el control a su sistema interno.
 
     olMap.addControl(this); // OL añade el elemento al DOM en la posición OL por defecto

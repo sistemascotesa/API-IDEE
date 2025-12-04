@@ -9,9 +9,9 @@ const map = Mmap({
   projection: 'EPSG:3857',
   // controls: ['panzoombar'],
   center: [-443273.10081370454, 4757481.749296248],
-  zoom: 6,
-  // maxZoom: 20,
-  // minZoom: 1.90,
+  zoom: 5,
+  maxZoom: 20,
+  minZoom: 1.90,
 });
 
 const panzoombar = new Panzoombar({

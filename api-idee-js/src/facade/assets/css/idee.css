@@ -612,7 +612,7 @@ button::-moz-focus-inner {
 .m-areas>div.m-area>div.m-panel.collapsed>button.m-panel-btn, */
 .ol-zoom>button,
 .m-areas>div.m-area>div.m-panel,
-.ol-zoomslider>button.ol-zoomslider-thumb,
+/* .ol-zoomslider>button.ol-zoomslider-thumb, */
 .ol-overviewmap.ol-collapsed,
 .m-scale-container,
 .m-wmcselector-container {
@@ -648,6 +648,7 @@ div.m-control button[class^=g-cartografia-],
 .m-mouse-position:before,
 .m-mouse-position,
 .m-scale-container>.m-unit:before,
+/* .ol-zoomslider>button.ol-zoomslider-thumb, */
 .m-scale-container {
     font-family: var(--control-font-family);
     color: var(--font-color);
@@ -700,7 +701,7 @@ div.m-control button[class^=g-cartografia-]:hover,
 }
 
 .ol-zoomslider>button.ol-zoomslider-thumb {
-    border: 2px solid white;
+    /* border: 2px solid white; */
 }
 
 .m-areas>div.m-area>div.m-panel.opened {
