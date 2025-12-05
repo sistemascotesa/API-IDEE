@@ -48,7 +48,7 @@ class ControlBase {
   constructor(vendorOptions = {}) {
     this.vendorOptions_ = vendorOptions ?? {};
     this.facadeMap_ = null;
-    this.view_ = null;
+    this.element = null;
     this.controlNative_ = null;
   }
 
@@ -61,7 +61,7 @@ class ControlBase {
    */
   build(map, view) {
     this.facadeMap = map;
-    this.setView(view);
+    this.setElement(view);
   }
 
   /**
@@ -98,28 +98,28 @@ class ControlBase {
   afterAddTo() {}
 
   /**
-   * Establece la vista del control de implementación
+   * Guarda todos los elementos de la implementación.
    *
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
-   * @param {HTMLElement} view vista de implementación
+   * @param {HTMLElement} element vista de implementación
    * @api stable
    */
-  setView(view) {
-    this.view_ = view;
+  setElement(element) {
+    this.element = element;
   }
 
   /**
-   * Devuelve la vista de implementación
+   * Devuelve todos los elementos de la implementación.
    *
    * @public
    * @function
    * @return {HTMLElement} Vista para el control de implementación
    * @api stable
    */
-  getView() {
-    return this.view_;
+  getElement() {
+    return this.element;
   }
 
   /**

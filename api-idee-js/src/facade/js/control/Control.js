@@ -268,8 +268,8 @@ class Control extends Base {
    * @api
    * @export
    */
-  getView() {
-    return this.getImpl().getView();
+  getElement() {
+    return this.getImpl().getElement();
   }
 
   /**
@@ -281,7 +281,7 @@ class Control extends Base {
    * @export
    */
   destroy() {
-    this.parentContainer.removeChild(this.getView());
+    this.parentContainer.removeChild(this.getElement());
   }
 }
 

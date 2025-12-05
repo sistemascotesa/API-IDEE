@@ -15,14 +15,10 @@ import RotateNative from './native/RotateNative';
  * @api
  */
 class Rotate extends Control {
-  /** Overrides original getView to get native ol view */
-  getView() {
-    return this.controlNative.panel;
-  }
-
   buildControlNative(controlNative) {
     this.controlNative = new RotateNative(this.vendorOptions_);
-    this.controlNative.build(this.facadeMap, this.view_);
+    this.controlNative.build(this.facadeMap, this.element);
+    this.setElement(this.controlNative.panel);
   }
 }
 

@@ -12,7 +12,7 @@ import ScaleLineNative from './native/ScaleLineNative';
  */
 class ScaleLine extends Control {
   /** Overrides original getView to get native ol view */
-  getView() {
+  getElement() {
     return this.controlNative.element;
   }
 

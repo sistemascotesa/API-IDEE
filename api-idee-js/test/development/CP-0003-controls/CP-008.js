@@ -1,19 +1,19 @@
 import { map as Mmap } from 'IDEE/api-idee';
 // import Plugin from 'IDEE/Plugin';
 // import Control from 'IDEE/control/Control';
-// import Rotate from 'IDEE/control/Rotate';
+import Rotate from 'IDEE/control/Rotate';
 
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
-  controls: ['rotate'],
+  // controls: ['rotate'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
 });
 
-// const rotate = new Rotate({
-//   position: 'down',
-// });
+const rotate = new Rotate({
+  position: 'down',
+});
 
 // const spainFlatControl = new Control('SpainFlat', {
 //   tooltip: 'spain',
@@ -31,9 +31,9 @@ const map = Mmap({
 
 // map.addPlugin(pluginRight);
 
-// map.addControls([
-//   // rotate,
-//   spainFlatControl,
-// ]);
+map.addControls([
+  rotate,
+  // spainFlatControl,
+]);
 
-// map.removeControls(rotate);
+map.removeControls(rotate);

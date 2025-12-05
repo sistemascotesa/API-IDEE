@@ -3191,7 +3191,7 @@ class Map extends Base {
   */
   addToolToContainer(container, toolImpl) {
     // container.replaceChildren([]);
-    container.appendChild(toolImpl.getView());
+    container.appendChild(toolImpl.getElement());
   }
 
   /**

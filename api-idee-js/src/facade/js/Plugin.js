@@ -121,10 +121,13 @@ class Plugin extends Base {
     return this;
   }
 
+  /**
+   * @param {Control} control
+   */
   addControlToPlugin(control) {
     this.createPanel();
     this.panel.createContentPanel();
-    this.panel.panelContent.appendChild(control.getImpl().getView());
+    this.panel.panelContent.appendChild(control.getImpl().getElement());
   }
 
   addTool(toolsParamVar) {
