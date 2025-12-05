@@ -477,6 +477,43 @@ export const zoomConstrains = (enableIntermediateZooms) => {
 };
 
 /**
+ * Analiza el parámetro multiWorld del usuario especificado
+ * en un booleano o cadena de texto.
+ *
+ * @param {Boolean|String} multiWorldParam Parámetro multiWorld especificado.
+ * @returns {Boolean} Devuelve true si multiWorld está activo, false en caso contrario.
+ * @public
+ * @function
+ * @api
+ * @throws {IDEE.exception} Si el parámetro no es especificado o de tipo no soportado.
+ */
+export const multiWorld = (multiWorldParam) => {
+  let multiWorldVar;
+
+  // checks if the param is null or empty
+  if (isNullOrEmpty(multiWorldParam)) {
+    Exception(getValue('exception').no_multiworld);
+  }
+
+  // boolean
+  if (typeof multiWorldParam === 'boolean') {
+    multiWorldVar = multiWorldParam ? 1 : 0;
+  // object
+  } else {
+    const lowerCaseParameter = multiWorldParam.toLowerCase();
+
+    if (lowerCaseParameter === 'true' || lowerCaseParameter === 'false') {
+      multiWorldVar = lowerCaseParameter === 'true' ? 1 : 0;
+    } else {
+      // unknown
+      Exception(getValue('exception').invalid_multiworld_param);
+    }
+  }
+
+  return multiWorldVar === 1;
+};
+
+/**
  * Analiza el parámetro de zoom mínimo del usuario especificado en un número.
  *
  * @param {String|Number} minZoomParam Parámetro de zoom mínimo especificado.

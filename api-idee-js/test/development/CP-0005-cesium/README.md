@@ -38,3 +38,9 @@ CP-006
     
 CP-007
     [] Example #1: Capa GeoJSON de puntos con icono en formato GLB.
+
+CP-009
+    [] Example #1: Patrones en polígonos.
+    [] Example #2: Patrones con imágenes en polígonos.
+    [] Example #3: Patrones en líneas.
+    [] Example #4: Patrones con imágenes en líneas.
