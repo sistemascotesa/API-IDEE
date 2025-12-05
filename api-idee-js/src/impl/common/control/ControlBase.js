@@ -18,8 +18,8 @@ class ControlBase {
   /**
    * guarda una instancia del control nativo compatible con la implementación
    */
-  set controlNative(controlImpl) {
-    this.controlNative_ = controlImpl;
+  set controlNative(controlNative) {
+    this.controlNative_ = controlNative;
   }
 
   /**

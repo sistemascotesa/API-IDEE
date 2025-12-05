@@ -1,5 +1,5 @@
 import { map as Mmap } from 'IDEE/api-idee';
-// import ScaleLine from 'IDEE/control/ScaleLine';
+import ScaleLine from 'IDEE/control/ScaleLine';
 // import Scale from 'IDEE/control/Scale';
 
 const map = Mmap({
@@ -12,19 +12,19 @@ const map = Mmap({
   zoom: 6,
 });
 
-// const scaleLine = new ScaleLine({
-//   position: 'center-top-right',
-//   vendorOptions: {
-//     units: 'degrees',
-//     // bar: true,
-//     text: true,
-//     minWidth: 90,
-//   },
-// });
+const scaleLine = new ScaleLine({
+  position: 'center-top-right',
+  vendorOptions: {
+    units: 'degrees',
+    // bar: true,
+    text: true,
+    minWidth: 90,
+  },
+});
 
-// map.addControls(scaleLine);
+map.addControls(scaleLine);
 // map.removeControls(ScaleLine.NAME);
-// map.removeControls(scaleLine);
+map.removeControls(scaleLine);
 
 /** ----------------------------------------------------------------------------------- */
 
