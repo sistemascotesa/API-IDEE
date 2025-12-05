@@ -7,6 +7,8 @@ import * as Position from 'IDEE/ui/position';
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
+  controls: ['scaleline', 'scale'],
+  // controls: ['panzoombar'],
   // controls: ['panzoombar'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 5,
