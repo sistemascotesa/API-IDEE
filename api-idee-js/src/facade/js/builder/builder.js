@@ -41,7 +41,7 @@ export const getScalePanel = (map, params = {}) => {
     panel = new Panel('map-info', {
       collapsible: false,
       className: 'm-map-info',
-      position: Position.BR,
+      position: Position.RIGHT,
       order: params.order || null,
     });
     panel.on(EventType.ADDED_TO_MAP, () => {
@@ -69,7 +69,7 @@ export const getScaleLinePanel = (map) => {
   const panel = new Panel('scaleline', {
     collapsible: false,
     className: 'm-scaleline',
-    position: Position.BL,
+    position: Position.DOWN,
     tooltip: 'Línea de escala',
   });
   panel.on(EventType.ADDED_TO_MAP, () => {
@@ -93,7 +93,7 @@ export const getPanzoombarPanel = () => {
   return new Panel('panzoombar', {
     collapsible: false,
     className: 'm-panzoombar',
-    position: Position.TL,
+    position: Position.CTL,
     tooltip: 'Nivel de zoom',
   });
 };
@@ -111,7 +111,7 @@ export const getPanzoomPanel = () => {
   return new Panel('panzoom', {
     collapsible: false,
     className: 'm-panzoom',
-    position: Position.TL,
+    position: Position.CTL,
   });
 };
 
@@ -128,7 +128,7 @@ export const getLocationPanel = () => {
   return new Panel('location', {
     collapsible: false,
     className: 'm-location',
-    position: Position.BR,
+    position: Position.RIGHT,
   });
 };
 
@@ -147,7 +147,7 @@ export const getRotatePanel = (params = {}) => {
   return new Panel('rotate', {
     collapsible: false,
     className: 'm-rotate',
-    position: Position.TL,
+    position: Position.CTL,
     order: params.order || null,
   });
 };
@@ -164,7 +164,7 @@ export const getRotatePanel = (params = {}) => {
 export const getBackgroundLayersPanel = () => {
   return new Panel('backgroundlayers', {
     collapsible: false,
-    position: Position.TR,
+    position: Position.CTR,
     className: 'm-plugin-baselayer',
   });
 };
@@ -181,7 +181,7 @@ export const getBackgroundLayersPanel = () => {
 export const getImplementationSwitcherPanel = () => {
   return new Panel('implementationswitcher', {
     collapsible: true,
-    position: Position.TR,
+    position: Position.CTR,
     className: 'm-implementationswitcher',
     collapsedButtonClass: 'g-cartografia-implementacion',
     tooltip: getValue('implementationswitcher').title,
@@ -204,7 +204,7 @@ export const getWMCSelectorPanel = (map) => {
   if (isNullOrEmpty(panel)) {
     panel = new Panel('map-info', {
       collapsible: false,
-      position: Position.BR,
+      position: Position.RIGHT,
       className: 'm-map-info',
     });
     panel.on(EventType.ADDED_TO_MAP, () => {
@@ -318,13 +318,14 @@ export const buildControl = (controlParam, map) => {
         builtControl.builderParams = params; // Store params for panel creation
       }
     } else {
-      const getControlsAvailable = concatUrlPaths([window.IDEE.config.MAPEA_URL, '/api/actions/controls']);
-      dialog.error(`El control ${controlName} no está definido. Consulte los controles disponibles <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
+      const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);
+      const exceptionMessage = getValue('exception').undefined_control;
+      dialog.error(`( "${controlParam}" ) ${exceptionMessage} <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
     }
   } else if (controlParam instanceof Control) {
     builtControl = controlParam;
   } else {
-    Exception('El control añadido no es válido.');
+    Exception(`${getValue('exception').invalid_control} ( ${controlParam} )`);
   }
 
   return builtControl;
