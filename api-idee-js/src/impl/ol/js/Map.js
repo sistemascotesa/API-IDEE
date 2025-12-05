@@ -2878,6 +2878,38 @@ class Map extends MObject {
   }
 
   /**
+   * Este método establece el estado de multiWorld
+   * instancia del mapa.
+   *
+   * @function
+   * @param {Boolean} multiWorld Nuevo valor.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  setMultiWorld(multiWorld) {
+    if (isNullOrEmpty(multiWorld)) {
+      Exception(getValue('exception').no_multiWorld);
+    }
+    this.getMapImpl().getView().setMultiWorld(multiWorld);
+    return this;
+  }
+
+  /**
+   * Este método obtiene el estado actual de
+   * multiWorld de la instancia del mapa.
+   *
+   * @function
+   * @returns {Boolean} Valor actual.
+   * @public
+   * @api
+   */
+  getMultiWorld() {
+    const olMultiWorld = this.getMapImpl().getView().getMultiWorld();
+    return olMultiWorld;
+  }
+
+  /**
    * Este método obtiene las resoluciones actuales
    * para la instancia del mapa.
    *
@@ -2927,6 +2959,7 @@ class Map extends MObject {
     const oldZoom = olMap.getView().getUserZoom();
     const minZoom = olMap.getView().getMinZoom();
     const maxZoom = olMap.getView().getMaxZoom();
+    const constrainResolution = olMap.getView().getConstrainResolution();
     const center = olMap.getView().getCenter();
     const size = olMap.getSize();
 
@@ -2938,6 +2971,7 @@ class Map extends MObject {
     newView.setUserZoom(oldZoom);
     newView.setMinZoom(minZoom);
     newView.setMaxZoom(maxZoom);
+    newView.setConstrainResolution(constrainResolution);
     newView.setCenter(center);
     // newView.setConstrainResolution(false);
     // calculates the new resolution
@@ -3065,6 +3099,7 @@ class Map extends MObject {
     const userZoom = olMap.getView().getUserZoom();
     const minZoom = olMap.getView().getMinZoom();
     const maxZoom = olMap.getView().getMaxZoom();
+    const constrainResolution = olMap.getView().getConstrainResolution();
 
     // sets the new view
     const newView = new View((this.viewExtent !== undefined && this.viewExtent.length === 4)
@@ -3081,7 +3116,7 @@ class Map extends MObject {
     newView.setUserZoom(userZoom);
     newView.setMinZoom(minZoom);
     newView.setMaxZoom(maxZoom);
-    // newView.setConstrainResolution(false);
+    newView.setConstrainResolution(constrainResolution);
     olMap.setView(newView);
 
     // updates min, max resolutions of all WMS layers

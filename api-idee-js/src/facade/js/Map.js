@@ -6,8 +6,8 @@ import MapImpl from 'impl/Map';
 import Base from './Base';
 import { getQuickLayers } from './api-idee';
 import {
-  isUndefined, isNull, isArray, isNullOrEmpty, isFunction, isObject, isString, normalize,
-  concatUrlPaths, escapeJSCode, getEnvolvedExtent, getImageMap,
+  isUndefined, isNull, isArray, isNullOrEmpty, isFunction, isObject, isString,
+  escapeJSCode, getEnvolvedExtent, getImageMap,
 } from './util/Utils';
 import { addFileToMap } from './util/LoadFiles';
 import { getValue } from './i18n/language';
@@ -20,14 +20,6 @@ import FeaturesHandler from './handler/Feature';
 import Feature from './feature/Feature';
 import * as Dialog from './dialog';
 import Control from './control/Control';
-import GetFeatureInfo from './control/GetFeatureInfo';
-import Location from './control/Location';
-import Scale from './control/Scale';
-import Rotate from './control/Rotate';
-import ScaleLine from './control/ScaleLine';
-import Panzoom from './control/Panzoom';
-import Panzoombar from './control/Panzoombar';
-import BackgroundLayers from './control/BackgroundLayers';
 import WMCSelector from './control/WMCSelector';
 import Layer from './layer/Layer';
 import * as LayerType from './layer/Type';
@@ -57,7 +49,7 @@ import Tiles3D from './layer/Tiles3D';
 import Terrain from './layer/Terrain';
 import WMC from './layer/WMC';
 import Attributions from './control/Attributions';
-import ImplementationSwitcher from './control/ImplementationSwitcher';
+import { buildControl, getPanelForControl } from './builder/builder';
 import applyDesignTokenCssVariables from './theme/tokens';
 
 /**
@@ -2930,7 +2922,7 @@ class Map extends Base {
    * @returns {Map} Devuelve el estado del mapa.
    * @api
    */
-  addControls(controlsParamVar) {
+  addControls(controlsParamVar, skipCheckDuplicate = false) {
     let controlsParam = controlsParamVar;
     if (!isNullOrEmpty(controlsParam)) {
       // checks if the implementation can manage layers
@@ -2947,178 +2939,33 @@ class Map extends Base {
       const controls = [];
       // for (let i = 0, ilen = controlsParam.length; i < ilen; i++) {
       controlsParam.forEach((controlParamVar) => {
-        let controlParam = controlParamVar;
+        const controlParam = controlParamVar;
         let control;
-        let panel;
         if (isString(controlParam)) {
-          controlParam = normalize(controlParam).split('*');
-          try {
-            switch (controlParam[0]) {
-              case Scale.NAME:
-                const paramsScale = {};
-                controlParam.forEach((p) => {
-                  if (p === 'true') paramsScale.exactScale = Boolean(p);
-                  // eslint-disable-next-line no-restricted-globals
-                  if (!isNaN(p)) paramsScale.order = Number(p);
-                });
-                control = new Scale(paramsScale);
-                panel = this.getPanels('map-info')[0];
-                if (isNullOrEmpty(panel)) {
-                  panel = new Panel('map-info', {
-                    collapsible: false,
-                    className: 'm-map-info',
-                    position: Position.BR,
-                    order: (paramsScale.order) ? paramsScale.order : null,
-                  });
-                  panel.on(EventType.ADDED_TO_MAP, (html) => {
-                    if (this.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
-                      this.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
-                    }
-                  });
-                }
-                panel.addClassName('m-with-scale');
-                break;
-              case ScaleLine.NAME:
-                control = new ScaleLine();
-                panel = new Panel(ScaleLine.NAME, {
-                  collapsible: false,
-                  className: 'm-scaleline',
-                  position: Position.BL,
-                  tooltip: 'Línea de escala',
-                });
-                panel.on(EventType.ADDED_TO_MAP, (html) => {
-                  if (this.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
-                    this.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
-                  }
-                });
-                break;
-              case Panzoombar.NAME:
-                control = new Panzoombar();
-                panel = new Panel(Panzoombar.NAME, {
-                  collapsible: false,
-                  className: 'm-panzoombar',
-                  position: Position.TL,
-                  tooltip: 'Nivel de zoom',
-                });
-                break;
-              case Panzoom.NAME:
-                control = new Panzoom();
-                panel = new Panel(Panzoom.NAME, {
-                  collapsible: false,
-                  className: 'm-panzoom',
-                  position: Position.TL,
-                });
-                break;
-              case Location.NAME:
-                control = new Location();
-                panel = new Panel(Location.NAME, {
-                  collapsible: false,
-                  className: 'm-location',
-                  position: Position.BR,
-                });
-                break;
-              case GetFeatureInfo.NAME:
-                control = new GetFeatureInfo(true);
-                break;
-              case Attributions.NAME:
-                if (controlParam.length === 2) {
-                  this.createAttribution({ collectionsAttributions: [controlParam[1]] });
-                } else {
-                  this.createAttribution();
-                }
+          control = buildControl(controlParam, this);
 
-                return;
-              case Rotate.NAME:
-                const paramsRotate = {};
-                controlParam.forEach((p) => {
-                  if (!isUndefined(p)) {
-                    const bbox = p.split(',');
-                    if (bbox.length === 4) {
-                      paramsRotate.viewInitial = bbox;
-                    }
-                    if (p === 'false') paramsRotate.help = false;
-                    // eslint-disable-next-line no-restricted-globals
-                    if (!isNaN(p)) paramsRotate.order = Number(p);
-                  }
-                });
-                control = new Rotate(paramsRotate);
-                panel = new Panel(Rotate.name, {
-                  collapsible: false,
-                  className: 'm-rotate',
-                  position: Position.TL,
-                  order: (paramsRotate.order) ? paramsRotate.order : null,
-                });
-                break;
-              case BackgroundLayers.NAME:
-                control = new BackgroundLayers(this);
-                panel = new Panel(BackgroundLayers.NAME, {
-                  collapsible: false,
-                  position: Position.TR,
-                  className: 'm-plugin-baselayer',
-                });
-                break;
-              case ImplementationSwitcher.NAME:
-                control = new ImplementationSwitcher();
-                panel = new Panel(ImplementationSwitcher.NAME, {
-                  collapsible: true,
-                  position: Position.TR,
-                  className: 'm-implementationswitcher',
-                  collapsedButtonClass: 'g-cartografia-implementacion',
-                  tooltip: getValue('implementationswitcher').title,
-                });
-                break;
-              case WMCSelector.NAME:
-                control = new WMCSelector();
-                panel = this.getPanels('map-info')[0];
-                if (isNullOrEmpty(panel)) {
-                  panel = new Panel('map-info', {
-                    collapsible: false,
-                    position: Position.BR,
-                    className: 'm-map-info',
-                  });
-                  panel.on(EventType.ADDED_TO_MAP, () => {
-                    if (this.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
-                      this.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
-                    }
-                  });
-                }
-                panel.addClassName('m-with-wmcselector');
-                break;
-              default:
-                if (/backgroundlayers\*([0-9])+\*(true|false)/.test(controlParam)) {
-                  const idLayer = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[1];
-                  const visible = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[2] === 'true';
-                  control = new BackgroundLayers(this, Number.parseInt(idLayer, 10), visible);
-
-                  panel = new Panel(BackgroundLayers.NAME, {
-                    collapsible: false,
-                    position: Position.TR,
-                    className: 'm-plugin-baselayer',
-                  });
-                } else {
-                  const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);
-                  Dialog.error(`El control ${controlParam} no está definido. Consulte los controles disponibles <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
-                }
-            }
-          } catch (e) {
-            // eslint-disable-next-line no-console
-            console.warn(e);
-            control = null;
+          // Skip if control is null (like Attributions which is handled separately)
+          if (isNullOrEmpty(control)) {
+            return;
           }
-        } else if (controlParam instanceof Control) {
+        } else if (isObject(controlParam) && controlParam instanceof Control) {
           control = controlParam;
-        } else {
-          Exception('El control "'.concat(controlParam).concat('" no es un control válido.'));
         }
 
-        if (!isNullOrEmpty(panel) && !panel.hasControl(control)) {
-          panel.addControls(control);
-          this.addPanels(panel);
-        } else if (!isNullOrEmpty(control)) {
-          control.addTo(this);
+        const params = control.builderParams || {};
+        const panel = getPanelForControl(control, this, params);
+
+        if (skipCheckDuplicate || !this.hasControl(control)) {
+          if (!isNullOrEmpty(panel) && !this.hasControl(control)) {
+            panel.addControls(control);
+            this.addPanels(panel);
+          } else if (!isNullOrEmpty(control)) {
+            control.addTo(this);
+          }
           controls.push(control);
         }
       });
+
       this.getImpl().addControls(controls);
     }
     return this;
@@ -3589,6 +3436,56 @@ class Map extends Base {
     const zoomConstrains = this.getImpl().getZoomConstrains();
 
     return zoomConstrains;
+  }
+
+  /**
+   * Este método establece el estado de multiWorld
+   * instancia del mapa.
+   *
+   * @public
+   * @function
+   * @param {Boolean} multiWorld Nuevo valor.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  setMultiWorld(multiWorld) {
+    // checks if the param is null or empty
+    if (isNullOrEmpty(multiWorld)) {
+      Exception(getValue('exception').no_multiWorld);
+    }
+
+    if (isUndefined(MapImpl.prototype.setMultiWorld)) {
+      Exception(getValue('exception').setMultiWorld_method);
+    }
+
+    try {
+      const multiWorldParam = parameter.multiWorld(multiWorld);
+      this.getImpl().setMultiWorld(multiWorldParam);
+    } catch (err) {
+      Dialog.error(err.toString());
+      throw err;
+    }
+
+    return this;
+  }
+
+  /**
+   * Este método obtiene el estado actual de
+   * multiWorld de la instancia del mapa.
+   *
+   * @public
+   * @function
+   * @returns {Boolean} Valor actual.
+   * @api
+   */
+  getMultiWorld() {
+    if (isUndefined(MapImpl.prototype.getMultiWorld)) {
+      Exception(getValue('exception').getMultiWorld_method);
+    }
+
+    const multiWorld = this.getImpl().getMultiWorld();
+
+    return multiWorld;
   }
 
   /**

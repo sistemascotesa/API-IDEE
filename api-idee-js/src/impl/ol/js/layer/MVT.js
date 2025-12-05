@@ -4,6 +4,7 @@
  */
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import OLLayerVectorTile from 'ol/layer/VectorTile';
+// import { get as getProj } from 'ol/proj';
 import { isNullOrEmpty, extend, isObject } from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
 import TileEventType from 'ol/source/TileEventType';
@@ -99,7 +100,11 @@ class MVT extends Vector {
     /**
      * MVT visibility_. Indica si la capa es visible.
      */
-    this.visibility_ = parameters.visibility !== false;
+    if (parameters.visibility === undefined) {
+      this.visibility_ = parameters.isBase !== true;
+    } else {
+      this.visibility_ = parameters.visibility;
+    }
 
     /**
      * MVT tileLoadFunction. Función de carga de tiles.
@@ -125,6 +130,42 @@ class MVT extends Vector {
      * Controla el disparo del evento LOAD
      */
     this.fireLoad_ = false;
+  }
+
+  /**
+   * Este método establece la visibilidad de esta capa.
+   *
+   * @function
+   * @param {Boolean} visibility Verdadero es visible, falso si no.
+   * @api stable
+   */
+  setVisible(visibility) {
+    this.visibility = visibility;
+    if (this.inRange() === true) {
+      // if this layer is base then it hides all base layers
+      if ((visibility === true) && (this.isBase === true)) {
+        // hides all base layers
+        this.map.getBaseLayers().forEach((layer) => {
+          if (!layer.equals(this) && layer.isVisible()) {
+            layer.setVisible(false);
+          }
+        });
+
+        // set this layer visible
+        if (!isNullOrEmpty(this.olLayer)) {
+          this.olLayer.setVisible(visibility);
+        }
+
+        // updates resolutions and keep the bbox
+        const oldBbox = this.map.getBbox();
+        this.map.getImpl().updateResolutionsFromBaseLayer();
+        if (!isNullOrEmpty(oldBbox)) {
+          this.map.setBbox(oldBbox);
+        }
+      } else if (!isNullOrEmpty(this.olLayer)) {
+        this.olLayer.setVisible(visibility);
+      }
+    }
   }
 
   /**
@@ -328,16 +369,16 @@ class MVT extends Vector {
   getFeaturesExtentPromise(skipFilter, filter) {
     return new Promise((resolve) => {
       const codeProj = this.map.getProjection().code;
-      if (this.isLoaded() === true) {
-        const features = this.getFeatures(skipFilter, filter);
-        const extent = ImplUtils.getFeaturesExtent(features, codeProj);
-        resolve(extent);
-      } else {
-        this.requestFeatures_().then((features) => {
-          const extent = ImplUtils.getFeaturesExtent(features, codeProj);
-          resolve(extent);
-        });
-      }
+      // if (this.isLoaded() === true) {
+      const features = this.getFeatures(skipFilter, filter);
+      const extent = ImplUtils.getFeaturesExtent(features, codeProj);
+      resolve(extent);
+      // } else {
+      //   this.requestFeatures_().then((features) => {
+      //     const extent = ImplUtils.getFeaturesExtent(features, codeProj);
+      //     resolve(extent);
+      //   });
+      // }
     });
   }
 

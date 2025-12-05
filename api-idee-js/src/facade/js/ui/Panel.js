@@ -403,7 +403,7 @@ class Panel extends MObject {
           }
           if (!isNullOrEmpty(this.element)) {
             control.on(EventType.ADDED_TO_MAP, this._moveControlView.bind(this), this);
-            this.map.addControls(control);
+            this._map.addControls(control, true);
           }
           control.on(EventType.ACTIVATED, this._manageActivation.bind(this), this);
         }
