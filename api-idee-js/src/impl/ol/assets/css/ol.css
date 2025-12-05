@@ -16,12 +16,12 @@
     z-index: 2;
     background-color: transparent;
     border-radius: 4px;
-    padding: 2px;
-    border: 2px solid var(--idee-color-primary);
+    padding: 0 2px;
+    border: 0px solid transparent;
 }
 
 .ol-scale-line .ol-scale-line-inner {
-    border: 2px solid #000000;
+    border: 2px solid var(--idee-color-primary);
     border-top: none;
     font-size: 10px;
     text-align: center;
