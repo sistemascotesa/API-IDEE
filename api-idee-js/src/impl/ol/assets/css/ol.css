@@ -307,11 +307,6 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    /* padding: 0px; */
-    
-    background-color: #71A7D3;
-    border: 2px solid #FFFFFF;
-    border-radius: 50%;
     
     height: 23px !important;
     width: 23px !important;
