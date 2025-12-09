@@ -320,7 +320,7 @@
 }
 
 .ol-zoomslider > button.ol-zoomslider-thumb:hover {
-    background-color: #1470db;
+    /* background-color: #1470db; */
     cursor: pointer;
 }
 

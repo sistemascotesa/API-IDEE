@@ -612,7 +612,7 @@ button::-moz-focus-inner {
 .m-areas>div.m-area>div.m-panel.collapsed>button.m-panel-btn, */
 .ol-zoom>button,
 .m-areas>div.m-area>div.m-panel,
-/* .ol-zoomslider>button.ol-zoomslider-thumb, */
+.ol-zoomslider>button.ol-zoomslider-thumb,
 .ol-overviewmap.ol-collapsed,
 .m-scale-container,
 .m-wmcselector-container {
@@ -677,6 +677,7 @@ div.m-control button[class^=g-cartografia-]:hover,
 .m-wmcselector-container:before:hover,
 .m-mouse-position:before:hover,
 .m-mouse-position:hover,
+.ol-zoomslider>button.ol-zoomslider-thumb,
 .m-scale-container>.m-unit:before:hover,
 .m-scale-container {
     background-color: var(--idee-color-primary-links) !important;
