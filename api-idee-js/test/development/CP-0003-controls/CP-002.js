@@ -1,5 +1,6 @@
 import { map as Mmap } from 'IDEE/api-idee';
-import Panzoombar from 'IDEE/control/Panzoombar';
+// import Panzoombar from 'IDEE/control/Panzoombar';
+import Panzoom from 'IDEE/control/Panzoom';
 import * as Position from 'IDEE/ui/position';
 // import ScaleLine from 'IDEE/control/ScaleLine';
 // import Scale from 'IDEE/control/Scale';
@@ -14,12 +15,17 @@ const map = Mmap({
   minZoom: 1.90,
 });
 
-const panzoombar = new Panzoombar({
-  position: Position.LEFT,
+// const panzoombar = new Panzoombar({
+//   position: Position.LEFT,
+// });
+
+const panzoom = new Panzoom({
+  position: Position.DOWN,
 });
 
 map.addControls([
-  panzoombar,
+  // panzoombar,
+  panzoom,
 ]);
 
 // const scaleLine = new ScaleLine({

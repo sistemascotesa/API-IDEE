@@ -30,38 +30,6 @@ OL3 PERFORMANCE
 }
 
 /****************
-    ZOOM
-****************/
-
-.ol-zoom>button {
-    background-color: white !important;
-    margin: 0 !important;
-    padding: 0px;
-    color: #404040 !important;
-    opacity: .75;
-    font-size: 18px !important;
-    text-align: center;
-    cursor: pointer;
-    width: 30px !important;
-    height: 30px !important;
-    box-shadow: 0px 1px 3px 0px #CACACA;
-}
-
-.ol-zoom>button:hover,
-.ol-zoom>button:focus {
-    background-color: transparent;
-    outline: none !important;
-}
-
-.ol-zoom>button:hover {
-    opacity: 1;
-}
-
-.ol-zoom>button.ol-zoom-in:before {}
-
-
-
-/****************
     SCALELINE
 ****************/
 
