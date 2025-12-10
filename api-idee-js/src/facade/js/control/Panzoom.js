@@ -19,37 +19,6 @@ import * as Position from '../ui/position';
  * @extends {IDEE.Control}
  */
 class Panzoom extends ControlBase {
-  // /**
-  //  * Constructor principal de la clase.
-  //  *
-  //  * @constructor
-  //  * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base, estas opciones
-  //  * se pasarán en formato objeto. Opciones disponibles:
-  //  * - duration: Duración de la animación en milisegundos.
-  //  * - className: Nombre de la clase CSS.
-  //  * - zoomInClassName: Nombre de clase de CSS para el botón de acercamiento.
-  //  * - zoomOutClassName: Nombre de clase de CSS para el botón de alejamiento.
-  //  * - zoomInLabel: Etiqueta de texto que se usará para el botón de acercamiento.
-  //  * - zoomOutLabel: Etiqueta de texto que se usará para el botón de alejamiento.
-  //  * - zoomInTipLabel: Etiqueta de texto que se usará para la sugerencia del botón.
-  //  * - zoomOutTipLabel: Etiqueta de texto que se usará para la sugerencia del botón.
-  //  * - delta: El delta de zoom aplicado en cada clic.
-  //  * - target: Especifique un objetivo si desea que el control se represente
-  //  * fuera de la ventana gráfica del mapa.
-  //  * @api
-  //  */
-  // constructor(vendorOptions = {}) {
-  //   if (isUndefined(PanzoomImpl) || (isObject(PanzoomImpl)
-  //     && isNullOrEmpty(Object.keys(PanzoomImpl)))) {
-  //     Exception(getValue('exception').panzoom_method);
-  //   }
-
-  //   // implementation of this control
-  //   const impl = new PanzoomImpl(vendorOptions);
-
-  //   // calls the super constructor
-  //   super(Panzoom.NAME, impl);
-  // }
   /**
    * Constructor principal de la clase.
    *

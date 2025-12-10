@@ -20,7 +20,7 @@ const map = Mmap({
 // });
 
 const panzoom = new Panzoom({
-  position: Position.DOWN,
+  position: Position.LEFT,
 });
 
 map.addControls([

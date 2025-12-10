@@ -610,7 +610,7 @@ button::-moz-focus-inner {
 .m-areas>div.m-area>div.m-panel.m-printer>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.m-layerswitcher>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.collapsed>button.m-panel-btn, */
-.ol-zoom>button,
+/* .ol-zoom>button, */
 .m-areas>div.m-area>div.m-panel,
 /* .ol-zoomslider>button.ol-zoomslider-thumb, */
 .ol-overviewmap.ol-collapsed,
@@ -638,7 +638,7 @@ button::-moz-focus-inner {
 .m-edition.collapsed>button.m-panel-btn,
 .m-printer.collapsed>button.m-panel-btn,
 .m-layerswitcher.collapsed>button.m-panel-btn,
-.ol-zoom>button,
+/* .ol-zoom>button, */
 div.m-control button[class*=" g-cartografia-"],
 div.m-control button[class^=g-cartografia-],
 .ol-overviewmap.ol-collapsed>button,
