@@ -122,11 +122,6 @@
     background-color: rgba(255, 255, 255, 0.6);
 }
 
-.ol-zoom {
-    top: .5em;
-    left: .5em;
-}
-
 .ol-rotate {
     top: .5em;
     right: .5em;
@@ -147,23 +142,6 @@
 .ol-full-screen {
     right: .5em;
     top: .5em;
-}
-
-.ol-control button {
-    display: block;
-    margin: 1px;
-    padding: 0;
-    color: white;
-    font-size: 1.14em;
-    font-weight: bold;
-    text-decoration: none;
-    text-align: center;
-    height: 1.375em;
-    width: 1.375em;
-    line-height: .4em;
-    background-color: rgba(0, 60, 136, 0.5);
-    border: none;
-    border-radius: 2px;
 }
 
 .ol-control button::-moz-focus-inner {
@@ -194,23 +172,11 @@
     top: 5.5em;
 }
 
-.ol-control button:hover,
-.ol-control button:focus {
+.ol-control button:hover
+/*.ol-control button:focus*/ {
     text-decoration: none;
     background-color: rgba(0, 60, 136, 0.7);
 }
-
-.ol-zoom .ol-zoom-in {
-    border-radius: 2px 2px 0 0;
-    border: 2px solid white;
-}
-
-.ol-zoom .ol-zoom-out {
-    border-radius: 0 0 2px 2px;
-    border: 2px solid white;
-    border-top: none;
-}
-
 
 .ol-attribution {
     text-align: right;
@@ -328,6 +294,58 @@
 .ol-zoomslider-thumb.ol-dragging {
     background-color: #1D5A9E;
 }
+
+/****************
+    ZOOM
+****************/
+
+.ol-zoom {
+    z-index: 15;
+    top: .5em;
+    left: .5em;
+    /* background-color: var(--idee-color-primary); */
+    background-color: transparent;
+}
+
+.ol-zoom .ol-zoom-in {
+    border-radius: 2px 2px 0 0;
+    border: 2px solid white;
+}
+
+.ol-zoom .ol-zoom-out {
+    border-radius: 0 0 2px 2px;
+    border: 2px solid white;
+    border-top: none;
+}
+
+.ol-zoom>button {
+    background-color: var(--idee-color-primary);
+    display: block;
+    /* background-color: white !important; */
+    margin: 0 !important;
+    padding: 0px;
+    color: white!important;
+    opacity: .75;
+    font-size: 18px !important;
+    text-align: center;
+    cursor: pointer;
+    width: 30px !important;
+    height: 30px !important;
+    box-shadow: 0px 1px 3px 0px #CACACA;
+}
+
+/* .ol-zoom>button:hover, */
+/* .ol-zoom>button:focus {
+    background-color: var(--idee-color-primary-links) !important;
+    outline: none !important;
+    opacity: 1;
+} */
+
+.ol-zoom>button:active {
+    background-color: var(--idee-color-primary-dark) !important;
+}
+
+.ol-zoom>button.ol-zoom-in:before {}
 
 .ol-overviewmap {
     left: 0.5em;
