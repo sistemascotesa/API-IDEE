@@ -3,7 +3,7 @@
 }
 
 #m-rotate-button:hover {
-  color: var(--idee-color-primary-links) !important;
+  color: var(--idee-color-links) !important;
 }
 
 div.m-control.m-rotate-container {
