@@ -47,7 +47,21 @@ class Panzoom extends OLControlZoom {
    */
   addTo(map, element) {
     this.facadeMap_ = map;
-    map.getMapImpl().addControl(this);
+    const olMap = map.getMapImpl();
+    super.setMap(olMap); // OL añade el control a su sistema interno.
+    olMap.addControl(this); // OL añade el elemento al DOM en la posición OL por defecto
+  }
+
+  /**
+   * Devuelve la vista de implementación
+   *
+   * @public
+   * @function
+   * @return {HTMLElement} vista de implementación
+   * @api stable
+   */
+  getView() {
+    return this.element;
   }
 
   /**
