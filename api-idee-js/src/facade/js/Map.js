@@ -2970,7 +2970,7 @@ class Map extends Base {
          * los controles no necesitan usar paneles,
          * esa es la diferenciación entre plugin y control.
          */
-        if ((!this.hasControl(control) || skipCheckDuplicate) && !isNullOrEmpty(control)) {
+        if (!isNullOrEmpty(control) && (skipCheckDuplicate || !this.hasControl(control))) {
           control.addTo(this);
           controls.push(control);
         }
