@@ -3041,7 +3041,7 @@ class Map extends Base {
   * @public
   * @function
   * @param { HTMLElement } container contenedor de mapa asignado
-  * @param { Control | Button } toolImpl implementación del control o boton que usa un plugin
+  * @param { Control | Plugin } toolImpl implementación del control o plugin que contiene la vista
   * @api stable
   */
   addToolToContainer(container, toolImpl) {
