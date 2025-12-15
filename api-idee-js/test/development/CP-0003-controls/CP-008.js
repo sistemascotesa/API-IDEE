@@ -1,7 +1,10 @@
 import { map as Mmap } from 'IDEE/api-idee';
-import Plugin from 'IDEE/Plugin';
+// import Plugin from 'IDEE/Plugin';
 // import Control from 'IDEE/control/Control';
-import Rotate from 'IDEE/control/Rotate';
+// import Rotate from 'IDEE/control/Rotate';
+import Attributions from 'IDEE/control/Attributions';
+import * as Position from 'IDEE/ui/position';
+import Panzoom from 'IDEE/control/Panzoom';
 
 const map = Mmap({
   container: 'map',
@@ -11,8 +14,18 @@ const map = Mmap({
   zoom: 6,
 });
 
-const rotate = new Rotate({
-  position: 'down',
+// const rotate = new Rotate({
+//   position: 'down',
+// });
+
+const attributionsControl = new Attributions({
+  position: Position.RIGHT,
+  order: 100, // Un orden para asegurar su visibilidad
+  closePanel: false,
+});
+
+const panzoom = new Panzoom({
+  position: Position.LEFT,
 });
 
 // const spainFlatControl = new Control('SpainFlat', {
@@ -21,18 +34,20 @@ const rotate = new Rotate({
 //   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg',
 // });
 
-const pluginRight = new Plugin('MyPluginRight', {
-  tooltip: 'GitHub',
-  position: 'right',
-  svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
-});
+// const pluginRight = new Plugin('MyPluginRight', {
+//   tooltip: 'GitHub',
+//   position: 'right',
+//   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
+// });
 
-pluginRight.addControl(rotate);
+// pluginRight.addControl(rotate);
 
-map.addPlugin(pluginRight);
+// map.addPlugin(pluginRight);
 
 map.addControls([
   // rotate,
+  attributionsControl,
+  panzoom,
   // spainFlatControl,
 ]);
 
