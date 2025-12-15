@@ -1,7 +1,7 @@
 /**
  * @module IDEE/control/Panzoombar
  */
-import panzoombarTemplate from 'templates/panzoombar';
+// import panzoombarTemplate from 'templates/panzoombar';
 import myhelp from 'templates/panzoombarhelp';
 import PanzoombarImpl from 'impl/control/Panzoombar';
 import ControlBase from './Control';
@@ -9,6 +9,7 @@ import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { compileSync as compileTemplate } from '../util/Template';
 import { getValue } from '../i18n/language';
+import * as Position from '../ui/position';
 
 /**
  * @classdesc
@@ -22,16 +23,14 @@ class Panzoombar extends ControlBase {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base, estas opciones
-   * se pasarán en formato objeto. Opciones disponibles:
-   * - className: Nombre de la clase CSS.
-   * - duration: Duración de la animación en milisegundos.
-   * - render: Función llamada cuando se debe volver
-   * a representar el control.
-   * Esto se llama en una devolución de llamada de requestAnimationFrame.
+   * @param {Object} options recibe las opciones de configuración por defecto
+   * position: {@link Position posicion} válida para el control
    * @api
    */
-  constructor(vendorOptions = {}) {
+  constructor(options = {}) {
+    const position = options.position ?? Position.DOWN;
+    const vendorOptions = options.vendorOptions ?? {};
+
     if (isUndefined(PanzoombarImpl) || (isObject(PanzoombarImpl)
       && isNullOrEmpty(Object.keys(PanzoombarImpl)))) {
       Exception(getValue('exception').panzoombar_method);
@@ -42,6 +41,9 @@ class Panzoombar extends ControlBase {
 
     // calls the super constructor
     super(Panzoombar.NAME, impl);
+
+    // Asignar la posición
+    this.position = position;
   }
 
   /**
@@ -54,7 +56,11 @@ class Panzoombar extends ControlBase {
    * @api
    */
   createView(map) {
-    return compileTemplate(panzoombarTemplate);
+    // Obtiene el DOM de OL
+    const element = this.getImpl().getElement();
+    // Asigna al elemento de Fachada
+    this.element = element;
+    return element;
   }
 
   /**

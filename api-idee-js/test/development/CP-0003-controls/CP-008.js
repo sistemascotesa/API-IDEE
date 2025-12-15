@@ -1,5 +1,5 @@
 import { map as Mmap } from 'IDEE/api-idee';
-// import Plugin from 'IDEE/Plugin';
+import Plugin from 'IDEE/Plugin';
 // import Control from 'IDEE/control/Control';
 import Rotate from 'IDEE/control/Rotate';
 
@@ -17,7 +17,7 @@ const rotate = new Rotate({
 
 // const spainFlatControl = new Control('SpainFlat', {
 //   tooltip: 'spain',
-//   position: 'right',
+//   position: 'left',
 //   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg',
 // });
 

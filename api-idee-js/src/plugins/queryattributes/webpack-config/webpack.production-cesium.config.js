@@ -69,8 +69,11 @@ module.exports = {
   optimization: {
     emitOnErrors: false,
     minimizer: [
-      new OptimizeCssAssetsPlugin(),
+      new OptimizeCssAssetsPlugin({
+        parallel: 1,
+      }),
       new TerserPlugin({
+        parallel: 1,
         terserOptions: {
           sourceMap: true,
         },

@@ -596,7 +596,7 @@ button::-moz-focus-inner {
 /*** LIGHT BLUE from Navbar: #71A7D3 ***/
 /*** DARK BLUE from Header: #364b5f ***/
 /*** BACKGROUND COLOR : --idee-color-primary ***/
-/*** BACKGROUND COLOR DARK : --idee-color-primary-links ***/
+/*** BACKGROUND COLOR DARK : --idee-color-links ***/
 /*** BACKGROUND COLOR ACTIVE : --idee-color-primary-dark ***/
 
 /* Controls */
@@ -610,13 +610,13 @@ button::-moz-focus-inner {
 .m-areas>div.m-area>div.m-panel.m-printer>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.m-layerswitcher>button.m-panel-btn,
 .m-areas>div.m-area>div.m-panel.collapsed>button.m-panel-btn, */
-.ol-zoom>button,
+/* .ol-zoom>button, */
 .m-areas>div.m-area>div.m-panel,
 .ol-zoomslider>button.ol-zoomslider-thumb,
 .ol-overviewmap.ol-collapsed,
 .m-scale-container,
 .m-wmcselector-container {
-    background-color: var(--idee-color-primary-links) !important;
+    background-color: var(--idee-color-primary) !important;
     opacity: 1;
 }
 
@@ -638,7 +638,7 @@ button::-moz-focus-inner {
 .m-edition.collapsed>button.m-panel-btn,
 .m-printer.collapsed>button.m-panel-btn,
 .m-layerswitcher.collapsed>button.m-panel-btn,
-.ol-zoom>button,
+/* .ol-zoom>button, */
 div.m-control button[class*=" g-cartografia-"],
 div.m-control button[class^=g-cartografia-],
 .ol-overviewmap.ol-collapsed>button,
@@ -648,6 +648,7 @@ div.m-control button[class^=g-cartografia-],
 .m-mouse-position:before,
 .m-mouse-position,
 .m-scale-container>.m-unit:before,
+.ol-zoomslider>button.ol-zoomslider-thumb,
 .m-scale-container {
     font-family: var(--control-font-family);
     color: var(--font-color);
@@ -676,9 +677,10 @@ div.m-control button[class^=g-cartografia-]:hover,
 .m-wmcselector-container:before:hover,
 .m-mouse-position:before:hover,
 .m-mouse-position:hover,
+.ol-zoomslider>button.ol-zoomslider-thumb,
 .m-scale-container>.m-unit:before:hover,
 .m-scale-container {
-    background-color: var(--idee-color-primary-links) !important;
+    background-color: var(--idee-color-links) !important;
 }
 
 .m-left .m-panel.opened div.m-control button[class^=g-cartografia-] {
@@ -700,7 +702,7 @@ div.m-control button[class^=g-cartografia-]:hover,
 }
 
 .ol-zoomslider>button.ol-zoomslider-thumb {
-    border: 2px solid white;
+    /* border: 2px solid white; */
 }
 
 .m-areas>div.m-area>div.m-panel.opened {
