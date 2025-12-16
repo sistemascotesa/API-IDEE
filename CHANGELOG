@@ -42,6 +42,7 @@
 - Se comprueba si la versión no está definida en el parámetro en getWMSGetCapabilitiesUrl de utils para no incluirla a la URL.
 - Se mejora la seleccion y deseleccion de WMC.
 - Se añade el evento REMOVED_FROM_MAP al método removeUnknowLayers_ de la implementación de mapa.
+- Se implementa el método getTicket en la clase Map para obtener el ticket definido.
 
 
 01/01/25 - Versión 1.0.0
