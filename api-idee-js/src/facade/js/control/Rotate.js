@@ -13,7 +13,7 @@ import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
 import * as Position from '../ui/position';
-import * as MapImplType from '../../../impl/common/map-impl-type';
+import * as MapImplType from '../../../impl/common/mapImplType';
 
 /**
  * @classdesc

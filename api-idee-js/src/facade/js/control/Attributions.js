@@ -3,6 +3,7 @@
  */
 import 'assets/css/controls/attributions';
 import attributionsTemplate from 'templates/attributions';
+import attributionsPanelTemplate from 'templates/attributions_panel';
 import myhelp from 'templates/attributionshelp';
 import AttributionsImpl from 'impl/control/Attributions';
 import ControlBase from './Control';
@@ -15,6 +16,7 @@ import GeoJSON from '../layer/GeoJSON';
 import KML from '../layer/KML';
 import { LAYER_VISIBILITY_CHANGE, ADDED_LAYER } from '../event/eventtype';
 import Exception from '../exception/exception';
+import ControlPanel from '../../../impl/common/ControlPanel';
 
 /**
  * @classdesc
@@ -80,6 +82,32 @@ class Attributions extends ControlBase {
     this.tooltip_ = options.tooltip || getValue('attributionsControl').tooltip;
     this.collectionsAttributions_ = options.collectionsAttributions || [];
 
+    // Compilar la plantilla completa
+    const panelTemplateHtml = compileTemplate(attributionsPanelTemplate, {
+      vars: {
+        collapsedClass: (options.closePanel !== false) ? 'collapsed' : 'opened',
+        tooltip: options.tooltip || getValue('attributionsControl').tooltip,
+      },
+    });
+
+    // Contenedor de controles
+    const panelContentElement = panelTemplateHtml.querySelector('.m-panel-controls');
+
+    // Crear el ControlPanel
+    this.controlPanel = new ControlPanel(Attributions.NAME, {
+      // Pasamos las opciones necesarias para que el panel sepa cómo posicionarse y lucir.
+      position: this.position,
+      tooltip: this.tooltip_,
+      className: 'm-attributions', // Añade la clase específica para el estilo
+      collapsible: window.innerWidth < 769, // Lógica del viejo createView
+      collapsed: options.closePanel ?? true, // El estado inicial
+      order: this.order,
+      element: panelTemplateHtml,
+      panelContent: panelContentElement,
+    });
+
+    this.getImpl().controlPanel = this.controlPanel;
+
     this.collectionsAttributions_ = this.collectionsAttributions_.map((attr) => {
       if (typeof attr === 'string') {
         return this.transformString(attr);
@@ -114,6 +142,8 @@ class Attributions extends ControlBase {
   createView(map) {
     this.map_ = map;
 
+    this.controlPanel.addTo(map); // Adjunta el elemento al DOM
+
     this.map_.on(ADDED_LAYER, (layers) => {
       layers.forEach((layer) => {
         if (layer.attribution) {
@@ -142,6 +172,9 @@ class Attributions extends ControlBase {
       });
 
       this.accessibilityTab(html);
+
+      this.controlPanel.panelContent.appendChild(html);
+
       this.map_.getLayers().forEach((layer) => {
         if (layer.attribution) {
           if (typeof layer.attribution === 'string') {
@@ -153,7 +186,8 @@ class Attributions extends ControlBase {
           this.changeVisibility(layer.id, layer.isVisible());
         }
       });
-      success(html);
+      // success(html);
+      success(this.controlPanel.getTemplatePanel());
     });
   }
 
@@ -452,7 +486,15 @@ class Attributions extends ControlBase {
    * @public
    */
   closePanel() {
-    this.getPanel().collapse();
+    // this.getPanel().collapse();
+    this.controlPanel.collapse();
+  }
+
+  /**
+  * Este método devuelve el panel.
+  */
+  getPanel() {
+    return this.controlPanel;
   }
 
   /**

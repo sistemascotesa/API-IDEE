@@ -1,7 +1,7 @@
 import ImplOlControl from '../../ol/js/control/Control';
 import ImplCesiumControl from '../../cesium/js/control/Control';
 import ImplLeafetControl from '../../leaflet/js/control/Control';
-import * as MapImplType from '../../common/map-impl-type';
+import * as MapImplType from '../../common/mapImplType';
 
 /**
  * @param {ImplOlMap|ImplCesiumMap|ImplLeafetMap} mapImpl

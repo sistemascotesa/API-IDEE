@@ -8,7 +8,7 @@ import WMS from 'IDEE/layer/WMS';
 import Panzoombar from 'IDEE/control/Panzoombar';
 import Control from 'IDEE/control/Control';
 import { getValue } from 'IDEE/i18n/language';
-import * as MapImplType from '../../../common/map-impl-type';
+import * as MapImplType from '../../../common/mapImplType';
 
 export default class Map extends MObject {
   /**

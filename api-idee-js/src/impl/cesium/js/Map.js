@@ -49,7 +49,7 @@ import {
 import GetCapabilities from './util/WMSCapabilities';
 import FormatWMS from './format/WMS';
 import CesiumFormatWMTSCapabilities from './format/CesiumWMTSCapabilities';
-import * as MapImplType from '../../common/map-impl-type';
+import * as MapImplType from '../../common/mapImplType';
 
 /**
  * @classdesc
