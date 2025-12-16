@@ -1,5 +1,5 @@
 import { map as Mmap } from 'IDEE/api-idee';
-import Plugin from 'IDEE/Plugin';
+// import Plugin from 'IDEE/Plugin';
 // import Control from 'IDEE/control/Control';
 import Rotate from 'IDEE/control/Rotate';
 
@@ -14,6 +14,12 @@ const map = Mmap({
 const rotate = new Rotate({
   position: 'down',
 });
+
+map.addControls([rotate]);
+
+map.removeControls(rotate);
+
+map.addControls([rotate]);
 
 // const spainFlatControl = new Control('SpainFlat', {
 //   tooltip: 'spain',
@@ -31,9 +37,9 @@ const rotate = new Rotate({
 
 // map.addPlugin(pluginRight);
 
-map.addControls([
-  rotate,
-  // spainFlatControl,
-]);
+// map.addControls([
+//   rotate,
+//   spainFlatControl,
+// ]);
 
-map.removeControls(rotate);
+// map.removeControls(rotate);

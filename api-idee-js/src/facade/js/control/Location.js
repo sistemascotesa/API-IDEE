@@ -49,7 +49,12 @@ class Location extends ControlBase {
     }
 
     // implementation of this control
-    const impl = new LocationImpl(tracking, highAccuracy, 60000, vendorOptions);
+    const impl = new LocationImpl({
+      tracking,
+      highAccuracy,
+      maximumAge: 6000,
+      vendorOptions,
+    });
 
     // calls the super constructor
     super(Location.NAME, impl);

@@ -163,7 +163,6 @@ class Control extends Base {
     element.title = this.tooltip;
     element.role = 'button';
     element.ariaLabel = this.tooltip;
-
     if (this.svgPath) {
       fetch(this.svgPath)
         .then((response) => response.text())

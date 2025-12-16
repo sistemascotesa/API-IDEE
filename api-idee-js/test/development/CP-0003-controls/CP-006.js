@@ -17,4 +17,6 @@ map.addControls([
   location,
 ]);
 
-// window.mapa = map;
+map.removeControls(location);
+
+map.addControls([location]);

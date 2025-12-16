@@ -17,7 +17,7 @@ import RotateNative from './native/RotateNative';
 class Rotate extends Control {
   buildControlNative(controlNative) {
     this.controlNative = new RotateNative(this.vendorOptions_);
-    this.controlNative.build(this.facadeMap, this.element);
+    this.controlNative.init(this.facadeMap, this.element);
     this.setElement(this.controlNative.panel);
   }
 }

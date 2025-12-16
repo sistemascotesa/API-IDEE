@@ -37,7 +37,7 @@ class RotateNative extends OlControl {
    * @param {HTML} parentContainer Plantilla del mapa que contiene este control.
    * @api stable
    */
-  build(map, template) {
+  init(map, template) {
     const olMap = map.getMapImpl();
     // panel que envuelve el control, no es padre
     this.panel = template;

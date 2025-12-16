@@ -169,17 +169,6 @@ class Rotate extends ControlBase {
     const equals = (obj instanceof Rotate);
     return equals;
   }
-
-  /**
-   * Esta función destruye este control y limpia el HTML.
-   *
-   * @public
-   * @function
-   * @api stable
-   */
-  destroy() {
-    this.getImpl().destroy();
-  }
 }
 
 /**

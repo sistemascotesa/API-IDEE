@@ -1,3 +1,6 @@
+import Exception from '../../../facade/js/exception/exception';
+import { isUndefined } from '../../../facade/js/util/Utils';
+
 /**
  * Clase base abstracta para la implementación de controles en IDEE.
  *
@@ -65,12 +68,25 @@ class ControlBase {
   }
 
   /**
-   * Este método construye el control de implementación
+   * Este método construye el control de implementación que se almacenará en
+   * controlNative_
    *
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @param {*} controlNative control nativo compatible con el mapa implementado
    */
   buildControlNative(controlNative) {}
+
+  /**
+   * Este método construye el control de implementación que se almacenará en
+   * controlNative_
+   *
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @param {*} controlNative control nativo compatible con el mapa implementado
+   */
+  afterBuildNative(controlNative) {
+    // eslint-disable-next-line no-underscore-dangle
+    this.controlNative.facadeMap_ = this.facadeMap;
+  }
 
   /**
   * Este método añade el control al mapa implementado.
@@ -86,8 +102,13 @@ class ControlBase {
   addTo(map, view) {
     this.build(map, view);
     this.buildControlNative();
-    this.facadeMap.getMapImpl().addControl(this.controlNative);
-    this.afterAddTo();
+    if (isUndefined(this.controlNative)) {
+      Exception('El control nativo no ha sido generado, use el método buildControlNative() para generar un control nativo compatible con el mapa');
+    } else {
+      this.afterBuildNative(this.controlNative);
+      this.facadeMap.getMapImpl().addControl(this.controlNative);
+      this.afterAddTo();
+    }
   }
 
   /**
@@ -96,6 +117,20 @@ class ControlBase {
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    */
   afterAddTo() {}
+
+  /**
+   * Activa el control nativo de la implementación
+   */
+  activate() {
+    if (!isUndefined(this.controlNative.activate)) this.controlNative.activate();
+  }
+
+  /**
+   * Desactiva el control nativo de la implementación
+   */
+  deactivate() {
+    if (!isUndefined(this.controlNative.activate)) this.controlNative.deactivate();
+  }
 
   /**
    * Guarda todos los elementos de la implementación.
