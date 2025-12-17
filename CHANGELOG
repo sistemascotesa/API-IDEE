@@ -43,6 +43,9 @@
 - Se mejora la seleccion y deseleccion de WMC.
 - Se añade el evento REMOVED_FROM_MAP al método removeUnknowLayers_ de la implementación de mapa.
 - Se implementa el método getTicket en la clase Map para obtener el ticket definido.
+- Se dispara el evento REMOVED_LAYER en la implementación del Mapa pero accediendo a la fachada del mapa.
+- En "Mapa - addUnknownLayers" se modifica "Este método agrega las capas de GeoJSON al mapa." por "Este método agrega las capas de tipo desconocido al mapa."
+- Se crean set/get multiWorld y se solucionan bugs que no persistía correctamente el zoomConstrain del mapa.
 
 
 01/01/25 - Versión 1.0.0
