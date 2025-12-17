@@ -24,8 +24,8 @@ export default function applyDesignTokenCssVariables() {
   if (color.primary_dark) {
     root.style.setProperty('--idee-color-primary-dark', color.primary_dark);
   }
-  if (color.succes) {
-    root.style.setProperty('--idee-color-success', color.succes);
+  if (color.success) {
+    root.style.setProperty('--idee-color-success', color.success);
   }
   if (color.danger) {
     root.style.setProperty('--idee-color-danger', color.danger);
