@@ -65,6 +65,7 @@ class Control extends OLControl {
    * @export
    */
   destroy() {
+    console.log('[Control Impl] Ejecutando destroy. Mapa fachada:', !!this.facadeMap_);
     this.facadeMap_.getMapImpl().removeControl(this);
     this.facadeMap_ = null;
   }

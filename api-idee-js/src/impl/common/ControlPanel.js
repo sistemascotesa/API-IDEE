@@ -225,6 +225,7 @@ class Panel extends MObject {
    * @api
    */
   destroy() {
+    console.log(`[ControlPanel] Destruyendo panel: ${this.name}`);
     if (this.element != null) {
       this.element.remove();
     }
@@ -244,22 +245,19 @@ class Panel extends MObject {
 
     if (!this.element) {
       this.element = compileTemplate(panelTemplate);
-      this.element.id = `plugin-panel-${this.name}`;
+      // this.element.id = `plugin-panel-${this.name}`;
       this.createTitlePanel(); // Solo se llama si no se inyecta la plantilla
-    } else {
-      // Si el elemento se ha inyectado (como en Attributions),
-      // solo necesitamos adjuntar eventos.
     }
 
-    // Botón flotante
-    this.buttonPanel = this.element.querySelector('.m-panel-btn');
+    this.element.id = `plugin-panel-${this.name}`;
 
-    if (this.buttonPanel) {
-      // Asociar el evento click
+    // Botón flotante
+    const newButton = this.element.querySelector('.m-panel-btn');
+
+    if (newButton && newButton !== this.buttonPanel) {
+      this.buttonPanel = newButton;
       this.buttonPanel.addEventListener('click', (event) => {
         event.preventDefault();
-
-        // Llamando a open o collapse según en el estado actual
         if (this.isCollapsed()) {
           this.open();
         } else {
@@ -330,10 +328,9 @@ class Panel extends MObject {
    * @api
    */
   _collapse(html) {
+    if (!html) return;
     html.classList.remove('opened');
-    // this.buttonPanel.classList.remove(this._openedButtonClass);
     html.classList.add('collapsed');
-    // this.buttonPanel.classList.add(this._collapsedButtonClass);
     this._collapsed = true;
     this.fire(EventType.HIDE);
   }
@@ -346,10 +343,9 @@ class Panel extends MObject {
    * @api
    */
   _open(html) {
+    if (!html) return;
     html.classList.remove('collapsed');
-    // this.buttonPanel.classList.remove(this._collapsedButtonClass);
     html.classList.add('opened');
-    // this.buttonPanel.classList.add(this._openedButtonClass);
     this._collapsed = false;
     this.fire(EventType.SHOW);
   }

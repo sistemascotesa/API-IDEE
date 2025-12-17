@@ -12,10 +12,16 @@ const mapa = Mmap({
 
 const attributionsControl = new Attributions({
   position: Position.LEFT,
-  order: 100,
-  closePanel: true, // colapsado para ver el botón flotante
+  // order: 100,
+  // closePanel: true, // colapsado para ver el botón flotante
 });
+
+mapa.removeControls(attributionsControl);
 
 mapa.addControls([
   attributionsControl,
 ]);
+
+mapa.removeControls(attributionsControl);
+
+mapa.addControls([attributionsControl]);
