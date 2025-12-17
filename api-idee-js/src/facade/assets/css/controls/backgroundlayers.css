@@ -3,9 +3,9 @@
     border-radius: 0 !important;
 }
 
-.m-areas>div.m-area>div.m-panel.no-collapsible>div.m-panel-controls>div.m-control.m-container.m-background>button {
-    background-color: #71a7d3 !important;
-    border: 2px solid white !important;
+div.m-control.m-container.m-background>button {
+    background-color: var(--idee-color-primary) !important;
+    /* border: 2px solid white !important; */
     border-radius: 5px;
     color: white;
     align-items: center;
@@ -14,11 +14,10 @@
     padding: 10px !important;
     font-weight: bold !important;
     width: 75px !important;
-    font-family: Muli, "sans-serif" !important;
     margin-left: 5px;
 }
 
-.m-areas>div.m-area>div.m-panel.no-collapsible>div.m-panel-controls>div.m-control.m-container.m-background>button:first-child {
+div.m-control.m-container.m-background>button:first-child {
     margin-left: 0px;
 }
 
@@ -27,27 +26,27 @@
     outline: none;
 }
 
-.m-areas>div.m-area>div.m-panel.opened.m-plugin-baselayer {
+div.m-panel.opened.m-plugin-baselayer {
     background-color: transparent !important;
     box-shadow: none !important;
     order: -10;
 }
 
-.m-areas>div.m-area>div.m-panel.no-collapsible>div.m-panel-controls>div.m-control.m-container.m-background>button.m-background-group-btn.activeBaseLayerButton {
-    background-color: #92c1e7 !important;
+div.m-control.m-container.m-background>button.m-background-group-btn.activeBaseLayerButton {
+    background-color: var(--idee-color-links) !important;
     /* outline: 1px solid orange; */
 }
 
-.m-areas>div.m-area>div.m-panel.no-collapsible>div.m-panel-controls>div.m-control.m-container.m-background>button#m-baselayerselector-unique-btn {
+div.m-control.m-container.m-background>button#m-baselayerselector-unique-btn {
     display: none;
 }
 
 @media (max-width: 768px) {
-    .m-areas>div.m-area>div.m-panel.no-collapsible>div.m-panel-controls>div.m-control.m-container.m-background>button.m-background-group-btn {
+    div.m-control.m-container.m-background>button.m-background-group-btn {
         display: none;
     }
 
-    .m-areas>div.m-area>div.m-panel.no-collapsible>div.m-panel-controls>div.m-control.m-container.m-background>button#m-baselayerselector-unique-btn {
+    div.m-control.m-container.m-background>button#m-baselayerselector-unique-btn {
         display: block;
     }
 }

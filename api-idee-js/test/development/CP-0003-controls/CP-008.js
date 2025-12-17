@@ -1,10 +1,8 @@
 import { map as Mmap } from 'IDEE/api-idee';
 // import Plugin from 'IDEE/Plugin';
 // import Control from 'IDEE/control/Control';
-// import Rotate from 'IDEE/control/Rotate';
-import Attributions from 'IDEE/control/Attributions';
+import Rotate from 'IDEE/control/Rotate';
 import * as Position from 'IDEE/ui/position';
-import Panzoom from 'IDEE/control/Panzoom';
 
 const map = Mmap({
   container: 'map',
@@ -14,19 +12,15 @@ const map = Mmap({
   zoom: 6,
 });
 
-// const rotate = new Rotate({
-//   position: 'down',
-// });
-
-const attributionsControl = new Attributions({
-  position: Position.RIGHT,
-  order: 100, // Un orden para asegurar su visibilidad
-  closePanel: false,
+const rotate = new Rotate({
+  position: Position.DOWN,
 });
 
-const panzoom = new Panzoom({
-  position: Position.LEFT,
-});
+map.addControls([rotate]);
+
+map.removeControls(rotate);
+
+map.addControls([rotate]);
 
 // const spainFlatControl = new Control('SpainFlat', {
 //   tooltip: 'spain',
@@ -43,12 +37,3 @@ const panzoom = new Panzoom({
 // pluginRight.addControl(rotate);
 
 // map.addPlugin(pluginRight);
-
-map.addControls([
-  // rotate,
-  attributionsControl,
-  panzoom,
-  // spainFlatControl,
-]);
-
-// map.removeControls(rotate);
