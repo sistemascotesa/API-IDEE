@@ -1,18 +1,51 @@
 import { map as Mmap } from 'IDEE/api-idee';
-import { generic_001 } from '../layers/generic/generic';
+import WMS from 'IDEE/layer/WMS';
+import BackgroundLayers from 'IDEE/control/BackgroundLayers';
+import * as Position from 'IDEE/ui/position';
 
-IDEE.config.backgroundlayers = [{
-  id: 'mapa',
-  title: 'Callejero',
-  layers: [
-    generic_001,
-  ],
-}];
+// IDEE.config.backgroundlayers = [{
+//   id: 'mapa',
+//   title: 'Callejero',
+//   layers: [
+//     Raster3,
+//     Raster2,
+//   ],
+// }];
 
-const mapa = Mmap({
+const map = Mmap({
   container: 'map',
-  projection: 'EPSG:3857',
-  controls: ['backgroundlayers'],
-  center: [-443273.10081370454, 4757481.749296248],
-  zoom: 6,
+  // controls: ['backgroundlayers'],
+  zoom: 5,
+  maxZoom: 20,
+  minZoom: 4,
+  center: [-467062.8225, 4683459.6216],
 });
+
+const backgrounLayersControl = new BackgroundLayers(
+  map,
+  {
+    position: Position.DOWN,
+  },
+);
+
+map.addControls(backgrounLayersControl);
+
+const layerinicial = new WMS({
+  url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+  name: 'AU.AdministrativeBoundary',
+  legend: 'Limite administrativo',
+  tiled: false,
+}, {});
+
+const layerUA = new WMS({
+  url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+  name: 'AU.AdministrativeUnit',
+  legend: 'Unidad administrativa',
+  tiled: false,
+}, {});
+
+map.addLayers([layerinicial, layerUA]);
+
+// map.removeControls(backgrounLayersControl);
+
+// map.addControls(backgrounLayersControl);

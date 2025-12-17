@@ -13,6 +13,7 @@ import ControlBase from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
 import { LOAD, ADDED_TO_MAP } from '../event/eventtype';
 import { getValue } from '../i18n/language';
+import * as Position from '../ui/position';
 
 /**
  * Esta constante indica el número máximo de capas base que tendrá el control.
@@ -44,11 +45,13 @@ class BackgroundLayers extends ControlBase {
    *
    * @constructor
    * @param {IDEE.map} map Mapa.
-   * @param {Number} idLayer Identificador de la capa.
-   * @param {Boolean} visible Define si será visible.
+   * @param {Number} options.idLayer Identificador de la capa.
+   * @param {Boolean} options.visible Define si será visible.
+   * @param {Number} options.order Orden del control en el contenedor seleccionado del mapa.
+   * @param {Number} options.position define el contener del mapa que usará el control para su vista
    * @api
    */
-  constructor(map, idLayer, visible) {
+  constructor(map, options = {}) {
     const impl = new ControlImpl();
     super(BackgroundLayers.NAME, impl);
     map.getBaseLayers().forEach((layer) => {
@@ -96,12 +99,22 @@ class BackgroundLayers extends ControlBase {
     /**
      * ID layer.
      */
-    this.idLayer = idLayer == null ? 0 : idLayer;
+    this.idLayer = options.idLayer == null ? 0 : options.idLayer;
 
     /**
      * Visibility.
      */
-    this.visible = visible == null ? true : visible;
+    this.visible = options.visible == null ? true : options.visible;
+
+    /**
+     * Order
+     */
+    this.order = options.order >= -1 ? options.order : null;
+
+    /**
+     * Position
+     */
+    this.position = options.position ?? Position.DOWN;
   }
 
   /**
@@ -119,8 +132,8 @@ class BackgroundLayers extends ControlBase {
       this.html = html;
       this.listen(html);
       // html.querySelector('button').click();
-      this.uniqueButton = this.html.querySelector('#m-baselayerselector-unique-btn');
-      this.uniqueButton.innerHTML = this.layers[0].title;
+      // this.uniqueButton = this.html.querySelector('#m-baselayerselector-unique-btn');
+      // this.uniqueButton.innerHTML = this.layers[0].title;
       this.on(ADDED_TO_MAP, () => {
         const visible = this.visible;
         if (this.idLayer > -1) {
@@ -205,7 +218,8 @@ class BackgroundLayers extends ControlBase {
   handlerClickDesktop(e, layersInfo, i) {
     this.removeLayers();
     this.visible = false;
-    const { layers, title } = layersInfo;
+    // const { layers, title } = layersInfo;
+    const { layers } = layersInfo;
     const isActived = e.target.parentElement
       .querySelector(`#m-baselayerselector-${layersInfo.id}`)
       .classList.contains('activeBaseLayerButton');
@@ -219,7 +233,7 @@ class BackgroundLayers extends ControlBase {
     if (!isActived) {
       this.visible = true;
       this.activeLayer = i;
-      e.target.parentElement.querySelector('#m-baselayerselector-unique-btn').innerText = title;
+      // e.target.parentElement.querySelector('#m-baselayerselector-unique-btn').innerText = title;
       e.target.parentElement
         .querySelector(`#m-baselayerselector-${layersInfo.id}`).classList.add('activeBaseLayerButton');
       this.map.addLayers(layers);
@@ -272,7 +286,8 @@ class BackgroundLayers extends ControlBase {
   listen(html) {
     html.querySelectorAll('button.m-background-group-btn')
       .forEach((b, i) => b.addEventListener('click', (e) => this.showBaseLayer(e, this.layers[i], i)));
-    html.querySelector('#m-baselayerselector-unique-btn').addEventListener('click', (e) => this.showBaseLayer(e));
+    // html.querySelector('#m-baselayerselector-unique-btn')
+    // .addEventListener('click', (e) => this.showBaseLayer(e));
   }
 
   /**

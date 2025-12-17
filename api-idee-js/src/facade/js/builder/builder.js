@@ -303,7 +303,10 @@ export const buildControl = (controlParam, map) => {
         if (/backgroundlayers\*([0-9])+\*(true|false)/.test(controlParam)) {
           const idLayer = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[1];
           const visible = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[2] === 'true';
-          return new BackgroundLayers(map, Number.parseInt(idLayer, 10), visible);
+          return new BackgroundLayers(map, {
+            visible,
+            idLayer: Number.parseInt(idLayer, 10),
+          });
         }
         return new BackgroundLayers(map);
       },
