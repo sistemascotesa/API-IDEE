@@ -19,3 +19,7 @@ const attributionsControl = new Attributions({
 mapa.addControls([
   attributionsControl,
 ]);
+
+mapa.removeControls(attributionsControl);
+
+mapa.addControls([attributionsControl]);
