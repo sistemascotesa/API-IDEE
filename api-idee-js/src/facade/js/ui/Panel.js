@@ -415,7 +415,6 @@ class Panel extends MObject {
           // control.element_.setAttribute('tabIndex', 0);
 
           // eslint-disable-next-line no-underscore-dangle
-          // console.log(control.element_);
         });
       });
     }
@@ -531,8 +530,6 @@ class Panel extends MObject {
    */
   _moveControlView(control) {
     const controlElem = control.getElement();
-    // eslint-disable-next-line no-console
-    console.log(this.element);
     if (!isNullOrEmpty(this.element)) {
       this.element.appendChild(controlElem);
     }
