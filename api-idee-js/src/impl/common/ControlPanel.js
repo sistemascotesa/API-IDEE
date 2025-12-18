@@ -248,7 +248,6 @@ class Panel extends MObject {
       this.createTitlePanel(); // Solo se llama si no se inyecta la plantilla
     } else {
       // Si el elemento se ha inyectado (como en Attributions),
-      // solo necesitamos adjuntar eventos.
     }
 
     // Botón flotante

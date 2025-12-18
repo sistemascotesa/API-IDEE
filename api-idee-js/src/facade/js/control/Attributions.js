@@ -95,7 +95,7 @@ class Attributions extends ControlBase {
 
     // Crear el ControlPanel
     this.controlPanel = new ControlPanel(Attributions.NAME, {
-      // Pasamos las opciones necesarias para que el panel sepa cómo posicionarse y lucir.
+      // Opciones necesarias para que el panel sepa cómo posicionarse y lucir.
       position: this.position,
       tooltip: this.tooltip_,
       className: 'm-attributions', // Añade la clase específica para el estilo
@@ -142,13 +142,14 @@ class Attributions extends ControlBase {
   createView(map) {
     this.map_ = map;
 
-    this.controlPanel.addTo(map); // Adjunta el elemento al DOM
+    this.controlPanel.addTo(this.map_); // Adjunta el elemento al DOM
 
     this.map_.on(ADDED_LAYER, (layers) => {
       layers.forEach((layer) => {
         if (layer.attribution) {
+          const layerId = layer.idLayer || layer.id || layer.name;
           layer.on(LAYER_VISIBILITY_CHANGE, ({ visibility, layer: l }) => {
-            this.changeVisibility(l.idLayer, visibility);
+            this.changeVisibility(layerId, visibility);
           });
         }
       });
@@ -174,16 +175,17 @@ class Attributions extends ControlBase {
       this.accessibilityTab(html);
 
       this.controlPanel.panelContent.appendChild(html);
-
+      console.log('THIS.MAP: ', this.map_.getLayers());
       this.map_.getLayers().forEach((layer) => {
+        const layerId = layer.idLayer || layer.id || layer.name;
         if (layer.attribution) {
           if (typeof layer.attribution === 'string') {
-            this.addHTMLContent(layer.attribution, layer.id);
+            this.addHTMLContent(layer.attribution, layerId);
           } else {
             this.addAttributions(layer.attribution);
           }
 
-          this.changeVisibility(layer.id, layer.isVisible());
+          this.changeVisibility(layerId, layer.isVisible());
         }
       });
       // success(html);
@@ -405,6 +407,15 @@ class Attributions extends ControlBase {
    */
   addHTMLContent(html, id) {
     this.html_.innerHTML += `<section id="${id}" class="attributionElements">${html}</section>`;
+    // const container = this.controlPanel.getTemplatePanel().querySelector('#m-attributions-container');
+
+    // if (container) {
+    //   const section = `<section id="${id}" class="attributionElements">${html}</section>`;
+    //   container.insertAdjacentHTML('beforeend', section);
+    // } else if (this.html_) {
+    //   // Fallback por si el panel aún no está en el DOM
+    //   this.html_.innerHTML += `<section id="${id}" class="attributionElements">${html}</section>`;
+    // }
   }
 
   /**

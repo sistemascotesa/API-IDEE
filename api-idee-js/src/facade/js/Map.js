@@ -49,8 +49,8 @@ import Tiles3D from './layer/Tiles3D';
 import Terrain from './layer/Terrain';
 import WMC from './layer/WMC';
 import Attributions from './control/Attributions';
-// import { buildControl, getPanelForControl } from './builder/builder';
-import { buildControl } from './builder/builder';
+import { buildControl, getPanelForControl } from './builder/builder';
+// import { buildControl } from './builder/builder';
 import applyDesignTokenCssVariables from './theme/tokens';
 // eslint-disable-next-line no-unused-vars
 import Plugin from './Plugin';
@@ -2951,7 +2951,8 @@ class Map extends Base {
         }
 
         // const params = control.builderParams || {};
-        // const panel = getPanelForControl(control, this, params);
+        const params = control.options || {};
+        const panel = getPanelForControl(control, this, params);
 
         // if (!this.hasControl(control) || skipCheckDuplicate) {
         //   if (!isNullOrEmpty(panel) && !this.hasControl(control)) {
@@ -2970,6 +2971,12 @@ class Map extends Base {
          * los controles no necesitan usar paneles,
          * esa es la diferenciación entre plugin y control.
          */
+
+        if (!isNullOrEmpty(panel) && !this.hasControl(control)) {
+          panel.addControls(control); // El panel registra al control
+          this.addPanels(panel); // El mapa registra al panel
+        }
+
         if ((!this.hasControl(control) || skipCheckDuplicate) && !isNullOrEmpty(control)) {
           control.addTo(this);
           controls.push(control);

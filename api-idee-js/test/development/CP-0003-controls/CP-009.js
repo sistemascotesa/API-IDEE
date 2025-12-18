@@ -5,10 +5,12 @@ import * as Position from 'IDEE/ui/position';
 const mapa = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
-  // controls: ['attributions*Contenido del control'],
+  // controls: ['attributions'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
 });
+
+// mapa.addControls(['attributions']);
 
 const attributionsControl = new Attributions({
   position: Position.LEFT,
