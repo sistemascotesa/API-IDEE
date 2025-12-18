@@ -4,7 +4,7 @@
 import {
   isUndefined, isNullOrEmpty, isFunction, isString, concatUrlPaths, normalize,
 } from 'IDEE/util/Utils';
-import Panel from '../ui/Panel';
+import ControlPanel from '../ui/ControlPanel';
 import * as Position from '../ui/position';
 import * as EventType from '../event/eventtype';
 import { getValue } from '../i18n/language';
@@ -38,7 +38,7 @@ import Exception from '../exception/exception';
 export const getScalePanel = (map, params = {}) => {
   let panel = map.getPanels('map-info')[0];
   if (isNullOrEmpty(panel)) {
-    panel = new Panel('map-info', {
+    panel = new ControlPanel('map-info', {
       collapsible: false,
       className: 'm-map-info',
       position: Position.RIGHT,
@@ -66,7 +66,7 @@ export const getScalePanel = (map, params = {}) => {
  * @api stable
  */
 export const getScaleLinePanel = (map) => {
-  const panel = new Panel('scaleline', {
+  const panel = new ControlPanel('scaleline', {
     collapsible: false,
     className: 'm-scaleline',
     position: Position.DOWN,
@@ -90,7 +90,7 @@ export const getScaleLinePanel = (map) => {
  * @api stable
  */
 export const getPanzoombarPanel = () => {
-  return new Panel('panzoombar', {
+  return new ControlPanel('panzoombar', {
     collapsible: false,
     className: 'm-panzoombar',
     position: Position.CTL,
@@ -108,7 +108,7 @@ export const getPanzoombarPanel = () => {
  * @api stable
  */
 export const getPanzoomPanel = () => {
-  return new Panel('panzoom', {
+  return new ControlPanel('panzoom', {
     collapsible: false,
     className: 'm-panzoom',
     position: Position.CTL,
@@ -125,7 +125,7 @@ export const getPanzoomPanel = () => {
  * @api stable
  */
 export const getLocationPanel = () => {
-  return new Panel('location', {
+  return new ControlPanel('location', {
     collapsible: false,
     className: 'm-location',
     position: Position.RIGHT,
@@ -144,7 +144,7 @@ export const getLocationPanel = () => {
  * @api stable
  */
 export const getRotatePanel = (params = {}) => {
-  return new Panel('rotate', {
+  return new ControlPanel('rotate', {
     collapsible: false,
     className: 'm-rotate',
     position: Position.CTL,
@@ -162,7 +162,7 @@ export const getRotatePanel = (params = {}) => {
  * @api stable
  */
 export const getBackgroundLayersPanel = () => {
-  return new Panel('backgroundlayers', {
+  return new ControlPanel('backgroundlayers', {
     collapsible: false,
     position: Position.CTR,
     className: 'm-plugin-baselayer',
@@ -179,7 +179,7 @@ export const getBackgroundLayersPanel = () => {
  * @api stable
  */
 export const getImplementationSwitcherPanel = () => {
-  return new Panel('implementationswitcher', {
+  return new ControlPanel('implementationswitcher', {
     collapsible: true,
     position: Position.CTR,
     className: 'm-implementationswitcher',
@@ -202,7 +202,7 @@ export const getImplementationSwitcherPanel = () => {
 export const getWMCSelectorPanel = (map) => {
   let panel = map.getPanels('map-info')[0];
   if (isNullOrEmpty(panel)) {
-    panel = new Panel('map-info', {
+    panel = new ControlPanel('map-info', {
       collapsible: false,
       position: Position.RIGHT,
       className: 'm-map-info',

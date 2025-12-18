@@ -49,7 +49,6 @@ import Tiles3D from './layer/Tiles3D';
 import Terrain from './layer/Terrain';
 import WMC from './layer/WMC';
 import Attributions from './control/Attributions';
-// import { buildControl, getPanelForControl } from './builder/builder';
 import { buildControl } from './builder/builder';
 import applyDesignTokenCssVariables from './theme/tokens';
 // eslint-disable-next-line no-unused-vars
@@ -2962,14 +2961,6 @@ class Map extends Base {
         //   }
         //   controls.push(control);
         // // }
-        // const params = control.builderParams || {};
-        // const panel = getPanelForControl(control, this, params);
-
-        /**
-         * Esta fragmento de código sustituye a lo anterior,
-         * los controles no necesitan usar paneles,
-         * esa es la diferenciación entre plugin y control.
-         */
         if ((!this.hasControl(control) || skipCheckDuplicate) && !isNullOrEmpty(control)) {
           control.addTo(this);
           controls.push(control);
@@ -3045,7 +3036,6 @@ class Map extends Base {
   * @api stable
   */
   addToolToContainer(container, toolImpl) {
-    // container.replaceChildren([]);
     container.appendChild(toolImpl.getView());
   }
 

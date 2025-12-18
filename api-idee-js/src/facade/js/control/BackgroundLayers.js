@@ -52,8 +52,9 @@ class BackgroundLayers extends ControlBase {
    * @api
    */
   constructor(map, options = {}) {
-    const impl = new ControlImpl();
-    super(BackgroundLayers.NAME, impl);
+    super(BackgroundLayers.NAME, options);
+    const impl = new ControlImpl(options);
+    this.setImpl(impl);
     map.getBaseLayers().forEach((layer) => {
       layer.on(LOAD, map.removeLayers(layer));
     });
@@ -105,11 +106,6 @@ class BackgroundLayers extends ControlBase {
      * Visibility.
      */
     this.visible = options.visible == null ? true : options.visible;
-
-    /**
-     * Order
-     */
-    this.order = options.order >= -1 ? options.order : null;
 
     /**
      * Position
