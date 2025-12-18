@@ -20,6 +20,6 @@ mapa.addControls([
   attributionsControl,
 ]);
 
-mapa.removeControls(attributionsControl);
+// mapa.removeControls(attributionsControl);
 
-mapa.addControls([attributionsControl]);
+// mapa.addControls([attributionsControl]);

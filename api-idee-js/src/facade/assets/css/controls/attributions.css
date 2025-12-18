@@ -65,10 +65,9 @@
     box-shadow: none;
 }
 
-.m-areas>div.m-area>div.m-panel.opened.m-attributions {
-    /* background-color: rgba(0, 0, 0, 0) !important; */
+/* .m-areas>div.m-area>div.m-panel.opened.m-attributions {
     box-shadow: none;
-}
+} */
 
 .m-attributions .m-panel-btn.g-cartografia-flecha-derecha,
 .m-attributions .m-panel-btn.g-cartografia-flecha-izquierda {

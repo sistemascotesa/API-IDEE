@@ -48,7 +48,7 @@ class Attributions extends Control {
 
     this.facadeMap_ = map; // Referencia al mapa fachada (IDEE.Map)
     this.element = element; // Asigna la plantilla/elemento HTML al control
-    // map.getMapImpl().addControl(this); // Registro del objeto control en la colección OL
+    map.getMapImpl().addControl(this); // Registro del objeto control en la colección OL
   }
 
   /**
