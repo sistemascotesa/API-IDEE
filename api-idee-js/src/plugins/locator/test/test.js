@@ -47,7 +47,6 @@ mp.on("infocatastro:locationCentered", (data) => {
 mp.on("xylocator:locationCentered", (data) => {
   window.alert(`zoom: ${data.zoom}
   center: ${data.center[0].toFixed(2)}, ${data.center[1].toFixed(2)}`);
-  console.log(data);
 });
 
 mp.on("ignsearchlocator:entityFound", (extent) => {

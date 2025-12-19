@@ -3,7 +3,7 @@ import Panzoombar from 'IDEE/control/Panzoombar';
 import Panzoom from 'IDEE/control/Panzoom';
 import * as Position from 'IDEE/ui/position';
 // import ScaleLine from 'IDEE/control/ScaleLine';
-// import Scale from 'IDEE/control/Scale';
+import Scale from 'IDEE/control/Scale';
 
 const map = Mmap({
   container: 'map',
@@ -18,7 +18,7 @@ const map = Mmap({
 });
 
 // const panzoombar = new Panzoombar({
-//   position: Position.LEFT,
+//   position: Position.DOWN,
 // });
 
 // const panzoom = new Panzoom({
@@ -31,7 +31,7 @@ map.addControls([
 ]);
 
 // const scaleLine = new ScaleLine({
-//   position: 'center-top-right',
+//   position: Position.LEFT,
 //   vendorOptions: {
 //     units: 'degrees',
 //     // bar: true,

@@ -47,7 +47,7 @@ import GetCapabilities from './util/WMSCapabilities';
 import View from './View';
 import FormatWMS from './format/WMS';
 import LayerGroup from './layer/LayerGroup';
-import * as MapImplType from '../../common/map-impl-type';
+import * as MapImplType from '../../common/mapImplType';
 
 /**
  * @classdesc

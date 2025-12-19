@@ -27,11 +27,23 @@ class Control extends Base {
    *
    * @constructor
    * @api
-   * @param {Object} implParam Opciones para generar el control.
    * @param {String} name Nombre del control.
+   * @param {Object} impl Control de implementación
+   * @param {Object} options Opciones para el control de fachada
+   * - tooltip: Representa el valor del título del control
+   * - svgPath: Representa el vínculo para la imagen del botón
+   * - position: Posición que tendrá en el marco del mapa, un contenedor disponible
+   * - order: Orden en el que se colocará dentro del contenedor
+   * * @example
+   * {
+   *   tooltip: 'Mi control',
+   *   svgPath: '/assets/icons/control.svg',
+   *   position: 'left',
+   *   order: 2
+   * }
    */
-  constructor(name, options = {}) {
-    super(options);
+  constructor(name, impl = {}, options = {}) {
+    super(impl);
     this.map = null;
 
     /**
@@ -45,10 +57,10 @@ class Control extends Base {
     this.parentContainer = null;
 
     this.name = name;
-    this.tooltip = options.tooltip || '';
-    this.svgPath = options.svgPath || null;
-    this.position = options.position ?? Position.LEFT;
-    this.order = options.order ?? 0;
+    this.tooltip = options.tooltip ?? impl.tooltip ?? '';
+    this.svgPath = options.svgPath ?? impl.svgPath ?? null;
+    this.position = options.position ?? impl.position ?? Position.LEFT;
+    this.order = options.order ?? impl.order ?? 0;
 
     this.controls = null;
     this.element = null;

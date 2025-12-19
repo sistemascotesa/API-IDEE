@@ -20,13 +20,13 @@ import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
  * @extends {IDEE.Control}
  */
 class ImplementationSwitcher extends ControlBase {
-  constructor() {
+  constructor(options) {
     if (isUndefined(ImplementationSwitcherImpl) || (isObject(ImplementationSwitcherImpl)
         && isNullOrEmpty(Object.keys(ImplementationSwitcherImpl)))) {
       Exception(getValue('exception').implementationswitcher_method);
     }
 
-    super(ImplementationSwitcher.NAME, new ImplementationSwitcherImpl());
+    super(ImplementationSwitcher.NAME, new ImplementationSwitcherImpl(), options);
 
     if (!window.implementations) {
       window.implementations = IDEE.config.implementationswitcher;

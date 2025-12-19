@@ -38,7 +38,6 @@ class Location extends ControlBase {
    * @api
    */
   constructor(options = {}) {
-    const position = options.position ?? Position.LEFT;
     const tracking = options.tracking ?? true;
     const highAccuracy = options.highAccuracy ?? false;
     const vendorOptions = options.vendorOptions ?? {};
@@ -52,9 +51,9 @@ class Location extends ControlBase {
     const impl = new LocationImpl(tracking, highAccuracy, 60000, vendorOptions);
 
     // calls the super constructor
-    super(Location.NAME, impl);
+    super(Location.NAME, impl, options);
 
-    this.position = position;
+    this.position = options.position ?? Position.LEFT;
     this.tracking = tracking;
     this.highAccuracy = highAccuracy;
     this.vendorOptions = vendorOptions;

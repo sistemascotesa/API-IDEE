@@ -207,6 +207,14 @@ class Panel extends MObject {
     if (!isNullOrEmpty(options.order)) {
       this._order = options.order;
     }
+
+    // Aceptar el elemento principal y el contenedor de contenido
+    if (options.element) {
+      this.element = options.element;
+    }
+    if (options.panelContent) {
+      this.panelContent = options.panelContent;
+    }
   }
 
   /**
@@ -234,10 +242,31 @@ class Panel extends MObject {
   addTo(map) {
     this.map = map;
 
-    this.element = compileTemplate(panelTemplate);
-    this.element.id = `plugin-panel-${this.name}`;
+    if (!this.element) {
+      this.element = compileTemplate(panelTemplate);
+      this.element.id = `plugin-panel-${this.name}`;
+      this.createTitlePanel(); // Solo se llama si no se inyecta la plantilla
+    } else {
+      // Si el elemento se ha inyectado (como en Attributions),
+      // solo necesitamos adjuntar eventos.
+    }
 
-    this.createTitlePanel();
+    // Botón flotante
+    this.buttonPanel = this.element.querySelector('.m-panel-btn');
+
+    if (this.buttonPanel) {
+      // Asociar el evento click
+      this.buttonPanel.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        // Llamando a open o collapse según en el estado actual
+        if (this.isCollapsed()) {
+          this.open();
+        } else {
+          this.collapse();
+        }
+      });
+    }
 
     this._tabAccessibility();
 
@@ -301,10 +330,10 @@ class Panel extends MObject {
    * @api
    */
   _collapse(html) {
-    /* html.classList.remove('opened');
-    this.buttonPanel.classList.remove(this._openedButtonClass);
+    html.classList.remove('opened');
+    // this.buttonPanel.classList.remove(this._openedButtonClass);
     html.classList.add('collapsed');
-    this.buttonPanel.classList.add(this._collapsedButtonClass); */
+    // this.buttonPanel.classList.add(this._collapsedButtonClass);
     this._collapsed = true;
     this.fire(EventType.HIDE);
   }
@@ -317,10 +346,10 @@ class Panel extends MObject {
    * @api
    */
   _open(html) {
-    /* html.classList.remove('collapsed');
-    this.buttonPanel.classList.remove(this._collapsedButtonClass);
+    html.classList.remove('collapsed');
+    // this.buttonPanel.classList.remove(this._collapsedButtonClass);
     html.classList.add('opened');
-    this.buttonPanel.classList.add(this._openedButtonClass); */
+    // this.buttonPanel.classList.add(this._openedButtonClass);
     this._collapsed = false;
     this.fire(EventType.SHOW);
   }
@@ -403,7 +432,7 @@ class Panel extends MObject {
           }
           if (!isNullOrEmpty(this.element)) {
             control.on(EventType.ADDED_TO_MAP, this._moveControlView.bind(this), this);
-            this.map.addControls(control, true);
+            this._map.addControls(control, true);
           }
           control.on(EventType.ACTIVATED, this._manageActivation.bind(this), this);
         }
@@ -415,6 +444,7 @@ class Panel extends MObject {
           // control.element_.setAttribute('tabIndex', 0);
 
           // eslint-disable-next-line no-underscore-dangle
+          // console.log(control.element_);
         });
       });
     }

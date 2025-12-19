@@ -25,10 +25,10 @@ class ScaleLine extends ControlBase {
    *
    * @constructor
    * @param {Object} options Objeto de opciones de la fachada que incluye
-   * - position: {@link Position posicion} válida para el control
-   *
-   * - vendorOptions Opciones de proveedor para la biblioteca base, estas opciones
-   * se pasarán en formato objeto. Opciones disponibles:
+  *
+  * - options: Opciones de proveedor para la biblioteca base, estas opciones
+  * se pasarán en formato objeto.
+  * Opciones disponibles:
    * - className: Nombre de la clase CSS.
    * El valor predeterminado es ol-scale-bar
    * cuando se configura con bar: Verdadero. De lo contrario, el valor
@@ -53,19 +53,17 @@ class ScaleLine extends ControlBase {
    * @api
    */
   constructor(options = {}) {
-    const vendorOptions = options.vendorOptions ?? {};
-    const position = options.position ?? Position.DOWN;
     if (isUndefined(ScaleLineImpl) || (isObject(ScaleLineImpl)
       && isNullOrEmpty(Object.keys(ScaleLineImpl)))) {
       Exception(getValue('exception').scaleline_method);
     }
 
     // implementation of this control
-    const impl = new ScaleLineImpl(vendorOptions);
+    const impl = new ScaleLineImpl(options);
 
     // calls the super constructor
-    super(ScaleLine.NAME, impl);
-    this.position = position;
+    super(ScaleLine.NAME, impl, options);
+    this.position = options.position ?? Position.DOWN;
   }
 
   /**

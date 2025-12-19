@@ -24,12 +24,10 @@ class Panzoom extends ControlBase {
    *
    * @constructor
    * @param {Object} options recibe las opciones de configuración por defecto
-   * position: {@link Position posicion} válida para el control
    * @api
    */
   constructor(options = {}) {
     const position = options.position ?? Position.DOWN;
-    const vendorOptions = options.vendorOptions ?? {};
 
     if (isUndefined(PanzoomImpl) || (isObject(PanzoomImpl)
       && isNullOrEmpty(Object.keys(PanzoomImpl)))) {
@@ -37,10 +35,10 @@ class Panzoom extends ControlBase {
     }
 
     // implementation of this control
-    const impl = new PanzoomImpl(vendorOptions);
+    const impl = new PanzoomImpl(options);
 
     // calls the super constructor
-    super(Panzoom.NAME, impl);
+    super(Panzoom.NAME, impl, options);
 
     // Asignar la posición
     this.position = position;

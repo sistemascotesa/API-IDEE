@@ -9,6 +9,7 @@ import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
 import { compileSync as compileTemplate } from '../util/Template';
+import * as Position from '../ui/position';
 
 /**
  * @classdesc
@@ -38,7 +39,9 @@ class GetFeatureInfo extends ControlBase {
     // implementation of this control
     const impl = new GetFeatureInfoImpl(activated, options);
     // calls the super constructor
-    super(GetFeatureInfo.NAME, impl);
+    super(GetFeatureInfo.NAME, impl, options);
+
+    this.position = options.position ?? Position.RIGHT;
   }
 
   /**

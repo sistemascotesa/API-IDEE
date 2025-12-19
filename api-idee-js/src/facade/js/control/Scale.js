@@ -27,8 +27,6 @@ class Scale extends ControlBase {
    *
    * @constructor
    * @param {Object} options Opciones del control.
-   * - Order: Orden que tendrá con respecto al
-   * resto de plugins y controles por pantalla.
    * - exactScale: Escala exacta.
    * @api
    */
@@ -36,18 +34,12 @@ class Scale extends ControlBase {
     if (isUndefined(ScaleImpl) || (isObject(ScaleImpl) && isNullOrEmpty(Object.keys(ScaleImpl)))) {
       Exception(getValue('exception').scale_method);
     }
-
     // implementation of this control
     const impl = new ScaleImpl(options);
 
     // calls the super constructor
-    super(Scale.NAME, impl);
+    super(Scale.NAME, impl, options);
 
-    /**
-     * Order: Orden que tendrá con respecto al
-     * resto de plugins y controles por pantalla.
-     */
-    this.order = options.order >= -1 ? options.order : null;
     this.position = options.position ?? Position.DOWN;
   }
 

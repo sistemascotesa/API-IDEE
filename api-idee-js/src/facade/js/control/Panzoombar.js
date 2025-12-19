@@ -24,26 +24,22 @@ class Panzoombar extends ControlBase {
    *
    * @constructor
    * @param {Object} options recibe las opciones de configuración por defecto
-   * position: {@link Position posicion} válida para el control
    * @api
    */
   constructor(options = {}) {
-    const position = options.position ?? Position.DOWN;
-    const vendorOptions = options.vendorOptions ?? {};
-
     if (isUndefined(PanzoombarImpl) || (isObject(PanzoombarImpl)
       && isNullOrEmpty(Object.keys(PanzoombarImpl)))) {
       Exception(getValue('exception').panzoombar_method);
     }
 
     // implementation of this control
-    const impl = new PanzoombarImpl(vendorOptions);
+    const impl = new PanzoombarImpl(options);
 
     // calls the super constructor
-    super(Panzoombar.NAME, impl);
+    super(Panzoombar.NAME, impl, options);
 
     // Asignar la posición
-    this.position = position;
+    this.position = options.position ?? Position.DOWN;
   }
 
   /**
