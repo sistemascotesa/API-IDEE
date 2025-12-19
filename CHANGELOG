@@ -47,6 +47,7 @@
 - Se implementa el parámetro overflow para los estilos de label.
 - Se elimina el método getFeaturesExtentPromise de WFS para que lo herede de Vector
 - Se implementa la función setZoomLevels en Mapa para establecer el nivel de zoom junto a las resoluciones correspondientes al nivel.
+- Se inicializa this.ticket_ en la clase Map y se añade al JSDoc.
 
 
 01/01/25 - Versión 1.0.0
