@@ -254,6 +254,12 @@ class Panel extends MObject {
     this.buttonPanel = this.element.querySelector('.m-panel-btn');
 
     if (this.buttonPanel) {
+      this.buttonPanel.classList.remove('g-cartografia-flecha-derecha', 'g-cartografia-flecha-izquierda');
+
+      const iconClass = this.isCollapsed() ? this._collapsedButtonClass : this._openedButtonClass;
+      if (iconClass) {
+        this.buttonPanel.classList.add(iconClass);
+      }
       // Asociar el evento click
       this.buttonPanel.addEventListener('click', (event) => {
         event.preventDefault();
@@ -329,6 +335,7 @@ class Panel extends MObject {
    * @api
    */
   _collapse(html) {
+    if (!html) return;
     html.classList.remove('opened');
     // this.buttonPanel.classList.remove(this._openedButtonClass);
     html.classList.add('collapsed');
@@ -345,6 +352,7 @@ class Panel extends MObject {
    * @api
    */
   _open(html) {
+    if (!html) return;
     html.classList.remove('collapsed');
     // this.buttonPanel.classList.remove(this._collapsedButtonClass);
     html.classList.add('opened');

@@ -104,6 +104,8 @@ class Attributions extends ControlBase {
       order: this.order,
       element: panelTemplateHtml,
       panelContent: panelContentElement,
+      collapsedButtonClass: 'g-cartografia-comentarios',
+      openedButtonClass: 'g-cartografia-comentarios',
     });
 
     this.getImpl().controlPanel = this.controlPanel;
@@ -164,17 +166,14 @@ class Attributions extends ControlBase {
       });
 
       html.querySelector('#close-button').addEventListener('click', () => this.closePanel());
-      this.html_ = html;
+      this.html_ = html.querySelector('#m-attributions-container') || html;
 
       this.initMode();
-
-      this.onMoveEnd(() => {
-        this.changeAttributions();
-      });
-
+      this.onMoveEnd(() => { this.changeAttributions(); });
       this.accessibilityTab(html);
 
       this.controlPanel.panelContent.appendChild(html);
+
       console.log('THIS.MAP: ', this.map_.getLayers());
       this.map_.getLayers().forEach((layer) => {
         const layerId = layer.idLayer || layer.id || layer.name;

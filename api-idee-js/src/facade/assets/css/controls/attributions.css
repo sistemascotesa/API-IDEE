@@ -6,7 +6,7 @@
 .m-panel.m-attributions .m-panel-btn {
     position: absolute;
     z-index: 9999;
-    background-color: #fff !important;
+    /* background-color: #fff !important; */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     /* height: auto; */
     transition: all 0.3s ease-in-out;
