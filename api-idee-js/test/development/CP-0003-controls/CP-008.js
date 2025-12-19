@@ -18,9 +18,9 @@ const rotate = new Rotate({
 
 map.addControls([rotate]);
 
-map.removeControls(rotate);
+// map.removeControls(rotate);
 
-map.addControls([rotate]);
+// map.addControls([rotate]);
 
 // const spainFlatControl = new Control('SpainFlat', {
 //   tooltip: 'spain',

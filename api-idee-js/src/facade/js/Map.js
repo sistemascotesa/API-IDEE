@@ -34,6 +34,7 @@ import GenericRaster from './layer/GenericRaster';
 import GenericVector from './layer/GenericVector';
 import Button from './ui/Button';
 import Panel from './ui/Panel';
+import ControlPanel from './ui/ControlPanel';
 import * as Position from './ui/position';
 import GeoJSON from './layer/GeoJSON';
 import GeoTIFF from './layer/GeoTIFF';
@@ -49,7 +50,7 @@ import Tiles3D from './layer/Tiles3D';
 import Terrain from './layer/Terrain';
 import WMC from './layer/WMC';
 import Attributions from './control/Attributions';
-import { buildControl } from './builder/builder';
+import { buildControl, getPanelForControl } from './builder/builder';
 import applyDesignTokenCssVariables from './theme/tokens';
 // eslint-disable-next-line no-unused-vars
 import Plugin from './Plugin';
@@ -2948,22 +2949,20 @@ class Map extends Base {
         } else if (isObject(controlParam) && controlParam instanceof Control) {
           control = controlParam;
         }
+        const panel = getPanelForControl(control, this, control.builderParams ?? {});
+        const isControlWithoutAdding = !this.hasControl(control);
 
-        // const params = control.builderParams || {};
-        // const panel = getPanelForControl(control, this, params);
-
-        // if (!this.hasControl(control) || skipCheckDuplicate) {
-        //   if (!isNullOrEmpty(panel) && !this.hasControl(control)) {
-        //     panel.addControls(control);
-        //     this.addPanels(panel);
-        //   } else if (!isNullOrEmpty(control)) {
-        //     control.addTo(this);
-        //   }
-        //   controls.push(control);
-        // // }
-        if ((!this.hasControl(control) || skipCheckDuplicate) && !isNullOrEmpty(control)) {
-          control.addTo(this);
-          controls.push(control);
+        if (isControlWithoutAdding || skipCheckDuplicate) {
+          if (!isNullOrEmpty(panel) && isControlWithoutAdding) {
+            panel.addControls(control);
+            this.addControlPanels(panel);
+          } else if (!isNullOrEmpty(control)) {
+            control.addTo(this);
+            controls.push(control);
+          }
+        } else {
+          const message = `( "${control.name}" ): ${getValue('exception').control_already_added}`;
+          Dialog.error(message);
         }
       });
 
@@ -3056,8 +3055,6 @@ class Map extends Base {
     let hasControl = false;
     if (controls.some((ctrl) => ctrl.name === controlName)) {
       hasControl = true;
-      const message = `( "${control.name}" ): ${getValue('exception').control_already_added}`;
-      Dialog.error(message);
     }
     return hasControl;
   }
@@ -3086,7 +3083,6 @@ class Map extends Base {
     let controls = this.getControls(controlsParam);
     controls = [].concat(controls);
     if (controls.length > 0) this.getImpl().removeControls(controls);
-
     return this;
   }
 
@@ -4347,6 +4343,27 @@ class Map extends Base {
           panel.addTo(this);
         }
       });
+    }
+    return this;
+  }
+
+  /**
+   * Añade un panel que alberga un control en su interior
+   *
+   * @function
+   * @param {ControlPanel | ControlPanel[]} controlPanelsVar
+   * @api
+   * @returns {Map} Devuelve el estado del mapa.
+   */
+  addControlPanels(controlPanelsVar) {
+    if (!isNullOrEmpty(controlPanelsVar)) {
+      (isArray(controlPanelsVar) ? controlPanelsVar : [controlPanelsVar])
+        .filter((panel) => !this.panels.some((panel2) => panel2.equals(panel))
+          && panel instanceof ControlPanel)
+        .forEach((panel) => {
+          this.panels.push(panel);
+          panel.addTo(this);
+        });
     }
     return this;
   }

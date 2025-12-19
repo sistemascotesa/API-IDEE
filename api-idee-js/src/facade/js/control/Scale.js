@@ -39,7 +39,6 @@ class Scale extends ControlBase {
 
     // calls the super constructor
     super(Scale.NAME, impl, options);
-
     this.position = options.position ?? Position.DOWN;
   }
 

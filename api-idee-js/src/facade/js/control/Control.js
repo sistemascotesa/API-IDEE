@@ -57,12 +57,13 @@ class Control extends Base {
     this.parentContainer = null;
 
     this.name = name;
-    this.tooltip = options.tooltip ?? impl.tooltip ?? '';
-    this.svgPath = options.svgPath ?? impl.svgPath ?? null;
-    this.position = options.position ?? impl.position ?? Position.LEFT;
-    this.order = options.order ?? impl.order ?? 0;
+    this.tooltip = options.tooltip ?? '';
+    this.svgPath = options.svgPath ?? null;
+    this.position = options.position ?? Position.LEFT;
+    this.order = options.order ?? 0;
 
     this.controls = null;
+    this.panel_ = null;
     this.element = null;
     this.activationBtn = null;
     this.activated = false;
@@ -269,6 +270,32 @@ class Control extends Base {
     }
     this.activated = false;
     this.fire(EventType.DEACTIVATED);
+  }
+
+  /**
+   * Sobrescribe el panel del control.
+   *
+   * @public
+   * @function
+   * @param {IDEE.ui.ControlPanel} panel ControlPanel.
+   * @api
+   * @export
+   */
+  setPanel(panel) {
+    this.panel_ = panel;
+  }
+
+  /**
+   * Devuelve el panel del control.
+   *
+   * @public
+   * @function
+   * @returns {IDEE.ui.ControlPanel} ControlPanel.
+   * @api
+   * @export
+   */
+  getPanel() {
+    return this.panel_;
   }
 
   /**
