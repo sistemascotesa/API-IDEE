@@ -482,7 +482,7 @@ class Map extends Base {
    * @param {Object} options Parámetros del control.
    * @api
    */
-  createAttribution(options = {}) {
+  createAttribution(options = {}, control = null) {
     // Comprobar si existe el control
     if (this.getControls().some(({ name }) => name === 'attributions')) {
       return;
@@ -495,7 +495,7 @@ class Map extends Base {
       order,
     } = options;
     try {
-      const atribucionControl = new Attributions({
+      const atribucionControl = !isNullOrEmpty(control) ? control : new Attributions({
         map: this,
         scale,
         collectionsAttributions: collectionsAttributions.map((l) => {
@@ -2948,6 +2948,7 @@ class Map extends Base {
           }
         } else if (isObject(controlParam) && controlParam instanceof Control) {
           control = controlParam;
+          control.builderParams = control.options;
         }
 
         // const params = control.builderParams || {};

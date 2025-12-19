@@ -234,7 +234,7 @@ export const getPanelForControl = (control, map, params = {}) => {
     [Panzoom.NAME]: () => getPanzoomPanel(),
     [GetFeatureInfo.NAME]: () => null, // GetFeatureInfo doesn't use panel
     [Location.NAME]: () => getLocationPanel(),
-    [Attributions.NAME]: () => null, // Attributions handled via map.createAttribution
+    [Attributions.NAME]: () => map.createAttribution(params, control),
     [Rotate.NAME]: () => getRotatePanel(params),
     [BackgroundLayers.NAME]: () => getBackgroundLayersPanel(),
     [ImplementationSwitcher.NAME]: () => getImplementationSwitcherPanel(),
