@@ -630,6 +630,7 @@ button::-moz-focus-inner {
 .m-panel.m-edition.collapsed>button.m-panel-btn,
 .m-panel.m-printer.collapsed>button.m-panel-btn,
 .m-panel.m-layerswitcher.collapsed>button.m-panel-btn, */
+.m-control.m-location-container>button,
 .m-geosearch.collapsed>button.m-panel-btn,
 .m-searchstreet.collapsed>button.m-panel-btn,
 .m-searchstreetgeosearch.collapsed>button.m-panel-btn,
@@ -660,6 +661,7 @@ div.m-control button[class^=g-cartografia-],
     padding: 0;
 }
 
+.m-control.m-location-container>button:hover,
 .m-geosearch.collapsed>button.m-panel-btn:hover,
 .m-searchstreet.collapsed>button.m-panel-btn:hover,
 .m-searchstreetgeosearch.collapsed>button.m-panel-btn:hover,

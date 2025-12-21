@@ -1,7 +1,7 @@
 /**
- * @module IDEE/ui/Panel
+ * @module IDEE/ui/ControlPanel
  */
-import 'assets/css/panel';
+import 'assets/css/controlpanel';
 import controlPanelTemplate from 'templates/control_panel';
 import * as Position from './position';
 import {
@@ -20,12 +20,12 @@ import { compileSync as compileTemplate } from '../util/Template';
  *
  * @api
  */
-class Panel extends MObject {
+class ControlPanel extends MObject {
   /**
    * Constructor principal de la clase.
    * @constructor
    * @param {string} name Nombre del panel.
-   * @param {Mx.parameters.Panel} options Opciones del panel.
+   * @param {Mx.parameters.ControlPanel} options Opciones del panel.
    * - collapsible: Indica si el panel se puede colapsar.
    * - position: Posición del panel.
    * - collapsed: Indica si el panel aparece por defecto colapsado o no.
@@ -570,7 +570,7 @@ class Panel extends MObject {
    */
   equals(obj) {
     let equals = false;
-    if (obj instanceof Panel) {
+    if (obj instanceof ControlPanel) {
       equals = (obj.name === this.name);
     }
     return equals;
@@ -627,4 +627,4 @@ class Panel extends MObject {
   }
 }
 
-export default Panel;
+export default ControlPanel;

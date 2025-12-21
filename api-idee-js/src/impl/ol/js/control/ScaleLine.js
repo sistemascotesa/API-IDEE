@@ -33,29 +33,31 @@ class ScaleLine extends OLControlScaleLine {
    * @constructor
    * @param {Object} options Opciones de proveedor para la biblioteca base, estas opciones
    * se pasarán en formato objeto.
-   * @property {string} [className] Nombre de la clase CSS.
-   * El valor predeterminado es `ol-scale-bar` cuando se configura con
-   * `bar: true`. De lo contrario, el valor predeterminado es `ol-scale-line`.
-   * @property {number} [minWidth=64] Ancho mínimo en píxeles con el dpi predeterminado de OGC.
-   * El ancho se ajustará para que coincida con el dpi utilizado.
-   * @property {number} [maxWidth] Ancho máximo en píxeles con el dpi predeterminado de OGC.
-   * El ancho se ajustará para que coincida con el dpi utilizado.
-   * @property {function(import("../MapEvent.js").default):void} [render] Función que se llama
-   * cuando el control debe volver a renderizarse.
-   * Esta función se llama en una devolución de llamada `requestAnimationFrame`.
-   * @property {HTMLElement|string} [target] Especifique un objetivo si desea que el control
-   * se represente fuera de la ventana gráfica del mapa.
-   * @property {Units} [units='metric'] Unidades.
-   * @property {boolean} [bar=false] Representa barras de escala en lugar de una línea.
-   * @property {number} [steps=4] Número de pasos que debe usar la barra de escala.
-   * Use números pares para obtener mejores resultados. Solo se aplica cuando `bar` es `true`.
-   * @property {boolean} [text=false] Representa la escala del texto por encima
-   * de la barra de escala. Solo se aplica cuando `bar` es `true`.
-   * @property {number|undefined} [dpi=undefined] Dpi del dispositivo de salida, como una impresora.
-   * Solo se aplica cuando `bar` es `true`. Si no se define,
-   * se asumirá el tamaño de píxel de pantalla predeterminado de OGC de 0,28 mm.
-   * @extends {ol.control.Control}
-   * @api stable
+   * - options: Opciones de proveedor para la biblioteca base, estas opciones
+   * se pasarán en formato objeto.
+   * Opciones disponibles:
+   * - className: Nombre de la clase CSS.
+   * El valor predeterminado es ol-scale-bar
+   * cuando se configura con bar: Verdadero. De lo contrario, el valor
+   * predeterminado es ol-scale-line.
+   * - minWidth: Ancho mínimo en píxeles en los dpi predeterminados de OGC.
+   * El ancho se ajustará para que coincida con los dpi utilizados.
+   * - render: Función llamada cuando se debe volver a
+   * representar el control.
+   * Esto se llama en una devolución de llamada de requestAnimationFrame.
+   * - target: Especifique un objetivo si desea que
+   * el control se represente fuera de la ventana gráfica del mapa.
+   * - units: Unidades.
+   * - bar: Representa barras de escala en lugar de una línea.
+   * - steps: Número de pasos que debe usar la barra de escala.
+   * Utilice números pares para obtener mejores resultados. Solo se aplica cuando
+   * la barra es verdadera.
+   * - text: Representa la escala de texto arriba de la barra de escala.
+   * Solo se aplica cuando la barra es verdadera.
+   * - dpi: dpi del dispositivo de salida, como una impresora.
+   * Solo se aplica cuando la barra es verdadera.
+   * Si no se define, se asumirá el tamaño de píxel de pantalla predeterminado de OGC de 0,28 mm.
+   * @api
    */
   constructor(options) {
     super(options);

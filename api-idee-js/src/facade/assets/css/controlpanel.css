@@ -210,7 +210,6 @@ div.m-panel>button {
 /****************************
      PANELS CONTAINER
 ****************************/
-.m-panel {}
 
 .m-panel>div.m-panel-controls {
     display: flex;
@@ -331,6 +330,10 @@ div.m-panel>button {
     background-color: transparent !important;
     border-radius: 0px !important;
 }
+.m-panel.m-location.opened {
+    background-color: transparent !important;
+}
+
 .m-panel>div.m-panel-controls>div {
     position: inherit !important;
     overflow: hidden;
