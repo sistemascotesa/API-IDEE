@@ -346,6 +346,8 @@ div.m-panel>button {
 
 .m-panel>div.m-panel-controls>div.m-control.m-container.m-background {
     display: flex !important;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .m-panel.m-tools>div.m-panel-controls>div.m-control.activated>button {
