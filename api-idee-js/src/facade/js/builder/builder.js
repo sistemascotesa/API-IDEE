@@ -35,14 +35,14 @@ import Exception from '../exception/exception';
  * @return {Object} Devuelve el panel del control Scale.
  * @api stable
  */
-export const getScalePanel = (map, params = {}) => {
+export const getScalePanel = (control, map, params = {}) => {
   let panel = map.getPanels('map-info')[0];
   if (isNullOrEmpty(panel)) {
     panel = new ControlPanel('map-info', {
       collapsible: false,
       className: 'm-map-info',
-      position: Position.RIGHT,
-      order: params.order || null,
+      position: params.position ?? control.position ?? Position.DOWN,
+      order: params.order ?? control.order ?? null,
     });
     panel.on(EventType.ADDED_TO_MAP, () => {
       if (map.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
@@ -65,12 +65,13 @@ export const getScalePanel = (map, params = {}) => {
  * @return {Object} Devuelve el panel del control ScaleLine.
  * @api stable
  */
-export const getScaleLinePanel = (map) => {
+export const getScaleLinePanel = (control, map, params = {}) => {
   const panel = new ControlPanel('scaleline', {
+    tooltip: 'Línea de escala',
     collapsible: false,
     className: 'm-scaleline',
-    position: Position.DOWN,
-    tooltip: 'Línea de escala',
+    position: params.position ?? control.position,
+    order: params.order ?? control.order ?? null,
   });
   panel.on(EventType.ADDED_TO_MAP, () => {
     if (map.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
@@ -89,12 +90,13 @@ export const getScaleLinePanel = (map) => {
  * @return {Object} Devuelve el panel del control Panzoombar.
  * @api stable
  */
-export const getPanzoombarPanel = () => {
+export const getPanzoombarPanel = (control, map, params = {}) => {
   return new ControlPanel('panzoombar', {
+    tooltip: 'Nivel de zoom',
     collapsible: false,
     className: 'm-panzoombar',
-    position: Position.CTL,
-    tooltip: 'Nivel de zoom',
+    position: params.position ?? control.position,
+    order: params.order ?? control.order ?? null,
   });
 };
 
@@ -107,11 +109,12 @@ export const getPanzoombarPanel = () => {
  * @return {Object} Devuelve el panel del control Panzoom.
  * @api stable
  */
-export const getPanzoomPanel = () => {
+export const getPanzoomPanel = (control, map, params = {}) => {
   return new ControlPanel('panzoom', {
     collapsible: false,
     className: 'm-panzoom',
-    position: Position.CTL,
+    position: params.position ?? control.position,
+    order: params.order ?? control.order ?? null,
   });
 };
 
@@ -124,11 +127,12 @@ export const getPanzoomPanel = () => {
  * @return {Object} Devuelve el panel del control Location.
  * @api stable
  */
-export const getLocationPanel = () => {
+export const getLocationPanel = (control, map, params = {}) => {
   return new ControlPanel('location', {
     collapsible: false,
     className: 'm-location',
-    position: Position.RIGHT,
+    position: params.position ?? control.position,
+    order: params.order ?? control.order ?? null,
   });
 };
 
@@ -143,12 +147,12 @@ export const getLocationPanel = () => {
  * @return {Object} Devuelve el panel del control Rotate.
  * @api stable
  */
-export const getRotatePanel = (params = {}) => {
+export const getRotatePanel = (control, map, params = {}) => {
   return new ControlPanel('rotate', {
     collapsible: false,
     className: 'm-rotate',
-    position: Position.CTL,
-    order: params.order || null,
+    position: params.position ?? control.position,
+    order: params.order ?? control.order ?? null,
   });
 };
 
@@ -161,11 +165,12 @@ export const getRotatePanel = (params = {}) => {
  * @return {Object} Devuelve el panel del control BackgroundLayers.
  * @api stable
  */
-export const getBackgroundLayersPanel = () => {
+export const getBackgroundLayersPanel = (control, map, params = {}) => {
   return new ControlPanel('backgroundlayers', {
     collapsible: false,
-    position: Position.CTR,
     className: 'm-plugin-baselayer',
+    position: params.position ?? control.position,
+    order: params.order ?? control.order ?? null,
   });
 };
 
@@ -178,13 +183,14 @@ export const getBackgroundLayersPanel = () => {
  * @return {Object} Devuelve el panel del control ImplementationSwitcher.
  * @api stable
  */
-export const getImplementationSwitcherPanel = () => {
+export const getImplementationSwitcherPanel = (control, map, params = {}) => {
   return new ControlPanel('implementationswitcher', {
     collapsible: true,
-    position: Position.CTR,
-    className: 'm-implementationswitcher',
     collapsedButtonClass: 'g-cartografia-implementacion',
     tooltip: getValue('implementationswitcher').title,
+    className: 'm-implementationswitcher',
+    position: params.position ?? control.position,
+    order: params.order ?? control.order ?? null,
   });
 };
 
@@ -199,13 +205,14 @@ export const getImplementationSwitcherPanel = () => {
  * @return {Object} Devuelve el panel del control WMCSelector.
  * @api stable
  */
-export const getWMCSelectorPanel = (map) => {
+export const getWMCSelectorPanel = (control, map, params = {}) => {
   let panel = map.getPanels('map-info')[0];
   if (isNullOrEmpty(panel)) {
     panel = new ControlPanel('map-info', {
       collapsible: false,
-      position: Position.RIGHT,
       className: 'm-map-info',
+      position: params.position ?? control.position,
+      order: params.order ?? control.order ?? null,
     });
     panel.on(EventType.ADDED_TO_MAP, () => {
       if (map.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
@@ -227,18 +234,18 @@ export const getWMCSelectorPanel = (map) => {
  */
 export const getPanelForControl = (control, map, params = {}) => {
   const panels = {
-    [Scale.NAME]: () => getScalePanel(map, params),
-    [`${Scale.NAME}*true`]: () => getScalePanel(map, params),
-    [ScaleLine.NAME]: () => getScaleLinePanel(map),
-    [Panzoombar.NAME]: () => getPanzoombarPanel(),
-    [Panzoom.NAME]: () => getPanzoomPanel(),
+    [Scale.NAME]: () => getScalePanel(control, map, params),
+    [`${Scale.NAME}*true`]: () => getScalePanel(control, map, params),
+    [ScaleLine.NAME]: () => getScaleLinePanel(control, map, params),
+    [Panzoombar.NAME]: () => getPanzoombarPanel(control, map, params),
+    [Panzoom.NAME]: () => getPanzoomPanel(control, map, params),
     [GetFeatureInfo.NAME]: () => null, // GetFeatureInfo doesn't use panel
-    [Location.NAME]: () => getLocationPanel(),
-    [Attributions.NAME]: () => map.createAttribution(params, control),
-    [Rotate.NAME]: () => getRotatePanel(params),
-    [BackgroundLayers.NAME]: () => getBackgroundLayersPanel(),
-    [ImplementationSwitcher.NAME]: () => getImplementationSwitcherPanel(),
-    [WMCSelector.NAME]: () => getWMCSelectorPanel(map),
+    [Location.NAME]: () => getLocationPanel(control, map, params),
+    [Attributions.NAME]: () => null, // Attributions handled via map.createAttribution
+    [Rotate.NAME]: () => getRotatePanel(control, map, params),
+    [BackgroundLayers.NAME]: () => getBackgroundLayersPanel(control, map, params),
+    [ImplementationSwitcher.NAME]: () => getImplementationSwitcherPanel(control, map, params),
+    [WMCSelector.NAME]: () => getWMCSelectorPanel(control, map, params),
   };
   const controlParam = control.name;
   const builderFunction = panels[controlParam];

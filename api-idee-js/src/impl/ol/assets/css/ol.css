@@ -344,18 +344,11 @@
     box-shadow: 0px 1px 3px 0px #CACACA;
 }
 
-/* .ol-zoom>button:hover, */
-/* .ol-zoom>button:focus {
-    background-color: var(--idee-color-links) !important;
-    outline: none !important;
-    opacity: 1;
-} */
-
 .ol-zoom>button:active {
     background-color: var(--idee-color-primary-dark) !important;
 }
 
-.ol-zoom>button.ol-zoom-in:before {}
+/* .ol-zoom>button.ol-zoom-in:before {} */
 
 .ol-overviewmap {
     left: 0.5em;

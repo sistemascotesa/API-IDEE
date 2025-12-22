@@ -27,8 +27,6 @@ class Panzoom extends ControlBase {
    * @api
    */
   constructor(options = {}) {
-    const position = options.position ?? Position.DOWN;
-
     if (isUndefined(PanzoomImpl) || (isObject(PanzoomImpl)
       && isNullOrEmpty(Object.keys(PanzoomImpl)))) {
       Exception(getValue('exception').panzoombar_method);
@@ -41,7 +39,7 @@ class Panzoom extends ControlBase {
     super(Panzoom.NAME, impl, options);
 
     // Asignar la posición
-    this.position = position;
+    this.position = options.position ?? Position.DOWN;
   }
 
   /**
