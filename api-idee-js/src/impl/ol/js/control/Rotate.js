@@ -7,7 +7,7 @@ import Control from './Control';
  * @classdesc
  * Agrega la funcionalidad para rotar el mapa para que el norte esté arriba.
  *
- * @param {Object} vendorOptions Opciones para la biblioteca base.
+ * @param {Object} options Opciones para la biblioteca base.
  * - element. Contenedor del control.
  * - target. Elemento donde se va a añadir el control.
  * - render. Función que devuelve el HTML del control.
@@ -21,8 +21,8 @@ class Rotate extends Control {
    * @extends {ol.control.Control}
    * @api stable
    */
-  constructor(vendorOptions) {
-    super(vendorOptions);
+  constructor(options) {
+    super(options);
 
     this.facadeMap_ = null;
   }

@@ -30,23 +30,6 @@ OL3 PERFORMANCE
 }
 
 /****************
-    SCALELINE
-****************/
-
-.ol-scale-line .ol-scale-line-inner {
-    color: #404040;
-    border-color: #404040;
-    font-weight: bold;
-}
-
-@media only screen and (max-width: 768px) {
-    .ol-scale-line-up {
-        margin-bottom: 30px;
-        margin-left: -15px;
-    }
-}
-
-/****************
     OVERVIEWMAP
 ****************/
 

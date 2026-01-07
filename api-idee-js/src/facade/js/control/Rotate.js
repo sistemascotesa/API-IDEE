@@ -31,9 +31,6 @@ class Rotate extends ControlBase {
    * - viewInitial: Vista inicial. Solo disponible para Cesium.
    * - help: Indica si se muestra la ayuda al crear el control.
    * Por defecto, verdadero. Solo disponible para Cesium.
-   * - position: {@link Position posicion} válida para el control
-   * - order: Orden que tendrá con respecto al
-   * resto de plugins y controles por pantalla.
    * @api
    */
   constructor(options = {}) {
@@ -51,15 +48,9 @@ class Rotate extends ControlBase {
     const impl = new RotateImpl(opts);
 
     // calls the super constructor
-    super(Rotate.NAME, impl);
+    super(Rotate.NAME, impl, options);
 
     this.help = opts.help;
-
-    /**
-     * Order: Orden que tendrá con respecto al
-     * resto de plugins y controles por pantalla.
-     */
-    this.order = options.order >= -1 ? options.order : null;
     this.position = options.position ?? Position.LEFT;
   }
 
