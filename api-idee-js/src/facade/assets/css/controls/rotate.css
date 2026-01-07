@@ -9,8 +9,10 @@
 div.m-control.m-rotate-container {
   overflow: hidden;
 }
-
-.m-left .m-panel.opened div.m-control.m-rotate-container button[class^=g-cartografia-] {
+.m-panel.m-rotate.opened {
+  background-color: var(--idee-color-primary-dark) !important;
+}
+.m-panel.m-rotate.opened div.m-control.m-rotate-container button[class^=g-cartografia-] {
   color: var(--idee-color-primary);
   background-color: var(--idee-color-primary-dark) !important;
   opacity: 1;

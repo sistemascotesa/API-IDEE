@@ -1,6 +1,5 @@
-.m-location-container {
-    top: 20px;
-    left: 600px;
+.m-control.m-location-container {
+    background-color: transparent !important;
 }
 
 /* .m-location-container.m-locating>button#m-location-button:before {

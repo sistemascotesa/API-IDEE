@@ -17,17 +17,27 @@
     background-color: transparent;
     border-radius: 4px;
     padding: 0 2px;
-    border: 0px solid transparent;
+
+    color: #404040;
+    border-color: #404040;
+    font-weight: bold;
 }
 
 .ol-scale-line .ol-scale-line-inner {
-    border: 2px solid var(--idee-color-primary);
+    border: 2px solid;
     border-top: none;
     font-size: 10px;
     text-align: center;
     margin: 1px;
     will-change: contents, width;
     transition: all 0.25s;
+}
+
+@media only screen and (max-width: 768px) {
+    .ol-scale-line-up {
+        margin-bottom: 30px;
+        margin-left: -15px;
+    }
 }
 
 .ol-scale-bar {
@@ -334,18 +344,11 @@
     box-shadow: 0px 1px 3px 0px #CACACA;
 }
 
-/* .ol-zoom>button:hover, */
-/* .ol-zoom>button:focus {
-    background-color: var(--idee-color-links) !important;
-    outline: none !important;
-    opacity: 1;
-} */
-
 .ol-zoom>button:active {
     background-color: var(--idee-color-primary-dark) !important;
 }
 
-.ol-zoom>button.ol-zoom-in:before {}
+/* .ol-zoom>button.ol-zoom-in:before {} */
 
 .ol-overviewmap {
     left: 0.5em;

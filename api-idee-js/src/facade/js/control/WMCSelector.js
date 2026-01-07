@@ -26,7 +26,7 @@ class WMCSelector extends ControlBase {
    * @constructor
    * @api
    */
-  constructor() {
+  constructor(options) {
     if (isUndefined(WMCSelectorImpl) || (isObject(WMCSelectorImpl)
       && isNullOrEmpty(Object.keys(WMCSelectorImpl)))) {
       Exception(getValue('exception').wmcselector_method);
@@ -36,7 +36,7 @@ class WMCSelector extends ControlBase {
     const impl = new WMCSelectorImpl();
 
     // calls the super constructor
-    super(WMCSelector.NAME, impl);
+    super(WMCSelector.NAME, impl, options);
   }
 
   /**

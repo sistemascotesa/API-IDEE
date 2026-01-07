@@ -17,6 +17,7 @@ import KML from '../layer/KML';
 import { LAYER_VISIBILITY_CHANGE, ADDED_LAYER } from '../event/eventtype';
 import Exception from '../exception/exception';
 import ControlPanel from '../../../impl/common/ControlPanel';
+import * as Position from '../ui/position';
 
 /**
  * @classdesc
@@ -53,7 +54,6 @@ class Attributions extends ControlBase {
    * @param {Number} scale Define cuando cambiara la atribución.
    * @param {String} defaultAttribution Atribución por defecto.
    * @param {String} defaultURL URL por defecto.
-   * @param {Number} order Accesibilidad, z-index.
    * @api
    */
   constructor(options = {}) {
@@ -63,9 +63,9 @@ class Attributions extends ControlBase {
     }
 
     const impl = new AttributionsImpl();
-    super(Attributions.NAME, impl);
+    super(Attributions.NAME, impl, options);
 
-    this.position = options.position;
+    this.position = options.position ?? Position.LEFT;
     this.closePanel = options.closePanel;
     this.urlAttribute = options.urlAttribute || 'Gobierno de España';
     this.options = options;
@@ -114,12 +114,6 @@ class Attributions extends ControlBase {
       }
       return attr;
     });
-
-    /**
-     * Order: Orden que tendrá con respecto al
-     * resto de plugins y controles por pantalla.
-     */
-    this.order = options.order;
   }
 
   transformString(attrString) {

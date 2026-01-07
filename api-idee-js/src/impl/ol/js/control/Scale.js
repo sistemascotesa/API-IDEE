@@ -64,7 +64,7 @@ class Scale extends Control {
    * @api stable
    */
   constructor(options = {}) {
-    super();
+    super(options);
     this.facadeMap_ = null;
   }
 

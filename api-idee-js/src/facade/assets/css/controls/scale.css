@@ -1,14 +1,16 @@
+
 .m-control.m-scale-container {
-    display: flex;
+    display: flex !important;
+    flex-direction: row;
     flex-wrap: wrap;
     gap: 0.25em;
     justify-content: center;
     align-items: center;
-    padding: .25em .75em;
+    padding: .25em .75em !important;
     margin: 0;
     border-radius: 16px;
+    width: 100%;
     min-width: 132px;
-    width: fit-content;
     height: auto !important;
     font-size: 12px !important;
     vertical-align: middle !important;

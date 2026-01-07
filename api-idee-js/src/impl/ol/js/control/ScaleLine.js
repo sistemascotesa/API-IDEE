@@ -31,12 +31,15 @@ class ScaleLine extends OLControlScaleLine {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base, estas opciones
-   * se pasarán en formato objeto. Opciones disponibles:
+   * @param {Object} options Opciones de proveedor para la biblioteca base, estas opciones
+   * se pasarán en formato objeto.
+   * - options: Opciones de proveedor para la biblioteca base, estas opciones
+   * se pasarán en formato objeto.
+   * Opciones disponibles:
    * - className: Nombre de la clase CSS.
    * El valor predeterminado es ol-scale-bar
-   * cuando se configura con "bar" es verdadero.
-   * De lo contrario, el valor predeterminado es ol-scale-line.
+   * cuando se configura con bar: Verdadero. De lo contrario, el valor
+   * predeterminado es ol-scale-line.
    * - minWidth: Ancho mínimo en píxeles en los dpi predeterminados de OGC.
    * El ancho se ajustará para que coincida con los dpi utilizados.
    * - render: Función llamada cuando se debe volver a
@@ -54,11 +57,10 @@ class ScaleLine extends OLControlScaleLine {
    * - dpi: dpi del dispositivo de salida, como una impresora.
    * Solo se aplica cuando la barra es verdadera.
    * Si no se define, se asumirá el tamaño de píxel de pantalla predeterminado de OGC de 0,28 mm.
-   * @extends {ol.control.Control}
-   * @api stable
+   * @api
    */
-  constructor(vendorOptions) {
-    super(vendorOptions);
+  constructor(options) {
+    super(options);
 
     this.facadeMap_ = null;
 
