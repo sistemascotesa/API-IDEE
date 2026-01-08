@@ -59,6 +59,23 @@
       "text1": "The obtain information tool allows obtaining the GetFeatureInfo (the information associated with the point clicked on the viewer) in WMS and WMTS services."
     }
   },
+  "timeline": {
+    "tooltip": "Timeline",
+    "title": "Timeline",
+    "play": "Play",
+    "pause": "Pause",
+    "excepcion": "The implementation used cannot create timelineControl controls",
+    "intervals_error": "The intervals were not defined correctly",
+    "initValue": "Start value",
+    "endValue": "Final value",
+    "textHelp": {
+      "help1": "The timeline extension.",
+      "help2": "The extension is customizable, so you can switch from one viewer to another.",
+      "help3": "The timeline allows you to make spatial filters on layers based on a time attribute, or add a date to a layer and filter by it.",
+      "help4": "The information relevant to the extension and its possible parameterization is documented in",
+      "help5": "The example of use of its parameters can be checked in"
+    }
+  },
   "wmcselector": {
     "title": "Context selector"
   },
@@ -138,6 +155,7 @@
     "panzoom_method": "The used implementation can not create Panzoom controls",
     "panzoombar_method": "The used implementation can not create Panzoombar controls",
     "scale_method": "The used implementation can not create Scale controls",
+    "timeline_method": "The used implementation can not create TimeLine controls",
     "scaleline_method": "The used implementation can not create ScaleLine controls",
     "wmcselector_method": "The used implementation can not create WMCSelector controls",
     "geojson_method": "The used implementation can not create objects IDEE.impl.format.GeoJSON",

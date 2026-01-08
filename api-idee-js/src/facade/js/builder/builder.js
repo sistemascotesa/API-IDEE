@@ -9,6 +9,7 @@ import * as Position from '../ui/position';
 import * as EventType from '../event/eventtype';
 import { getValue } from '../i18n/language';
 import Control from '../control/Control';
+import Attributions from '../control/Attributions';
 import GetFeatureInfo from '../control/GetFeatureInfo';
 import Location from '../control/Location';
 import Scale from '../control/Scale';
@@ -17,9 +18,9 @@ import ScaleLine from '../control/ScaleLine';
 import Panzoom from '../control/Panzoom';
 import Panzoombar from '../control/Panzoombar';
 import BackgroundLayers from '../control/BackgroundLayers';
-import WMCSelector from '../control/WMCSelector';
-import Attributions from '../control/Attributions';
 import ImplementationSwitcher from '../control/ImplementationSwitcher';
+import WMCSelector from '../control/WMCSelector';
+import TimeLine from '../control/Timeline';
 import * as dialog from '../dialog';
 import Exception from '../exception/exception';
 
@@ -29,20 +30,21 @@ import Exception from '../exception/exception';
  * @public
  * @function
  *
+ * @param {Object} control Control.
  * @param {Object} map Mapa.
  * @param {Object} params Parámetros del control.
  *
  * @return {Object} Devuelve el panel del control Scale.
  * @api stable
  */
-export const getScalePanel = (control, map, params = {}) => {
+export const getScalePanel = (control, map, params = {}, defaultOptions = {}) => {
   let panel = map.getPanels('map-info')[0];
   if (isNullOrEmpty(panel)) {
     panel = new ControlPanel('map-info', {
+      ...defaultOptions,
       collapsible: false,
       className: 'm-map-info',
       position: params.position ?? control.position ?? Position.DOWN,
-      order: params.order ?? control.order ?? null,
     });
     panel.on(EventType.ADDED_TO_MAP, () => {
       if (map.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
@@ -65,13 +67,12 @@ export const getScalePanel = (control, map, params = {}) => {
  * @return {Object} Devuelve el panel del control ScaleLine.
  * @api stable
  */
-export const getScaleLinePanel = (control, map, params = {}) => {
+export const getScaleLinePanel = (control, map, params = {}, defaultOptions = {}) => {
   const panel = new ControlPanel('scaleline', {
+    ...defaultOptions,
     tooltip: 'Línea de escala',
     collapsible: false,
     className: 'm-scaleline',
-    position: params.position ?? control.position,
-    order: params.order ?? control.order ?? null,
   });
   panel.on(EventType.ADDED_TO_MAP, () => {
     if (map.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
@@ -90,13 +91,11 @@ export const getScaleLinePanel = (control, map, params = {}) => {
  * @return {Object} Devuelve el panel del control Panzoombar.
  * @api stable
  */
-export const getPanzoombarPanel = (control, map, params = {}) => {
+export const getPanzoombarPanel = (control, map, params = {}, defaultOptions = {}) => {
   return new ControlPanel('panzoombar', {
     tooltip: 'Nivel de zoom',
     collapsible: false,
     className: 'm-panzoombar',
-    position: params.position ?? control.position,
-    order: params.order ?? control.order ?? null,
   });
 };
 
@@ -109,12 +108,10 @@ export const getPanzoombarPanel = (control, map, params = {}) => {
  * @return {Object} Devuelve el panel del control Panzoom.
  * @api stable
  */
-export const getPanzoomPanel = (control, map, params = {}) => {
+export const getPanzoomPanel = (control, map, params = {}, defaultOptions = {}) => {
   return new ControlPanel('panzoom', {
     collapsible: false,
     className: 'm-panzoom',
-    position: params.position ?? control.position,
-    order: params.order ?? control.order ?? null,
   });
 };
 
@@ -127,12 +124,10 @@ export const getPanzoomPanel = (control, map, params = {}) => {
  * @return {Object} Devuelve el panel del control Location.
  * @api stable
  */
-export const getLocationPanel = (control, map, params = {}) => {
+export const getLocationPanel = (control, map, params = {}, defaultOptions = {}) => {
   return new ControlPanel('location', {
     collapsible: false,
     className: 'm-location',
-    position: params.position ?? control.position,
-    order: params.order ?? control.order ?? null,
   });
 };
 
@@ -147,12 +142,10 @@ export const getLocationPanel = (control, map, params = {}) => {
  * @return {Object} Devuelve el panel del control Rotate.
  * @api stable
  */
-export const getRotatePanel = (control, map, params = {}) => {
+export const getRotatePanel = (control, map, params = {}, defaultOptions = {}) => {
   return new ControlPanel('rotate', {
     collapsible: false,
     className: 'm-rotate',
-    position: params.position ?? control.position,
-    order: params.order ?? control.order ?? null,
   });
 };
 
@@ -165,12 +158,10 @@ export const getRotatePanel = (control, map, params = {}) => {
  * @return {Object} Devuelve el panel del control BackgroundLayers.
  * @api stable
  */
-export const getBackgroundLayersPanel = (control, map, params = {}) => {
+export const getBackgroundLayersPanel = (control, map, params = {}, defaultOptions = {}) => {
   return new ControlPanel('backgroundlayers', {
     collapsible: false,
     className: 'm-plugin-baselayer',
-    position: params.position ?? control.position,
-    order: params.order ?? control.order ?? null,
   });
 };
 
@@ -183,14 +174,12 @@ export const getBackgroundLayersPanel = (control, map, params = {}) => {
  * @return {Object} Devuelve el panel del control ImplementationSwitcher.
  * @api stable
  */
-export const getImplementationSwitcherPanel = (control, map, params = {}) => {
+export const getImpSwitcherPanel = (control, map, params = {}, defaultOptions = {}) => {
   return new ControlPanel('implementationswitcher', {
     collapsible: true,
     collapsedButtonClass: 'g-cartografia-implementacion',
     tooltip: getValue('implementationswitcher').title,
     className: 'm-implementationswitcher',
-    position: params.position ?? control.position,
-    order: params.order ?? control.order ?? null,
   });
 };
 
@@ -205,14 +194,13 @@ export const getImplementationSwitcherPanel = (control, map, params = {}) => {
  * @return {Object} Devuelve el panel del control WMCSelector.
  * @api stable
  */
-export const getWMCSelectorPanel = (control, map, params = {}) => {
+export const getWMCSelectorPanel = (control, map, params = {}, defaultOptions = {}) => {
   let panel = map.getPanels('map-info')[0];
   if (isNullOrEmpty(panel)) {
     panel = new ControlPanel('map-info', {
+      ...defaultOptions,
       collapsible: false,
       className: 'm-map-info',
-      position: params.position ?? control.position,
-      order: params.order ?? control.order ?? null,
     });
     panel.on(EventType.ADDED_TO_MAP, () => {
       if (map.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
@@ -225,6 +213,29 @@ export const getWMCSelectorPanel = (control, map, params = {}) => {
 };
 
 /**
+ * Esta función devuelve el panel para el control de línea de tiempo
+ *
+ * @public
+ * @function
+ *
+ * @param {Object} control Control.
+ * @param {Object} map Mapa.
+ * @param {Object} params Parámetros del control.
+ *
+ * @return {Object} Devuelve el panel del control Timeline.
+ * @api stable
+ */
+export const getTimelinePanel = (control, map, params = {}, defaultOptions = {}) => {
+  return new ControlPanel('panelTimeline', {
+    ...defaultOptions,
+    collapsible: true,
+    className: 'm-plugin-timeline',
+    collapsedButtonClass: 'timeline-gestion-reloj2',
+    tooltip: params.tooltip ?? getValue('timeline').tooltip,
+  });
+};
+
+/**
  * This method create the mapea panel control from the name control.
  * @function
  * @param {Object} control Control instance.
@@ -233,19 +244,24 @@ export const getWMCSelectorPanel = (control, map, params = {}) => {
  * @private
  */
 export const getPanelForControl = (control, map, params = {}) => {
+  const defaultOptions = {
+    order: params.order ?? control.order ?? null,
+    position: params.position ?? control.position,
+  };
   const panels = {
-    [Scale.NAME]: () => getScalePanel(control, map, params),
-    [`${Scale.NAME}*true`]: () => getScalePanel(control, map, params),
-    [ScaleLine.NAME]: () => getScaleLinePanel(control, map, params),
-    [Panzoombar.NAME]: () => getPanzoombarPanel(control, map, params),
-    [Panzoom.NAME]: () => getPanzoomPanel(control, map, params),
+    [Scale.NAME]: () => getScalePanel(control, map, params, defaultOptions),
+    [`${Scale.NAME}*true`]: () => getScalePanel(control, map, params, defaultOptions),
+    [ScaleLine.NAME]: () => getScaleLinePanel(control, map, params, defaultOptions),
+    [Panzoombar.NAME]: () => getPanzoombarPanel(control, map, params, defaultOptions),
+    [Panzoom.NAME]: () => getPanzoomPanel(control, map, params, defaultOptions),
     [GetFeatureInfo.NAME]: () => null, // GetFeatureInfo doesn't use panel
-    [Location.NAME]: () => getLocationPanel(control, map, params),
+    [Location.NAME]: () => getLocationPanel(control, map, params, defaultOptions),
     [Attributions.NAME]: () => null, // Attributions handled via map.createAttribution
-    [Rotate.NAME]: () => getRotatePanel(control, map, params),
-    [BackgroundLayers.NAME]: () => getBackgroundLayersPanel(control, map, params),
-    [ImplementationSwitcher.NAME]: () => getImplementationSwitcherPanel(control, map, params),
-    [WMCSelector.NAME]: () => getWMCSelectorPanel(control, map, params),
+    [Rotate.NAME]: () => getRotatePanel(control, map, params, defaultOptions),
+    [BackgroundLayers.NAME]: () => getBackgroundLayersPanel(control, map, params, defaultOptions),
+    [ImplementationSwitcher.NAME]: () => getImpSwitcherPanel(control, map, params, defaultOptions),
+    [TimeLine.NAME]: () => getTimelinePanel(control, map, params, defaultOptions),
+    [WMCSelector.NAME]: () => getWMCSelectorPanel(control, map, params, defaultOptions),
   };
   const controlParam = control.name;
   const builderFunction = panels[controlParam];
@@ -319,6 +335,20 @@ export const buildControl = (controlParam, map) => {
       },
       [ImplementationSwitcher.NAME]: () => new ImplementationSwitcher(),
       [WMCSelector.NAME]: () => new WMCSelector(),
+      [TimeLine.NAME]: () => {
+        return new TimeLine({
+          // intervals: this.intervals,
+          // animation: this.animation,
+          // speed: this.speed,
+          // speedDate: this.speedDate,
+          // paramsDate: this.paramsDate,
+          // stepValue: this.stepValue,
+          // sizeWidthDinamic: this.sizeWidthDinamic,
+          // formatMove: this.formatMove,
+          // formatValue: this.formatValue,
+          // timelineType: this.timelineType,
+        });
+      },
     };
 
     const builderFunction = controls[controlName];
