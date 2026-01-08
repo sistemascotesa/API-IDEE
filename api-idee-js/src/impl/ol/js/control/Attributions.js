@@ -1,7 +1,7 @@
 /**
  * @module IDEE/impl/control/Attributions
  */
-// import DoubleClickZoom from 'ol/interaction/DoubleClickZoom';
+import DoubleClickZoom from 'ol/interaction/DoubleClickZoom';
 import Control from './Control';
 
 /**
@@ -37,18 +37,14 @@ class Attributions extends Control {
    * @api stable
    */
   addTo(map, element) {
-    // const olMap = map.getMapImpl();
-    // olMap.getInteractions().forEach((interaction) => {
-    //   if (interaction instanceof DoubleClickZoom) {
-    //     this.dblClickInteraction_ = interaction;
-    //   }
-    // });
+    const olMap = map.getMapImpl();
+    olMap.getInteractions().forEach((interaction) => {
+      if (interaction instanceof DoubleClickZoom) {
+        this.dblClickInteraction_ = interaction;
+      }
+    });
 
-    // super.addTo(map, element);
-
-    this.facadeMap_ = map; // Referencia al mapa fachada (IDEE.Map)
-    this.element = element; // Asigna la plantilla/elemento HTML al control
-    map.getMapImpl().addControl(this); // Registro del objeto control en la colección OL
+    super.addTo(map, element);
   }
 
   /**
@@ -71,11 +67,6 @@ class Attributions extends Control {
    */
   destroy() {
     super.destroy();
-  }
-
-  getPanel() {
-    // Necesario si la fachada llama a this.getPanel() y espera el ControlPanel
-    return this.controlPanel;
   }
 }
 

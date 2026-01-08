@@ -3,7 +3,6 @@
  */
 import 'assets/css/controls/attributions';
 import attributionsTemplate from 'templates/attributions';
-import attributionsPanelTemplate from 'templates/attributions_panel';
 import myhelp from 'templates/attributionshelp';
 import AttributionsImpl from 'impl/control/Attributions';
 import ControlBase from './Control';
@@ -16,8 +15,6 @@ import GeoJSON from '../layer/GeoJSON';
 import KML from '../layer/KML';
 import { LAYER_VISIBILITY_CHANGE, ADDED_LAYER } from '../event/eventtype';
 import Exception from '../exception/exception';
-import ControlPanel from '../../../impl/common/ControlPanel';
-import * as Position from '../ui/position';
 
 /**
  * @classdesc
@@ -54,6 +51,7 @@ class Attributions extends ControlBase {
    * @param {Number} scale Define cuando cambiara la atribución.
    * @param {String} defaultAttribution Atribución por defecto.
    * @param {String} defaultURL URL por defecto.
+   * @param {Number} order Accesibilidad, z-index.
    * @api
    */
   constructor(options = {}) {
@@ -62,10 +60,13 @@ class Attributions extends ControlBase {
       Exception(getValue('exception').attributions_method);
     }
 
+    // const impl = new AttributionsImpl();
+    // super(impl, Attributions.NAME);
+    super(Attributions.NAME);
     const impl = new AttributionsImpl();
-    super(Attributions.NAME, impl, options);
+    this.setImpl(impl);
 
-    this.position = options.position ?? Position.LEFT;
+    this.position = options.position;
     this.closePanel = options.closePanel;
     this.urlAttribute = options.urlAttribute || 'Gobierno de España';
     this.options = options;
@@ -82,40 +83,18 @@ class Attributions extends ControlBase {
     this.tooltip_ = options.tooltip || getValue('attributionsControl').tooltip;
     this.collectionsAttributions_ = options.collectionsAttributions || [];
 
-    // Compilar la plantilla completa
-    const panelTemplateHtml = compileTemplate(attributionsPanelTemplate, {
-      vars: {
-        collapsedClass: (options.closePanel !== false) ? 'collapsed' : 'opened',
-        tooltip: options.tooltip || getValue('attributionsControl').tooltip,
-      },
-    });
-
-    // Contenedor de controles
-    const panelContentElement = panelTemplateHtml.querySelector('.m-panel-controls');
-
-    // Crear el ControlPanel
-    this.controlPanel = new ControlPanel(Attributions.NAME, {
-      // Opciones necesarias para que el panel sepa cómo posicionarse y lucir.
-      position: this.position,
-      tooltip: this.tooltip_,
-      className: 'm-attributions', // Añade la clase específica para el estilo
-      collapsible: window.innerWidth < 769, // Lógica del viejo createView
-      collapsed: options.closePanel ?? true, // El estado inicial
-      order: this.order,
-      element: panelTemplateHtml,
-      panelContent: panelContentElement,
-      collapsedButtonClass: 'g-cartografia-comentarios',
-      openedButtonClass: 'g-cartografia-comentarios',
-    });
-
-    this.getImpl().controlPanel = this.controlPanel;
-
     this.collectionsAttributions_ = this.collectionsAttributions_.map((attr) => {
       if (typeof attr === 'string') {
         return this.transformString(attr);
       }
       return attr;
     });
+
+    /**
+     * Order: Orden que tendrá con respecto al
+     * resto de plugins y controles por pantalla.
+     */
+    this.order = options.order;
   }
 
   transformString(attrString) {
@@ -138,14 +117,11 @@ class Attributions extends ControlBase {
   createView(map) {
     this.map_ = map;
 
-    this.controlPanel.addTo(this.map_); // Adjunta el elemento al DOM
-
     this.map_.on(ADDED_LAYER, (layers) => {
       layers.forEach((layer) => {
         if (layer.attribution) {
-          const layerId = layer.idLayer || layer.id || layer.name;
           layer.on(LAYER_VISIBILITY_CHANGE, ({ visibility, layer: l }) => {
-            this.changeVisibility(layerId, visibility);
+            this.changeVisibility(l.idLayer, visibility);
           });
         }
       });
@@ -160,29 +136,27 @@ class Attributions extends ControlBase {
       });
 
       html.querySelector('#close-button').addEventListener('click', () => this.closePanel());
-      this.html_ = html.querySelector('#m-attributions-container') || html;
+      this.html_ = html;
 
       this.initMode();
-      this.onMoveEnd(() => { this.changeAttributions(); });
+
+      this.onMoveEnd(() => {
+        this.changeAttributions();
+      });
+
       this.accessibilityTab(html);
-
-      this.controlPanel.panelContent.appendChild(html);
-
-      console.log('THIS.MAP: ', this.map_.getLayers());
       this.map_.getLayers().forEach((layer) => {
-        const layerId = layer.idLayer || layer.id || layer.name;
         if (layer.attribution) {
           if (typeof layer.attribution === 'string') {
-            this.addHTMLContent(layer.attribution, layerId);
+            this.addHTMLContent(layer.attribution, layer.id);
           } else {
             this.addAttributions(layer.attribution);
           }
 
-          this.changeVisibility(layerId, layer.isVisible());
+          this.changeVisibility(layer.id, layer.isVisible());
         }
       });
-      // success(html);
-      success(this.controlPanel.getTemplatePanel());
+      success(html);
     });
   }
 
@@ -400,15 +374,6 @@ class Attributions extends ControlBase {
    */
   addHTMLContent(html, id) {
     this.html_.innerHTML += `<section id="${id}" class="attributionElements">${html}</section>`;
-    // const container = this.controlPanel.getTemplatePanel().querySelector('#m-attributions-container');
-
-    // if (container) {
-    //   const section = `<section id="${id}" class="attributionElements">${html}</section>`;
-    //   container.insertAdjacentHTML('beforeend', section);
-    // } else if (this.html_) {
-    //   // Fallback por si el panel aún no está en el DOM
-    //   this.html_.innerHTML += `<section id="${id}" class="attributionElements">${html}</section>`;
-    // }
   }
 
   /**
@@ -490,15 +455,7 @@ class Attributions extends ControlBase {
    * @public
    */
   closePanel() {
-    // this.getPanel().collapse();
-    this.controlPanel.collapse();
-  }
-
-  /**
-  * Este método devuelve el panel.
-  */
-  getPanel() {
-    return this.controlPanel;
+    this.getPanel().collapse();
   }
 
   /**
@@ -563,7 +520,12 @@ class Attributions extends ControlBase {
    * @public
    */
   onMoveEnd(callback) {
-    this.impl_.registerEvent('moveend', this.map_, (e) => callback(e));
+    // this.impl_.registerEvent('moveend', this.map_, (e) => callback(e));
+    if (this.impl_ && typeof this.impl_.registerEvent === 'function') {
+      this.impl_.registerEvent('moveend', this.map_, (e) => callback(e));
+    } else {
+      console.log('FALLÓ onMoveEnd');
+    }
   }
 
   /**
