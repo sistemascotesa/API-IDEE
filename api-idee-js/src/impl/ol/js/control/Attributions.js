@@ -44,7 +44,10 @@ class Attributions extends Control {
       }
     });
 
-    super.addTo(map, element);
+    super.addTo(map, element); // Llama al addTo de Control.js de impl
+    // this.facadeMap_ = map; // Referencia al mapa fachada (IDEE.Map)
+    // this.element = element; // Asigna la plantilla/elemento HTML al control
+    // map.getMapImpl().addControl(this); // Registro del objeto control en la colección OL
   }
 
   /**

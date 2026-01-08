@@ -15,6 +15,7 @@ import GeoJSON from '../layer/GeoJSON';
 import KML from '../layer/KML';
 import { LAYER_VISIBILITY_CHANGE, ADDED_LAYER } from '../event/eventtype';
 import Exception from '../exception/exception';
+import * as Position from '../ui/position';
 
 /**
  * @classdesc
@@ -60,13 +61,13 @@ class Attributions extends ControlBase {
       Exception(getValue('exception').attributions_method);
     }
 
-    // const impl = new AttributionsImpl();
-    // super(impl, Attributions.NAME);
-    super(Attributions.NAME);
     const impl = new AttributionsImpl();
-    this.setImpl(impl);
+    super(Attributions.NAME, impl, options);
+    // super(Attributions.NAME);
+    // const impl = new AttributionsImpl();
+    // this.setImpl(impl);
 
-    this.position = options.position;
+    this.position = options.position || Position.LEFT;
     this.closePanel = options.closePanel;
     this.urlAttribute = options.urlAttribute || 'Gobierno de España';
     this.options = options;
@@ -132,6 +133,7 @@ class Attributions extends ControlBase {
         vars: {
           collapsible: window.innerWidth < 769,
           order: this.order,
+          tooltip: this.tooltip_,
         },
       });
 
@@ -520,12 +522,12 @@ class Attributions extends ControlBase {
    * @public
    */
   onMoveEnd(callback) {
-    // this.impl_.registerEvent('moveend', this.map_, (e) => callback(e));
-    if (this.impl_ && typeof this.impl_.registerEvent === 'function') {
-      this.impl_.registerEvent('moveend', this.map_, (e) => callback(e));
-    } else {
-      console.log('FALLÓ onMoveEnd');
-    }
+    this.impl_.registerEvent('moveend', this.map_, (e) => callback(e));
+    // if (this.impl_ && typeof this.impl_.registerEvent === 'function') {
+    //   this.impl_.registerEvent('moveend', this.map_, (e) => callback(e));
+    // } else {
+    //   console.log('FALLÓ onMoveEnd');
+    // }
   }
 
   /**

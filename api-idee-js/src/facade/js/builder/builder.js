@@ -119,6 +119,27 @@ export const getPanzoomPanel = (control, map, params = {}) => {
 };
 
 /**
+ * Esta función devuelve el panel para el control Attributions.
+ *
+ * @public
+ * @function
+ *
+ * @return {Object} Devuelve el panel del control Attributions.
+ * @api stable
+ */
+export const getAttributionsPanel = (control, map, params = {}) => {
+  return new ControlPanel('attributions', {
+    collapsible: true,
+    position: params.position ?? control.position ?? Position.LEFT,
+    className: 'm-attributions',
+    collapsedButtonClass: 'g-cartografia-comentarios',
+    // tooltip: tooltip || getValue('attributionsControl').tooltip,
+    tooltip: params.tooltip ?? control.tooltip ?? getValue('attributionsControl').tooltip,
+    order: params.order ?? control.order ?? null,
+  });
+};
+
+/**
  * Esta función devuelve el panel para el control Location.
  *
  * @public
@@ -241,7 +262,9 @@ export const getPanelForControl = (control, map, params = {}) => {
     [Panzoom.NAME]: () => getPanzoomPanel(control, map, params),
     [GetFeatureInfo.NAME]: () => null, // GetFeatureInfo doesn't use panel
     [Location.NAME]: () => getLocationPanel(control, map, params),
-    [Attributions.NAME]: () => null, // Attributions handled via map.createAttribution
+    // [Attributions.NAME]: () => null, // Attributions handled via map.createAttribution
+    // Attributions handled via map.createAttribution
+    [Attributions.NAME]: () => getAttributionsPanel(control, map, params),
     [Rotate.NAME]: () => getRotatePanel(control, map, params),
     [BackgroundLayers.NAME]: () => getBackgroundLayersPanel(control, map, params),
     [ImplementationSwitcher.NAME]: () => getImplementationSwitcherPanel(control, map, params),
@@ -265,12 +288,12 @@ export const buildControl = (controlParam, map) => {
   const params = {};
 
   if (isString(controlParam)) {
-    const normalizedControl = normalize(controlParam).split('*');
-    const controlName = normalizedControl[0];
+    const normalizedControlParams = normalize(controlParam).split('*');
+    const controlName = normalizedControlParams[0];
 
     const controls = {
       [Scale.NAME]: () => {
-        normalizedControl.forEach((p) => {
+        normalizedControlParams.forEach((p) => {
           if (p === 'true') params.exactScale = true;
           // eslint-disable-next-line no-restricted-globals
           if (!isNaN(p)) params.order = Number(p);
@@ -282,6 +305,7 @@ export const buildControl = (controlParam, map) => {
       [Panzoom.NAME]: () => new Panzoom(),
       [Location.NAME]: () => new Location(),
       [GetFeatureInfo.NAME]: () => new GetFeatureInfo(true),
+      /*
       [Attributions.NAME]: () => {
         // Attributions handled separately via map.createAttribution
         if (normalizedControl.length === 2) {
@@ -291,8 +315,24 @@ export const buildControl = (controlParam, map) => {
         }
         return null;
       },
+      */
+      [Attributions.NAME]: () => new Attributions({
+        // map: this,
+        map,
+        scale: undefined,
+        collectionsAttributions: normalizedControlParams.length === 2
+          ? [normalizedControlParams[1]].map((l) => {
+            if (typeof l !== 'string') {
+              const attr = l;
+              attr.id = l.idLayer;
+              return attr;
+            }
+            return l;
+          }) : [],
+        order: undefined,
+      }),
       [Rotate.NAME]: () => {
-        normalizedControl.forEach((p) => {
+        normalizedControlParams.forEach((p) => {
           if (!isUndefined(p)) {
             const bbox = p.split(',');
             if (bbox.length === 4) {

@@ -493,9 +493,9 @@ class Map extends Base {
         }),
         order,
       });
-      const panel = new Panel(Attributions.NAME, {
+      const panel = new ControlPanel(Attributions.NAME, {
         collapsible: true,
-        position: Position[position] || Position.CBR,
+        position: Position[position] || Position.LEFT,
         className: 'm-attributions',
         collapsedButtonClass: 'g-cartografia-comentarios',
         tooltip: tooltip || getValue('attributionsControl').tooltip,
@@ -2941,9 +2941,10 @@ class Map extends Base {
         let control;
         if (isString(controlParam)) {
           control = buildControl(controlParam, this);
-
           // Skip if control is null (like Attributions which is handled separately)
           if (isNullOrEmpty(control)) {
+            // TODO: crear alerta que indique que no se ha creado un control compatible,
+            // se debe indicar al usuario/desarrollador como hacerlo
             return;
           }
         } else if (isObject(controlParam) && controlParam instanceof Control) {
