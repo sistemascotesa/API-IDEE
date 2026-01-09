@@ -19,7 +19,7 @@ import Panzoombar from '../control/Panzoombar';
 import BackgroundLayers from '../control/BackgroundLayers';
 import ImplementationSwitcher from '../control/ImplementationSwitcher';
 import WMCSelector from '../control/WMCSelector';
-import TimeLine from '../control/Timeline';
+import TimeLine from '../control/TimeLine';
 import * as dialog from '../dialog';
 import Exception from '../exception/exception';
 

@@ -36,3 +36,6 @@ Control Rotate para 3D
 
 CP-013
 Control parametro de ordenación
+
+CP-014
+Control linea de tiempo (timeline)
