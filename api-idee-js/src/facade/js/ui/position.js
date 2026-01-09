@@ -64,3 +64,15 @@ export const RIGHT = 'right';
  * @api
  */
 export const DOWN = 'down';
+
+export const isValid = (position) => {
+  return [
+    CTL,
+    CTR,
+    CBL,
+    CBR,
+    LEFT,
+    RIGHT,
+    DOWN,
+  ].some((validPosition) => validPosition === position);
+};
