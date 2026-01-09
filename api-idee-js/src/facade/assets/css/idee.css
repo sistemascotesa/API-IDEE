@@ -8,6 +8,8 @@
     --control-font-style: normal;
     --control-font-weight: 400;
     --control-font-stretch: 100%;
+    --panel-left-width: 64px;
+    --panel-right-width: 64px;
 }
 
 .m-api-idee-container {
@@ -51,19 +53,27 @@
 
 .m-api-idee-center-panel {
     pointer-events: none;
-    /* para que no interfiera con controles */
     position: absolute;
-    width: calc(100% - 128px);
+    width: calc(100% - (var(--panel-left-width) + var(--panel-right-width)));
     height: calc(100% - 72px - 1rem) !important;
     top: 0;
     padding: .5em 0;
-    left: 64px;
+    left: var(--panel-left-width);
     height: max-content;
 
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     gap: .5em;
+    transition: all 0.3s ease;
+}
+
+.m-api-idee-container:has(.m-api-idee-left-buttons .opened:not(.no-collapsible)) {
+    --panel-left-width: 210px;
+}
+
+.m-api-idee-container:has(.m-api-idee-right-buttons .opened:not(.no-collapsible)) {
+    --panel-right-width: 210px;
 }
 
 .m-api-idee-center-panel-top-left {
