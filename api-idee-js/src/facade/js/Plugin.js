@@ -108,11 +108,14 @@ class Plugin extends Base {
     return this;
   }
 
+  /**
+   * @param {Control} control
+   */
   addControlToPlugin(control) {
-    if (isNullOrEmpty(this.panel.panelContent)) {
-      this.panel.createContentPanel();
-    }
-    this.panel.panelContent.appendChild(control.getImpl().element);
+    if (isNullOrEmpty(this.panel.panelContent)) this.panel.createContentPanel();
+    const panel = control.getPanel();
+    const panelContainer = isNullOrEmpty(panel) ? null : panel.getControlsContainer();
+    this.panel.panelContent.appendChild(panelContainer ?? control.getElement());
   }
 
   addTool(toolsParamVar) {

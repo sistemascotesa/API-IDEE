@@ -247,8 +247,8 @@ export const getTimelinePanel = (control, map, params = {}, defaultOptions = {})
   return new ControlPanel('panelTimeline', {
     ...defaultOptions,
     collapsible: true,
-    className: 'm-plugin-timeline',
-    collapsedButtonClass: 'timeline-gestion-reloj2',
+    className: 'm-control-timeline',
+    collapsedButtonClass: 'g-cartografia-gestion-reloj2',
     tooltip: params.tooltip ?? getValue('timeline').tooltip,
   });
 };

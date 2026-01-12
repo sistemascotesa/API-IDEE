@@ -1,5 +1,5 @@
 import { map as Mmap } from 'IDEE/api-idee';
-// import Plugin from 'IDEE/Plugin';
+import Plugin from 'IDEE/Plugin';
 // import Control from 'IDEE/control/Control';
 import Rotate from 'IDEE/control/Rotate';
 import * as Position from 'IDEE/ui/position';
@@ -16,7 +16,7 @@ const rotate = new Rotate({
   position: Position.DOWN,
 });
 
-map.addControls([rotate]);
+// map.addControls([rotate]);
 
 // map.removeControls(rotate);
 
@@ -28,12 +28,12 @@ map.addControls([rotate]);
 //   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg',
 // });
 
-// const pluginRight = new Plugin('MyPluginRight', {
-//   tooltip: 'GitHub',
-//   position: 'right',
-//   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
-// });
+const pluginRight = new Plugin('MyPluginRight', {
+  tooltip: 'GitHub',
+  position: 'right',
+  svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
+});
 
-// pluginRight.addControl(rotate);
+pluginRight.addControl(rotate);
 
-// map.addPlugin(pluginRight);
+map.addPlugin(pluginRight);

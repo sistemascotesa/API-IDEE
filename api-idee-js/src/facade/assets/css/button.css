@@ -1,20 +1,4 @@
-.m-api-idee-left-buttons,
-.m-api-idee-right-buttons {
-    position: absolute;
-    width: 46px;
-    height: calc(100% - 72px);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: .5em;
-    gap: .5em;
-    flex-wrap: wrap;
-}
 
-.m-api-idee-left-buttons {
-    left: 0;
-}
 
 .m-plugin-button, .m-control-button {
     z-index: 2;
