@@ -20,7 +20,7 @@ CP-007
 Control location*false*true
 
 CP-008
-Control rotation
+Control rotation (se prueba añadiéndolo en un Plugin para el verificado de que los contenedores se guardan correctamente)
 
 CP-009
 Control attributions

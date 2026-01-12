@@ -192,16 +192,16 @@ class ControlPanel extends MObject {
 
   /**
    * Este método elimina el panel.
+   * elimina la instancia del mapa de fachada en caso de estar
    *
    * @public
    * @function
    * @api
    */
   destroy() {
-    if (this._element != null) {
-      this._areaContainer.removeChild(this._element);
-    }
+    if (this._element != null) this._areaContainer.removeChild(this._element);
     this._controlsContainer = null;
+    if (this._controls.length > 0) this.removeControls(this._controls);
   }
 
   /**

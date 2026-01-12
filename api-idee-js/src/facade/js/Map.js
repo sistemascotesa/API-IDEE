@@ -4446,7 +4446,7 @@ class Map extends Base {
     container.appendChild(this.leftButtons);
 
     this.centerPanel = document.createElement('center-panel');
-    this.centerPanel.id = 'upPanel';
+    this.centerPanel.id = 'centerPanel';
     this.centerPanel.classList.add('m-api-idee-center-panel');
 
     this.centerPanelTopLeft = document.createElement('center-panel-top-left');
@@ -4541,7 +4541,7 @@ class Map extends Base {
         this.rightButtons.style.right = `${newWidth}px`;
       }
 
-      this.updateUpDownPanelDimensions();
+      this.updateCenterDownPanelDimensions();
     });
   }
 
@@ -4552,7 +4552,7 @@ class Map extends Base {
    * @function
    * @api
    */
-  updateUpPanelDimensions(container = this.getContainer()) {
+  updateCenterPanelDimensions(container = this.getContainer()) {
     const leftButtonsRight = this.leftButtons.getBoundingClientRect().right;
     const rightButtonsLeft = this.rightButtons.getBoundingClientRect().left;
     const upWidth = Math.max(rightButtonsLeft - leftButtonsRight, 0);
@@ -4582,8 +4582,8 @@ class Map extends Base {
    * @function
    * @api
    */
-  updateUpDownPanelDimensions(container = this.getContainer()) {
-    this.updateUpPanelDimensions(container);
+  updateCenterDownPanelDimensions(container = this.getContainer()) {
+    this.updateCenterPanelDimensions(container);
     this.updateDownPanelDimensions(container);
   }
 
@@ -4632,7 +4632,7 @@ class Map extends Base {
 
       const onTransitionEnd = (event) => {
         if (event.propertyName === 'width') {
-          this.updateUpDownPanelDimensions();
+          this.updateCenterDownPanelDimensions();
           panel.removeEventListener('transitionend', onTransitionEnd);
         }
       };
@@ -4660,7 +4660,7 @@ class Map extends Base {
 
       const onTransitionEnd = (event) => {
         if (event.propertyName === 'width') {
-          this.updateUpDownPanelDimensions();
+          this.updateCenterDownPanelDimensions();
           panel.removeEventListener('transitionend', onTransitionEnd);
         }
       };

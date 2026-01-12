@@ -729,3 +729,25 @@
     -webkit-mask-image: url('../images/icon_ue870.svg');
     mask-image: url('../images/icon_ue870.svg');
 }
+
+/** TIMELINE **/
+
+.g-cartografia-control-pausa:before {
+    -webkit-mask-image: url('../images/pausa.svg');
+    mask-image: url('../images/pausa.svg');
+}
+
+.g-cartografia-control-siguiente:before {
+    -webkit-mask-image: url('../images/pausa.svg');
+    mask-image: url('../images/pausa.svg');
+}
+
+.g-cartografia-gestion-reloj2:before {
+    -webkit-mask-image: url('../images/reloj_tres.svg');
+    mask-image: url('../images/reloj_tres.svg');
+}
+
+.g-cartografia-gestion-reloj3:before {
+    -webkit-mask-image: url('../images/reloj_arena.svg');
+    mask-image: url('../images/reloj_arena.svg');
+}

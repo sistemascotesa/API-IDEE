@@ -39,7 +39,7 @@ class Control extends OLControl {
    */
   addTo(map, template) {
     this.facadeMap_ = map;
-    this.element = template;
+    this.setElement(template);
     map.getMapImpl().addControl(this);
   }
 
@@ -67,6 +67,20 @@ class Control extends OLControl {
   destroy() {
     this.facadeMap_.getMapImpl().removeControl(this);
     this.facadeMap_ = null;
+    this.setElement(null);
+  }
+
+  /**
+   * Este método establece los elementos a usar.
+   *
+   * @public
+   * @function
+   * @@param {HTMLElement} element
+   * @api stable
+   * @export
+   */
+  setElement(element) {
+    this.element = element;
   }
 
   /**

@@ -247,8 +247,8 @@ export const getTimelinePanel = (control, map, params = {}, defaultOptions = {})
   return new ControlPanel('panelTimeline', {
     ...defaultOptions,
     collapsible: true,
-    className: 'm-plugin-timeline',
-    collapsedButtonClass: 'timeline-gestion-reloj2',
+    className: 'm-control-timeline',
+    collapsedButtonClass: 'g-cartografia-gestion-reloj2',
     tooltip: params.tooltip ?? getValue('timeline').tooltip,
   });
 };
@@ -358,20 +358,9 @@ export const buildControl = (controlParam, map) => {
       },
       [ImplementationSwitcher.NAME]: () => new ImplementationSwitcher(),
       [WMCSelector.NAME]: () => new WMCSelector(),
-      [TimeLine.NAME]: () => {
-        return new TimeLine({
-          // intervals: this.intervals,
-          // animation: this.animation,
-          // speed: this.speed,
-          // speedDate: this.speedDate,
-          // paramsDate: this.paramsDate,
-          // stepValue: this.stepValue,
-          // sizeWidthDinamic: this.sizeWidthDinamic,
-          // formatMove: this.formatMove,
-          // formatValue: this.formatValue,
-          // timelineType: this.timelineType,
-        });
-      },
+      [TimeLine.NAME]: () => new TimeLine({
+        timelineType: 'absoluteSimple',
+      }),
     };
 
     const builderFunction = controls[controlName];
