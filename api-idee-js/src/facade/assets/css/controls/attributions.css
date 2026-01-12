@@ -149,7 +149,7 @@
     text-align: left;
     font-size: 18px;
     font-weight: 600;
-    color: var(--idee-color-primary);
+    color: var(--idee-color-primary) !important;
 }
 
 /************* ATTRIBUTIONS *************/
@@ -189,6 +189,12 @@
   opacity: 1;
 }
 
-.m-panel.collapsed>button.m-panel-btn:hover {
-  background-color: var(--idee-color-primary);
+.m-panel-btn.g-cartografia-comentarios:hover {
+    background-color: var(--idee-color-links) !important;
+    transition: background-color 0.2s ease;
+}
+
+.m-panel-btn.g-cartografia-flecha-derecha:hover {
+    background-color: var(--idee-color-links) !important;
+    transition: background-color 0.2s ease;
 }

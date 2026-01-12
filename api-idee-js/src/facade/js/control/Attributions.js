@@ -67,7 +67,7 @@ class Attributions extends ControlBase {
     // const impl = new AttributionsImpl();
     // this.setImpl(impl);
 
-    this.position = options.position || Position.RIGHT;
+    this.position = options.position || Position.LEFT;
     this.closePanel = options.closePanel;
     this.urlAttribute = options.urlAttribute || 'Gobierno de España';
     this.options = options;
