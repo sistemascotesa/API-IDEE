@@ -2,7 +2,7 @@ import { map as Mmap } from 'IDEE/api-idee';
 import Rotate from 'IDEE/control/Rotate';
 import Scale from 'IDEE/control/Scale';
 import ScaleLine from 'IDEE/control/ScaleLine';
-import Panzoom from 'IDEE/control//Panzoom';
+import Panzoom from 'IDEE/control/Panzoom';
 // import * as Position from 'IDEE/ui/position';
 
 /**

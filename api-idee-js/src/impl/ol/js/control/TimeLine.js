@@ -1,10 +1,14 @@
 /**
- * @module IDEE/impl/control/Timeline
+ * @module IDEE/impl/control/TimeLine
  */
-
 import Control from './Control';
 
-class Timeline extends Control {
+/**
+ * @classdesc
+ * Añadir un control de linea de tiempo
+ * @api
+ */
+class TimeLine extends Control {
   /**
    * This function adds the control to the specified map
    *
@@ -19,4 +23,4 @@ class Timeline extends Control {
   }
 }
 
-export default Timeline;
+export default TimeLine;
