@@ -140,6 +140,13 @@ class Attributions extends ControlBase {
       html.querySelector('#close-button').addEventListener('click', () => this.closePanel());
       this.html_ = html;
 
+      setTimeout(() => {
+        const panel = this.getPanel();
+        if (panel && panel.getButtonPanel()) {
+          panel.getButtonPanel().setAttribute('title', this.tooltip_);
+        }
+      }, 0);
+
       this.initMode();
 
       this.onMoveEnd(() => {

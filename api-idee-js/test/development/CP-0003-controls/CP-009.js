@@ -1,22 +1,22 @@
 import { map as Mmap } from 'IDEE/api-idee';
-import Attributions from 'IDEE/control/Attributions';
+// import Attributions from 'IDEE/control/Attributions';
 // import * as Position from 'IDEE/ui/position';
 import WMS from 'IDEE/layer/WMS';
 // import Panzoom from 'IDEE/control/Panzoom';
-import * as Position from 'IDEE/ui/position';
+// import * as Position from 'IDEE/ui/position';
 
 const mapa = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
   // controls: ['attributions*<p>Contenido del control</p>'],
-  // controls: ['location', 'attributions*<p>Contenido del control</p>', 'rotate', 'ImplementationSwitcher'],
+  controls: ['location', 'attributions*<p>Contenido del control</p>', 'rotate', 'ImplementationSwitcher'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
 });
 
-const attributions = new Attributions({
-  position: Position.LEFT,
-});
+// const attributions = new Attributions({
+//   position: Position.LEFT,
+// });
 
 // const panzoom = new Panzoom({
 //   position: Position.DOWN,
@@ -49,11 +49,11 @@ const layerinicial = new WMS({
 
 mapa.addLayers(layerinicial);
 
-mapa.addControls(attributions);
+// mapa.addControls(attributions);
 
-attributions.on('added:map', () => {
-  mapa.removeControls(attributions);
-});
+// attributions.on('added:map', () => {
+//   mapa.removeControls(attributions);
+// });
 
 // setTimeout(() => {
 //   mapa.removeControls([attributions]);
