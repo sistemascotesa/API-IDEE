@@ -6,6 +6,7 @@ import controlPanelTemplate from 'templates/control_panel';
 import * as Position from './position';
 import {
   isArray, isNullOrEmpty, isString, includes,
+  isObject,
 } from '../util/Utils';
 import MObject from '../Object';
 import * as EventType from '../event/eventtype';
@@ -192,16 +193,17 @@ class ControlPanel extends MObject {
 
   /**
    * Este método elimina el panel.
-   * elimina la instancia del mapa de fachada en caso de estar
    *
    * @public
    * @function
    * @api
    */
   destroy() {
-    if (this._element != null) this._areaContainer.removeChild(this._element);
+    if (isObject(this._element)) {
+      this._areaContainer.removeChild(this._element);
+      this.element = null;
+    }
     this._controlsContainer = null;
-    if (this._controls.length > 0) this.removeControls(this._controls);
   }
 
   /**

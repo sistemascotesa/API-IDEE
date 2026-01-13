@@ -17,4 +17,13 @@ map.addControls([
   location,
 ]);
 
+const removeControl = () => {
+  map.removeControls(location);
+};
+
+const removeButton = document.getElementById('removeButton');
+removeButton.addEventListener('click', () => {
+  removeControl();
+});
+
 // window.mapa = map;

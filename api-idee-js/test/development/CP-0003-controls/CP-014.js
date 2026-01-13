@@ -15,8 +15,6 @@ let ctrl;
 const createControl = (propiedades) => {
   ctrl = new Timeline(propiedades);
   map.addControls(ctrl);
-  // eslint-disable-next-line no-console
-  console.info(map.getControls());
 };
 
 const removeControl = () => {
@@ -130,7 +128,7 @@ if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
 }
 
 function changeTest() {
-  removeControl();
+  if (ctrl) removeControl();
   const options = {};
   options.position = selectPosicion.options[selectPosicion.selectedIndex].value;
 
@@ -153,7 +151,6 @@ function changeTest() {
 }
 
 const removeButton = document.getElementById('removeButton');
-
 removeButton.addEventListener('click', () => {
   removeControl();
 });
