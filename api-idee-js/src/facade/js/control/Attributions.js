@@ -601,7 +601,24 @@ class Attributions extends ControlBase {
    * @api
    */
   destroy() {
-    this.getImpl().destroy();
+    if (this.getImpl()) {
+      this.getImpl().destroy();
+    }
+
+    if (this.map_) {
+      this.map_.un(ADDED_LAYER);
+    }
+
+    const panel = this.getPanel();
+    if (panel) {
+      panel.destroy();
+    }
+
+    try {
+      super.destroy();
+    } catch (e) {
+      console.warn('Attributions: Limpieza de DOM gestionada por el Panel.');
+    }
   }
 
   /**

@@ -5,7 +5,7 @@
 
 .m-panel.m-attributions .m-panel-btn {
     position: absolute;
-    z-index: 9999;
+    /* z-index: 9999; */
     /* background-color: #fff !important; */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     /* height: auto; */
@@ -15,6 +15,20 @@
 
 .m-panel.m-attributions.collapsed .m-panel-btn {
     display: block;
+}
+
+.m-panel.m-attributions.collapsed {
+    /* color: var(--idee-color-links) !important; */
+    /* background-color: var(--idee-color-links) !important; */
+    border: 2px solid white;
+}
+
+.m-panel.collapsed>button.m-panel-btn:hover {
+    background-color: var(--idee-color-primary-dark) !important;
+}
+
+.m-panel.m-attributions.collapsed:hover {
+    background-color: var(--idee-color-primary-dark) !important;
 }
 
 .m-panel.opened .m-attributions {
@@ -59,13 +73,7 @@
 .m-attributions .m-panel-btn.g-cartografia-flecha-derecha,
 .m-attributions .m-panel-btn.g-cartografia-flecha-izquierda {
     background-color: var(--idee-color-primary) !important;
-    color: white !important;
-}
-
-.m-attributions.opened .m-panel-btn.g-cartografia-flecha-derecha,
-.m-attributions.opened .m-panel-btn.g-cartografia-flecha-izquierda {
-    /* background-color: white !important; */
-    color: var(--idee-color-primary);
+    /* color: white !important; */
 }
 
 
@@ -149,7 +157,7 @@
     text-align: left;
     font-size: 18px;
     font-weight: 600;
-    color: var(--idee-color-primary) !important;
+    color: var(--idee-color-primary-dark) !important;
 }
 
 /************* ATTRIBUTIONS *************/
@@ -165,7 +173,7 @@
     top: 0;
     right: 0;
     z-index: 1000;
-    border-radius: 20px;
+    /* border-radius: 20px; */
     margin: 0;
 }
 
@@ -183,18 +191,134 @@
 }
 
 /*** COLOR BOTÓN ***/
+.m-panel-btn.g-cartografia-comentarios {
+    border: 1px solid white;
+}
+
 .m-panel.collapsed>button.m-panel-btn {
-  color: var(--idee-color-primary);
-  background-color: var(--idee-color-primary-dark) !important;
+  /* color: var(--idee-color-primary); */
+  background-color: var(--idee-color-primary) !important;
   opacity: 1;
 }
 
 .m-panel-btn.g-cartografia-comentarios:hover {
     background-color: var(--idee-color-links) !important;
-    transition: background-color 0.2s ease;
+    /* color: var(--idee-color-links) !important; */
 }
 
 .m-panel-btn.g-cartografia-flecha-derecha:hover {
     background-color: var(--idee-color-links) !important;
-    transition: background-color 0.2s ease;
+    /* color: var(--idee-color-links) !important; */
+}
+
+.m-panel-btn.g-cartografia-flecha-izquierda:hover {
+    background-color: var(--idee-color-links) !important;
+    /* color: var(--idee-color-links) !important; */
+}
+
+.m-panel-btn.g-cartografia-comentarios:active {
+    /* background-color: var(--idee-color-links) !important; */
+    color: var(--idee-color-primary-dark) !important;
+}
+
+.m-panel-btn.g-cartografia-flecha-derecha:active {
+    /* background-color: var(--idee-color-links) !important; */
+    color: var(--idee-color-primary-dark) !important;
+}
+
+
+.m-panel-btn.g-cartografia-flecha-izquierda:active {
+    /* background-color: var(--idee-color-links) !important; */
+    color: var(--idee-color-primary-dark) !important;
+}
+
+.m-attributions .attributionElements a,
+.m-attributions .attributionElements a:visited {
+    /* color: var(--idee-color-links) !important;  */
+    color: #000000 !important;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.m-attributions .attributionElements a:hover {
+    color: var(--idee-color-primary-dark) !important;
+    text-decoration: underline;
+}
+
+.m-attributions .attributionElements a span {
+    color: #000000 !important;
+    font-weight: bold;
+    margin-right: 4px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.m-attributions .attributionElements a:hover span {
+    color: #000000 !important;
+    text-decoration: none !important;
+}
+
+.g-cartografia-comentarios {
+    font-family: inherit !important;
+}
+
+.g-cartografia-comentarios:before {
+    content: '' !important;
+
+    display: block !important;
+    width: 24px !important;
+    height: 24px !important;
+    margin: auto;
+
+    -webkit-mask-size: contain !important;
+    mask-size: contain !important;
+    -webkit-mask-repeat: no-repeat !important;
+    mask-repeat: no-repeat !important;
+    -webkit-mask-position: center !important;
+    mask-position: center !important;
+
+    background-color: currentColor !important;
+}
+
+.g-cartografia-flecha-derecha:before {
+    content: '' !important;
+
+    display: block !important;
+    width: 24px !important;
+    height: 24px !important;
+    margin: auto;
+
+    -webkit-mask-size: contain !important;
+    mask-size: contain !important;
+    -webkit-mask-repeat: no-repeat !important;
+    mask-repeat: no-repeat !important;
+    -webkit-mask-position: center !important;
+    mask-position: center !important;
+
+    background-color: currentColor !important;
+}
+
+.g-cartografia-flecha-izquierda:before {
+    content: '' !important;
+
+    display: block !important;
+    width: 24px !important;
+    height: 24px !important;
+    margin: auto;
+
+    -webkit-mask-size: contain !important;
+    mask-size: contain !important;
+    -webkit-mask-repeat: no-repeat !important;
+    mask-repeat: no-repeat !important;
+    -webkit-mask-position: center !important;
+    mask-position: center !important;
+
+    background-color: currentColor !important;
+}
+
+.m-attributions button,
+.m-attributions button:hover {
+    border: none !important;
+    /* Con borde invisible */
+    /* border-color: transparent !important; */
 }
