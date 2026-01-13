@@ -67,7 +67,7 @@ class Attributions extends ControlBase {
     // const impl = new AttributionsImpl();
     // this.setImpl(impl);
 
-    this.position = options.position || Position.RIGHT;
+    this.position = options.position || Position.LEFT;
     this.closePanel = options.closePanel;
     this.urlAttribute = options.urlAttribute || 'Gobierno de España';
     this.options = options;
@@ -139,6 +139,13 @@ class Attributions extends ControlBase {
 
       html.querySelector('#close-button').addEventListener('click', () => this.closePanel());
       this.html_ = html;
+
+      setTimeout(() => {
+        const panel = this.getPanel();
+        if (panel && panel.getButtonPanel()) {
+          panel.getButtonPanel().setAttribute('title', this.tooltip_);
+        }
+      }, 0);
 
       this.initMode();
 
@@ -601,7 +608,24 @@ class Attributions extends ControlBase {
    * @api
    */
   destroy() {
-    this.getImpl().destroy();
+    if (this.getImpl()) {
+      this.getImpl().destroy();
+    }
+
+    if (this.map_) {
+      this.map_.un(ADDED_LAYER);
+    }
+
+    const panel = this.getPanel();
+    if (panel) {
+      panel.destroy();
+    }
+
+    try {
+      super.destroy();
+    } catch (e) {
+      console.warn('Attributions: Limpieza de DOM gestionada por el Panel.');
+    }
   }
 
   /**
