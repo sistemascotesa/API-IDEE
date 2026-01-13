@@ -1,11 +1,13 @@
 /**
- * @module IDEE/control/TimeLine
+ * @module IDEE/control/Timeline
  */
 import 'assets/css/controls/timeline';
 import timelineTemplate from 'templates/timeline';
 import myhelp from 'templates/timelineHelp';
 import timelineDinamicTemplate from 'templates/timelineDinamic';
-import TimelineImpl from 'impl/control/TimeLine';
+import TimelineImpl from 'impl/control/Timeline';
+import WMS from 'IDEE/layer/WMS';
+import WMTS from 'IDEE/layer/WMTS';
 import {
   isArray, isNullOrEmpty, isObject, isString, isUndefined,
 } from '../util/Utils';
@@ -53,6 +55,7 @@ class Timeline extends Control {
       } else if (isArray(options.intervals)) {
         this.intervals = options.intervals;
       } else {
+        // IDEE.dialog.error(getValue('intervals_error'));
         this.intervals = [];
       }
     }
@@ -134,8 +137,7 @@ class Timeline extends Control {
 
     /**
      * position
-     * Value: Array with each interval attributes [name, tag, service]
-     * @type {String}
+     * @type {Position}
      */
     this.position = Position.isValid(options.position) ? options.position : Position.LEFT;
 
@@ -262,6 +264,19 @@ class Timeline extends Control {
   }
 
   /**
+    * This function transform string to IDEE.Layer
+    *
+    * @public
+    * @function
+    * @api stable
+    * @param {string | object}
+    * @return {Boolean}
+    */
+  isValidLayer(layer) {
+    return isObject(layer) && (layer.type === 'WMTS' || layer.type === 'WMS');
+  }
+
+  /**
    * Transform StringLayers to api-idee IDEE.Layer
    *
    * WMTS*http://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*EPSG:25830*PNOA
@@ -279,12 +294,12 @@ class Timeline extends Control {
       if (layer.indexOf('*') >= 0) {
         const urlLayer = layer.split('*');
         if (urlLayer[0].toUpperCase() === 'WMS') {
-          newLayer = new IDEE.layer.WMS({
+          newLayer = new WMS({
             url: urlLayer[2],
             name: urlLayer[3],
           });
         } else if (urlLayer[0].toUpperCase() === 'WMTS') {
-          newLayer = new IDEE.layer.WMTS({
+          newLayer = new WMTS({
             url: urlLayer[2],
             name: urlLayer[3],
           });

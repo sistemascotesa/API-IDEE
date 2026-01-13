@@ -76,3 +76,10 @@ export const isValid = (position) => {
     DOWN,
   ].some((validPosition) => validPosition === position);
 };
+
+export const isRightOrLeft = (position) => {
+  return [
+    LEFT,
+    RIGHT,
+  ].some((validPosition) => validPosition === position);
+};
