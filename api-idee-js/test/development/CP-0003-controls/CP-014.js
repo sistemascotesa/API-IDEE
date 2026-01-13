@@ -10,13 +10,18 @@ const map = Mmap({
   zoom: 6,
 });
 
-let timelineControl;
+let ctrl;
 
 const createControl = (propiedades) => {
-  timelineControl = new Timeline(propiedades);
-  map.addControls(timelineControl);
+  ctrl = new Timeline(propiedades);
+  map.addControls(ctrl);
   // eslint-disable-next-line no-console
   console.info(map.getControls());
+};
+
+const removeControl = () => {
+  map.removeControls(ctrl);
+  ctrl = null;
 };
 
 const position = Position.LEFT;
@@ -125,12 +130,12 @@ if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
 }
 
 function changeTest() {
+  removeControl();
   const options = {};
   options.position = selectPosicion.options[selectPosicion.selectedIndex].value;
 
   if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
     options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
-    options.position = selectPosicion.options[selectPosicion.selectedIndex].value;
     options.intervals = elementTime.value !== '' ? elementTime.value : time;
     options.speedDate = elementSpeedDate.value >= 1 ? elementSpeedDate.value : 1;
     options.paramsDate = elementParamsDate.options[elementParamsDate.selectedIndex].value;
@@ -144,12 +149,11 @@ function changeTest() {
     options.intervals = inputIntervals.value !== '' ? inputIntervals.value : intervals;
     // const animationValor = selectAnimation.options[selectAnimation.selectedIndex].value;
   }
-  map.removeControls(timelineControl);
   createControl(options);
 }
 
-const botonEliminar = document.getElementById('removeButton');
-botonEliminar.addEventListener('click', () => {
-  map.removeControls(timelineControl);
-  timelineControl = null;
+const removeButton = document.getElementById('removeButton');
+
+removeButton.addEventListener('click', () => {
+  removeControl();
 });
