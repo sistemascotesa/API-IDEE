@@ -80,8 +80,9 @@
 
 .g-cartografia-comentarios:before {
     /* content: "\e902"; */
-    -webkit-mask-image: url('../images/icon_ue902.svg');
-    mask-image: url('../images/icon_ue902.svg');
+    /* content: "\ue95e"; */
+    -webkit-mask-image: url('../images/icon_ue95e.svg');
+    mask-image: url('../images/icon_ue95e.svg');
 }
 
 .g-cartografia-escala3:before {
