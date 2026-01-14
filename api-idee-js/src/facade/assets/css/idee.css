@@ -130,9 +130,6 @@
 }
 
 .m-api-idee-left-buttons .m-panel.opened > button.m-panel-btn {
-    position: absolute;
-    left: 0;
-    right: auto;
     float: none;
 }
 

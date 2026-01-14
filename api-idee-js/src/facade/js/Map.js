@@ -3080,10 +3080,27 @@ class Map extends Base {
       Exception(getValue('exception').removecontrol_method);
     }
 
-    // gets the contros to remove
+    // gets controls to remove
     let controls = this.getControls(controlsParam);
     controls = [].concat(controls);
-    if (controls.length > 0) this.getImpl().removeControls(controls);
+    if (controls.length > 0) {
+      controls.forEach((control) => {
+        // check if this control has panels and remove it if
+        const panel = control.getPanel();
+        if (panel instanceof ControlPanel || panel instanceof Panel) {
+          const panelControls = panel.getControls();
+          if (isArray(panelControls) && panelControls.legth === 1) {
+            this.removePanel(panel);
+          } else {
+            panel.removeControls(control);
+          }
+        }
+      });
+
+      // Finally remove this control from de map and destroy
+      this.getImpl().removeControls(controls);
+    }
+
     return this;
   }
 
@@ -4377,7 +4394,7 @@ class Map extends Base {
    * @returns {Map} Devuelve el estado del mapa.
    */
   removePanel(panel) {
-    if (panel instanceof Panel) {
+    if (panel instanceof Panel || panel instanceof ControlPanel) {
       panel.destroy();
       this.panels = this.panels.filter((panel2) => !panel2.equals(panel));
     }

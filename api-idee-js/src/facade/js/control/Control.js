@@ -335,11 +335,9 @@ class Control extends Base {
    * @export
    */
   destroy() {
-    const panel = this.getPanel();
-    if (isNullOrEmpty(panel)) this.parentContainer.removeChild(this.getElement());
-    else {
-      panel.removeControls(this);
-      panel.destroy();
+    const el = this.getElement();
+    if (el && this.parentContainer.contains(el)) {
+      this.parentContainer.removeChild(el);
     }
     this.getImpl().destroy();
   }

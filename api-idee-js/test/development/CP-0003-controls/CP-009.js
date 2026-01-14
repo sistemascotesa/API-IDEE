@@ -8,11 +8,15 @@ import WMS from 'IDEE/layer/WMS';
 const mapa = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
-  // controls: ['attributions'],
+  // controls: ['attributions*<p>Contenido del control</p>'],
   controls: ['location', 'attributions*<p>Contenido del control</p>', 'rotate', 'ImplementationSwitcher'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
 });
+
+// const attributions = new Attributions({
+//   position: Position.LEFT,
+// });
 
 // const panzoom = new Panzoom({
 //   position: Position.DOWN,
@@ -45,6 +49,16 @@ const layerinicial = new WMS({
 
 mapa.addLayers(layerinicial);
 
+// mapa.addControls(attributions);
+
+// attributions.on('added:map', () => {
+//   mapa.removeControls(attributions);
+// });
+
+// setTimeout(() => {
+//   mapa.removeControls([attributions]);
+// }, 1000);
+
 // mapa.addControls([
 //   attributionsControl,
 // ]);
@@ -52,3 +66,9 @@ mapa.addLayers(layerinicial);
 // mapa.removeControls(attributionsControl);
 
 // mapa.addControls([attributionsControl]);
+
+const removeButton = document.getElementById('removeButton');
+
+removeButton.addEventListener('click', () => {
+  mapa.removeControls('attributions');
+});
