@@ -6,6 +6,7 @@ import controlPanelTemplate from 'templates/control_panel';
 import * as Position from './position';
 import {
   isArray, isNullOrEmpty, isString, includes,
+  isObject,
 } from '../util/Utils';
 import MObject from '../Object';
 import * as EventType from '../event/eventtype';
@@ -198,8 +199,9 @@ class ControlPanel extends MObject {
    * @api
    */
   destroy() {
-    if (this._element != null) {
+    if (isObject(this._element)) {
       this._areaContainer.removeChild(this._element);
+      this.element = null;
     }
     this._controlsContainer = null;
   }

@@ -19,7 +19,7 @@ import Panzoombar from '../control/Panzoombar';
 import BackgroundLayers from '../control/BackgroundLayers';
 import ImplementationSwitcher from '../control/ImplementationSwitcher';
 import WMCSelector from '../control/WMCSelector';
-import TimeLine from '../control/TimeLine';
+import Timeline from '../control/Timeline';
 import * as dialog from '../dialog';
 import Exception from '../exception/exception';
 
@@ -247,8 +247,8 @@ export const getTimelinePanel = (control, map, params = {}, defaultOptions = {})
   return new ControlPanel('panelTimeline', {
     ...defaultOptions,
     collapsible: true,
-    className: 'm-plugin-timeline',
-    collapsedButtonClass: 'timeline-gestion-reloj2',
+    className: 'm-control-timeline',
+    collapsedButtonClass: 'g-cartografia-gestion-reloj2',
     tooltip: params.tooltip ?? getValue('timeline').tooltip,
   });
 };
@@ -278,7 +278,7 @@ export const getPanelForControl = (control, map, params = {}) => {
     [Rotate.NAME]: () => getRotatePanel(control, map, params, defaultOptions),
     [BackgroundLayers.NAME]: () => getBackgroundLayersPanel(control, map, params, defaultOptions),
     [ImplementationSwitcher.NAME]: () => getImpSwitcherPanel(control, map, params, defaultOptions),
-    [TimeLine.NAME]: () => getTimelinePanel(control, map, params, defaultOptions),
+    [Timeline.NAME]: () => getTimelinePanel(control, map, params, defaultOptions),
     [WMCSelector.NAME]: () => getWMCSelectorPanel(control, map, params, defaultOptions),
   };
   const controlParam = control.name;
@@ -366,20 +366,9 @@ export const buildControl = (controlParam, map) => {
       },
       [ImplementationSwitcher.NAME]: () => new ImplementationSwitcher(),
       [WMCSelector.NAME]: () => new WMCSelector(),
-      [TimeLine.NAME]: () => {
-        return new TimeLine({
-          // intervals: this.intervals,
-          // animation: this.animation,
-          // speed: this.speed,
-          // speedDate: this.speedDate,
-          // paramsDate: this.paramsDate,
-          // stepValue: this.stepValue,
-          // sizeWidthDinamic: this.sizeWidthDinamic,
-          // formatMove: this.formatMove,
-          // formatValue: this.formatValue,
-          // timelineType: this.timelineType,
-        });
-      },
+      [Timeline.NAME]: () => new Timeline({
+        timelineType: 'absoluteSimple',
+      }),
     };
 
     const builderFunction = controls[controlName];

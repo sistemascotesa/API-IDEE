@@ -299,6 +299,19 @@ class Control extends Base {
   }
 
   /**
+   * Este método establece los elementos a usar en la implementación.
+   *
+   * @public
+   * @function
+   * @@param {HTMLElement} element
+   * @api stable
+   * @export
+   */
+  setElement(element) {
+    this.getImpl().setElement(element);
+  }
+
+  /**
    * Este método devuelve todos los elementos de la implementación.
    *
    * @public
@@ -314,13 +327,19 @@ class Control extends Base {
   /**
    * Elimina el control.
    *
+   * Elimina el panel asociado y se desvincula del mapa de fachada
+   *
    * @public
    * @function
    * @api
    * @export
    */
   destroy() {
-    this.parentContainer.removeChild(this.getElement());
+    const el = this.getElement();
+    if (el && this.parentContainer.contains(el)) {
+      this.parentContainer.removeChild(el);
+    }
+    this.getImpl().destroy();
   }
 }
 

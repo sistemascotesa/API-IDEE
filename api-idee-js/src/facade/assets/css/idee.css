@@ -68,13 +68,78 @@
     transition: all 0.3s ease;
 }
 
-.m-api-idee-container:has(.m-api-idee-left-buttons .opened:not(.no-collapsible)) {
+/*** CONTENEDORES LATERALES DEL MAPA DE FACHADA ***/
+.m-api-idee-left-buttons,
+.m-api-idee-right-buttons {
+    position: absolute;
+    min-width: 46px;
+    width: auto;
+    height: calc(100% - 72px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: .5em;
+    gap: .5em;
+    flex-wrap: wrap;
+}
+
+/*** CONTENEDOR DERECHO ***/
+.m-api-idee-right-buttons {
+    right: 0;
+    align-items: flex-end !important;
+    pointer-events: none;
+}
+
+.m-api-idee-right-buttons > * {
+    pointer-events: auto;
+}
+
+.m-api-idee-right-buttons .m-panel.opened {
+    flex-direction: row;
+    justify-content: flex-end;
+    position: relative;
+}
+
+.m-api-idee-right-buttons .m-panel.opened > button.m-panel-btn { 
+    position: absolute;
+    right: 0;
+    left: auto;
+    float: none;
+}
+
+.m-api-idee-right-buttons .m-panel {
+    flex-direction: row-reverse !important;
+}
+
+/*** CONTENEDOR IZQUIERDO ***/
+.m-api-idee-left-buttons {
+    left: 0;
+    align-items: flex-start !important;
+    pointer-events: none;
+}
+
+.m-api-idee-left-buttons > * {
+    pointer-events: auto;
+}
+
+.m-api-idee-left-buttons .m-panel.opened {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    position: relative;
+}
+
+.m-api-idee-left-buttons .m-panel.opened > button.m-panel-btn {
+    float: none;
+}
+
+/* .m-api-idee-container:has(.m-api-idee-left-buttons .opened:not(.no-collapsible)) {
     --panel-left-width: 210px;
 }
 
 .m-api-idee-container:has(.m-api-idee-right-buttons .opened:not(.no-collapsible)) {
     --panel-right-width: 210px;
-}
+} */
 
 .m-api-idee-center-panel-top-left {
     grid-column: 1;

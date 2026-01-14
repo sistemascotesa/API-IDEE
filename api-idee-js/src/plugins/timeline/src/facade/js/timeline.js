@@ -57,11 +57,11 @@ export default class Timeline extends IDEE.Plugin {
     /**
      * Position of the Plugin
      * @public
-     * Posible values: TR | TL | BL | BR
+     * Posible values: right | left
      * @type {String}
      */
-    const positions = ['TR', 'TL', 'BL', 'BR'];
-    this.position = positions.includes(options.position) ? options.position : 'TR';
+    const positions = ['left', 'right'];
+    this.position = positions.includes(options.position) ? options.position : positions[0];
 
     /**
      * Intervals

@@ -59,8 +59,6 @@ mapa.addLayers(layerinicial);
 //   mapa.removeControls([attributions]);
 // }, 1000);
 
-// mapa.removeControls('attributions');
-
 // mapa.addControls([
 //   attributionsControl,
 // ]);
@@ -68,3 +66,9 @@ mapa.addLayers(layerinicial);
 // mapa.removeControls(attributionsControl);
 
 // mapa.addControls([attributionsControl]);
+
+const removeButton = document.getElementById('removeButton');
+
+removeButton.addEventListener('click', () => {
+  mapa.removeControls('attributions');
+});
