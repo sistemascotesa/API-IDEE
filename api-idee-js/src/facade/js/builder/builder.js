@@ -315,7 +315,15 @@ export const buildControl = (controlParam, map) => {
       [Panzoombar.NAME]: () => new Panzoombar(),
       [Panzoom.NAME]: () => new Panzoom(),
       [Location.NAME]: () => new Location(),
-      [GetFeatureInfo.NAME]: () => new GetFeatureInfo(true),
+      // [GetFeatureInfo.NAME]: () => new GetFeatureInfo(true),
+      [GetFeatureInfo.NAME]: () => {
+        let activated = true;
+        // Si el usuario define false...
+        if (normalizedControlParams.includes('false')) {
+          activated = false;
+        }
+        return new GetFeatureInfo(activated);
+      },
       [Attributions.NAME]: () => new Attributions({
         map,
         scale: undefined,
