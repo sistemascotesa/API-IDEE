@@ -1,18 +1,32 @@
 import { map as Mmap } from 'IDEE/api-idee';
-// import Attributions from 'IDEE/control/Attributions';
+import Attributions from 'IDEE/control/Attributions';
 // import * as Position from 'IDEE/ui/position';
 import WMS from 'IDEE/layer/WMS';
 // import Panzoom from 'IDEE/control/Panzoom';
-// import * as Position from 'IDEE/ui/position';
+import * as Position from 'IDEE/ui/position';
 
 const mapa = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
   // controls: ['attributions*<p>Contenido del control</p>'],
-  controls: ['location', 'attributions*<p>Contenido del control</p>', 'rotate', 'ImplementationSwitcher'],
+  // controls: ['location', 'attributions*<p>Contenido del control</p>', 'rotate', 'ImplementationSwitcher'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
 });
+
+let ctrl;
+
+const createControl = (propiedades) => {
+  ctrl = new Attributions(propiedades);
+  mapa.addControls(ctrl);
+};
+
+const removeControl = () => {
+  mapa.removeControls(ctrl);
+  ctrl = null;
+};
+
+const position = Position.LEFT;
 
 // const attributions = new Attributions({
 //   position: Position.LEFT,
@@ -68,6 +82,17 @@ mapa.addLayers(layerinicial);
 // mapa.addControls([attributionsControl]);
 
 const removeButton = document.getElementById('removeButton');
+
+const selectPosicion = document.getElementById('selectPosicion');
+
+function changeTest() {
+  if (ctrl) removeControl();
+  const options = {};
+  options.position = selectPosicion.options[selectPosicion.selectedIndex].value;
+  createControl(options);
+}
+
+selectPosicion.addEventListener('change', changeTest);
 
 removeButton.addEventListener('click', () => {
   mapa.removeControls('attributions');
