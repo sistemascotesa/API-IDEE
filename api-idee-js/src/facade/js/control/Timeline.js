@@ -1,6 +1,7 @@
 /**
  * @module IDEE/control/Timeline
  */
+import 'assets/css/fonts';
 import 'assets/css/controls/timeline';
 import timelineTemplate from 'templates/timeline';
 import myhelp from 'templates/timelineHelp';
@@ -47,7 +48,7 @@ class Timeline extends Control {
      * Intervals
      * @public
      * Value: Array with each interval attributes [name, tag, service]
-     * @type {String}
+     * @property {String} intervals
      */
     if (options !== undefined) {
       if (isString(options.intervals)) {
@@ -216,8 +217,8 @@ class Timeline extends Control {
         slider.setAttribute('max', intervals.length - 1);
         slider.addEventListener('input', (e) => this.changeSlider(slider));
         slider.addEventListener('change', (e) => {
-          document.querySelector('.m-timeline-button button').classList.add('g-cartografia-control-siguiente');
-          document.querySelector('.m-timeline-button button').classList.remove('g-cartografia-control-pausa');
+          this.getPlayTimeButton().classList.add('g-cartografia-control-siguiente');
+          this.getPlayTimeButton().classList.remove('g-cartografia-control-pausa');
           document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '0');
           clearTimeout(this.running);
           this.running = false;
@@ -382,6 +383,17 @@ class Timeline extends Control {
       .find((layer) => layer.getImpl().legend === layerSearch.getImpl().legend);
   }
 
+  /** Returns the play button element used to init timeline process
+   *
+   * @public
+   * @api stable
+   * @function
+   * @returns {HTMLButtonElement}
+   */
+  getPlayTimeButton() {
+    return document.getElementById('m-timeline-play');
+  }
+
   /** This function make the play animation
    *
    * @public
@@ -395,8 +407,8 @@ class Timeline extends Control {
     const slider = document.querySelector('#input-slider');
     let step = parseInt(slider.value, 10);
     if (this.running) {
-      document.querySelector('.m-timeline-button button').classList.add('g-cartografia-control-siguiente');
-      document.querySelector('.m-timeline-button button').classList.remove('g-cartografia-control-pausa');
+      this.getPlayTimeButton().classList.add('g-cartografia-control-siguiente');
+      this.getPlayTimeButton().classList.remove('g-cartografia-control-pausa');
       clearTimeout(this.running);
     }
     if (!next) {
@@ -418,8 +430,8 @@ class Timeline extends Control {
     }
     slider.value = parseFloat(slider.value) + 1;
     this.changeSlider(slider);
-    document.querySelector('.m-timeline-button button').classList.remove('g-cartografia-control-siguiente');
-    document.querySelector('.m-timeline-button button').classList.add('g-cartografia-control-pausa');
+    this.getPlayTimeButton().classList.remove('g-cartografia-control-siguiente');
+    this.getPlayTimeButton().classList.add('g-cartografia-control-pausa');
     this.running = setTimeout((e) => this.playTimeline(true), this.speed * 1000);
   }
 
@@ -1188,6 +1200,7 @@ class Timeline extends Control {
 
   /**
   * Obtiene la ayuda del control
+  * Su construcción es similar a la del plugin, por ello se usa la misma plantilla
   *
   * @function
   * @public

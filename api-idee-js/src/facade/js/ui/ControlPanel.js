@@ -143,6 +143,9 @@ class ControlPanel extends MObject {
     this._openedButtonClass = null;
     if (!isNullOrEmpty(options.openedButtonClass)) {
       this._openedButtonClass = options.openedButtonClass;
+    } else if (!isNullOrEmpty(options.collapsedButtonClass)
+      && options.collapsedButtonClass !== null) {
+      this._openedButtonClass = options.collapsedButtonClass;
     } else if ((this.position === Position.LEFT) || (this.position === Position.CTL)) {
       this._openedButtonClass = 'g-cartografia-flecha-izquierda';
     } else if ((this.position === Position.RIGHT) || (this.position === Position.CTR)
@@ -218,7 +221,7 @@ class ControlPanel extends MObject {
     this._map = map;
     this._areaContainer = this._map.getToolsContainer(this.position);
     const html = compileTemplate(controlPanelTemplate);
-    const button = html.querySelector('.m-panel-btn');
+    const button = html.querySelector('.m-control-panel-btn');
     button.setAttribute('type', 'button');
 
     this._element = html;
@@ -241,7 +244,7 @@ class ControlPanel extends MObject {
     if (!isNullOrEmpty(this._tooltip)) {
       this._element.setAttribute('title', this._tooltip);
     }
-    this._buttonPanel = html.querySelector('button.m-panel-btn');
+    this._buttonPanel = html.querySelector('button.m-control-panel-btn');
     if (!isNullOrEmpty(this._className)) {
       this._className.split(/\s+/).forEach((className) => {
         html.classList.add(className);
@@ -258,7 +261,7 @@ class ControlPanel extends MObject {
       html.classList.add('no-collapsible');
     }
 
-    this._controlsContainer = html.querySelector('div.m-panel-controls');
+    this._controlsContainer = html.querySelector('div.m-controls-panel');
     this._areaContainer.appendChild(html);
 
     this._buttonPanel.addEventListener('click', (evt) => {

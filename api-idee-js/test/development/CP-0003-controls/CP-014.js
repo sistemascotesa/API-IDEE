@@ -1,7 +1,6 @@
 /* eslint-disable no-use-before-define */
 import { map as Mmap } from 'IDEE/api-idee';
 import Timeline from 'IDEE/control/Timeline';
-import * as Position from 'IDEE/ui/position';
 
 const map = Mmap({
   container: 'map',
@@ -22,7 +21,13 @@ const removeControl = () => {
   ctrl = null;
 };
 
-const position = Position.LEFT;
+const inputIntervals = document.getElementById('inputIntervals');
+const selectIntervals = document.getElementById('selectIntervals');
+const selectAnimation = document.getElementById('selectAnimation');
+const inputSpeed = document.getElementById('inputSpeed');
+const selectPosicion = document.getElementById('selectPosicion');
+const position = selectPosicion.options[selectPosicion.selectedIndex].value;
+
 const intervals = [
   ['NACIONAL 1981-1986', '1986', 'WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986'],
   ['OLISTAT', '1998', 'WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT'],
@@ -59,7 +64,6 @@ const formatMove = 'continuous';
 
 // Type
 const typeTimeLine = document.getElementById('typeTimeLine');
-
 if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
   createControl({
     timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
@@ -80,12 +84,6 @@ if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
 }
 
 // Original
-const selectPosicion = document.getElementById('selectPosicion');
-const inputIntervals = document.getElementById('inputIntervals');
-const selectIntervals = document.getElementById('selectIntervals');
-const selectAnimation = document.getElementById('selectAnimation');
-const inputSpeed = document.getElementById('inputSpeed');
-
 typeTimeLine.addEventListener('change', ({ target }) => {
   if (target.value === 'absolute' || target.value === 'relative') {
     document.querySelector('#dinamic').style.display = 'block';
