@@ -37,10 +37,13 @@
                 <div>
                     <label for="selectPosicion">Selector de posición del plugin</label>
                     <select name="position" id="selectPosicion">
-                        <option value="TL">Arriba Izquierda (TL)</option>
-                        <option value="TR" selected="selected">Arriba Derecha (TR)</option>
-                        <option value="BR">Abajo Derecha (BR)</option>
-                        <option value="BL">Abajo Izquierda (BL)</option>
+                        <option value="left" selected="selected">Izquierda (left)</option>
+                        <option value="right">Derecha (right)</option>
+                        <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
+                        <option value="center-top-right">Centro superior derecho (center-top-right)</option>
+                        <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
+                        <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)</option>
+                        <option value="down">Abajo (down)</option>
                     </select>
                     <label for="typeTimeLine">Tipo TimeLine: </label>
                     <select name="typeTimeLine" id="typeTimeLine">
@@ -121,7 +124,7 @@
                         </select>
                     </div>
 
-                    <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar">
+                    <input type="button" value="Eliminar Control" name="eliminar" id="removeButton">
 
                 </div>
                 <div id="mapjs" class="m-container"></div>
@@ -144,7 +147,24 @@
                                 zoom: 6,
                             });
 
-                            let mp; let position;
+                            let ctrl;
+
+                            const createControl = (propiedades) => {
+                                ctrl = new IDEE.control.Timeline(propiedades);
+                                map.addControls(ctrl);
+                            };
+
+                            const removeControl = () => {
+                                map.removeControls(ctrl);
+                                ctrl = null;
+                            };
+
+                            const inputIntervals = document.getElementById('inputIntervals');
+                            const selectIntervals = document.getElementById('selectIntervals');
+                            const selectAnimation = document.getElementById('selectAnimation');
+                            const inputSpeed = document.getElementById('inputSpeed');
+                            const selectPosicion = document.getElementById('selectPosicion');
+                            const position = selectPosicion.options[selectPosicion.selectedIndex].value;
                             const intervals = [
                                 ['NACIONAL 1981-1986', '1986', 'WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986'],
                                 ['OLISTAT', '1998', 'WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT'],
@@ -154,8 +174,7 @@
                                 ['PNOA 2006', '2006', 'WMS*pnoa2006*https://www.ign.es/wms/pnoa-historico*pnoa2006'],
                                 ['PNOA 2010', '2010', 'WMS*pnoa2010*https://www.ign.es/wms/pnoa-historico*pnoa2010'],
                             ];
-
-                            let time = [
+                            const time = [
                                 {
                                     id: '1',
                                     init: '1990-05-12T23:39:58.767Z',
@@ -167,16 +186,21 @@
                                     id: '2',
                                     init: '1990-05-12T23:39:58.767Z',
                                     end: '2015-05-29T20:22:26.001Z',
-                                    grupo: 'vectorWMS_GRUPO',
+                                    // grupo: 'vectorWMS_GRUPO',
                                     layer: 'WMS*Eventos sísmicos*https://www.ign.es/wms-inspire/geofisica*NZ.ObservedEvent',
                                     attributeParam: 'date',
                                     grupo: 'NZ.ObservedEvent - equalsTimeLine',
                                 },
-                            ], speedDate = 2, paramsDate = 'yr', stepValue = 5, formatValue = 'logarithmic', sizeWidthDinamic = 'sizeWidthDinamic_medium', formatMove = 'continuous';
+                            ];
+                            const speedDate = 2;
+                            const paramsDate = 'yr';
+                            const stepValue = 5;
+                            const formatValue = 'logarithmic';
+                            const sizeWidthDinamic = 'sizeWidthDinamic_medium';
+                            const formatMove = 'continuous';
 
                             // Type
                             const typeTimeLine = document.getElementById('typeTimeLine');
-
                             if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
                                 createControl({
                                     timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
@@ -186,7 +210,7 @@
                                     stepValue,
                                     formatMove,
                                     formatValue,
-                                    sizeWidthDinamic
+                                    sizeWidthDinamic,
                                 });
                             } else {
                                 createControl({
@@ -196,33 +220,26 @@
                                 });
                             }
 
-                            // Original
-                            const selectPosicion = document.getElementById("selectPosicion");
-                            const inputIntervals = document.getElementById("inputIntervals");
-                            const selectIntervals = document.getElementById("selectIntervals");
-                            const selectAnimation = document.getElementById("selectAnimation");
-                            const inputSpeed = document.getElementById("inputSpeed");
-
                             typeTimeLine.addEventListener('change', ({ target }) => {
                                 if (target.value === 'absolute' || target.value === 'relative') {
                                     document.querySelector('#dinamic').style.display = 'block';
-                                    document.querySelector('#origin').style.display = 'none'
+                                    document.querySelector('#origin').style.display = 'none';
                                 } else {
                                     document.querySelector('#dinamic').style.display = 'none';
-                                    document.querySelector('#origin').style.display = 'block'
+                                    document.querySelector('#origin').style.display = 'block';
                                 }
-                                cambiarTest();
+                                changeTest();
                             });
 
-                            selectPosicion.addEventListener('change', cambiarTest);
-                            inputIntervals.addEventListener('change', cambiarTest);
+                            selectPosicion.addEventListener('change', changeTest);
+                            inputIntervals.addEventListener('change', changeTest);
                             selectIntervals.addEventListener('change', () => {
                                 inputIntervals.value = selectIntervals.value;
-                                cambiarTest();
+                                changeTest();
                             });
 
-                            selectAnimation.addEventListener('change', cambiarTest);
-                            inputSpeed.addEventListener('change', cambiarTest);
+                            selectAnimation.addEventListener('change', changeTest);
+                            inputSpeed.addEventListener('change', changeTest);
 
                             // Dinamic
                             const elementTime = document.getElementById('time');
@@ -234,8 +251,7 @@
                             const elementFormatMove = document.getElementById('formatMove');
 
                             [elementTime, elementSpeedDate, elementParamsDate, elementStepValue,
-                                elementSizeWidthDinamic, elementFormatMove, elementFormatValue].forEach(el => el.addEventListener('change', cambiarTest));
-
+                                elementSizeWidthDinamic, elementFormatMove, elementFormatValue].forEach((el) => el.addEventListener('change', changeTest));
 
                             if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
                                 document.querySelector('#dinamic').style.display = 'block';
@@ -246,12 +262,12 @@
                             }
 
                             function changeTest() {
+                                if (ctrl) removeControl();
                                 const options = {};
                                 options.position = selectPosicion.options[selectPosicion.selectedIndex].value;
 
                                 if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
                                     options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
-                                    options.position = selectPosicion.options[selectPosicion.selectedIndex].value;
                                     options.intervals = elementTime.value !== '' ? elementTime.value : time;
                                     options.speedDate = elementSpeedDate.value >= 1 ? elementSpeedDate.value : 1;
                                     options.paramsDate = elementParamsDate.options[elementParamsDate.selectedIndex].value;
@@ -265,18 +281,12 @@
                                     options.intervals = inputIntervals.value !== '' ? inputIntervals.value : intervals;
                                     // const animationValor = selectAnimation.options[selectAnimation.selectedIndex].value;
                                 }
-                                map.removeControls(mp);
                                 createControl(options);
                             }
 
-                            function createControl(propiedades) {
-                                mp = new IDEE.control.Timeline(propiedades);
-                                map.addControls(mp);
-                            }
-
-                            const botonEliminar = document.getElementById("botonEliminar");
-                            botonEliminar.addEventListener("click", function () {
-                                map.removeControls(mp);
+                            const removeButton = document.getElementById('removeButton');
+                            removeButton.addEventListener('click', () => {
+                                removeControl();
                             });
                         </script>
             </body>
