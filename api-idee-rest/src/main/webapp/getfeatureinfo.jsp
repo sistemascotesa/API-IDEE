@@ -37,6 +37,19 @@
 </head>
 
 <body>
+    <label for="selectPosicion">Selector de posición del plugin</label>
+    <select name="position" id="selectPosicion">
+        <option value="left" selected="selected">Izquierda (left)</option>
+        <option value="right">Derecha (right)</option>
+        <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
+        <option value="center-top-right">Centro superior derecho (center-top-right)</option>
+        <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
+        <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)</option>
+        <option value="down">Abajo (down)</option>
+    </select>
+    </div>
+        <input type="button" value="Eliminar Control" name="eliminar" id="removeButton">
+    </div>
     <div id="mapjs" class="m-container"></div>
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
     <script type="text/javascript" src="js/apiidee.ol.min.js"></script>

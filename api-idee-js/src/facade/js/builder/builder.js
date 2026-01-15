@@ -244,7 +244,7 @@ export const getWMCSelectorPanel = (control, map, params = {}, defaultOptions = 
  * @api stable
  */
 export const getTimelinePanel = (control, map, params = {}, defaultOptions = {}) => {
-  return new ControlPanel('panelTimeline', {
+  return new ControlPanel('timeline', {
     ...defaultOptions,
     collapsible: true,
     className: 'm-control-timeline',
