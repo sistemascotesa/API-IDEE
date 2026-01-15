@@ -2891,7 +2891,7 @@ class Map extends Base {
    * @public
    * @function
    * @param {string|Array<String>} controlsParam Controles de nombre de colección.
-   * @returns {Array<Control> | Array<Plugin>} Matriz de retorno de controles.
+   * @returns {Array<ControlPanel> | Array<Control> | Array<Plugin>} Matriz de retorno de controles.
    * @api
    */
   getControls(controlsParamVar) {
@@ -3085,9 +3085,9 @@ class Map extends Base {
     controls = [].concat(controls);
     if (controls.length > 0) {
       controls.forEach((control) => {
-        // check if this control has panels and remove it if
         const panel = control.getPanel();
-        if (panel instanceof ControlPanel || panel instanceof Panel) {
+        // check if this control has panels and remove it if
+        if (panel instanceof ControlPanel) {
           const panelControls = panel.getControls();
           if (isArray(panelControls) && panelControls.legth === 1) {
             this.removePanel(panel);

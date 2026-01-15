@@ -160,14 +160,17 @@ class ControlPanel extends MObject {
      */
     this._element = null;
 
-    /**
+    /** Contains the tool container of facade map
+     *
      * @private
      * @type {HTMLElement}
      * @expose
      */
     this._areaContainer = null;
 
-    /**
+    /** It contains the container that is displayed when the panel is opened
+     * this contains the loaded controls.
+     *
      * @private
      * @type {HTMLElement}
      * @expose
@@ -206,6 +209,8 @@ class ControlPanel extends MObject {
       this._areaContainer.removeChild(this._element);
       this.element = null;
     }
+    this.element = null;
+    this._areaContainer = null;
     this._controlsContainer = null;
   }
 
