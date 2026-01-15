@@ -26,7 +26,6 @@ import OlControlImpl from '../control/Control';
 import OlControlScaleLineImpl from '../control/ScaleLine';
 import OLControlZoomSlider from '../control/Panzoombar';
 import OLControlZoom from '../control/Panzoom';
-import OLControlGetFeatureInfo from '../control/GetFeatureInfo';
 
 /**
   * Este método obtiene la cantidad de unidades por
@@ -738,8 +737,7 @@ class Utils {
     return controlImpl instanceof OlControlImpl
     || controlImpl instanceof OlControlScaleLineImpl
     || controlImpl instanceof OLControlZoomSlider
-    || controlImpl instanceof OLControlZoom
-    || controlImpl instanceof OLControlGetFeatureInfo;
+    || controlImpl instanceof OLControlZoom;
   }
 }
 export default Utils;
