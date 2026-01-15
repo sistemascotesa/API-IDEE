@@ -315,10 +315,3 @@
 
     background-color: currentColor !important;
 }
-
-.m-attributions button,
-.m-attributions button:hover {
-    border: none !important;
-    /* Con borde invisible */
-    /* border-color: transparent !important; */
-}

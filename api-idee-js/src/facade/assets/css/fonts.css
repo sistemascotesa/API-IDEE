@@ -27,8 +27,9 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-[class^="g-cartografia"]:before {
-    content: '';
+[class^="g-cartografia"]::before,
+[class*=" g-cartografia-"]::before {
+    content: '' !important;
     display: block;
     margin: auto;
     width: 24px;
@@ -42,92 +43,92 @@
     mask-size: contain;
 }
 
-.g-cartografia-check:before {
+.g-cartografia-check::before {
     /* content: "\e801"; */
     -webkit-mask-image: url('../images/icon_ue801.svg');
     mask-image: url('../images/icon_ue801.svg');
 }
 
-.g-cartografia-check5:before {
+.g-cartografia-check5::before {
     /* content: "\e80d"; */
     -webkit-mask-image: url('../images/icon_ue80d.svg');
     mask-image: url('../images/icon_ue80d.svg');
 }
 
-.g-cartografia-escala:before {
+.g-cartografia-escala::before {
     /* content: "\e812"; */
     -webkit-mask-image: url('../images/icon_ue812.svg');
     mask-image: url('../images/icon_ue812.svg');
 }
 
-.g-cartografia-escala2:before {
+.g-cartografia-escala2::before {
     /* content: "\e813"; */
     -webkit-mask-image: url('../images/icon_ue813.svg');
     mask-image: url('../images/icon_ue813.svg');
 }
 
-.g-cartografia-brujula-norte:before {
+.g-cartografia-brujula-norte::before {
     /* content: "\e900"; */
     -webkit-mask-image: url('../images/icon_ue900.svg');
     mask-image: url('../images/icon_ue900.svg');
 }
 
-.g-cartografia-capas2:before {
+.g-cartografia-capas2::before {
     /* content: "\e901"; */
     -webkit-mask-image: url('../images/icon_ue901.svg');
     mask-image: url('../images/icon_ue901.svg');
 }
 
-.g-cartografia-comentarios:before {
+.g-cartografia-comentarios::before {
     /* content: "\e902"; */
     /* content: "\ue95e"; */
     -webkit-mask-image: url('../images/icon_ue95e.svg');
     mask-image: url('../images/icon_ue95e.svg');
 }
 
-.g-cartografia-escala3:before {
+.g-cartografia-escala3::before {
     /* content: "\e903"; */
     -webkit-mask-image: url('../images/icon_ue903.svg');
     mask-image: url('../images/icon_ue903.svg');
 }
 
-.g-cartografia-flecha:before {
+.g-cartografia-flecha::before {
     /* content: "\e904"; */
     -webkit-mask-image: url('../images/icon_ue904.svg');
     mask-image: url('../images/icon_ue904.svg');
 }
 
-.g-cartografia-flecha-abajo:before {
+.g-cartografia-flecha-abajo::before {
     /* content: "\e905"; */
     -webkit-mask-image: url('../images/icon_ue905.svg');
     mask-image: url('../images/icon_ue905.svg');
 }
 
-.g-cartografia-flecha-arriba:before {
+.g-cartografia-flecha-arriba::before {
     /* content: "\e906"; */
     -webkit-mask-image: url('../images/icon_ue906.svg');
     mask-image: url('../images/icon_ue906.svg');
 }
 
-.g-cartografia-flecha-derecha:before {
+.g-cartografia-flecha-derecha::before {
     /* content: "\e907"; */
     -webkit-mask-image: url('../images/icon_ue907.svg');
     mask-image: url('../images/icon_ue907.svg');
 }
 
-.g-cartografia-flecha-izquierda:before {
+.g-cartografia-flecha-izquierda::before {
     /* content: "\e908"; */
     -webkit-mask-image: url('../images/icon_ue908.svg');
     mask-image: url('../images/icon_ue908.svg');
 }
 
-.g-cartografia-gps2:before {
+.g-cartografia-gps2::before {
     /* content: "\e909"; */
     -webkit-mask-image: url('../images/g-cartografia-gps2.svg');
     mask-image: url('../images/g-cartografia-gps2.svg');
 }
 
-.g-cartografia-info:before {
+.g-cartografia-info::before {
     /* content: "\e90a"; */
     -webkit-mask-image: url('../images/icon_ue90a.svg');
     mask-image: url('../images/icon_ue90a.svg');
@@ -144,416 +145,416 @@
     mask-image: url('../images/icon_ue90b.svg');
 }
 
-.g-cartografia-pin:before {
+.g-cartografia-pin::before {
     /* content: "\e90c"; */
     -webkit-mask-image: url('../images/icon_ue90c.svg');
     mask-image: url('../images/icon_ue90c.svg');
 }
 
-.g-cartografia-posicion3:before {
+.g-cartografia-posicion3::before {
     /* content: "\e90d"; */
     -webkit-mask-image: url('../images/icon_ue90d.svg');
     mask-image: url('../images/icon_ue90d.svg');
 }
 
-.g-cartografia-zoom-extension:before {
+.g-cartografia-zoom-extension::before {
     /* content: "\e90e"; */
     -webkit-mask-image: url('../images/icon_ue90e.svg');
     mask-image: url('../images/icon_ue90e.svg');
 }
 
-.g-cartografia-spinner:before {
+.g-cartografia-spinner::before {
     /* content: "\e90f"; */
     -webkit-mask-image: url('../images/icon_ue90f.svg');
     mask-image: url('../images/icon_ue90f.svg');
 }
 
-.g-cartografia-warning:before {
+.g-cartografia-warning::before {
     /* content: "\e910"; */
     -webkit-mask-image: url('../images/icon_ue910.svg');
     mask-image: url('../images/icon_ue910.svg');
 }
 
-.g-cartografia-notification:before {
+.g-cartografia-notification::before {
     /* content: "\e911"; */
     -webkit-mask-image: url('../images/icon_ue911.svg');
     mask-image: url('../images/icon_ue911.svg');
 }
 
-.g-cartografia-cancelar:before {
+.g-cartografia-cancelar::before {
     /* content: "\e912"; */
     -webkit-mask-image: url('../images/icon_ue912.svg');
     mask-image: url('../images/icon_ue912.svg');
 }
 
-.g-cartografia-implementacion:before {
+.g-cartografia-implementacion::before {
     /* content: "\e913"; */
     -webkit-mask-image: url('../images/icon_ue913.svg');
     mask-image: url('../images/icon_ue913.svg');
 }
 
-.g-cartografia-cancelar2:before {
+.g-cartografia-cancelar2::before {
     /* content: "\e914"; */
     -webkit-mask-image: url('../images/icon_ue914.svg');
     mask-image: url('../images/icon_ue914.svg');
 }
 
-.g-cartografia-check2:before {
+.g-cartografia-check2::before {
     /* content: "\e915"; */
     -webkit-mask-image: url('../images/icon_ue915.svg');
     mask-image: url('../images/icon_ue915.svg');
 }
 
-.g-cartografia-flecha-abajo2:before {
+.g-cartografia-flecha-abajo2::before {
     /* content: "\e916"; */
     -webkit-mask-image: url('../images/icon_ue916.svg');
     mask-image: url('../images/icon_ue916.svg');
 }
 
-.g-cartografia-check3:before {
+.g-cartografia-check3::before {
     /* content: "\e917"; */
     -webkit-mask-image: url('../images/icon_ue917.svg');
     mask-image: url('../images/icon_ue917.svg');
 }
 
-.g-cartografia-flecha-arriba2:before {
+.g-cartografia-flecha-arriba2::before {
     /* content: "\e918"; */
     -webkit-mask-image: url('../images/icon_ue918.svg');
     mask-image: url('../images/icon_ue918.svg');
 }
 
-.g-cartografia-check4:before {
+.g-cartografia-check4::before {
     /* content: "\e919"; */
     -webkit-mask-image: url('../images/icon_ue919.svg');
     mask-image: url('../images/icon_ue919.svg');
 }
 
-.g-cartografia-flecha-derecha2:before {
+.g-cartografia-flecha-derecha2::before {
     /* content: "\e91a"; */
     -webkit-mask-image: url('../images/icon_ue91a.svg');
     mask-image: url('../images/icon_ue91a.svg');
 }
 
-.g-cartografia-flecha-derecha3:before {
+.g-cartografia-flecha-derecha3::before {
     /* content: "\e91b"; */
     -webkit-mask-image: url('../images/icon_ue91b.svg');
     mask-image: url('../images/icon_ue91b.svg');
 }
 
-.g-cartografia-flecha-deshacer:before {
+.g-cartografia-flecha-deshacer::before {
     /* content: "\e91c"; */
     -webkit-mask-image: url('../images/icon_ue91c.svg');
     mask-image: url('../images/icon_ue91c.svg');
 }
 
-.g-cartografia-check-circle:before {
+.g-cartografia-check-circle::before {
     /* content: "\e91d"; */
     -webkit-mask-image: url('../images/icon_ue91d.svg');
     mask-image: url('../images/icon_ue91d.svg');
 }
 
-.g-cartografia-flecha-izquierda2:before {
+.g-cartografia-flecha-izquierda2::before {
     /* content: "\e91e"; */
     -webkit-mask-image: url('../images/icon_ue91e.svg');
     mask-image: url('../images/icon_ue91e.svg');
 }
 
-.g-cartografia-flecha-izquierda3:before {
+.g-cartografia-flecha-izquierda3::before {
     /* content: "\e91f"; */
     -webkit-mask-image: url('../images/icon_ue91f.svg');
     mask-image: url('../images/icon_ue91f.svg');
 }
 
-.g-cartografia-flecha-link:before {
+.g-cartografia-flecha-link::before {
     /* content: "\e920"; */
     -webkit-mask-image: url('../images/icon_ue920.svg');
     mask-image: url('../images/icon_ue920.svg');
 }
 
-.g-cartografia-flechas-mover:before {
+.g-cartografia-flechas-mover::before {
     /* content: "\e921"; */
     -webkit-mask-image: url('../images/icon_ue921.svg');
     mask-image: url('../images/icon_ue921.svg');
 }
 
-.g-cartografia-gps:before {
+.g-cartografia-gps::before {
     /* content: "\e922"; */
     -webkit-mask-image: url('../images/icon_ue922.svg');
     mask-image: url('../images/icon_ue922.svg');
 }
 
-.g-cartografia-gps3:before {
+.g-cartografia-gps3::before {
     /* content: "\e923"; */
     -webkit-mask-image: url('../images/icon_ue923.svg');
     mask-image: url('../images/icon_ue923.svg');
 }
 
-.g-cartografia-gps4:before {
+.g-cartografia-gps4::before {
     /* content: "\e925"; */
     -webkit-mask-image: url('../images/icon_ue925.svg');
     mask-image: url('../images/icon_ue925.svg');
 }
 
-.g-cartografia-guardar:before {
+.g-cartografia-guardar::before {
     /* content: "\e926"; */
     -webkit-mask-image: url('../images/icon_ue926.svg');
     mask-image: url('../images/icon_ue926.svg');
 }
 
-.g-cartografia-herramienta:before {
+.g-cartografia-herramienta::before {
     /* content: "\e927"; */
     -webkit-mask-image: url('../images/icon_ue927.svg');
     mask-image: url('../images/icon_ue927.svg');
 }
 
-.g-cartografia-impresora:before {
+.g-cartografia-impresora::before {
     /* content: "\e928"; */
     -webkit-mask-image: url('../images/icon_ue928.svg');
     mask-image: url('../images/icon_ue928.svg');
 }
 
-.g-cartografia-editar2:before {
+.g-cartografia-editar2::before {
     /* content: "\e929"; */
     -webkit-mask-image: url('../images/icon_ue929.svg');
     mask-image: url('../images/icon_ue929.svg');
 }
 
-.g-cartografia-linea:before {
+.g-cartografia-linea::before {
     /* content: "\e92a"; */
     -webkit-mask-image: url('../images/icon_ue92a.svg');
     mask-image: url('../images/icon_ue92a.svg');
 }
 
-.g-cartografia-lineas:before {
+.g-cartografia-lineas::before {
     /* content: "\e92b"; */
     -webkit-mask-image: url('../images/icon_ue92b.svg');
     mask-image: url('../images/icon_ue92b.svg');
 }
 
-.g-cartografia-lista:before {
+.g-cartografia-lista::before {
     /* content: "\e92c"; */
     -webkit-mask-image: url('../images/icon_ue92c.svg');
     mask-image: url('../images/icon_ue92c.svg');
 }
 
-.g-cartografia-localizacion:before {
+.g-cartografia-localizacion::before {
     /* content: "\e92d"; */
     -webkit-mask-image: url('../images/icon_ue92d.svg');
     mask-image: url('../images/icon_ue92d.svg');
 }
 
-.g-cartografia-localizacion2:before {
+.g-cartografia-localizacion2::before {
     /* content: "\e92e"; */
     -webkit-mask-image: url('../images/icon_ue92e.svg');
     mask-image: url('../images/icon_ue92e.svg');
 }
 
-.g-cartografia-localizacion3:before {
+.g-cartografia-localizacion3::before {
     /* content: "\e92f"; */
     -webkit-mask-image: url('../images/icon_ue92f.svg');
     mask-image: url('../images/icon_ue92f.svg');
 }
 
-.g-cartografia-localizacion4:before {
+.g-cartografia-localizacion4::before {
     /* content: "\e930"; */
     -webkit-mask-image: url('../images/icon_ue930.svg');
     mask-image: url('../images/icon_ue930.svg');
 }
 
-.g-cartografia-mano:before {
+.g-cartografia-mano::before {
     /* content: "\e931"; */
     -webkit-mask-image: url('../images/icon_ue931.svg');
     mask-image: url('../images/icon_ue931.svg');
 }
 
-.g-cartografia-mano2:before {
+.g-cartografia-mano2::before {
     /* content: "\e932"; */
     -webkit-mask-image: url('../images/icon_ue932.svg');
     mask-image: url('../images/icon_ue932.svg');
 }
 
-.g-cartografia-mapa:before {
+.g-cartografia-mapa::before {
     /* content: "\e933"; */
     -webkit-mask-image: url('../images/icon_ue933.svg');
     mask-image: url('../images/icon_ue933.svg');
 }
 
-.g-cartografia-mas:before {
+.g-cartografia-mas::before {
     /* content: "\e934"; */
     -webkit-mask-image: url('../images/icon_ue934.svg');
     mask-image: url('../images/icon_ue934.svg');
 }
 
-.g-cartografia-mas2:before {
+.g-cartografia-mas2::before {
     /* content: "\e935"; */
     -webkit-mask-image: url('../images/icon_ue935.svg');
     mask-image: url('../images/icon_ue935.svg');
 }
 
-.g-cartografia-medir-area:before {
+.g-cartografia-medir-area::before {
     /* content: "\e936"; */
     -webkit-mask-image: url('../images/icon_ue936.svg');
     mask-image: url('../images/icon_ue936.svg');
 }
 
-.g-cartografia-medir-linea:before {
+.g-cartografia-medir-linea::before {
     /* content: "\e937"; */
     -webkit-mask-image: url('../images/icon_ue937.svg');
     mask-image: url('../images/icon_ue937.svg');
 }
 
-.g-cartografia-menos:before {
+.g-cartografia-menos::before {
     /* content: "\e938"; */
     -webkit-mask-image: url('../images/icon_ue938.svg');
     mask-image: url('../images/icon_ue938.svg');
 }
 
-.g-cartografia-menos2:before {
+.g-cartografia-menos2::before {
     /* content: "\e939"; */
     -webkit-mask-image: url('../images/icon_ue939.svg');
     mask-image: url('../images/icon_ue939.svg');
 }
 
-.g-cartografia-menu:before {
+.g-cartografia-menu::before {
     /* content: "\e93a"; */
     -webkit-mask-image: url('../images/icon_ue93a.svg');
     mask-image: url('../images/icon_ue93a.svg');
 }
 
-.g-cartografia-mundo:before {
+.g-cartografia-mundo::before {
     /* content: "\e93b"; */
     -webkit-mask-image: url('../images/icon_ue93b.svg');
     mask-image: url('../images/icon_ue93b.svg');
 }
 
-.g-cartografia-mundo2:before {
+.g-cartografia-mundo2::before {
     /* content: "\e93c"; */
     -webkit-mask-image: url('../images/icon_ue93c.svg');
     mask-image: url('../images/icon_ue93c.svg');
 }
 
-.g-cartografia-opciones:before {
+.g-cartografia-opciones::before {
     /* content: "\e93d"; */
     -webkit-mask-image: url('../images/icon_ue93d.svg');
     mask-image: url('../images/icon_ue93d.svg');
 }
 
-.g-cartografia-descargar:before {
+.g-cartografia-descargar::before {
     /* content: "\e93e"; */
     -webkit-mask-image: url('../images/icon_ue93e.svg');
     mask-image: url('../images/icon_ue93e.svg');
 }
 
-.g-cartografia-editar:before {
+.g-cartografia-editar::before {
     /* content: "\e93f"; */
     -webkit-mask-image: url('../images/icon_ue93f.svg');
     mask-image: url('../images/icon_ue93f.svg');
 }
 
-.g-cartografia-pin-nuevo:before {
+.g-cartografia-pin-nuevo::before {
     /* content: "\e940"; */
     -webkit-mask-image: url('../images/icon_ue940.svg');
     mask-image: url('../images/icon_ue940.svg');
 }
 
-.g-cartografia-pin2:before {
+.g-cartografia-pin2::before {
     /* content: "\e941"; */
     -webkit-mask-image: url('../images/icon_ue941.svg');
     mask-image: url('../images/icon_ue941.svg');
 }
 
-.g-cartografia-pin3:before {
+.g-cartografia-pin3::before {
     /* content: "\e942"; */
     -webkit-mask-image: url('../images/icon_ue942.svg');
     mask-image: url('../images/icon_ue942.svg');
 }
 
-.g-cartografia-pin4:before {
+.g-cartografia-pin4::before {
     /* content: "\e943"; */
     -webkit-mask-image: url('../images/icon_ue943.svg');
     mask-image: url('../images/icon_ue943.svg');
 }
 
-.g-cartografia-poligono:before {
+.g-cartografia-poligono::before {
     /* content: "\e944"; */
     -webkit-mask-image: url('../images/icon_ue944.svg');
     mask-image: url('../images/icon_ue944.svg');
 }
 
-.g-cartografia-posicion:before {
+.g-cartografia-posicion::before {
     /* content: "\e945"; */
     -webkit-mask-image: url('../images/icon_ue945.svg');
     mask-image: url('../images/icon_ue945.svg');
 }
 
-.g-cartografia-posicion2:before {
+.g-cartografia-posicion2::before {
     /* content: "\e946"; */
     -webkit-mask-image: url('../images/icon_ue946.svg');
     mask-image: url('../images/icon_ue946.svg');
 }
 
-.g-cartografia-bandera:before {
+.g-cartografia-bandera::before {
     /* content: "\e947"; */
     -webkit-mask-image: url('../images/icon_ue947.svg');
     mask-image: url('../images/icon_ue947.svg');
 }
 
-.g-cartografia-posicion4:before {
+.g-cartografia-posicion4::before {
     /* content: "\e948"; */
     -webkit-mask-image: url('../images/icon_ue948.svg');
     mask-image: url('../images/icon_ue948.svg');
 }
 
-.g-cartografia-posicion5:before {
+.g-cartografia-posicion5::before {
     /* content: "\e949"; */
     -webkit-mask-image: url('../images/icon_ue949.svg');
     mask-image: url('../images/icon_ue949.svg');
 }
 
-.g-cartografia-posicion6:before {
+.g-cartografia-posicion6::before {
     /* content: "\e94a"; */
     -webkit-mask-image: url('../images/icon_ue94a.svg');
     mask-image: url('../images/icon_ue94a.svg');
 }
 
-.g-cartografia-posicion7:before {
+.g-cartografia-posicion7::before {
     /* content: "\e94b"; */
     -webkit-mask-image: url('../images/icon_ue94b.svg');
     mask-image: url('../images/icon_ue94b.svg');
 }
 
-.g-cartografia-prismaticos:before {
+.g-cartografia-prismaticos::before {
     /* content: "\e94c"; */
     -webkit-mask-image: url('../images/icon_ue94c.svg');
     mask-image: url('../images/icon_ue94c.svg');
 }
 
-.g-cartografia-regla:before {
+.g-cartografia-regla::before {
     /* content: "\e94d"; */
     -webkit-mask-image: url('../images/icon_ue94d.svg');
     mask-image: url('../images/icon_ue94d.svg');
 }
 
-.g-cartografia-reglas:before {
+.g-cartografia-reglas::before {
     /* content: "\e94e"; */
     -webkit-mask-image: url('../images/icon_ue94e.svg');
     mask-image: url('../images/icon_ue94e.svg');
 }
 
-.g-cartografia-ruta:before {
+.g-cartografia-ruta::before {
     /* content: "\e94f"; */
     -webkit-mask-image: url('../images/icon_ue94f.svg');
     mask-image: url('../images/icon_ue94f.svg');
 }
 
-.g-cartografia-spinner2 .path1:before {
+.g-cartografia-spinner2 .path1::before {
     /* content: "\e951"; */
     -webkit-mask-image: url('../images/icon_ue951.svg');
     mask-image: url('../images/icon_ue951.svg');
     color: rgb(107, 107, 107);
 }
 
-.g-cartografia-spinner2 .path2:before {
+.g-cartografia-spinner2 .path2::before {
     /* content: "\e952"; */
     -webkit-mask-image: url('../images/icon_ue952.svg');
     mask-image: url('../images/icon_ue952.svg');
@@ -562,7 +563,7 @@
     opacity: 0.1;
 }
 
-.g-cartografia-spinner2 .path3:before {
+.g-cartografia-spinner2 .path3::before {
     /* content: "\e953"; */
     -webkit-mask-image: url('../images/icon_ue953.svg');
     mask-image: url('../images/icon_ue953.svg');
@@ -571,7 +572,7 @@
     opacity: 0.2;
 }
 
-.g-cartografia-spinner2 .path4:before {
+.g-cartografia-spinner2 .path4::before {
     /* content: "\e954"; */
     -webkit-mask-image: url('../images/icon_ue954.svg');
     mask-image: url('../images/icon_ue954.svg');
@@ -580,7 +581,7 @@
     opacity: 0.3;
 }
 
-.g-cartografia-spinner2 .path5:before {
+.g-cartografia-spinner2 .path5::before {
     /* content: "\e955"; */
     -webkit-mask-image: url('../images/icon_ue955.svg');
     mask-image: url('../images/icon_ue955.svg');
@@ -589,7 +590,7 @@
     opacity: 0.4;
 }
 
-.g-cartografia-spinner2 .path6:before {
+.g-cartografia-spinner2 .path6::before {
     /* content: "\e956"; */
     -webkit-mask-image: url('../images/icon_ue956.svg');
     mask-image: url('../images/icon_ue956.svg');
@@ -598,7 +599,7 @@
     opacity: 0.5;
 }
 
-.g-cartografia-spinner2 .path7:before {
+.g-cartografia-spinner2 .path7::before {
     /* content: "\e957"; */
     -webkit-mask-image: url('../images/icon_ue957.svg');
     mask-image: url('../images/icon_ue957.svg');
@@ -607,7 +608,7 @@
     opacity: 0.6;
 }
 
-.g-cartografia-spinner2 .path8:before {
+.g-cartografia-spinner2 .path8::before {
     /* content: "\e958"; */
     -webkit-mask-image: url('../images/icon_ue958.svg');
     mask-image: url('../images/icon_ue958.svg');
@@ -616,7 +617,7 @@
     opacity: 0.7;
 }
 
-.g-cartografia-spinner2 .path9:before {
+.g-cartografia-spinner2 .path9::before {
     /* content: "\e959"; */
     -webkit-mask-image: url('../images/icon_ue959.svg');
     mask-image: url('../images/icon_ue959.svg');
@@ -625,7 +626,7 @@
     opacity: 0.8;
 }
 
-.g-cartografia-spinner2 .path10:before {
+.g-cartografia-spinner2 .path10::before {
     /* content: "\e95a"; */
     -webkit-mask-image: url('../images/icon_ue95a.svg');
     mask-image: url('../images/icon_ue95a.svg');
@@ -634,126 +635,124 @@
     opacity: 0.9;
 }
 
-.g-cartografia-brujula:before {
+.g-cartografia-brujula::before {
     /* content: "\e950"; */
     -webkit-mask-image: url('../images/icon_ue950.svg');
     mask-image: url('../images/icon_ue950.svg');
 }
 
-.g-cartografia-subir:before {
+.g-cartografia-subir::before {
     /* content: "\e95b"; */
     -webkit-mask-image: url('../images/icon_ue95b.svg');
     mask-image: url('../images/icon_ue95b.svg');
 }
 
-.g-cartografia-tamano:before {
+.g-cartografia-tamano::before {
     /* content: "\e95c"; */
     -webkit-mask-image: url('../images/icon_ue95c.svg');
     mask-image: url('../images/icon_ue95c.svg');
 }
 
-.g-cartografia-temperatura:before {
+.g-cartografia-temperatura::before {
     /* content: "\e95d"; */
     -webkit-mask-image: url('../images/icon_ue95d.svg');
     mask-image: url('../images/icon_ue95d.svg');
 }
 
-.g-cartografia-texto:before {
+.g-cartografia-texto::before {
     /* content: "\e95e"; */
     -webkit-mask-image: url('../images/icon_ue95e.svg');
     mask-image: url('../images/icon_ue95e.svg');
 }
 
-.g-cartografia-usuario:before {
+.g-cartografia-usuario::before {
     /* content: "\e95f"; */
     -webkit-mask-image: url('../images/icon_ue95f.svg');
     mask-image: url('../images/icon_ue95f.svg');
 }
 
-.g-cartografia-usuario2:before {
+.g-cartografia-usuario2::before {
     /* content: "\e960"; */
     -webkit-mask-image: url('../images/icon_ue960.svg');
     mask-image: url('../images/icon_ue960.svg');
 }
 
-.g-cartografia-zoom:before {
+.g-cartografia-zoom::before {
     /* content: "\e961"; */
     -webkit-mask-image: url('../images/icon_ue961.svg');
     mask-image: url('../images/icon_ue961.svg');
 }
 
-.g-cartografia-ayuda:before {
+.g-cartografia-ayuda::before {
     /* content: "\e962"; */
     -webkit-mask-image: url('../images/icon_ue962.svg');
     mask-image: url('../images/icon_ue962.svg');
 }
 
-.g-cartografia-zoom-mas:before {
+.g-cartografia-zoom-mas::before {
     /* content: "\e963"; */
     -webkit-mask-image: url('../images/icon_ue963.svg');
     mask-image: url('../images/icon_ue963.svg');
 }
 
-.g-cartografia-zoom-menos:before {
+.g-cartografia-zoom-menos::before {
     /* content: "\e964"; */
     -webkit-mask-image: url('../images/icon_ue964.svg');
     mask-image: url('../images/icon_ue964.svg');
 }
 
-.g-cartografia-pin5:before {
+.g-cartografia-pin5::before {
     /* content: "\e965"; */
     -webkit-mask-image: url('../images/icon_ue965.svg');
     mask-image: url('../images/icon_ue965.svg');
 }
 
-.g-cartografia-pin-nuevo2:before {
+.g-cartografia-pin-nuevo2::before {
     /* content: "\e966"; */
     -webkit-mask-image: url('../images/icon_ue966.svg');
     mask-image: url('../images/icon_ue966.svg');
 }
 
-.g-cartografia-pin-seleccionado:before {
+.g-cartografia-pin-seleccionado::before {
     /* content: "\e967"; */
     -webkit-mask-image: url('../images/icon_ue967.svg');
     mask-image: url('../images/icon_ue967.svg');
 }
 
-.g-cartografia-capas:before {
+.g-cartografia-capas::before {
     /* content: "\e968"; */
     -webkit-mask-image: url('../images/icon_ue968.svg');
     mask-image: url('../images/icon_ue968.svg');
 }
 
-.g-cartografia-giroscopio:before {
+.g-cartografia-giroscopio::before {
     /* content: "\e86e"; */
     -webkit-mask-image: url('../images/icon_ue86e.svg');
     mask-image: url('../images/icon_ue86e.svg');
 }
 
-.g-cartografia-exterior:before {
+.g-cartografia-exterior::before {
     /* content: "\e870"; */
     -webkit-mask-image: url('../images/icon_ue870.svg');
     mask-image: url('../images/icon_ue870.svg');
 }
 
-/** TIMELINE **/
-
-.g-cartografia-control-pausa:before {
+.g-cartografia-control-pausa::before {
     -webkit-mask-image: url('../images/pausa.svg');
     mask-image: url('../images/pausa.svg');
 }
 
-.g-cartografia-control-siguiente:before {
-    -webkit-mask-image: url('../images/pausa.svg');
-    mask-image: url('../images/pausa.svg');
+.g-cartografia-control-siguiente::before {
+    -webkit-mask-image: url('../images/siguiente.svg');
+    mask-image: url('../images/siguiente.svg');
 }
 
-.g-cartografia-gestion-reloj2:before {
+.g-cartografia-gestion-reloj2::before {
     -webkit-mask-image: url('../images/reloj_tres.svg');
     mask-image: url('../images/reloj_tres.svg');
 }
 
-.g-cartografia-gestion-reloj3:before {
+.g-cartografia-gestion-reloj3::before {
     -webkit-mask-image: url('../images/reloj_arena.svg');
     mask-image: url('../images/reloj_arena.svg');
 }
