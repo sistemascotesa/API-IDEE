@@ -45,6 +45,23 @@ const proj4258 = {
 };
 
 /**
+ * EPSG:25830 ETRS89 UTM Huso 30 es una proyección cartográfica en la que se divide
+ * la Tierra en 60 husos de 6 grados de longitud. El huso 30 se extiende desde los 12 grados
+ * al este hasta los 18 grados al este. Esta proyección se basa en el elipsoide ETRS89
+ * y se utiliza comúnmente en Europa y otras partes del mundo.
+ * @type {Object}
+ * @public
+ * @api
+ */
+const proj3042 = {
+  def: '+proj=utm +zone=30 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs',
+  extent: [-729785.83, 3715125.82, 940929.67, 9518470.69],
+  codes: ['EPSG:3042', 'urn:ogc:def:crs:EPSG::3042', 'http://www.opengis.net/gml/srs/epsg.xml#3042'],
+  units: 'm',
+  metersPerUnit: 1,
+};
+
+/**
  * EPSG:3857 es una proyección cartográfica conocida como Pseudo-Mercator
  * que se utiliza comúnmente en aplicaciones web y de mapeo en línea.
  * @type {Object}
@@ -515,6 +532,7 @@ const crs84 = {
  * @api
  */
 const projections = [
+  proj3042,
   proj3857,
   proj4326,
   proj32627,
