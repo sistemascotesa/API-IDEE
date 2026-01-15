@@ -4,6 +4,7 @@
 import 'assets/css/controls/getfeatureinfo';
 import GetFeatureInfoImpl from 'impl/control/GetFeatureInfo';
 import myhelp from 'templates/getfeatureinfohelp';
+import getfeatureinfoTemplate from 'templates/getfeatureinfo';
 import ControlBase from './Control';
 import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
@@ -54,7 +55,23 @@ class GetFeatureInfo extends ControlBase {
    * @api
    */
   createView(map) {
-    return '';
+    // return '';
+
+    const html = compileTemplate(getfeatureinfoTemplate, {
+      vars: {
+        title: getValue('getfeatureinfo').title,
+      },
+    });
+
+    // Asignarlo aquí para que el panel acceda al appendChild
+    this.element_ = html;
+
+    // if (this.activated) {
+    //   const btn = html.querySelector('#m-getfeatureinfo-button');
+    //   if (btn) btn.classList.add('active');
+    // }
+
+    return html;
   }
 
   /**
@@ -69,7 +86,11 @@ class GetFeatureInfo extends ControlBase {
    * @export
    */
   getActivationButton(element) {
-    return null;
+    if (!element) {
+      return null;
+    }
+
+    return element.querySelector('button#m-getfeatureinfo-button');
   }
 
   /**

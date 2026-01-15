@@ -170,28 +170,38 @@ class GetFeatureInfo extends Control {
 
     return wmsLayers.map((layer) => {
       const olLayer = layer.getImpl().getLayer();
-      let param;
-      if (layer.isVisible() && layer.isQueryable() && !isNullOrEmpty(olLayer)) {
-        param = {};
-        const getFeatureInfoParams = {
-          INFO_FORMAT: this.userFormats[this.currentFormat],
-          FEATURE_COUNT: this.featureCount,
-        };
-        const regexBuffer = /buffer/i;
-        const source = olLayer.getSource();
-        const coord = this.evt.coordinate;
-        if (!regexBuffer.test(layer.url)) {
-          getFeatureInfoParams.BUFFER = this.buffer;
-        }
+      let param = null;
 
-        let url = source.getFeatureInfoUrl(coord, viewResolution, srs, getFeatureInfoParams);
-        if (isString(IDEE.config.TICKET)) {
-          url = addParameters(url, { ticket: IDEE.config.TICKET });
+      // Verificar que la capa existe y su implementación de OL
+      if (layer.isVisible() && layer.isQueryable() && olLayer && olLayer.getSource()) {
+        // const getFeatureInfoParams = {
+        //   INFO_FORMAT: this.userFormats[this.currentFormat],
+        //   FEATURE_COUNT: this.featureCount,
+        // };
+
+        const source = olLayer.getSource();
+        if (source && typeof source.getFeatureInfoUrl === 'function') {
+          const getFeatureInfoParams = {
+            INFO_FORMAT: this.userFormats[this.currentFormat],
+            FEATURE_COUNT: this.featureCount,
+          };
+
+          const coord = this.evt.coordinate;
+
+          const regexBuffer = /buffer/i;
+          if (!regexBuffer.test(layer.url)) {
+            getFeatureInfoParams.BUFFER = this.buffer;
+          }
+
+          let url = source.getFeatureInfoUrl(coord, viewResolution, srs, getFeatureInfoParams);
+          if (isString(IDEE.config.TICKET)) {
+            url = addParameters(url, { ticket: IDEE.config.TICKET });
+          }
+          param = { layer: layer.legend || layer.name, url };
         }
-        param = { layer: layer.legend || layer.name, url };
       }
       return param;
-    });
+    }).filter((p) => p !== null); // Eliminar resultados nulos
   }
 
   /**

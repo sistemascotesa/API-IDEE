@@ -115,6 +115,22 @@ export const getPanzoomPanel = (control, map, params = {}, defaultOptions = {}) 
 };
 
 /**
+ * Esta función devuelve el panel para el control GetFeatureInfo.
+ *
+ * @public
+ * @function
+ *
+ * @return {Object} Devuelve el panel del control GetFeatureInfo.
+ * @api stable
+ */
+export const getGetFeatureInfo = (control, map, params = {}, defaultOptions = {}) => {
+  return new ControlPanel('getfeatureinfo', {
+    collapsible: false,
+    className: 'm-getfeatureinfo',
+  });
+};
+
+/**
  * Esta función devuelve el panel para el control Attributions.
  *
  * @public
@@ -272,7 +288,7 @@ export const getPanelForControl = (control, map, params = {}) => {
     [ScaleLine.NAME]: () => getScaleLinePanel(control, map, params, defaultOptions),
     [Panzoombar.NAME]: () => getPanzoombarPanel(control, map, params, defaultOptions),
     [Panzoom.NAME]: () => getPanzoomPanel(control, map, params, defaultOptions),
-    [GetFeatureInfo.NAME]: () => null, // GetFeatureInfo doesn't use panel
+    [GetFeatureInfo.NAME]: () => getGetFeatureInfo(control, map, params, defaultOptions),
     [Location.NAME]: () => getLocationPanel(control, map, params, defaultOptions),
     [Attributions.NAME]: () => getAttributionsPanel(control, map, params, defaultOptions),
     [Rotate.NAME]: () => getRotatePanel(control, map, params, defaultOptions),
