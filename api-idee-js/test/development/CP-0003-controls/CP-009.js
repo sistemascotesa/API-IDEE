@@ -15,6 +15,7 @@ const mapa = Mmap({
 });
 
 let ctrl;
+const selectPosicion = document.getElementById('selectPosicion');
 
 const createControl = (propiedades) => {
   ctrl = new Attributions(propiedades);
@@ -26,7 +27,7 @@ const removeControl = () => {
   ctrl = null;
 };
 
-const position = Position.LEFT;
+createControl();
 
 // const attributions = new Attributions({
 //   position: Position.LEFT,
@@ -55,13 +56,15 @@ const layerinicial = new WMS({
   },
 }, {});
 
+mapa.addLayers(layerinicial);
+
 // const attributionsControl = new Attributions({
 //   position: Position.LEFT,
 //   order: 100,
 //   closePanel: true, // colapsado para ver el botón flotante
 // });
 
-mapa.addLayers(layerinicial);
+
 
 // mapa.addControls(attributions);
 
@@ -81,19 +84,32 @@ mapa.addLayers(layerinicial);
 
 // mapa.addControls([attributionsControl]);
 
+const updateControl = () => {
+  if (ctrl != null) removeControl();
+  createControl({
+    position: selectPosicion.options[selectPosicion.selectedIndex].value,
+  });
+};
+
+selectPosicion.addEventListener('change', updateControl);
+
 const removeButton = document.getElementById('removeButton');
-
-const selectPosicion = document.getElementById('selectPosicion');
-
-function changeTest() {
-  if (ctrl) removeControl();
-  const options = {};
-  options.position = selectPosicion.options[selectPosicion.selectedIndex].value;
-  createControl(options);
-}
-
-selectPosicion.addEventListener('change', changeTest);
-
 removeButton.addEventListener('click', () => {
-  mapa.removeControls('attributions');
+  removeControl();
 });
+
+const layer = new WMS({
+  url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+  name: 'AU.AdministrativeBoundary',
+  legend: 'Limite administrativo',
+  tiled: false,
+  attribution: {
+    name: 'Capa WMS',
+    description: 'Descripción WMS',
+    url: 'https://www.ign.es',
+    contentAttributions: '${api-idee.static_resources.url}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+    contentType: 'kml',
+  },
+}, {});
+
+mapa.addLayers(layer);
