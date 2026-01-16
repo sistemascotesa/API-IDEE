@@ -156,6 +156,7 @@
     "panzoom_method": "La implementación usada no puede crear controles Panzoom",
     "panzoombar_method": "La implementación usada no puede crear controles Panzoombar",
     "scale_method": "La implementación usada no puede crear controles Scale",
+    "measurebar_method": "La implementación usada no puede crear controles Measurebar",
     "timeline_method": "La implementación usada no puede crear controles TimeLine",
     "scaleline_method": "La implementación usada no puede crear controles ScaleLine",
     "wmcselector_method": "La implementación usada no puede crear controles WMCSelector",

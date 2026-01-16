@@ -4,22 +4,6 @@
     background-color: #fff;
 }
 
-/* .m-control-timeline.collapsed {
-    height: 40px;
-}
-
-.m-control-timeline.opened>button.m-panel-btn {
-    position: absolute;
-    left: -2.5rem;
-    background-color: #fff;
-}
-
-.m-control-timeline.opened>button.m-panel-btn.opened-left {
-    left: unset !important;
-    position: absolute;
-    background-color: var(--idee-color-primary);
-} */
-
 .m-timeline-container {
     text-align: center;
 }

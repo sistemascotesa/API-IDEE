@@ -1,0 +1,3 @@
+/**
+ * @module IDEE/control/MeasureBar
+ */

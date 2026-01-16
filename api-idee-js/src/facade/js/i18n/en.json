@@ -156,6 +156,7 @@
     "panzoombar_method": "The used implementation can not create Panzoombar controls",
     "scale_method": "The used implementation can not create Scale controls",
     "timeline_method": "The used implementation can not create TimeLine controls",
+    "measurebar_method": "The used implementation can not create Measurebar controls",
     "scaleline_method": "The used implementation can not create ScaleLine controls",
     "wmcselector_method": "The used implementation can not create WMCSelector controls",
     "geojson_method": "The used implementation can not create objects IDEE.impl.format.GeoJSON",
