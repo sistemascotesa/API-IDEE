@@ -509,9 +509,9 @@ class Map extends Base {
         }),
         order,
       });
-      const panel = new Panel(Attributions.NAME, {
+      const panel = new ControlPanel(Attributions.NAME, {
         collapsible: true,
-        position: Position[position] || Position.CBR,
+        position: Position[position] || Position.LEFT,
         className: 'm-attributions',
         collapsedButtonClass: 'g-cartografia-comentarios',
         tooltip: tooltip || getValue('attributionsControl').tooltip,
@@ -2892,7 +2892,7 @@ class Map extends Base {
    * @public
    * @function
    * @param {string|Array<String>} controlsParam Controles de nombre de colección.
-   * @returns {Array<Control> | Array<Plugin>} Matriz de retorno de controles.
+   * @returns {Array<ControlPanel> | Array<Control> | Array<Plugin>} Matriz de retorno de controles.
    * @api
    */
   getControls(controlsParamVar) {
@@ -2942,9 +2942,10 @@ class Map extends Base {
         let control;
         if (isString(controlParam)) {
           control = buildControl(controlParam, this);
-
           // Skip if control is null (like Attributions which is handled separately)
           if (isNullOrEmpty(control)) {
+            // TODO: crear alerta que indique que no se ha creado un control compatible,
+            // se debe indicar al usuario/desarrollador como hacerlo
             return;
           }
         } else if (isObject(controlParam) && controlParam instanceof Control) {
@@ -3081,10 +3082,27 @@ class Map extends Base {
       Exception(getValue('exception').removecontrol_method);
     }
 
-    // gets the contros to remove
+    // gets controls to remove
     let controls = this.getControls(controlsParam);
     controls = [].concat(controls);
-    if (controls.length > 0) this.getImpl().removeControls(controls);
+    if (controls.length > 0) {
+      controls.forEach((control) => {
+        const panel = control.getPanel();
+        // check if this control has panels and remove it if
+        if (panel instanceof ControlPanel) {
+          const panelControls = panel.getControls();
+          if (isArray(panelControls) && panelControls.legth === 1) {
+            this.removePanel(panel);
+          } else {
+            panel.removeControls(control);
+          }
+        }
+      });
+
+      // Finally remove this control from de map and destroy
+      this.getImpl().removeControls(controls);
+    }
+
     return this;
   }
 
@@ -4378,7 +4396,7 @@ class Map extends Base {
    * @returns {Map} Devuelve el estado del mapa.
    */
   removePanel(panel) {
-    if (panel instanceof Panel) {
+    if (panel instanceof Panel || panel instanceof ControlPanel) {
       panel.destroy();
       this.panels = this.panels.filter((panel2) => !panel2.equals(panel));
     }
@@ -4447,7 +4465,7 @@ class Map extends Base {
     container.appendChild(this.leftButtons);
 
     this.centerPanel = document.createElement('center-panel');
-    this.centerPanel.id = 'upPanel';
+    this.centerPanel.id = 'centerPanel';
     this.centerPanel.classList.add('m-api-idee-center-panel');
 
     this.centerPanelTopLeft = document.createElement('center-panel-top-left');
@@ -4542,7 +4560,7 @@ class Map extends Base {
         this.rightButtons.style.right = `${newWidth}px`;
       }
 
-      this.updateUpDownPanelDimensions();
+      this.updateCenterDownPanelDimensions();
     });
   }
 
@@ -4553,7 +4571,7 @@ class Map extends Base {
    * @function
    * @api
    */
-  updateUpPanelDimensions(container = this.getContainer()) {
+  updateCenterPanelDimensions(container = this.getContainer()) {
     const leftButtonsRight = this.leftButtons.getBoundingClientRect().right;
     const rightButtonsLeft = this.rightButtons.getBoundingClientRect().left;
     const upWidth = Math.max(rightButtonsLeft - leftButtonsRight, 0);
@@ -4583,8 +4601,8 @@ class Map extends Base {
    * @function
    * @api
    */
-  updateUpDownPanelDimensions(container = this.getContainer()) {
-    this.updateUpPanelDimensions(container);
+  updateCenterDownPanelDimensions(container = this.getContainer()) {
+    this.updateCenterPanelDimensions(container);
     this.updateDownPanelDimensions(container);
   }
 
@@ -4633,7 +4651,7 @@ class Map extends Base {
 
       const onTransitionEnd = (event) => {
         if (event.propertyName === 'width') {
-          this.updateUpDownPanelDimensions();
+          this.updateCenterDownPanelDimensions();
           panel.removeEventListener('transitionend', onTransitionEnd);
         }
       };
@@ -4661,7 +4679,7 @@ class Map extends Base {
 
       const onTransitionEnd = (event) => {
         if (event.propertyName === 'width') {
-          this.updateUpDownPanelDimensions();
+          this.updateCenterDownPanelDimensions();
           panel.removeEventListener('transitionend', onTransitionEnd);
         }
       };

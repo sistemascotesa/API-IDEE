@@ -8,6 +8,8 @@
     --control-font-style: normal;
     --control-font-weight: 400;
     --control-font-stretch: 100%;
+    --panel-left-width: 64px;
+    --panel-right-width: 64px;
 }
 
 .m-api-idee-container {
@@ -51,20 +53,93 @@
 
 .m-api-idee-center-panel {
     pointer-events: none;
-    /* para que no interfiera con controles */
     position: absolute;
-    width: calc(100% - 128px);
+    width: calc(100% - (var(--panel-left-width) + var(--panel-right-width)));
     height: calc(100% - 72px - 1rem) !important;
     top: 0;
     padding: .5em 0;
-    left: 64px;
+    left: var(--panel-left-width);
     height: max-content;
 
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     gap: .5em;
+    transition: all 0.3s ease;
 }
+
+/*** CONTENEDORES LATERALES DEL MAPA DE FACHADA ***/
+.m-api-idee-left-buttons,
+.m-api-idee-right-buttons {
+    position: absolute;
+    min-width: 46px;
+    width: auto;
+    height: calc(100% - 72px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: .5em;
+    gap: .5em;
+    flex-wrap: wrap;
+}
+
+/*** CONTENEDOR DERECHO ***/
+.m-api-idee-right-buttons {
+    right: 0;
+    align-items: flex-end !important;
+    pointer-events: none;
+}
+
+.m-api-idee-right-buttons > * {
+    pointer-events: auto;
+}
+
+.m-api-idee-right-buttons .m-panel.opened {
+    flex-direction: row;
+    justify-content: flex-end;
+    position: relative;
+}
+
+.m-api-idee-right-buttons .m-panel.opened > button.m-panel-btn { 
+    position: absolute;
+    right: 0;
+    left: auto;
+    float: none;
+}
+
+.m-api-idee-right-buttons .m-panel {
+    flex-direction: row-reverse !important;
+}
+
+/*** CONTENEDOR IZQUIERDO ***/
+.m-api-idee-left-buttons {
+    left: 0;
+    align-items: flex-start !important;
+    pointer-events: none;
+}
+
+.m-api-idee-left-buttons > * {
+    pointer-events: auto;
+}
+
+.m-api-idee-left-buttons .m-panel.opened {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    position: relative;
+}
+
+.m-api-idee-left-buttons .m-panel.opened > button.m-panel-btn {
+    float: none;
+}
+
+/* .m-api-idee-container:has(.m-api-idee-left-buttons .opened:not(.no-collapsible)) {
+    --panel-left-width: 210px;
+}
+
+.m-api-idee-container:has(.m-api-idee-right-buttons .opened:not(.no-collapsible)) {
+    --panel-right-width: 210px;
+} */
 
 .m-api-idee-center-panel-top-left {
     grid-column: 1;
@@ -454,6 +529,7 @@ div.m-control button[class*=" g-cartografia-"] {
     -webkit-transition: opacity 0.25s ease 0s;
     transition: opacity 0.25s ease 0s;
     margin: 0;
+    opacity: 1;
 }
 
 .ol-overviewmap>button {
@@ -462,12 +538,15 @@ div.m-control button[class*=" g-cartografia-"] {
     transition: opacity 0.25s ease 0s;
 }
 
-div.m-control.activated button[class^="g-cartografia-"],
-div.m-control button[class^="g-cartografia-"]:hover,
-div.m-control button[class*=" g-cartografia-"]:hover,
-.m-panel>button.m-panel-btn:hover,
 .ol-overviewmap>button:hover {
     opacity: 1 !important;
+}
+
+div.m-control.activated button[class^="g-cartografia-"],
+div.m-control button[class^="g-cartografia-"]:hover,
+div.m-control button[class*=" g-cartografia-"]:hover {
+    opacity: 1 !important;
+    background-color: var(--idee-color-links);
 }
 
 div.m-control button[class^="g-cartografia-"]:focus,
@@ -661,6 +740,14 @@ div.m-control button[class^=g-cartografia-],
     padding: 0;
 }
 
+div.m-control.active button[class*="g-cartografia-"] {
+    background-color: var(--idee-color-primary-dark) !important;
+}
+
+div.m-control.active button[class*="g-cartografia-"]:hover {
+    background-color: var(--idee-color-links) !important;
+}
+
 .m-control.m-location-container>button:hover,
 .m-geosearch.collapsed>button.m-panel-btn:hover,
 .m-searchstreet.collapsed>button.m-panel-btn:hover,
@@ -684,12 +771,6 @@ div.m-control button[class^=g-cartografia-]:hover,
 .m-scale-container>.m-unit:before:hover,
 .m-scale-container {
     background-color: var(--idee-color-links) !important;
-}
-
-.m-left .m-panel.opened div.m-control button[class^=g-cartografia-] {
-    color: #364b5f !important;
-    background-color: white !important;
-    opacity: 1;
 }
 
 /* secondary color */
@@ -734,20 +815,12 @@ div.m-control button[class^=g-cartografia-]:hover,
     min-width: 250px;
 }
 
-div.m-control button[class^="g-cartografia-"] {
-    opacity: 1;
-}
-
 .ol-overviewmap:not(.ol-collapsed) button {
     background-color: #71A7D3 !important;
 }
 
 .m-control.m-getfeatureinfo-container.activated>button#m-getfeatureinfo-button {
     color: #71A7D3 !important;
-}
-
-.m-control.m-getfeatureinfo-container:not(.activated)>button#m-getfeatureinfo-button {
-    color: #888888 !important;
 }
 
 .m-panel.m-tools {

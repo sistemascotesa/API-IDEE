@@ -21,10 +21,20 @@
 }
 
 /****************************
+    CUSTOM THEME COLORS
+****************************/
+
+/*** LIGHT BLUE from Navbar: #71A7D3 ***/
+/*** DARK BLUE from Header: #364b5f ***/
+/*** BACKGROUND COLOR : --idee-color-primary ***/
+/*** BACKGROUND COLOR DARK : --idee-color-links ***/
+/*** BACKGROUND COLOR ACTIVE : --idee-color-primary-dark ***/
+
+/****************************
      SPECIFIC PANELS
 ****************************/
-.m-panel {
-    z-index: 999;
+.m-control-panel {
+    z-index: 800;
     position: relative;
     background: #fff;
     box-sizing: border-box;
@@ -36,19 +46,20 @@
     align-items: self-start !important;
 }
 
-div.m-panel>button {
+div.m-control-panel-btn {
+    z-index: 801;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
 }
 
 /*
-.m-panel.m-geosearch.opened {
+.m-control-panel.m-geosearch.opened {
    border-radius: 4px;
    border-top-right-radius: 0px;
    border-bottom-right-radius: 0px;
 }
 
 @media only screen and (max-width: 768px) {
-   .m-panel.m-geosearch.opened {
+   .m-control-panel.m-geosearch.opened {
       border-top-right-radius: 4px;
       border-bottom-right-radius: 4px;
    }
@@ -56,110 +67,92 @@ div.m-panel>button {
 */
 
 /* NO COLLAPSIBLE */
-.m-panel.no-collapsible {
+.m-control-panel.no-collapsible {
     border-radius: 20px;
 }
 
 /* BUTTON */
-.m-panel>button.m-panel-btn {
-    color: #fff;
+.m-control-panel>button.m-control-panel-btn {
+    color: white;
+    background-color: var(--idee-color-primary);
+    border: 2px solid var(--button-border-color);
+    border-radius: 50%;
+}
+
+.m-control-panel>button.m-control-panel-btn:hover {
+    color: white;
+    background-color: var(--idee-color-links);
+}
+
+.m-control-panel>button.m-control-panel-btn.collapsed {
+    background-color: var(--idee-color-primary);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
 }
 
-.m-panel>button.m-panel-btn,
-.m-panel.no-collapsible>div.m-panel-controls>div.m-control>button {
-    -webkit-transition: opacity 0.25s ease 0s, color 0.25s ease 0s;
-    transition: opacity 0.25s ease 0s, color 0.25s ease 0s;
-    padding: 0px;
-    font-size: 19px;
-    background: none;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    box-sizing: border-box;
-    font-family: 'g-cartografia' !important;
-    speak: none;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-    /* Better Font Rendering =========== */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-}
-
-.m-panel.opened>button.m-panel-btn {
-    font-size: 15px;
-}
-
-.m-panel>button.m-panel-btn {
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-    float: right;
-}
-
-.m-panel.collapsed>button.m-panel-btn {
-    position: inherit;
-    right: 0;
-    box-shadow: none;
-}
-
-.m-panel>button.m-panel-btn {
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    float: left;
-}
-
-.m-panel.m-tools>button.m-panel-btn {
-    background-color: #337ceb;
-}
-
-.m-panel.m-edition>button.m-panel-btn {
-    background-color: #67af13;
-}
-
-.m-panel.m-tools.collapsed>button.m-panel-btn {
-    color: #337ceb;
-}
-
-.m-panel.m-edition.collapsed>button.m-panel-btn {
-    color: #67af13;
-}
-
-.m-panel.collapsed>button.m-panel-btn {
-    border-radius: 20px;
-    background-color: white !important;
-    border: 2px solid white;
-}
-
-.m-panel>button.m-panel-btn:focus {
+.m-control-panel>button.m-control-panel-btn:focus {
     outline: none;
 }
 
-.m-panel.no-collapsible>button.m-panel-btn {
+.m-control-panel.no-collapsible>button.m-control-panel-btn {
     display: none;
 }
 
-.m-areas>div.m-area.m-left>div.m-panel,
-.m-areas>div.m-area.m-left>div.m-panel>div.m-panel-controls {
-    -webkit-flex-direction: row-reverse;
-    flex-direction: row-reverse;
-    align-items: flex-end;
+.m-control-panel>button.m-control-panel-btn,
+.m-control-panel.no-collapsible>div.m-controls-panel>div.m-control>button {
+    -webkit-transition: opacity 0.25s ease 0s, color 0.25s ease 0s;
+    transition: opacity 0.25s ease 0s, color 0.25s ease 0s;
+    padding: 0px;
+    cursor: pointer;
+    height: 40px;
+    aspect-ratio: 1;
+    box-sizing: border-box;
+    line-height: 1;
+    text-align: center;
+}
+
+.m-control-panel.collapsed>button.m-control-panel-btn {
+    position: inherit;
+}
+
+.m-control-panel.opened>button.m-control-panel-btn {
+    right: 0;
+    border: 0;
+    border-radius: 0 4px 0 0;
+    z-index: 999;
+}
+
+.m-control-panel.opened>button.m-control-panel-btn:hover {
+    color: white;
+    background-color: rgb(221, 21, 37);
+}
+
+.m-control-panel.m-tools>button.m-control-panel-btn {
+    background-color: var(--idee-color-primary-dark);
+}
+
+.m-control-panel.m-edition>button.m-control-panel-btn {
+    background-color: #67af13;
+}
+
+.m-control-panel.m-tools.collapsed>button.m-control-panel-btn {
+    color: var(--idee-color-primary-dark);
+}
+
+.m-control-panel.m-edition.collapsed>button.m-control-panel-btn {
+    color: #67af13;
 }
 
 /* LEFT AND RIGHT */
-.m-panel.m-tools {
+.m-control-panel.m-tools {
     order: -90;
 }
 
-.m-panel.m-edition {
+.m-control-panel.m-edition {
     order: -80;
 }
 
 /* SPECIFIC CONTROLS */
-.m-panel.m-panzoombar {
+.m-control-panel.m-panzoombar {
     order: -69;
     margin-top: 8px;
     border-radius: 20px;
@@ -168,42 +161,42 @@ div.m-panel>button {
 }
 
 @media only screen and (max-width: 768px) {
-    .m-panel.m-panzoombar {
+    .m-control-panel.m-panzoombar {
         display: none;
     }
 }
 
-.m-panel.m-panzoom {
+.m-control-panel.m-panzoom {
     order: -70;
     width: 30px;
     height: 60px;
     border-radius: 4px;
 }
 
-.m-panel.m-location>div.m-panel-controls>div.m-control.activated>button {
+.m-control-panel.m-location>div.m-controls-panel>div.m-control.activated>button {
     color: var(--idee-color-links);
 }
 
-.m-panel.m-mouse {
+.m-control-panel.m-mouse {
     border-radius: 4px;
     padding: 5px;
 }
 
-.m-panel.m-mouse>div.m-panel-controls {
+.m-control-panel.m-mouse>div.m-controls-panel {
     width: auto;
 }
 
-.m-panel.m-mouse>div.m-panel-controls:before {
+.m-control-panel.m-mouse>div.m-controls-panel:before {
     font-size: 15px;
     background: none;
 }
 
-.m-panel.m-overviewmap {
+.m-control-panel.m-overviewmap {
     /*   border-radius: 4px*/
     box-shadow: none;
 }
 
-.m-panel.m-overviewmap.collapsed {
+.m-control-panel.m-overviewmap.collapsed {
     /*   height: 40px;*/
 }
 
@@ -211,7 +204,7 @@ div.m-panel>button {
      PANELS CONTAINER
 ****************************/
 
-.m-panel>div.m-panel-controls {
+.m-control-panel>div.m-controls-panel {
     display: flex;
 }
 
@@ -219,7 +212,7 @@ div.m-panel>button {
      FIREFOX HACKS
 ****************************/
 /* @-moz-document url-prefix() {
-    .m-panel>div.m-panel-controls {
+    .m-control-panel>div.m-controls-panel {
         display: inline-flex;
     }
 } */
@@ -229,19 +222,19 @@ div.m-panel>button {
 ****************************/
 @media all and (-ms-high-contrast: none),
 (-ms-high-contrast: active) {
-    .m-panel.collapsed {
+    .m-control-panel.collapsed {
         height: auto !important;
     }
 
-    .m-panel.m-layerswitcher.collapsed {
+    .m-control-panel.m-layerswitcher.collapsed {
         width: 40px !important;
     }
 
-    .m-panel.m-layerswitcher>div.m-panel-controls {
+    .m-control-panel.m-layerswitcher>div.m-controls-panel {
         width: 100% !important;
     }
 
-    .m-panel.m-panzoom {
+    .m-control-panel.m-panzoom {
         height: auto !important;
     }
 
@@ -257,37 +250,21 @@ div.m-panel>button {
 /****************************
  SAFARI HACKS
 ****************************/
-@supports (overflow:-webkit-marquee) and (justify-content:inherit) {
-
-    /*
-		div.m-panel.m-panzoombar {
-		   margin-top: 75px;
-		}
-
-	div.m-panel.m-panzoom {
-		   margin-top: 55px;
-		}
-	*/
-    .m-areas>div.m-area.m-top {
-        top: 0;
-        /*height: auto;
-	   max-height: 1000px;*/
-    }
-}
+@supports (overflow:-webkit-marquee) and (justify-content:inherit) {}
 
 /****************************
      VISIBILITY
 ****************************/
-.m-panel.m-map-info,
-.m-panel.m-map-info>div.m-panel-controls {
+.m-control-panel.m-map-info,
+.m-control-panel.m-map-info>div.m-controls-panel {
     visibility: hidden;
 }
 
-.m-panel {
+.m-control-panel {
     visibility: visible;
 }
 
-.m-panel.m-map-info>div.m-panel-controls>div {
+.m-control-panel.m-map-info>div.m-controls-panel>div {
     visibility: visible !important;
 }
 
@@ -295,25 +272,25 @@ div.m-panel>button {
      ANIMATIONS
 ****************************/
 /*
-.m-panel {
+.m-control-panel {
     -webkit-transition: border-radius .5s ease 0s;
     transition: border-radius .5s ease 0s;
 } */
 
-.m-panel.collapsed {
+.m-control-panel.collapsed {
     border-radius: 20px;
 }
 
-.m-panel>div.m-panel-controls {
+.m-control-panel>div.m-controls-panel {
     opacity: 1;
-    /*background-color: white;*/
+    /* background-color: white; */
     border-radius: 10px;
     /*max-width: 50vw;*/
     -webkit-transition: max-width 1s ease 0s, opacity .75s ease .1s;
     transition: max-width 1s ease 0s, opacity .75s ease .1s;
 }
 
-.m-panel.collapsed>div.m-panel-controls {
+.m-control-panel.collapsed>div.m-controls-panel {
     display: none;
     opacity: 0;
     max-width: 0px;
@@ -324,58 +301,50 @@ div.m-panel>button {
 /****************************
      CONTROLS
 ****************************/
-.m-panel>div.m-panel-controls>div,
-.m-panel.m-panzoom.opened,
-.m-panel.m-scaleline.opened {
-    background-color: transparent !important;
-    border-radius: 0px !important;
-}
-.m-panel.m-location.opened {
-    background-color: transparent !important;
-}
 
-.m-panel>div.m-panel-controls>div {
+.m-control-panel>div.m-controls-panel>div {
     position: inherit !important;
     overflow: hidden;
     padding: 0px;
     display: table;
 }
+
 /****************************
      CONTROLS WITHOUTH SHADOW
 ****************************/
-.m-panel.m-scaleline.opened {
+.m-control-panel.m-scaleline.opened {
     box-shadow: none !important;
 }
 
-.m-panel>div.m-panel-controls>div.m-control.m-container.m-background {
+.m-control-panel>div.m-controls-panel>div.m-control.m-container.m-background {
     display: flex !important;
     flex-wrap: wrap;
     gap: 10px;
 }
 
-.m-panel.m-tools>div.m-panel-controls>div.m-control.activated>button {
+.m-control-panel.m-tools>div.m-controls-panel>div.m-control.activated>button {
     color: var(--idee-color-links);
 }
 
-.m-panel.m-edition>div.m-panel-controls>div.m-control.activated>button {
+.m-control-panel.m-edition>div.m-controls-panel>div.m-control.activated>button {
     color: #67af13
 }
 
 @media only screen and (min-width: 769px) {
 
-    .m-geosearch.collapsed .m-panel-controls,
-    .m-searchstreet.collapsed .m-panel-controls,
-    .m-searchstreetgeosearch.collapsed .m-panel-controls {
+    .m-geosearch.collapsed .m-controls-panel,
+    .m-searchstreet.collapsed .m-controls-panel,
+    .m-searchstreetgeosearch.collapsed .m-controls-panel {
         display: none !important;
     }
 }
 
-.m-tools.collapsed .m-panel-controls,
-.m-edition.collapsed .m-panel-controls {
+.m-tools.collapsed .m-controls-panel,
+.m-edition.collapsed .m-controls-panel {
     display: none !important;
 }
 
-.m-map-info>div.m-panel-controls {
+.m-map-info>div.m-controls-panel {
     flex-direction: row-reverse;
     align-items: flex-end;
 }
@@ -391,29 +360,28 @@ div.m-panel>button {
 /*  Localizacion  */
 .m-location {
     order: 1;
-    z-index: 97;
 }
 
 /*  Info mapa  */
 
-.m-panel.m-map-info>div.m-panel-controls>div.m-control.m-wmcselector-container {
+.m-control-panel.m-map-info>div.m-controls-panel>div.m-control.m-wmcselector-container {
     order: 2;
 }
 
-.m-panel.m-map-info.m-with-mouse>div.m-panel-controls>div.m-control.m-wmcselector-container,
-.m-panel.m-map-info.m-with-scale>div.m-panel-controls>div.m-control.m-wmcselector-container {
+.m-control-panel.m-map-info.m-with-mouse>div.m-controls-panel>div.m-control.m-wmcselector-container,
+.m-control-panel.m-map-info.m-with-scale>div.m-controls-panel>div.m-control.m-wmcselector-container {
     border-top-left-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
 }
 
 @media only screen and (max-width: 768px) {
-    .m-panel.m-map-info.m-with-mouse:not(.m-with-scale)>div.m-panel-controls>div.m-control.m-wmcselector-container {
+    .m-control-panel.m-map-info.m-with-mouse:not(.m-with-scale)>div.m-controls-panel>div.m-control.m-wmcselector-container {
         border-top-left-radius: 20px !important;
         border-bottom-left-radius: 20px !important;
     }
 }
 
-.m-panel>div.m-panel-controls .m-mouse-position {
+.m-control-panel>div.m-controls-panel .m-mouse-position {
     background-color: white !important;
     padding: 6px 12px 3px 12px !important;
     font-family: 'Muli', 'sans-serif' !important;
@@ -441,19 +409,19 @@ div.m-panel>button {
     margin-top: 3px;
 }
 
-.m-panel.m-map-info.m-with-mouse>div.m-panel-controls>div.m-control.m-scale-container {
+.m-control-panel.m-map-info.m-with-mouse>div.m-controls-panel>div.m-control.m-scale-container {
     border-top-left-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
 }
 
 @media only screen and (max-width: 768px) {
-    .m-panel.m-map-info.m-with-mouse>div.m-panel-controls>div.m-control.m-scale-container {
+    .m-control-panel.m-map-info.m-with-mouse>div.m-controls-panel>div.m-control.m-scale-container {
         border-top-left-radius: 20px !important;
         border-bottom-left-radius: 20px !important;
     }
 }
 
-.m-panel.m-map-info.m-with-wmcselector>div.m-panel-controls>div.m-control.m-scale-container {
+.m-control-panel.m-map-info.m-with-wmcselector>div.m-controls-panel>div.m-control.m-scale-container {
     border-top-right-radius: 0px !important;
     border-bottom-right-radius: 0px !important;
 }
@@ -470,11 +438,33 @@ div.m-panel>button {
     width: 100%;
 }
 
-button.g-cartografia-flecha-derecha,
-button.g-cartografia-flecha-izquierda {
-    border: none;
-}
-
 .focusStyle {
     border: 3px solid black !important;
+}
+
+/* ANIMACIÓN SUAVE DEL BOTÓN Y DEL PANEL */
+
+/* Aseguramos que el botón siempre es absolute y que puede animarse */
+.m-control-panel>button.m-control-panel-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: 0.5s ease;
+}
+
+/* El panel se ocultará inicialmente reduciendo su ancho */
+.m-control-panel>.m-controls-panel {
+    max-width: max-content;
+    transition: right 0.5s ease, opacity 0.45s ease;
+}
+
+/* ESTADO ABIERTO */
+.m-control-panel.opened>button.m-control-panel-btn {
+    transform: translateX(100% - 2.5rem);
+    border-radius: 0 4px 0 0;
+}
+
+.m-control-panel.opened>.m-controls-panel {
+    opacity: 1;
+    display: flex;
 }

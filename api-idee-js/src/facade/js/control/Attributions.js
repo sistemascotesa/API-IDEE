@@ -3,7 +3,6 @@
  */
 import 'assets/css/controls/attributions';
 import attributionsTemplate from 'templates/attributions';
-import attributionsPanelTemplate from 'templates/attributions_panel';
 import myhelp from 'templates/attributionshelp';
 import AttributionsImpl from 'impl/control/Attributions';
 import ControlBase from './Control';
@@ -16,7 +15,6 @@ import GeoJSON from '../layer/GeoJSON';
 import KML from '../layer/KML';
 import { LAYER_VISIBILITY_CHANGE, ADDED_LAYER } from '../event/eventtype';
 import Exception from '../exception/exception';
-import ControlPanel from '../../../impl/common/ControlPanel';
 import * as Position from '../ui/position';
 
 /**
@@ -54,6 +52,7 @@ class Attributions extends ControlBase {
    * @param {Number} scale Define cuando cambiara la atribución.
    * @param {String} defaultAttribution Atribución por defecto.
    * @param {String} defaultURL URL por defecto.
+   * @param {Number} order Accesibilidad, z-index.
    * @api
    */
   constructor(options = {}) {
@@ -64,8 +63,11 @@ class Attributions extends ControlBase {
 
     const impl = new AttributionsImpl();
     super(Attributions.NAME, impl, options);
+    // super(Attributions.NAME);
+    // const impl = new AttributionsImpl();
+    // this.setImpl(impl);
 
-    this.position = options.position ?? Position.LEFT;
+    this.position = options.position || Position.LEFT;
     this.closePanel = options.closePanel;
     this.urlAttribute = options.urlAttribute || 'Gobierno de España';
     this.options = options;
@@ -82,38 +84,18 @@ class Attributions extends ControlBase {
     this.tooltip_ = options.tooltip || getValue('attributionsControl').tooltip;
     this.collectionsAttributions_ = options.collectionsAttributions || [];
 
-    // Compilar la plantilla completa
-    const panelTemplateHtml = compileTemplate(attributionsPanelTemplate, {
-      vars: {
-        collapsedClass: (options.closePanel !== false) ? 'collapsed' : 'opened',
-        tooltip: options.tooltip || getValue('attributionsControl').tooltip,
-      },
-    });
-
-    // Contenedor de controles
-    const panelContentElement = panelTemplateHtml.querySelector('.m-panel-controls');
-
-    // Crear el ControlPanel
-    this.controlPanel = new ControlPanel(Attributions.NAME, {
-      // Pasamos las opciones necesarias para que el panel sepa cómo posicionarse y lucir.
-      position: this.position,
-      tooltip: this.tooltip_,
-      className: 'm-attributions', // Añade la clase específica para el estilo
-      collapsible: window.innerWidth < 769, // Lógica del viejo createView
-      collapsed: options.closePanel ?? true, // El estado inicial
-      order: this.order,
-      element: panelTemplateHtml,
-      panelContent: panelContentElement,
-    });
-
-    this.getImpl().controlPanel = this.controlPanel;
-
     this.collectionsAttributions_ = this.collectionsAttributions_.map((attr) => {
       if (typeof attr === 'string') {
         return this.transformString(attr);
       }
       return attr;
     });
+
+    /**
+     * Order: Orden que tendrá con respecto al
+     * resto de plugins y controles por pantalla.
+     */
+    this.order = options.order;
   }
 
   transformString(attrString) {
@@ -136,8 +118,6 @@ class Attributions extends ControlBase {
   createView(map) {
     this.map_ = map;
 
-    this.controlPanel.addTo(map); // Adjunta el elemento al DOM
-
     this.map_.on(ADDED_LAYER, (layers) => {
       layers.forEach((layer) => {
         if (layer.attribution) {
@@ -153,11 +133,19 @@ class Attributions extends ControlBase {
         vars: {
           collapsible: window.innerWidth < 769,
           order: this.order,
+          tooltip: this.tooltip_,
         },
       });
 
       html.querySelector('#close-button').addEventListener('click', () => this.closePanel());
       this.html_ = html;
+
+      setTimeout(() => {
+        const panel = this.getPanel();
+        if (panel && panel.getButtonPanel()) {
+          panel.getButtonPanel().setAttribute('title', this.tooltip_);
+        }
+      }, 0);
 
       this.initMode();
 
@@ -166,9 +154,6 @@ class Attributions extends ControlBase {
       });
 
       this.accessibilityTab(html);
-
-      this.controlPanel.panelContent.appendChild(html);
-
       this.map_.getLayers().forEach((layer) => {
         if (layer.attribution) {
           if (typeof layer.attribution === 'string') {
@@ -180,8 +165,7 @@ class Attributions extends ControlBase {
           this.changeVisibility(layer.id, layer.isVisible());
         }
       });
-      // success(html);
-      success(this.controlPanel.getTemplatePanel());
+      success(html);
     });
   }
 
@@ -480,15 +464,7 @@ class Attributions extends ControlBase {
    * @public
    */
   closePanel() {
-    // this.getPanel().collapse();
-    this.controlPanel.collapse();
-  }
-
-  /**
-  * Este método devuelve el panel.
-  */
-  getPanel() {
-    return this.controlPanel;
+    this.getPanel().collapse();
   }
 
   /**
@@ -554,6 +530,11 @@ class Attributions extends ControlBase {
    */
   onMoveEnd(callback) {
     this.impl_.registerEvent('moveend', this.map_, (e) => callback(e));
+    // if (this.impl_ && typeof this.impl_.registerEvent === 'function') {
+    //   this.impl_.registerEvent('moveend', this.map_, (e) => callback(e));
+    // } else {
+    //   console.log('FALLÓ onMoveEnd');
+    // }
   }
 
   /**
@@ -627,7 +608,8 @@ class Attributions extends ControlBase {
    * @api
    */
   destroy() {
-    this.getImpl().destroy();
+    super.destroy();
+    if (this.map_) this.map_.un(ADDED_LAYER);
   }
 
   /**

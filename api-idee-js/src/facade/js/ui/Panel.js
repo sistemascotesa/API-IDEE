@@ -184,13 +184,6 @@ class Panel extends MObject {
 
     /**
      * @private
-     * @type {HTMLElement}
-     * @expose
-     */
-    // this._controlsContainer = null;
-
-    /**
-     * @private
      * @type {String}
      * @expose
      */
