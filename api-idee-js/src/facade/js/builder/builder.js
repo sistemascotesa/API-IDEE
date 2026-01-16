@@ -115,6 +115,25 @@ export const getPanzoomPanel = (control, map, params = {}, defaultOptions = {}) 
 };
 
 /**
+ * Esta función devuelve el panel para el control GetFeatureInfo.
+ *
+ * @public
+ * @function
+ *
+ * @return {Object} Devuelve el panel del control GetFeatureInfo.
+ * @api stable
+ */
+export const getGetFeatureInfo = (control, map, params = {}, defaultOptions = {}) => {
+  return new ControlPanel('getfeatureinfo', {
+    ...defaultOptions,
+    collapsible: false,
+    className: 'm-getfeatureinfo',
+    collapsedButtonClass: 'g-cartografia-featureInfo',
+    tooltip: params.tooltip ?? control.tooltip ?? getValue('getfeatureinfo').tooltip,
+  });
+};
+
+/**
  * Esta función devuelve el panel para el control Attributions.
  *
  * @public
@@ -272,7 +291,7 @@ export const getPanelForControl = (control, map, params = {}) => {
     [ScaleLine.NAME]: () => getScaleLinePanel(control, map, params, defaultOptions),
     [Panzoombar.NAME]: () => getPanzoombarPanel(control, map, params, defaultOptions),
     [Panzoom.NAME]: () => getPanzoomPanel(control, map, params, defaultOptions),
-    [GetFeatureInfo.NAME]: () => null, // GetFeatureInfo doesn't use panel
+    [GetFeatureInfo.NAME]: () => null,
     [Location.NAME]: () => getLocationPanel(control, map, params, defaultOptions),
     [Attributions.NAME]: () => getAttributionsPanel(control, map, params, defaultOptions),
     [Rotate.NAME]: () => getRotatePanel(control, map, params, defaultOptions),
@@ -315,7 +334,17 @@ export const buildControl = (controlParam, map) => {
       [Panzoombar.NAME]: () => new Panzoombar(),
       [Panzoom.NAME]: () => new Panzoom(),
       [Location.NAME]: () => new Location(),
-      [GetFeatureInfo.NAME]: () => new GetFeatureInfo(true),
+      // [GetFeatureInfo.NAME]: () => new GetFeatureInfo(true),
+      [GetFeatureInfo.NAME]: () => {
+        let activated = true;
+        // Si el usuario define false...
+        if (normalizedControlParams.includes('false')) {
+          activated = false;
+        }
+        return new GetFeatureInfo({
+          activated,
+        });
+      },
       [Attributions.NAME]: () => new Attributions({
         map,
         scale: undefined,

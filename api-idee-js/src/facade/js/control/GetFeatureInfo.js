@@ -4,12 +4,14 @@
 import 'assets/css/controls/getfeatureinfo';
 import GetFeatureInfoImpl from 'impl/control/GetFeatureInfo';
 import myhelp from 'templates/getfeatureinfohelp';
+import getfeatureinfoTemplate from 'templates/getfeatureinfo';
 import ControlBase from './Control';
 import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
 import { compileSync as compileTemplate } from '../util/Template';
 import * as Position from '../ui/position';
+import * as EventType from '../event/eventtype';
 
 /**
  * @classdesc
@@ -24,20 +26,20 @@ class GetFeatureInfo extends ControlBase {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Boolean} activated Define si esta activo.
    * @param {object} options Opciones del control.
+   * - activated. Booleano que activa o no el control.
    * - featureCount. Número de objetos geográficos, por defecto 10.
    * - buffer. Configuración del "buffer", por defecto 5.
    * @api
    */
-  constructor(activated, options = {}) {
+  constructor(options = {}) {
     if (isUndefined(GetFeatureInfoImpl) || (isObject(GetFeatureInfoImpl)
       && isNullOrEmpty(Object.keys(GetFeatureInfoImpl)))) {
       Exception(getValue('exception').getfeatureinfo_method);
     }
 
     // implementation of this control
-    const impl = new GetFeatureInfoImpl(activated, options);
+    const impl = new GetFeatureInfoImpl(options);
     // calls the super constructor
     super(GetFeatureInfo.NAME, impl, options);
 
@@ -54,12 +56,35 @@ class GetFeatureInfo extends ControlBase {
    * @api
    */
   createView(map) {
-    return '';
+    this.element = compileTemplate(getfeatureinfoTemplate, {
+      vars: {
+        title: getValue('getfeatureinfo').title,
+        order: this.order,
+      },
+    });
+
+    return this.element;
   }
 
   /**
-   * Este método devuelve si el botón de activación
-   * del control esta activado.
+   * Este método añade el control al mapa.
+   *
+   * @public
+   * @function
+   * @param {IDEE.Map} map Mapa.
+   * @api
+   * @export
+   */
+  addTo(map) {
+    this.once(EventType.ADDED_TO_MAP, () => {
+      if (this.getImpl().activated) this.activate();
+    });
+
+    super.addTo(map);
+  }
+
+  /**
+   * Este método devuelve el botón de activación
    *
    * @public
    * @function
@@ -68,8 +93,12 @@ class GetFeatureInfo extends ControlBase {
    * @api
    * @export
    */
-  getActivationButton(element) {
-    return null;
+  getActivationButton(element = this.element) {
+    if (!element) {
+      return null;
+    }
+
+    return element.querySelector('#m-getfeatureinfo-button');
   }
 
   /**
