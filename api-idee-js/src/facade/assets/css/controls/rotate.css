@@ -6,6 +6,10 @@
   background-color: var(--idee-color-links) !important;
 }
 
+.m-control-panel.m-rotate.opened.no-collapsible>div.m-controls-panel {
+  border-radius: 50%;
+}
+
 div.m-control.m-rotate-container {
   overflow: hidden;
 }

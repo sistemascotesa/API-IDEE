@@ -15,7 +15,7 @@ import { compileSync as compileTemplate } from '../util/Template';
 
 /**
  * @classdesc
- * Esta clase se encarga de general el panel de los plugins.
+ * Esta clase se encarga de general el panel de los controles.
  * @property {String} name Nombre del panel.
  * @property {String} position Posición del panel.
  *
@@ -233,7 +233,7 @@ class ControlPanel extends MObject {
 
     // Accessibility
     button.setAttribute('role', 'button');
-    button.setAttribute('aria-label', `Plugin ${this.name}`);
+    button.setAttribute('aria-label', `Control ${this.name}`);
 
     if (this._order) {
       this._element.style.setProperty('order', this._order, 'important');
