@@ -362,101 +362,57 @@ params.forEach((param) => {
    * @type {Number}
    */
   IDEE.config('ZOOM_LOCATION', '${zoomLocation}');
-  window.M = IDEE;
 
   IDEE.config.token = {
     "cnig": {
       "color": {
-        "primary": {
-          "value": "#71a7d3",
-          "type": "color",
-          "description": "Azul Primario"
-        },
-        "links": {
-          "value": "#1470db",
-          "type": "color",
-          "description": "Links"
-        },
-        "primary_dark": {
-          "value": "#1d5a9e",
-          "type": "color",
-          "description": "Azul Oscuro"
-        },
-        "success": {
-          "value": "#49d793",
-          "type": "color",
-          "description": "Éxito"
-        },
-        "danger": {
-          "value": "#e65244",
-          "type": "color",
-          "description": "Peligro"
-        },
-        "warning": {
-          "value": "#fc8802",
-          "type": "color",
-          "description": "Atención"
-        }
+        "primary": "#71a7d3",
+        "links": "#1470db",
+        "primary_dark": "#1d5a9e",
+        "success": "#49d793",
+        "danger": "#e65244",
+        "warning": "#fc8802",
+        "neutral_05": "#f8f9fa",
+        "neutral_10": "#f1f3f5",
+        "neutral_20": "#e9ecef",
+        "neutral_30": "#dee2e6",
+        "neutral_40": "#ced4da",
+        "neutral_50": "#adb5bd",
+        "neutral_60": "#868e96",
+        "neutral_70": "#495057",
+        "neutral_80": "#343a40",
+        "neutral_90": "#212529",
+        "white": "#ffffff",
+        "black": "#000000",
       },
       "typography": {
-        "fontFamily": {
-          "Base": {
-            "value": "'Roboto', sans-serif",
-            "type": "fontFamily",
-            "description": "Fuente principal"
-          },
-          "fontSize": {
-            "caption": {
-              "value": "12px",
-              "type": "fontSize",
-              "description": "Tamaño extra pequeño"
-            },
-            "body_s": {
-              "value": "14px",
-              "type": "fontSize",
-              "description": "Tamaño pequeño"
-            },
-            "body_m": {
-              "value": "16px",
-              "type": "fontSize",
-              "description": "Tamaño normal"
-            },
-            "body_l": {
-              "value": "18px",
-              "type": "fontSize",
-              "description": "Tamaño grande"
-            },
-            "heading_m": {
-              "value": "24px",
-              "type": "fontSize",
-              "description": "Tamaño extra grande"
-            },
-            "heading_l": {
-              "value": "32px",
-              "type": "fontSize",
-              "description": "Tamaño extra súper grande"
-            }
-          },
-          "fontWeight": {
-            "regular": {
-              "value": 400,
-              "type": "fontWeight",
-              "description": "Peso regular"
-            },
-            "bold": {
-              "value": 700,
-              "type": "fontWeight",
-              "description": "Peso negrita"
-            }
-          },
-          "lineHeight": {
-          },
-          "letterSpacing": {
-          }
-        }
-      }
+        "fontFamily": "'Roboto', sans-serif",
+        "fontSize": {
+          "caption": "12px",
+          "body_s": "14px",
+          "body_m": "16px",
+          "body_l": "18px",
+          "heading_m": "24px",
+          "heading_l": "32px",
+        },
+        "fontWeight": {
+          "regular": 400,
+          "bold": 700,
+        },
+        "lineHeight": {
+        },
+        "letterSpacing": {
+        },
+      },
+      "shape": {
+        "border": "",
+        "borderRadius": "",
+        "boxShadow": "",
+      },
     },
   }
 
   IDEE.config.activeTOKEN = 'cnig';
+
+  window.M = IDEE;
 }(window.IDEE));

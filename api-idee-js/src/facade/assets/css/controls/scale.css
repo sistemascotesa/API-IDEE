@@ -32,6 +32,11 @@
     margin-right: 2px;
 }
 
+.m-control-panel.m-scaleline.opened.no-collapsible>.m-controls-panel {
+    background-color: transparent;
+    box-shadow: none;
+}
+
 .m-control.m-scale-container .m-zoom-level {
     display: flex;
     align-items: center;

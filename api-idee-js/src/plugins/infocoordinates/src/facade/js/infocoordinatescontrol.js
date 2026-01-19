@@ -114,8 +114,6 @@ export default class InfocoordinatesControl extends IDEE.Control {
       this.accessibilityTab(html);
 
       this.map.addLayers(this.layerFeatures);
-      this.panel.on(IDEE.evt.SHOW, this.activate, this);
-      this.panel.on(IDEE.evt.HIDE, this.deactivate, this);
 
       success(html);
       html.querySelector('#m-infocoordinates-buttonRemoveAllPoints').addEventListener('click', this.removeAllPoints.bind(this));

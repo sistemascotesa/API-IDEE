@@ -6,8 +6,18 @@ import MapImpl from 'impl/Map';
 import Base from './Base';
 import { getQuickLayers } from './api-idee';
 import {
-  isUndefined, isNull, isArray, isNullOrEmpty, isFunction, isObject, isString,
-  escapeJSCode, getEnvolvedExtent, getImageMap,
+  isUndefined,
+  isNull,
+  isArray,
+  isNullOrEmpty,
+  isFunction,
+  isObject,
+  isString,
+  escapeJSCode,
+  getEnvolvedExtent,
+  getResolutionFromScale,
+  getImageMap,
+  generateResolutionsFromExtent,
 } from './util/Utils';
 import { addFileToMap } from './util/LoadFiles';
 import { getValue } from './i18n/language';
@@ -89,6 +99,7 @@ class Map extends Base {
    * - zoom: Zoom del mapa.
    * - zoomConstrains: Restricciones de zoom.
    * - rotation: Rotación del mapa.
+   * - ticket: Ticket de autenticación.
    * @param { Mx.parameters.MapOptions } options Opciones personalizadas para la implementación
    * proporcionado por el usuario.
    * - verticalExaggeration: Exageración vertical de la escena. Si se establece a 1 no se aplica
@@ -182,6 +193,11 @@ class Map extends Base {
      * Map: Plugins incorporados al mapa.
      */
     this.plugins = [];
+
+    /**
+     * Map: Ticket de autenticación.
+     */
+    this.ticket_ = null;
 
     /**
      * Map: "Popup".
@@ -467,7 +483,7 @@ class Map extends Base {
    * @param {Object} options Parámetros del control.
    * @api
    */
-  createAttribution(options = {}) {
+  createAttribution(options = {}, control = null) {
     // Comprobar si existe el control
     if (this.getControls().some(({ name }) => name === 'attributions')) {
       return;
@@ -480,7 +496,7 @@ class Map extends Base {
       order,
     } = options;
     try {
-      const atribucionControl = new Attributions({
+      const atribucionControl = !isNullOrEmpty(control) ? control : new Attributions({
         map: this,
         scale,
         collectionsAttributions: collectionsAttributions.map((l) => {
@@ -1203,7 +1219,6 @@ class Map extends Base {
       // gets the layers
       const wmcLayers = this.getWMC(layersParam);
       if (wmcLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [wmcLayers]);
         // removes the layers
         this.getImpl().removeWMC(wmcLayers);
       }
@@ -1311,7 +1326,6 @@ class Map extends Base {
       // gets the layers
       const kmlLayers = this.getKML(layersParam);
       if (kmlLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [kmlLayers]);
         kmlLayers.forEach((layer) => {
           this.featuresHandler_.removeLayer(layer);
         });
@@ -1420,7 +1434,6 @@ class Map extends Base {
       // gets the layers
       const wmsLayers = this.getWMS(layersParam);
       if (wmsLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [wmsLayers]);
         // removes the layers
         this.getImpl().removeWMS(wmsLayers);
       }
@@ -1542,10 +1555,11 @@ class Map extends Base {
   }
 
   /**
-   * Este método agrega las capas de GeoJSON al mapa.
+   * Este método agrega las capas de tipo desconocido al mapa.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
-   * @param {Array<string>|Array<Mx.parameters.Layer>} layersParam Colección u objeto de capa.
+   * @param {Array<string>|Array<Mx.parameters.Layer>} layersParamVar Colección u objeto de capa.
+   * @api
    */
   addUnknowLayers_(layersParamVar) {
     let layersParam = layersParamVar;
@@ -1585,7 +1599,6 @@ class Map extends Base {
       // gets the layers
       const wfsLayers = this.getWFS(layersParam);
       if (wfsLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [wfsLayers]);
         wfsLayers.forEach((layer) => {
           this.featuresHandler_.removeLayer(layer);
         });
@@ -1698,7 +1711,6 @@ class Map extends Base {
       // gets the layers
       const geotiffLayers = this.getGeoTIFF(layersParam);
       if (geotiffLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [geotiffLayers]);
         geotiffLayers.forEach((layer) => {
           this.featuresHandler_.removeLayer(layer);
         });
@@ -1812,7 +1824,6 @@ class Map extends Base {
       // gets the layers
       const mapLibreLayers = this.getMapLibre(layersParam);
       if (mapLibreLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [mapLibreLayers]);
         mapLibreLayers.forEach((layer) => {
           this.featuresHandler_.removeLayer(layer);
         });
@@ -1927,7 +1938,6 @@ class Map extends Base {
       // gets the layers
       const ogcapifLayers = this.getOGCAPIFeatures(layersParam);
       if (ogcapifLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [ogcapifLayers]);
         ogcapifLayers.forEach((layer) => {
           this.featuresHandler_.removeLayer(layer);
         });
@@ -2038,7 +2048,6 @@ class Map extends Base {
       // gets the layers
       const wmtsLayers = this.getWMTS(layersParam);
       if (wmtsLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [wmtsLayers]);
         // removes the layers
         this.getImpl().removeWMTS(wmtsLayers);
       }
@@ -2097,7 +2106,6 @@ class Map extends Base {
       }
       const mvtLayers = this.getMVT(layersParam);
       if (mvtLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [mvtLayers]);
         mvtLayers.forEach((layer) => {
           this.featuresHandler_.removeLayer(layer);
         });
@@ -2229,7 +2237,6 @@ class Map extends Base {
     if (!isNullOrEmpty(layersParam)) {
       const mbtilesLayers = this.getMBTiles(layersParam);
       if (mbtilesLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [mbtilesLayers]);
         this.getImpl().removeMBTiles(mbtilesLayers);
       }
     }
@@ -2316,7 +2323,6 @@ class Map extends Base {
       }
       const mbtilesLayers = this.getMBTilesVector(layersParam);
       if (mbtilesLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [mbtilesLayers]);
         this.getImpl().removeMBTilesVector(mbtilesLayers);
       }
     }
@@ -2409,7 +2415,6 @@ class Map extends Base {
 
       const xyzLayers = this.getXYZs(layersParam);
       if (xyzLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [xyzLayers]);
         this.getImpl().removeXYZ(xyzLayers);
       }
     }
@@ -2502,7 +2507,6 @@ class Map extends Base {
 
       const tmsLayers = this.getTMS(layersParam);
       if (tmsLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [tmsLayers]);
         this.getImpl().removeTMS(tmsLayers);
       }
     }
@@ -2605,7 +2609,6 @@ class Map extends Base {
 
       const tiles3DLayers = this.getTiles3D(layersParam);
       if (tiles3DLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [tiles3DLayers]);
         this.getImpl().removeTiles3D(tiles3DLayers);
       }
     }
@@ -2705,7 +2708,6 @@ class Map extends Base {
 
       const terrainLayers = this.getTerrain(layersParam);
       if (terrainLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [terrainLayers]);
         this.getImpl().removeTerrain(terrainLayers);
       }
     }
@@ -2844,7 +2846,6 @@ class Map extends Base {
         this.geopackages = this.geopackages
           .filter((geopackage) => !geopackage.equals(layer));
       });
-      this.fire(EventType.REMOVED_LAYER, [geopackageLayers]);
     }
     return this;
   }
@@ -2949,6 +2950,7 @@ class Map extends Base {
           }
         } else if (isObject(controlParam) && controlParam instanceof Control) {
           control = controlParam;
+          control.builderParams = control.options;
         }
         const panel = getPanelForControl(control, this, control.builderParams ?? {});
         const isControlWithoutAdding = !this.hasControl(control);
@@ -4876,6 +4878,23 @@ class Map extends Base {
   }
 
   /**
+   * Establece la devolución de llamada cuando se carga la instancia.
+   *
+   * @public
+   * @function
+   * @param {IDEE.evt} eventType Tipo de evento.
+   * @param {Function} listener "Callback".
+   * @param {Object} optThis Opciones de la instancia del mapa.
+   * @api
+   */
+  once(eventType, listener, optThis) {
+    super.once(eventType, listener, optThis);
+    if ((eventType === EventType.COMPLETED) && (this._finishedMap === true)) {
+      this.fire(EventType.COMPLETED);
+    }
+  }
+
+  /**
    * Método para añadir las atribuciones de las capas.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    *
@@ -5013,6 +5032,32 @@ class Map extends Base {
   }
 
   /**
+   * Establece los niveles de zoom del mapa aplicando las resoluciones correspondientes.
+   *
+   * @function
+   * @public
+   * @api
+   * @param {Number} zoomLevels Niveles de zoom.
+   */
+  setZoomLevels(zoomLevels) {
+    if (!isUndefined(zoomLevels) && !isNullOrEmpty(zoomLevels)) {
+      this.calculateMaxExtent().then((extent) => {
+        const zoom = this.getZoom();
+        const size = this.getMapImpl().getSize();
+        const units = this.getProjection().units;
+        const resolutions = generateResolutionsFromExtent(extent, size, zoomLevels, units);
+        this.setResolutions(resolutions, true);
+        IDEE.config.ZOOM_LEVELS = zoomLevels;
+        if (zoom < zoomLevels) {
+          this.setZoom(zoom);
+        }
+      }).catch((error) => {
+        throw error;
+      });
+    }
+  }
+
+  /**
    * Este método aplica un color al fondo del mapa
    *
    * @function
@@ -5074,6 +5119,20 @@ class Map extends Base {
       Exception(getValue('exception').no_set_rotation_method);
     }
     this.getImpl().setRotation(rotation * (Math.PI / 180));
+  }
+
+  /**
+   * Este método establece la escala más cercana para esta
+   * instancia del mapa.
+   *
+   * @public
+   * @function
+   * @param {Number} scale Escala.
+   * @api
+   */
+  setToClosestScale(scale) {
+    const resolution = getResolutionFromScale(scale, this.getProjection().units);
+    this.getImpl().setToClosestScale(resolution);
   }
 
   /**

@@ -99,7 +99,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    gap: .5rem;
+    gap: 6px;
     padding-bottom: 1rem;
 }
 
@@ -506,7 +506,7 @@ table#attribute-table>tr>th>button {
     font-size: 14px;
     width: 100%;
     border-bottom: 0;
-    height: 40px;
+    height: 64px;
     line-height: 2.7;
     text-align: center;
     font-weight: 700;
@@ -895,7 +895,7 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 .m-vectorsmanagement-previews>div>button.activated,
 .m-vectorsmanagement-selection-layer>button.activated,
 [class^="vectorsmanagement-icon-"].activated {
-    background-color: var(--idee-color-dark) !important;
+    background-color: var(--idee-color-primary-dark) !important;
 }
 
 .m-vectorsmanagement-previews>button.activated,

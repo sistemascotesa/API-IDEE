@@ -78,14 +78,14 @@ export default class AddLayerControl extends IDEE.Control {
         <input 
           type="text" 
           id="layer-name"
-          style="width: calc(14rem - 8px); margin: 0; border-radius: 2px; border: 1px solid #ced4da"
+          style="width: 98%"
         >
       </div>
       `,
       getValue('title_new_layer'),
     );
 
-    const colorPrimary = '#71a7d3';
+    const colorPrimary = 'var(--idee-color-primary)';
     const dialog = document.querySelector('.m-dialog > div.m-modal > div.m-content');
     dialog.style.minWidth = '15rem';
 

@@ -1,6 +1,7 @@
-.m-control.m-container.m-background {
-    background-color: transparent !important;
-    border-radius: 0 !important;
+.m-control-baselayer.m-control-panel.opened.no-collapsible>div.m-controls-panel {
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
 }
 
 div.m-control.m-container.m-background>button {

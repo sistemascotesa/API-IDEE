@@ -135,21 +135,18 @@ export default class Infocoordinates extends IDEE.Plugin {
 
     map.addPanels(this.panel);
 
-    this.controls.push(new InfocoordinatesControl(
-      this.decimalGEOcoord_,
-      this.decimalUTMcoord_,
-      this.helpUrl_,
-      this.order,
-      this.outputDownloadFormat_,
-    ));
-    // this.controls.push(new InfocoordinatesControl({
-    //   decimalGEOcoord: this.decimalGEOcoord_,
-    //   decimalUTMcoord: this.decimalUTMcoord_,
-    //   helpUrl: this.helpUrl_,
-    //   order: this.order,
-    //   outputDownloadFormat: this.outputDownloadFormat_,
-    // }));
+    const control = new InfocoordinatesControl({
+      decimalGEOcoord: this.decimalGEOcoord_,
+      decimalUTMcoord: this.decimalUTMcoord_,
+      helpUrl: this.helpUrl_,
+      order: this.order,
+      outputDownloadFormat: this.outputDownloadFormat_,
+    });
+    this.controls.push(control);
     this.panel.addControls(this.controls);
+
+    this.panel.on(IDEE.evt.SHOW, control.activate, control);
+    this.panel.on(IDEE.evt.HIDE, control.deactivate, control);
 
     this.button.panel = this.panel;
     this.panel.button = this.button;

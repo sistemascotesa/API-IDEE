@@ -37,6 +37,7 @@
     "jsdoc-plugin-typescript": "2.3.0",
     "mini-css-extract-plugin": "2.7.6",
     "mocha": "10.2.0",
+    "string-replace-loader": "^3.2.0",
     "style-loader": "3.3.3",
     "terser-webpack-plugin": "5.3.9",
     "walk": "2.3.15",

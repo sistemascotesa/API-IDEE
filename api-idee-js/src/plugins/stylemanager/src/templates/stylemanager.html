@@ -1,19 +1,15 @@
-<div class="m-plugin-panel-content m-stylemanager">
-    <ul>
-        <li class="group">
-            <div class="m-stylemanager-buttons-wrap">
-                <select class="" id="m-stylemanager-select">
-                    <option disabled="disabled" selected="selected">{{translations.selectLayer}}</option>
-                    {{#each layers}}
-                        <option name={{this.name}}>{{this.name}}</option>
-                    {{/each}}
-                </select>
-                <button title="{{translations.applyStyle}}" class="m-button-styles" data-apply-style><i class="gi-1x stylemanager-apply"></i></button>
-                <button title="{{translations.clearStyle}}" class="m-button-styles" data-clear-style><i class="gi-1x stylemanager-reset"></i></button>
-                <button title="{{translations.generateSerialized}}" class="m-button-styles" data-serialized-style><i class="gi-1x stylemanager-copy"></i></button>
-            </div>
-        </li>
-    </ul>
+<div id="plugin-panel-content-stylemanager" class="m-plugin-panel-content" aria-label="Plugin stylemanager" role="menuitem">
+    <div class="m-stylemanager-buttons-wrap">
+        <select class="" id="m-stylemanager-select">
+            <option disabled="disabled" selected="selected">{{translations.selectLayer}}</option>
+            {{#each layers}}
+                <option name={{this.name}}>{{this.name}}</option>
+            {{/each}}
+        </select>
+        <button title="{{translations.applyStyle}}" class="m-button-styles" data-apply-style><i class="gi-1x stylemanager-apply"></i></button>
+        <button title="{{translations.clearStyle}}" class="m-button-styles" data-clear-style><i class="gi-1x stylemanager-reset"></i></button>
+        <button title="{{translations.generateSerialized}}" class="m-button-styles" data-serialized-style><i class="gi-1x stylemanager-copy"></i></button>
+    </div>
     <div class="m-stylemanager-container-select">
 
         <div class="m-boxes m-hidden m-boxes-botonera" data-role="botonera">
