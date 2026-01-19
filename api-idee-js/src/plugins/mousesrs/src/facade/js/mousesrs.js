@@ -36,8 +36,11 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super();
-
+    super('mousersrs', {
+      position: options.position || 'down',
+      tooltip: options.tooltip || getValue('tooltip'),
+    });
+    // super();
     /**
      * Facade of the map
      * @private
@@ -109,7 +112,7 @@ export default class MouseSRS extends IDEE.Plugin {
     /**
      * Draggable dialog
      */
-    this.draggableDialog = options.draggableDialog === undefined ? true : options.draggableDialog;
+    this.draggableDialog = options.draggableDialog || false;
 
     /**
      * URL to the help for the icon
@@ -166,6 +169,8 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
+    this.map = map;
+
     this.control_ = new MouseSRSControl(
       this.srs_,
       this.label_,
@@ -180,14 +185,15 @@ export default class MouseSRS extends IDEE.Plugin {
       this.order,
       this.draggableDialog,
       this.epsgFormat,
+      this.options.position || 'down',
     );
     this.controls_.push(this.control_);
-    this.map_ = map;
     this.panel_ = new IDEE.ui.Panel('panelMouseSRS', {
       collapsible: false,
       tooltip: this.tooltip_,
       className: 'm-plugin-mousesrs',
       order: this.order,
+      position: this.position,
     });
     map.addControls(this.controls_);
   }
@@ -200,8 +206,8 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map_.removeControls([this.control_]);
-    this.map_ = null;
+    this.map.removeControls([this.control_]);
+    this.map = null;
     this.control_ = null;
     this.panel_ = null;
   }
@@ -212,9 +218,9 @@ export default class MouseSRS extends IDEE.Plugin {
    * @getter
    * @function
    */
-  get name() {
-    return 'mousesrs';
-  }
+  // get name() {
+  //   return 'mousesrs';
+  // }
 
   /**
    * This function returns the position
@@ -223,9 +229,9 @@ export default class MouseSRS extends IDEE.Plugin {
    * @return {string}
    * @api
    */
-  get position() {
-    return this.position_;
-  }
+  // get position() {
+  //   return this.position_;
+  // }
 
   /**
    * This function returns the label

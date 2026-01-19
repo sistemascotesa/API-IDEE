@@ -30,14 +30,20 @@ export default class MouseSRSControl extends IDEE.Control {
     order = 32766,
     draggableDialog = true,
     epsgFormat = false,
+    position = 'down',
   ) {
-    if (IDEE.utils.isUndefined(MouseSRSImplControl) || (IDEE.utils.isObject(MouseSRSImplControl)
+    if (IDEE.utils.isUndefined(MouseSRSImplControl)
+      || (IDEE.utils.isObject(MouseSRSImplControl)
       && IDEE.utils.isNullOrEmpty(Object.keys(MouseSRSImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
     // eslint-disable-next-line max-len
     const impl = new MouseSRSImplControl(srs, label, precision, geoDD, utmDD, tooltip, activeZ, helpUrl, mode, coveragePrecisions, order, draggableDialog, epsgFormat);
-    super('MouseSRS', impl);
+    super('MouseSRS', impl, {
+      tooltip,
+      position,
+      order,
+    });
     this.tooltip_ = tooltip;
     this.order = order;
   }

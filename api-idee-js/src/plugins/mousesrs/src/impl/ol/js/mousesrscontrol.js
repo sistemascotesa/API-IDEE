@@ -105,6 +105,14 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     this.renderPlugin(map, html);
   }
 
+  /**
+   * Este método es el que busca Map.js para insertar el control en el DOM
+   */
+  getView() {
+    // eslint-disable-next-line no-underscore-dangle
+    return this.html_; // DEvolver el div#div-contenedor
+  }
+
   async renderPlugin(map, html) {
     this.facadeMap_ = map;
     this.mousePositionControl = new ExtendedMouse({
@@ -163,6 +171,10 @@ export default class MouseSRSControl extends IDEE.impl.Control {
       const listElem = document.getElementById('m-mousesrs-srs-selector');
       let isEditable = false;
 
+      listElem.addEventListener('mousedown', (event) => {
+        event.preventDefault();
+      });
+
       input.addEventListener('focus', () => {
         if (!isEditable) {
           listElem.style.display = 'block';
@@ -179,8 +191,7 @@ export default class MouseSRSControl extends IDEE.impl.Control {
                 listElem.style.display = 'none';
                 input.focus();
               } else {
-                input.value = value;
-                this.changeSRS(map, html);
+                this.changeSRS(map, html, value);
               }
             });
           });
@@ -188,12 +199,14 @@ export default class MouseSRSControl extends IDEE.impl.Control {
       });
 
       input.addEventListener('blur', () => {
-        listElem.style.display = 'none';
-        isEditable = false;
-        if (!input.hasAttribute('readonly')) {
-          input.setAttribute('readonly', 'readonly');
-          input.value = this.srs_;
-        }
+        setTimeout(() => {
+          listElem.style.display = 'none';
+          isEditable = false;
+          if (!input.hasAttribute('readonly')) {
+            input.setAttribute('readonly', 'readonly');
+            input.value = this.srs_;
+          }
+        }, 150);
       });
 
       input.addEventListener('keyup', (event) => {
@@ -254,12 +267,19 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     return format;
   }
 
-  changeSRS(map, html) {
-    const select = document.querySelector('#m-mousesrs-epsg-selected');
-    this.srs_ = select.value;
-    this.label_ = select.value;
-    this.facadeMap_.getMapImpl().removeControl(this.mousePositionControl);
-    document.querySelector('div.m-api-idee-container div.m-dialog').remove();
+  changeSRS(map, html, newValue) {
+    const val = newValue || document.querySelector('#m-mousesrs-epsg-selected')?.value;
+    if (!val) return;
+    this.srs_ = val;
+    this.label_ = val;
+
+    if (this.mousePositionControl) {
+      this.facadeMap_.getMapImpl().removeControl(this.mousePositionControl);
+    }
+
+    const dialog = document.querySelector('div.m-api-idee-container div.m-dialog');
+    if (dialog) dialog.remove();
+
     this.renderPlugin(map, html);
   }
 
