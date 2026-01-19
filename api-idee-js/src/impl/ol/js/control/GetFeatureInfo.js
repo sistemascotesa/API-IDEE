@@ -30,14 +30,14 @@ class GetFeatureInfo extends Control {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Boolean} activated Activa o no el control.
    * @param {Object} options Opciones del control.
+   * - activated. Booleano que activa o no el control.
    * - featureCount. Número de objetos geográficos, por defecto 10.
    * - buffer. Configuración del área de influencia, por defecto 5.
    * @extends {IDEE.impl.Control}
    * @api stable
    */
-  constructor(activated, options) {
+  constructor(options) {
     super();
 
     /**
@@ -57,7 +57,7 @@ class GetFeatureInfo extends Control {
      */
     this.buffer = options.buffer || 5;
     this.element = document.createElement('div');
-    this.activated = activated;
+    this.activated = options.activated;
     this.currentFormat = 0;
   }
 
@@ -71,14 +71,33 @@ class GetFeatureInfo extends Control {
    * @api stable
    * @export
    */
-  addTo(map, element) {
-    const olControls = map.getMapImpl().getControls().getArray();
-    const hasControl = olControls.some((control) => control instanceof GetFeatureInfo);
-    if (hasControl === false) {
-      this.facadeMap_ = map;
-      map.getMapImpl().addControl(this);
-      this.addOnClickEvent_();
-    }
+  addTo(map, template) {
+    super.addTo(map, template);
+  }
+
+  /**
+   * Este método activa el control
+   *
+   * @public
+   * @function
+   * @api stable
+   */
+  activate() {
+    this.activated = true;
+    this.addOnClickEvent_();
+  }
+
+  /**
+   * Este método desactiva el control
+   *
+   * @public
+   * @function
+   * @api stable
+   */
+  deactivate() {
+    this.activated = false;
+    this.deleteOnClickEvent_();
+    this.facadeMap_.removePopup();
   }
 
   /**
@@ -170,28 +189,38 @@ class GetFeatureInfo extends Control {
 
     return wmsLayers.map((layer) => {
       const olLayer = layer.getImpl().getLayer();
-      let param;
-      if (layer.isVisible() && layer.isQueryable() && !isNullOrEmpty(olLayer)) {
-        param = {};
-        const getFeatureInfoParams = {
-          INFO_FORMAT: this.userFormats[this.currentFormat],
-          FEATURE_COUNT: this.featureCount,
-        };
-        const regexBuffer = /buffer/i;
-        const source = olLayer.getSource();
-        const coord = this.evt.coordinate;
-        if (!regexBuffer.test(layer.url)) {
-          getFeatureInfoParams.BUFFER = this.buffer;
-        }
+      let param = null;
 
-        let url = source.getFeatureInfoUrl(coord, viewResolution, srs, getFeatureInfoParams);
-        if (isString(IDEE.config.TICKET)) {
-          url = addParameters(url, { ticket: IDEE.config.TICKET });
+      // Verificar que la capa existe y su implementación de OL
+      if (layer.isVisible() && layer.isQueryable() && olLayer && olLayer.getSource()) {
+        // const getFeatureInfoParams = {
+        //   INFO_FORMAT: this.userFormats[this.currentFormat],
+        //   FEATURE_COUNT: this.featureCount,
+        // };
+
+        const source = olLayer.getSource();
+        if (source && typeof source.getFeatureInfoUrl === 'function') {
+          const getFeatureInfoParams = {
+            INFO_FORMAT: this.userFormats[this.currentFormat],
+            FEATURE_COUNT: this.featureCount,
+          };
+
+          const coord = this.evt.coordinate;
+
+          const regexBuffer = /buffer/i;
+          if (!regexBuffer.test(layer.url)) {
+            getFeatureInfoParams.BUFFER = this.buffer;
+          }
+
+          let url = source.getFeatureInfoUrl(coord, viewResolution, srs, getFeatureInfoParams);
+          if (isString(IDEE.config.TICKET)) {
+            url = addParameters(url, { ticket: IDEE.config.TICKET });
+          }
+          param = { layer: layer.legend || layer.name, url };
         }
-        param = { layer: layer.legend || layer.name, url };
       }
       return param;
-    });
+    }).filter((p) => p !== null); // Eliminar resultados nulos
   }
 
   /**
@@ -316,7 +345,7 @@ class GetFeatureInfo extends Control {
         features.forEach((feature) => {
           const attr = feature.getKeys();
           formatedInfo += '<div class=\'divinfo\'>';
-          formatedInfo += `<table class='api-idee-table'><tbody><tr><td class='header' colspan='3'>' ${beautifyAttribute(layerName)} '</td></tr>'`;
+          formatedInfo += `<table class='api-idee-table'><tbody><tr><td class='header' colspan='2'>' ${beautifyAttribute(layerName)} '</td></tr>'`;
           for (let i = 0, ilen = attr.length; i < ilen; i += 1) {
             const attrName = attr[i];
             const attrValue = feature.get(attrName);
@@ -387,7 +416,7 @@ class GetFeatureInfo extends Control {
     let html = '<div class=\'divinfo\'>';
 
     // build the table
-    html += `<table class='api-idee-table'><tbody><tr><td class='header' colspan='3'>${beautifyAttribute(layerName)}</td></tr>`;
+    html += `<table class='api-idee-table'><tbody><tr><td class='header' colspan='2'>${beautifyAttribute(layerName)}</td></tr>`;
 
     for (let i = 0, ilen = attrValuesString.length; i < ilen; i += 1) {
       const attrValueString = attrValuesString[i].trim();
@@ -411,7 +440,7 @@ class GetFeatureInfo extends Control {
         }
       } else if (GetFeatureInfo.regExs.gsNewFeature.test(attrValueString)) {
         // set new header
-        html += `<tr><td class="header" colspan="3">${beautifyAttribute(layerName)}</td></tr>`;
+        html += `<tr><td class="header" colspan="2">${beautifyAttribute(layerName)}</td></tr>`;
       }
     }
 
@@ -452,7 +481,7 @@ class GetFeatureInfo extends Control {
     const attrValuesString = infoVar.split('\n');
 
     let html = '';
-    const htmlHeader = `<table class='api-idee-table'><tbody><tr><td class='header' colspan='3'>${beautifyAttribute(layerName)}</td></tr>`;
+    const htmlHeader = `<table class='api-idee-table'><tbody><tr><td class='header' colspan='2'>${beautifyAttribute(layerName)}</td></tr>`;
 
     for (let i = 0, ilen = attrValuesString.length; i < ilen; i += 1) {
       const attrValueString = attrValuesString[i].trim();
@@ -473,7 +502,7 @@ class GetFeatureInfo extends Control {
           if ((nextAttrValueString.length > 0)
             && !GetFeatureInfo.regExs.msNewFeature.test(nextAttrValueString)) {
             // set new header
-            html += `<tr><td class='header' colspan='3'>${beautifyAttribute(layerName)}</td><td></td></tr>`;
+            html += `<tr><td class='header' colspan='2'>${beautifyAttribute(layerName)}</td><td></td></tr>`;
           }
         } else {
           html += '<tr><td class="key"><b>';
@@ -514,7 +543,7 @@ class GetFeatureInfo extends Control {
     const formato = this.userFormats[this.currentFormat];
     let contFull = 0;
     const loadingInfoTab = {
-      icon: 'g-cartografia-info',
+      icon: 'g-cartografia-featureInfo',
       title: GetFeatureInfo.POPUP_TITLE,
       content: htmlAsText,
     };
@@ -564,7 +593,7 @@ class GetFeatureInfo extends Control {
           popup.removeTab(loadingInfoTab);
           if (infos.length === 0) {
             popup.addTab({
-              icon: 'g-cartografia-info',
+              icon: 'g-cartografia-featureInfo',
               title: GetFeatureInfo.POPUP_TITLE,
               content: getValue('getfeatureinfo').no_info,
             });
@@ -578,7 +607,7 @@ class GetFeatureInfo extends Control {
             });
             const parsedContent = popupContent.replace(/(.*)(<a href=.*)(>.*<\/a.*)/g, '$1$2 target="_blank"$3');
             popup.addTab({
-              icon: 'g-cartografia-info',
+              icon: 'g-cartografia-featureInfo',
               title: GetFeatureInfo.POPUP_TITLE,
               content: parsedContent,
               listeners: [{

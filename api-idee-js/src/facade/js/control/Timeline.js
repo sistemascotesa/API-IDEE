@@ -32,7 +32,7 @@ class Timeline extends Control {
    * @constructor
    * @api
    */
-  constructor(options) {
+  constructor(options = {}) {
     if (isUndefined(TimelineImpl) || (isObject(TimelineImpl)
       && isNullOrEmpty(Object.keys(TimelineImpl)))) {
       Exception(getValue('exception').timeline_method);

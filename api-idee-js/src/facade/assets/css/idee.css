@@ -529,6 +529,7 @@ div.m-control button[class*=" g-cartografia-"] {
     -webkit-transition: opacity 0.25s ease 0s;
     transition: opacity 0.25s ease 0s;
     margin: 0;
+    opacity: 1;
 }
 
 .ol-overviewmap>button {
@@ -537,12 +538,15 @@ div.m-control button[class*=" g-cartografia-"] {
     transition: opacity 0.25s ease 0s;
 }
 
-div.m-control.activated button[class^="g-cartografia-"],
-div.m-control button[class^="g-cartografia-"]:hover,
-div.m-control button[class*=" g-cartografia-"]:hover,
-.m-panel>button.m-panel-btn:hover,
 .ol-overviewmap>button:hover {
     opacity: 1 !important;
+}
+
+div.m-control.activated button[class^="g-cartografia-"],
+div.m-control button[class^="g-cartografia-"]:hover,
+div.m-control button[class*=" g-cartografia-"]:hover {
+    opacity: 1 !important;
+    background-color: var(--idee-color-links);
 }
 
 div.m-control button[class^="g-cartografia-"]:focus,
@@ -736,6 +740,14 @@ div.m-control button[class^=g-cartografia-],
     padding: 0;
 }
 
+div.m-control.active button[class*="g-cartografia-"] {
+    background-color: var(--idee-color-primary-dark) !important;
+}
+
+div.m-control.active button[class*="g-cartografia-"]:hover {
+    background-color: var(--idee-color-links) !important;
+}
+
 .m-control.m-location-container>button:hover,
 .m-geosearch.collapsed>button.m-panel-btn:hover,
 .m-searchstreet.collapsed>button.m-panel-btn:hover,
@@ -759,12 +771,6 @@ div.m-control button[class^=g-cartografia-]:hover,
 .m-scale-container>.m-unit:before:hover,
 .m-scale-container {
     background-color: var(--idee-color-links) !important;
-}
-
-.m-left .m-panel.opened div.m-control button[class^=g-cartografia-] {
-    color: #364b5f !important;
-    background-color: white !important;
-    opacity: 1;
 }
 
 /* secondary color */
@@ -809,20 +815,12 @@ div.m-control button[class^=g-cartografia-]:hover,
     min-width: 250px;
 }
 
-div.m-control button[class^="g-cartografia-"] {
-    opacity: 1;
-}
-
 .ol-overviewmap:not(.ol-collapsed) button {
     background-color: #71A7D3 !important;
 }
 
 .m-control.m-getfeatureinfo-container.activated>button#m-getfeatureinfo-button {
     color: #71A7D3 !important;
-}
-
-.m-control.m-getfeatureinfo-container:not(.activated)>button#m-getfeatureinfo-button {
-    color: #888888 !important;
 }
 
 .m-panel.m-tools {

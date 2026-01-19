@@ -134,7 +134,12 @@
     mask-image: url('../images/icon_ue90a.svg');
 }
 
-.g-cartografia-papelera::before {
+.g-cartografia-featureInfo:before {
+    -webkit-mask-image: url('../images/getFeatureInfo.svg');
+    mask-image: url('../images/getFeatureInfo.svg');
+}
+
+.g-cartografia-papelera:before {
     /* content: "\e90b"; */
     -webkit-mask-image: url('../images/icon_ue90b.svg');
     mask-image: url('../images/icon_ue90b.svg');
