@@ -108,7 +108,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
           },
         },
       };
-      const s = IDEE.template.compileSync(template, options);
+      const html = IDEE.template.compileSync(template, options);
       this.initCustomDropdown(html);
       // Añadir código dependiente del DOM
       this.accessibilityTab(html);
