@@ -6,7 +6,7 @@ import MouseSRSImplControl from 'impl/mousesrscontrol';
 import template from '../../templates/mousesrs';
 import { getValue } from './i18n/language';
 
-export default class MouseSRSControl extends IDEE.Control {
+class MouseSRSControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
@@ -86,3 +86,14 @@ export default class MouseSRSControl extends IDEE.Control {
     this.getImpl().destroy();
   }
 }
+
+/**
+   * Nombre para identificar este control.
+   * @const
+   * @type {string}
+   * @public
+   * @api
+   */
+MouseSRSControl.NAME = 'mousesrs';
+
+export default MouseSRSControl;

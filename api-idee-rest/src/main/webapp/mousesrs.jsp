@@ -171,8 +171,13 @@
             objeto.mode = selectMode.value;
             objeto.coveragePrecissions = JSON.parse(inputCoveragePrecissions.value);
             helpUrl = inputHelpUrl.value != "" ? objeto.helpUrl = inputHelpUrl.value : "";
-            draggableDialog = draggableDialogElement.value != "" && (draggableDialogElement.value == "true" || draggableDialogElement.value == true) ? objeto.draggableDialogElement = true : objeto.draggableDialogElement = false;
-            map.removePlugins(mp);
+            draggableDialog = draggableDialogElement.value != "" && (draggableDialogElement.value == "true" || draggableDialogElement.value == true) ? objeto.draggableDialog = true : objeto.draggableDialog = false;
+            
+            if (mp) {
+                map.removePlugins(mp);
+                if (typeof mp.destroy === 'function') mp.destroy();
+            }
+
             crearPlugin(objeto);
         }
 

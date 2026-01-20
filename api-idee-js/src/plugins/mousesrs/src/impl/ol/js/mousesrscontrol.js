@@ -100,6 +100,7 @@ export default class MouseSRSControl extends IDEE.impl.Control {
    * @api
    */
   addTo(map, html) {
+    super.addTo(map, html);
     this.auxMap_ = map;
     this.html_ = html;
     this.renderPlugin(map, html);
@@ -133,7 +134,7 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     });
 
     map.getMapImpl().addControl(this.mousePositionControl);
-    super.addTo(map, html);
+    // super.addTo(map, html);
     setTimeout(() => {
       this.mousePositionControl.initLoaderManager(map);
       document.querySelector('.m-mousesrs-container .m-mouse-srs').setAttribute('role', 'text ');

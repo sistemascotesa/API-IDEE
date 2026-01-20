@@ -39,8 +39,9 @@ const mp = new MouseSRS({
 });
 map.addPlugin(mp); window.mp = mp;
 
-// setTimeout(() => {
-//   console.log('Destruyendo el plugin ahora...');
-//   mp.destroy();
-//   console.log('Plugin eliminado.');
-// }, 5000);
+setTimeout(() => {
+  console.log('Destruyendo el plugin ahora...');
+  mp.destroy();
+  console.log('Plugin eliminado.');
+}, 2000);
+// mp.destroy();
