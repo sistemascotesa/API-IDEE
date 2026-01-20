@@ -301,7 +301,7 @@ export default class PrintViewManagementControl extends IDEE.Control {
       }
 
       active.classList.remove('activated');
-      // const container = document.querySelector('#div-contenedor-printviewmanagement');
+      // const container = document.querySelector('#plugin-panel-content-printviewmanagement');
       // if (container && container.children.length > 2) {
       //   container.removeChild(container.children[2]);
       // }

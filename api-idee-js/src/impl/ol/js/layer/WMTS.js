@@ -5,7 +5,8 @@ import {
   isNull, isArray, isNullOrEmpty, addParameters, getWMTSGetCapabilitiesUrl, getResolutionFromScale,
   extend,
 } from 'IDEE/util/Utils';
-import { default as OLSourceWMTS } from 'ol/source/WMTS';
+import { default as OLSourceWMTS, optionsFromCapabilities } from 'ol/source/WMTS';
+// import { optionsFromCapabilities } from 'patches';
 import OLFormatWMTSCapabilities from 'ol/format/WMTSCapabilities';
 import OLTileGridWMTS from 'ol/tilegrid/WMTS';
 import { getBottomLeft, getTopLeft, getWidth } from 'ol/extent';
@@ -13,7 +14,6 @@ import { get as getRemote } from 'IDEE/util/Remote';
 import * as EventType from 'IDEE/event/eventtype';
 import { get as getProj } from 'ol/proj';
 import OLLayerTile from 'ol/layer/Tile';
-import { optionsFromCapabilities } from 'patches';
 import LayerBase from './Layer';
 import getLayerExtent from '../util/wmtscapabilities';
 /**
@@ -177,8 +177,11 @@ class WMTS extends LayerBase {
   getWGS84BoundingBoxCapabilities_(capabilities) {
     const contents = capabilities.Contents;
     const defaultExtent = this.map.getMaxExtent();
+    const layerExtent = this.options.maxExtent;
 
-    if (!isNull(contents)) {
+    if (!isNullOrEmpty(layerExtent)) {
+      this.maxExtent = layerExtent;
+    } else if (!isNull(contents)) {
       this.maxExtent = getLayerExtent(contents, this.name, this.map
         .getProjection().code, defaultExtent);
     }

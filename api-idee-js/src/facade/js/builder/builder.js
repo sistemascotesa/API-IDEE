@@ -198,7 +198,7 @@ export const getRotatePanel = (control, map, params = {}, defaultOptions = {}) =
 export const getBackgroundLayersPanel = (control, map, params = {}, defaultOptions = {}) => {
   return new ControlPanel('backgroundlayers', {
     collapsible: false,
-    className: 'm-plugin-baselayer',
+    className: 'm-control-baselayer',
   });
 };
 

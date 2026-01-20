@@ -31,14 +31,23 @@
 - Se elimina código innecesario y se soluciona problema con asignación de estilos en capas MBTilesVector.
 - Añadido método activateBaseLayer en Layer, para que cuando una capa base sea eliminada, se active otra si hay.
 - Se implementa la posibilidad de enviar un callback a getMaxExtent de mbtiles.
-- Se crean set/get multiWorld.
-- Se solucionan bugs que no persistia correctamente el zoomConstrain del mapa.
 - Mejora la visualización de leyendas.
 - Soluciona errores en el comportamiento de isVisible en MVT.
 - Se soluciona un error al devolver el legendURL de una capa Vector con estilos cluster composite.
 - Se elimina el método getFeaturesExtentPromise de GeoJSON para que herede de Vector.
 - Añadida configuración para determinar el zoom aplicado al localizar al usuario mediante location.
 - Se añade el método getImageMap para generar la imagen del mapa.
+- Se comprueba si la versión no está definida en el parámetro en getWMSGetCapabilitiesUrl de utils para no incluirla a la URL.
+- Se mejora la seleccion y deseleccion de WMC.
+- Se añade el evento REMOVED_FROM_MAP al método removeUnknowLayers_ de la implementación de mapa.
+- Se implementa el método getTicket en la clase Map para obtener el ticket definido.
+- Se dispara el evento REMOVED_LAYER en la implementación del Mapa pero accediendo a la fachada del mapa.
+- En "Mapa - addUnknownLayers" se modifica "Este método agrega las capas de GeoJSON al mapa." por "Este método agrega las capas de tipo desconocido al mapa."
+- Se crean set/get multiWorld y se solucionan bugs que no persistía correctamente el zoomConstrain del mapa.
+- Se implementa el parámetro overflow para los estilos de label.
+- Se elimina el método getFeaturesExtentPromise de WFS para que lo herede de Vector
+- Se implementa la función setZoomLevels en Mapa para establecer el nivel de zoom junto a las resoluciones correspondientes al nivel.
+- Se inicializa this.ticket_ en la clase Map y se añade al JSDoc.
 
 
 01/01/25 - Versión 1.0.0

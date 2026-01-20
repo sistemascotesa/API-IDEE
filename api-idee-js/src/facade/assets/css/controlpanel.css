@@ -3,10 +3,6 @@
 ****************************/
 
 @media only screen and (max-width: 768px) {
-    .m-top.m-right {
-        /*top: 50px;*/
-    }
-
     .m-top.top-extra {
         top: 65px;
     }
@@ -34,21 +30,46 @@
      SPECIFIC PANELS
 ****************************/
 .m-control-panel {
-    z-index: 800;
     position: relative;
-    background: #fff;
+    background: transparent;
     box-sizing: border-box;
     border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
-
     display: flex !important;
-    justify-content: center !important;
-    align-items: self-start !important;
+    align-items: self-start;
 }
 
-div.m-control-panel-btn {
-    z-index: 801;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+.m-control-panel.opened {
+    column-gap: .75rem;
+}
+
+/***************************************************
+ POSICIÓN DEL BOTÓN Y DEL PANEL SEGÚN CONTENEDOR PADRE
+****************************************************/
+.m-api-idee-left-buttons .m-control-panel,
+.m-api-idee-right-buttons .m-control-panel,
+.m-api-idee-center-panel-top-left .m-control-panel,
+.m-api-idee-center-panel-bottom-left .m-control-panel,
+.m-api-idee-center-panel-top-right .m-control-panel,
+.m-api-idee-center-panel-bottom-right .m-control-panel {
+    align-items: self-start;
+}
+
+.m-api-idee-down-panel .m-control-panel {
+    align-items: self-end;
+}
+
+/* Cuando el contenedor padre indica izquierda */
+.m-api-idee-left-buttons .m-control-panel.opened:not(.no-collapsible),
+.m-api-idee-center-panel-top-left .m-control-panel.opened:not(.no-collapsible),
+.m-api-idee-center-panel-bottom-left .m-control-panel.opened:not(.no-collapsible) {
+    flex-direction: row;
+}
+
+/* Cuando el contenedor padre indica derecha */
+.m-api-idee-right-buttons .m-control-panel.opened:not(.no-collapsible),
+.m-api-idee-center-panel-top-right .m-control-panel.opened:not(.no-collapsible),
+.m-api-idee-center-panel-bottom-right .m-control-panel.opened:not(.no-collapsible) {
+    flex-direction: row-reverse;
 }
 
 /*
@@ -66,17 +87,13 @@ div.m-control-panel-btn {
 }
 */
 
-/* NO COLLAPSIBLE */
-.m-control-panel.no-collapsible {
-    border-radius: 20px;
-}
-
 /* BUTTON */
 .m-control-panel>button.m-control-panel-btn {
-    color: white;
+    z-index: 999;
     background-color: var(--idee-color-primary);
     border: 2px solid var(--button-border-color);
     border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
 }
 
 .m-control-panel>button.m-control-panel-btn:hover {
@@ -115,10 +132,7 @@ div.m-control-panel-btn {
 }
 
 .m-control-panel.opened>button.m-control-panel-btn {
-    right: 0;
-    border: 0;
-    border-radius: 0 4px 0 0;
-    z-index: 999;
+    background-color: var(--idee-color-links);
 }
 
 .m-control-panel.opened>button.m-control-panel-btn:hover {
@@ -191,22 +205,34 @@ div.m-control-panel-btn {
     background: none;
 }
 
-.m-control-panel.m-overviewmap {
-    /*   border-radius: 4px*/
-    box-shadow: none;
-}
-
-.m-control-panel.m-overviewmap.collapsed {
-    /*   height: 40px;*/
-}
-
 /****************************
      PANELS CONTAINER
 ****************************/
 
 .m-control-panel>div.m-controls-panel {
+    max-width: 50vw;
+    z-index: 999;
     display: flex;
+    opacity: 1;
+    border-radius: 4px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+    -webkit-transition: max-width 1s ease 0s, opacity .75s ease .1s;
+    transition: max-width 1s ease 0s, opacity .75s ease .1s;
 }
+
+.m-control-panel.collapsed {
+    border-radius: 20px;
+}
+
+.m-control-panel.collapsed>div.m-controls-panel {
+    display: none;
+    opacity: 0;
+    max-width: 0px;
+    -webkit-transition: max-width .4s ease 0s, opacity .3s ease 0s;
+    transition: max-width .4s ease 0s, opacity .3s ease 0s;
+}
+
 
 /****************************
      FIREFOX HACKS
@@ -277,26 +303,6 @@ div.m-control-panel-btn {
     transition: border-radius .5s ease 0s;
 } */
 
-.m-control-panel.collapsed {
-    border-radius: 20px;
-}
-
-.m-control-panel>div.m-controls-panel {
-    opacity: 1;
-    /* background-color: white; */
-    border-radius: 10px;
-    /*max-width: 50vw;*/
-    -webkit-transition: max-width 1s ease 0s, opacity .75s ease .1s;
-    transition: max-width 1s ease 0s, opacity .75s ease .1s;
-}
-
-.m-control-panel.collapsed>div.m-controls-panel {
-    display: none;
-    opacity: 0;
-    max-width: 0px;
-    -webkit-transition: max-width .4s ease 0s, opacity .3s ease 0s;
-    transition: max-width .4s ease 0s, opacity .3s ease 0s;
-}
 
 /****************************
      CONTROLS
@@ -391,9 +397,7 @@ div.m-control-panel-btn {
     height: 15px !important;
 }
 
-
-
-.m-wmcselector-container {
+/* .m-wmcselector-container {
     background-color: white !important;
     padding: 4px 10px 3px 12px !important;
     font-family: 'Muli', 'sans-serif' !important;
@@ -407,7 +411,7 @@ div.m-control-panel-btn {
     color: #a35d38;
     margin-right: 5px;
     margin-top: 3px;
-}
+} */
 
 .m-control-panel.m-map-info.m-with-mouse>div.m-controls-panel>div.m-control.m-scale-container {
     border-top-left-radius: 0px !important;
@@ -444,25 +448,16 @@ div.m-control-panel-btn {
 
 /* ANIMACIÓN SUAVE DEL BOTÓN Y DEL PANEL */
 
-/* Aseguramos que el botón siempre es absolute y que puede animarse */
 .m-control-panel>button.m-control-panel-btn {
-    position: absolute;
-    right: 0;
-    top: 0;
     transition: 0.5s ease;
 }
 
-/* El panel se ocultará inicialmente reduciendo su ancho */
 .m-control-panel>.m-controls-panel {
     max-width: max-content;
-    transition: right 0.5s ease, opacity 0.45s ease;
+    transition: 0.5s ease;
 }
 
 /* ESTADO ABIERTO */
-.m-control-panel.opened>button.m-control-panel-btn {
-    transform: translateX(100% - 2.5rem);
-    border-radius: 0 4px 0 0;
-}
 
 .m-control-panel.opened>.m-controls-panel {
     opacity: 1;

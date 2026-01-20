@@ -308,7 +308,9 @@ export const getWMSGetCapabilitiesUrl = (serverUrl, version, ticket) => {
 
   // PATCH: En api-idee 3 no se manda luego aquí tampoco. Hay servicios que dan error....
   //       version
-  wmsGetCapabilitiesUrl = addParameters(wmsGetCapabilitiesUrl, `version=${version}`);
+  if (!isNullOrEmpty(version)) {
+    wmsGetCapabilitiesUrl = addParameters(wmsGetCapabilitiesUrl, `version=${version}`);
+  }
 
   return wmsGetCapabilitiesUrl;
 };

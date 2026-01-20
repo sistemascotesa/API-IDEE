@@ -62,6 +62,8 @@ public class ActionsWS {
 		actions.put("/version");
 		actions.put("/projection");
 		actions.put("/plugins");
+		actions.put("/plugins/external");
+		actions.put("/plugins/external/reload");
 		actions.put("/resourcesPlugins");
 		actions.put("/versions");
 		actions.put("/resources/svg");
@@ -158,6 +160,49 @@ public class ActionsWS {
 		}
 
 		return JSBuilder.wrapCallback(pluginsJSON, callbackFn);
+	}
+
+	/**
+	 * Returns the list of available external plugins
+	 * 
+	 * @param callbackFn the name of the javascript function to execute as callback
+	 * 
+	 * @return the javascript code with external plugins info
+	 */
+	@GET
+	@Path("/plugins/external")
+	public String showAvailableExternalPlugins(@QueryParam("callback") String callbackFn) {
+		JSONArray pluginsJSON = new JSONArray();
+
+		PluginsManager.init(context);
+		for (String pluginName : PluginsManager.getAvailableExternalPlugins()) {
+			pluginsJSON.put(pluginName);
+		}
+
+		return JSBuilder.wrapCallback(pluginsJSON, callbackFn);
+	}
+
+	/**
+	 * Reloads the list of available external plugins from the remote repository.
+	 * This endpoint forces a refresh of the external plugins list.
+	 * 
+	 * @param callbackFn the name of the javascript function to execute as callback
+	 * 
+	 * @return the javascript code with the reload result
+	 */
+	@GET
+	@Path("/plugins/external/reload")
+	public String reloadExternalPlugins(@QueryParam("callback") String callbackFn) {
+		PluginsManager.init(context);
+		
+		int count = PluginsManager.reloadExternalPlugins();
+		
+		JSONObject result = new JSONObject();
+		result.put("success", true);
+		result.put("message", "Lista de plugins externos recargada correctamente");
+		result.put("count", count);
+		
+		return JSBuilder.wrapCallback(result, callbackFn);
 	}
 
 	/**
