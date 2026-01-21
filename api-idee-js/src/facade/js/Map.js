@@ -4448,73 +4448,64 @@ class Map extends Base {
 
     container.classList.add('m-api-idee-container');
 
+    this.toolPanelsContainer = document.createElement('tool-panels-container');
+    this.toolPanelsContainer.classList.add('m-api-idee-tool-panels-container');
+    container.appendChild(this.toolPanelsContainer);
+
     this.leftPanel = document.createElement('left-panel');
-    this.leftPanel.id = 'leftPanel';
     this.leftPanel.classList.add('m-api-idee-left-panel');
-    container.appendChild(this.leftPanel);
+    this.toolPanelsContainer.appendChild(this.leftPanel);
 
     this.leftHandle = document.createElement('left-handle');
-    this.leftHandle.id = 'leftHandle';
     this.leftHandle.classList.add('m-api-idee-left-handle');
     this.leftHandle.style.visibility = 'hidden';
     this.leftPanel.appendChild(this.leftHandle);
 
     this.leftButtons = document.createElement('left-buttons');
-    this.leftButtons.id = 'leftButtons';
     this.leftButtons.classList.add('m-api-idee-left-buttons');
-    container.appendChild(this.leftButtons);
+    this.toolPanelsContainer.appendChild(this.leftButtons);
 
     this.centerPanel = document.createElement('center-panel');
-    this.centerPanel.id = 'centerPanel';
     this.centerPanel.classList.add('m-api-idee-center-panel');
 
     this.centerPanelTopLeft = document.createElement('center-panel-top-left');
-    this.centerPanelTopLeft.id = 'centerPanelTopLeft';
     this.centerPanelTopLeft.classList.add('m-api-idee-center-panel-top-left');
     this.centerPanel.appendChild(this.centerPanelTopLeft);
 
     this.centerPanelTopRight = document.createElement('center-panel-top-right');
-    this.centerPanelTopRight.id = 'centerPanelTopRight';
     this.centerPanelTopRight.classList.add('m-api-idee-center-panel-top-right');
     this.centerPanel.appendChild(this.centerPanelTopRight);
 
     this.centerPanelBottomLeft = document.createElement('center-panel-bottom-left');
-    this.centerPanelBottomLeft.id = 'centerPanelBottomLeft';
     this.centerPanelBottomLeft.classList.add('m-api-idee-center-panel-bottom-left');
     this.centerPanel.appendChild(this.centerPanelBottomLeft);
 
     this.centerPanelBottomRight = document.createElement('center-panel-bottom-right');
-    this.centerPanelBottomRight.id = 'centerPanelBottomRight';
     this.centerPanelBottomRight.classList.add('m-api-idee-center-panel-bottom-right');
     this.centerPanel.appendChild(this.centerPanelBottomRight);
 
-    container.appendChild(this.centerPanel);
+    this.toolPanelsContainer.appendChild(this.centerPanel);
 
     this.mapPanel = document.createElement('map-panel');
-    this.mapPanel.id = 'mapPanel';
     this.mapPanel.classList.add('m-api-idee-map-panel');
     container.appendChild(this.mapPanel);
 
     this.rightButtons = document.createElement('right-buttons');
-    this.rightButtons.id = 'rightButtons';
     this.rightButtons.classList.add('m-api-idee-right-buttons');
-    container.appendChild(this.rightButtons);
+    this.toolPanelsContainer.appendChild(this.rightButtons);
 
     this.rightPanel = document.createElement('right-panel');
-    this.rightPanel.id = 'rightPanel';
     this.rightPanel.classList.add('m-api-idee-right-panel');
-    container.appendChild(this.rightPanel);
+    this.toolPanelsContainer.appendChild(this.rightPanel);
 
     this.rightHandle = document.createElement('right-handle');
-    this.rightHandle.id = 'rightHandle';
     this.rightHandle.classList.add('m-api-idee-right-handle');
     this.rightHandle.style.visibility = 'hidden';
     this.rightPanel.appendChild(this.rightHandle);
 
     this.downPanel = document.createElement('down-panel');
-    this.downPanel.id = 'downPanel';
     this.downPanel.classList.add('m-api-idee-down-panel');
-    container.appendChild(this.downPanel);
+    this.toolPanelsContainer.appendChild(this.downPanel);
 
     this.isResizingLeft = false;
     this.isResizingRight = false;

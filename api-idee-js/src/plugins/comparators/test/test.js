@@ -14,7 +14,7 @@ window.map = map;
 
 const mpLayerswitcher = new IDEE.plugin.Layerswitcher({
   collapsed: true,
-  position: 'TR',
+  position: 'right',
 });
 
 map.addPlugin(mpLayerswitcher);
@@ -202,7 +202,7 @@ const capas = [
 ]; // */
 
 const mp = new Comparators({
-  position: 'TR',
+  position: 'right',
   collapsed: false,
   collapsible: true,
   isDraggable: false,
@@ -234,13 +234,40 @@ const mp = new Comparators({
       map2: {
         controls: ['scale'],
         Layerswitcher: {
-          position: 'TL',
+          position: 'left',
+        },
+        BackImgLayer: {
+          position: 'right',
+          collapsed: true,
+          collapsible: true,
+          tooltip: "Capas de fondo",
+          layerVisibility: true,
+          columnsNumber: 0,
+          empty: true,
+          ids: "mapa,hibrido",
+          titles: "Mapa,Hibrido",
+          previews:
+            "https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqmapa.png,https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqhibrid.png",
+          layers:
+            "WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*false*true,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*Imagen (PNOA)*false*image/png*false*false*true",
+        },
+      },
+      map3: {
+        controls: ['scale'],
+        Layerswitcher: {
+          position: 'left',
+        },
+      },
+      map4: {
+        controls: ['scale'],
+        Layerswitcher: {
+          position: 'right',
         },
       },
     },
     enabledDisplayInLayerSwitcher: true,
     defaultCompareViz: 2,
-    modeVizTypes: [0, 2, 3, 4],
+    modeVizTypes: [0, 1, 2, 3, 4, 6],
     // tooltip: 'tooltipMirror',
   },
   windowsyncParams: {
@@ -254,7 +281,7 @@ const mp = new Comparators({
       {
         name: 'Layerswitcher',
         params: {
-          position: 'TL',
+          position: 'right',
         },
       },
     ],
