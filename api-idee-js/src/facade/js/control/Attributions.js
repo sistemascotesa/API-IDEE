@@ -63,9 +63,6 @@ class Attributions extends ControlBase {
 
     const impl = new AttributionsImpl();
     super(Attributions.NAME, impl, options);
-    // super(Attributions.NAME);
-    // const impl = new AttributionsImpl();
-    // this.setImpl(impl);
 
     this.position = options.position || Position.LEFT;
     this.closePanel = options.closePanel;

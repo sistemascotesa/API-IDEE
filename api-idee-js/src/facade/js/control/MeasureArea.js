@@ -1,20 +1,27 @@
-import MeasureAreaImpl from 'impl/measurearea';
-import Measure from './measurebase';
-import measureareaHTML from '../../templates/measurearea';
-import { getValue } from './i18n/language';
+import MeasureAreaImpl from 'impl/control/MeasureArea';
+import measureAreaTemplate from 'templates/measurearea';
+import Measure from './Measure';
+import { getValue } from '../i18n/language';
+import { isNullOrEmpty, isObject, isUndefined } from '../util/Utils';
+import exception from '../exception/exception';
 
+/**
+ * @classdesc
+ * Control de medida de una area
+ *
+ * @api
+ * @extends {IDEE.Control}
+ */
 export default class MeasureArea extends Measure {
-  constructor(order) {
+  constructor(options) {
     // checks if the implementation can create WMC layers
-    if (IDEE.utils.isUndefined(MeasureAreaImpl) || (IDEE.utils.isObject(MeasureAreaImpl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(MeasureAreaImpl)))) {
-      IDEE.exception(getValue('exception.impl_area'));
+    if (isUndefined(MeasureAreaImpl) || (isObject(MeasureAreaImpl)
+      && isNullOrEmpty(Object.keys(MeasureAreaImpl)))) {
+      exception(getValue('exception').impl_area);
     }
     // implementation of this control
     const impl = new MeasureAreaImpl();
-
-    // const calls the super constructor
-    super(impl, measureareaHTML, MeasureArea.NAME, order);
+    super(impl, measureAreaTemplate, MeasureArea.NAME, options);
   }
 
   /**
@@ -23,14 +30,14 @@ export default class MeasureArea extends Measure {
    *
    * @public
    * @function
-   * @param {*} obj - Object to compare
+   * @param {*} control - Object to compare
    * @returns {boolean} equals - Returns if they are equal or not
    * @api stable
    */
-  equals(obj) {
+  equals(control) {
     let equals = false;
-    if (obj instanceof MeasureArea) {
-      equals = (this.name === obj.name);
+    if (control instanceof MeasureArea) {
+      equals = (this.name === control.name);
     }
     return equals;
   }
@@ -62,4 +69,4 @@ MeasureArea.TEMPLATE = 'measurearea.html';
  * @public
  * @api stable
  */
-export const HELP_KEEP_MESSAGE = getValue('text.keep_drawing_area');
+export const HELP_KEEP_MESSAGE = Measure.translation.text.keep_drawing_area;

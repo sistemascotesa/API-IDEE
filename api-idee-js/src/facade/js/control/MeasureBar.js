@@ -1,66 +1,215 @@
 /**
  * @module IDEE/control/MeasureBar
  */
-import 'assets/css/controls/scale';
-import scaleTemplate from 'templates/scale';
-import MeasureBarImpl from 'impl/control/MeasureBar';
-import myhelp from 'templates/scalehelp';
-import ControlBase from './Control';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
-import Exception from '../exception/exception';
-import { compileSync as compileTemplate } from '../util/Template';
-import { getValue } from '../i18n/language';
+import myhelp from 'templates/measurehelp';
+import Control from './Control';
+import Measure from './Measure';
+import MeasureLength from './MeasureLength';
+import MeasureArea from './MeasureArea';
+import MeasureClear from './MeasureClear';
 import * as Position from '../ui/position';
+import { getValue } from '../i18n/language';
+import 'assets/css/controls/measurebar';
+
+import { compileSync } from '../util/Template';
+import { encodeBase64 } from '../util/Utils';
 
 /**
  * @classdesc
- * Agregar escala numérica.
- * @property {Number} order Orden que tendrá con respecto al
- * resto de plugins y controles por pantalla.
+ * Control that uses measure controls
  *
  * @api
  * @extends {IDEE.Control}
  */
-class MeasureBar extends ControlBase {
+class MeasureBar extends Control {
   /**
-   * Constructor principal de la clase.
+   * @classdesc
+   * Main facade control object. This class creates a control
+   * object which has an implementation Object
    *
    * @constructor
-   * @param {Object} options Opciones del control.
-   * - exactMeasurebar: Escala exacta.
-   * @api
+   * @extends {Control}
+   * @api stable
    */
   constructor(options = {}) {
-    if (isUndefined(MeasureBarImpl)
-      || (isObject(MeasureBarImpl) && isNullOrEmpty(Object.keys(MeasureBarImpl)))) {
-      Exception(getValue('exception').measure_method);
-    }
-    // implementation of this control
-    const impl = new MeasureBarImpl(options);
+    super(MeasureBar.NAME, undefined, options);
 
-    // calls the super constructor
-    super(MeasureBar.NAME, impl, options);
-    this.position = options.position ?? Position.DOWN;
+    /**
+     * Facade of the map
+     * @private
+     * @type {IDEE.Map}
+     */
+    this.map_ = null;
+
+    /**
+     * Array of controls
+     *
+     * @private
+     * @type {Array<Control>}
+     */
+    this.controls_ = [];
+
+    /**
+     * position of control on map, default left
+     * @type {Position}
+     */
+    this.position = Position.isValid(options.position) ? options.position : Position.LEFT;
+
+    /**
+     * Control MeasureLength
+     * @private
+     * @type {IDEE.control.MeasureLength}
+     */
+    this.measureLength_ = null;
+
+    /**
+     * Control MeasureArea
+     * @private
+     * @type {IDEE.control.MeasureArea}
+     */
+    this.measureArea_ = null;
+
+    /**
+     * Control MeasureClear
+     * @private
+     * @type {IDEE.control.MeasureClear}
+     */
+    this.measureClear_ = null;
+
+    /**
+     *@private
+     *@type { Number }
+     */
+    this.order = options.order >= -1 ? options.order : null;
+
+    /**
+     * Option to allow the control to be collapsed or not
+     * @private
+     * @type {Boolean}
+     */
+    this.collapsed_ = options.collapsed;
+    if (this.collapsed_ === undefined) this.collapsed_ = true;
+
+    /**
+     * Option to allow the control to be collapsible or not
+     * @private
+     * @type {Boolean}
+     */
+    this.collapsible_ = options.collapsible;
+    if (this.collapsible_ === undefined) this.collapsible_ = true;
+
+    /**
+     * Control tooltip
+     *
+     * @private
+     * @type {string}
+     */
+    this.tooltip_ = options.tooltip || getValue('measure.text.tooltip');
+
+    /**
+     * Control parameters
+     * @public
+     * @type {object}
+     */
+    this.options = options;
   }
 
   /**
-   * Esta función crea la vista del mapa especificado.
+   * @inheritdoc
+   * @public
+   * @function
+   * @param {IDEE.Map} map - Map to add the control
+   * @api stable
+   */
+  addTo(map) {
+    this.map_ = map;
+
+    this.measureLength_ = new MeasureLength({ order: this.order });
+    this.measureArea_ = new MeasureArea({ order: this.order });
+    this.measureClear_ = new MeasureClear(
+      this.measureLength_,
+      this.measureArea_,
+      { order: this.order },
+    );
+
+    this.controls_.push(this.measureLength_, this.measureArea_, this.measureClear_);
+
+    // this.panel_ = new IDEE.ui.Panel('MeasureBar', {
+    //   collapsed: this.collapsed_,
+    //   collapsible: this.collapsible_,
+    //   tooltip: this.tooltip_,
+    //   position: IDEE.ui.position[this.position_],
+    //   className: 'm-panel-measurebar',
+    //   collapsedButtonClass: 'measurebar-regla',
+    //   order: this.order,
+    // });
+
+    this.panel_.addControls(this.controls_);
+
+    // this.map_.addPanels(this.panel_);
+  }
+
+  /**
+   * Get the API REST Parameters of the control
+   *
+   * @function
+   * @public
+   * @api
+   */
+  getAPIRest() {
+    return `${this.name}=${this.position_}*${this.collapsed_}*${this.collapsible_}*${this.tooltip_}`;
+  }
+
+  /**
+   * Gets the API REST Parameters in base64 of the control
+   *
+   * @function
+   * @public
+   * @api
+   */
+  getAPIRestBase64() {
+    return `${this.name}=base64=${encodeBase64(this.options)}`;
+  }
+
+  /**
+   * This function destroys this control
    *
    * @public
    * @function
-   * @param {IDEE.Map} map Mapa
-   * @returns {Promise} Plantilla HTML.
-   * @api
+   * @api stable
    */
-  createView(map) {
-    return compileTemplate(scaleTemplate, {
-      vars: {
-        title: getValue('scale').title,
-        scale: getValue('scale').scale,
-        level: getValue('scale').level,
-        order: this.order,
-      },
-    });
+  destroy() {
+    this.map_.removeControls([this.measureLength_, this.measureArea_, this.measureClear_]);
+    this.map_ = null;
+    this.measureLength_ = null;
+    this.measureArea_ = null;
+    this.measureClear_ = null;
+    super.destroy();
+  }
+
+  /**
+   * This function return the control of control
+   *
+   * @public
+   * @function
+   * @api stable
+   */
+  getControls() {
+    const aControls = [];
+    aControls.push(this.measureArea_, this.measureClear_, this.measureLength_);
+    return aControls;
+  }
+
+  /**
+   * This function compare if control recieved by param is instance of IDEE.control.MeasureBar
+   *
+   * @public
+   * @function
+   * @param {Control} control to comapre
+   * @api stable
+   */
+  equals(control) {
+    return control instanceof MeasureBar;
   }
 
   /**
@@ -69,18 +218,30 @@ class MeasureBar extends ControlBase {
    * @function
    * @public
    * @api
-  */
+   */
   getHelp() {
-    const textHelp = getValue(MeasureBar.NAME).textHelp;
     return {
-      title: MeasureBar.NAME,
+      title: this.name,
       content: new Promise((success) => {
-        const html = compileTemplate(myhelp, {
+        const html = compileSync(myhelp, {
           vars: {
-            urlImages: `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/controles`,
+            urlImages: `${IDEE.config.STATIC_RESOURCES_URL}/images/help/measure`,
             translations: {
-              help1: textHelp.text1,
-              help2: textHelp.text2,
+              help1: Measure.translation.textHelp.help1,
+              help2: Measure.translation.textHelp.help2,
+              help3: Measure.translation.textHelp.help3,
+              help4: Measure.translation.textHelp.help4,
+              help5: Measure.translation.textHelp.help5,
+              help6: Measure.translation.textHelp.help6,
+              help7: Measure.translation.textHelp.help7,
+              help8: Measure.translation.textHelp.help8,
+              help9: Measure.translation.textHelp.help9,
+              help10: Measure.translation.textHelp.help10,
+              help11: Measure.translation.textHelp.help11,
+              help12: Measure.translation.textHelp.help12,
+              help13: Measure.translation.textHelp.help13,
+              help14: Measure.translation.textHelp.help14,
+              help15: Measure.translation.textHelp.help15,
             },
           },
         });
@@ -88,29 +249,14 @@ class MeasureBar extends ControlBase {
       }),
     };
   }
-
-  /**
-   * Esta función comprueba si un objeto es igual
-   * a este control.
-   *
-   * @public
-   * @function
-   * @param {*} obj Objeto a comparar.
-   * @returns {boolean} Iguales devuelve verdadero, falso si no son iguales.
-   * @api
-   */
-  equals(obj) {
-    const equals = (obj instanceof MeasureBar);
-    return equals;
-  }
 }
 
 /**
- * Nombre del control.
+ * Name for this control
  * @const
  * @type {string}
  * @public
- * @api
+ * @api stable
  */
 MeasureBar.NAME = 'measurebar';
 

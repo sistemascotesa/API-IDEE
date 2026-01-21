@@ -1,7 +1,8 @@
 /**
  * @module IDEE/Control
  */
-import { isUndefined, isNullOrEmpty } from '../util/Utils';
+import ControlImpl from 'impl/control/Control';
+import { isUndefined, isNullOrEmpty, isNumber } from '../util/Utils';
 import Exception from '../exception/exception';
 import Base from '../Base';
 import * as EventType from '../event/eventtype';
@@ -42,8 +43,8 @@ class Control extends Base {
    *   order: 2
    * }
    */
-  constructor(name, impl = {}, options = {}) {
-    super(impl);
+  constructor(name, impl, options = {}) {
+    super(impl ?? new ControlImpl(options.vendorOptions));
     this.map = null;
 
     /**
@@ -59,8 +60,13 @@ class Control extends Base {
     this.name = name;
     this.tooltip = options.tooltip ?? '';
     this.svgPath = options.svgPath ?? null;
-    this.position = options.position ?? Position.LEFT;
-    this.order = options.order ?? 0;
+
+    /**
+     * position of control on map, default left
+     * @type {Position}
+     */
+    this.position = Position.isValid(options.position) ? options.position : Position.LEFT;
+    this.order = isNumber(options.order) ? options.order : 0;
 
     this.controls = null;
     this.panel_ = null;

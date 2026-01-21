@@ -22,6 +22,8 @@ import WMCSelector from '../control/WMCSelector';
 import Timeline from '../control/Timeline';
 import * as dialog from '../dialog';
 import Exception from '../exception/exception';
+import { isBoolean } from '../util/Utils';
+import MeasureBar from '../control/MeasureBar';
 
 /**
  * Esta función devuelve el panel para el control Scale.
@@ -29,12 +31,12 @@ import Exception from '../exception/exception';
  * @public
  * @function
  *
- * @param {Object} control Control.
- * @param {Object} map Mapa.
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {Object} Devuelve el panel del control Scale.
+ * @return {ControlPanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getScalePanel = (control, map, params = {}, defaultOptions = {}) => {
@@ -61,9 +63,12 @@ export const getScalePanel = (control, map, params = {}, defaultOptions = {}) =>
  * @public
  * @function
  *
- * @param {Object} map Mapa.
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
+ * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {Object} Devuelve el panel del control ScaleLine.
+ * @return {ControlPanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getScaleLinePanel = (control, map, params = {}, defaultOptions = {}) => {
@@ -87,7 +92,12 @@ export const getScaleLinePanel = (control, map, params = {}, defaultOptions = {}
  * @public
  * @function
  *
- * @return {Object} Devuelve el panel del control Panzoombar.
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
+ * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
+ *
+ * @return {ControlPanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getPanzoombarPanel = (control, map, params = {}, defaultOptions = {}) => {
@@ -104,7 +114,12 @@ export const getPanzoombarPanel = (control, map, params = {}, defaultOptions = {
  * @public
  * @function
  *
- * @return {Object} Devuelve el panel del control Panzoom.
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
+ * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
+ *
+ * @return {ControlPanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getPanzoomPanel = (control, map, params = {}, defaultOptions = {}) => {
@@ -120,7 +135,12 @@ export const getPanzoomPanel = (control, map, params = {}, defaultOptions = {}) 
  * @public
  * @function
  *
- * @return {Object} Devuelve el panel del control GetFeatureInfo.
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
+ * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
+ *
+ * @return {ControlPanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getGetFeatureInfo = (control, map, params = {}, defaultOptions = {}) => {
@@ -139,7 +159,12 @@ export const getGetFeatureInfo = (control, map, params = {}, defaultOptions = {}
  * @public
  * @function
  *
- * @return {Object} Devuelve el panel del control Attributions.
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
+ * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
+ *
+ * @return {ControlPanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getAttributionsPanel = (control, map, params = {}, defaultOptions = {}) => {
@@ -158,7 +183,12 @@ export const getAttributionsPanel = (control, map, params = {}, defaultOptions =
  * @public
  * @function
  *
- * @return {Object} Devuelve el panel del control Location.
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
+ * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
+ *
+ * @return {ControlPanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getLocationPanel = (control, map, params = {}, defaultOptions = {}) => {
@@ -174,9 +204,12 @@ export const getLocationPanel = (control, map, params = {}, defaultOptions = {})
  * @public
  * @function
  *
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
  * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {Object} Devuelve el panel del control Rotate.
+ * @return {ControlPanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getRotatePanel = (control, map, params = {}, defaultOptions = {}) => {
@@ -192,7 +225,12 @@ export const getRotatePanel = (control, map, params = {}, defaultOptions = {}) =
  * @public
  * @function
  *
- * @return {Object} Devuelve el panel del control BackgroundLayers.
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
+ * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
+ *
+ * @return {ControlPanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getBackgroundLayersPanel = (control, map, params = {}, defaultOptions = {}) => {
@@ -208,7 +246,12 @@ export const getBackgroundLayersPanel = (control, map, params = {}, defaultOptio
  * @public
  * @function
  *
- * @return {Object} Devuelve el panel del control ImplementationSwitcher.
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
+ * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
+ *
+ * @return {ControlPanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getImpSwitcherPanel = (control, map, params = {}, defaultOptions = {}) => {
@@ -226,9 +269,12 @@ export const getImpSwitcherPanel = (control, map, params = {}, defaultOptions = 
  * @public
  * @function
  *
- * @param {Object} map Mapa.
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
+ * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {Object} Devuelve el panel del control WMCSelector.
+ * @return {ControlPanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getWMCSelectorPanel = (control, map, params = {}, defaultOptions = {}) => {
@@ -255,19 +301,45 @@ export const getWMCSelectorPanel = (control, map, params = {}, defaultOptions = 
  * @public
  * @function
  *
- * @param {Object} control Control.
- * @param {Object} map Mapa.
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
  * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {Object} Devuelve el panel del control Timeline.
+ * @return {ControlPanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getTimelinePanel = (control, map, params = {}, defaultOptions = {}) => {
   return new ControlPanel('timeline', {
     ...defaultOptions,
-    collapsible: true,
+    collapsible: isBoolean(defaultOptions.collapsible) ? defaultOptions.collapsible : true,
     className: 'm-control-timeline',
     collapsedButtonClass: 'g-cartografia-gestion-reloj2',
+    tooltip: params.tooltip ?? getValue('timeline').tooltip,
+  });
+};
+
+/**
+ * Esta función devuelve el panel que alberga los controles de medida
+ *
+ * @public
+ * @function
+ *
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
+ * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
+ *
+ * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @api stable
+ */
+export const getMeasureBarPanel = (control, map, params = {}, defaultOptions = {}) => {
+  return new ControlPanel(MeasureBar.NAME, {
+    ...defaultOptions,
+    collapsible: isBoolean(defaultOptions.collapsible) ? defaultOptions.collapsible : true,
+    collapsed: isBoolean(defaultOptions.collapsed) ? defaultOptions.collapsed : true,
+    className: `m-control-${MeasureBar.NAME}`,
+    collapsedButtonClass: 'g-cartografia-icon_ue94d',
     tooltip: params.tooltip ?? getValue('timeline').tooltip,
   });
 };
@@ -289,6 +361,7 @@ export const getPanelForControl = (control, map, params = {}) => {
     [Scale.NAME]: () => getScalePanel(control, map, params, defaultOptions),
     [`${Scale.NAME}*true`]: () => getScalePanel(control, map, params, defaultOptions),
     [ScaleLine.NAME]: () => getScaleLinePanel(control, map, params, defaultOptions),
+    [MeasureBar.NAME]: () => getScaleLinePanel(control, map, params, defaultOptions),
     [Panzoombar.NAME]: () => getPanzoombarPanel(control, map, params, defaultOptions),
     [Panzoom.NAME]: () => getPanzoomPanel(control, map, params, defaultOptions),
     [GetFeatureInfo.NAME]: () => null,
@@ -331,6 +404,7 @@ export const buildControl = (controlParam, map) => {
         return new Scale(params);
       },
       [ScaleLine.NAME]: () => new ScaleLine(),
+      [MeasureBar.NAME]: () => new MeasureBar(),
       [Panzoombar.NAME]: () => new Panzoombar(),
       [Panzoom.NAME]: () => new Panzoom(),
       [Location.NAME]: () => new Location(),
