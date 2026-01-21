@@ -9,7 +9,7 @@ import { handlerErrorPluginWindowSync, handlerErrorURLWindowSync } from './error
 
 const CONFIG_IBERPIX_BACKIMAGELAYER = {
   order: 10,
-  position: 'TR',
+  position: 'right',
   layerId: 0,
   layerVisibility: true,
   collapsed: true,
@@ -78,7 +78,7 @@ const CONFIG_IBERPIX_BACKIMAGELAYER = {
 
 const CONFIG_IBERPIX_LAYERSWITCHER = {
   collapsed: true,
-  position: 'TR',
+  position: 'right',
   https: true,
   http: true,
   isDraggable: false,

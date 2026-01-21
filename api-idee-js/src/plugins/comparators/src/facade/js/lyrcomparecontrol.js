@@ -951,10 +951,10 @@ export default class LyrCompareControl extends IDEE.Control {
       this.template.querySelector('#m-lyrcompare-lyrB-lbl').classList.add('cp-th-large-2');
       this.template.querySelector('#m-lyrcompare-lyrC-lbl').classList.add('cp-th-large-3');
       this.template.querySelector('#m-lyrcompare-lyrD-lbl').classList.add('cp-th-large-4');
-      this.template.querySelector('#m-lyrcompare-lyrA-cont').style.display = 'block';
-      this.template.querySelector('#m-lyrcompare-lyrB-cont').style.display = 'block';
-      this.template.querySelector('#m-lyrcompare-lyrC-cont').style.display = 'block';
-      this.template.querySelector('#m-lyrcompare-lyrD-cont').style.display = 'block';
+      this.template.querySelector('#m-lyrcompare-lyrA-cont').style.display = 'flex';
+      this.template.querySelector('#m-lyrcompare-lyrB-cont').style.display = 'flex';
+      this.template.querySelector('#m-lyrcompare-lyrC-cont').style.display = 'flex';
+      this.template.querySelector('#m-lyrcompare-lyrD-cont').style.display = 'flex';
     }
 
     this.template.querySelector('input').disabled = false; // Habilita el range del radio
