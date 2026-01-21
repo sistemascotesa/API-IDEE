@@ -333,11 +333,18 @@ export default class MirrorpanelControl extends IDEE.Control {
     const bigContainer = document.createElement('div');
     bigContainer.id = 'lienzo';
     bigContainer.classList.add('mirrorpanel-grid');
-    const mapjsA = document.getElementById(this.target.id);
-    this.oldClass = mapjsA.classList.toString();
-    mapjsA.parentElement.insertBefore(bigContainer, mapjsA);
-    mapjsA.classList.add('mirror1');
+    const defaultBaseMap = document.getElementById(this.target.id);
+    this.oldClass = defaultBaseMap.classList.toString();
+    defaultBaseMap.parentElement.insertBefore(bigContainer, defaultBaseMap);
+    const toolsContainer = document.querySelector('.m-api-idee-tools-container');
+
+    const mapjsA = document.createElement('div');
+    mapjsA.id = 'mapjsA';
+    mapjsA.classList.add('mirror1', 'm-api-idee-container');
     bigContainer.appendChild(mapjsA);
+
+    mapjsA.appendChild(toolsContainer);
+    mapjsA.appendChild(defaultBaseMap);
 
     const mapjsB = document.createElement('div');
     mapjsB.id = 'mapjsB';
@@ -373,8 +380,7 @@ export default class MirrorpanelControl extends IDEE.Control {
      */
   manageVisionPanelByCSSGrid(modeViz) {
     const oldModeViz = this.defaultCompareViz;
-    const map0 = document.getElementById(this.target.id);
-    map0.style.display = 'none';
+    document.getElementById('mapjsA').style.display = 'none';
     document.getElementById('mapjsB').style.display = 'none';
     document.getElementById('mapjsC').style.display = 'none';
     document.getElementById('mapjsD').style.display = 'none';
@@ -605,19 +611,17 @@ export default class MirrorpanelControl extends IDEE.Control {
 
   destroyMapsContainer() {
     this.manageVisionPanelByCSSGrid(0);
-    // Remove mirrors containers
-    document.getElementById('mapjsB').remove();
-    document.getElementById('mapjsC').remove();
-    document.getElementById('mapjsD').remove();
-    // Take the main map out of the container
     const lienzo = document.getElementById('lienzo');
-    const mapjsA = document.querySelector('.mirror1');
-    lienzo.parentElement.insertBefore(mapjsA, lienzo);
-    mapjsA.style.display = 'block';
-    mapjsA.classList.remove('mirror1');
-    mapjsA.classList = this.oldClass;
-    // Load the main container
-    document.getElementById('lienzo').remove();
+    const mapjsA = document.getElementById('mapjsA');
+    const mainMap = mapjsA.querySelector('.m-api-idee-map-panel');
+    const mainToolPanelsContainer = mapjsA.querySelector('.m-api-idee-tools-container');
+
+    lienzo.parentElement.insertBefore(mainToolPanelsContainer, lienzo);
+    lienzo.parentElement.insertBefore(mainMap, lienzo);
+    mainMap.style.display = 'block';
+    mainMap.classList = this.oldClass;
+
+    lienzo.remove();
   }
 
   /**
