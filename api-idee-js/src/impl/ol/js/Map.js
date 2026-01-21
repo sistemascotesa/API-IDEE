@@ -247,7 +247,7 @@ class Map extends MObject {
 
     this.map_ = new OLMap({
       controls: [],
-      target: div.id,
+      target: div,
       // renderer,
       view,
       pixelRatio,

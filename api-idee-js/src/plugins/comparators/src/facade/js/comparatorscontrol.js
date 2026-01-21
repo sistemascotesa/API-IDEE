@@ -21,7 +21,7 @@ export default class ComparatorsControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api
    */
-  constructor(isDraggable, order, options) {
+  constructor({ isDraggable, order, options }) {
     if (IDEE.utils.isUndefined(ComparatorsImpl)
       || (IDEE.utils.isObject(ComparatorsImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(ComparatorsImpl)))) {
@@ -274,7 +274,7 @@ export default class ComparatorsControl extends IDEE.Control {
     this.controls.forEach((c) => {
       if (c.controlParam[0]) {
         if (c.active) {
-          this.html.querySelector(`#${c.buttonsID}`).classList.add('activatedComparators');
+          this.html.querySelector(`#${c.buttonsID}`).classList.add('activated');
           if (c.id === 'lyrcompare' && c.controlParam[1].length < 1) {
             IDEE.toast.error(getValue('exception.notLayers'), null, 6000);
             setTimeout(() => {
@@ -299,7 +299,7 @@ export default class ComparatorsControl extends IDEE.Control {
           this.control = control;
           control.active(this.html);
         } else {
-          this.html.querySelector(`#${c.buttonsID}`).classList.remove('activatedComparators');
+          this.html.querySelector(`#${c.buttonsID}`).classList.remove('activated');
           if (c.control) c.control.deactivate();
           // eslint-disable-next-line no-param-reassign
           c.control = null;

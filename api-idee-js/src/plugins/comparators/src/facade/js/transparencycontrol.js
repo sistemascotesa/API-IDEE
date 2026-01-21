@@ -201,15 +201,15 @@ export default class TransparencyControl extends IDEE.Control {
         .addEventListener('click', (evt) => {
           this.freeze = !this.freeze;
           this.getImpl().setFreeze(this.freeze);
-          this.template.querySelector('#m-transparency-lock').style.visibility = 'visible';
-          this.template.querySelector('#m-transparency-unlock').style.visibility = 'hidden';
+          this.template.querySelector('#m-transparency-lock').style.display = 'inline';
+          this.template.querySelector('#m-transparency-unlock').style.display = 'none';
         });
 
       if (this.layers.length === 0 || this.layers === '') {
         IDEE.toast.error(getValue('exception.notLayers'), null, 6000);
       } else if (options !== '') {
-        this.template.querySelector('#m-transparency-lock').style.visibility = 'hidden';
-        this.template.querySelector('#m-transparency-unlock').style.visibility = 'hidden';
+        this.template.querySelector('#m-transparency-lock').style.display = 'inline';
+        this.template.querySelector('#m-transparency-unlock').style.display = 'none';
         this.template
           .querySelector('select')
           .addEventListener('change', (evt) => {
@@ -264,11 +264,11 @@ export default class TransparencyControl extends IDEE.Control {
         this.freeze = !this.freeze;
         this.getImpl().setFreeze(this.freeze);
         if (this.freeze) {
-          this.template.querySelector('#m-transparency-lock').style.visibility = 'hidden';
-          this.template.querySelector('#m-transparency-unlock').style.visibility = 'visible';
+          this.template.querySelector('#m-transparency-lock').style.display = 'none';
+          this.template.querySelector('#m-transparency-unlock').style.display = 'inline';
         } else {
-          this.template.querySelector('#m-transparency-lock').style.visibility = 'visible';
-          this.template.querySelector('#m-transparency-unlock').style.visibility = 'hidden';
+          this.template.querySelector('#m-transparency-lock').style.display = 'inline';
+          this.template.querySelector('#m-transparency-unlock').style.display = 'none';
         }
       }
     });
@@ -283,8 +283,8 @@ export default class TransparencyControl extends IDEE.Control {
       document.querySelector('#m-lyrdropdown-selector').style.display = 'none';
     }
 
-    this.template.querySelector('#m-transparency-lock').style.visibility = 'visible';
-    this.template.querySelector('#m-transparency-unlock').style.visibility = 'hidden';
+    this.template.querySelector('#m-transparency-lock').style.display = 'inline';
+    this.template.querySelector('#m-transparency-unlock').style.display = 'none';
     this.activate();
   }
 

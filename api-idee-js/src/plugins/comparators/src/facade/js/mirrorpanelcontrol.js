@@ -333,7 +333,7 @@ export default class MirrorpanelControl extends IDEE.Control {
     const bigContainer = document.createElement('div');
     bigContainer.id = 'lienzo';
     bigContainer.classList.add('mirrorpanel-grid');
-    const mapjsA = document.getElementById(this.target);
+    const mapjsA = document.getElementById(this.target.id);
     this.oldClass = mapjsA.classList.toString();
     mapjsA.parentElement.insertBefore(bigContainer, mapjsA);
     mapjsA.classList.add('mirror1');
@@ -373,7 +373,7 @@ export default class MirrorpanelControl extends IDEE.Control {
      */
   manageVisionPanelByCSSGrid(modeViz) {
     const oldModeViz = this.defaultCompareViz;
-    const map0 = document.getElementById(this.target);
+    const map0 = document.getElementById(this.target.id);
     map0.style.display = 'none';
     document.getElementById('mapjsB').style.display = 'none';
     document.getElementById('mapjsC').style.display = 'none';
@@ -441,7 +441,7 @@ export default class MirrorpanelControl extends IDEE.Control {
     });
 
     modeViz.forEach((map) => {
-      document.querySelector(`#mapL${map}Select`).parentElement.style.display = 'initial';
+      document.querySelector(`#mapL${map}Select`).parentElement.style.display = 'flex';
     });
   }
 
@@ -464,7 +464,6 @@ export default class MirrorpanelControl extends IDEE.Control {
 
     if (bgColorContainer) {
       // eslint-disable-next-line no-console
-      console.log('bgColorContainer', bgColorContainer);
       this.mapL[mapLyr] = IDEE.map({
         container: `mapjs${mapLyr}`,
         center: this.map_.getCenter(),
