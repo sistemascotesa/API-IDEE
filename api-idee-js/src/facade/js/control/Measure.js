@@ -1,10 +1,13 @@
+/**
+ * @module IDEE/control/Measure
+ */
 import { getValue } from '../i18n/language';
 import { compileSync } from '../util/Template';
 import Control from './Control';
 
 export default class Measure extends Control {
   static get translation() {
-    return getValue('measure');
+    return getValue(Measure.NAME);
   }
 
   /**
@@ -85,7 +88,7 @@ export default class Measure extends Control {
    * @api stable
    */
   destroy() {
-    this.getImpl().destroy();
+    super.destroy();
     this.template_ = null;
     this.impl = null;
   }
@@ -98,7 +101,7 @@ export default class Measure extends Control {
  * @public
  * @api stable
  */
-Measure.NAME = 'measurebar';
+Measure.NAME = 'measure';
 
 /**
  * Template for this controls

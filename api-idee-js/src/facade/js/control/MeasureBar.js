@@ -8,7 +8,6 @@ import MeasureLength from './MeasureLength';
 import MeasureArea from './MeasureArea';
 import MeasureClear from './MeasureClear';
 import * as Position from '../ui/position';
-import { getValue } from '../i18n/language';
 import 'assets/css/controls/measurebar';
 
 import { compileSync } from '../util/Template';
@@ -104,7 +103,7 @@ class MeasureBar extends Control {
      * @private
      * @type {string}
      */
-    this.tooltip_ = options.tooltip || getValue('measure.text.tooltip');
+    this.tooltip_ = options.tooltip ?? Measure.translation.text.tooltip;
 
     /**
      * Control parameters
@@ -123,7 +122,6 @@ class MeasureBar extends Control {
    */
   addTo(map) {
     this.map_ = map;
-
     this.measureLength_ = new MeasureLength({ order: this.order });
     this.measureArea_ = new MeasureArea({ order: this.order });
     this.measureClear_ = new MeasureClear(
@@ -131,22 +129,12 @@ class MeasureBar extends Control {
       this.measureArea_,
       { order: this.order },
     );
-
+    [this.measureLength_, this.measureArea_, this.measureClear_].forEach((control) => {
+      // eslint-disable-next-line no-param-reassign
+      control.facadeMap = this.map_;
+    });
     this.controls_.push(this.measureLength_, this.measureArea_, this.measureClear_);
-
-    // this.panel_ = new IDEE.ui.Panel('MeasureBar', {
-    //   collapsed: this.collapsed_,
-    //   collapsible: this.collapsible_,
-    //   tooltip: this.tooltip_,
-    //   position: IDEE.ui.position[this.position_],
-    //   className: 'm-panel-measurebar',
-    //   collapsedButtonClass: 'measurebar-regla',
-    //   order: this.order,
-    // });
-
     this.panel_.addControls(this.controls_);
-
-    // this.map_.addPanels(this.panel_);
   }
 
   /**
@@ -179,12 +167,11 @@ class MeasureBar extends Control {
    * @api stable
    */
   destroy() {
-    this.map_.removeControls([this.measureLength_, this.measureArea_, this.measureClear_]);
+    this.map_.removeControls([this.measureLength_, this.measureArea_, this.measureClear_, this]);
     this.map_ = null;
     this.measureLength_ = null;
     this.measureArea_ = null;
     this.measureClear_ = null;
-    super.destroy();
   }
 
   /**

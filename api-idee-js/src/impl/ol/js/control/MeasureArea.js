@@ -1,8 +1,11 @@
+/**
+ * @module IDEE/impl/control/MeasureArea
+ */
+import FacadeMeasure from 'IDEE/control/Measure';
+import FacadeMeasureLength from 'IDEE/control/MeasureLength';
+import { HELP_KEEP_MESSAGE } from 'IDEE/control/MeasureArea';
 import * as olSphere from 'ol/sphere';
-import FacadeMeasure from '../../../../facade/js/control/Measure';
-import FacadeMeasureLength from '../../../../facade/js/control/MeasureLength';
-import MeasureBase from './MeasureBase';
-import { HELP_KEEP_MESSAGE } from '../../../../facade/js/control/MeasureArea';
+import Measure from './Measure';
 
 /**
  * @classdesc
@@ -13,7 +16,7 @@ import { HELP_KEEP_MESSAGE } from '../../../../facade/js/control/MeasureArea';
  * @extends {Measure}
  * @api stable
  */
-export default class MeasureArea extends MeasureBase {
+class MeasureArea extends Measure {
   constructor() {
     super('Polygon');
     /**
@@ -91,3 +94,5 @@ export default class MeasureArea extends MeasureBase {
     return `${number}`.replace(/\d(?=(\d{3})+\.)/g, '$&*').split('.').join(',').split('*').join('.');
   }
 }
+
+export default MeasureArea;

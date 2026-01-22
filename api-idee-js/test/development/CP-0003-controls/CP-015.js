@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import { map as Mmap } from 'IDEE/api-idee';
 import MeasureBar from 'IDEE/control/MeasureBar';
 
@@ -26,9 +25,7 @@ const selectCollapsed = document.getElementById('selectCollapsed');
 const selectCollapsible = document.getElementById('selectCollapsible');
 const inputTooltip = document.getElementById('inputTooltip');
 
-selectPosition.addEventListener('change', recreateControl);
-
-function recreateControl() {
+const recreateControl = () => {
   if (ctrl) removeControl();
   const options = {};
   options.position = selectPosition.options[selectPosition.selectedIndex].value;
@@ -38,13 +35,16 @@ function recreateControl() {
   if (collapsed !== '') options.collapsed = (collapsed === 'true');
   if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
   createControl(options);
-}
+};
+
+selectPosition.addEventListener('change', recreateControl);
+selectCollapsed.addEventListener('change', recreateControl);
+selectCollapsible.addEventListener('change', recreateControl);
+inputTooltip.addEventListener('change', recreateControl);
 
 const removeButton = document.getElementById('removeButton');
 removeButton.addEventListener('click', () => {
   removeControl();
 });
 
-createControl({
-  position: selectPosition.options[selectPosition.selectedIndex].value,
-});
+recreateControl();

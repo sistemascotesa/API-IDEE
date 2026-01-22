@@ -11,14 +11,14 @@ import Draw from 'ol/interaction/Draw';
 import LineString from 'ol/geom/LineString';
 import Overlay from 'ol/Overlay';
 import Polygon from 'ol/geom/Polygon';
+import FacadeMeasure from 'IDEE/control/Measure';
 import Control from './Control';
 import tooltipPointerHTML from '../../../../templates/measure_pointer_tooltip';
 import tooltipHTML from '../../../../templates/measure_tooltip';
-import FacadeMeasure from '../../../../facade/js/control/Measure';
 import { compileSync } from '../../../../facade/js/util/Template';
 import { isNullOrEmpty } from '../../../../facade/js/util/Utils';
 
-const arc = require('../../../../../node_modules/arc');
+const arc = require('arc');
 
 /**
  * @classdesc
@@ -29,7 +29,7 @@ const arc = require('../../../../../node_modules/arc');
  * @extends {Control}
  * @api stable
  */
-export default class MeasureBase extends Control {
+class Measure extends Control {
   constructor(type) {
     super();
 
@@ -107,7 +107,6 @@ export default class MeasureBase extends Control {
    * @api stable
    */
   addTo(map, element) {
-    this.facadeMap_ = map;
     // adds layer
     map.getMapImpl().addLayer(this.layer_);
     // super addTo
@@ -399,9 +398,7 @@ export default class MeasureBase extends Control {
    */
   destroy() {
     this.deactivate();
-    this.element.remove();
-    this.facadeMap_.removeControls(this);
-    this.facadeMap_ = null;
+    super.destroy();
     this.overlays_.length = 0;
   }
 
@@ -444,3 +441,5 @@ export default class MeasureBase extends Control {
     return coords;
   }
 }
+
+export default Measure;

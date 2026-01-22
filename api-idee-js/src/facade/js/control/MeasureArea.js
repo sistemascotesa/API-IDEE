@@ -1,3 +1,6 @@
+/**
+ * @module IDEE/control/MeasureArea
+ */
 import MeasureAreaImpl from 'impl/control/MeasureArea';
 import measureAreaTemplate from 'templates/measurearea';
 import Measure from './Measure';
@@ -10,7 +13,7 @@ import exception from '../exception/exception';
  * Control de medida de una area
  *
  * @api
- * @extends {IDEE.Control}
+ * @extends {IDEE.Control.Measure}
  */
 export default class MeasureArea extends Measure {
   constructor(options) {

@@ -5,11 +5,13 @@
     }
   },
   "panzoombar": {
+    "title": "Zoom level",
     "textHelp": {
       "text1": "This tool allows you to change the zoom of the viewer from a panel with a slider. The display map changes zoom in or out as you move the slider up or down."
     }
   },
   "backgroundlayers": {
+    "title": "",
     "textHelp": {
       "text1": "The base layer selector tool allows you to switch between different base layers or background layers, configured in a viewer."
     }
@@ -35,23 +37,24 @@
     }
   },
   "scaleline": {
+    "title": "Scale line",
     "textHelp": {
       "text1": "The graphic scale is a line located on the map, often in the margin of the sheet, that has been subdivided into segments to indicate the lengths on the map of terrestrial distance units.",
       "text2": "Thanks to this element it is possible to measure the real distance directly on the map with the help of a ruler or a compass.",
       "text3": "Source"
     }
   },
-  "attributionsControl": {
+  "attributions": {
+    "title": "Recognitions",
     "attribution": "attribution",
-    "tooltip": "Recognitions",
     "textHelp": {
       "text1": "The base layer selector tool allows you to switch between different base layers or background layers, configured in a viewer.",
       "text2": "With this information, attribution can be given to each layer, allowing the user to know its source."
     }
   },
   "getfeatureinfo": {
-    "info": "Information",
     "title": "Consult layer",
+    "info": "Information",
     "no_info": "No associated info",
     "info_of": "Information about",
     "unsupported_format": "Unsupported format",
@@ -60,7 +63,6 @@
     }
   },
   "timeline": {
-    "tooltip": "Timeline",
     "title": "Timeline",
     "play": "Play",
     "pause": "Pause",
@@ -235,6 +237,7 @@
     "getxyzs_method": "The used implementation does not have the getXYZs method.",
     "gettms_method": "The used implementation does not have the getTMS method.",
     "undefined_control": "The control is not defined, please refer to the available controls.",
+    "control_name_method": "The specified control needs a name in order to be created.",
     "no_tool_position": "There is no tool container for the indicated position",
     "invalid_tool_position": "The tool position is incorrect",
     "getcontrols_method": "The used implementation does not have the getControls method.",

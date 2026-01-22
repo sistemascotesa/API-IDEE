@@ -1,3 +1,6 @@
+/**
+ * @module IDEE/control/MeasureClear
+ */
 import MeasureClearImpl from 'impl/control/MeasureClear';
 import measureClearTemplate from 'templates/measureclear';
 import Control from './Control';

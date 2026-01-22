@@ -1,3 +1,6 @@
+/**
+ * @module IDEE/control/MeasureLength
+ */
 import MeasureLengthImpl from 'impl/control/MeasureLength';
 import measureLengtTemplate from 'templates/measurelength';
 import Measure from './Measure';

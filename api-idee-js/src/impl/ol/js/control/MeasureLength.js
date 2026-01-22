@@ -1,8 +1,11 @@
+/**
+ * @module IDEE/impl/control/MeasureLength
+ */
+import FacadeMeasure from 'IDEE/control/Measure';
+import FacadeMeasureArea from 'IDEE/control/MeasureArea';
+import { HELP_KEEP_MESSAGE } from 'IDEE/control/MeasureLength';
 import * as olProj from 'ol/proj';
-import MeasureBase from './MeasureBase';
-import FacadeMeasure from '../../../../facade/js/control/Measure';
-import FacadeMeasureArea from '../../../../facade/js/control/MeasureArea';
-import { HELP_KEEP_MESSAGE } from '../../../../facade/js/control/MeasureLength';
+import Measure from './Measure';
 
 const WGS84 = 'EPSG:4326';
 const { measurements } = require('../../../../geoprocesses');
@@ -16,7 +19,7 @@ const { measurements } = require('../../../../geoprocesses');
  * @extends {MeasureBase}
  * @api stable
  */
-export default class MeasureLength extends MeasureBase {
+class MeasureLength extends Measure {
   constructor() {
     super('LineString');
 
@@ -89,3 +92,5 @@ export default class MeasureLength extends MeasureBase {
     document.querySelector('.m-control.m-measurelength-container').classList.add('activated');
   }
 }
+
+export default MeasureLength;

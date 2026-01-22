@@ -1,5 +1,8 @@
-import FacadeMeasureArea from '../../../../facade/js/control/MeasureArea';
-import FacadeMeasureLength from '../../../../facade/js/control/MeasureLength';
+/**
+ * @module IDEE/impl/control/MeasureClear
+ */
+import FacadeMeasureArea from 'IDEE/control/MeasureArea';
+import FacadeMeasureLength from 'IDEE/control/MeasureLength';
 import Control from './Control';
 // eslint-disable-next-line no-unused-vars
 import MeasureArea from './MeasureArea';
@@ -14,7 +17,7 @@ import MeasureLength from './MeasureLength';
  * @extends {Control}
  * @api stable
  */
-export default class MeasureClear extends Control {
+class MeasureClear extends Control {
   constructor(measureLengthControl, measureAreaControl) {
     super();
 
@@ -99,3 +102,5 @@ export default class MeasureClear extends Control {
     this.facadeMap_ = null;
   }
 }
+
+export default MeasureClear;

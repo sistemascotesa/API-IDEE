@@ -1,8 +1,9 @@
 /**
  * @module IDEE/Control
  */
-import ControlImpl from 'impl/control/Control';
-import { isUndefined, isNullOrEmpty, isNumber } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isNumber, isString,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import Base from '../Base';
 import * as EventType from '../event/eventtype';
@@ -44,7 +45,7 @@ class Control extends Base {
    * }
    */
   constructor(name, impl, options = {}) {
-    super(impl ?? new ControlImpl(options.vendorOptions));
+    super(impl);
     this.map = null;
 
     /**
@@ -57,9 +58,14 @@ class Control extends Base {
      */
     this.parentContainer = null;
 
-    this.name = name;
-    this.tooltip = options.tooltip ?? '';
-    this.svgPath = options.svgPath ?? null;
+    this.name = null;
+    if (isString(name)) this.name = name;
+    else Exception(getValue('exception').control_name_method);
+
+    this.tooltip = '';
+    if (isString(options.tooltip)) this.tooltip = options.tooltip;
+
+    this.svgPath = isString(options.svgPath) ?? null;
 
     /**
      * position of control on map, default left
@@ -73,6 +79,13 @@ class Control extends Base {
     this.element = null;
     this.activationBtn = null;
     this.activated = false;
+  }
+
+  /**
+   * @return {Object} and object that contains the control translate JSON.
+   */
+  get translation() {
+    return getValue(this.name);
   }
 
   /**

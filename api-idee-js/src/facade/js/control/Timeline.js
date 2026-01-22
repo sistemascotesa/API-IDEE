@@ -46,7 +46,6 @@ class Timeline extends Control {
 
     /**
      * Intervals
-     * @public
      * Value: Array with each interval attributes [name, tag, service]
      * @property {String} intervals
      */
@@ -77,43 +76,36 @@ class Timeline extends Control {
     this.speed = parseFloat(options.speed) || 1;
 
     /**
-     *@private
      *@type { Number }
      */
     this.speedDate = (options.speedDate) ? options.speedDate : 2;
 
     /**
-     *@private
      *@type { String }
      */
     this.paramsDate = (options.paramsDate) ? options.paramsDate : 'yr';
 
     /**
-     *@private
      *@type { Number }
      */
     this.stepValue = (options.stepValue) ? options.stepValue : 1;
 
     /**
-     *@private
      *@type { String }
      */
     this.sizeWidthDinamic = (options.sizeWidthDinamic) ? options.sizeWidthDinamic : '';
 
     /**
-     *@private
      *@type { String }
      */
     this.formatMove = (options.formatMove === 'discrete') ? 'discrete' : 'continuous';
 
     /**
-     *@private
      *@type { String }
      */
     this.formatValue = (options.formatValue) ? options.formatValue : 'linear';
 
     /**
-     *@private
      *@type { String }
      */
     this.timelineType = options.timelineType || false;
