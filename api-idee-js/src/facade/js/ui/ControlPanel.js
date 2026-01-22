@@ -7,6 +7,8 @@ import * as Position from './position';
 import {
   isArray, isNullOrEmpty, isString, includes,
   isObject,
+  isNumber,
+  isBoolean,
 } from '../util/Utils';
 import MObject from '../Object';
 import * as EventType from '../event/eventtype';
@@ -47,7 +49,8 @@ class ControlPanel extends MObject {
      * @api
      * @expose
      */
-    this.name = name;
+    this.name = '';
+    if (isString(name)) this.name = name;
 
     /**
      * @private
@@ -76,7 +79,7 @@ class ControlPanel extends MObject {
      * @expose
      */
     this._collapsible = false;
-    if (!isNullOrEmpty(options.collapsible)) {
+    if (isBoolean(options.collapsible)) {
       this._collapsible = options.collapsible;
     }
 
@@ -86,7 +89,7 @@ class ControlPanel extends MObject {
      * @expose
      */
     this.position = Position.LEFT;
-    if (!isNullOrEmpty(options.position)) {
+    if (Position.isValid(options.position)) {
       this.position = options.position;
     }
 
@@ -96,7 +99,7 @@ class ControlPanel extends MObject {
      * @expose
      */
     this._collapsed = this._collapsible;
-    if (!isNullOrEmpty(options.collapsed)) {
+    if (isBoolean(options.collapsed)) {
       this._collapsed = (options.collapsed && (this._collapsible === true));
     }
 
@@ -106,7 +109,7 @@ class ControlPanel extends MObject {
      * @expose
      */
     this._multiActivation = false;
-    if (!isNullOrEmpty(options.multiActivation)) {
+    if (isBoolean(options.multiActivation)) {
       this._multiActivation = options.multiActivation;
     }
 
@@ -116,7 +119,7 @@ class ControlPanel extends MObject {
      * @expose
      */
     this._className = null;
-    if (!isNullOrEmpty(options.className)) {
+    if (isString(options.className)) {
       this._className = options.className;
     }
 
@@ -126,7 +129,7 @@ class ControlPanel extends MObject {
      * @expose
      */
     this._collapsedButtonClass = null;
-    if (!isNullOrEmpty(options.collapsedButtonClass)) {
+    if (isString(options.collapsedButtonClass)) {
       this._collapsedButtonClass = options.collapsedButtonClass;
     } else if ((this.position === Position.LEFT) || (this.position === Position.CTL)) {
       this._collapsedButtonClass = 'g-cartografia-flecha-derecha';
@@ -141,10 +144,9 @@ class ControlPanel extends MObject {
      * @expose
      */
     this._openedButtonClass = null;
-    if (!isNullOrEmpty(options.openedButtonClass)) {
+    if (isString(options.openedButtonClass)) {
       this._openedButtonClass = options.openedButtonClass;
-    } else if (!isNullOrEmpty(options.collapsedButtonClass)
-      && options.collapsedButtonClass !== null) {
+    } else if (isString(options.collapsedButtonClass) && options.collapsedButtonClass !== null) {
       this._openedButtonClass = options.collapsedButtonClass;
     } else if ((this.position === Position.LEFT) || (this.position === Position.CTL)) {
       this._openedButtonClass = 'g-cartografia-flecha-izquierda';
@@ -183,7 +185,7 @@ class ControlPanel extends MObject {
      * @expose
      */
     this._tooltip = null;
-    if (!isNullOrEmpty(options.tooltip)) {
+    if (isString(options.tooltip)) {
       this._tooltip = options.tooltip;
     }
 
@@ -192,7 +194,7 @@ class ControlPanel extends MObject {
      * @type {Number}
      * @expose
      */
-    if (!isNullOrEmpty(options.order)) {
+    if (isNumber(options.order)) {
       this._order = options.order;
     }
   }
@@ -540,15 +542,15 @@ class ControlPanel extends MObject {
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
-   * @param {array<IDEE.Control>} controls Control.
+   * @param {IDEE.Control} control Control.
    * @api
    */
   _moveControlView(control) {
     const controlElem = control.getElement();
-    if (!isNullOrEmpty(this._controlsContainer)) {
+    if (!isNullOrEmpty(this._controlsContainer) && !isNullOrEmpty(controlElem)) {
       this._controlsContainer.appendChild(controlElem);
+      control.fire(EventType.ADDED_TO_PANEL);
     }
-    control.fire(EventType.ADDED_TO_PANEL);
   }
 
   /**

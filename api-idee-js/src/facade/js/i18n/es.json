@@ -5,11 +5,13 @@
     }
   },
   "panzoombar": {
+    "title": "Nivel de zoom",
     "textHelp": {
       "text1": "Esta herramienta permite cambiar el zoom del visualizador a partir de un panel con un desplazador. El mapa del visualizador cambia acercándose o alejándose según se cambie el desplazador hacia arriba o hacia abajo."
     }
   },
   "backgroundlayers": {
+    "title": "",
     "textHelp": {
       "text1": "La herramienta de selector de capas base permite cambiar entre distintas capas base o capas de fondo, configuradas en un visualizador."
     }
@@ -36,23 +38,24 @@
     }
   },
   "scaleline": {
+    "title": "Línea de escala",
     "textHelp": {
       "text1": "La escala gráfica es una línea situada en el mapa, a menudo en el margen de la hoja, que se ha subdividido en segmentos para indicar las longitudes sobre el mapa de las unidades terrestres de distancia.",
       "text2": "Gracias a este elemento es posible medir la distancia real directamente sobre el mapa con la ayuda de una regla o un compás.",
       "text3": "Fuente"
     }
   },
-  "attributionsControl": {
+  "attributions": {
+    "title": "Reconocimientos",
     "attribution": "atribución",
-    "tooltip": "Reconocimientos",
     "textHelp": {
       "text1": "La herramienta de selector de capas base permite cambiar entre distintas capas base o capas de fondo, configuradas en un visualizador.",
       "text2": "Con esta información, se puede dar la atribución a cada capa, permitiendo al usuario saber su fuente."
     }
   },
   "getfeatureinfo": {
-    "info": "Información",
     "title": "Consultar capa",
+    "info": "Información",
     "no_info": "No existe información asociada",
     "info_of": "Información de",
     "unsupported_format": "Formato no soportado",
@@ -61,7 +64,6 @@
     }
   },
   "timeline": {
-    "tooltip": "Línea de tiempo",
     "title": "Línea de tiempo",
     "play": "Iniciar",
     "pause": "Parar",
@@ -108,6 +110,34 @@
     "image1_description": "Icono girar vista",
     "image2_description": "Icono inclinar vista",
     "close_btn": "Cerrar ayuda"
+  },
+  "measure": {
+    "textHelp": {
+      "help1": "Mide longitudes y superficies sobre el mapa.",
+      "help2": "1. Medir distancias.",
+      "help3": "2. Medir área.",
+      "help4": "3. Borrar Medidas.",
+      "help5": "Haga clic sobre la herramienta para seleccionarla y luego sobre el mapa para dibujar la distancia que quiere medir. A medida que se va dibujando se va actualizando la longitud total.",
+      "help6": "Haga doble clic para terminar la medición de distancia, y empezar otra.",
+      "help7": "Con la tecla Escape se desactiva la herramienta y se borra la medición activa. Esto puede ser útil para reiniciar la herramienta si se ha cometido un error en la última medición, sin borrar el resto de mediciones ya realizadas.",
+      "help8": "La herramienta se queda activa hasta que la desactive, haciendo clic de nuevo sobre el botón 'Medir distancias'.",
+      "help9": "Haga clic sobre la herramienta para seleccionarla y luego sobre el mapa para dibujar el área que quiere medir. A medida que se va dibujando se va actualizando la superficie medida.",
+      "help10": "Haga doble clic para terminar la medición de área, y empezar otra.",
+      "help11": "Con la tecla Escape se desactiva la herramienta y se borra la medición activa. Esto puede ser útil para reiniciar la herramienta si se ha cometido un error en la última medición, sin borrar el resto de mediciones ya realizadas.",
+      "help12": "La herramienta se queda activa hasta que la desactive, haciendo clic de nuevo sobre el botón 'Medir área'.",
+      "help13": "Borra todas las mediciones realizadas, tanto áreas como distancias.",
+      "help14": "La información relevante a la extensión y su posible parametrización está documentada en",
+      "help15": "El ejemplo de uso de sus parámetros puede comprobarse en"
+    },
+    "text": {
+      "tooltip": "Herramientas de medición",
+      "keep_drawing": "Click para continuar dibujando la línea",
+      "click_draw": "Click para empezar a dibujar",
+      "keep_drawing_area": "Click para continuar dibujando el área",
+      "measure_area": "Medir área",
+      "delete": "Borrar medidas",
+      "measure": "Medir distancias"
+    }
   },
   "mouse": {
     "title": "Coordenadas del puntero"
@@ -156,6 +186,7 @@
     "panzoom_method": "La implementación usada no puede crear controles Panzoom",
     "panzoombar_method": "La implementación usada no puede crear controles Panzoombar",
     "scale_method": "La implementación usada no puede crear controles Scale",
+    "measurebar_method": "La implementación usada no puede crear controles Measurebar",
     "timeline_method": "La implementación usada no puede crear controles TimeLine",
     "scaleline_method": "La implementación usada no puede crear controles ScaleLine",
     "wmcselector_method": "La implementación usada no puede crear controles WMCSelector",
@@ -207,6 +238,7 @@
     "getxyzs_method": "La implementación usada no posee el método getXYZs.",
     "gettms_method": "La implementación usada no posee el método getTMS.",
     "undefined_control": "El control no está definido, consulte los controles disponibles.",
+    "control_name_method": "El control especificado necesita un nombre para poder ser creado",
     "no_tool_position": "No existe un contenedor de herramientas para la posición indicada",
     "invalid_tool_position": "La posición de la herramienta es incorrecta",
     "getcontrols_method": "La implementación usada no posee el método getControls.",
@@ -354,6 +386,9 @@
     "setminscale_no_apply": "No es posible aplicar la mínima escala a la capa WMC.",
     "setmaxscale_no_apply": "No es posible aplicar la máxima escala a la capa WMC.",
     "wkt_toCQL_method": "La implementación usada no puede crear el formateador WKT por lo que no incluirá filtros CQL.",
-    "enableDrag_deprecated": "El método enableDrag de la clase Map ha quedado obsoleto, se recomienda usar en su lugar enablePan."
+    "enableDrag_deprecated": "El método enableDrag de la clase Map ha quedado obsoleto, se recomienda usar en su lugar enablePan.",
+    "impl_length": "La implementación usada no puede crear controles MeasureLength.",
+    "impl_clear": "La implementación usada no puede crear controles MeasureClear.",
+    "impl_area": "La implementación usada no puede crear controles MeasureArea"
   }
 }

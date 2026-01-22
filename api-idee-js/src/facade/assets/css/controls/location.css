@@ -1,5 +1,5 @@
-.m-control.m-location-container {
-    background-color: transparent !important;
+.m-control-panel.m-location.opened.no-collapsible>.m-controls-panel {
+    border-radius: 50%;
 }
 
 /* .m-location-container.m-locating>button#m-location-button:before {
@@ -12,6 +12,7 @@
 .m-location-container.m-locating>button#m-location-button {
     padding: 8px;
 }
+
 
 .m-location-container>button#m-location-button {
     border: 2px solid white !important;
