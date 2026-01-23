@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="idee" content="yes">
+
+    <title>PRUEBA DESARROLLO</title>
+    <style rel="stylesheet">
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: auto;
+        }
+    </style>
+
+</head>
+
+<body style="display: flex; flex-direction: column;">
+    <div>
+        <label for="selectPosicion">Selector de posición del plugin</label>
+        <select name="position" id="selectPosicion">
+            <option value="left">Izquierda (left)</option>
+            <option value="right" selected="selected">Derecha (right)</option>
+            <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
+            <option value="center-top-right">Centro superior derecho (center-top-right)</option>
+            <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
+            <option value="center-bottom-right">Centro inferior derecho (center-bottom-right)</option>
+            <option value="down">Abajo (down)</option>
+        </select>
+        <label for="selectCollapsed">Parámetro de collapsed</label>
+        <select name="collapsed" id="selectCollapsed">
+            <option value=''></option>
+            <option value="true" selected="selected">true</option>
+            <option value="false">false</option>
+        </select>
+
+        <label for="selectCollapsible">Selector de collapsible</label>
+        <select name="collapsible" id="selectCollapsible">
+            <option value=''></option>
+            <option value="true" selected="selected">true</option>
+            <option value="false">false</option>
+        </select>
+
+        <label for="inputTooltip">Parámetro tooltip</label>
+        <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Herramientas de medición">
+    </div>
+    <div>
+        <input type="button" value="Eliminar Control" name="eliminar" id="removeButton">
+    </div>
+    <div id="map" class="map"></div>
+    <script src="/config.js" charset="utf-8"></script>
+    <script src="/CP-0003-controls/CP-015.js" charset="utf-8"></script>
+</body>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-19NTRSBP21"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-19NTRSBP21');
+</script>
+
+</html>

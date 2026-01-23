@@ -38,4 +38,7 @@ CP-013
 Control parametro de ordenación
 
 CP-014
-Control linea de tiempo (timeline)
+Control timeline
+
+CP-015
+Control measurebar

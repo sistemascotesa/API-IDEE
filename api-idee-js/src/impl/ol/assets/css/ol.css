@@ -185,7 +185,7 @@
 .ol-control button:hover
 /*.ol-control button:focus*/ {
     text-decoration: none;
-    background-color: rgba(0, 60, 136, 0.7);
+    background-color: var(--idee-color-links);
 }
 
 .ol-attribution {
