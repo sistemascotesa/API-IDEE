@@ -6,7 +6,7 @@ import MouseSRSImplControl from 'impl/mousesrscontrol';
 import template from '../../templates/mousesrs';
 import { getValue } from './i18n/language';
 
-export default class MouseSRSControl extends IDEE.Control {
+class MouseSRSControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
@@ -30,14 +30,20 @@ export default class MouseSRSControl extends IDEE.Control {
     order = 32766,
     draggableDialog = true,
     epsgFormat = false,
+    position = 'down',
   ) {
-    if (IDEE.utils.isUndefined(MouseSRSImplControl) || (IDEE.utils.isObject(MouseSRSImplControl)
+    if (IDEE.utils.isUndefined(MouseSRSImplControl)
+      || (IDEE.utils.isObject(MouseSRSImplControl)
       && IDEE.utils.isNullOrEmpty(Object.keys(MouseSRSImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
     // eslint-disable-next-line max-len
     const impl = new MouseSRSImplControl(srs, label, precision, geoDD, utmDD, tooltip, activeZ, helpUrl, mode, coveragePrecisions, order, draggableDialog, epsgFormat);
-    super('MouseSRS', impl);
+    super('MouseSRS', impl, {
+      tooltip,
+      position,
+      order,
+    });
     this.tooltip_ = tooltip;
     this.order = order;
   }
@@ -80,3 +86,14 @@ export default class MouseSRSControl extends IDEE.Control {
     this.getImpl().destroy();
   }
 }
+
+/**
+   * Nombre para identificar este control.
+   * @const
+   * @type {string}
+   * @public
+   * @api
+   */
+MouseSRSControl.NAME = 'mousesrs';
+
+export default MouseSRSControl;

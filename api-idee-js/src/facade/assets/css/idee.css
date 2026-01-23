@@ -785,10 +785,6 @@ div.m-control button[class^=g-cartografia-]:hover,
     color: #f1832e !important;
 }
 
-.ol-zoomslider>button.ol-zoomslider-thumb {
-    /* border: 2px solid white; */
-}
-
 .m-panel.opened {
     background-color: #fff !important;
 }

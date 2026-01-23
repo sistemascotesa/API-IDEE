@@ -1,6 +1,6 @@
 import { map as Mmap } from 'IDEE/api-idee';
 // import Panzoombar from 'IDEE/control/Panzoombar';
-import Panzoom from 'IDEE/control/Panzoom';
+// import Panzoom from 'IDEE/control/Panzoom';
 // import * as Position from 'IDEE/ui/position';
 // import ScaleLine from 'IDEE/control/ScaleLine';
 // import Scale from 'IDEE/control/Scale';
@@ -8,9 +8,9 @@ import Panzoom from 'IDEE/control/Panzoom';
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
-  // controls: ['scaleline', 'scale'],
+  controls: ['scaleline', 'scale'],
   // controls: [Panzoombar.NAME],
-  controls: [Panzoom.NAME],
+  // controls: [Panzoom.NAME],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 5,
   maxZoom: 20,
@@ -25,10 +25,10 @@ const map = Mmap({
 //   position: Position.LEFT,
 // });
 
-map.addControls([
-  // panzoombar,
-  // panzoom,
-]);
+// map.addControls([
+//   panzoombar,
+//   panzoom,
+// ]);
 
 // const scaleLine = new ScaleLine({
 //   position: Position.LEFT,

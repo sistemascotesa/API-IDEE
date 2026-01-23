@@ -78,7 +78,7 @@ class Panzoom extends ControlBase {
    * @api
    */
   getHelp() {
-    const textHelp = getValue('panzoom').textHelp;
+    const textHelp = this.translation.textHelp;
     return {
       title: Panzoom.NAME,
       content: new Promise((success) => {

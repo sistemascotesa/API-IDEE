@@ -36,14 +36,19 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super();
-
+    super('mousersrs', {
+      position: options.position || 'down',
+      tooltip: options.tooltip || getValue('tooltip'),
+    });
+    // super();
     /**
      * Facade of the map
      * @private
      * @type {IDEE.Map}
      */
     this.map_ = null;
+
+    this.position = options.position || 'down';
 
     /**
      * Array of controls
@@ -109,7 +114,7 @@ export default class MouseSRS extends IDEE.Plugin {
     /**
      * Draggable dialog
      */
-    this.draggableDialog = options.draggableDialog === undefined ? true : options.draggableDialog;
+    this.draggableDialog = options.draggableDialog || false;
 
     /**
      * URL to the help for the icon
@@ -166,6 +171,8 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
+    this.map = map;
+
     this.control_ = new MouseSRSControl(
       this.srs_,
       this.label_,
@@ -180,15 +187,21 @@ export default class MouseSRS extends IDEE.Plugin {
       this.order,
       this.draggableDialog,
       this.epsgFormat,
+      this.position,
     );
+    // this.control_.once(IDEE.evt.ADDED_TO_MAP, () => {
+    //   // eslint-disable-next-line no-underscore-dangle
+    //   this.control_.parentContainer.appendChild(this.control_.getImpl().html_);
+    // });
     this.controls_.push(this.control_);
-    this.map_ = map;
-    this.panel_ = new IDEE.ui.Panel('panelMouseSRS', {
+    this.panel_ = new IDEE.ui.ControlPanel('panelMouseSRS', {
       collapsible: false,
       tooltip: this.tooltip_,
       className: 'm-plugin-mousesrs',
       order: this.order,
+      position: this.position,
     });
+    this.control_.setPanel(this.panel_);
     map.addControls(this.controls_);
   }
 
@@ -200,31 +213,17 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map_.removeControls([this.control_]);
-    this.map_ = null;
+    // this.map.removeControls([this.control_]);
+    // this.map = null;
+    // this.control_ = null;
+    // this.panel_ = null;
+    if (this.map && this.control_) {
+      // this.map.removeControls([this.control_]);
+      this.control_.destroy();
+    }
+    this.map = null;
     this.control_ = null;
     this.panel_ = null;
-  }
-
-  /**
-   * Name of the plugin
-   *
-   * @getter
-   * @function
-   */
-  get name() {
-    return 'mousesrs';
-  }
-
-  /**
-   * This function returns the position
-   *
-   * @public
-   * @return {string}
-   * @api
-   */
-  get position() {
-    return this.position_;
   }
 
   /**
@@ -234,9 +233,9 @@ export default class MouseSRS extends IDEE.Plugin {
    * @function
    * @api
    */
-  get label() {
-    return this.label_;
-  }
+  // get label() {
+  //   return this.label_;
+  // }
 
   /**
    * This function returns the srs (Spatial Reference System)
