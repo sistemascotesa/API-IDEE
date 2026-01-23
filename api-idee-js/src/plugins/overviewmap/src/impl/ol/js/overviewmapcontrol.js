@@ -13,6 +13,8 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
     super(IDEE.utils.extend({
       layers: [],
       tipLabel: getValue('tooltip'),
+      collapsed: true,
+      collapsible: true,
     }, vendorOptions, true));
 
     /**
@@ -35,7 +37,10 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
       this.collapsedButtonClass_ = options.collapsedButtonClass;
     }
 
-    if (options.position === 'TR' || options.position === 'BR') {
+    if (options.position === 'right'
+      || options.position === 'center-bottom-right'
+      || options.position === 'center-top-right'
+    ) {
       this.openedButtonClass_ = 'g-cartografia-flecha-derecha';
     } else {
       this.openedButtonClass_ = 'g-cartografia-flecha-izquierda';
@@ -93,11 +98,28 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
    * @api stable
    */
   addTo(map, html) {
+    super.addTo(map, html); // Llama al addTo de IDEE.Control si existe
     this.facadeMap_ = map;
     this.update(map, html);
+    this.html_ = html;
     if (!this.getCollapsed()) {
       this.addLayers();
     }
+  }
+
+  /**
+   * Método para que el panel llame y obtener el HTML.
+   * Devuelve el elemento DOM generado por OpenLayers
+   *
+   * @public
+   * @function
+   * @api stable
+   */
+  getView() {
+    console.log('Pidiendo vista del OverviewMap...');
+    // 'this.element' es el div principal que crea OpenLayers automáticamente
+    return this.element; // this.html_ contiene el DOM del plugin
+    // return this.element;
   }
 
   /**
@@ -290,7 +312,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
       this.ovmap_.addLayer(olLayers[0]);
     }
 
-    this.facadeMap_.getMapImpl().addControl(this);
+    // this.facadeMap_.getMapImpl().addControl(this);
     this.wasOpen_ = true;
   }
 

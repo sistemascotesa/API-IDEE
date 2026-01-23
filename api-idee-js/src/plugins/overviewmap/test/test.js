@@ -13,8 +13,8 @@ const map = IDEE.map({
 window.map = map;
 
 const mp = new OverviewMap({
-  position: 'BR', // TL | TR | BL | BR
-  collapsed: false,
+  position: 'left',
+  collapsed: true,
   collapsible: true,
   fixed: true,
   zoom: 4,

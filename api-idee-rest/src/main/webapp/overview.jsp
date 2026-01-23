@@ -163,7 +163,7 @@
 
         let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
-            position: "BR",
+            position: "left",
         });
         map.addPlugin(mp2);
         const botonEliminar = document.getElementById("botonEliminar");

@@ -3,10 +3,10 @@
  */
 
 import OverviewMapImplControl from 'impl/overviewmapcontrol';
-import template from 'templates/overviewmap';
+// import template from 'templates/overviewmap';
 import { getValue } from './i18n/language';
 
-export default class OverviewMapControl extends IDEE.Control {
+class OverviewMapControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
@@ -23,7 +23,7 @@ export default class OverviewMapControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl'));
     }
     const impl = new OverviewMapImplControl(options, vendorOptions);
-    super('OverviewMap', impl);
+    super('OverviewMap', impl, {});
 
     impl.facadeControl = this;
   }
@@ -38,9 +38,17 @@ export default class OverviewMapControl extends IDEE.Control {
    */
   createView(map) {
     return new Promise((success, fail) => {
-      const html = IDEE.template.compileSync(template);
+      const html = this.getImpl().getView();
       success(html);
     });
+  }
+
+  /**
+   * Este método es el que busca Map.js para insertar el control en el DOM
+   */
+  getView() {
+    // Le pedimos a la implementación de OpenLayers su elemento real
+    return this.getImpl().getView();
   }
 
   /**
@@ -54,4 +62,12 @@ export default class OverviewMapControl extends IDEE.Control {
   equals(control) {
     return control instanceof OverviewMapControl;
   }
+
+  destroy() {
+    this.getImpl().destroy();
+  }
 }
+
+OverviewMapControl.NAME = 'overviewmap';
+
+export default OverviewMapControl;

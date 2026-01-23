@@ -22,7 +22,10 @@ export default class OverviewMap extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super();
+    super('overviewmap', {
+      position: options.position || 'left',
+      tooltip: options.tooltip || getValue('tooltip'),
+    });
     /**
      * Facade of the map
      * @private
@@ -49,7 +52,7 @@ export default class OverviewMap extends IDEE.Plugin {
      * @private
      * @type {String}
      */
-    this.position_ = options.position !== undefined ? options.position : 'BR';
+    this.position_ = options.position || 'left';
 
     /**
      * Plugin tooltip
@@ -150,17 +153,30 @@ export default class OverviewMap extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.control_ = new OverviewMapControl(this.options_, this.vendorOptions);
-    this.controls_.push(this.control_);
     this.map_ = map;
+
+    this.control_ = new OverviewMapControl(this.options_, this.vendorOptions);
+    // this.control_.position = this.position;
+    this.control_.parentPlugin = this;
+    this.controls_.push(this.control_);
+
     this.panel_ = new IDEE.ui.Panel('OverviewMap', {
-      className: 'm-overviewmap-panel',
-      position: IDEE.ui.position[this.position_],
-      order: this.order,
       tooltip: this.tooltip_,
+      className: 'm-overviewmap-panel',
+      // position: IDEE.ui.position[this.position_],
+      order: this.order,
+      position: this.position,
     });
-    this.panel_.addControls(this.controls_);
+    this.panel = this.panel_;
+
+    this.control_.setPanel(this.panel_);
     map.addPanels(this.panel_);
+    if (this.panel && !this.panel.panelContent) {
+      this.panel.createContentPanel();
+    }
+    // map.addPanels(this.panel_);
+    // Ahoramiso el panel no tiene el DOM.
+    map.addControls(this.controls_);
   }
 
   /**
