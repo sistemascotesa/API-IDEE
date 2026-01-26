@@ -98,7 +98,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
    * @api stable
    */
   addTo(map, html) {
-    console.log('addTo');
+    // No existe el método addTo de la clase base
     super.addTo(map, html); // Llama al addTo de IDEE.Control si existe
     this.facadeMap_ = map;
     const olMap = map.getMapImpl();
@@ -119,9 +119,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
    * @api stable
    */
   getView() {
-    // 'this.element' es el div principal que crea OpenLayers automáticamente
     return this.element; // this.html_ contiene el DOM del plugin
-    // return this.element;
   }
 
   /**

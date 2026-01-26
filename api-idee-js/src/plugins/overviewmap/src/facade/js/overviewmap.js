@@ -171,9 +171,9 @@ export default class OverviewMap extends IDEE.Plugin {
 
     this.panel_.addControls(this.control_);
     // this.control_.setPanel(this.panel_);
-    map.addControlPanels(this.panel_);
+    this.map_.addControlPanels(this.panel_);
 
-    map.addControls(this.controls_);
+    // this.map_.addControls(this.controls_);
     this.controls_.push(this.control_);
   }
 

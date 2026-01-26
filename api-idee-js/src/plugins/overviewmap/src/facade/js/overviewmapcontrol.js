@@ -39,7 +39,6 @@ class OverviewMapControl extends IDEE.Control {
   createView(map) {
     return new Promise((success, fail) => {
       const html = this.getImpl().getView();
-      console.log('Vista obtenida de la impl:', html);
       // const html = IDEE.template.compileSync(template);
       success(html);
     });
@@ -49,7 +48,7 @@ class OverviewMapControl extends IDEE.Control {
    * Este método es el que busca Map.js para insertar el control en el DOM
    */
   getView() {
-    // Le pedimos a la implementación de OpenLayers su elemento real
+    // Elemento real de OpenLayers
     return this.getImpl().getView();
   }
 
