@@ -6,7 +6,7 @@ import ContactLinkImplControl from 'impl/contactlinkcontrol';
 import template from 'templates/contactlink';
 import { getValue } from './i18n/language';
 
-export default class ContactLinkControl extends IDEE.Control {
+class ContactLinkControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
@@ -16,7 +16,7 @@ export default class ContactLinkControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api stable
    */
-  constructor(values) {
+  constructor(options) {
     // 1. checks if the implementation can create PluginControl
     if (IDEE.utils.isUndefined(ContactLinkImplControl)
       || (IDEE.utils.isObject(ContactLinkImplControl)
@@ -25,77 +25,77 @@ export default class ContactLinkControl extends IDEE.Control {
     }
     // 2. implementation of this control
     const impl = new ContactLinkImplControl();
-    super('ContactLink', impl);
+    super(ContactLinkControl.NAME, impl, options);
 
     /**
      * Link to cnig downloads
      * @private
      * @type {String}
      */
-    this.linksDescargascnig = values.descargascnig;
+    this.linksDescargascnig = options.descargascnig;
 
     /**
      * Link to pnoa comparator
      * @private
      * @type {String}
      */
-    this.linksPnoa = values.pnoa;
+    this.linksPnoa = options.pnoa;
 
     /**
      * Link to 3d visualizer
      * @private
      * @type {String}
      */
-    this.linksVisualizador3d = values.visualizador3d;
+    this.linksVisualizador3d = options.visualizador3d;
 
     /**
      * Link to cnig
      * @privatecnig
      * @type {String}
      */
-    this.linksFototeca = values.fototeca;
+    this.linksFototeca = options.fototeca;
 
     /**
      * Link to twitter
      * @private
      * @type {String}
      */
-    this.linksTwitter = values.twitter;
+    this.linksTwitter = options.twitter;
 
     /**
      * Link to instagram
      * @private
      * @type {String}
      */
-    this.linksInstagram = values.instagram;
+    this.linksInstagram = options.instagram;
 
     /**
      * Link to facebook
      * @private
      * @type {String}
      */
-    this.linksFacebook = values.facebook;
+    this.linksFacebook = options.facebook;
 
     /**
      * Link to pinterest
      * @private
      * @type {String}
      */
-    this.linksPinterest = values.pinterest;
+    this.linksPinterest = options.pinterest;
 
     /**
      * Link to youtube
      * @private
      * @type {String}
      */
-    this.linksYoutube = values.youtube;
+    this.linksYoutube = options.youtube;
 
     /**
      * Link to cnig downloads
      * @private
      * @type {String}
      */
-    this.linksMail = values.mail;
+    this.linksMail = options.mail;
 
     /**
      * Template
@@ -108,7 +108,7 @@ export default class ContactLinkControl extends IDEE.Control {
      *@private
      *@type { Number }
      */
-    this.order = values.order >= -1 ? values.order : null;
+    this.order = options.order >= -1 ? options.order : null;
   }
 
   /**
@@ -120,6 +120,7 @@ export default class ContactLinkControl extends IDEE.Control {
    * @api stable
    */
   createView(map) {
+    this.map_ = map;
     if (!IDEE.template.compileSync) { // JGL: retrocompatibilidad API IDEE
       IDEE.template.compileSync = (string, options) => {
         let templateCompiled;
@@ -224,9 +225,9 @@ export default class ContactLinkControl extends IDEE.Control {
    * @param {HTML} html of control
    * @api stable
    */
-  getActivationButton(html) {
-    return html.querySelector('.m-contactlink button');
-  }
+  // getActivationButton(html) {
+  //   return html.querySelector('.m-contactlink button');
+  // }
 
   /**
    * This function compares controls
@@ -245,3 +246,14 @@ export default class ContactLinkControl extends IDEE.Control {
   }
   // Add your own functions
 }
+
+/**
+ * Identifier name to this control
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+ContactLinkControl.NAME = 'ContactLink';
+
+export default ContactLinkControl;
