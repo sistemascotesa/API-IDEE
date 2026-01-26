@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -26,6 +26,65 @@
     <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>
     <script type="text/javascript" src="/main.js"></script>
 
+</body>
+
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="idee" content="yes">
+    <title>ContactLink TEST</title>
+    <link href="http://localhost:8080/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <style rel="stylesheet">
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <label for="selectPosicion">Selector de posición del plugin</label>
+        <select name="position" id="selectPosicion">
+            <option value="left" selected="selected">Izquierda (left)</option>
+            <option value="right">Derecha (right)</option>
+            <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
+            <option value="center-top-right">Centro superior derecho (center-top-right)</option>
+            <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
+            <option value="center-bottom-right">Centro inferior derecho (center-bottom-right)</option>
+            <option value="down">Abajo (down)</option>
+        </select>
+        <label for="selectCollapsed">Parámetro de collapsed</label>
+        <select name="collapsed" id="selectCollapsed">
+            <option value=''></option>
+            <option value="true" selected="selected">true</option>
+            <option value="false">false</option>
+        </select>
+
+        <label for="selectCollapsible">Selector de collapsible</label>
+        <select name="collapsible" id="selectCollapsible">
+            <option value=''></option>
+            <option value="true" selected="selected">true</option>
+            <option value="false">false</option>
+        </select>
+    </div>
+    <div>
+        <input type="button" value="Eliminar Control" name="eliminar" id="removeButton">
+    </div>
+    <div id="mapjs" class="container"></div>
+    <script type="text/javascript" src="http://localhost:8080/api-idee/js/apiidee.ol.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="/main.js"></script>
 </body>
 
 </html>
