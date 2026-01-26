@@ -267,7 +267,7 @@ const mp = new Comparators({
     },
     enabledDisplayInLayerSwitcher: true,
     defaultCompareViz: 2,
-    modeVizTypes: [0, 1, 2, 3, 4, 6],
+    modeVizTypes: [0, 1, 2, 3, 4, 5],
     // tooltip: 'tooltipMirror',
   },
   windowsyncParams: {

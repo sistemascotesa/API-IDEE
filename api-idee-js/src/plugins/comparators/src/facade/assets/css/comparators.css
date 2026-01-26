@@ -342,11 +342,10 @@ Establece la visibilidad del icono de dragging
 .mirrorpanel-grid .mirror1,
 .mirrorpanel-grid:not(.modeViz0) .mirror2,
 .mirrorpanel-grid:not(.modeViz0):not(.modeViz1):not(.modeViz2) .mirror3,
-.mirrorpanel-grid.modeViz4 .mirror4,
-.mirrorpanel-grid.modeViz5 .mirror4,
-.mirrorpanel-grid.modeViz6 .mirror4 {
+.mirrorpanel-grid.modeViz3 .mirror4 {
 	display: block !important; 
 }
+
 
 .mirror1 { grid-area: mirror1; }
 .mirror2 { grid-area: mirror2; }
@@ -394,53 +393,13 @@ Establece la visibilidad del icono de dragging
 	grid-template-areas: 'mirror1' 'mirror2' !important;
 }
 
-/***************
-  | A | B | C |
-****************/
-
-.mirrorpanel-grid.modeViz3 {
-	grid-template-columns: 1fr 1fr 1fr !important;
-	grid-template-rows: 1fr !important;
-	/*grid-template-areas: 'mirror1 mirror2 mirror3' !important;*/
-	grid-template-areas: 'mirror1 mirror2 mirror3' !important;
-}
-
-/***************
-  | C | B | A |
-****************/
-
-.mirrorpanel-grid.modeViz3.reverseMirror {
-	grid-template-columns: 1fr 1fr 1fr !important;
-	grid-template-rows: 1fr !important;
-	grid-template-areas: 'mirror3 mirror2 mirror1' !important;
-}
-
-/*******************
-  | A | B | C | D |
-*******************/
-
-.mirrorpanel-grid.modeViz4 {
-	grid-template-columns: 1fr 1fr 1fr 1fr !important;
-	grid-template-rows: 1fr !important;
-	grid-template-areas: 'mirror1 mirror2 mirror3 mirror4' !important;
-}
-
-/*******************
-  | D | C | B | A |
-*******************/
-
-.mirrorpanel-grid.modeViz4.reverseMirror {
-	grid-template-columns: 1fr 1fr 1fr 1fr !important;
-	grid-template-rows: 1fr !important;
-	grid-template-areas: 'mirror4 mirror3 mirror2 mirror1' !important;
-}
 
 /***********
   | A | B |
   | C | D |
 ************/
 
-.mirrorpanel-grid.modeViz5 {
+.mirrorpanel-grid.modeViz3 {
 	grid-template-columns: 1fr 1fr !important;
 	grid-template-rows: 1fr 1fr !important;
 	grid-template-areas: 'mirror1 mirror2' 'mirror3 mirror4' !important;
@@ -451,78 +410,32 @@ Establece la visibilidad del icono de dragging
   | C | D |
 ************/
 
-.mirrorpanel-grid.modeViz5.reverseMirror  {
+.mirrorpanel-grid.modeViz3.reverseMirror  {
 	grid-template-columns: 1fr 1fr !important;
 	grid-template-rows: 1fr 1fr !important;
 	grid-template-areas: 'mirror2 mirror1' 'mirror3 mirror4' !important;
 }
 
-/*******
-  | A |
-  | B |
-  | C |
-  | D |
-********/
-
-.mirrorpanel-grid.modeViz6 {
-	grid-template-columns: 1fr !important;
-	grid-auto-rows: 1fr 1fr 1fr 1fr !important;
-	grid-template-areas: 'mirror1' 'mirror2' 'mirror3' 'mirror4' !important;
-}
-
-/*******************
-  |   A   | B | C |
-********************/
-
-.mirrorpanel-grid.modeViz7 {
-	grid-template-columns: 2fr 1fr 1fr !important;
-	grid-template-rows: 1fr !important;
-	grid-template-areas: 'mirror1 mirror2 mirror3' !important;
-}
-
-/*******************
-  | C | B |   A   |
-********************/
-
-.mirrorpanel-grid.modeViz7.reverseMirror {
-	grid-template-columns: 1fr 1fr 2fr !important;
-	grid-template-rows: 1fr !important;
-	grid-template-areas: 'mirror3 mirror2 mirror1' !important;
-}
-
-
-/************
-  |   A   |
-  | B | C |
-*************/
-
-.mirrorpanel-grid.modeViz8 {
+/*********
+  | B |   |
+  |   | A |
+  | C |   |
+**********/
+.mirrorpanel-grid.modeViz4 {
 	grid-template-columns: 1fr 1fr !important;
 	grid-template-rows: 1fr 1fr !important;
-	grid-template-areas: 'mirror1 mirror1' 'mirror2 mirror3' !important;
+	grid-template-areas: 'mirror2 mirror1' 'mirror3 mirror1' !important;
 }
 
-
-/***********
-  | A | B |
-  |   C   |
-************/
-
-.mirrorpanel-grid.modeViz9 {
+/**********
+  |   | B |
+  | A |   |
+  |   | C |
+***********/
+.mirrorpanel-grid.modeViz5 {
 	grid-template-columns: 1fr 1fr !important;
 	grid-template-rows: 1fr 1fr !important;
-	grid-template-areas: 'mirror1 mirror2' 'mirror3 mirror3' !important;
-}
-
-/***********
-  | B | A |
-  |   C   |
-************/
-
-.mirrorpanel-grid.modeViz9.reverseMirror {
-	grid-template-columns: 1fr 1fr !important;
-	grid-template-rows: 1fr 1fr !important;
-	grid-template-areas: 'mirror2 mirror1' 'mirror3 mirror3' !important;
+	grid-template-areas: 'mirror1 mirror2' 'mirror1 mirror3' !important;
 }
 
 
@@ -570,34 +483,18 @@ Establece la visibilidad del icono de dragging
     }
 
     .modeviz3:before {
-        content: "\e805";
-    }
-
-    .modeviz4:before {
-        content: "\e806";
-    }
-
-    .modeviz7:before {
-        content: "\e807";
-    }
-
-    .modeviz5:before {
         content: "\e808";
     }
 
-    .modeviz6:before {
-        content: "\e806";
+    .modeviz4:before {
+        content: "\e809";
         transform: rotate(90deg);
         display: block;
     }
 
-    .modeviz8:before {
+    .modeviz5:before {
         content: "\e809";
-    }
-
-    .modeviz9:before {
-        content: "\e809";
-        transform: rotate(180deg);
+        transform: rotate(-90deg);
         display: block;
     }
 

@@ -42,13 +42,13 @@ export default class MirrorpanelControl extends IDEE.Control {
     /**
      * Define los iconos de división
      * que se mostrarán.
-     * Valores modeViz [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+     * Valores modeViz [0, 1, 2, 3, 4, 5]
      * @public
      * @type { Array<Number> }
-     * @default [0,1,2,3,4,5,6,7,8,9]
+     * @default [0,1,2,3,4,5]
      */
     this.modeVizTypes = values.modeVizTypes;
-    if (this.modeVizTypes === undefined) this.modeVizTypes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    if (this.modeVizTypes === undefined) this.modeVizTypes = [0, 1, 2, 3, 4, 5];
 
     /**
        * Visual mode
@@ -168,7 +168,7 @@ export default class MirrorpanelControl extends IDEE.Control {
     }
 
     this.modeVizTypes.forEach((n) => {
-      if (![0, 1, 2, 3, 4, 5, 6, 7, 8, 9].includes(n)) {
+      if (![0, 1, 2, 3, 4, 5].includes(n)) {
         IDEE.toast.error(`Error: ${getValue('exception.mirrorModeVizTypes')} - ${n}`);
       }
     });
@@ -336,7 +336,7 @@ export default class MirrorpanelControl extends IDEE.Control {
     const defaultBaseMap = document.getElementById(this.target.id);
     this.oldClass = defaultBaseMap.classList.toString();
     defaultBaseMap.parentElement.insertBefore(bigContainer, defaultBaseMap);
-    const toolsContainer = document.querySelector('.m-api-idee-tools-container');
+    const toolsContainer = document.querySelector('.m-api-idee-tool-panels-container');
 
     const mapjsA = document.createElement('div');
     mapjsA.id = 'mapjsA';
@@ -387,7 +387,7 @@ export default class MirrorpanelControl extends IDEE.Control {
     document.getElementById('lienzo').classList.remove('reverseMirror');
     this.template.querySelector(`#set-mirror-${oldModeViz}`).classList.remove('activatedComparators');
     // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 6; i++) {
       document.getElementById('lienzo').classList.remove(`modeViz${i}`);
     }
 
@@ -401,7 +401,7 @@ export default class MirrorpanelControl extends IDEE.Control {
       }
     }
 
-    if ([3, 7, 8, 9].includes(modeViz)) {
+    if ([4, 5].includes(modeViz)) {
       if (this.mapL.B === null) {
         this.createMapObjects('B');// Create MapB
       }
@@ -411,7 +411,7 @@ export default class MirrorpanelControl extends IDEE.Control {
       }
     }
 
-    if ([4, 5, 6].includes(modeViz)) {
+    if ([3].includes(modeViz)) {
       if (this.mapL.B === null) {
         this.createMapObjects('B');// Create MapB
       }
@@ -431,10 +431,6 @@ export default class MirrorpanelControl extends IDEE.Control {
     if (this.mapL.B !== null) { this.mapL.B.refresh(); }
     if (this.mapL.C !== null) { this.mapL.C.refresh(); }
     if (this.mapL.D !== null) { this.mapL.D.refresh(); }
-
-    setTimeout(() => {
-      this.changeViewPluginsGrid([3, 4, 7].includes(modeViz));
-    }, 500);
   }
 
   /**
@@ -614,7 +610,7 @@ export default class MirrorpanelControl extends IDEE.Control {
     const lienzo = document.getElementById('lienzo');
     const mapjsA = document.getElementById('mapjsA');
     const mainMap = mapjsA.querySelector('.m-api-idee-map-panel');
-    const mainToolPanelsContainer = mapjsA.querySelector('.m-api-idee-tools-container');
+    const mainToolPanelsContainer = mapjsA.querySelector('.m-api-idee-tool-panels-container');
 
     lienzo.parentElement.insertBefore(mainToolPanelsContainer, lienzo);
     lienzo.parentElement.insertBefore(mainMap, lienzo);

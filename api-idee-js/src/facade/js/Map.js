@@ -4487,6 +4487,7 @@ class Map extends Base {
     this.toolPanelsContainer.appendChild(this.centerPanel);
 
     this.mapPanel = document.createElement('map-panel');
+    this.mapPanel.id = 'mapPanel';
     this.mapPanel.classList.add('m-api-idee-map-panel');
     container.appendChild(this.mapPanel);
 
