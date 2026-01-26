@@ -262,6 +262,7 @@ export default class LyrCompareControl extends IDEE.Control {
             selectFirst.click();
           }
         }, 1000);
+        this.addSvgIcons(t);
       });
   }
 
@@ -424,12 +425,11 @@ export default class LyrCompareControl extends IDEE.Control {
       'm-lyrcompare-vcurtain': 'set-mirror-1',
       'm-lyrcompare-hcurtain': 'set-mirror-2',
       'm-lyrcompare-void': 'set-mirror-0',
-      'm-lyrcompare-multicurtain': 'set-mirror-5',
+      'm-lyrcompare-multicurtain': 'set-mirror-3',
     };
 
     const mirrorID = dicMirrorLang[idButton];
     const langMirror = this.dicAccesibilityButton[mirrorID];
-
     langMirror.forEach(({ id, text }) => {
       document.querySelector(`.${id}`).innerHTML = text.secondaryMap;
     });
@@ -1054,5 +1054,12 @@ export default class LyrCompareControl extends IDEE.Control {
 
   addlayersControl(layer) {
     this.layers.push(layer);
+  }
+
+  addSvgIcons(html) {
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_mapStan', html.querySelector('#m-lyrcompare-void'));
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_dosMap', html.querySelector('#m-lyrcompare-hcurtain'));
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_dosMapVertical', html.querySelector('#m-lyrcompare-vcurtain'));
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_mosaico', html.querySelector('#m-lyrcompare-multicurtain'));
   }
 }

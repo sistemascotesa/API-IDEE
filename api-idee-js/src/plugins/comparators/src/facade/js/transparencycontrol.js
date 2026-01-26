@@ -236,7 +236,7 @@ export default class TransparencyControl extends IDEE.Control {
             this.effectSelectedImpl_();
           });
       }
-
+      this.addSvgIcons(this.template);
       success(this.template);
     });
 
@@ -450,5 +450,10 @@ export default class TransparencyControl extends IDEE.Control {
     setTimeout(() => {
       this.getImpl().effectSelected(this.layerSelected, this.radius, this.freeze);
     }, 1000);
+  }
+
+  addSvgIcons(html) {
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_candado_cerrado', html.querySelector('#m-transparency-lock'));
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_candado', html.querySelector('#m-transparency-unlock'));
   }
 }

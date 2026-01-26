@@ -44,88 +44,6 @@ const dicAccesibilityButton = {
     {
       id: 'mapLASelect_label',
       text: {
-        principalMap: 'Capas del mapa derecho:',
-        secondaryMap: 'Capas del mapa izquierdo:',
-      },
-    },
-    {
-      id: 'mapLBSelect_label',
-      text: {
-        principalMap: 'Capas del mapa central:',
-        secondaryMap: 'Capas del mapa central:',
-      },
-    },
-    {
-      id: 'mapLCSelect_label',
-      text: {
-        principalMap: 'Capas del mapa izquierdo:',
-        secondaryMap: 'Capas del mapa derecho:',
-      },
-    }],
-  'set-mirror-4': [
-    {
-      id: 'mapLASelect_label',
-      text: {
-        principalMap: 'Capas del mapa derecho:',
-        secondaryMap: 'Capas del mapa izquierdo:',
-      },
-    },
-    {
-      id: 'mapLBSelect_label',
-      text: {
-        principalMap: 'Capas del mapa central derecho:',
-        secondaryMap: 'Capas del mapa central izquierdo:',
-      },
-    },
-    {
-      id: 'mapLCSelect_label',
-      text: {
-        principalMap: 'Capas del mapa central izquierdo:',
-        secondaryMap: 'Capas del mapa central derecho:',
-      },
-    },
-    {
-      id: 'mapLDSelect_label',
-      text: {
-        principalMap: 'Capas del mapa izquierdo:',
-        secondaryMap: 'Capas del mapa derecho:',
-      },
-    },
-  ],
-  'set-mirror-5': [
-    {
-      id: 'mapLASelect_label',
-      text: {
-        principalMap: 'Capas del mapa superior derecho:',
-        secondaryMap: 'Capas del mapa superior izquierdo:',
-      },
-    },
-    {
-      id: 'mapLBSelect_label',
-      text: {
-        principalMap: 'Capas del mapa superior izquierdo:',
-        secondaryMap: 'Capas del mapa superior derecho:',
-      },
-    },
-    {
-      id: 'mapLCSelect_label',
-      text: {
-        principalMap: 'Capas del mapa inferior izquierdo:',
-        secondaryMap: 'Capas del mapa inferior izquierdo:',
-      },
-    },
-    {
-      id: 'mapLDSelect_label',
-      text: {
-        principalMap: 'Capas del mapa inferior derecho:',
-        secondaryMap: 'Capas del mapa inferior derecho:',
-      },
-    },
-  ],
-  'set-mirror-6': [
-    {
-      id: 'mapLASelect_label',
-      text: {
         principalMap: 'Capas del primer mapa:',
         secondaryMap: 'Capas del primer mapa:',
       },
@@ -152,72 +70,49 @@ const dicAccesibilityButton = {
       },
     },
   ],
-  'set-mirror-7': [
+  'set-mirror-4': [
     {
       id: 'mapLASelect_label',
       text: {
         principalMap: 'Capas del mapa derecho:',
-        secondaryMap: 'Capas del mapa izquierdo:',
+        secondaryMap: 'Capas del mapa derecho:',
       },
     },
     {
       id: 'mapLBSelect_label',
       text: {
-        principalMap: 'Capas del mapa central:',
-        secondaryMap: 'Capas del mapa central:',
+        principalMap: 'Capas del mapa superior izquierdo:',
+        secondaryMap: 'Capas del mapa superior izquierdo:',
       },
     },
     {
       id: 'mapLCSelect_label',
       text: {
-        principalMap: 'Capas del mapa izquierdo:',
-        secondaryMap: 'Capas del mapa derecho:',
+        principalMap: 'Capas del mapa inferior izquierdo:',
+        secondaryMap: 'Capas del mapa inferior izquierdo:',
       },
     },
   ],
-  'set-mirror-8': [
+  'set-mirror-5': [
     {
       id: 'mapLASelect_label',
-      text: {
-        principalMap: 'Capas del mapa superior:',
-        secondaryMap: 'Capas del mapa superior:',
-      },
-    },
-    {
-      id: 'mapLBSelect_label',
       text: {
         principalMap: 'Capas del mapa izquierdo:',
         secondaryMap: 'Capas del mapa izquierdo:',
       },
     },
     {
-      id: 'mapLCSelect_label',
-      text: {
-        principalMap: 'Capas del mapa derecho:',
-        secondaryMap: 'Capas del mapa derecho:',
-      },
-    },
-  ],
-  'set-mirror-9': [
-    {
-      id: 'mapLASelect_label',
-      text: {
-        principalMap: 'Capas del mapa derecho:',
-        secondaryMap: 'Capas del mapa izquierdo:',
-      },
-    },
-    {
       id: 'mapLBSelect_label',
       text: {
-        principalMap: 'Capas del mapa izquierdo:',
-        secondaryMap: 'Capas del mapa derecho:',
+        principalMap: 'Capas del mapa superior derecho:',
+        secondaryMap: 'Capas del mapa superior derecho:',
       },
     },
     {
       id: 'mapLCSelect_label',
       text: {
-        principalMap: 'Capas del mapa inferior:',
-        secondaryMap: 'Capas del mapa inferior:',
+        principalMap: 'Capas del mapa inferior derecho:',
+        secondaryMap: 'Capas del mapa inferior derecho:',
       },
     },
   ],

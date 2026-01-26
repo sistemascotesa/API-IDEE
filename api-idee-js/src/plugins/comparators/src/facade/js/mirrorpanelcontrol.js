@@ -207,7 +207,8 @@ export default class MirrorpanelControl extends IDEE.Control {
       button.addEventListener('click', ({ target }) => {
         this.createSelectorLayer(this.addValueButton(modeViz));
         this.manageVisionPanelByCSSGrid(modeViz);
-        this.changeSpanText(target.id);
+        const elementId = target.parentElement?.id || target.id;
+        this.changeSpanText(elementId);
       });
     });
 
@@ -218,7 +219,7 @@ export default class MirrorpanelControl extends IDEE.Control {
     if (this.showCursors) {
       this.addLayerCursor('A');
     }
-
+    this.addSvgIcons(this.template);
     if (this.enabledKeyFunctions) this.addEventKey_();
   }
 
@@ -227,11 +228,11 @@ export default class MirrorpanelControl extends IDEE.Control {
       return ['B'];
     }
 
-    if ([3, 7, 8, 9].includes(modeViz)) {
+    if ([4, 5].includes(modeViz)) {
       return ['B', 'C'];
     }
 
-    if ([4, 5, 6].includes(modeViz)) {
+    if ([3].includes(modeViz)) {
       return ['B', 'C', 'D'];
     }
     return ['A'];
@@ -733,5 +734,14 @@ export default class MirrorpanelControl extends IDEE.Control {
         this.manageVisionPanelByCSSGrid(0);
       }
     });
+  }
+
+  addSvgIcons(html) {
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_mapStan', html.querySelector('#set-mirror-0'));
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_dosMapVertical', html.querySelector('#set-mirror-1'));
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_dosMap', html.querySelector('#set-mirror-2'));
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_mosaico', html.querySelector('#set-mirror-3'));
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_tres_mapas_derecha', html.querySelector('#set-mirror-4'));
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_tres_mapas_izquierda', html.querySelector('#set-mirror-5'));
   }
 }

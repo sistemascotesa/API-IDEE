@@ -2,8 +2,12 @@
 * GENERAL *
 ***********/
 
-.m-api-idee-tabs-container {
+#div-contenedor-comparators .m-api-idee-tabs-container {
     height: auto;
+}
+
+#div-contenedor-comparators .m-api-idee-tabs-container li svg {
+    pointer-events: none;
 }
 
 .button-comparators {
@@ -34,6 +38,10 @@
     background-color: transparent;
     cursor: pointer;
     color: #adb5bdFF;
+}
+
+.m-lyrcompare-effect-buttoms button svg {
+    pointer-events: none;
 }
 
 .mirrorButtons button.activatedComparators,
@@ -192,24 +200,29 @@
 }
 
 .lyrcompare-swipe-control .control-icon::before {
-	content: '\e9c4';
-	font-family: 'comparators';
-	position: absolute;
-	display: block;
-	/* Jugamos con la opacidad para hacer aparecer el botón. COmo la opacidad va de 0 a 100, se puede dividir en fraccciones y las transciones tienen efecto */
-	/* Si jugáramos con la visibilidad (hidden/visible) o con el display (none/block), a tener valores puntuales, la transición no les afecta y el efecto no se nota */
-	opacity: 0;
-	font-size: 1.3rem;
-	text-align: center;
-	line-height: 2.5rem;
-	margin: 0 auto;
-	width: 2.5rem;
-	color: #94bdde;
-	border-radius: 50rem;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.51), 0 -1px 0 rgba(0, 0, 0, .02);
-	background-color: white;
-	z-index: 3;
-	transition: opacity 0.3s ease-out; /* Establecemos una transición para que al aparecer lo haga de manera gradual. Más elegante*/
+    content: '⬌';
+    position: absolute;
+    display: block;
+    opacity: 0;
+    font-size: 1.3rem;
+    text-align: center;
+    line-height: 2.5rem;
+    margin: 0 auto;
+    width: 2.5rem;
+    color: #94bdde;
+    border-radius: 50rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.51), 0 -1px 0 rgba(0, 0, 0, .02);
+    background-color: white;
+    z-index: 3;
+    transition: opacity 0.3s ease-out;
+}
+
+.lyrcompare-swipe-control.vertical .control-icon::before {
+    content: '⬌';
+}
+
+.lyrcompare-swipe-control.horizontal .control-icon::before {
+    content: '⬍';
 }
 
 .lyrcompare-swipe-control.vertical::before {
@@ -244,12 +257,10 @@
 /* e2m. Al hacer hover, se rellena el botón con el icono correspondiente y se aplica un pequeño cambio de escala para acentuar la transición */
 
 .lyrcompare-swipe-control.vertical:hover >.control-icon::before{
-	content: '\e9c4';
 	opacity: 1;
 }
 
 .lyrcompare-swipe-control.horizontal:hover >.control-icon::before{
-	content: '\e9c4';
 	opacity: 1;
 }
 
@@ -436,239 +447,6 @@ Establece la visibilidad del icono de dragging
 	grid-template-columns: 1fr 1fr !important;
 	grid-template-rows: 1fr 1fr !important;
 	grid-template-areas: 'mirror1 mirror2' 'mirror1 mirror3' !important;
-}
-
-
-/************
-* ICON FONT *
-*************/
-@font-face {
-    font-family: 'comparators';
-    src:
-      url('../fonts/comparators.ttf') format('truetype'),
-      url('../fonts/comparators.woff') format('woff'),
-      url('../fonts/comparators.svg') format('svg');
-    font-weight: normal;
-    font-style: normal;
-    font-display: block;
-  }
-  
-  [class^="comparators-icon-"], [class*=" comparators-icon-"] {
-    /* use !important to prevent issues with browser extensions that change fonts */
-    font-family: 'comparators' !important;
-    speak: never;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-
-    /* Better Font Rendering =========== */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-    .modeviz0:before {
-        content: "\e804";
-    }
-
-    .modeviz1:before {
-        content: "\e803";
-    }
-
-    .modeviz2:before {
-        content: "\e803";
-        transform: rotate(90deg);
-        display: block;
-    }
-
-    .modeviz3:before {
-        content: "\e808";
-    }
-
-    .modeviz4:before {
-        content: "\e809";
-        transform: rotate(90deg);
-        display: block;
-    }
-
-    .modeviz5:before {
-        content: "\e809";
-        transform: rotate(-90deg);
-        display: block;
-    }
-
-    .mirror-panel-button::before {
-        content: "\e802";
-    }
-
-    .lyrcompare-button:before {
-        content: "\e903";
-    }
-
-    .transparency-button:before {
-        content: "\e902";
-    }
-
-    .windowsync-button:before {
-        content: "\e901";
-        font-size: 1.3rem;
-    }
-
-    .cp-transparency-icon:before {
-        content: "\e900";
-    }
-
-    .cp-deactivateCurtain:before {
-        content: "\e804";
-    }
-
-    .cp-lock-icon:before {
-        content: "\e800";
-        color:#e65244FF;
-    }
-
-    .cp-unlock-icon:before {
-        content: "\f13e";
-        color: #136a37;
-    }
-  
-  .comparators-icon-lock:before {
-    content: "\e800";
-  }
-  .comparators-icon-th-large:before {
-    content: "\e801";
-  }
-  .comparators-icon-icon:before {
-    content: "\e802";
-  }
-  .comparators-icon-modeviz1:before {
-    content: "\e803";
-  }
-  .comparators-icon-modeviz0:before {
-    content: "\e804";
-  }
-  .comparators-icon-modeviz2:before {
-    content: "\e805";
-  }
-  .comparators-icon-modeviz3:before {
-    content: "\e806";
-  }
-  .comparators-icon-modeviz7:before {
-    content: "\e807";
-  }
-  .comparators-icon-modeviz5:before {
-    content: "\e808";
-  }
-  .comparators-icon-modeviz8:before {
-    content: "\e809";
-  }
-  .comparators-icon-imgcompare:before {
-    content: "\e816";
-  }
-  .comparators-icon-zoom-mapa:before {
-    content: "\e900";
-  }
-  .comparators-icon-transparency:before {
-    content: "\e900";
-  }
-  .comparators-icon-comparador-capas:before {
-    content: "\e902";
-  }
-  .comparators-icon-columns-2:before {
-    content: "\e90d";
-  }
-  .comparators-icon-columns-1:before {
-    content: "\e90e";
-  }
-  .comparators-icon-th-large-4:before {
-    content: "\e90f";
-  }
-  .comparators-icon-th-large-3:before {
-    content: "\e910";
-  }
-  .comparators-icon-th-large-2:before {
-    content: "\e911";
-  }
-  .comparators-icon-th-large-1:before {
-    content: "\e912";
-  }
-  .comparators-icon-columns1:before {
-    content: "\e913";
-  }
-  .comparators-icon-lock-open-alt:before {
-    content: "\f13e";
-  }
-  .comparators-icon-plus:before {
-    content: "\ea0a";
-  }
-  .comparators-icon-cross:before {
-    content: "\ea0f";
-  }
-  .comparators-icon-share:before {
-    content: "\ea7d";
-  }
-  .comparators-icon-new-tab:before {
-    content: "\ea7e";
-  }
-  .comparators-icon-window-restore:before {
-    content: '\f2d2'; 
-  }
-  .comparators-icon-window-close-o:before {
-    content: '\f2d4';
-  } 
-
-.cp-columns:before {
-    content: "\e913";
-}
-.cp-columns-rotate:before {
-    content: "\e913";
-    display: inline-block;
-    transform: rotate(270deg);
-}
-
-.cp-void:before {
-    content: "\e804";
-}
-
-.cp-th-large:before {
-    content: "\e801";
-}
-
-.m-plugin-lyrcompare .icon-flecha-izquierda:before {
-	content: '\e91d';
-}
-
-div.m-area.m-top.m-left>div.m-plugin-comparators.m-panel>button.m-panel-btn {
-    font-family: comparators !important;
-}
-
-div.m-area.m-top.m-left>div.m-plugin-comparators.m-panel.opened>button.m-panel-btn {
-    font-family: g-cartografia !important;
-}
-
-div.m-area.m-top.m-right>div.m-plugin-comparators.m-panel>button.m-panel-btn {
-    font-family: comparators !important;
-}
-
-div.m-area.m-top.m-right>div.m-plugin-comparators.m-panel.opened>button.m-panel-btn {
-    font-family: g-cartografia !important;
-}
-
-div.m-area.m-bottom.m-right>div.m-plugin-comparators.m-panel>button.m-panel-btn {
-    font-family: comparators !important;
-}
-
-div.m-area.m-bottom.m-right>div.m-plugin-comparators.m-panel.opened>button.m-panel-btn {
-    font-family: g-cartografia !important;
-}
-
-div.m-area.m-bottom.m-left>div.m-plugin-comparators.m-panel>button.m-panel-btn {
-    font-family: comparators !important;
-}
-
-div.m-area.m-bottom.m-left>div.m-plugin-comparators.m-panel.opened>button.m-panel-btn {
-    font-family: g-cartografia !important;
 }
 
 /* +++++++ Transparency ++++++++ */

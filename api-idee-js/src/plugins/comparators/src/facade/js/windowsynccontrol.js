@@ -363,6 +363,7 @@ export default class WindowSyncControl extends IDEE.Control {
         if (btnCloseWindow) {
           btnCloseWindow.addEventListener('click', this.closeWindows);
         }
+        this.addSvgIcons(t);
       });
 
     this.map_.addLayers(this.layers);
@@ -583,5 +584,10 @@ export default class WindowSyncControl extends IDEE.Control {
      */
   equals(control) {
     return control instanceof WindowSyncControl;
+  }
+
+  addSvgIcons(html) {
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_vent', html.querySelector('#new_windowsync'));
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_vent_cerrar', html.querySelector('#deleteAll_windowsync'));
   }
 }
