@@ -153,13 +153,9 @@ Ctrl + Shift + Flecha hacia abajo: Disminuye el radio, si el radio llega al valo
     - 0: barra de herramientas desplegada con el mapa simple esperando al usuario.
     - 1: dos mapas en vertical.
     - 2: dos mapas en horizontal.
-    - 3: tres mapas en vertical.
-    - 4: cuatro mapas en vertical.
-    - 5: mosaico con cuatro mapas.
-    - 6: cuatro mapas en horizontal.
-    - 7: tres mapas en proporción 2-1-1.
-    - 8: un mapa arriba y dos abajo.
-    - 9: dos mapas arriba y uno abajo.
+    - 3: mosaico con cuatro mapas.
+    - 4: dos mapas a la izquierda y uno a la derecha.
+    - 5: dos mapas a la derecha y uno a la izquierda.
 
 - **windowsyncParams**: Parámetro opcionales del plugin windowsync, en caso de no querer cargar este control su valor será "false".
   - controls: (Array de Strings) Define que controles tendrán los mapas.
