@@ -98,8 +98,11 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
    * @api stable
    */
   addTo(map, html) {
+    console.log('addTo');
     super.addTo(map, html); // Llama al addTo de IDEE.Control si existe
     this.facadeMap_ = map;
+    const olMap = map.getMapImpl();
+    this.setMap(olMap);
     this.update(map, html);
     this.html_ = html;
     if (!this.getCollapsed()) {
@@ -116,7 +119,6 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
    * @api stable
    */
   getView() {
-    console.log('Pidiendo vista del OverviewMap...');
     // 'this.element' es el div principal que crea OpenLayers automáticamente
     return this.element; // this.html_ contiene el DOM del plugin
     // return this.element;

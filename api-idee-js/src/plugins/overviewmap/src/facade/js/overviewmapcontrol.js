@@ -39,6 +39,8 @@ class OverviewMapControl extends IDEE.Control {
   createView(map) {
     return new Promise((success, fail) => {
       const html = this.getImpl().getView();
+      console.log('Vista obtenida de la impl:', html);
+      // const html = IDEE.template.compileSync(template);
       success(html);
     });
   }

@@ -1,32 +1,32 @@
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control {
+div.m-control-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control {
     margin-left: 0 !important;
 }
 
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control>button::before {
+div.m-control-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control>button::before {
     font-family: 'overviewmap' !important;
 }
 
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control.ol-collapsed>button>span {
+div.m-control-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control.ol-collapsed>button>span {
     display: none;
 }
 
 /* Closing arrows*/
 
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button {
+div.m-control-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button {
     padding-bottom: 10px !important;
     padding-left: 4px !important;
 }
 
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button::before {
+div.m-control-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button::before {
     font-family: 'g-cartografia' !important;
     font-size: 8px !important;
 }
 
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button.g-cartografia-flecha-derecha {
+div.m-control-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button.g-cartografia-flecha-derecha {
     right: 135px !important;
 }
 
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button.g-cartografia-flecha-izquierda {
+div.m-control-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button.g-cartografia-flecha-izquierda {
     left: 135px !important;
 }
 
@@ -52,7 +52,7 @@ div.ol-overviewmap-box {
     font-display: block;
 }
 
-.m-areas>div.m-area>div.m-panel>button.m-panel-btn.overviewmap-mundo,
+div.m-panel>button.m-panel-btn.overviewmap-mundo,
 [class^="overviewmap-"],
 [class*=" overviewmap-"] {
     font-family: 'overviewmap' !important;

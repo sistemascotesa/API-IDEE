@@ -9,6 +9,8 @@ import myhelp from '../../templates/myhelp';
 
 import es from './i18n/es';
 import en from './i18n/en';
+// eslint-disable-next-line import/no-relative-packages
+import { isValid, LEFT } from '../../../../../facade/js/ui/position';
 
 export default class OverviewMap extends IDEE.Plugin {
   /**
@@ -23,7 +25,9 @@ export default class OverviewMap extends IDEE.Plugin {
    */
   constructor(options = {}) {
     super('overviewmap', {
-      position: options.position || 'left',
+      position:
+        isValid(options.position) ? options.position : LEFT,
+      // position: options.position || 'left',
       tooltip: options.tooltip || getValue('tooltip'),
     });
     /**
@@ -52,7 +56,7 @@ export default class OverviewMap extends IDEE.Plugin {
      * @private
      * @type {String}
      */
-    this.position_ = options.position || 'left';
+    this.position_ = IDEE.ui.position || 'left';
 
     /**
      * Plugin tooltip
@@ -156,27 +160,21 @@ export default class OverviewMap extends IDEE.Plugin {
     this.map_ = map;
 
     this.control_ = new OverviewMapControl(this.options_, this.vendorOptions);
-    // this.control_.position = this.position;
-    this.control_.parentPlugin = this;
-    this.controls_.push(this.control_);
 
-    this.panel_ = new IDEE.ui.Panel('OverviewMap', {
-      tooltip: this.tooltip_,
+    this.panel_ = new IDEE.ui.ControlPanel('OverviewMap', {
+      collapsible: true,
       className: 'm-overviewmap-panel',
-      // position: IDEE.ui.position[this.position_],
+      tooltip: this.tooltip_,
       order: this.order,
       position: this.position,
     });
-    this.panel = this.panel_;
 
-    this.control_.setPanel(this.panel_);
-    map.addPanels(this.panel_);
-    if (this.panel && !this.panel.panelContent) {
-      this.panel.createContentPanel();
-    }
-    // map.addPanels(this.panel_);
-    // Ahoramiso el panel no tiene el DOM.
+    this.panel_.addControls(this.control_);
+    // this.control_.setPanel(this.panel_);
+    map.addControlPanels(this.panel_);
+
     map.addControls(this.controls_);
+    this.controls_.push(this.control_);
   }
 
   /**
