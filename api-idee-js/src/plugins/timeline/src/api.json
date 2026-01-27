@@ -9,7 +9,7 @@
     "properties": [{
         "type": "simple",
         "name": "position",
-        "possibleValues": ["TL", "TR", "BL", "BR"],
+        "possibleValues": ["left", "right"],
         "position": 0
       },
       {

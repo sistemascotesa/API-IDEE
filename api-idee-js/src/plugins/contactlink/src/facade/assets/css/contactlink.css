@@ -28,8 +28,8 @@ div.m-plugin-contactlink.opened>button.m-panel-btn {
 *********************/
 
 .m-control.m-container.m-contactlink>div.title {
-    color: #fff !important;
-    background-color: var(--idee-color-links);
+    color: var(--idee-color-primary-dark) !important;
+    background-color: transparent;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     font-size: 15px;
     height: 2.5rem;
@@ -61,8 +61,8 @@ div.m-plugin-contactlink.opened>button.m-panel-btn {
 
 .m-control.m-container.m-contactlink>div.links>hr {
     margin: .5rem .25rem;
-    border-top: 0;
-    border-color: var(--idee-color-links);
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .m-control.m-container.m-contactlink>div.links>div.web {

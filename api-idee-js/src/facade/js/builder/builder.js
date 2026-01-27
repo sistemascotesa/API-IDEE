@@ -6,9 +6,6 @@ import {
   isUndefined, isNullOrEmpty, isFunction, isString, concatUrlPaths, normalize,
 } from 'IDEE/util/Utils';
 import ControlPanel from '../ui/ControlPanel';
-import * as EventType from '../event/eventtype';
-import Panel from '../ui/Panel';
-import * as Position from '../ui/position';
 import { getValue } from '../i18n/language';
 import Control from '../control/Control';
 import Attributions from '../control/Attributions';

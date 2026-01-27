@@ -10,7 +10,7 @@
       "type": "simple",
       "name": "position",
       "position": 0,
-      "possibleValues": ["TL", "TR", "BL", "BR"]
+      "possibleValues": ["left", "right"]
     },{
       "type": "simple",
       "name": "tooltip",
