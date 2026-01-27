@@ -11,9 +11,13 @@ Muestra información GetFeatureInfo mediante activación de plugin.
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
+Para uso de implementación OpenLayers:
 - **information.ol.min.js**
 - **information.ol.min.css**
 
+Para uso de implementación Cesium:
+- **information.cesium.min.js**
+- **information.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/information/information.ol.min.css" rel="stylesheet" />

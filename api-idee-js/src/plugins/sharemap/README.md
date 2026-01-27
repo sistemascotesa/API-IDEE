@@ -11,9 +11,13 @@ Plugin que permite copiar la url del mapa actual visualizado. Exporta la informa
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **sharemap.ol.min.js**
 - **sharemap.ol.min.css**
+
+Para uso de implementación Cesium:
+- **sharemap.cesium.min.js**
+- **sharemap.cesium.min.css**
 
 
 ```html

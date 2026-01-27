@@ -10,9 +10,13 @@ Provee de enlaces a sitios, redes sociales y correo institucionales.
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **contactlink.ol.min.js**
 - **contactlink.ol.min.css**
+
+Para uso de implementación Cesium:
+- **contactlink.cesium.min.js**
+- **contactlink.cesium.min.css**
 
 
 ```html

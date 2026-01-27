@@ -10,9 +10,13 @@ Plugin que muestra una historia en forma de carrusel. Esta compuesta por diferen
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **storymap.ol.min.js**
 - **storymap.ol.min.css**
+
+Para uso de implementación Cesium:
+- **storymap.cesium.min.js**
+- **storymap.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/storymap/storymap.ol.min.css" rel="stylesheet" />

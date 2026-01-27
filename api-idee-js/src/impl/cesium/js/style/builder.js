@@ -30,6 +30,9 @@ import PointFontSymbol from '../point/FontSymbol';
 import Simple from './Simple';
 import CesiumStyleFillPattern from '../ext/CesiumStyleFillPattern';
 
+const baselineInCesium = [Baseline.TOP, Baseline.BOTTOM, Baseline.BASELINE, Baseline.CENTER];
+const alignInCesium = [Align.LEFT, Align.CENTER, Align.RIGHT];
+
 /**
  * Esta función devuelve el relleno.
  * @public
@@ -171,7 +174,7 @@ export const getStrokePatern = (options, featureVariable, layer) => {
 export const getLabel = (options, featureVariable, layer) => {
   const DEFAULT_LABEL_COLOR = '#000';
   const DEFAULT_ALIGN = HorizontalOrigin.CENTER;
-  const DEFAULT_BASELINE = VerticalOrigin.TOP;
+  const DEFAULT_BASELINE = VerticalOrigin.CENTER;
 
   let label = {};
   if (options.label) {
@@ -181,15 +184,15 @@ export const getLabel = (options, featureVariable, layer) => {
     const baseline = Simple.getValue(options.label.baseline, featureVariable, layer);
     labelText = {
       font: Simple.getValue(options.label.font, featureVariable, layer) || '10px sans-serif',
-      scale: Simple.getValue(options.label.scale, featureVariable, layer),
+      scale: Simple.getValue(options.label.scale, featureVariable, layer) || 1,
       pixelOffset: new Cartesian2(
         Simple.getValue(
-          options.label.offset ? options.label.offset[0] : undefined,
+          options.label.offset ? options.label.offset[0] : 0,
           featureVariable,
           layer,
         ),
         Simple.getValue(
-          options.label.offset ? options.label.offset[1] : undefined,
+          options.label.offset ? options.label.offset[1] : 0,
           featureVariable,
           layer,
         ),
@@ -199,9 +202,9 @@ export const getLabel = (options, featureVariable, layer) => {
         featureVariable,
         layer,
       )),
-      horizontalOrigin: Object.values(Align).includes(align)
+      horizontalOrigin: alignInCesium.includes(align)
         ? HorizontalOrigin[align.toUpperCase()] : DEFAULT_ALIGN,
-      verticalOrigin: Object.values(Baseline).includes(baseline)
+      verticalOrigin: baselineInCesium.includes(baseline)
         ? VerticalOrigin[baseline.toUpperCase()] : DEFAULT_BASELINE,
       text: textLabel === undefined ? undefined : String(textLabel),
       style: LabelStyle.FILL,
@@ -332,7 +335,7 @@ export const getIconSrc = (options, featureVariable, layer) => {
           1.0,
           Simple.getValue(options.icon.opacity || 1, featureVariable, layer),
         ),
-        scale: Simple.getValue(options.icon.scale, featureVariable, layer),
+        scale: Simple.getValue(options.icon.scale || 1, featureVariable, layer),
         rotation: Simple.getValue(
           options.icon.rotation ? -Number(options.icon.rotation) : 0,
           featureVariable,
@@ -351,14 +354,12 @@ export const getIconSrc = (options, featureVariable, layer) => {
           ) : undefined,
         pixelOffset: new Cartesian2(
           Simple.getValue(options.icon.anchor
-            ? options.icon.anchor[1] : undefined, featureVariable, layer),
+            ? options.icon.anchor[1] : 0, featureVariable, layer),
           Simple.getValue(options.icon.anchor
-            ? options.icon.anchor[0] : undefined, featureVariable, layer),
+            ? options.icon.anchor[0] : 0, featureVariable, layer),
         ),
-        verticalOrigin: Object.values(Baseline).includes(baseline) && options.icon.anchor
-          ? VerticalOrigin[baseline.toUpperCase()] : VerticalOrigin.CENTER,
-        horizontalOrigin: Object.values(Align).includes(align) && options.icon.anchor
-          ? HorizontalOrigin[align.toUpperCase()] : HorizontalOrigin.CENTER,
+        verticalOrigin: baselineInCesium.includes(baseline) && options.icon.anchor,
+        horizontalOrigin: alignInCesium.includes(align) && options.icon.anchor,
         sizeInMeters: false,
       });
     }

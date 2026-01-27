@@ -3,6 +3,8 @@
  */
 import Feature from 'IDEE/feature/Feature';
 import * as WKT from 'IDEE/geom/WKT';
+import GeoJSONFormat from 'IDEE/format/GeoJSON';
+import WKTFormat from 'IDEE/format/WKT';
 import { isNullOrEmpty, isString, generateRandom } from 'IDEE/util/Utils';
 import { extend, getWidth, getCenter } from 'ol/extent';
 import {
@@ -12,6 +14,7 @@ import {
   getPointResolution,
 } from 'ol/proj';
 import OLFeature from 'ol/Feature';
+import WKB from 'ol/format/WKB';
 import RenderFeature from 'ol/render/Feature';
 import Point from 'ol/geom/Point';
 import LineString from 'ol/geom/LineString';
@@ -735,9 +738,70 @@ class Utils {
    */
   static isOlControlImpl(controlImpl) {
     return controlImpl instanceof OlControlImpl
-    || controlImpl instanceof OlControlScaleLineImpl
-    || controlImpl instanceof OLControlZoomSlider
-    || controlImpl instanceof OLControlZoom;
+      || controlImpl instanceof OlControlScaleLineImpl
+      || controlImpl instanceof OLControlZoomSlider
+      || controlImpl instanceof OLControlZoom;
+  }
+
+  /**
+   * Este método transforma un objeto de tipo Feature a formato WKB
+   *
+   * @function
+   * @param {Feature} feature Feature a parsear
+   * @returns {String|ArrayBuffer} objeto en formato WKB
+   * @public
+   * @api
+   */
+  static parseFeatureToWKB(feature) {
+    const wkbFormat = new WKB();
+    return wkbFormat.writeFeature(feature.getImpl().getFeature());
+  }
+
+  /**
+   * Este método transforma un objeto GeoJSON a formato WKB
+   *
+   * @function
+   * @param {String} json Objeto GeoJSON a parsear
+   * @param {IDEE.Projection|String} featureProjection proyección con la que
+   * se va a crear cada una de las features al ser leidas por el formato WKB
+   * @returns {Array<IDEE.Feature>} objeto en formato WKB
+   * @public
+   * @api
+   */
+  static parseGeoJSONToWKB(json, mapProjection, featureProjection) {
+    const wkbFormat = new WKB();
+    const geoJSONFormat = new GeoJSONFormat({
+      defaultDataProjection: mapProjection,
+    });
+    const features = geoJSONFormat.read(json, {
+      featureProjection,
+    });
+    return features.filter((feature) => {
+      const olFeature = feature.getImpl().getFeature();
+      return olFeature.getGeometry() !== null;
+    }).map((feature) => {
+      return wkbFormat.writeFeature(feature.getImpl().getFeature());
+    });
+  }
+
+  /**
+   * Este método transforma un objeto WKT a formato WKB
+   *
+   * @function
+   * @param {String} json Objeto WKT a parsear
+   * @param {IDEE.Projection|String} featureProjection proyección con la que
+   * se va a crear cada una de las features al ser leidas por el formato WKB
+   * @returns {Array<IDEE.Feature>} objeto en formato WKB
+   * @public
+   * @api
+   */
+  static parseWKTToWKB(wkt, projection) {
+    const wkbFormat = new WKB();
+    const wktFormat = new WKTFormat();
+    const olFeature = wktFormat.read(wkt, {
+      featureProjection: projection,
+    });
+    return wkbFormat.writeFeatures(olFeature.getImpl().getFeature());
   }
 }
 export default Utils;

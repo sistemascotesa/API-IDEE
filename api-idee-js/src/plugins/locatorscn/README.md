@@ -15,9 +15,13 @@ https://github.com/pelias/api
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **locatorscn.ol.min.js**
 - **locatorscn.ol.min.css**
+
+Para uso de implementación Cesium:
+- **locatorscn.cesium.min.js**
+- **locatorscn.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/locatorscn/locatorscn.ol.min.css" rel="stylesheet" />

@@ -13,9 +13,13 @@ También permite descargar la ayuda en formato PDF.
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
+Para uso de implementación OpenLayers:
 - **help.ol.min.js**
 - **help.ol.min.css**
 
+Para uso de implementación Cesium:
+- **help.cesium.min.js**
+- **help.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.css" rel="stylesheet" />
@@ -120,7 +124,7 @@ URL_API?help=position*tooltip*extendInitialExtraContents
 ### Ejemplo de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee/?help=TR*Obtener%20ayuda*true
+https://componentes.idee.es/api-idee/?help=TR*Obtener%20ayuda*true&controls=scale
 ```
 
 ### Ejemplo de uso API-REST en base64
