@@ -388,6 +388,8 @@
     "enableDrag_deprecated": "The enableDrag method of the Map class has been deprecated, it is recommended to use enablePan instead.",
     "impl_length": "The implementation used cannot create MeasureLength.",
     "impl_clear": "The implementation used cannot create MeasureClear.",
-    "impl_area": "The implementation used cannot create MeasureArea"
+    "impl_area": "The implementation used cannot create MeasureArea",
+    "animated_method": "The used implementation will not be able to disable or modify the animation.",
+    "deactivatechangeresolution_method": "The used implementation does not have the deactivateChangeResolutionEvent method."
   }
 }

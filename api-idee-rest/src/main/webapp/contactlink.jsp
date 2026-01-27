@@ -104,22 +104,14 @@
                         <option value="false">false</option>
                     </select>
 
-                    <label for="selectCollapsible">Selector de collapsible</label>
-                    <select name="collapsible" id="selectCollapsible">
-                        <option value=''></option>
-                        <option value="true" selected="selected">true</option>
-                        <option value="false">false</option>
-                    </select>
-
                     <label for="inputTooltip">Parámetro tooltip</label>
                     <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Reconocimientos">
                     <datalist id="tooltipSug">
                         <option value="Reconocimientos"></option>
                     </datalist>
 
-
-                    <input type="hidden" id="buttonAPI" value="API Rest" />
-                    <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar">
+                    <input type="hidden" id="buttonAPI" value="API Rest"/>
+                    <button id="botonEliminar">Eliminar Plugin</button>
 
                 </div>
                 <div id="mapjs" class="m-container"></div>
@@ -179,7 +171,6 @@
                             const buttonApi = document.getElementById("buttonAPI");
                             const inputTooltip = document.getElementById("inputTooltip");
                             const selectCollapsed = document.getElementById("selectCollapsed");
-                            const selectCollapsible = document.getElementById("selectCollapsible");
 
                             selectPosicion.addEventListener('change', cambiarTest);
                             inputDescargascnig.addEventListener('change', cambiarTest);
@@ -193,7 +184,6 @@
                             inputYoutube.addEventListener('change', cambiarTest);
                             inputMail.addEventListener('change', cambiarTest);
                             inputTooltip.addEventListener('change', cambiarTest);
-                            selectCollapsible.addEventListener('change', cambiarTest);
                             selectCollapsed.addEventListener('change', cambiarTest);
 
                             function cambiarTest() {
@@ -209,8 +199,6 @@
                                 pinterest = inputPinterest.value != "" ? objeto.pinterest = inputPinterest.value : "";
                                 youtube = inputYoutube.value != "" ? objeto.youtube = inputYoutube.value : "";
                                 mail = inputMail.value != "" ? objeto.mail = 'mailto:' + inputMail.value : "";
-                                collapsible = selectCollapsible.options[selectCollapsible.selectedIndex].value;
-                                collapsible != '' ? objeto.collapsible = (collapsible === "true") : '';
                                 collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
                                 collapsed != '' ? objeto.collapsed = (collapsed === "true") : '';
                                 tooltip = inputTooltip.value != "" ? objeto.tooltip = inputTooltip.value : "";

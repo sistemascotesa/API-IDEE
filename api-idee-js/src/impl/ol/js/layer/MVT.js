@@ -190,7 +190,7 @@ class MVT extends Vector {
       });
     }
 
-    const extent = this.maxExtent_ || this.facadeVector_.getMaxExtent();
+    const extent = this.facadeVector_.getMaxExtent();
     const ticket = IDEE.config.TICKET;
     const url = isNullOrEmpty(ticket) ? this.url : `${this.url}?ticket=${ticket}`;
 

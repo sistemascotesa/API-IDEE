@@ -11,9 +11,13 @@ Plugin que muestra una previsualización de la zona donde está centrado el mapa
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **overviewmap.ol.min.js**
 - **overviewmap.ol.min.css**
+
+Para uso de implementación Cesium:
+- **overviewmap.cesium.min.js**
+- **overviewmap.cesium.min.css**
 
 
 ```html

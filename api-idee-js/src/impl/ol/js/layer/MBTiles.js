@@ -266,11 +266,10 @@ class MBTiles extends Layer {
           }
           const resolutions = generateResolutions(extent, DEFAULT_TILE_SIZE, this.maxZoomLevel_);
           this.getExtentFromProvider().then((reprojectedExtent) => {
-            this.maxExtent_ = this.maxExtent_ || reprojectedExtent || extent;
             this.createLayer({
               tileProvider,
               resolutions,
-              extent: this.maxExtent_,
+              extent: this.maxExtent_ || reprojectedExtent || extent,
               sourceExtent: extent,
               projection,
             });

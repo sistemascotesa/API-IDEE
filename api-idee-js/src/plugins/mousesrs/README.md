@@ -12,9 +12,13 @@
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **mousesrs.ol.min.js**
 - **mousesrs.ol.min.css**
+
+Para uso de implementación Cesium:
+- **mousesrs.cesium.min.js**
+- **mousesrs.cesium.min.css**
 
 
 ```html

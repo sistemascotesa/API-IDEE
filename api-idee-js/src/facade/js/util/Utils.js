@@ -244,7 +244,7 @@ export const addParameters = (url, params) => {
       }
     });
     // removes the last '&'
-    if (requestParams.charAt(requestUrl.length - 1) === '&') {
+    if (requestParams.charAt(requestParams.length - 1) === '&') {
       requestParams = requestParams.substring(0, requestParams.length - 1);
     }
   } else if (isString(params)) {
@@ -857,6 +857,7 @@ const geometricTypes = [
   'geometrypropertytype',
   'multisurfacepropertytype',
   'multilinestringpropertytype',
+  'multicurvepropertytype',
   'surfacepropertytype',
   'geometrypropertytype',
   'geometryarraypropertytype',

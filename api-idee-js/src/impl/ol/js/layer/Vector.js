@@ -105,7 +105,6 @@ class Vector extends Layer {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
     map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
     this.olLayer = new OLLayerVector(this.vendorOptions_);
     this.updateSource_();
@@ -124,6 +123,9 @@ class Vector extends Layer {
 
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
     if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
+    this.fire(EventType.ADDED_TO_MAP);
+    this.facadeVector_?.fire(EventType.ADDED_TO_MAP);
   }
 
   /**

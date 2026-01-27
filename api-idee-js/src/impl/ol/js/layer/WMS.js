@@ -1021,7 +1021,7 @@ class WMS extends LayerBase {
    */
   refresh() {
     const olLayer = this.getLayer();
-    if (!isNullOrEmpty(olLayer)) {
+    if (!isNullOrEmpty(olLayer) && !isNullOrEmpty(olLayer.getSource())) {
       olLayer.getSource().changed();
     }
   }

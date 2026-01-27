@@ -323,8 +323,10 @@ export const projection = (projectionParameter) => {
   // string
   if (isString(projectionParameter)) {
     const baseProjection = projectionParameter.split(/\*/)[0].trim();
+    const units = projectionParameter.split(/\*/)[1]?.trim();
     if (/^(EPSG:)?\d+$/i.test(baseProjection)) {
       projectionVar.code = baseProjection;
+      projectionVar.units = units;
     } else {
       Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
     }
@@ -333,8 +335,10 @@ export const projection = (projectionParameter) => {
     // y max
     if (!isNull(projectionParameter.code)) {
       const baseProjection = projectionParameter.code.split(/\*/)[0].trim();
+      const units = projectionParameter.code.split(/\*/)[1]?.trim();
       if (/^(EPSG:)?\d+$/i.test(baseProjection)) {
         projectionVar.code = baseProjection;
+        projectionVar.units = units;
       } else {
         Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
       }
@@ -1374,6 +1378,26 @@ export const getLegendGeoJSON = (parameter) => {
 };
 
 /**
+ * Analiza el parámetro para obtener el nombre de la capa GeoJSON.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|Mx.parameters.GeoJSON} parameter Parámetro para obtener
+ * la leyenda de la capa GeoJSON.
+ * @returns {string} Leyenda de la capa.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
+ * @api
+ */
+export const getNameGeoJSON = (parameter) => {
+  let name;
+  if (isObject(parameter) && !isNullOrEmpty(parameter.name)) {
+    name = parameter.name.trim();
+  }
+  return name;
+};
+
+/**
  * Analiza el parámetro para obtener la URL del servicio GeoJSON.
  * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
  *
@@ -1539,7 +1563,7 @@ export const geojson = (userParameters) => {
     layerObj.type = LayerType.GeoJSON;
 
     // gets the name
-    layerObj.name = getLegendGeoJSON(userParam);
+    layerObj.name = getNameGeoJSON(userParam) || getLegendGeoJSON(userParam);
 
     // get the legend
     layerObj.legend = getLegendGeoJSON(userParam);
@@ -4600,7 +4624,7 @@ const osm = (userParameters) => {
   if (!isString(params)) {
     return {
       ...params,
-      type: 'osm',
+      type: 'OSM',
     };
   }
 
