@@ -6,6 +6,7 @@ import * as EventType from 'IDEE/event/eventtype';
 import GeoJSONFormat from 'IDEE/format/GeoJSON';
 import OLSourceVector from 'ol/source/Vector';
 import { get as getProj } from 'ol/proj';
+import { createScriptTag } from 'IDEE/util/Remote';
 import Vector from './Vector';
 import JSONPLoader from '../loader/JSONP';
 
@@ -81,6 +82,11 @@ class GeoJSON extends Vector {
      * GeoJSON loaded_. Define si la capa esta cargada.
      */
     this.loaded_ = false;
+
+    /**
+     * GeoJSON isLocalFile_. Indica si la url es un archivo local.
+     */
+    this.isLocalFile_ = parameters.isLocalFile || false;
 
     /**
      * GeoJSON hiddenAttributes_. Atributos de la capa ocultos.
@@ -196,12 +202,24 @@ class GeoJSON extends Vector {
    * @api
    */
   requestFeatures_() {
-    if (this.source) {
+    if (this.isLocalFile_) {
+      this.loadFeaturesPromise_ = new Promise((resolve) => {
+        createScriptTag(this.url, null, () => {
+          const keys = Object.keys(window);
+          const firstVar = window[keys[keys.length - 1]];
+          if (firstVar) {
+            this.source = firstVar;
+            const features = this.formater_.read(this.source, this.map.getProjection());
+            resolve(features);
+          }
+        });
+      });
+    } else if (this.source) {
       this.loadFeaturesPromise_ = new Promise((resolve) => {
         const features = this.formater_.read(this.source, this.map.getProjection());
         resolve(features);
       });
-    } else if (isNullOrEmpty(this.loadFeaturesPromise_)) {
+    } else {
       this.loadFeaturesPromise_ = new Promise((resolve) => {
         this.loader_.getLoaderFn((features) => {
           resolve(features);

@@ -12,9 +12,13 @@
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **infocoordinates.ol.min.js**
 - **infocoordinates.ol.min.css**
+
+Para uso de implementación Cesium:
+- **infocoordinates.cesium.min.js**
+- **infocoordinates.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/infocoordinates/infocoordinates.ol.min.css" rel="stylesheet" />

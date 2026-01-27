@@ -132,6 +132,42 @@ params.forEach((param) => {
   IDEE.config('THEME_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${api-idee.theme.url}`);
 
   /**
+   * Predefined WMC files. It is composed of URL,
+   * predefined name and context name.
+   * @type {object}
+   * @public
+   * @api stable
+   */
+  IDEE.config('predefinedWMC', {
+    /**
+     * Predefined WMC URLs
+     * @const
+     * @type {Array<string>}
+     * @public
+     * @api stable
+     */
+    'urls': '${wmc.urls}'.split(',').map((e) => e),
+
+    /**
+     * WMC predefined names
+     * @const
+     * @type {Array<string>}
+     * @public
+     * @api stable
+     */
+    'predefinedNames': '${wmc.predefinedNames}'.split(','),
+
+    /**
+     * WMC context names
+     * @const
+     * @type {Array<string>}
+     * @public
+     * @api stable
+     */
+    'names': '${wmc.names}'.split(','),
+  });
+
+  /**
    * The path to the api-idee theme
    * @const
    * @type {string}

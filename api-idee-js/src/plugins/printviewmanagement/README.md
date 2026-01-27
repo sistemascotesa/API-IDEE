@@ -16,8 +16,13 @@ Plugin que permite utilizar diferentes herramientas de impresión.
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
+Para uso de implementación OpenLayers:
 - **printviewmanagement.ol.min.js**
 - **printviewmanagement.ol.min.css**
+
+Para uso de implementación Cesium:
+- **printviewmanagement.cesium.min.js**
+- **printviewmanagement.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/printviewmanagement/printviewmanagement.ol.min.css" rel="stylesheet" />
@@ -322,11 +327,13 @@ URL_API?printviewmanagement=position*collapsed*collapsible*tooltip*isDraggable*g
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee?printviewmanagement=TL*true*true*Imprimir*true***false*false*true
+https://componentes.idee.es/api-idee?printviewmanagement=TR*false*false*imprimir*true*true*true*true*2
 ```
 
 ```
-https://componentes.idee.es/api-idee?printviewmanagement=TL*true*true*Imprimir*true***false*true*true*0
+https://componentes.idee.es/api-idee?printviewmanagement=TL*true*true*Imprimir*true***false*true*true*1
+```
+
 
 ### Ejemplos de uso API-REST en base64
 

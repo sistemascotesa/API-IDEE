@@ -10,8 +10,13 @@ Plugin que permite la elección de la capa de fondo mediante la previsualizació
 # Dependencias
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
+Para uso de implementación OpenLayers:
 - **backimglayer.ol.min.js**
 - **backimglayer.ol.min.css**
+
+Para uso de implementación Cesium:
+- **backimglayer.cesium.min.js**
+- **backimglayer.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/backimglayer/backimglayer.ol.min.css" rel="stylesheet" />

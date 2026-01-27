@@ -97,6 +97,17 @@ export default class EditionControl extends IDEE.Control {
      * @type {*}
      */
     this.selectionLayer = null;
+
+    /**
+     * Snap object with snapToPointer and pixelTolerance properties
+     * @private
+     * @type {Object}
+     */
+    // eslint-disable-next-line no-underscore-dangle
+    this.defaultSnap = this.managementControl_.edition_ instanceof Object
+      // eslint-disable-next-line no-underscore-dangle
+      ? this.managementControl_.edition_
+      : { snapToPointer: true, pixelTolerance: 30 };
   }
 
   /**
@@ -110,6 +121,8 @@ export default class EditionControl extends IDEE.Control {
   active(html) {
     this.template = IDEE.template.compileSync(template, {
       vars: {
+        defaultSnapToPointer: this.defaultSnap.snapToPointer,
+        defaultPixelTolerance: this.defaultSnap.pixelTolerance,
         translations: {
           editgeometria: getValue('editgeometria'),
           clean: getValue('clean'),
@@ -118,6 +131,8 @@ export default class EditionControl extends IDEE.Control {
           scale: getValue('scale'),
           move: getValue('move'),
           delete: getValue('delete'),
+          snapToPointer: getValue('snapToPointer'),
+          pixelTolerance: getValue('pixelTolerance'),
           attributes: getValue('attributes'),
           newcolumn: getValue('newcolumn'),
           title_attribute_table: getValue('title_attribute_table'),
@@ -178,6 +193,16 @@ export default class EditionControl extends IDEE.Control {
     this.template.querySelector('#editattribute').addEventListener('click', () => this.editionBtnClick('editattribute'));
 
     this.template.querySelector('#cleanAll').addEventListener('click', () => this.showModalCleanGeometries());
+
+    this.template.querySelector('#m-vectorsmanagement-snapToPointer-input').addEventListener('change', (evt) => {
+      this.defaultSnap.snapToPointer = evt.target.checked;
+      this.getImpl().updateModifyOptions(this.defaultSnap);
+    });
+
+    this.template.querySelector('#m-vectorsmanagement-pixelTolerance-input').addEventListener('change', (evt) => {
+      this.defaultSnap.pixelTolerance = parseInt(evt.target.value, 10);
+      this.getImpl().updateModifyOptions(this.defaultSnap);
+    });
 
     this.template.querySelector('#m-vectorsmanagement-deletegeom-btn').addEventListener('click', () => this.deleteSingleFeature());
   }
@@ -471,13 +496,7 @@ export default class EditionControl extends IDEE.Control {
    * @api stable
    */
   activateEdition() {
-    // eslint-disable-next-line no-underscore-dangle
-    const snap = this.managementControl_.edition_ instanceof Object
-      // eslint-disable-next-line no-underscore-dangle
-      ? this.managementControl_.edition_
-      : { snapToPointer: true, pixelTolerance: 30 };
-
-    this.getImpl().activateSelection(snap);
+    this.getImpl().activateSelection(this.defaultSnap);
   }
 
   /**

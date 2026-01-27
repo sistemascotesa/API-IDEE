@@ -14,9 +14,13 @@ Plugin que permite utilizar diferentes herramientas de zoom.
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **viewmanagement.ol.min.js**
 - **viewmanagement.ol.min.css**
+
+Para uso de implementación Cesium:
+- **viewmanagement.cesium.min.js**
+- **viewmanagement.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/viewmanagement/viewmanagement.ol.min.css" rel="stylesheet" />

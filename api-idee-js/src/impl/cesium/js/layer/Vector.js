@@ -1,6 +1,7 @@
 /**
  * @module IDEE/impl/layer/Vector
  */
+import ClusteredFeature from 'IDEE/feature/Clustered';
 import {
   isNullOrEmpty,
   isFunction,
@@ -13,6 +14,7 @@ import Popup from 'IDEE/Popup';
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import * as EventType from 'IDEE/event/eventtype';
 import Style from 'IDEE/style/Style';
+import StyleCluster from 'IDEE/style/Cluster';
 import {
   BillboardGraphics,
   Color,
@@ -281,7 +283,9 @@ class Vector extends Layer {
   setLayer(layer) {
     const cesiumMap = this.map.getMapImpl();
     if (this.cesiumLayer !== layer) {
-      this.facadeVector_.removeFeatures(this.facadeVector_.getFeatures());
+      if (!(layer instanceof CustomDataSource && layer.clustering.enabled)) {
+        this.facadeVector_.removeFeatures(this.facadeVector_.getFeatures());
+      }
       const oldzIndex = cesiumMap.dataSources.indexOf(this.cesiumLayer);
       cesiumMap.dataSources.remove(this.cesiumLayer);
       this.cesiumLayer = layer;
@@ -441,6 +445,10 @@ class Vector extends Layer {
    * @api
    */
   handlerAddFeatures_(features, update) {
+    // Verificar que la capa sigue asociada al mapa (puede ser null si se destruyó)
+    if (isNullOrEmpty(this.map)) {
+      return;
+    }
     const cesiumMap = this.map.getMapImpl();
     if (cesiumMap.scene.globe.tilesLoaded) {
       this.addFeatures_(features, update);
@@ -595,6 +603,10 @@ class Vector extends Layer {
   removeFeatures(features) {
     this.features_ = this.features_.filter((f) => !(features.includes(f)));
     this.redraw();
+    const style = this.facadeVector_.getStyle();
+    if (style instanceof StyleCluster) {
+      style.refresh();
+    }
   }
 
   /**
@@ -652,8 +664,8 @@ class Vector extends Layer {
    * @expose
    */
   selectFeatures(features, coord, evt) {
-    if (this.extract === true) {
-      const feature = features[0];
+    const feature = features[0];
+    if (!(feature instanceof ClusteredFeature) && (this.extract === true)) {
       if (!isNullOrEmpty(feature)) {
         const clickFn = feature.getAttribute('vendor.api_idee.click');
         if (isFunction(clickFn)) {
@@ -811,6 +823,11 @@ class Vector extends Layer {
    */
   destroy() {
     const cesiumMap = this.map.getMapImpl();
+    // Eliminar el listener de tileLoadProgressEvent si existe
+    if (!isNullOrEmpty(this.tileLoadHandler)) {
+      cesiumMap.scene.globe.tileLoadProgressEvent.removeEventListener(this.tileLoadHandler);
+      this.tileLoadHandler = null;
+    }
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.dataSources.remove(this.cesiumLayer, true);
       this.cesiumLayer = null;

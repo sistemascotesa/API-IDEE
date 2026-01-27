@@ -19,9 +19,13 @@ https://www.idee.es/resources/documentos/Cartociudad/CartoCiudad_ServiciosWeb.pd
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **locator.ol.min.js**
 - **locator.ol.min.css**
+
+Para uso de implementación Cesium:
+- **locator.cesium.min.js**
+- **locator.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/locator/locator.ol.min.css" rel="stylesheet" />

@@ -2917,6 +2917,24 @@ class Map extends Base {
   }
 
   /**
+   * Este método añade un estilo al control scaleline para que
+   * no choque con los controles scale y wmcselector cuando la pantalla
+   * no es lo suficientemente ancha y los tres controles han sido añadidos.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @private
+   * @function
+   * @param {Object} panel panel del control.
+   * @api
+   */
+  addUpClass_(panel) {
+    panel.on(EventType.ADDED_TO_MAP, (html) => {
+      if (this.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
+        this.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
+      }
+    });
+  }
+
+  /**
    * Este método agrega controles especificados por el usuario.
    *
    * @public
@@ -3833,7 +3851,7 @@ class Map extends Base {
       const oldProj = this.getProjection();
       projection = parameter.projection(projection);
 
-      if (oldProj.code !== projection.code) {
+      if (oldProj.code !== projection.code || asDefault === true) {
         this.getImpl().setProjection(projection);
         this._defaultProj = (this._defaultProj && (asDefault === true));
         this.fire(EventType.CHANGE_PROJ, [oldProj, projection]);
@@ -4863,10 +4881,11 @@ class Map extends Base {
    * @api
    */
   on(eventType, listener, optThis) {
-    super.on(eventType, listener, optThis);
+    const idEvent = super.on(eventType, listener, optThis);
     if ((eventType === EventType.COMPLETED) && (this._finishedMap === true)) {
       this.fire(EventType.COMPLETED);
     }
+    return idEvent;
   }
 
   /**
