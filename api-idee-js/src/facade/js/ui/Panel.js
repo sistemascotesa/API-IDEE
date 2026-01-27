@@ -599,6 +599,18 @@ class Panel extends MObject {
   }
 
   /**
+   * Este método establece el estado del panel.
+   *
+   * @public
+   * @function
+   * @param {Boolean} flag Estado del panel.
+   * @api
+   */
+  setCollapsed(flag) {
+    this._collapsed = flag;
+  }
+
+  /**
    * Este método devuelve el contenedor.
    *
    * @public

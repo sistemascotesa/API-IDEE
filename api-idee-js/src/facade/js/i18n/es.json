@@ -389,6 +389,8 @@
     "enableDrag_deprecated": "El método enableDrag de la clase Map ha quedado obsoleto, se recomienda usar en su lugar enablePan.",
     "impl_length": "La implementación usada no puede crear controles MeasureLength.",
     "impl_clear": "La implementación usada no puede crear controles MeasureClear.",
-    "impl_area": "La implementación usada no puede crear controles MeasureArea"
+    "impl_area": "La implementación usada no puede crear controles MeasureArea",
+    "animated_method": "La implementación usada no podrá desactivar ni modificar la animación",
+    "deactivatechangeresolution_method": "La implementación usada no posee el método deactivateChangeResolutionEvent"
   }
 }

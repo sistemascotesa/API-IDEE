@@ -50,14 +50,11 @@ const removePlugin = () => {
 
 const selectPosition = document.getElementById('selectPosicion');
 const selectCollapsed = document.getElementById('selectCollapsed');
-const selectCollapsible = document.getElementById('selectCollapsible');
 
 const recreatePlugin = () => {
   if (plugin) removePlugin();
   const options = {};
   options.position = selectPosition.options[selectPosition.selectedIndex].value;
-  const collapsible = selectCollapsible.options[selectCollapsible.selectedIndex].value;
-  if (collapsible !== '') options.collapsible = (collapsible === 'true');
   const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
   if (collapsed !== '') options.collapsed = (collapsed === 'true');
   createControl(options);
@@ -65,7 +62,6 @@ const recreatePlugin = () => {
 
 selectPosition.addEventListener('change', recreatePlugin);
 selectCollapsed.addEventListener('change', recreatePlugin);
-selectCollapsible.addEventListener('change', recreatePlugin);
 
 const removeButton = document.getElementById('removeButton');
 removeButton.addEventListener('click', () => {

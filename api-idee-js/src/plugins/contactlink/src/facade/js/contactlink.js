@@ -130,26 +130,11 @@ export default class ContactLink extends IDEE.Plugin {
     this.metadata_ = api.metadata;
 
     /**
-     * Plugin tooltip
-     *
-     * @private
-     * @type {string}
-     */
-    this.tooltip_ = options.tooltip ?? getValue('tooltip');
-
-    /**
      * Collapsed attribute
      * @public
      * @type {boolean}
      */
     this.collapsed = IDEE.utils.isBoolean(options.collapsed) ? options.collapsed : true;
-
-    /**
-     * Collapsible attribute
-     * @public
-     * @type {boolean}
-     */
-    this.collapsible = IDEE.utils.isBoolean(options.collapsible) ? options.collapsible : true;
 
     /**
      *@private
@@ -199,12 +184,11 @@ export default class ContactLink extends IDEE.Plugin {
     map.addButtons(this.button);
 
     this.panel = new IDEE.ui.Panel(this.name, {
-      collapsible: this.collapsible,
       collapsed: this.collapsed,
       position: this.position,
       className: this.className,
       collapsedButtonClass: 'g-contactlink-link',
-      tooltip: this.tooltip_,
+      tooltip: this.tooltip,
       order: this.order,
     });
     map.addPanels(this.panel);
@@ -254,7 +238,7 @@ export default class ContactLink extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.linksDescargasCnig}*${this.linksPnoa}*${this.linksVisualizador3d}*${this.linksFototeca}*${this.linksTwitter}*${this.linksInstagram}*${this.linksFacebook}*${this.linksPinterest}*${this.linksYoutube}*${this.linksMail}`;
+    return `${this.name}=${this.position}*${this.collapsed}*false*${this.tooltip}*${this.linksDescargasCnig}*${this.linksPnoa}*${this.linksVisualizador3d}*${this.linksFototeca}*${this.linksTwitter}*${this.linksInstagram}*${this.linksFacebook}*${this.linksPinterest}*${this.linksYoutube}*${this.linksMail}`;
   }
 
   /**

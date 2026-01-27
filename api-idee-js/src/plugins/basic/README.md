@@ -11,9 +11,13 @@ Plugin básico para crear otros plugins
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
+Para uso de implementación OpenLayers:
 - **basic.ol.min.js**
 - **basic.ol.min.css**
 
+Para uso de implementación Cesium:
+- **basic.cesium.min.js**
+- **basic.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/basic/basic.ol.min.css" rel="stylesheet" />

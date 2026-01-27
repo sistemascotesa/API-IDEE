@@ -60,10 +60,6 @@ import enQueryattributes from '../../../plugins/queryattributes/src/facade/js/i1
 // import esQuerydatabase from '../../../plugins/querydatabase/src/facade/js/i18n/es';
 // import enQuerydatabase from '../../../plugins/querydatabase/src/facade/js/i18n/en';
 
-// Rescale
-import esRescale from '../../../plugins/rescale/src/facade/js/i18n/es';
-import enRescale from '../../../plugins/rescale/src/facade/js/i18n/en';
-
 // Selectionzoom
 import esSelectionzoom from '../../../plugins/selectionzoom/src/facade/js/i18n/es';
 import enSelectionzoom from '../../../plugins/selectionzoom/src/facade/js/i18n/en';
@@ -95,6 +91,10 @@ import enLocatorscn from '../../../plugins/locatorscn/src/facade/js/i18n/en';
 // Vectorsmanagement
 import esVectorsmanagement from '../../../plugins/vectorsmanagement/src/facade/js/i18n/es';
 import enVectorsmanagement from '../../../plugins/vectorsmanagement/src/facade/js/i18n/en';
+
+// Filteredsearch
+import esFilteredsearch from '../../../plugins/filteredsearch/src/facade/js/i18n/es';
+import enFilteredsearch from '../../../plugins/filteredsearch/src/facade/js/i18n/en';
 
 /**
  * Este objeto devuelve un objeto JSON dinámico que contiene
@@ -163,10 +163,6 @@ const pluginsLanguage = {
     enQuerydatabase,
   },
   */
-  rescale: {
-    esRescale,
-    enRescale,
-  },
   selectionzoom: {
     esSelectionzoom,
     enSelectionzoom,
@@ -198,6 +194,10 @@ const pluginsLanguage = {
   vectorsmanagement: {
     esVectorsmanagement,
     enVectorsmanagement,
+  },
+  filteredsearch: {
+    esFilteredsearch,
+    enFilteredsearch,
   },
 };
 

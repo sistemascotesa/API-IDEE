@@ -48,6 +48,19 @@
 - Se elimina el método getFeaturesExtentPromise de WFS para que lo herede de Vector
 - Se implementa la función setZoomLevels en Mapa para establecer el nivel de zoom junto a las resoluciones correspondientes al nivel.
 - Se inicializa this.ticket_ en la clase Map y se añade al JSDoc.
+- Se modifica el comportamiento de getMaxExtent en WMTS con useCapabilities para que en caso de que el usuario indique maxExtent a la capa devuelva el especificado y no el del capabilities.
+- Mejora la lógica de cálculo de tamaño del canvas en el toImage.
+- Se evita que quede "&" al final de la URL al usar addParameters de Utilidades.
+- Mejoras sobre las plantillas y Handlebars que permite el registro de funciones tanto en núcleo como en plugins.
+- Se añade comprobación de plantilla en el método getKML (impl).
+- Se añade a getLayerExtent y getExtentRecursive_ (WMS) la posibilidad de especificar una proyección de forma opcional.
+- Implementa la lectura de iconos mediante proxy en caso de que no se encuentre en el mismo dominio que la aplicación y tenga el proxy activado para la leyenda en estilos generic de tipo punto.
+- Se sobrescribe el método inview de OL para que se muestren las capas desde el maxResolution especificado por el usuario.. Se comentan los patches optionsFromCapabilities y writePos_ para que funcionen como en OL.
+- Se implementan las capas externas y sus dependencias.
+- Añadido el método privado addUpClass_ para evitar choque con controles wmcselector, scale y scaleline.
+- Se incorporan a API-IDEE los plugins mapheader y mapfooter.
+- Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los plugins queryattributes, infoccordinates y modal.
+- se modifica el comportamiento del método getMaxExtent de MVT para que devuelva el extent en el siguiente orden: el especificado por el usuario, el de la extensión de los features, el especificado en el mapa o el de la proyección en función del que pueda obtener.
 
 
 01/01/25 - Versión 1.0.0

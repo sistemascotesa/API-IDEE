@@ -392,6 +392,28 @@ div.m-panel>button {
 }
 
 /*  Info mapa  */
+.m-panel.m-map-info>div.m-panel-controls>div.m-control.m-scale-container,
+.m-panel.m-map-info>div.m-panel-controls>div.m-control.m-wmcselector-container {
+    order: 3;
+    border: 2px solid white;
+}
+
+.m-panel.m-map-info.m-with-mouse>div.m-panel-controls>div.m-control.m-scale-container {
+    border-top-left-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+}
+
+@media only screen and (max-width: 768px) {
+    .m-panel.m-map-info.m-with-mouse>div.m-panel-controls>div.m-control.m-scale-container {
+        border-top-left-radius: 20px !important;
+        border-bottom-left-radius: 20px !important;
+    }
+}
+
+.m-panel.m-map-info.m-with-wmcselector>div.m-panel-controls>div.m-control.m-scale-container {
+    border-top-right-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+}
 
 .m-panel.m-map-info>div.m-panel-controls>div.m-control.m-wmcselector-container {
     order: 2;
@@ -410,7 +432,7 @@ div.m-panel>button {
     }
 }
 
-.m-panel>div.m-panel-controls .m-mouse-position {
+.m-areas>div.m-area>div.m-panel>div.m-panel-controls .m-mouse-position {
     background-color: white !important;
     padding: 6px 12px 3px 12px !important;
     font-family: 'Muli', 'sans-serif' !important;
@@ -420,11 +442,25 @@ div.m-panel>button {
     height: 15px !important;
 }
 
+.m-scale-container {
+    background-color: white !important;
+    padding: 6px 12px 3px 12px !important;
+    font-family: 'Muli', 'sans-serif' !important;
+    font-size: 12px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02) !important;
+    display: flex !important;
+    height: 15px;
+    white-space: pre;
+}
 
+.m-scale-container:before {
+    color: #a35d38;
+    margin-right: 5px;
+}
 
 .m-wmcselector-container {
     background-color: white !important;
-    padding: 4px 10px 3px 12px !important;
+    padding: 5px 10px 3px 12px !important;
     font-family: 'Muli', 'sans-serif' !important;
     font-size: 12px !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02) !important;
@@ -438,21 +474,12 @@ div.m-panel>button {
     margin-top: 3px;
 }
 
-.m-panel.m-map-info.m-with-mouse>div.m-panel-controls>div.m-control.m-scale-container {
-    border-top-left-radius: 0px !important;
-    border-bottom-left-radius: 0px !important;
-}
-
 @media only screen and (max-width: 768px) {
-    .m-panel.m-map-info.m-with-mouse>div.m-panel-controls>div.m-control.m-scale-container {
+    .m-scale-container {
         border-top-left-radius: 20px !important;
         border-bottom-left-radius: 20px !important;
+        padding: 6px 12px 3px 12px !important;
     }
-}
-
-.m-panel.m-map-info.m-with-wmcselector>div.m-panel-controls>div.m-control.m-scale-container {
-    border-top-right-radius: 0px !important;
-    border-bottom-right-radius: 0px !important;
 }
 
 @media only screen and (min-width: 769px) {
