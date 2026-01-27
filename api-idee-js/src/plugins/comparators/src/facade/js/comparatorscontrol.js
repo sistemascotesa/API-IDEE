@@ -21,7 +21,7 @@ export default class ComparatorsControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api
    */
-  constructor({ isDraggable, order, options }) {
+  constructor({ order, options }) {
     if (IDEE.utils.isUndefined(ComparatorsImpl)
       || (IDEE.utils.isObject(ComparatorsImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(ComparatorsImpl)))) {
@@ -30,13 +30,6 @@ export default class ComparatorsControl extends IDEE.Control {
 
     const impl = new ComparatorsImpl();
     super('Comparators', impl);
-
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable_ = isDraggable || false;
 
     /**
      * Order of plugin
@@ -238,10 +231,6 @@ export default class ComparatorsControl extends IDEE.Control {
           });
         }
       });
-
-      if (this.isDraggable_) {
-        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-comparators-title');
-      }
 
       this.accessibilityTab_(this.html);
 
@@ -585,7 +574,6 @@ export default class ComparatorsControl extends IDEE.Control {
     });
 
     this.order = null;
-    this.isDraggable_ = null;
     this.options = null;
     this.defaultCompareMode = null;
     this.mirrorpanelParams = null;

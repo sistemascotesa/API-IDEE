@@ -47,13 +47,6 @@ export default class Comparators extends IDEE.Plugin {
     this.collapsible = !IDEE.utils.isUndefined(options.collapsible) ? options.collapsible : true;
 
     /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
-
-    /**
      * Indicates order to the plugin
      * @private
      * @type {Number}
@@ -105,7 +98,7 @@ export default class Comparators extends IDEE.Plugin {
 
     this.panel = new IDEE.ui.Panel(this.name, {
       tooltip: this.tooltip,
-      position: IDEE.ui.position[this.position],
+      position: this.position,
       minWidth: this.minPanelWidth,
       maxWidth: this.maxPanelWidth,
       className: 'm-plugin-comparators',
@@ -117,7 +110,6 @@ export default class Comparators extends IDEE.Plugin {
     map.addPanels(this.panel);
 
     this.controls.push(new ComparatorsControl({
-      isDraggable: this.isDraggable,
       map: this.map,
       order: this.order,
       options: this.options,
@@ -137,7 +129,7 @@ export default class Comparators extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.controls}*${this.collapsed}*${this.collapsible}*${this.tooltip}*${this.isDraggable}*${this.options.listLayers}*${this.options.defaultCompareMode}*${this.options.enabledKeyFunctions}*${!!this.options.transparencyParams}*${!!this.options.lyrcompareParams}*${!!this.options.mirrorpanelParams}*${!!this.options.windowsyncParams}`;
+    return `${this.name}=${this.controls}*${this.collapsed}*${this.collapsible}*${this.tooltip}*${this.options.listLayers}*${this.options.defaultCompareMode}*${this.options.enabledKeyFunctions}*${!!this.options.transparencyParams}*${!!this.options.lyrcompareParams}*${!!this.options.mirrorpanelParams}*${!!this.options.windowsyncParams}`;
   }
 
   /**
@@ -162,6 +154,8 @@ export default class Comparators extends IDEE.Plugin {
     this.controls[0].deactivate();
     this.controls[0].controls = [];
     this.map.removeControls(this.controls);
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
 
     this.map = null;
     this.panel_ = null;
@@ -171,7 +165,6 @@ export default class Comparators extends IDEE.Plugin {
     this.collapsed = null;
     this.collapsible = null;
     this.tooltip = null;
-    this.isDraggable = null;
     this.order = null;
   }
 

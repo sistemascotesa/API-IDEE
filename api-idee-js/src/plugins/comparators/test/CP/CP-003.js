@@ -12,7 +12,7 @@ const map = IDEE.map({
 });
 
 const mp = new Comparators({
-  position: 'TR',
+  position: 'right',
   collapsed: false,
   collapsible: true,
   transparencyParams: false,

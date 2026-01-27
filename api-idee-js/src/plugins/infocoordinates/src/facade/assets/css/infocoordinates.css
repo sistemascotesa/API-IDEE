@@ -320,7 +320,7 @@
     border: 1px solid #d1d5db;
 }
 
-.m-plugin-panel-content button svg{
+#plugin-panel-content-infocoordinates svg{
     width: 100%;
     height: 100%;
 }

@@ -96,13 +96,6 @@
                             <option value="false">false</option>
                         </select>
 
-                        <label for="selectDraggable">Selector de draggable</label>
-                        <select name="selectDraggable" id="selectDraggable">
-                            <option value=""></option>
-                            <option value="true" selected="selected">true</option>
-                            <option value="false">false</option>
-                        </select>
-
                         <label for="enabledKeyFunctions">Activa atajos de teclado</label>
                         <select name="enabledKeyFunctions" id="enabledKeyFunctions">
                             <option value=""></option>
@@ -212,7 +205,7 @@
 
                         <label for="mirrorpanelParams_modeVizTypes">Introducir modeVizTypes del control
                             mirrorpanelParams</label>
-                        <input type="text" id="mirrorpanelParams_modeVizTypes" value="[0, 1, 2, 3, 5]">
+                        <input type="text" id="mirrorpanelParams_modeVizTypes" value="[0, 1, 2, 3, 4, 5]">
 
                         <label for="mirrorpanelParams_tooltip">Introducir tooltip del control mirrorpanelParams</label>
                         <input type="text" id="mirrorpanelParams_tooltip" value="tooltipMirror">
@@ -295,7 +288,7 @@
                                     zoom: 6,
                                 });
 
-                                let mp;
+                                let mp = null;
 
                                 const selectPosicion = document.getElementById("selectPosicion");
                                 const selectCollapsed = document.getElementById("selectCollapsed");
@@ -325,9 +318,9 @@
                                 const selectMirrorpanelParams_enabledControlsPlugins = document.getElementById("mirrorpanelParams_enabledControlsPlugins");
                                 const selectwindowsyncParams_controls = document.getElementById("windowsyncParams_controls");
                                 const selectwindowsyncParams_plugins = document.getElementById("windowsyncParams_plugins");
-                                const selectDraggableParams = document.getElementById("selectDraggable");
                                 const tooltipComparatorParams = document.getElementById("tooltipComparator");
-
+                                const botonEliminar = document.getElementById("botonEliminar");
+                                
 
                                 selectPosicion.addEventListener('change', cambiarTest);
                                 selectCollapsed.addEventListener('change', cambiarTest);
@@ -357,68 +350,10 @@
                                 selectMirrorpanelParams_enabledControlsPlugins.addEventListener('change', cambiarTest);
                                 selectwindowsyncParams_controls.addEventListener('change', cambiarTest);
                                 selectwindowsyncParams_plugins.addEventListener('change', cambiarTest);
-                                selectDraggableParams.addEventListener('change', cambiarTest);
                                 tooltipComparatorParams.addEventListener('change', cambiarTest);
-
-                                /* Creación por defecto */
-                                crearPlugin({
-                                    position: 'right',
-                                    collapsed: false,
-                                    collapsible: true,
-                                    defaultCompareMode: 'none', // mirror - curtain - spyeye - none
-                                    listLayers: [
-                                        'WMS*Huellas Sentinel2*https://wms-satelites-historicos.idee.es/satelites-historicos*teselas_sentinel2_espanna*true',
-                                        'WMS*Invierno 2022 falso color natural*https://wms-satelites-historicos.idee.es/satelites-historicos*SENTINEL.2022invierno_432-1184*true',
-                                        'WMS*Invierno 2022 falso color infrarrojo*https://wms-satelites-historicos.idee.es/satelites-historicos*SENTINEL.2022invierno_843*true',
-                                        'WMS*Filomena*https://wms-satelites-historicos.idee.es/satelites-historicos*Filomena*true',
-                                    ],
-                                    enabledKeyFunctions: true,
-                                    lyrsMirrorMinZindex: 10,
-                                    transparencyParams: {
-                                        radius: 50,
-                                        maxRadius: 100,
-                                        minRadius: 10,
-                                        tooltip: 'tooltipTransparency',
-                                    },
-                                    lyrcompareParams: {
-                                        staticDivision: 2,
-                                        defaultLyrA: 3,
-                                        defaultLyrB: 2,
-                                        defaultLyrC: 1,
-                                        defaultLyrD: 0,
-                                        opacityVal: 100,
-                                        tooltip: 'tooltipLyrCompare',
-                                        defaultCompareViz: 2,
-                                    },
-                                    mirrorpanelParams: {
-                                        showCursors: false,
-                                        principalMap: true,
-                                        enabledControlsPlugins: {
-                                            map2: {
-                                                ShareMap: {}, // Opciones por defecto
-                                            },
-                                            map3: {
-                                                controls: ['scale'],
-                                            },
-                                        },
-                                        enabledDisplayInLayerSwitcher: true,
-                                        defaultCompareViz: 2,
-                                        modeVizTypes: [0, 1, 2, 3, 5], // 0 - 9
-                                        tooltip: 'tooltipMirror',
-                                    },
-                                    windowsyncParams: {
-                                        controls: ['scale'],
-                                        plugins: [
-                                            {
-                                                name: 'Layerswitcher',
-                                                param: {
-                                                    position: 'left',
-                                                },
-                                            },
-                                        ],
-                                    },
+                                botonEliminar.addEventListener("click", function () {
+                                    map.removePlugins(mp);
                                 });
-
 
                                 function cambiarTest() {
                                     const posicionValor = selectPosicion.options[selectPosicion.selectedIndex].value;
@@ -449,11 +384,12 @@
                                     const mirrorpanelParams_enabledControlsPluginsValor = JSON.parse(selectMirrorpanelParams_enabledControlsPlugins.value);
                                     const windowsyncParams_controlsValor = JSON.parse(selectwindowsyncParams_controls.value);
                                     const windowsyncParams_pluginsValor = JSON.parse(selectwindowsyncParams_plugins.value);
-                                    const draggableValor = selectDraggableParams.options[selectDraggableParams.selectedIndex].value === 'true';
                                     const tooltipComparatorValor = tooltipComparatorParams.value;
 
 
-                                    map.removePlugins(mp);
+                                    if (mp !== null) {
+                                        map.removePlugins(mp);
+                                    }
                                     setTimeout(() => {
                                         crearPlugin({
                                             position: posicionValor,
@@ -462,7 +398,6 @@
                                             defaultCompareMode: defaultCompareModeValor, // mirror - curtain - spyeye - none
                                             listLayers: listLayersValor,
                                             tooltip: tooltipComparatorValor,
-                                            isDraggable: draggableValor,
                                             enabledKeyFunctions: enabledKeyFunctionsValor,
                                             lyrsMirrorMinZindex: lyrsMirrorMinZindexValor,
                                             transparencyParams: {
@@ -502,19 +437,7 @@
                                     mp = new IDEE.plugin.Comparators(propiedades);
                                     map.addPlugin(mp);
                                 }
-
-                                const botonEliminar = document.getElementById("botonEliminar");
-                                botonEliminar.addEventListener("click", function () {
-                                    map.removePlugins(mp);
-                                });
-
-
-                                /* ShareMap */
-                                mp2 = new IDEE.plugin.ShareMap({
-                                    baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
-                                    position: "right",
-                                });
-                                map.addPlugin(mp2);
+                                cambiarTest();
                             </script>
                 </body>
 

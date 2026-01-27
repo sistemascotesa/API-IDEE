@@ -14,7 +14,7 @@ const mp2 = new IDEE.plugin.Infocoordinates({
 });
 
 const mp = new Comparators({
-  position: 'TR',
+  position: 'right',
   collapsed: false,
   collapsible: true,
   transparencyParams: false,
@@ -26,7 +26,7 @@ const mp = new Comparators({
       {
         name: 'Layerswitcher',
         params: {
-          position: 'TL',
+          position: 'left',
         },
       },
     ],

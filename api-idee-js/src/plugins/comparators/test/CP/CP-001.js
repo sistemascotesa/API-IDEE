@@ -10,10 +10,9 @@ const map = IDEE.map({
 });
 
 const mp = new Comparators({
-  position: 'TR',
+  position: 'right',
   collapsed: false,
   collapsible: true,
-  isDraggable: true,
   // ? -> Se comprueba que se abre el panel, parámetro defaultCompareMode
   // defaultCompareMode: 'windowsyncParams',
   transparencyParams: true,

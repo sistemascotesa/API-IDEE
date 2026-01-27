@@ -119,8 +119,6 @@ Ctrl + Shift + Enter: Alterna el estado de congelación.
 Ctrl + Shift + Flecha hacia arriba: Aumenta el radio, si el radio alcanza el valor máximo de 200, no ocurre ningún cambio.
 Ctrl + Shift + Flecha hacia abajo: Disminuye el radio, si el radio llega al valor mínimo de 32, no ocurre ningún cambio.
 
-- **isDraggable**: "True" para que el plugins se pueda desplazar, por defecto false.
-
 - **transparencyParams**: Parámetros opcionales del control transparency, en el caso de no querer cargar este control su valor será "false".
   - radius (numérico): radio del efecto transparencia. Tiene un rango entre 30 y 200. Defecto: 100.
   - maxRadius Radio máximo, por defecto 200.
@@ -167,7 +165,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
   - Servicio,Leyenda,URL,Nombre. Separados por "*".
 ```javascript
  const mp = new IDEE.plugin.Comparators({
-  position: 'TR',
+  position: 'right',
   enabledDisplayInLayerSwitcher: true,
   collapsed: false,
   collapsible: true,
@@ -317,7 +315,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
 # API-REST
 
 ```javascript
-URL_API?comparators=position*!collapsed*!collapsible*!tooltip*!isDraggable*!listLayers*!defaultCompareMode*!enabledKeyFunctions*!transparencyParams*!lyrcompareParams*!mirrorpanelParams*!windowsyncParams
+URL_API?comparators=position*!collapsed*!collapsible*!tooltip*!listLayers*!defaultCompareMode*!enabledKeyFunctions*!transparencyParams*!lyrcompareParams*!mirrorpanelParams*!windowsyncParams
 ```
 
 <table>
@@ -344,11 +342,6 @@ URL_API?comparators=position*!collapsed*!collapsible*!tooltip*!isDraggable*!list
     <tr>
         <td>tooltip</td>
         <td>Valor a usar para mostrar en el tooltip del plugin</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-    <tr>
-        <td>isDraggable</td>
-        <td>true/false</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
      <tr>
@@ -407,10 +400,9 @@ IDEE.utils.encodeBase64(obj_params);
 Ejemplo de constructor:
 ```javascript
 {
-  position: 'TL',
+  position: 'left',
   collapsed: false,
   collapsible: true,
-  isDraggable: true,
   tooltip: 'Plugin Comparators',
   defaultCompareMode: 'mirror',
   enabledDisplayInLayerSwitcher: true,
