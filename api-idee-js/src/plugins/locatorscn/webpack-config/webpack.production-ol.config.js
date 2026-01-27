@@ -8,6 +8,7 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 
 const PJSON_PATH = path.resolve(__dirname, '..', 'package.json');
 const pjson = require(PJSON_PATH);
+const webpack = require('webpack');
 
 module.exports = {
   mode: 'production',
@@ -83,6 +84,9 @@ module.exports = {
     //   version: pjson.version,
     //   regex: /([A-Za-z]+)(\..*)/,
     // }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
@@ -96,7 +100,11 @@ module.exports = {
         {
           from: 'src/api.json',
           to: 'api.json',
-        },
+        }
+        // , {
+        //   from: 'src/facade/assets/images',
+        //   to: 'images',
+        // },
       ],
     }),
   ],

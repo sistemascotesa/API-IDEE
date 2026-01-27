@@ -11,9 +11,13 @@ Plugin que permite la identificación de incidencias sobre la cartografía. El u
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **incicarto.ol.min.js**
 - **incicarto.ol.min.css**
+
+Para uso de implementación Cesium:
+- **incicarto.cesium.min.js**
+- **incicarto.cesium.min.css**
 
 
 ```html

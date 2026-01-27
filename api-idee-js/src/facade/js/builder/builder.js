@@ -7,6 +7,8 @@ import {
 } from 'IDEE/util/Utils';
 import ControlPanel from '../ui/ControlPanel';
 import * as EventType from '../event/eventtype';
+import Panel from '../ui/Panel';
+import * as Position from '../ui/position';
 import { getValue } from '../i18n/language';
 import Control from '../control/Control';
 import Attributions from '../control/Attributions';
@@ -63,11 +65,7 @@ export const getScalePanel = (control, map, params = {}) => {
       collapsible: false,
       className: 'm-map-info',
     });
-    panel.on(EventType.ADDED_TO_MAP, () => {
-      if (map.getControls([WMCSelector.NAME, 'scale', 'scaleline']).length === 3) {
-        map.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
-      }
-    });
+    map.addUpClass_(panel); // eslint-disable-line no-underscore-dangle
   }
   panel.addClassName('m-with-scale');
   return panel;
@@ -93,11 +91,7 @@ export const getScaleLinePanel = (control, map, params = {}) => {
     collapsible: false,
     order: 0,
   });
-  panel.on(EventType.ADDED_TO_MAP, () => {
-    if (map.getControls([WMCSelector.NAME, 'scale', ScaleLine.NAME]).length === 3) {
-      map.getControls([ScaleLine.NAME])[0].getImpl().getElement().classList.add('ol-scale-line-up');
-    }
-  });
+  map.addUpClass_(panel); // eslint-disable-line no-underscore-dangle
   return panel;
 };
 
@@ -320,11 +314,7 @@ export const getWMCSelectorPanel = (control, map, params = {}) => {
       collapsible: false,
       className: 'm-map-info',
     });
-    panel.on(EventType.ADDED_TO_MAP, () => {
-      if (map.getControls([WMCSelector.NAME, 'scale', 'scaleline']).length === 3) {
-        map.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
-      }
-    });
+    map.addUpClass_(panel); // eslint-disable-line no-underscore-dangle
   }
   panel.addClassName(`m-with-${WMCSelector.NAME}`);
   return panel;

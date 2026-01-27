@@ -139,9 +139,9 @@ export default class PrintViewManagement extends IDEE.Plugin {
     /**
      * Indicates if you want to use proxy in requests
      * @private
-     * @type {Boolean}
+     * @type {Boolean|String}
      */
-    this.useProxy = IDEE.utils.isUndefined(options.useProxy) ? false : options.useProxy;
+    this.useProxy = IDEE.utils.isUndefined(options.useProxy) ? IDEE.useproxy : options.useProxy;
 
     /**
      * Stores the proxy state at plugin load time
