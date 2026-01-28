@@ -39,13 +39,11 @@
 
 <body>
     <div>
-        <label for="selectPosicion">Selector de posición del plugin</label>
+        <label for="selectPosicion">Selector de posición del plugin</label> 
         <select name="position" id="selectPosicion">
-            <option value="TL" selected="selected">Arriba Izquierda (TL)</option>
-            <option value="TR">Arriba Derecha (TR)</option>
-            <option value="BR">Abajo Derecha (BR)</option>
-            <option value="BL">Abajo Izquierda (BL)</option>
-        </select>
+			<option value="left">Izquierda</option>
+			<option value="right" selected="selected">Derecha</option>
+		</select> 
         <label for="selectCollapsed">Selector collapsed</label>
         <select name="collapsedValue" id="selectCollapsed">
             <option value=true>true</option>

@@ -13,7 +13,7 @@ let plugin;
 
 const createControl = (options) => {
   plugin = new ViewManagement({
-    position: 'TL', // 'TL' | 'TR' | 'BR' | 'BL'
+    position: 'left',
     // collapsible: true,
     collapsed: true,
     isDraggable: true,
