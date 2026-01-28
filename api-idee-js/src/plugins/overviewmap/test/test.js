@@ -30,3 +30,9 @@ const mp = new OverviewMap({
 });
 
 map.addPlugin(mp); window.mp = mp;
+
+// setTimeout(() => {
+//   console.log('Destruyendo el plugin ahora...');
+//   mp.destroy();
+//   console.log('Plugin eliminado.');
+// }, 2000);

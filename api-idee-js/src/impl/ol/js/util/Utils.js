@@ -737,6 +737,14 @@ class Utils {
    * @api
    */
   static isOlControlImpl(controlImpl) {
+    // if (!controlImpl) return false;
+    // const className = controlImpl.constructor.name;
+    // if (className === 'OverviewMapControl' || className === 'OverviewMapControlControl') {
+    //   return true;
+    // }
+    if (controlImpl.isOverviewMap) {
+      return true;
+    }
     return controlImpl instanceof OlControlImpl
       || controlImpl instanceof OlControlScaleLineImpl
       || controlImpl instanceof OLControlZoomSlider

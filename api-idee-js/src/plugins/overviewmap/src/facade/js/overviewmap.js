@@ -28,7 +28,7 @@ export default class OverviewMap extends IDEE.Plugin {
       position:
         isValid(options.position) ? options.position : LEFT,
       // position: options.position || 'left',
-      tooltip: options.tooltip || getValue('tooltip'),
+      // tooltip: options.tooltip || getValue('tooltip'),
     });
     /**
      * Facade of the map
@@ -164,6 +164,7 @@ export default class OverviewMap extends IDEE.Plugin {
     this.panel_ = new IDEE.ui.ControlPanel('OverviewMap', {
       collapsible: true,
       className: 'm-overviewmap-panel',
+      collapsedButtonClass: 'overviewmap-mundo',
       tooltip: this.tooltip_,
       order: this.order,
       position: this.position,
