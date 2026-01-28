@@ -6,6 +6,8 @@ import ModalControl from './modalcontrol';
 import api from '../../api';
 import { getValue } from './i18n/language';
 import myhelp from '../../templates/myhelp';
+// eslint-disable-next-line import/no-relative-packages
+import { LEFT } from '../../../../../facade/js/ui/position';
 
 import es from './i18n/es';
 import en from './i18n/en';
@@ -22,7 +24,12 @@ export default class Modal extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super();
+    // super();
+    super('modal', {
+      position: options.position ?? LEFT,
+      tooltip: options.tooltip ?? getValue('tooltip'),
+      order: options.order ?? 0,
+    });
     /**
      * Facade of the map
      * @private
@@ -133,9 +140,11 @@ export default class Modal extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
+    this.map_ = map;
+
     this.control_ = new ModalControl(this.url_);
     this.controls_.push(this.control_);
-    this.map_ = map;
+
     this.panel_ = new IDEE.ui.Panel('Modal', {
       className: 'm-panel-modal',
       collapsible: this.collapsible_,
@@ -145,6 +154,7 @@ export default class Modal extends IDEE.Plugin {
       tooltip: this.tooltip_,
       order: this.order,
     });
+
     this.panel_.addControls(this.controls_);
     map.addPanels(this.panel_);
   }

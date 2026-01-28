@@ -23,7 +23,7 @@ export default class ModalControl extends IDEE.Control {
       IDEE.exception(getValue('exception_modalcontrol'));
     }
     const impl = new ModalImplControl();
-    super('Modal', impl);
+    super('Modal', impl, {});
 
     /**
      * Help documentation link.
