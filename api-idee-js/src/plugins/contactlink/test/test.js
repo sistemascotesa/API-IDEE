@@ -44,15 +44,17 @@ const createControl = (options) => {
 };
 
 const removePlugin = () => {
-  map.removePlugin(plugin);
-  plugin = null;
+  if (plugin) {
+    map.removePlugin(plugin);
+    plugin = null;
+  }
 };
 
 const selectPosition = document.getElementById('selectPosicion');
 const selectCollapsed = document.getElementById('selectCollapsed');
 
 const recreatePlugin = () => {
-  if (plugin) removePlugin();
+  removePlugin();
   const options = {};
   options.position = selectPosition.options[selectPosition.selectedIndex].value;
   const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
