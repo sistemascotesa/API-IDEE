@@ -9,7 +9,7 @@ import ZoomPanelControl from './zoompanelcontrol';
 import PredefinedZoomControl from './predefinedzoomcontrol';
 import ZoomExtentControl from './zoomextentcontrol';
 
-export default class ViewManagementControl extends IDEE.Control {
+class ViewManagementControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
@@ -25,7 +25,7 @@ export default class ViewManagementControl extends IDEE.Control {
     }
 
     const impl = new ViewManagementImpl();
-    super('ViewManagement', impl);
+    super(ViewManagementControl.NAME, impl);
     /**
      * Indicates if the control PredefinedZoom is added to the plugin
      * @private
@@ -224,3 +224,14 @@ export default class ViewManagementControl extends IDEE.Control {
     }
   }
 }
+
+/**
+ * Identifier name to this control
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+ViewManagementControl.NAME = 'ViewManagement';
+
+export default ViewManagementControl;
