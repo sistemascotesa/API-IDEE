@@ -46,7 +46,7 @@ export default class PredefinedZoomControl extends IDEE.Control {
           const newDiv = document.createElement('div');
           newDiv.classList.add('m-predefinedzoom-button-container');
           const newBtn = document.createElement('button');
-          newBtn.setAttribute('class', 'viewmanagement-icon-expand');
+          newBtn.setAttribute('class', 'g-cartografia-viewmanagement-icon-expand');
           newBtn.setAttribute('id', `m-predefinedzoom-${customZoom.name}`);
           newBtn.setAttribute('title', customZoom.name);
           if (customZoom.bbox !== undefined) {

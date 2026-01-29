@@ -5,7 +5,7 @@
 import ZoomExtentImpl from 'impl/zoomextentcontrol';
 import { getValue } from './i18n/language';
 
-export default class ZoomExtentControl extends IDEE.Control {
+class ZoomExtentControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
@@ -20,7 +20,7 @@ export default class ZoomExtentControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl_zoomextent'));
     }
     const impl = new ZoomExtentImpl();
-    super('ZoomExtentImpl', impl);
+    super(ZoomExtentControl.NAME, impl);
     this.getImpl().createInteraction(map);
   }
 
@@ -97,3 +97,14 @@ export default class ZoomExtentControl extends IDEE.Control {
     document.removeEventListener('keydown', this.escKey_);
   }
 }
+
+/**
+ * Identifier name to this control
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+ZoomExtentControl.NAME = 'ZoomExtentImpl';
+
+export default ZoomExtentControl;
