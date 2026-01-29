@@ -217,12 +217,12 @@ export default class SelectionZoomControl extends IDEE.Control {
         BboxTransformXmaxYmin = this.getImpl().transform(
           BboxTransformXmaxYmin,
           'EPSG:3857',
-          this.map_.getProjection().code,
+          this.map.getProjection().code,
         );
         BboxTransformXminYmax = this.getImpl().transform(
           BboxTransformXminYmax,
           'EPSG:3857',
-          this.map_.getProjection().code,
+          this.map.getProjection().code,
         );
 
         nuevoBbox.x.min = BboxTransformXminYmax[0];
@@ -256,7 +256,7 @@ export default class SelectionZoomControl extends IDEE.Control {
     }
 
     this.fire('selectionzoom:activeChanges', [{ activeLayerId: this.activeLayer }]);
-    document.querySelector('.m-panel.m-plugin-selectionzoom.opened > button.m-panel-btn').click();
+    if (this.activationButton) this.activationButton.element.click();
   }
 
   /**
