@@ -84,7 +84,7 @@ const create = (options) => {
   map.addPlugin(plugin);
 };
 
-const removePlugin = () => {
+const remove = () => {
   if (plugin) {
     map.removePlugin(plugin);
     plugin = null;
@@ -94,8 +94,8 @@ const removePlugin = () => {
 const selectPosition = document.getElementById('selectPosicion');
 const selectCollapsed = document.getElementById('selectCollapsed');
 
-const recreatePlugin = () => {
-  removePlugin();
+const recreate = () => {
+  remove();
   const options = {};
   options.position = selectPosition.options[selectPosition.selectedIndex].value;
   const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
@@ -103,12 +103,12 @@ const recreatePlugin = () => {
   create(options);
 };
 
-selectPosition.addEventListener('change', recreatePlugin);
-selectCollapsed.addEventListener('change', recreatePlugin);
+selectPosition.addEventListener('change', recreate);
+selectCollapsed.addEventListener('change', recreate);
 
 const removeButton = document.getElementById('removeButton');
 removeButton.addEventListener('click', () => {
-  removePlugin();
+  remove();
 });
 
-recreatePlugin();
+recreate();

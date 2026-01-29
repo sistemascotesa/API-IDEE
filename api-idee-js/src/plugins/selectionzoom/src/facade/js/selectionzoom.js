@@ -7,6 +7,8 @@ import api from '../../api';
 import SelectionZoomControl from './selectionzoomcontrol';
 import { getValue } from './i18n/language';
 import myhelp from '../../templates/myhelp';
+// eslint-disable-next-line import/no-relative-packages
+import { LEFT } from '../../../../../facade/js/ui/position';
 
 import es from './i18n/es';
 import en from './i18n/en';
@@ -23,13 +25,17 @@ export default class SelectionZoom extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super();
+    super('selectionzoom', {
+      position: options.position ?? LEFT,
+      tooltip: options.tooltip ?? getValue('tooltip'),
+      order: options.order ?? 0,
+    });
     /**
      * Facade of the map
      * @private
      * @type {IDEE.Map}
      */
-    this.map_ = null;
+    this.map = null;
 
     /**
      * Array of controls
@@ -51,14 +57,6 @@ export default class SelectionZoom extends IDEE.Plugin {
      * @type {object}
      */
     this.options = options;
-
-    /**
-     * Position of the plugin
-     *
-     * @private
-     * @type {Enum} TL | TR | BL | BR
-     */
-    this.position_ = options.position || 'TL';
 
     /**
      * Layers options
@@ -154,18 +152,6 @@ export default class SelectionZoom extends IDEE.Plugin {
      * @type {Object}
      */
     this.metadata_ = api.metadata;
-
-    /**
-     *@private
-     *@type { string }
-     */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
-
-    /**
-     *@private
-     *@type { Number }
-     */
-    this.order = options.order >= -1 ? options.order : null;
   }
 
   /**
@@ -192,7 +178,28 @@ export default class SelectionZoom extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.controls_.push(new SelectionZoomControl(
+    this.map = map;
+
+    this.button = new IDEE.ui.Button(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+      svgPath: `plugins/${this.name}/images/icon.svg`,
+      order: this.order,
+    });
+    map.addButtons(this.button);
+
+    this.panel = new IDEE.ui.Panel(this.name, {
+      collapsible: this.collapsible,
+      collapsed: this.collapsed,
+      position: this.position,
+      className: 'm-plugin-selectionzoom',
+      tooltip: this.tooltip,
+      collapsedButtonClass: 'g-selectionzoom-selezoom',
+      order: this.order,
+    });
+    map.addPanels(this.panel);
+
+    const control = new SelectionZoomControl(
       map,
       this.ids,
       this.titles,
@@ -202,20 +209,20 @@ export default class SelectionZoom extends IDEE.Plugin {
       this.centers || '',
       this.order,
       this.newparameterization,
-    ));
-    this.map_ = map;
-    this.panel_ = new IDEE.ui.Panel('panelSelectionZoom', {
-      collapsible: this.collapsible,
-      collapsed: this.collapsed,
-      position: IDEE.ui.position[this.position_],
-      className: 'm-plugin-selectionzoom',
-      tooltip: this.tooltip_,
-      collapsedButtonClass: 'g-selectionzoom-selezoom',
-      order: this.order,
+    );
+
+    control.setPanel(this.panel);
+    control.activationButton = this.button;
+    control.on(IDEE.evt.ADDED_TO_MAP, () => {
+      this.fire(IDEE.evt.ADDED_TO_MAP);
     });
 
-    this.panel_.addControls(this.controls_);
-    map.addPanels(this.panel_);
+    this.controls_.push(control);
+
+    this.panel.addControls(this.controls_);
+
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
   }
 
   /**
@@ -281,11 +288,13 @@ export default class SelectionZoom extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
-    this.map_.removeControls(this.controls_);
-    this.map_ = null;
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
+    this.map.removeControls(this.controls_);
+    this.map = null;
     this.control_ = null;
     this.controls_ = null;
-    this.panel_ = null;
+    this.panel = null;
     this.name = null;
   }
 
