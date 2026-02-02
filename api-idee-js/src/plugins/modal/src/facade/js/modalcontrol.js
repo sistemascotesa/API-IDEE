@@ -17,12 +17,13 @@ export default class ModalControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api stable
    */
-  constructor(url) {
+  constructor(url, options = {}) {
     if (IDEE.utils.isUndefined(ModalImplControl) || (IDEE.utils.isObject(ModalImplControl)
       && IDEE.utils.isNullOrEmpty(Object.keys(ModalImplControl)))) {
       IDEE.exception(getValue('exception_modalcontrol'));
     }
     const impl = new ModalImplControl();
+    impl.setTemplates(templateES, templateEN);
     super('Modal', impl, {});
 
     /**
@@ -42,29 +43,40 @@ export default class ModalControl extends IDEE.Control {
    * @api stable
    */
   createView(map) {
+    this.map_ = map;
+
     document.addEventListener('keydown', (evt) => {
       if (evt.key === 'Escape') {
-        const elem = document.querySelector('.m-panel.m-panel-modal.opened');
-        if (elem !== null) {
-          elem.querySelector('button.m-panel-btn').click();
-        }
+        this.getImpl().toggleModal(false);
       }
     });
+
+    // Devuelve elemento vacío. El botón se puso con new IDEE.ui.Button
+    return document.createElement('div');
+  }
+
+  /**
+   * Método llamado por el botón oficial
+   */
+  async triggerModal() {
+    let content = '';
+
     if (this.url_ !== 'template_es' && this.url_ !== 'template_en') {
-      return IDEE.remote.get(this.url_).then((response) => {
-        let html = response.text;
-        html = html.substring(html.indexOf('<!-- Start Popup Content -->'), html.lastIndexOf('<!-- End Popup Content -->'));
-        const htmlObject = document.createElement('div');
-        htmlObject.classList.add('m-control', 'm-container', 'm-modal');
-        htmlObject.innerHTML = html;
-        return htmlObject;
-      });
+      content = `<iframe src="${this.url_}" class="m-modal-iframe" frameborder="0"></iframe>`;
+    } else {
+      content = IDEE.language.getLang() === 'en' ? templateEN : templateES;
     }
 
-    const htmlObject = document.createElement('div');
-    htmlObject.classList.add('m-control', 'm-container', 'm-modal');
-    htmlObject.innerHTML = IDEE.language.getLang() === 'en' ? templateEN : templateES;
-    return htmlObject;
+    this.getImpl().showModal(content);
+
+    const modalBody = this.getImpl().modalElement.querySelector('.m-modal-body');
+    if (modalBody) {
+      const links = modalBody.querySelectorAll('a');
+      links.forEach((link) => {
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+      });
+    }
   }
 
   /**

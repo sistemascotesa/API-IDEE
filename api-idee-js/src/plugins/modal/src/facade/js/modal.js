@@ -7,7 +7,9 @@ import api from '../../api';
 import { getValue } from './i18n/language';
 import myhelp from '../../templates/myhelp';
 // eslint-disable-next-line import/no-relative-packages
-import { LEFT } from '../../../../../facade/js/ui/position';
+// import { LEFT } from '../../../../../facade/js/ui/position';
+// eslint-disable-next-line import/no-relative-packages
+import * as Position from '../../../../../facade/js/ui/position';
 
 import es from './i18n/es';
 import en from './i18n/en';
@@ -25,8 +27,10 @@ export default class Modal extends IDEE.Plugin {
    */
   constructor(options = {}) {
     // super();
+    const pos = options.position || Position.LEFT;
+
     super('modal', {
-      position: options.position ?? LEFT,
+      position: pos,
       tooltip: options.tooltip ?? getValue('tooltip'),
       order: options.order ?? 0,
     });
@@ -49,7 +53,8 @@ export default class Modal extends IDEE.Plugin {
      * @private
      * @type {String}
      */
-    this.position_ = options.position || 'TR';
+    // this.position_ = options.position || Position.LEFT;
+    this.position = pos;
 
     /**
      * Option to allow the plugin to be collapsed or not
@@ -142,21 +147,52 @@ export default class Modal extends IDEE.Plugin {
   addTo(map) {
     this.map_ = map;
 
+    const currentPos = this.position;
+
+    // Si la posición es derecha
+    const isRightSide = [
+      Position.RIGHT,
+      Position.CTR,
+      Position.CBR,
+      'right',
+      'center-top-right',
+      'center-bottom-right',
+    ].includes(currentPos);
+
+    const buttonPos = isRightSide ? Position.RIGHT : Position.LEFT;
+
     this.control_ = new ModalControl(this.url_);
     this.controls_.push(this.control_);
 
-    this.panel_ = new IDEE.ui.Panel('Modal', {
-      className: 'm-panel-modal',
-      collapsible: this.collapsible_,
-      collapsed: this.collapsed_,
-      collapsedButtonClass: 'icon-help',
-      position: IDEE.ui.position[this.position_],
-      tooltip: this.tooltip_,
-      order: this.order,
+    this.button = new IDEE.ui.Button(this.name, {
+      position: buttonPos,
+      tooltip: this.tooltip,
+      svgPath: `plugins/${this.name}/src/facade/assets/images/icon.svg`,
     });
+    // map.addButtons(this.button);
 
-    this.panel_.addControls(this.controls_);
-    map.addPanels(this.panel_);
+    this.button.openPanel = () => {
+      this.control_.triggerModal();
+      this.button.pressed = false;
+    };
+
+    this.button.closePanel = () => {};
+    map.addButtons(this.button);
+
+    // this.panel_ = new IDEE.ui.ControlPanel('Modal', {
+    //   className: 'm-panel-modal',
+    //   collapsible: this.collapsible_,
+    //   collapsed: this.collapsed_,
+    //   collapsedButtonClass: 'icon-help',
+    //   position: IDEE.ui.position[this.position_] || Position.LEFT,
+    //   tooltip: this.tooltip_,
+    //   order: this.order,
+    // });
+    // this.control_.setPanel(this.panel_);
+
+    // this.panel_.addControls(this.controls_);
+    map.addControls(this.controls_);
+    // map.addPanels(this.panel_);
   }
 
   /**
@@ -229,7 +265,21 @@ export default class Modal extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map_.removeControls([this.control_]);
-    [this.map_, this.control_, this.panel_] = [null, null, null];
+    // this.map_.removeControls([this.control_]);
+    // [this.map_, this.control_, this.panel_] = [null, null, null];
+
+    if (this.button) {
+      this.button.destroy();
+    }
+
+    if (this.map_ && this.controls_) {
+      this.map_.removeControls(this.controls_);
+    }
+
+    this.map_ = null;
+    this.control_ = null;
+    this.controls_ = [];
+    this.button = null;
+    this.panel_ = null;
   }
 }
