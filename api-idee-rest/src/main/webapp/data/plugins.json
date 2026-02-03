@@ -283,7 +283,7 @@
     "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/measurebar",
     "image": "img/api-logo.png",
     "description": "Herramienta de medición de áreas y distancias.",
-    "obsolete": false
+    "obsolete": true
   },
   {
     "name": "mirrorpanel",
@@ -327,7 +327,7 @@
     "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/overviewmap",
     "image": "img/api-logo.png",
     "description": "Mapa de localización sobre la vista.",
-    "obsolete": false
+    "obsolete": true
   },
   {
     "name": "predefinedzoom",
@@ -448,7 +448,7 @@
     "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/timeline",
     "image": "img/api-logo.png",
     "description": "Plugin de línea del tiempo.",
-    "obsolete": false
+    "obsolete": true
   },
   {
     "name": "toc",

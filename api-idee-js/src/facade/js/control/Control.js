@@ -149,6 +149,7 @@ class Control extends Base {
     const buildImpl = (templateReady) => {
       let controlImpl = this.getImpl();
       if (!isControlImpl(controlImpl)) {
+        // eslint-disable-next-line no-console
         // Consige una implementación de control nueva para un mapa de implementación concreto
         controlImpl = getControlImpl(this.map.getImpl(), controlImpl);
         super.setImpl(controlImpl);
