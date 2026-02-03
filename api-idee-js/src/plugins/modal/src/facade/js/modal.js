@@ -26,13 +26,10 @@ export default class Modal extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    // super();
-    const pos = options.position || Position.LEFT;
-
     super('modal', {
-      position: pos,
+      position: options.position ?? Position.LEFT,
       tooltip: options.tooltip ?? getValue('tooltip'),
-      order: options.order ?? 0,
+      order: options.order,
     });
     /**
      * Facade of the map
@@ -47,14 +44,6 @@ export default class Modal extends IDEE.Plugin {
      * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
-
-    /**
-     * Plugin position on window.
-     * @private
-     * @type {String}
-     */
-    // this.position_ = options.position || Position.LEFT;
-    this.position = pos;
 
     /**
      * Option to allow the plugin to be collapsed or not
@@ -106,12 +95,6 @@ export default class Modal extends IDEE.Plugin {
     this.tooltip_ = options.tooltip || getValue('tooltip');
 
     /**
-     *@private
-     *@type { Number }
-     */
-    this.order = options.order >= -1 ? options.order : null;
-
-    /**
      * Plugin parameters
      * @public
      * @type {object}
@@ -145,25 +128,11 @@ export default class Modal extends IDEE.Plugin {
   addTo(map) {
     this.map_ = map;
 
-    const currentPos = this.position;
-
-    // Si la posición es derecha
-    const isRightSide = [
-      Position.RIGHT,
-      Position.CTR,
-      Position.CBR,
-      'right',
-      'center-top-right',
-      'center-bottom-right',
-    ].includes(currentPos);
-
-    const buttonPos = isRightSide ? Position.RIGHT : Position.LEFT;
-
     this.control_ = new ModalControl(this.url_);
     this.controls_.push(this.control_);
 
     this.button = new IDEE.ui.Button(this.name, {
-      position: buttonPos,
+      position: this.position,
       tooltip: this.tooltip,
       svgPath: `plugins/${this.name}/images/icon.svg`,
       order: this.order,
