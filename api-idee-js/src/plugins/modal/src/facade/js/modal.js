@@ -7,8 +7,6 @@ import api from '../../api';
 import { getValue } from './i18n/language';
 import myhelp from '../../templates/myhelp';
 // eslint-disable-next-line import/no-relative-packages
-// import { LEFT } from '../../../../../facade/js/ui/position';
-// eslint-disable-next-line import/no-relative-packages
 import * as Position from '../../../../../facade/js/ui/position';
 
 import es from './i18n/es';
