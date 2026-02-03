@@ -61,16 +61,14 @@ export default class Modal extends IDEE.Plugin {
      * @private
      * @type {Boolean}
      */
-    this.collapsed_ = options.collapsed;
-    if (this.collapsed_ === undefined) this.collapsed_ = true;
+    this.collapsed = options.collapsed !== undefined ? options.collapsed : true;
 
     /**
      * Collapsible attribute
      * @private
      * @type {boolean}
      */
-    this.collapsible_ = options.collapsible;
-    if (this.collapsible_ === undefined) this.collapsible_ = true;
+    this.collapsible = options.collapsible !== undefined ? options.collapsible : true;
 
     /**
      * Url of HTML with the content for modal in the selected language.
@@ -168,6 +166,7 @@ export default class Modal extends IDEE.Plugin {
       position: buttonPos,
       tooltip: this.tooltip,
       svgPath: `plugins/${this.name}/src/facade/assets/images/icon.svg`,
+      order: this.order,
     });
     // map.addButtons(this.button);
 
@@ -193,6 +192,13 @@ export default class Modal extends IDEE.Plugin {
     // this.panel_.addControls(this.controls_);
     map.addControls(this.controls_);
     // map.addPanels(this.panel_);
+
+    if (this.collapsed === false) {
+      // delay para asegurar que el mapa termine de renderizar
+      setTimeout(() => {
+        this.control_.triggerModal();
+      }, 300);
+    }
   }
 
   /**
@@ -205,7 +211,7 @@ export default class Modal extends IDEE.Plugin {
   getAPIRest() {
     const URL = (this.options.helpLink && Object.keys(this.options.helpLink).length > 0)
       ? [this.options.helpLink.es, this.options.helpLink.en] : [this.url_en, this.url_es];
-    return `${this.name}=${this.position_}*${this.collapsed_}*${this.collapsible_}*${URL[0]}*${URL[1]}`;
+    return `${this.name}=${this.position_}*${this.collapsed}*${this.collapsible}*${URL[0]}*${URL[1]}`;
   }
 
   /**
@@ -265,8 +271,9 @@ export default class Modal extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    // this.map_.removeControls([this.control_]);
-    // [this.map_, this.control_, this.panel_] = [null, null, null];
+    if (this.control_) {
+      this.control_.getImpl().toggleModal(false);
+    }
 
     if (this.button) {
       this.button.destroy();
