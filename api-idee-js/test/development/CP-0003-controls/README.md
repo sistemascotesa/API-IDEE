@@ -42,3 +42,6 @@ Control timeline
 
 CP-015
 Control measurebar
+
+CP-015
+Control overview

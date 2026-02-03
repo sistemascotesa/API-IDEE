@@ -1,0 +1,8 @@
+div.ol-overviewmap.ol-unselectable.ol-control.ol-collapsed>button>span {
+    display: none;
+}
+
+/* ol custom styles */
+.m-control-overviewmap.opened .ol-overlay-container.ol-selectable .ol-overviewmap-box {
+    border: 1px solid rgba(212, 25, 25, 0.76);
+}

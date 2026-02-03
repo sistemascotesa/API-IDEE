@@ -26,9 +26,10 @@ import MultiPolygon from 'ol/geom/MultiPolygon';
 import GeometryCollection from 'ol/geom/GeometryCollection';
 import Circle from 'ol/geom/Circle';
 import OlControlImpl from '../control/Control';
-import OlControlScaleLineImpl from '../control/ScaleLine';
-import OLControlZoomSlider from '../control/Panzoombar';
-import OLControlZoom from '../control/Panzoom';
+import ScaleLineImpl from '../control/ScaleLine';
+import PanzoombarImpl from '../control/Panzoombar';
+import OverviewMapZoomImpl from '../control/Panzoom';
+import OverviewMapImpl from '../control/OverviewMap';
 
 /**
   * Este método obtiene la cantidad de unidades por
@@ -737,18 +738,11 @@ class Utils {
    * @api
    */
   static isOlControlImpl(controlImpl) {
-    // if (!controlImpl) return false;
-    // const className = controlImpl.constructor.name;
-    // if (className === 'OverviewMapControl' || className === 'OverviewMapControlControl') {
-    //   return true;
-    // }
-    if (controlImpl.isOverviewMap) {
-      return true;
-    }
     return controlImpl instanceof OlControlImpl
-      || controlImpl instanceof OlControlScaleLineImpl
-      || controlImpl instanceof OLControlZoomSlider
-      || controlImpl instanceof OLControlZoom;
+      || controlImpl instanceof ScaleLineImpl
+      || controlImpl instanceof PanzoombarImpl
+      || controlImpl instanceof OverviewMapZoomImpl
+      || controlImpl instanceof OverviewMapImpl;
   }
 
   /**

@@ -48,12 +48,12 @@
 .m-api-idee-left-buttons .m-control-panel,
 .m-api-idee-right-buttons .m-control-panel,
 .m-api-idee-center-panel-top-left .m-control-panel,
-.m-api-idee-center-panel-bottom-left .m-control-panel,
-.m-api-idee-center-panel-top-right .m-control-panel,
-.m-api-idee-center-panel-bottom-right .m-control-panel {
+.m-api-idee-center-panel-top-right .m-control-panel {
     align-items: self-start;
 }
 
+.m-api-idee-center-panel-bottom-left .m-control-panel,
+.m-api-idee-center-panel-bottom-right .m-control-panel,
 .m-api-idee-down-panel .m-control-panel {
     align-items: self-end;
 }

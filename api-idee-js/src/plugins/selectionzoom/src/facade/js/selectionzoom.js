@@ -233,7 +233,7 @@ export default class SelectionZoom extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position_}*${this.collapsible}*${this.collapsed}*${this.ids}*${this.titles}*${this.previews}*${this.bboxs}*${this.zooms}`;
+    return `${this.name}=${this.position}*${this.collapsible}*${this.collapsed}*${this.ids}*${this.titles}*${this.previews}*${this.bboxs}*${this.zooms}`;
   }
 
   /**
