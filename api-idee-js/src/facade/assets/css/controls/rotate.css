@@ -1,4 +1,5 @@
 #m-rotate-button {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
   overflow: hidden;
 }
 
@@ -7,15 +8,19 @@
 }
 
 .m-control-panel.m-rotate.opened.no-collapsible>div.m-controls-panel {
+  background-color: transparent;
+  box-shadow: none;
   border-radius: 50%;
 }
 
 div.m-control.m-rotate-container {
   overflow: hidden;
 }
+
 .m-panel.m-rotate.opened {
   background-color: var(--idee-color-primary-dark) !important;
 }
+
 .m-panel.m-rotate.opened div.m-control.m-rotate-container button[class^=g-cartografia-] {
   color: var(--idee-color-primary);
   background-color: var(--idee-color-primary-dark) !important;
