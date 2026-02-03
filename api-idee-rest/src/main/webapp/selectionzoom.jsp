@@ -21,7 +21,9 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: auto;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
     </style>
     <%
@@ -55,7 +57,7 @@
             <option value=false>false</option>
         </select>
 
-        <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar">
+        <button id="botonEliminar">Eliminar Plugin</button>
     </div>
     <div id="mapjs" class="m-container"></div>
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
@@ -138,7 +140,7 @@
         }
         mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
-            position: "TR",
+            position: "left",
         });
         map.addPlugin(mp2);
         const botonEliminar = document.getElementById("botonEliminar");
