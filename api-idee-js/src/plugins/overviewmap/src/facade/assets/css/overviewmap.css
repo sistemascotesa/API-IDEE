@@ -1,32 +1,28 @@
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control {
-    margin-left: 0 !important;
-}
-
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control>button::before {
+div.m-control-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control>button::before {
     font-family: 'overviewmap' !important;
 }
 
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control.ol-collapsed>button>span {
+div.m-control-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control.ol-collapsed>button>span {
     display: none;
 }
 
 /* Closing arrows*/
 
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button {
+div.m-control-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button {
     padding-bottom: 10px !important;
     padding-left: 4px !important;
 }
 
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button::before {
+div.m-control-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button::before {
     font-family: 'g-cartografia' !important;
     font-size: 8px !important;
 }
 
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button.g-cartografia-flecha-derecha {
+div.m-control-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button.g-cartografia-flecha-derecha {
     right: 135px !important;
 }
 
-div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button.g-cartografia-flecha-izquierda {
+div.m-control-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewmap.ol-unselectable.ol-control:not(.ol-collapsed)>button.g-cartografia-flecha-izquierda {
     left: 135px !important;
 }
 
@@ -34,25 +30,11 @@ div.m-area>div.m-panel.m-overviewmap-panel>div.m-panel-controls>div.ol-overviewm
 
 div.ol-overviewmap-box {
     border: 1px solid red;
-    min-width: 8px;
-    min-height: 8px;
+    min-width: 80px;
+    min-height: 40px;
 }
 
-/* Collapsed icon font */
-
-@font-face {
-    font-family: 'overviewmap';
-    src: url('../fonts/overviewmap.eot?c6upgl');
-    src: url('../fonts/overviewmap.eot?c6upgl#iefix') format('embedded-opentype'),
-        url('../fonts/overviewmap.ttf?c6upgl') format('truetype'),
-        url('../fonts/overviewmap.woff?c6upgl') format('woff'),
-        url('../fonts/overviewmap.svg?c6upgl#overviewmap') format('svg');
-    font-weight: normal;
-    font-style: normal;
-    font-display: block;
-}
-
-.m-areas>div.m-area>div.m-panel>button.m-panel-btn.overviewmap-mundo,
+div.m-panel>button.m-panel-btn.overviewmap-mundo,
 [class^="overviewmap-"],
 [class*=" overviewmap-"] {
     font-family: 'overviewmap' !important;
@@ -72,6 +54,21 @@ button.overviewmap-mundo {
 }
 
 
-.overviewmap-mundo:before {
-    content: "\e1950";
+div.m-control-panel.m-overviewmap-panel button.m-control-panel-btn.overviewmap-mundo::before,
+button.m-control-panel-btn.overviewmap-mundo::before {
+    content: "" !important; 
+    display: block !important;
+    width: 24px !important;
+    height: 24px !important;
+    margin: auto;
+    -webkit-mask-image: url('../images/icon.svg') !important;
+    mask-image: url('../images/icon.svg') !important;
+    -webkit-mask-size: contain !important;
+    mask-size: contain !important;
+    -webkit-mask-repeat: no-repeat !important;
+    mask-repeat: no-repeat !important;
+    -webkit-mask-position: center !important;
+    mask-position: center !important;
+    background-color: white !important; 
+    background-image: none !important;
 }

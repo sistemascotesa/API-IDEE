@@ -27,6 +27,16 @@
   "layerswitcher": {
     "title": "Layer selector"
   },
+  "overviewmap": {
+    "textHelp": {
+      "help1": "Shows a general view with a box that corresponds to the area where we are in the main view.",
+      "help2": "The situation map box is synchronized with the main view. Allows you to scroll the main view, moving the box from the situation map.",
+      "help3": "To hide the location map again, click the 'Minimize' button.",
+      "help4": "The information relevant to the extension and its possible parameterization is documented in",
+      "help5": "The example of use of its parameters can be checked in"
+    },
+    "tooltip": "Overview Map"
+  },
   "scale": {
     "title": "Scale",
     "scale": "Scale",
@@ -389,6 +399,7 @@
     "impl_length": "The implementation used cannot create MeasureLength.",
     "impl_clear": "The implementation used cannot create MeasureClear.",
     "impl_area": "The implementation used cannot create MeasureArea",
+    "impl_overviewmap": "The implementation used cannot create OverviewMapControl.",
     "animated_method": "The used implementation will not be able to disable or modify the animation.",
     "deactivatechangeresolution_method": "The used implementation does not have the deactivateChangeResolutionEvent method."
   }

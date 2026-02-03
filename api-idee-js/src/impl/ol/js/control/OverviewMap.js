@@ -1,63 +1,76 @@
 /**
- * @module IDEE/impl/control/OverviewMapControl
+ * @module IDEE/impl/control/OverviewMap
  */
-/* eslint-disable import/no-extraneous-dependencies */
-import OverviewMap from 'ol/control/OverviewMap';
-import { getValue } from '../../../facade/js/i18n/language';
+import LayerGroup from 'IDEE/layer/LayerGroup';
+import OlControlOverviewMap from 'ol/control/OverviewMap';
+import { get } from 'ol/proj';
+import TileLayer from 'ol/layer/Tile';
+import TileWMS from 'ol/source/TileWMS';
+import WMTSTileGrid from 'ol/tilegrid/WMTS';
+import { getTopLeft, getWidth, scaleFromCenter } from 'ol/extent';
+import WMTS from 'ol/source/WMTS';
+import { fromExtent } from 'ol/geom/Polygon';
+import { extend, isNullOrEmpty, isNumber } from '../../../../facade/js/util/Utils';
 
-// export default class OverviewMapControl extends ol.control.OverviewMap {
-export default class OverviewMapControl extends OverviewMap {
+/**
+ * @classdesc
+ * Esta clase se encarga de general el panel de los controles.
+ * @property {String} name Nombre del panel.
+ * @property {String} position Posición del panel.
+ *
+ * @api
+ */
+class OverviewMap extends OlControlOverviewMap {
   /**
    * @constructor
-   * @extends {ol.control.Control}
+   * @extends {ol.control.OverviewMap}
    * @api stable
    */
-  constructor(options, vendorOptions = {}) {
-    super(IDEE.utils.extend({
+  constructor(options) {
+    super(extend({
       layers: [],
-      tipLabel: getValue('tooltip'),
+      tipLabel: options.tipLabel ?? '',
       collapsed: false,
       collapsible: false,
-    }, vendorOptions, true));
-
-    this.isOverviewMap = true;
-
+    }, options.vendorOptions ?? {}, true));
     /**
      * Toggle delayer
      * @private
      * @type {Number}
      */
     this.toggleDelay_ = 1000;
-    if (!IDEE.utils.isNullOrEmpty(options.toggleDelay)) {
+    if (!isNullOrEmpty(options.toggleDelay)) {
       this.toggleDelay_ = options.toggleDelay;
     }
 
+    this.zoom_ = 15;
+    if (isNumber(options.zoom) && options.zoom >= 0 && options.zoom <= 22) {
+      this.zoom_ = options.zoom;
+    }
+
+    this.maxZoom_ = 22;
+    if (isNumber(options.maxZoom) && options.maxZoom >= 0 && options.maxZoom <= 22) {
+      this.maxZoom_ = options.maxZoom;
+    }
+
+    this.minZoom_ = 0;
+    if (isNumber(options.minZoom) && options.minZoom >= 0 && options.minZoom <= 22) {
+      this.minZoom_ = options.minZoom;
+    }
+
     /**
-     * Collapsed button class
+     * Indicates the ratio of the minimap size to the full map size.
+     * Use values from 0.1 to 1.
+     * This parameter can be calculated using a valid zoom value.
      * @private
-     * @type {String}
+     * @type {number | null}
      */
-    this.collapsedButtonClass_ = 'overviewmap-mundo';
-    if (!IDEE.utils.isNullOrEmpty(options.collapsedButtonClass)) {
-      this.collapsedButtonClass_ = options.collapsedButtonClass;
-    }
+    // eslint-disable-next-line no-nested-ternary
+    this.ratio_ = (isNullOrEmpty(options.ratio) || options.ratio === 0)
+      ? null : options.ratio > 1
+        ? 1 : options.ratio;
 
-    if (options.position === 'right'
-      || options.position === 'center-bottom-right'
-      || options.position === 'center-top-right'
-    ) {
-      this.openedButtonClass_ = 'g-cartografia-flecha-derecha';
-    } else {
-      this.openedButtonClass_ = 'g-cartografia-flecha-izquierda';
-    }
-
-    if (!IDEE.utils.isNullOrEmpty(options.openedButtonClass)) {
-      this.openedButtonClass_ = options.openedButtonClass;
-    }
-
-    this.fixed_ = options.fixed || false;
-
-    this.zoom_ = options.zoom || 4;
+    this.fixed_ = options.fixed ?? false;
 
     this.baseLayer_ = options.baseLayer || 'WMTS*http://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*false*true';
 
@@ -66,11 +79,36 @@ export default class OverviewMapControl extends OverviewMap {
      * @private
      * @type {*}
      */
-    this.facadeMap_ = null;
+    this.facadeMap = null;
 
     this.order = (options.order) ? options.order : null;
 
     this.bindedUpdateBox = this.updateBox_.bind(this);
+  }
+
+  /**
+   * Calculates one ratio in avaliable 0-1 using zoom property if not defined
+   * @returns {number} representing the ratio
+   */
+  getRatioFromZoom() {
+    let ratio = this.ratio_;
+    const map = this.getOverviewMap();
+    if (map && isNullOrEmpty(this.ratio_)) {
+      const view = map.getView();
+      if (view) {
+        const maxZoom = view.getMaxZoom() ?? 22;
+        ratio = this.zoom_ / (this.zoom_ + maxZoom);
+      }
+    }
+    return ratio;
+  }
+
+  get minRatio() {
+    return 0.1 / (this.getRatioFromZoom() ** 0.5);
+  }
+
+  get maxRatio() {
+    return 0.75 * (1 / this.getRatioFromZoom());
   }
 
   /**
@@ -103,21 +141,30 @@ export default class OverviewMapControl extends OverviewMap {
    * @api stable
    */
   addTo(map, html) {
-    // No existe el método addTo de la clase base
-    // super.addTo(map, html); // Llama al addTo de IDEE.Control si existe
-    this.facadeMap_ = map;
+    this.facadeMap = map;
     const olMap = map.getMapImpl();
     this.setMap(olMap);
 
-    // Para que no esté el control colapsado desde el principio
-    // this.setCollapsed(false);
-
     this.update(map, html);
     this.html_ = html;
-    // if (!this.getCollapsed()) {
-    //   this.addLayers();
-    // }
     this.addLayers();
+  }
+
+  resetExtent_() {
+    const map = this.getMap();
+    const ovmap = this.getOverviewMap();
+
+    const mapSize = map.getSize();
+    const view = map.getView();
+    const extent = view.calculateExtentInternal(mapSize);
+
+    const ovview = ovmap.getView();
+
+    const steps = Math.log(this.maxRatio / this.minRatio) / Math.LN2;
+    const ratio = 1 / (2 ** (steps / 2) * this.minRatio);
+
+    scaleFromCenter(extent, ratio);
+    ovview.fitInternal(fromExtent(extent));
   }
 
   /**
@@ -148,17 +195,6 @@ export default class OverviewMapControl extends OverviewMap {
       button.style.display = 'none';
     }
 
-    if (this.collapsed_ === true) {
-      if (button.classList.contains(this.collapsedButtonClass_)) {
-        button.classList.remove(this.collapsedButtonClass_);
-      } else {
-        button.classList.add(this.collapsedButtonClass_);
-      }
-    } else if (button.classList.contains(this.openedButtonClass_)) {
-      button.classList.remove(this.openedButtonClass_);
-    } else {
-      button.classList.add(this.openedButtonClass_);
-    }
     this.addOpenEventListener(button, map);
     this.setTarget();
   }
@@ -195,10 +231,9 @@ export default class OverviewMapControl extends OverviewMap {
    * @api
    */
   setTarget() {
-    const facadeControl = this.facadeControl_;
-    if (!IDEE.utils.isNullOrEmpty(facadeControl)) {
-      const panel = facadeControl.getPanel();
-      if (!IDEE.utils.isNullOrEmpty(panel)) {
+    if (!isNullOrEmpty(this.facadeControl)) {
+      const panel = this.facadeControl.getPanel();
+      if (!isNullOrEmpty(panel)) {
         this.target_ = panel.getControlsContainer();
       }
     }
@@ -235,60 +270,37 @@ export default class OverviewMapControl extends OverviewMap {
    */
   addLayers() {
     const olLayers = [];
-    this.facadeMap_.getLayers().forEach((layer) => {
+    this.facadeMap.getLayers().forEach((layer) => {
       if (layer.isBase === true && layer.isVisible()) {
         const olLayer = layer.getImpl().getLayer();
-        if (IDEE.utils.isNullOrEmpty(olLayer)) {
+        if (isNullOrEmpty(olLayer)) {
           // layer.getImpl().on(IDEE.evt.ADDED_TO_MAP, this.addLayer_.bind(this));
         } else {
           olLayers.push(olLayer);
         }
       }
     });
-    // let newView = {};
-    let newView;
-    const currentProjection = ol.proj.get(this.facadeMap_.getProjection().code);
-    const currentCenter = this.facadeMap_.getCenter();
-    // eslint-disable-next-line max-len
-    const centerArray = Array.isArray(currentCenter) ? currentCenter : [currentCenter.x, currentCenter.y];
+
+    const ovmView = this.getOverviewMap().getView();
     if (this.fixed_) {
-      newView = new ol.View({
-        projection: currentProjection,
-        center: centerArray,
-        maxZoom: this.zoom_,
-        minZoom: this.zoom_,
-        zoom: this.zoom_,
-      });
+      ovmView.setMaxZoom(this.zoom_);
+      ovmView.setMinZoom(this.zoom_);
     } else {
-      const ideeView = new IDEE.impl.View({
-        projection: currentProjection,
-        center: currentCenter,
-        resolutions: this.facadeMap_.getResolutions(),
-      });
-
-      // Extracción de la instancia real
-      if (typeof ideeView.getImpl === 'function') {
-        // Si existe, ejecuta y devuelve objeto nativo OL.
-        newView = ideeView.getImpl();
-      } else {
-        newView = ideeView;
-      }
+      ovmView.setMaxZoom(this.maxZoom_);
+      ovmView.setMinZoom(this.minZoom_);
     }
-
-    // this.ovmap_.setView(newView);
-    this.ovmap_.setView(Promise.resolve(newView));
 
     this.setCollapsed(false);
 
-    this.view_ = newView;
+    // this.view_ = newView;
     if (this.baseLayer_ !== undefined && this.baseLayer_.length > 3) {
       const parameters = this.baseLayer_.split('*');
       if (parameters.length > 1 && (parameters[0] === 'WMS' || parameters[0] === 'WMTS' || parameters[0] === 'LayerGroup')) {
         if (parameters[0] === 'WMS') {
-          const layer = new ol.layer.Tile({
+          const layer = new TileLayer({
             visible: true,
             opacity: 1,
-            source: new ol.source.TileWMS({
+            source: new TileWMS({
               url: parameters[2],
               params: {
                 LAYERS: parameters[3],
@@ -304,14 +316,14 @@ export default class OverviewMapControl extends OverviewMap {
 
           this.ovmap_.addLayer(layer);
         } else if (parameters[0] === 'LayerGroup') {
-          const layer = new IDEE.layer.LayerGroup(this.baseLayer_);
-          layer.getImpl().addTo(this.facadeMap_, false);
+          const layer = new LayerGroup(this.baseLayer_);
+          layer.getImpl().addTo(this.facadeMap, false);
           const olLayer = layer.getImpl().getLayer();
           this.ovmap_.addLayer(olLayer);
         } else {
-          const projection = ol.proj.get(this.facadeMap_.getProjection().code);
+          const projection = get(this.facadeMap.getProjection().code);
           const projectionExtent = projection.getExtent();
-          const size = ol.extent.getWidth(projectionExtent) / 256;
+          const size = getWidth(projectionExtent) / 256;
           const resolutions = new Array(14);
           const matrixIds = new Array(14);
           for (let z = 0; z < 14; z += 1) {
@@ -320,16 +332,16 @@ export default class OverviewMapControl extends OverviewMap {
             matrixIds[z] = z;
           }
 
-          const layer = new ol.layer.Tile({
+          const layer = new TileLayer({
             opacity: 1,
-            source: new ol.source.WMTS({
+            source: new WMTS({
               url: parameters[1],
               layer: parameters[2],
               matrixSet: parameters[3],
               format: parameters[6],
               projection,
-              tileGrid: new ol.tilegrid.WMTS({
-                origin: ol.extent.getTopLeft(projectionExtent),
+              tileGrid: new WMTSTileGrid({
+                origin: getTopLeft(projectionExtent),
                 resolutions,
                 matrixIds,
               }),
@@ -347,7 +359,7 @@ export default class OverviewMapControl extends OverviewMap {
       this.ovmap_.addLayer(olLayers[0]);
     }
 
-    // this.facadeMap_.getMapImpl().addControl(this);
+    // this.facadeMap.getMapImpl().addControl(this);
     this.wasOpen_ = true;
   }
 
@@ -358,8 +370,6 @@ export default class OverviewMapControl extends OverviewMap {
     this.classToggle(this.element, 'ol-collapsed');
     const button = this.element.querySelector('button');
     button.setAttribute('tabindex', this.order);
-    this.classToggle(button, this.openedButtonClass_);
-    this.classToggle(button, this.collapsedButtonClass_);
 
     setTimeout(() => {
       if (this.collapsed_) {
@@ -392,8 +402,8 @@ export default class OverviewMapControl extends OverviewMap {
    * @export
    */
   destroy() {
-    this.facadeMap_.getMapImpl().removeControl(this);
-    this.facadeMap_ = null;
+    this.facadeMap.getMapImpl().removeControl(this);
+    this.facadeMap = null;
   }
 
   classToggle(htmlElement, className) {
@@ -412,3 +422,5 @@ export default class OverviewMapControl extends OverviewMap {
     }
   }
 }
+
+export default OverviewMap;

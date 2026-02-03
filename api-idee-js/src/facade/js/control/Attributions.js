@@ -87,12 +87,6 @@ class Attributions extends ControlBase {
       }
       return attr;
     });
-
-    /**
-     * Order: Orden que tendrá con respecto al
-     * resto de plugins y controles por pantalla.
-     */
-    this.order = options.order;
   }
 
   transformString(attrString) {

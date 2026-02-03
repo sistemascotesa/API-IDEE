@@ -28,6 +28,16 @@
   "layerswitcher": {
     "title": "Selector de capas"
   },
+  "overviewmap": {
+    "textHelp": {
+      "help1": "Muestra una vista general con un recuadro que corresponde a la zona donde nos encontramos en la vista principal.",
+      "help2": "El recuadro del mapa de situación está sincronizado con la vista principal. Permite desplazar la vista principal, moviendo el recuadro desde el mapa de situación.",
+      "help3": "Para ocultar de nuevo el mapa de situación haga clic en el botón 'Minimizar'.",
+      "help4": "La información relevante a la extensión y su posible parametrización está documentada en",
+      "help5": "El ejemplo de uso de sus parámetros puede comprobarse en"
+    },
+    "tooltip": "Mapa de situación"
+  },
   "scale": {
     "title": "Escala",
     "scale": "Escala",
@@ -390,6 +400,7 @@
     "impl_length": "La implementación usada no puede crear controles MeasureLength.",
     "impl_clear": "La implementación usada no puede crear controles MeasureClear.",
     "impl_area": "La implementación usada no puede crear controles MeasureArea",
+    "impl_overviewmap": "La implementación usada no puede crear controles OverviewMapControl.",
     "animated_method": "La implementación usada no podrá desactivar ni modificar la animación",
     "deactivatechangeresolution_method": "La implementación usada no posee el método deactivateChangeResolutionEvent"
   }
