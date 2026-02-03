@@ -6,6 +6,10 @@ import ModalControl from './modalcontrol';
 import api from '../../api';
 import { getValue } from './i18n/language';
 import myhelp from '../../templates/myhelp';
+// eslint-disable-next-line import/no-relative-packages
+// import { LEFT } from '../../../../../facade/js/ui/position';
+// eslint-disable-next-line import/no-relative-packages
+import * as Position from '../../../../../facade/js/ui/position';
 
 import es from './i18n/es';
 import en from './i18n/en';
@@ -22,7 +26,14 @@ export default class Modal extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super();
+    // super();
+    const pos = options.position || Position.LEFT;
+
+    super('modal', {
+      position: pos,
+      tooltip: options.tooltip ?? getValue('tooltip'),
+      order: options.order ?? 0,
+    });
     /**
      * Facade of the map
      * @private
@@ -42,23 +53,22 @@ export default class Modal extends IDEE.Plugin {
      * @private
      * @type {String}
      */
-    this.position_ = options.position || 'TR';
+    // this.position_ = options.position || Position.LEFT;
+    this.position = pos;
 
     /**
      * Option to allow the plugin to be collapsed or not
      * @private
      * @type {Boolean}
      */
-    this.collapsed_ = options.collapsed;
-    if (this.collapsed_ === undefined) this.collapsed_ = true;
+    this.collapsed = options.collapsed !== undefined ? options.collapsed : true;
 
     /**
      * Collapsible attribute
      * @private
      * @type {boolean}
      */
-    this.collapsible_ = options.collapsible;
-    if (this.collapsible_ === undefined) this.collapsible_ = true;
+    this.collapsible = options.collapsible !== undefined ? options.collapsible : true;
 
     /**
      * Url of HTML with the content for modal in the selected language.
@@ -133,20 +143,51 @@ export default class Modal extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
+    this.map_ = map;
+
+    const currentPos = this.position;
+
+    // Si la posición es derecha
+    const isRightSide = [
+      Position.RIGHT,
+      Position.CTR,
+      Position.CBR,
+      'right',
+      'center-top-right',
+      'center-bottom-right',
+    ].includes(currentPos);
+
+    const buttonPos = isRightSide ? Position.RIGHT : Position.LEFT;
+
     this.control_ = new ModalControl(this.url_);
     this.controls_.push(this.control_);
-    this.map_ = map;
-    this.panel_ = new IDEE.ui.Panel('Modal', {
-      className: 'm-panel-modal',
-      collapsible: this.collapsible_,
-      collapsed: this.collapsed_,
-      collapsedButtonClass: 'icon-help',
-      position: IDEE.ui.position[this.position_],
-      tooltip: this.tooltip_,
+
+    this.button = new IDEE.ui.Button(this.name, {
+      position: buttonPos,
+      tooltip: this.tooltip,
+      svgPath: `plugins/${this.name}/images/icon.svg`,
       order: this.order,
     });
-    this.panel_.addControls(this.controls_);
-    map.addPanels(this.panel_);
+    // map.addButtons(this.button);
+
+    this.button.openPanel = () => {
+      this.control_.triggerModal();
+      this.button.pressed = false;
+    };
+
+    this.button.closePanel = () => {};
+
+    if (this.collapsible !== false) {
+      map.addButtons(this.button);
+    }
+    map.addControls(this.controls_);
+
+    if (this.collapsed === false || this.collapsible === false) {
+      setTimeout(() => {
+        // triggerModal para asegurar la apertura
+        this.control_.triggerModal();
+      }, 300);
+    }
   }
 
   /**
@@ -159,7 +200,7 @@ export default class Modal extends IDEE.Plugin {
   getAPIRest() {
     const URL = (this.options.helpLink && Object.keys(this.options.helpLink).length > 0)
       ? [this.options.helpLink.es, this.options.helpLink.en] : [this.url_en, this.url_es];
-    return `${this.name}=${this.position_}*${this.collapsed_}*${this.collapsible_}*${URL[0]}*${URL[1]}`;
+    return `${this.name}=${this.position_}*${this.collapsed}*${this.collapsible}*${URL[0]}*${URL[1]}`;
   }
 
   /**
@@ -219,7 +260,22 @@ export default class Modal extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map_.removeControls([this.control_]);
-    [this.map_, this.control_, this.panel_] = [null, null, null];
+    if (this.control_) {
+      this.control_.getImpl().toggleModal(false);
+    }
+
+    if (this.button) {
+      this.button.destroy();
+    }
+
+    if (this.map_ && this.controls_) {
+      this.map_.removeControls(this.controls_);
+    }
+
+    this.map_ = null;
+    this.control_ = null;
+    this.controls_ = [];
+    this.button = null;
+    this.panel_ = null;
   }
 }
