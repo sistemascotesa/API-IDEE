@@ -28,7 +28,7 @@ export default class SelectionZoom extends IDEE.Plugin {
     super('selectionzoom', {
       position: options.position ?? LEFT,
       tooltip: options.tooltip ?? getValue('tooltip'),
-      order: options.order ?? 0,
+      order: options.order,
     });
     /**
      * Facade of the map

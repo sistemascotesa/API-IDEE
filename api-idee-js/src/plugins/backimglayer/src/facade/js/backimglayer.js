@@ -26,6 +26,7 @@ export default class BackImgLayer extends IDEE.Plugin {
     super('backimglayer', {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
     });
 
     /**
@@ -125,12 +126,6 @@ export default class BackImgLayer extends IDEE.Plugin {
      */
     this.metadata_ = api.metadata;
 
-    /**
-     *@private
-     *@type { Number }
-     */
-    this.order = options.order >= -1 ? options.order : null;
-
     this.visible = options.visible !== undefined ? options.visible : true;
   }
 
@@ -164,6 +159,7 @@ export default class BackImgLayer extends IDEE.Plugin {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: `plugins/${this.name}/images/icon.svg`,
+      order: this.order,
     });
     map.addButtons(this.button);
 

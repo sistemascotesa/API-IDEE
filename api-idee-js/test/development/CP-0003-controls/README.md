@@ -35,7 +35,7 @@ CP-012
 Control Rotate para 3D
 
 CP-013
-Control parametro de ordenación
+Control parametro de ordenación (Plugins + Controles)
 
 CP-014
 Control timeline

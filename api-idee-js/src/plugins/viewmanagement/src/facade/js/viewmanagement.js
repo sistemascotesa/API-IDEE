@@ -25,7 +25,7 @@ export default class ViewManagement extends IDEE.Plugin {
     super('viewmanagement', {
       position: options.position ?? LEFT,
       tooltip: options.tooltip ?? getValue('tooltip'),
-      order: options.order ?? 0,
+      order: options.order,
     });
 
     /**
@@ -100,13 +100,6 @@ export default class ViewManagement extends IDEE.Plugin {
      * @type {Boolean}
      */
     this.zoompanel = !IDEE.utils.isUndefined(options.zoompanel) ? options.zoompanel : true;
-
-    /**
-     * Indicates order to the plugin
-     * @private
-     * @type {Number}
-     */
-    this.order = options.order >= -1 ? options.order : null;
   }
 
   /**
@@ -144,6 +137,7 @@ export default class ViewManagement extends IDEE.Plugin {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: `plugins/${this.name}/images/icon.svg`,
+      order: this.order,
     });
     map.addButtons(this.button);
 

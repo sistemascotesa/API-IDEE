@@ -5,10 +5,11 @@ import Base from './Base';
 import Button from './ui/Button';
 import Panel from './ui/Panel';
 
-import { isArray, isNullOrEmpty } from './util/Utils';
+import { isArray, isNullOrEmpty, isNumber } from './util/Utils';
 import Control from './control/Control';
 import Tool from './tool/Tool';
 import Exception from './exception/exception';
+import * as Position from './ui/position';
 
 /**
  * @classdesc
@@ -20,9 +21,25 @@ class Plugin extends Base {
   constructor(name, options = {}) {
     super(options);
 
+    /**
+     * Name of this plugin
+     * @type {string}
+     */
     this.name = name;
     this.tooltip = options.tooltip || '';
-    this.position = options.position || 'right';
+
+    /**
+     * Position on one of map container tools, default 'right'
+     * @type {Position}
+     */
+    this.position = Position.isValid(options.position) ? options.position : Position.RIGHT;
+
+    /**
+     * Determines the position of the tool when it is inside a map tool container
+     * @type {number}
+     */
+    this.order = isNumber(options.order) ? options.order : 0;
+
     this.svgPath = options.svgPath || null;
     this.minPanelWidth = 256;
     this.maxPanelWidth = 360;
@@ -49,6 +66,7 @@ class Plugin extends Base {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: this.svgPath,
+      order: this.order,
     });
     map.addButtons(this.button);
 

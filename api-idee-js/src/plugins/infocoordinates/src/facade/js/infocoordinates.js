@@ -25,6 +25,7 @@ export default class Infocoordinates extends IDEE.Plugin {
     super('infocoordinates', {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
     });
     /**
      *  Decimal digits fixed on geographic coordinates
@@ -77,12 +78,6 @@ export default class Infocoordinates extends IDEE.Plugin {
     this.outputDownloadFormat_ = options.outputDownloadFormat || 'txt';
 
     /**
-     *@private
-     *@type { Number }
-     */
-    this.order = options.order >= -1 ? options.order : null;
-
-    /**
      * Plugin parameters
      * @public
      * @type {object}
@@ -120,6 +115,7 @@ export default class Infocoordinates extends IDEE.Plugin {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: `plugins/${this.name}/images/icon.svg`,
+      order: this.order,
     });
     map.addButtons(this.button);
     // Crear el panel por separado

@@ -176,6 +176,7 @@ export default class Layerswitcher extends IDEE.Plugin {
     super('layerswitcher', {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
     });
 
     /**
@@ -242,9 +243,6 @@ export default class Layerswitcher extends IDEE.Plugin {
     // Estado inicial del proxy
     this.statusProxy = IDEE.useproxy;
 
-    // Indicates order to the plugin
-    this.order = options.order >= -1 ? options.order : null;
-
     // Añadir attributions
     this.useAttributions = options.useAttributions || false;
   }
@@ -265,6 +263,7 @@ export default class Layerswitcher extends IDEE.Plugin {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: `plugins/${this.name}/images/icon.svg`,
+      order: this.order,
     });
     map.addButtons(this.button);
 

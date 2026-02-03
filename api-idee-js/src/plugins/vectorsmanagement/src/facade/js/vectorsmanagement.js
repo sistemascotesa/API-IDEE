@@ -25,6 +25,7 @@ export default class VectorsManagement extends IDEE.Plugin {
     super('vectorsmanagement', {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
     });
 
     /**
@@ -162,9 +163,6 @@ export default class VectorsManagement extends IDEE.Plugin {
 
     // Determina si el plugin es draggable o no
     this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
-
-    // Indicates order to the plugin
-    this.order = options.order >= -1 ? options.order : null;
   }
 
   /**
@@ -197,6 +195,7 @@ export default class VectorsManagement extends IDEE.Plugin {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: `plugins/${this.name}/images/icon.svg`,
+      order: this.order,
     });
     map.addButtons(this.button);
 
