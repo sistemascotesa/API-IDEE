@@ -89,8 +89,10 @@
                 <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
                 <script type="text/javascript" src="js/configuration.js"></script>
                 <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
-                <% String[] jsfiles=PluginsManager.getJSFiles(parameterMap); for (int i=0; i < jsfiles.length; i++) {
-                    String jsfile=jsfiles[i]; %>
+                <% 
+                    String[] jsfiles=PluginsManager.getJSFiles(parameterMap); 
+                    for (int i=0; i < jsfiles.length; i++) {
+                        String jsfile=jsfiles[i]; %>
                     <script type="text/javascript" src="plugins/<%=jsfile%>"></script>
 
                     <% } %>
