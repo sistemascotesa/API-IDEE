@@ -114,11 +114,11 @@
             const opciones = {
                 position: selectPosicion.value,
                 collapsed: selectCollapsed.value === "true",
+                collapsible: selectCollapsible.value === "true",
                 tooltip: inputTooltip.value || "Más información",
                 // Forzamos el uso de templates locales para el test
                 url_es: 'template_es',
                 url_en: 'template_en',
-                collapsible: true,
                 order: 1
             };
             // let objeto = {};

@@ -165,7 +165,7 @@ export default class Modal extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: buttonPos,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/src/facade/assets/images/icon.svg`,
+      svgPath: `plugins/${this.name}/images/icon.svg`,
       order: this.order,
     });
     // map.addButtons(this.button);
@@ -176,26 +176,15 @@ export default class Modal extends IDEE.Plugin {
     };
 
     this.button.closePanel = () => {};
-    map.addButtons(this.button);
 
-    // this.panel_ = new IDEE.ui.ControlPanel('Modal', {
-    //   className: 'm-panel-modal',
-    //   collapsible: this.collapsible_,
-    //   collapsed: this.collapsed_,
-    //   collapsedButtonClass: 'icon-help',
-    //   position: IDEE.ui.position[this.position_] || Position.LEFT,
-    //   tooltip: this.tooltip_,
-    //   order: this.order,
-    // });
-    // this.control_.setPanel(this.panel_);
-
-    // this.panel_.addControls(this.controls_);
+    if (this.collapsible !== false) {
+      map.addButtons(this.button);
+    }
     map.addControls(this.controls_);
-    // map.addPanels(this.panel_);
 
-    if (this.collapsed === false) {
-      // delay para asegurar que el mapa termine de renderizar
+    if (this.collapsed === false || this.collapsible === false) {
       setTimeout(() => {
+        // triggerModal para asegurar la apertura
         this.control_.triggerModal();
       }, 300);
     }
