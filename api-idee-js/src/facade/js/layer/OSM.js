@@ -128,6 +128,14 @@ class OSM extends LayerBase {
      * OSM options. Opciones OSM.
      */
     this.options = options;
+
+    /**
+     * OSM Attribution by dafault
+     */
+    if (!isObject(this.attribution)) this.attribution = {};
+    if (isUndefined(this.attribution.name)) this.attribution.name = 'OSM';
+    if (isUndefined(this.attribution.description)) this.attribution.description = '© OpenStreetMap';
+    if (isUndefined(this.attribution.url)) this.attribution.url = 'https://www.openstreetmap.org/copyright';
   }
 
   /**

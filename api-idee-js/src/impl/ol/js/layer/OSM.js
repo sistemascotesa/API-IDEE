@@ -75,11 +75,6 @@ class OSM extends Layer {
     this.facadeLayer_ = null;
 
     /**
-     * OSM hasAttributtion. La OSM no tiene atribuciones.
-     */
-    this.hasAttributtion = false;
-
-    /**
      * OSM haveOSMLayer. Existe alguna capa que necesite el attributions.
      */
     this.haveOSMLayer = false;
@@ -163,20 +158,6 @@ class OSM extends Layer {
     if (addLayer) {
       this.map.getMapImpl().addLayer(this.olLayer);
       this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
-    }
-
-    this.map.getImpl().getMapImpl().getControls().getArray()
-      .forEach((cont) => {
-        if (cont instanceof OLControlAttribution) {
-          this.hasAttributtion = true;
-        }
-      }, this);
-    if (!this.hasAttributtion && !this.facadeLayer_.attribution) {
-      this.map.getMapImpl().addControl(new OLControlAttribution({
-        className: 'ol-attribution ol-unselectable ol-control ol-collapsed m-attribution',
-        collapsible: true,
-      }));
-      this.hasAttributtion = false;
     }
 
     // recalculate resolutions
