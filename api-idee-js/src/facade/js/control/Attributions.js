@@ -60,7 +60,6 @@ class Attributions extends ControlBase {
       && isNullOrEmpty(Object.keys(AttributionsImpl)))) {
       Exception(getValue('exception').attributions_method);
     }
-
     const impl = new AttributionsImpl();
     super(Attributions.NAME, impl, options);
 
@@ -128,7 +127,6 @@ class Attributions extends ControlBase {
         },
       });
 
-      html.querySelector('#close-button').addEventListener('click', () => this.closePanel());
       this.html_ = html;
 
       setTimeout(() => {
@@ -542,7 +540,7 @@ class Attributions extends ControlBase {
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/controles`,
+            urlImages: `${IDEE.config.STATIC_RESOURCES_URL}facade/assets/images/help/${Attributions.NAME}`,
             translations: {
               help1: textHelp.text1,
               help2: textHelp.text2,

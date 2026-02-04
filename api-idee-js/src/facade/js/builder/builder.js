@@ -218,10 +218,10 @@ export const getGetFeatureInfo = (control, map, params = {}) => {
  * @api stable
  */
 export const getAttributionsPanel = (control, map, params = {}) => {
-  return new ControlPanel('attributions', {
+  return new ControlPanel(Attributions.NAME, {
     ...getDefaultPanelOptions(control, params),
-    collapsible: true,
-    collapsedButtonClass: 'g-cartografia-comentarios',
+    collapsible: isBoolean(params.collapsible) ? params.collapsible : true,
+    collapsedButtonClass: 'g-cartografia-comments-simple',
   });
 };
 
