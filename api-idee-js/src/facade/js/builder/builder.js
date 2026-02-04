@@ -441,8 +441,9 @@ export const buildControl = (controlParam, map) => {
         });
       },
       [Attributions.NAME]: () => {
-        // eslint-disable-next-line no-param-reassign
-        map.controlAttributions = new Attributions({
+        // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+        map._attributionsMap = [...map._attributionsMap, ...normalizedControlParams];
+        return new Attributions({
           map,
           collectionsAttributions: normalizedControlParams.length === 2
             ? [normalizedControlParams[1]].map((l) => {
@@ -454,9 +455,6 @@ export const buildControl = (controlParam, map) => {
               return l;
             }) : [],
         });
-        // eslint-disable-next-line no-underscore-dangle, no-param-reassign
-        map._attributionsMap = [...map._attributionsMap, ...normalizedControlParams];
-        return map.controlAttributions;
       },
       [Rotate.NAME]: () => {
         normalizedControlParams.forEach((p) => {

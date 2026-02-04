@@ -549,7 +549,7 @@ class Map extends Base {
       return;
     }
 
-    const controlAttributions = this.getControls().find(({ name }) => name === 'attributions');
+    const controlAttributions = this.getControls().find(({ name }) => name === Attributions.NAME);
     if (!controlAttributions) { return; }
     let addAttribution = null;
 
@@ -4955,7 +4955,7 @@ class Map extends Base {
    */
   evtRemoveAttributions_() {
     this.on(EventType.REMOVED_LAYER, (layersEvt) => {
-      const controlAttributions = this.getControls().find(({ name }) => name === 'attributions');
+      const controlAttributions = this.getControls().find(({ name }) => name === Attributions.NAME);
 
       if (!layersEvt || !controlAttributions) {
         return;

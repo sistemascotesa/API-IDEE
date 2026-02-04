@@ -3,7 +3,7 @@ import Attributions from 'IDEE/control/Attributions';
 import WMS from 'IDEE/layer/WMS';
 import OSM from 'IDEE/layer/OSM';
 
-const mapa = Mmap({
+const map = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
   // controls: ['attributions*<p>Contenido del control</p>'],
@@ -49,19 +49,16 @@ const selectCollapsible = document.getElementById('selectCollapsible');
 const inputTooltip = document.getElementById('inputTooltip');
 
 const create = (options) => {
-  if (!mapa.hasControl(Attributions.NAME)) mapa.addControls(new Attributions(options));
+  if (!map.hasControl(Attributions.NAME)) map.addControls(new Attributions(options));
 };
 
 const remove = () => {
-  const ctrls = mapa.getControls(Attributions.NAME);
-  if (ctrls.length === 1) mapa.removeControls(ctrls[0]);
+  const ctrls = map.getControls(Attributions.NAME);
+  if (ctrls.length === 1) map.removeControls(ctrls[0]);
 };
 
 const recreate = () => {
   remove();
-
-  mapa.removeLayers(layers);
-  mapa.addLayers(layers);
 
   const options = {};
 
@@ -74,7 +71,7 @@ const recreate = () => {
 
   if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
 
-  create();
+  create(options);
 };
 
 selectPosition.addEventListener('change', recreate);
@@ -89,13 +86,15 @@ removeButton.addEventListener('click', () => {
 
 const removeLayerOSMButton = document.getElementById('removeLayerOSM');
 removeLayerOSMButton.addEventListener('click', () => {
-  mapa.removeLayers(layerOpenStreetMap);
+  map.removeLayers(layerOpenStreetMap);
 });
 
 const addLayerOSMButton = document.getElementById('addLayerOSM');
 addLayerOSMButton.addEventListener('click', () => {
-  mapa.removeLayers(layerOpenStreetMap);
-  mapa.addLayers(layerOpenStreetMap);
+  map.removeLayers(layerOpenStreetMap);
+  map.addLayers(layerOpenStreetMap);
 });
 
 recreate();
+
+map.addLayers(layers);

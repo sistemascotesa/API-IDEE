@@ -4,6 +4,7 @@
 import 'assets/css/controls/attributions';
 import attributionsTemplate from 'templates/attributions';
 import myhelp from 'templates/attributionshelp';
+import * as EventType from 'IDEE/event/eventtype';
 import AttributionsImpl from 'impl/control/Attributions';
 import ControlBase from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
@@ -86,6 +87,12 @@ class Attributions extends ControlBase {
       }
       return attr;
     });
+
+    this.on(EventType.ADDED_TO_MAP, this.onAddedToMap.bind(this));
+  }
+
+  onAddedToMap() {
+    this.map.controlAttributions = this;
   }
 
   transformString(attrString) {
@@ -598,6 +605,7 @@ class Attributions extends ControlBase {
    */
   destroy() {
     super.destroy();
+    this.un(EventType.ADDED_TO_MAP, this.onAddedToMap.bind(this));
     if (this.map_) this.map_.un(ADDED_LAYER);
   }
 

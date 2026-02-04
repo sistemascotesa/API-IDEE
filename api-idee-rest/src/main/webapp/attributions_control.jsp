@@ -63,12 +63,12 @@
 
                     <label for="inputTooltip">Parámetro tooltip</label>
                     <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug"
-                        value="Herramientas de medición">
+                        value="Esto es un tooltip">
                 </div>
-                <div style="background-color: rgba(150, 150, 150, 0.35); padding: 0.25rem;">
-                    <button style="border: 2px solid white;" id="removeButton">Eliminar Control</button>
-                    <button style="border: 2px solid white;" id="removeLayerOSM">Eliminar Capa OSM</button>
-                    <button style="border: 2px solid white;" id="addLayerOSM">Añadir Capa OSM</button>
+                <div style="background-color: rgb(172, 161, 147); padding: 0.25rem;">
+                    <button id="removeButton">Eliminar Control</button>
+                    <button id="removeLayerOSM">Eliminar Capa OSM</button>
+                    <button id="addLayerOSM">Añadir Capa OSM</button>
                 </div>
                 <div id="mapjs" class="m-container"></div>
                 <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
@@ -117,7 +117,7 @@
                                 visibility: true,
                             });
 
-                            const layers = [
+                            const layersAttributions = [
                                 layerBaseAdministrative,
                                 layerOpenStreetMap,
                             ];
@@ -128,20 +128,17 @@
                             const inputTooltip = document.getElementById('inputTooltip');
 
                             const create = (options) => {
-                                if (!mapa.hasControl(IDEE.control.Attributions.NAME))
-                                    mapa.addControls(new IDEE.control.Attributions(options));
+                                if (!map.hasControl(IDEE.control.Attributions.NAME))
+                                    map.addControls(new IDEE.control.Attributions(options));
                             };
 
                             const remove = () => {
-                                const ctrls = mapa.getControls(IDEE.control.Attributions.NAME);
-                                if (ctrls.length === 1) mapa.removeControls(ctrls[0]);
+                                const ctrls = map.getControls(IDEE.control.Attributions.NAME);
+                                if (ctrls.length === 1) map.removeControls(ctrls[0]);
                             };
 
                             const recreate = () => {
                                 remove();
-
-                                mapa.removeLayers(layers);
-                                mapa.addLayers(layers);
 
                                 const options = {};
 
@@ -154,7 +151,7 @@
 
                                 if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
 
-                                create();
+                                create(options);
                             };
 
                             selectPosition.addEventListener('change', recreate);
@@ -169,16 +166,18 @@
 
                             const removeLayerOSMButton = document.getElementById('removeLayerOSM');
                             removeLayerOSMButton.addEventListener('click', () => {
-                                mapa.removeLayers(layerOpenStreetMap);
+                                map.removeLayers(layerOpenStreetMap);
                             });
 
                             const addLayerOSMButton = document.getElementById('addLayerOSM');
                             addLayerOSMButton.addEventListener('click', () => {
-                                mapa.removeLayers(layerOpenStreetMap);
-                                mapa.addLayers(layerOpenStreetMap);
+                                map.removeLayers(layerOpenStreetMap);
+                                map.addLayers(layerOpenStreetMap);
                             });
 
                             recreate();
+
+                            map.addLayers(layersAttributions);
                         </script>
             </body>
 
