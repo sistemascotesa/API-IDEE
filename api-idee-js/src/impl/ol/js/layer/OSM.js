@@ -1,14 +1,12 @@
 /**
  * @module IDEE/impl/layer/OSM
  */
-import FacadeOSM from 'IDEE/layer/OSM';
 import * as LayerType from 'IDEE/layer/Type';
 import {
   isUndefined, isNullOrEmpty, generateResolutionsFromExtent, extend,
 } from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
 import OLLayerTile from 'ol/layer/Tile';
-import OLControlAttribution from 'ol/control/Attribution';
 import SourceOSM from 'ol/source/OSM';
 import SourceXYZ from 'ol/source/XYZ';
 import ImplMap from '../Map';
@@ -73,11 +71,6 @@ class OSM extends Layer {
      * OSM facadeLayer_. Intancia de la fachada.
      */
     this.facadeLayer_ = null;
-
-    /**
-     * OSM haveOSMLayer. Existe alguna capa que necesite el attributions.
-     */
-    this.haveOSMLayer = false;
 
     /**
      * OSM visibility. DDefine si la capa es visible o no.
@@ -325,20 +318,6 @@ class OSM extends Layer {
       this.olLayer = null;
     }
 
-    this.map.getLayers().forEach((layer) => {
-      if (layer instanceof FacadeOSM) {
-        this.haveOSMLayer = true;
-      }
-    });
-
-    if (!this.haveOSMLayer) {
-      this.map.getImpl().getMapImpl().getControls().getArray()
-        .forEach((data) => {
-          if (data instanceof OLControlAttribution) {
-            this.map.getImpl().getMapImpl().removeControl(data);
-          }
-        });
-    }
     this.map = null;
   }
 

@@ -440,20 +440,24 @@ export const buildControl = (controlParam, map) => {
           activated,
         });
       },
-      [Attributions.NAME]: () => new Attributions({
-        map,
-        scale: undefined,
-        collectionsAttributions: normalizedControlParams.length === 2
-          ? [normalizedControlParams[1]].map((l) => {
-            if (typeof l !== 'string') {
-              const attr = l;
-              attr.id = l.idLayer;
-              return attr;
-            }
-            return l;
-          }) : [],
-        order: undefined,
-      }),
+      [Attributions.NAME]: () => {
+        // eslint-disable-next-line no-param-reassign
+        map.controlAttributions = new Attributions({
+          map,
+          collectionsAttributions: normalizedControlParams.length === 2
+            ? [normalizedControlParams[1]].map((l) => {
+              if (typeof l !== 'string') {
+                const attr = l;
+                attr.id = l.idLayer;
+                return attr;
+              }
+              return l;
+            }) : [],
+        });
+        // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+        map._attributionsMap = [...map._attributionsMap, ...normalizedControlParams];
+        return map.controlAttributions;
+      },
       [Rotate.NAME]: () => {
         normalizedControlParams.forEach((p) => {
           if (!isUndefined(p)) {

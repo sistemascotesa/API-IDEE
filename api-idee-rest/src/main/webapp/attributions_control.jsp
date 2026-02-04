@@ -45,7 +45,8 @@
                         <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)</option>
                         <option value="down">Abajo (down)</option>
                     </select>
-
+                </div>
+                <div>
                     <label for="selectCollapsed">Parámetro de collapsed</label>
                     <select name="collapsed" id="selectCollapsed">
                         <option value=''></option>
@@ -64,8 +65,10 @@
                     <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug"
                         value="Herramientas de medición">
                 </div>
-                <div>
-                    <button id="removeButton">Eliminar Control</button>
+                <div style="background-color: rgba(150, 150, 150, 0.35); padding: 0.25rem;">
+                    <button style="border: 2px solid white;" id="removeButton">Eliminar Control</button>
+                    <button style="border: 2px solid white;" id="removeLayerOSM">Eliminar Capa OSM</button>
+                    <button style="border: 2px solid white;" id="addLayerOSM">Añadir Capa OSM</button>
                 </div>
                 <div id="mapjs" class="m-container"></div>
                 <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
@@ -98,6 +101,7 @@
                                     name: 'Capa WMS',
                                     description: 'Descripción WMS',
                                     url: 'https://www.ign.es',
+                                    // eslint-disable-next-line max-len
                                     // contentAttributions: '${api-idee.static_resources.url}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
                                     contentAttributions: '',
                                     contentType: 'kml',
@@ -113,9 +117,10 @@
                                 visibility: true,
                             });
 
-                            mapa.addLayers([layerBaseAdministrative, layerOpenStreetMap]);
-
-                            let ctrl;
+                            const layers = [
+                                layerBaseAdministrative,
+                                layerOpenStreetMap,
+                            ];
 
                             const selectPosition = document.getElementById('selectPosicion');
                             const selectCollapsed = document.getElementById('selectCollapsed');
@@ -123,17 +128,21 @@
                             const inputTooltip = document.getElementById('inputTooltip');
 
                             const create = (options) => {
-                                ctrl = new IDEE.control.Attributions(options);
-                                mapa.addControls(ctrl);
+                                if (!mapa.hasControl(IDEE.control.Attributions.NAME))
+                                    mapa.addControls(new IDEE.control.Attributions(options));
                             };
 
                             const remove = () => {
-                                mapa.removeControls(ctrl);
-                                ctrl = null;
+                                const ctrls = mapa.getControls(IDEE.control.Attributions.NAME);
+                                if (ctrls.length === 1) mapa.removeControls(ctrls[0]);
                             };
 
                             const recreate = () => {
-                                if (ctrl != null) remove();
+                                remove();
+
+                                mapa.removeLayers(layers);
+                                mapa.addLayers(layers);
+
                                 const options = {};
 
                                 options.position = selectPosition.options[selectPosition.selectedIndex].value;
@@ -144,7 +153,8 @@
                                 if (collapsed !== '') options.collapsed = (collapsed === 'true');
 
                                 if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
-                                create(options);
+
+                                create();
                             };
 
                             selectPosition.addEventListener('change', recreate);
@@ -155,6 +165,17 @@
                             const removeButton = document.getElementById('removeButton');
                             removeButton.addEventListener('click', () => {
                                 remove();
+                            });
+
+                            const removeLayerOSMButton = document.getElementById('removeLayerOSM');
+                            removeLayerOSMButton.addEventListener('click', () => {
+                                mapa.removeLayers(layerOpenStreetMap);
+                            });
+
+                            const addLayerOSMButton = document.getElementById('addLayerOSM');
+                            addLayerOSMButton.addEventListener('click', () => {
+                                mapa.removeLayers(layerOpenStreetMap);
+                                mapa.addLayers(layerOpenStreetMap);
                             });
 
                             recreate();

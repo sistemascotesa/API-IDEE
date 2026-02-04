@@ -31,7 +31,8 @@
             <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)</option>
             <option value="down">Abajo (down)</option>
         </select>
-
+    </div>
+    <div>
         <label for="selectCollapsed">Parámetro de collapsed</label>
         <select name="collapsed" id="selectCollapsed">
             <option value=''></option>
@@ -49,8 +50,10 @@
         <label for="inputTooltip">Parámetro tooltip</label>
         <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Herramientas de medición">
     </div>
-    <div>
-        <button id="removeButton">Eliminar Control</button>
+    <div style="background-color: rgba(150, 150, 150, 0.35); padding: 0.25rem;">
+        <button style="border: 2px solid white;" id="removeButton">Eliminar Control</button>
+        <button style="border: 2px solid white;" id="removeLayerOSM">Eliminar Capa OSM</button>
+        <button style="border: 2px solid white;" id="addLayerOSM">Añadir Capa OSM</button>
     </div>
     <div id="map" class="map"></div>
     <script src="/config.js" charset="utf-8"></script>
