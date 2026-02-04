@@ -1,9 +1,12 @@
 /**
  * @module IDEE/impl/control/OverviewMapControl
  */
+/* eslint-disable import/no-extraneous-dependencies */
+import OverviewMap from 'ol/control/OverviewMap';
 import { getValue } from '../../../facade/js/i18n/language';
 
-export default class OverviewMapControl extends ol.control.OverviewMap {
+// export default class OverviewMapControl extends ol.control.OverviewMap {
+export default class OverviewMapControl extends OverviewMap {
   /**
    * @constructor
    * @extends {ol.control.Control}
@@ -13,7 +16,11 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
     super(IDEE.utils.extend({
       layers: [],
       tipLabel: getValue('tooltip'),
+      collapsed: false,
+      collapsible: false,
     }, vendorOptions, true));
+
+    this.isOverviewMap = true;
 
     /**
      * Toggle delayer
@@ -35,7 +42,10 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
       this.collapsedButtonClass_ = options.collapsedButtonClass;
     }
 
-    if (options.position === 'TR' || options.position === 'BR') {
+    if (options.position === 'right'
+      || options.position === 'center-bottom-right'
+      || options.position === 'center-top-right'
+    ) {
       this.openedButtonClass_ = 'g-cartografia-flecha-derecha';
     } else {
       this.openedButtonClass_ = 'g-cartografia-flecha-izquierda';
@@ -93,11 +103,33 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
    * @api stable
    */
   addTo(map, html) {
+    // No existe el método addTo de la clase base
+    // super.addTo(map, html); // Llama al addTo de IDEE.Control si existe
     this.facadeMap_ = map;
+    const olMap = map.getMapImpl();
+    this.setMap(olMap);
+
+    // Para que no esté el control colapsado desde el principio
+    // this.setCollapsed(false);
+
     this.update(map, html);
-    if (!this.getCollapsed()) {
-      this.addLayers();
-    }
+    this.html_ = html;
+    // if (!this.getCollapsed()) {
+    //   this.addLayers();
+    // }
+    this.addLayers();
+  }
+
+  /**
+   * Método para que el panel llame y obtener el HTML.
+   * Devuelve el elemento DOM generado por OpenLayers
+   *
+   * @public
+   * @function
+   * @api stable
+   */
+  getView() {
+    return this.element; // this.html_ contiene el DOM del plugin
   }
 
   /**
@@ -111,6 +143,11 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
     button.setAttribute('tabindex', this.order);
     button.setAttribute('aria-label', 'Plugin overviewmap');
     button.setAttribute('role', 'button');
+
+    if (button) {
+      button.style.display = 'none';
+    }
+
     if (this.collapsed_ === true) {
       if (button.classList.contains(this.collapsedButtonClass_)) {
         button.classList.remove(this.collapsedButtonClass_);
@@ -208,21 +245,41 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
         }
       }
     });
-    let newView = {};
+    // let newView = {};
+    let newView;
+    const currentProjection = ol.proj.get(this.facadeMap_.getProjection().code);
+    const currentCenter = this.facadeMap_.getCenter();
+    // eslint-disable-next-line max-len
+    const centerArray = Array.isArray(currentCenter) ? currentCenter : [currentCenter.x, currentCenter.y];
     if (this.fixed_) {
       newView = new ol.View({
-        projection: ol.proj.get(this.facadeMap_.getProjection().code),
+        projection: currentProjection,
+        center: centerArray,
         maxZoom: this.zoom_,
         minZoom: this.zoom_,
+        zoom: this.zoom_,
       });
     } else {
-      newView = new IDEE.impl.View({
-        projection: ol.proj.get(this.facadeMap_.getProjection().code),
+      const ideeView = new IDEE.impl.View({
+        projection: currentProjection,
+        center: currentCenter,
         resolutions: this.facadeMap_.getResolutions(),
       });
+
+      // Extracción de la instancia real
+      if (typeof ideeView.getImpl === 'function') {
+        // Si existe, ejecuta y devuelve objeto nativo OL.
+        newView = ideeView.getImpl();
+      } else {
+        newView = ideeView;
+      }
     }
 
-    this.ovmap_.setView(newView);
+    // this.ovmap_.setView(newView);
+    this.ovmap_.setView(Promise.resolve(newView));
+
+    this.setCollapsed(false);
+
     this.view_ = newView;
     if (this.baseLayer_ !== undefined && this.baseLayer_.length > 3) {
       const parameters = this.baseLayer_.split('*');
@@ -290,7 +347,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
       this.ovmap_.addLayer(olLayers[0]);
     }
 
-    this.facadeMap_.getMapImpl().addControl(this);
+    // this.facadeMap_.getMapImpl().addControl(this);
     this.wasOpen_ = true;
   }
 

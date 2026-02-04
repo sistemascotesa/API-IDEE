@@ -9,6 +9,8 @@ import myhelp from '../../templates/myhelp';
 
 import es from './i18n/es';
 import en from './i18n/en';
+// eslint-disable-next-line import/no-relative-packages
+import { isValid, LEFT } from '../../../../../facade/js/ui/position';
 
 export default class OverviewMap extends IDEE.Plugin {
   /**
@@ -22,7 +24,12 @@ export default class OverviewMap extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super();
+    super('overviewmap', {
+      position:
+        isValid(options.position) ? options.position : LEFT,
+      // position: options.position || 'left',
+      // tooltip: options.tooltip || getValue('tooltip'),
+    });
     /**
      * Facade of the map
      * @private
@@ -49,7 +56,7 @@ export default class OverviewMap extends IDEE.Plugin {
      * @private
      * @type {String}
      */
-    this.position_ = options.position !== undefined ? options.position : 'BR';
+    this.position_ = IDEE.ui.position || 'left';
 
     /**
      * Plugin tooltip
@@ -150,17 +157,26 @@ export default class OverviewMap extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.control_ = new OverviewMapControl(this.options_, this.vendorOptions);
-    this.controls_.push(this.control_);
     this.map_ = map;
-    this.panel_ = new IDEE.ui.Panel('OverviewMap', {
+
+    this.control_ = new OverviewMapControl(this.options_, this.vendorOptions);
+
+    this.panel_ = new IDEE.ui.ControlPanel('OverviewMap', {
+      collapsible: true,
       className: 'm-overviewmap-panel',
-      position: IDEE.ui.position[this.position_],
-      order: this.order,
+      collapsedButtonClass: 'overviewmap-mundo',
       tooltip: this.tooltip_,
+      order: this.order,
+      position: this.position,
     });
-    this.panel_.addControls(this.controls_);
-    map.addPanels(this.panel_);
+
+    this.map_.addControlPanels(this.panel_);
+    this.panel_.addControls(this.control_);
+    // this.control_.setPanel(this.panel_);
+    this.map_.addPanels(this.panel_);
+
+    // this.map_.addControls(this.controls_);
+    this.controls_.push(this.control_);
   }
 
   /**

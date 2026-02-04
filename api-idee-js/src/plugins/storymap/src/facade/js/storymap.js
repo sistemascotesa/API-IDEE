@@ -23,6 +23,7 @@ export default class StoryMap extends IDEE.Plugin {
     super('storymap', {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
     });
 
     /**
@@ -114,6 +115,7 @@ export default class StoryMap extends IDEE.Plugin {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: `plugins/${this.name}/images/icon.svg`,
+      order: this.order,
     });
     window.map = map;
     window.mapjs = map;
@@ -127,6 +129,7 @@ export default class StoryMap extends IDEE.Plugin {
       collapsible: this.collapsible,
       collapsed: this.collapsed_,
       collapsedButtonClass: 'icon-capas2',
+      order: this.order,
     });
     map.addPanels(this.panel);
     this.controls.push(new StoryMapControl(

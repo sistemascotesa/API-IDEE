@@ -5,7 +5,7 @@
 import 'assets/css/button';
 import buttonTemplate from 'templates/button';
 import * as Position from './position';
-import { isNullOrEmpty } from '../util/Utils';
+import { isNullOrEmpty, isNumber } from '../util/Utils';
 import { compileSync as compileTemplate } from '../util/Template';
 import * as Dialog from '../dialog';
 import Exception from '../exception/exception';
@@ -58,6 +58,14 @@ class Button extends MObject {
     }
 
     /**
+     * Determines the position of the tool when it is inside a map tool container
+     * @type {number}
+     * @api
+     * @expose
+     */
+    this.order = isNumber(options.order) ? options.order : 0;
+
+    /**
      * @private
      * @type {String}
      * @expose
@@ -87,7 +95,12 @@ class Button extends MObject {
     this.element.title = this.tooltip;
     this.element.role = 'button';
     this.element.ariaLabel = this.tooltip;
-    this.element.tabIndex = '300';
+    if (this.order) {
+      this.element.style.setProperty('order', this.order, 'important');
+      this.element.setAttribute('tabIndex', this.order);
+    } else {
+      this.element.setAttribute('tabIndex', '300');
+    }
 
     if (this.svgPath) {
       fetch(this.svgPath)

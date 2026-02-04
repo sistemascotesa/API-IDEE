@@ -25,6 +25,7 @@ export default class StyleManager extends IDEE.Plugin {
     super('stylemanager', {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
     });
 
     /**
@@ -78,6 +79,7 @@ export default class StyleManager extends IDEE.Plugin {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: `plugins/${this.name}/images/icon.svg`,
+      order: this.order,
     });
     map.addButtons(this.button);
 
@@ -90,6 +92,7 @@ export default class StyleManager extends IDEE.Plugin {
       collapsible: this.collapsible_,
       collapsed: this.collapsed_,
       collapsedButtonClass: 'stylemanager-palette',
+      order: this.order,
     });
     map.addPanels(this.panel);
 

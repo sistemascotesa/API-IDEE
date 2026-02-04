@@ -1,48 +1,19 @@
 import { map as Mmap } from 'IDEE/api-idee';
 import Attributions from 'IDEE/control/Attributions';
-// import * as Position from 'IDEE/ui/position';
 import WMS from 'IDEE/layer/WMS';
-// import Panzoom from 'IDEE/control/Panzoom';
-import * as Position from 'IDEE/ui/position';
+import OSM from 'IDEE/layer/OSM';
 
-const mapa = Mmap({
+const map = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
   // controls: ['attributions*<p>Contenido del control</p>'],
+  // eslint-disable-next-line max-len
   // controls: ['location', 'attributions*<p>Contenido del control</p>', 'rotate', 'ImplementationSwitcher'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
 });
 
-let ctrl;
-const selectPosicion = document.getElementById('selectPosicion');
-
-const createControl = (propiedades) => {
-  ctrl = new Attributions(propiedades);
-  mapa.addControls(ctrl);
-};
-
-const removeControl = () => {
-  mapa.removeControls(ctrl);
-  ctrl = null;
-};
-
-createControl();
-
-// const attributions = new Attributions({
-//   position: Position.LEFT,
-// });
-
-// const panzoom = new Panzoom({
-//   position: Position.DOWN,
-// });
-
-// mapa.addControls([
-//   panzoom,
-// ]);
-
-// En vez de new IDEE.layer.WMS
-const layerinicial = new WMS({
+const layerBaseAdministrative = new WMS({
   url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeBoundary',
   legend: 'Limite administrativo',
@@ -51,65 +22,79 @@ const layerinicial = new WMS({
     name: 'Capa WMS',
     description: 'Descripción WMS',
     url: 'https://www.ign.es',
-    contentAttributions: '${api-idee.static_resources.url}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+    // eslint-disable-next-line max-len
+    // contentAttributions: '${api-idee.static_resources.url}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+    contentAttributions: '',
     contentType: 'kml',
   },
 }, {});
 
-mapa.addLayers(layerinicial);
+const layerOpenStreetMap = new OSM({
+  name: 'OSM',
+  legend: 'OSM',
+  url: 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  matrixSet: 'EPSG:3857',
+  isBase: false,
+  visibility: true,
+});
 
-// const attributionsControl = new Attributions({
-//   position: Position.LEFT,
-//   order: 100,
-//   closePanel: true, // colapsado para ver el botón flotante
-// });
+const layers = [
+  layerBaseAdministrative,
+  layerOpenStreetMap,
+];
 
+const selectPosition = document.getElementById('selectPosicion');
+const selectCollapsed = document.getElementById('selectCollapsed');
+const selectCollapsible = document.getElementById('selectCollapsible');
+const inputTooltip = document.getElementById('inputTooltip');
 
-
-// mapa.addControls(attributions);
-
-// attributions.on('added:map', () => {
-//   mapa.removeControls(attributions);
-// });
-
-// setTimeout(() => {
-//   mapa.removeControls([attributions]);
-// }, 1000);
-
-// mapa.addControls([
-//   attributionsControl,
-// ]);
-
-// mapa.removeControls(attributionsControl);
-
-// mapa.addControls([attributionsControl]);
-
-const updateControl = () => {
-  if (ctrl != null) removeControl();
-  createControl({
-    position: selectPosicion.options[selectPosicion.selectedIndex].value,
-  });
+const create = (options) => {
+  if (!map.hasControl(Attributions.NAME)) map.addControls(new Attributions(options));
 };
 
-selectPosicion.addEventListener('change', updateControl);
+const remove = () => {
+  const ctrls = map.getControls(Attributions.NAME);
+  if (ctrls.length === 1) map.removeControls(ctrls[0]);
+};
+
+const recreate = () => {
+  remove();
+
+  const options = {};
+
+  options.position = selectPosition.options[selectPosition.selectedIndex].value;
+  const collapsible = selectCollapsible.options[selectCollapsible.selectedIndex].value;
+  if (collapsible !== '') options.collapsible = (collapsible === 'true');
+
+  const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
+  if (collapsed !== '') options.collapsed = (collapsed === 'true');
+
+  if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
+
+  create(options);
+};
+
+selectPosition.addEventListener('change', recreate);
+selectCollapsed.addEventListener('change', recreate);
+selectCollapsible.addEventListener('change', recreate);
+inputTooltip.addEventListener('change', recreate);
 
 const removeButton = document.getElementById('removeButton');
 removeButton.addEventListener('click', () => {
-  removeControl();
+  remove();
 });
 
-const layer = new WMS({
-  url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
-  name: 'AU.AdministrativeBoundary',
-  legend: 'Limite administrativo',
-  tiled: false,
-  attribution: {
-    name: 'Capa WMS',
-    description: 'Descripción WMS',
-    url: 'https://www.ign.es',
-    contentAttributions: '${api-idee.static_resources.url}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
-    contentType: 'kml',
-  },
-}, {});
+const removeLayerOSMButton = document.getElementById('removeLayerOSM');
+removeLayerOSMButton.addEventListener('click', () => {
+  map.removeLayers(layerOpenStreetMap);
+});
 
-mapa.addLayers(layer);
+const addLayerOSMButton = document.getElementById('addLayerOSM');
+addLayerOSMButton.addEventListener('click', () => {
+  map.removeLayers(layerOpenStreetMap);
+  map.addLayers(layerOpenStreetMap);
+});
+
+recreate();
+
+map.addLayers(layers);

@@ -14,25 +14,46 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: auto;
         }
     </style>
 
 </head>
 
-<body>
+<body style="display: flex; flex-direction: column;">
     <div>
         <label for="selectPosicion">Selector de posición del plugin</label>
         <select name="position" id="selectPosicion">
             <option value="left" selected="selected">Izquierda (left)</option>
-            <option value="right">Derecha (left)</option>
+            <option value="right">Derecha (right)</option>
             <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
             <option value="center-top-right">Centro superior derecho (center-top-right)</option>
             <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
             <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)</option>
             <option value="down">Abajo (down)</option>
         </select>
-        <input type="button" value="Eliminar Control" name="eliminar" id="removeButton">
+    </div>
+    <div>
+        <label for="selectCollapsed">Parámetro de collapsed</label>
+        <select name="collapsed" id="selectCollapsed">
+            <option value=''></option>
+            <option value="true">true</option>
+            <option value="false" selected="selected">false</option>
+        </select>
+
+        <label for="selectCollapsible">Selector de collapsible</label>
+        <select name="collapsible" id="selectCollapsible">
+            <option value=''></option>
+            <option value="true" selected="selected">true</option>
+            <option value="false">false</option>
+        </select>
+
+        <label for="inputTooltip">Parámetro tooltip</label>
+        <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Esto es un tooltip">
+    </div>
+    <div style="background-color: rgba(150, 150, 150, 0.35); padding: 0.25rem;">
+        <button style="border: 2px solid white;" id="removeButton">Eliminar Control</button>
+        <button style="border: 2px solid white;" id="removeLayerOSM">Eliminar Capa OSM</button>
+        <button style="border: 2px solid white;" id="addLayerOSM">Añadir Capa OSM</button>
     </div>
     <div id="map" class="map"></div>
     <script src="/config.js" charset="utf-8"></script>

@@ -4,6 +4,7 @@
 import 'assets/css/controls/attributions';
 import attributionsTemplate from 'templates/attributions';
 import myhelp from 'templates/attributionshelp';
+import * as EventType from 'IDEE/event/eventtype';
 import AttributionsImpl from 'impl/control/Attributions';
 import ControlBase from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
@@ -60,7 +61,6 @@ class Attributions extends ControlBase {
       && isNullOrEmpty(Object.keys(AttributionsImpl)))) {
       Exception(getValue('exception').attributions_method);
     }
-
     const impl = new AttributionsImpl();
     super(Attributions.NAME, impl, options);
 
@@ -88,11 +88,11 @@ class Attributions extends ControlBase {
       return attr;
     });
 
-    /**
-     * Order: Orden que tendrá con respecto al
-     * resto de plugins y controles por pantalla.
-     */
-    this.order = options.order;
+    this.on(EventType.ADDED_TO_MAP, this.onAddedToMap.bind(this));
+  }
+
+  onAddedToMap() {
+    this.map.controlAttributions = this;
   }
 
   transformString(attrString) {
@@ -134,7 +134,6 @@ class Attributions extends ControlBase {
         },
       });
 
-      html.querySelector('#close-button').addEventListener('click', () => this.closePanel());
       this.html_ = html;
 
       setTimeout(() => {
@@ -548,7 +547,7 @@ class Attributions extends ControlBase {
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/controles`,
+            urlImages: `${IDEE.config.STATIC_RESOURCES_URL}facade/assets/images/help/${Attributions.NAME}`,
             translations: {
               help1: textHelp.text1,
               help2: textHelp.text2,
@@ -606,6 +605,7 @@ class Attributions extends ControlBase {
    */
   destroy() {
     super.destroy();
+    this.un(EventType.ADDED_TO_MAP, this.onAddedToMap.bind(this));
     if (this.map_) this.map_.un(ADDED_LAYER);
   }
 

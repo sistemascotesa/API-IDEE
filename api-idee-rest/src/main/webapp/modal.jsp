@@ -40,10 +40,8 @@
     <div>
         <label for="selectPosicion">Selector de posición del plugin</label>
         <select name="position" id="selectPosicion">
-            <option value="TL">Arriba Izquierda (TL)</option>
-            <option value="TR" selected="selected">Arriba Derecha (TR)</option>
-            <option value="BR">Abajo Derecha (BR)</option>
-            <option value="BL">Abajo Izquierda (BL)</option>
+            <option value="left">Izquierda (left)</option>
+            <option value="right">Derecha (right)</option>
         </select>
         <label for="selectCollapsed">Selector de collapsed</label>
         <select name="collapsed" id="selectCollapsed">
@@ -57,7 +55,7 @@
             <option value="true" selected="selected">true</option>
             <option value="false">false</option>
         </select>
-        <label for="inputTooltip">Parámetro tooltip</label>
+        <label for="inputTooltip">Tooltip:</label>
         <input type="text" id="inputTooltip" value="Más información" />
         <label for="inputUrl_es">Parámetro url_es</label>
         <input type="text" id="inputUrl_es" value="https://www.ign.es/iberpix/ayuda/es.html" />
@@ -94,15 +92,15 @@
         });
 
 
-        let mp, posicion, url_es, url_en, collapsed;
-        crearPlugin({});
+        let mp = null;
 
         const selectPosicion = document.getElementById("selectPosicion");
-        const inputUrl_es = document.getElementById("inputUrl_es");
-        const inputUrl_en = document.getElementById("inputUrl_en");
         const selectCollapsed = document.getElementById("selectCollapsed");
         const selectCollapsible = document.getElementById("selectCollapsible");
         const inputTooltip = document.getElementById("inputTooltip");
+        const inputUrl_es = document.getElementById("inputUrl_es");
+        const inputUrl_en = document.getElementById("inputUrl_en");
+        const botonEliminar = document.getElementById("botonEliminar");
 
         selectPosicion.addEventListener('change', cambiarTest);
         inputUrl_es.addEventListener('change', cambiarTest);
@@ -112,17 +110,28 @@
         inputTooltip.addEventListener('change', cambiarTest);
 
         function cambiarTest() {
-            let objeto = {};
-            objeto.position = selectPosicion.options[selectPosicion.selectedIndex].value;
-            (inputUrl_es.value != "") ? objeto.url_es = inputUrl_es.value: "https://www.ign.es/iberpix/ayuda/es.html";
-            (inputUrl_en.value != "") ? objeto.url_en = inputUrl_en.value: "https://www.ign.es/iberpix/ayuda/en.html";
-            (inputTooltip.value != "") ? objeto.tooltip = inputTooltip.value: "Más información";
-            collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
-            collapsed != '' ? objeto.collapsed = (collapsed === "true") : '';
-            collapsible = selectCollapsible.options[selectCollapsible.selectedIndex].value;
-            collapsible != '' ? objeto.collapsible = (collapsible === "true") : '';
-            map.removePlugins(mp);
-            crearPlugin(objeto);
+            eliminarPlugin();
+            const opciones = {
+                position: selectPosicion.value,
+                collapsed: selectCollapsed.value === "true",
+                collapsible: selectCollapsible.value === "true",
+                tooltip: inputTooltip.value || "Más información",
+                // Forzamos el uso de templates locales para el test
+                url_es: 'template_es',
+                url_en: 'template_en',
+                order: 1
+            };
+            // let objeto = {};
+            // objeto.position = selectPosicion.options[selectPosicion.selectedIndex].value;
+            // (inputUrl_es.value != "") ? objeto.url_es = inputUrl_es.value: "https://www.ign.es/iberpix/ayuda/es.html";
+            // (inputUrl_en.value != "") ? objeto.url_en = inputUrl_en.value: "https://www.ign.es/iberpix/ayuda/en.html";
+            // (inputTooltip.value != "") ? objeto.tooltip = inputTooltip.value: "Más información";
+            // collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
+            // collapsed != '' ? objeto.collapsed = (collapsed === "true") : '';
+            // collapsible = selectCollapsible.options[selectCollapsible.selectedIndex].value;
+            // collapsible != '' ? objeto.collapsible = (collapsible === "true") : '';
+            // map.removePlugins(mp);
+            crearPlugin(opciones);
         }
 
         function crearPlugin(propiedades) {
@@ -130,16 +139,29 @@
             map.addPlugin(mp);
         }
 
+        function eliminarPlugin() {
+            if (mp) {
+                map.removePlugin(mp);
+                mp = null;
+            }
+        }
+
+        // let mp2 = new IDEE.plugin.ShareMap({
+        //     baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
+        //     position: "TR",
+        // });
+        // map.addPlugin(mp2);
+
+        botonEliminar.addEventListener("click", eliminarPlugin);
+        cambiarTest();
+        // botonEliminar.addEventListener("click", function() {
+        //     map.removePlugins(mp);
+        // });
         let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });
         map.addPlugin(mp2);
-
-        const botonEliminar = document.getElementById("botonEliminar");
-        botonEliminar.addEventListener("click", function() {
-            map.removePlugins(mp);
-        });
     </script>
 </body>
 

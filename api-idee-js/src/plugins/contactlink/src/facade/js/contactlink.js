@@ -28,7 +28,7 @@ export default class ContactLink extends IDEE.Plugin {
     super('contactlink', {
       position: options.position ?? LEFT,
       tooltip: options.tooltip ?? getValue('tooltip'),
-      order: options.order ?? 0,
+      order: options.order,
     });
 
     /**
@@ -137,12 +137,6 @@ export default class ContactLink extends IDEE.Plugin {
     this.collapsed = IDEE.utils.isBoolean(options.collapsed) ? options.collapsed : true;
 
     /**
-     *@private
-     *@type { Number }
-     */
-    this.order = IDEE.utils.isNumber(options.order) ? options.order : null;
-
-    /**
      * Plugin parameters
      * @public
      * @type {object}
@@ -180,6 +174,7 @@ export default class ContactLink extends IDEE.Plugin {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: `plugins/${this.name}/images/icon.svg`,
+      order: this.order,
     });
     map.addButtons(this.button);
 

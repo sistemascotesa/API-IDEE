@@ -2,6 +2,7 @@
  * @module IDEE/layer/OSM
  */
 import OSMImpl from 'impl/layer/OSM';
+import * as EventType from 'IDEE/event/eventtype';
 import LayerBase from './Layer';
 import {
   isUndefined, isNullOrEmpty, isObject, isString,
@@ -10,6 +11,7 @@ import Exception from '../exception/exception';
 import * as LayerType from './Type';
 import * as parameter from '../parameter/parameter';
 import { getValue } from '../i18n/language';
+import Attributions from '../control/Attributions';
 
 /**
  * @classdesc
@@ -128,6 +130,35 @@ class OSM extends LayerBase {
      * OSM options. Opciones OSM.
      */
     this.options = options;
+
+    /**
+     * OSM hasAttributtion. Verdadero cuando el control de attribuciones se carga
+     */
+    this.hasAttributtion = false;
+
+    /**
+     * OSM haveOSMLayer. Existe alguna capa que necesite el attributions.
+     */
+    this.haveOSMLayer = false;
+
+    /**
+     * OSM haveOSMLayer. Existe alguna capa que necesite el attributions.
+     */
+    this.haveOSMLayer = false;
+
+    /**
+     * OSM Attribution by dafault
+     */
+    if (!isObject(this.attribution)) this.attribution = {};
+    if (isUndefined(this.attribution.name)) this.attribution.name = 'OSM';
+    if (isUndefined(this.attribution.description)) this.attribution.description = '© OpenStreetMap';
+    if (isUndefined(this.attribution.url)) this.attribution.url = 'https://www.openstreetmap.org/copyright';
+
+    /** Cuando la capa es añadida al mapa, está necesita obligatoriamente los reconocimientos */
+    this.on(EventType.ADDED_TO_MAP, () => {
+      this.hasAttributtion = this.map_.hasControl(Attributions.NAME);
+      if (!this.hasAttributtion) this.map_.addControls(Attributions.NAME);
+    });
   }
 
   /**
@@ -160,6 +191,11 @@ class OSM extends LayerBase {
       equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
+  }
+
+  destroy() {
+    // eslint-disable-next-line no-console
+    console.log('si me destruyo');
   }
 }
 

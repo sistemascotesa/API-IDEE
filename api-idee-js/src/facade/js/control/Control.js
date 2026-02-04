@@ -8,8 +8,8 @@ import Exception from '../exception/exception';
 import Base from '../Base';
 import * as EventType from '../event/eventtype';
 import { getValue } from '../i18n/language';
-import * as Position from '../ui/position';
 import Plugin from '../Plugin';
+import * as Position from '../ui/position';
 import isControlImpl from '../../../impl/util/control/isControlImpl';
 import getControlImpl from '../../../impl/util/control/getControlImpl';
 
@@ -68,10 +68,15 @@ class Control extends Base {
     this.svgPath = isString(options.svgPath) ?? null;
 
     /**
-     * position of control on map, default left
+     * Position of control on map, default left
      * @type {Position}
      */
     this.position = Position.isValid(options.position) ? options.position : Position.LEFT;
+
+    /**
+     * Determines the position of the tool when it is inside a map tool container
+     * @type {number}
+     */
     this.order = isNumber(options.order) ? options.order : 0;
 
     this.controls = null;
@@ -149,6 +154,7 @@ class Control extends Base {
     const buildImpl = (templateReady) => {
       let controlImpl = this.getImpl();
       if (!isControlImpl(controlImpl)) {
+        // eslint-disable-next-line no-console
         // Consige una implementación de control nueva para un mapa de implementación concreto
         controlImpl = getControlImpl(this.map.getImpl(), controlImpl);
         super.setImpl(controlImpl);

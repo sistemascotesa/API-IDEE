@@ -25,6 +25,7 @@ export default class Locator extends IDEE.Plugin {
     super('locator', {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
     });
 
     /**
@@ -98,13 +99,6 @@ export default class Locator extends IDEE.Plugin {
       : options.byPlaceAddressPostal;
 
     /**
-     * Indicates order to the plugin
-     * @private
-     * @type {Number}
-     */
-    this.order = options.order >= -1 ? options.order : null;
-
-    /**
      * Indicates if you want to use proxy in requests
      * @private
      * @type {Boolean|String}
@@ -149,6 +143,7 @@ export default class Locator extends IDEE.Plugin {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: `plugins/${this.name}/images/icon.svg`,
+      order: this.order,
     });
     map.addButtons(this.button);
 

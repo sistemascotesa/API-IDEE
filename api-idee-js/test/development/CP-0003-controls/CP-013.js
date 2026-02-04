@@ -1,9 +1,11 @@
 import { map as Mmap } from 'IDEE/api-idee';
+import Control from 'IDEE/control/Control';
+import Plugin from 'IDEE/Plugin';
 import Rotate from 'IDEE/control/Rotate';
 import Scale from 'IDEE/control/Scale';
 import ScaleLine from 'IDEE/control/ScaleLine';
 import Panzoom from 'IDEE/control/Panzoom';
-// import * as Position from 'IDEE/ui/position';
+import * as Position from 'IDEE/ui/position';
 
 /**
  * Este test debería contener todos los controles para comprobar la funcionalidad de
@@ -13,6 +15,8 @@ import Panzoom from 'IDEE/control/Panzoom';
 const map = Mmap({
   container: 'map',
 });
+
+window.mapa = map;
 
 const panzoom = new Panzoom({
   order: 1,
@@ -39,11 +43,19 @@ const controlsDown = [
   panzoom,
 ];
 
-const controls = [
+const githubPLugin = new Plugin('github', {
+  tooltip: 'GitHub',
+  position: Position.LEFT,
+  svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
+  order: 2,
+});
+
+const tools = [
   ...controlsDown,
+  githubPLugin,
 ];
 
-const log = controls.reduce((acc, ctrl) => {
+const log = tools.reduce((acc, ctrl) => {
   acc[ctrl.position] = {
     [ctrl.name]: {
       order: ctrl.order,
@@ -56,4 +68,7 @@ const log = controls.reduce((acc, ctrl) => {
 // eslint-disable-next-line no-console
 console.info(JSON.parse(JSON.stringify(log)));
 
-map.addControls(controls);
+tools.forEach((tool) => {
+  if (tool instanceof Control) map.addControls(tool);
+  else if (tool instanceof Plugin) map.addPlugins(tool);
+});

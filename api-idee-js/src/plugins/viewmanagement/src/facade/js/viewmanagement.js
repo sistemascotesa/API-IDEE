@@ -7,6 +7,8 @@ import es from './i18n/es';
 import en from './i18n/en';
 import { getValue } from './i18n/language';
 import myhelp from '../../templates/myhelp';
+// eslint-disable-next-line import/no-relative-packages
+import { LEFT } from '../../../../../facade/js/ui/position';
 
 export default class ViewManagement extends IDEE.Plugin {
   /**
@@ -20,13 +22,18 @@ export default class ViewManagement extends IDEE.Plugin {
    * @api
    */
   constructor(options = {}) {
-    super();
+    super('viewmanagement', {
+      position: options.position ?? LEFT,
+      tooltip: options.tooltip ?? getValue('tooltip'),
+      order: options.order,
+    });
+
     /**
      * Facade of the map
      * @private
      * @type {IDEE.Map}
      */
-    this.map_ = null;
+    this.map = null;
 
     /**
      * Array of controls
@@ -36,13 +43,6 @@ export default class ViewManagement extends IDEE.Plugin {
     this.controls_ = [];
 
     /**
-     * Plugin name
-     * @public
-     * @type {String}
-     */
-    this.name = 'viewmanagement';
-
-    /**
      * Plugin parameters
      * @public
      * @type {Object}
@@ -50,26 +50,11 @@ export default class ViewManagement extends IDEE.Plugin {
     this.options = options;
 
     /**
-     * Position of the plugin
-     *
-     * @private
-     * @type {String} TL | TR | BL | BR
-     */
-    this.position_ = options.position || 'TL';
-
-    /**
      * Option to allow the plugin to be collapsed or not
      * @private
      * @type {Boolean}
      */
     this.collapsed = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
-
-    /**
-     * Option to allow the plugin to be collapsible or not
-     * @private
-     * @type {Boolean}
-     */
-    this.collapsible = !IDEE.utils.isUndefined(options.collapsible) ? options.collapsible : true;
 
     /**
      * Tooltip of plugin
@@ -115,13 +100,6 @@ export default class ViewManagement extends IDEE.Plugin {
      * @type {Boolean}
      */
     this.zoompanel = !IDEE.utils.isUndefined(options.zoompanel) ? options.zoompanel : true;
-
-    /**
-     * Indicates order to the plugin
-     * @private
-     * @type {Number}
-     */
-    this.order = options.order >= -1 ? options.order : null;
   }
 
   /**
@@ -148,31 +126,53 @@ export default class ViewManagement extends IDEE.Plugin {
    * @api
    */
   addTo(map) {
+    this.map = map;
+
     if (this.predefinedzoom === false && this.zoomextent === false
       && this.viewhistory === false && this.zoompanel === false) {
       IDEE.dialog.error(getValue('exception.no_controls'));
     }
-    this.controls_.push(new ViewManagementControl(
+
+    this.button = new IDEE.ui.Button(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+      svgPath: `plugins/${this.name}/images/icon.svg`,
+      order: this.order,
+    });
+    map.addButtons(this.button);
+
+    this.panel = new IDEE.ui.Panel(this.name, {
+      collapsible: this.collapsible,
+      collapsed: this.collapsed,
+      position: this.position,
+      className: 'm-plugin-viewmanagement',
+      tooltip: this.tooltip,
+      collapsedButtonClass: 'g-cartografia-viewmanagement-icon-zoom-mapa',
+      order: this.order,
+    });
+    map.addPanels(this.panel);
+
+    const control = new ViewManagementControl(
       this.isDraggable,
       this.predefinedzoom,
       this.zoomextent,
       this.viewhistory,
       this.zoompanel,
       this.order,
-    ));
-    this.map_ = map;
-    this.panel_ = new IDEE.ui.Panel('panelViewManagement', {
-      collapsible: this.collapsible,
-      collapsed: this.collapsed,
-      position: IDEE.ui.position[this.position_],
-      className: 'm-plugin-viewmanagement',
-      tooltip: this.tooltip_,
-      collapsedButtonClass: 'viewmanagement-icon-zoom-mapa',
-      order: this.order,
+    );
+
+    control.setPanel(this.panel);
+
+    control.on(IDEE.evt.ADDED_TO_MAP, () => {
+      this.fire(IDEE.evt.ADDED_TO_MAP);
     });
 
-    this.panel_.addControls(this.controls_);
-    map.addPanels(this.panel_);
+    this.controls_.push(control);
+
+    this.panel.addControls(this.controls_);
+
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
   }
 
   /**
@@ -201,7 +201,7 @@ export default class ViewManagement extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position_}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.isDraggable}*${!!this.predefinedzoom}*${this.zoomextent}*${this.viewhistory}*${this.zoompanel}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.isDraggable}*${!!this.predefinedzoom}*${this.zoomextent}*${this.viewhistory}*${this.zoompanel}`;
   }
 
   /**
@@ -223,10 +223,12 @@ export default class ViewManagement extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map_.removeControls(this.controls_);
-    this.map_ = null;
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
+    this.map.removeControls(this.controls_);
+    this.map = null;
     this.controls_ = null;
-    this.panel_ = null;
+    this.panel = null;
     this.name = null;
   }
 

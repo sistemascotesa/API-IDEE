@@ -113,7 +113,7 @@
         let posicion = 'BR', fixed = true, 
             baseLayer = "WMTS*http://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa_IGN*false*image/jpeg*false*false*true",
             collapsible = false,collapsed = false,baseZoom,tooltip = 'Mapa de situación';
-        crearPlugin(posicion, fixed, baseLayer,baseZoom, collapsed, collapsible,tooltip);
+        crearPlugin(posicion, fixed, baseLayer, collapsed, collapsible,tooltip, zoom);
 
         const selectPosicion = document.getElementById("selectPosicion");
         const selectFixed = document.getElementById("selectFixed");
@@ -140,35 +140,43 @@
             baseLayer = inputBaseLayer.value;
             collapsed = (selectCollapsed.options[selectCollapsed.selectedIndex].value == 'true');
             collapsible = (selectCollapsible.options[selectCollapsible.selectedIndex].value == 'true');
-			zoom = inputZoom.value;
 			//tooltip = (inputTooltip.options[inputTooltip.inputIndex].value);
 			//tooltip = inputTooltip.value != "" ? options.tooltip = inputTooltip.value : "";
 			tooltip = inputTooltip.value;
-            map.removePlugins(mp);
+			zoom = inputZoom.value;
+            // map.removePlugin(mp);
+            map.destroy(mp);
             crearPlugin(position, fixed, baseLayer, collapsed, collapsible, tooltip, zoom);
         }
 
         function crearPlugin(posicion, fixed, baseLayer, collapsed, collapsible, tooltip, zoom) {
+            if (mp) { mp.destroy(); }
             mp = new IDEE.plugin.OverviewMap({
                 position: posicion,
                 fixed: fixed,
-				tooltip: tooltip,
+				// tooltip: tooltip,
                 zoom: zoom,
                 baseLayer: baseLayer,
                 collapsed: collapsed || false,
                 collapsible: collapsible || false,
             });
+            // if (typeof mp.setTooltip === 'function') {
+            //     mp.setTooltip(tooltip);
+            // }
             map.addPlugin(mp);
         }
 
         let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
-            position: "BR",
+            position: "left",
         });
         map.addPlugin(mp2);
         const botonEliminar = document.getElementById("botonEliminar");
         botonEliminar.addEventListener("click", function() {
-            map.removePlugins(mp);
+            // map.removePlugin(mp);
+            map.destroy(mp);
+            mp = null; // Limpiamos la referencia
+            console.log('Plugin eliminado manualmente');
         });
     </script>
 </body>

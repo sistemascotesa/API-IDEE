@@ -25,6 +25,7 @@ export default class Incicarto extends IDEE.Plugin {
     super('incicarto', {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
     });
 
     /**
@@ -131,6 +132,7 @@ export default class Incicarto extends IDEE.Plugin {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: `plugins/${this.name}/images/icon.svg`,
+      order: this.order,
     });
     map.addButtons(this.button);
 
@@ -141,6 +143,7 @@ export default class Incicarto extends IDEE.Plugin {
       position: IDEE.ui.position[this.position],
       collapsedButtonClass: 'icon-incicarto',
       tooltip: this.tooltip,
+      order: this.order,
     });
     map.addPanels(this.panel);
 

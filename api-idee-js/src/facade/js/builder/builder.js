@@ -24,6 +24,7 @@ import * as dialog from '../dialog';
 import Exception from '../exception/exception';
 import { isBoolean, isNumber } from '../util/Utils';
 import MeasureBar from '../control/MeasureBar';
+import OverviewMap from '../control/OverviewMap';
 
 /**
  * This method getDefaultPanelOptions from one control and additional params if necessary
@@ -107,11 +108,35 @@ export const getScaleLinePanel = (control, map, params = {}) => {
  * @api stable
  */
 export const getMeasureBarPanel = (control, map, params = {}) => {
-  return new ControlPanel(MeasureBar.NAME, {
+  const panel = ControlPanel(MeasureBar.NAME, {
     ...getDefaultPanelOptions(control, params),
     className: `m-control-${MeasureBar.NAME}`,
     collapsedButtonClass: 'g-cartografia-regla',
   });
+  return panel;
+};
+
+/**
+ * Esta función devuelve el panel que alberga el control de mini mapa observable
+ *
+ * @public
+ * @function
+ *
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
+ * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
+ *
+ * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @api stable
+ */
+export const getOverviewMapPanel = (control, map, params = {}) => {
+  const panel = new ControlPanel(OverviewMap.NAME, {
+    ...getDefaultPanelOptions(control, params),
+    className: `m-control-${OverviewMap.NAME}`,
+    collapsedButtonClass: 'g-cartografia-mundo',
+  });
+  return panel;
 };
 
 /**
@@ -193,10 +218,10 @@ export const getGetFeatureInfo = (control, map, params = {}) => {
  * @api stable
  */
 export const getAttributionsPanel = (control, map, params = {}) => {
-  return new ControlPanel('attributions', {
+  return new ControlPanel(Attributions.NAME, {
     ...getDefaultPanelOptions(control, params),
-    collapsible: true,
-    collapsedButtonClass: 'g-cartografia-comentarios',
+    collapsible: isBoolean(params.collapsible) ? params.collapsible : true,
+    collapsedButtonClass: 'g-cartografia-comments-simple',
   });
 };
 
@@ -356,6 +381,7 @@ export const getPanelForControl = (control, map, params = {}) => {
     [`${Scale.NAME}*true`]: () => getScalePanel(control, map, params),
     [ScaleLine.NAME]: () => getScaleLinePanel(control, map, params),
     [MeasureBar.NAME]: () => getMeasureBarPanel(control, map, params),
+    [OverviewMap.NAME]: () => getOverviewMapPanel(control, map, params),
     [Panzoombar.NAME]: () => getPanzoombarPanel(control, map, params),
     [Panzoom.NAME]: () => getPanzoomPanel(control, map, params),
     [GetFeatureInfo.NAME]: () => null,
@@ -399,6 +425,7 @@ export const buildControl = (controlParam, map) => {
       },
       [ScaleLine.NAME]: () => new ScaleLine(),
       [MeasureBar.NAME]: () => new MeasureBar(),
+      [OverviewMap.NAME]: () => new OverviewMap(),
       [Panzoombar.NAME]: () => new Panzoombar(),
       [Panzoom.NAME]: () => new Panzoom(),
       [Location.NAME]: () => new Location(),
@@ -413,20 +440,22 @@ export const buildControl = (controlParam, map) => {
           activated,
         });
       },
-      [Attributions.NAME]: () => new Attributions({
-        map,
-        scale: undefined,
-        collectionsAttributions: normalizedControlParams.length === 2
-          ? [normalizedControlParams[1]].map((l) => {
-            if (typeof l !== 'string') {
-              const attr = l;
-              attr.id = l.idLayer;
-              return attr;
-            }
-            return l;
-          }) : [],
-        order: undefined,
-      }),
+      [Attributions.NAME]: () => {
+        // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+        map._attributionsMap = [...map._attributionsMap, ...normalizedControlParams];
+        return new Attributions({
+          map,
+          collectionsAttributions: normalizedControlParams.length === 2
+            ? [normalizedControlParams[1]].map((l) => {
+              if (typeof l !== 'string') {
+                const attr = l;
+                attr.id = l.idLayer;
+                return attr;
+              }
+              return l;
+            }) : [],
+        });
+      },
       [Rotate.NAME]: () => {
         normalizedControlParams.forEach((p) => {
           if (!isUndefined(p)) {

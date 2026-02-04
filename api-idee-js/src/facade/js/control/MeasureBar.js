@@ -212,7 +212,7 @@ class MeasureBar extends Control {
       content: new Promise((success) => {
         const html = compileSync(myhelp, {
           vars: {
-            urlImages: `${IDEE.config.STATIC_RESOURCES_URL}/images/help/measure`,
+            urlImages: `${IDEE.config.STATIC_RESOURCES_URL}facade/assets/images/help/${MeasureBar.NAME}`,
             translations: {
               help1: Measure.translation.textHelp.help1,
               help2: Measure.translation.textHelp.help2,

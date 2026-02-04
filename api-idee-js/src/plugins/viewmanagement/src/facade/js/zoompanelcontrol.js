@@ -5,7 +5,7 @@ import template from 'templates/zoompanel';
 import ZoomPanelImpl from 'impl/zoompanelcontrol';
 import { getValue } from './i18n/language';
 
-export default class ZoomPanelControl extends IDEE.Control {
+class ZoomPanelControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
@@ -20,7 +20,7 @@ export default class ZoomPanelControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl_zoompanel'));
     }
     const impl = new ZoomPanelImpl();
-    super('ZoomPanelImpl', impl);
+    super(ZoomPanelControl.NAME, impl);
     this.facadeMap_ = map;
   }
 
@@ -94,3 +94,14 @@ export default class ZoomPanelControl extends IDEE.Control {
     return control instanceof ZoomPanelControl;
   }
 }
+
+/**
+ * Identifier name to this control
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+ZoomPanelControl.NAME = 'ZoomExtentImpl';
+
+export default ZoomPanelControl;
