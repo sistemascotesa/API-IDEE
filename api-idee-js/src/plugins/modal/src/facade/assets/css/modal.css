@@ -265,7 +265,8 @@ div#popup-box {
     color: var(--idee-color-primary-dark);
     margin-top: 0;
     margin-bottom: 10px;
-    font-size: 1.2rem;
+    font-family: 'Roboto';
+    font-weight: 500;
     background-color: transparent !important;
 }
 

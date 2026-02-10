@@ -57,7 +57,7 @@
 
 .m-api-idee-left-panel {
     left: 0;
-    box-shadow: 5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
+    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
 }
 
 .m-api-idee-center-panel {
@@ -210,7 +210,7 @@
 
 .m-api-idee-right-panel {
     right: 0;
-    box-shadow: -5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
+    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
 }
 
 .m-api-idee-left-handle,
@@ -266,7 +266,8 @@
 .m-plugin-panel-title {
     padding: 16px;
     font-size: 18px;
-    font-weight: bold;
+    font-family: 'Roboto';
+    font-weight: 500;
     color: var(--idee-color-primary-dark);
     white-space: normal;
     word-break: break-word;
