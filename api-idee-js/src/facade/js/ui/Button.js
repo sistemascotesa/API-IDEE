@@ -166,14 +166,7 @@ class Button extends MObject {
       button.closePanel();
     });
 
-    this.map.openPanel(this.position, this.panel.minWidth, this.panel.maxWidth);
-    if (this.position === Position.LEFT) {
-      if (!this.map.leftPanel.contains(this.panel.element)) {
-        this.map.leftPanel.appendChild(this.panel.element);
-      }
-    } else if (!this.map.rightPanel.contains(this.panel.element)) {
-      this.map.rightPanel.appendChild(this.panel.element);
-    }
+    this.map.openSidePanel(this.panel);
 
     this.panel.open();
     this.pressed = true;
@@ -181,7 +174,7 @@ class Button extends MObject {
   }
 
   closePanel() {
-    this.map.closePanel(this.position);
+    this.map.closeSidePanels();
     if (this.position === Position.LEFT) {
       if (this.map.leftPanel.contains(this.panel.element)) {
         this.map.leftPanel.removeChild(this.panel.element);

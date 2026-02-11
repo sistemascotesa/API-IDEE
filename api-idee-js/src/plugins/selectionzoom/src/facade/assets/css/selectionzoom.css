@@ -4,7 +4,7 @@
     display: none;
 }
 
-.m-control.m-container.m-selectionzoom {
+.m-plugin-panel .m-control.m-container.m-selectionzoom {
     height: 100%;
     width: 100%;
     padding: 0;
@@ -19,18 +19,18 @@
 /* Images container */
 
 .m-plugin-panel .m-control.m-container.m-selectionzoom>div#m-selectionzoom-previews {
-    flex-grow: 1;
+    height: fit-content;
+    /* flex-grow: 1; */
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: center;
     flex-wrap: wrap;
     gap: .75rem;
     overflow: auto;
-    padding: 0 .5rem;
+    padding: .5rem;
 }
 
-.m-control.m-container.m-selectionzoom>div#m-selectionzoom-previews>div[id^="m-selectionzoom-lyr-"] {
+.m-plugin-panel .m-control.m-container.m-selectionzoom>div#m-selectionzoom-previews>div[id^="m-selectionzoom-lyr-"] {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -40,7 +40,7 @@
     gap: .2rem;
 }
 
-div[id^="m-selectionzoom-lyr-"]>.lyr-img-frame {
+.m-plugin-panel div[id^="m-selectionzoom-lyr-"]>.lyr-img-frame {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -49,7 +49,7 @@ div[id^="m-selectionzoom-lyr-"]>.lyr-img-frame {
     border: .2rem solid rgb(206, 212, 218);
 }
 
-div[id^="m-selectionzoom-lyr-"]>.lyr-img-frame>img {
+.m-plugin-panel div[id^="m-selectionzoom-lyr-"]>.lyr-img-frame>img {
     width: 4.5rem;
     aspect-ratio: 1;
 }
@@ -58,7 +58,7 @@ div[id^="m-selectionzoom-lyr-"]>.lyr-img-frame>img {
     width: 5.5rem;
 }
 
-div[id^="m-selectionzoom-lyr-"]>span {
+.m-plugin-panel div[id^="m-selectionzoom-lyr-"]>span {
     color: rgb(73, 73, 73);
     height: 20px;
     margin-top: 0;
@@ -72,11 +72,11 @@ div[id^="m-selectionzoom-lyr-"]>span {
 }
 
 /** HOVER CARD EFFECT */
-div[id^="m-selectionzoom-lyr-"]>.lyr-img-frame:hover {
+.m-plugin-panel div[id^="m-selectionzoom-lyr-"]>.lyr-img-frame:hover {
     border-color: var(--idee-color-links);
 }
 
-div[id^="m-selectionzoom-lyr-"]:hover>span {
+.m-plugin-panel div[id^="m-selectionzoom-lyr-"]:hover>span {
     font-weight: bold;
     color: var(--idee-color-links);
 }

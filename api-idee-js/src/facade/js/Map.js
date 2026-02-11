@@ -3953,7 +3953,7 @@ class Map extends Base {
 
       const plugins = this.plugins.filter((plugin2) => plugin2.position === plugin.position);
       if (plugins.length === 0) {
-        this.closePanel(plugin.position);
+        this.closeSidePanels(plugin.position);
       }
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -4470,6 +4470,16 @@ class Map extends Base {
     this.toolPanelsContainer.classList.add('m-api-idee-tool-panels-container');
     container.appendChild(this.toolPanelsContainer);
 
+    /** THIS PANEL IS USED ONLY IN MOBILE VERSION */
+    this.upPanel = document.createElement('m-api-idee-up-panel');
+    this.upPanel.classList.add('m-api-idee-up-panel');
+    this.toolPanelsContainer.appendChild(this.upPanel);
+
+    this.upHandle = document.createElement('up-handle');
+    this.upHandle.classList.add('m-api-idee-up-handle');
+    this.upHandle.style.visibility = 'hidden';
+    this.upPanel.appendChild(this.upHandle);
+
     this.leftPanel = document.createElement('left-panel');
     this.leftPanel.classList.add('m-api-idee-left-panel');
     this.toolPanelsContainer.appendChild(this.leftPanel);
@@ -4526,191 +4536,177 @@ class Map extends Base {
     this.downPanel.classList.add('m-api-idee-down-panel');
     this.toolPanelsContainer.appendChild(this.downPanel);
 
+    this.isResizingUp = false;
     this.isResizingLeft = false;
     this.isResizingRight = false;
 
     this.leftHandle.addEventListener('mousedown', (event) => {
       event.preventDefault();
-
+      this.toolPanelsContainer.classList.add('is-resizing');
       this.isResizingLeft = true;
       document.body.style.userSelect = 'none';
     });
 
     this.rightHandle.addEventListener('mousedown', (event) => {
       event.preventDefault();
-
+      this.toolPanelsContainer.classList.add('is-resizing');
       this.isResizingRight = true;
       document.body.style.userSelect = 'none';
     });
 
+    this.upHandle.addEventListener('mousedown', (event) => {
+      event.preventDefault();
+      this.toolPanelsContainer.classList.add('is-resizing');
+      this.isResizingUp = true;
+      document.body.style.userSelect = 'none';
+    });
+
     document.addEventListener('mouseup', () => {
+      this.toolPanelsContainer.classList.remove('is-resizing');
       this.isResizingLeft = false;
       this.isResizingRight = false;
+      this.isResizingUp = false;
+
       document.body.style.userSelect = 'auto';
     });
 
     document.addEventListener('mousemove', (event) => {
-      if (!this.isResizingLeft && !this.isResizingRight) {
-        return;
-      }
+      const containerRect = container.getBoundingClientRect();
 
       if (this.isResizingLeft) {
-        const containerRect = container.getBoundingClientRect();
-        let newWidth = Math.max(event.clientX - containerRect.left, 0);
-        newWidth = Math.min(newWidth, this.maxPanelWidth);
-        newWidth = Math.max(newWidth, this.minPanelWidth);
-        this.leftPanel.style.width = `${newWidth}px`;
-        this.leftButtons.style.left = `${newWidth}px`;
-      } else {
-        const containerRect = container.getBoundingClientRect();
-        let newWidth = Math.max(containerRect.right - event.clientX, 0);
-        newWidth = Math.min(newWidth, this.maxPanelWidth);
-        newWidth = Math.max(newWidth, this.minPanelWidth);
-        this.rightPanel.style.width = `${newWidth}px`;
-        this.rightButtons.style.right = `${newWidth}px`;
+        let newWidth = event.clientX - containerRect.left;
+        newWidth = Math.min(Math.max(newWidth, this.minPanelWidth), this.maxPanelWidth);
+        this.toolPanelsContainer.style.setProperty('--left-width', `${newWidth}px`);
+      } else if (this.isResizingRight) {
+        let newWidth = containerRect.right - event.clientX;
+        newWidth = Math.min(Math.max(newWidth, this.minPanelWidth), this.maxPanelWidth);
+        this.toolPanelsContainer.style.setProperty('--right-width', `${newWidth}px`);
+      } else if (this.isResizingUp) {
+        let newHeight = event.clientY - containerRect.top;
+        newHeight = Math.min(
+          Math.max(newHeight, this.minUpPanelHeight),
+          this.maxUpPanelHeight,
+        );
+        this.toolPanelsContainer.style.setProperty('--up-height', `${newHeight}px`);
       }
-
-      this.updateCenterDownPanelDimensions();
     });
   }
 
   /**
-   * Actualiza el tamaño del panel superior.
-   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
-   * @public
-   * @function
-   * @api
+   * This method open one lateral panel, if is possible depending on the map view.
+   * In compact mode, it will open a top panel.
+   *
+   * @param {Panel} panel a panel used by plugins
    */
-  updateCenterPanelDimensions(container = this.getContainer()) {
-    const leftButtonsRight = this.leftButtons.getBoundingClientRect().right;
-    const rightButtonsLeft = this.rightButtons.getBoundingClientRect().left;
-    const upWidth = Math.max(rightButtonsLeft - leftButtonsRight, 0);
-    this.centerPanel.style.left = `${leftButtonsRight - container.getBoundingClientRect().left}px`;
-    this.centerPanel.style.width = `${upWidth}px`;
-  }
-
-  /**
-   * Actualiza el tamaño del panel inferior.
-   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
-   * @public
-   * @function
-   * @api
-   */
-  updateDownPanelDimensions(container = this.getContainer()) {
-    const leftPanelRight = this.leftPanel.getBoundingClientRect().right;
-    const rightPanelLeft = this.rightPanel.getBoundingClientRect().left;
-    const downWidth = Math.max(rightPanelLeft - leftPanelRight, 0);
-    this.downPanel.style.left = `${leftPanelRight - container.getBoundingClientRect().left}px`;
-    this.downPanel.style.width = `${downWidth}px`;
-  }
-
-  /**
-   * Actualiza el tamaño de los paneles superior e inferior.
-   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
-   * @public
-   * @function
-   * @api
-   */
-  updateCenterDownPanelDimensions(container = this.getContainer()) {
-    this.updateCenterPanelDimensions(container);
-    this.updateDownPanelDimensions(container);
-  }
-
-  /* eslint-disable no-param-reassign */
-  openPanel(side, minWidth, maxWidth) {
-    const panel = side === 'left' ? this.leftPanel : this.rightPanel;
-    const handle = panel === this.leftPanel ? this.leftHandle : this.rightHandle;
-    const buttons = panel === this.leftPanel ? this.leftButtons : this.rightButtons;
-
-    if (panel.style.width === '') {
-      panel.style.width = '0px';
-    }
-
-    this.minPanelWidth = 256;
-    this.maxPanelWidth = 360;
-
-    if (minWidth >= this.minPanelWidth && minWidth <= this.maxPanelWidth) {
-      this.minPanelWidth = minWidth;
-    }
-
-    if (maxWidth >= this.minPanelWidth && maxWidth <= this.maxPanelWidth) {
-      this.maxPanelWidth = maxWidth;
-    }
-
-    this.openPanelWidth = panel.offsetWidth;
-    if (this.openPanelWidth < this.minPanelWidth) {
-      this.openPanelWidth = this.minPanelWidth;
-    }
-    if (this.openPanelWidth > this.maxPanelWidth) {
-      this.openPanelWidth = this.maxPanelWidth;
-    }
-
-    this.addTransition(panel, handle, buttons);
-
-    setTimeout(() => {
-      panel.style.width = `${this.openPanelWidth}px`;
-      if (panel === this.leftPanel) {
-        buttons.style.left = panel.style.width;
-      } else {
-        buttons.style.right = panel.style.width;
+  openSidePanel(panel) {
+    if (this.isCompactMode()) {
+      this.openPanelCompactMode(panel);
+    } else {
+      const { minWidth, maxWidth, position } = panel;
+      let sidePanel; let handle;
+      let panelAttribute;
+      if (position === Position.LEFT) {
+        sidePanel = this.leftPanel;
+        handle = this.leftHandle;
+        panelAttribute = '--left-width';
+      } else if (position === 'right') {
+        sidePanel = this.rightPanel;
+        handle = this.rightHandle;
+        panelAttribute = '--right-width';
       }
 
+      this.minPanelWidth = 256;
+      this.maxPanelWidth = 360;
+
+      if (minWidth >= this.minPanelWidth && minWidth <= this.maxPanelWidth) {
+        this.minPanelWidth = minWidth;
+      }
+
+      if (maxWidth >= this.minPanelWidth && maxWidth <= this.maxPanelWidth) {
+        this.maxPanelWidth = maxWidth;
+      }
+
+      this.openPanelWidth = sidePanel.offsetWidth;
+      if (this.openPanelWidth < this.minPanelWidth) {
+        this.openPanelWidth = this.minPanelWidth;
+      }
+      if (this.openPanelWidth > this.maxPanelWidth) {
+        this.openPanelWidth = this.maxPanelWidth;
+      }
+
+      this.addPanelToPanelContainer(sidePanel, panel);
       handle.style.visibility = 'visible';
-
-      this.removeTransition(panel, handle, buttons);
-
-      const onTransitionEnd = (event) => {
-        if (event.propertyName === 'width') {
-          this.updateCenterDownPanelDimensions();
-          panel.removeEventListener('transitionend', onTransitionEnd);
-        }
-      };
-      panel.addEventListener('transitionend', onTransitionEnd);
-    }, 1);
+      this.toolPanelsContainer.style.setProperty(panelAttribute, `${this.openPanelWidth}px`);
+    }
   }
 
-  /* eslint-disable no-param-reassign */
-  closePanel(side) {
-    const panel = side === 'left' ? this.leftPanel : this.rightPanel;
-    const handle = panel === this.leftPanel ? this.leftHandle : this.rightHandle;
-    const buttons = panel === this.leftPanel ? this.leftButtons : this.rightButtons;
-
-    this.addTransition(panel, handle, buttons);
-
-    setTimeout(() => {
-      panel.style.width = '0px';
-      if (panel === this.leftPanel) {
-        buttons.style.left = panel.style.width;
-      } else {
-        buttons.style.right = panel.style.width;
-      }
-
-      handle.style.visibility = 'hidden';
-
-      const onTransitionEnd = (event) => {
-        if (event.propertyName === 'width') {
-          this.updateCenterDownPanelDimensions();
-          panel.removeEventListener('transitionend', onTransitionEnd);
-        }
-      };
-      panel.addEventListener('transitionend', onTransitionEnd);
-    }, 1);
+  /**
+   * Closses all side active panels
+   *
+   */
+  closeSidePanels() {
+    [
+      [this.upPanel, this.upHandle, '--up-height'],
+      [this.leftPanel, this.leftHandle, '--left-width'],
+      [this.rightPanel, this.rightHandle, '--right-width'],
+    ].forEach((panelComponents) => {
+      this.toolPanelsContainer.style.setProperty(panelComponents[2], '0px');
+      // eslint-disable-next-line no-param-reassign
+      panelComponents[1].style.visibility = 'hidden';
+    });
   }
 
-  /* eslint-disable no-param-reassign */
-  addTransition(panel, handle, buttons) {
-    panel.style.transition = 'width 0.3s ease-in-out';
-    handle.style.transition = 'visibility 0.3s ease-in-out';
-    buttons.style.transition = panel === this.leftPanel ? 'left 0.3s ease-in-out' : 'right 0.3s ease-in-out';
+  /**
+   * @param {HTMLElement} mapPanel represents one avaliable tool panel to add content
+   * @param {Panel} panel
+   */
+  addPanelToPanelContainer(mapPanel, panel) {
+    mapPanel.appendChild(panel.element);
   }
 
-  /* eslint-disable no-param-reassign */
-  removeTransition(panel, handle, buttons) {
-    setTimeout(() => {
-      panel.style.transition = '';
-      handle.style.transition = '';
-      buttons.style.transition = '';
-    }, 300);
+  /**
+   * @param {HTMLElement} container
+   * @returns {Boolean} indicates whether the parent map container
+   * has a movable view size, ("compact")
+   */
+  isCompactMode() {
+    return this.toolPanelsContainer.clientWidth <= 600;
+  }
+
+  /**
+   * Opens one Panel in compact "mobile view"
+   *
+   * @param {Panel} panel a panel used by plugins
+   */
+  openPanelCompactMode(panel) {
+    const {
+      minHeightCompact = 250,
+      maxHeightCompact = this.toolPanelsContainer.clientHeight * 0.6 < 450
+        ? 550 : this.toolPanelsContainer.clientHeight * 0.6,
+    } = panel;
+
+    this.minUpPanelHeight = this.toolPanelsContainer.clientHeight * 0.25;
+    this.maxUpPanelHeight = this.toolPanelsContainer.clientHeight * 0.6;
+
+    if (minHeightCompact >= this.minUpPanelHeight && minHeightCompact <= this.maxUpPanelHeight) {
+      this.minUpPanelHeight = minHeightCompact;
+    }
+
+    if (maxHeightCompact >= this.minUpPanelHeight && maxHeightCompact <= this.maxUpPanelHeight) {
+      this.maxUpPanelHeight = maxHeightCompact;
+    }
+
+    this.openUpPanelHeight = this.upPanel.offsetWidth;
+    if (this.openUpPanelHeight < this.minUpPanelHeight) {
+      this.openUpPanelHeight = this.minUpPanelHeight;
+    }
+    if (this.openUpPanelHeight > this.maxUpPanelHeight) {
+      this.openUpPanelHeight = this.maxUpPanelHeight;
+    }
+
+    this.addPanelToPanelContainer(this.upPanel, panel);
+    this.upHandle.style.visibility = 'visible';
+    this.toolPanelsContainer.style.setProperty('--up-height', `${this.openUpPanelHeight}px`);
   }
 
   /**
