@@ -181,7 +181,7 @@ class Button extends MObject {
   }
 
   closePanel() {
-    this.map.closePanel(this.position);
+    this.map.closeSidePanels();
     if (this.position === Position.LEFT) {
       if (this.map.leftPanel.contains(this.panel.element)) {
         this.map.leftPanel.removeChild(this.panel.element);

@@ -8,8 +8,6 @@
     --control-font-style: normal;
     --control-font-weight: 400;
     --control-font-stretch: 100%;
-    --panel-left-width: 64px;
-    --panel-right-width: 64px;
 }
 
 .m-api-idee-container {
@@ -28,15 +26,6 @@
     background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
 }
 
-.m-api-idee-tool-panels-container {
-    position: absolute;
-    background-color: transparent;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
 .m-api-idee-map-panel {
     position: absolute;
     top: 0;
@@ -46,61 +35,92 @@
     z-index: 1;
 }
 
-.m-api-idee-left-panel,
-.m-api-idee-right-panel {
+.m-api-idee-tool-panels-container {
     position: absolute;
-    top: 0;
-    height: 100%;
+    pointer-events: none;
+    inset: 0;
+    display: grid;
+
+    --left-width: 0px;
+    --right-width: 0px;
+    --buttons-width: 3.5rem;
+    --up-height: 0px;
+    --down-height: 72px;
+
+    grid-template-columns:
+        var(--left-width) var(--buttons-width) auto var(--buttons-width) var(--right-width);
+
+    grid-template-rows:
+        var(--up-height) auto var(--down-height);
+
+    grid-template-areas:
+        "up               up           up      up           up"
+        "leftPluginPanel  leftBtns     center  rightBtns    rightPluginPanel"
+        "leftPluginPanel  down         down    down         rightPluginPanel";
+
+    transition:
+        grid-template-columns .4s ease,
+        grid-template-rows .4s ease;
+}
+
+.m-api-idee-tool-panels-container.is-resizing {
+    transition: none !important;
+}
+
+.m-api-idee-left-panel,
+.m-api-idee-right-panel,
+.m-api-idee-up-panel {
+    position: relative;
+    pointer-events: auto;
     background-color: #fff;
     z-index: 3;
 }
 
-.m-api-idee-left-panel {
-    left: 0;
-    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
+.m-api-idee-up-panel {
+    grid-area: up;
 }
 
-.m-api-idee-center-panel {
-    pointer-events: none;
-    position: absolute;
-    width: calc(100% - (var(--panel-left-width) + var(--panel-right-width)));
-    height: calc(100% - 72px - 1rem) !important;
-    top: 0;
-    padding: .5em 0;
-    left: var(--panel-left-width);
-    height: max-content;
+.m-api-idee-left-panel {
+    grid-area: leftPluginPanel;
+}
 
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: .5em;
-    transition: all 0.3s ease;
+.m-api-idee-right-panel {
+    grid-area: rightPluginPanel;
 }
 
 /*** CONTENEDORES LATERALES DEL MAPA DE FACHADA ***/
 .m-api-idee-left-buttons,
 .m-api-idee-right-buttons {
-    position: absolute;
-    min-width: 46px;
+    position: relative;
     width: auto;
-    height: calc(100% - 72px);
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: flex-start;
     padding: .5em;
     gap: .5em;
     flex-wrap: wrap;
 }
 
+.m-api-idee-center-panel {
+    grid-area: center;
+    position: relative;
+    pointer-events: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: .5em;
+    transition: all 0.3s ease;
+    padding: .5em 0;
+}
+
 /*** CONTENEDOR DERECHO ***/
 .m-api-idee-right-buttons {
-    right: 0;
-    align-items: flex-end !important;
+    grid-area: rightBtns;
+    align-items: flex-end;
     pointer-events: none;
 }
 
-.m-api-idee-right-buttons > * {
+.m-api-idee-right-buttons>* {
     pointer-events: auto;
 }
 
@@ -110,7 +130,7 @@
     position: relative;
 }
 
-.m-api-idee-right-buttons .m-panel.opened > button.m-panel-btn { 
+.m-api-idee-right-buttons .m-panel.opened>button.m-panel-btn {
     position: absolute;
     right: 0;
     left: auto;
@@ -123,12 +143,12 @@
 
 /*** CONTENEDOR IZQUIERDO ***/
 .m-api-idee-left-buttons {
-    left: 0;
-    align-items: flex-start !important;
+    grid-area: leftBtns;
+    align-items: flex-start;
     pointer-events: none;
 }
 
-.m-api-idee-left-buttons > * {
+.m-api-idee-left-buttons>* {
     pointer-events: auto;
 }
 
@@ -138,17 +158,9 @@
     position: relative;
 }
 
-.m-api-idee-left-buttons .m-panel.opened > button.m-panel-btn {
+.m-api-idee-left-buttons .m-panel.opened>button.m-panel-btn {
     float: none;
 }
-
-/* .m-api-idee-container:has(.m-api-idee-left-buttons .opened:not(.no-collapsible)) {
-    --panel-left-width: 210px;
-}
-
-.m-api-idee-container:has(.m-api-idee-right-buttons .opened:not(.no-collapsible)) {
-    --panel-right-width: 210px;
-} */
 
 .m-api-idee-center-panel-top-left {
     grid-column: 1;
@@ -208,59 +220,60 @@
     flex-shrink: 0;
 }
 
-.m-api-idee-right-panel {
-    right: 0;
-    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
+.m-api-idee-left-handle,
+.m-api-idee-right-handle,
+.m-api-idee-up-handle {
+    position: absolute;
+    background-color: white;
+    border: 1px solid var(--idee-color-primary);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    z-index: 4;
+    box-shadow: 5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
+}
+
+.m-api-idee-up-handle {
+    cursor: n-resize;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 48px;
+    height: 16px;
 }
 
 .m-api-idee-left-handle,
 .m-api-idee-right-handle {
-    position: absolute;
+    cursor: ew-resize;
     top: 50%;
     width: 16px;
     height: 48px;
-    cursor: ew-resize;
-    background-color: white;
-    border: 1px solid var(--idee-color-primary);
-    border-radius: 4px;
     transform: translateY(-50%);
-    transition: all 0.3s ease;
-    z-index: 4;
 }
 
-.m-api-idee-left-handle {
-    right: -8px;
-    box-shadow: 5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
-}
-
-.m-api-idee-right-handle {
-    left: -8px;
-    box-shadow: -5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
-}
-
+.m-api-idee-up-handle:hover,
 .m-api-idee-left-handle:hover,
 .m-api-idee-right-handle:hover {
     background-color: var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
+.m-api-idee-left-handle {
+    right: -8px;
+}
+
+.m-api-idee-right-handle {
+    left: -8px;
+}
+
 .m-api-idee-down-panel {
-    position: absolute;
+    position: relative;
+    grid-area: down;
     padding: .5em;
-    bottom: 0;
-    left: 0;
-    width: calc(100% - 1em);
-    min-height: calc(72px - 1em);
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     flex-wrap: wrap;
     gap: 0.5em;
-}
-
-.m-plugin-panel {
-    width: 100%;
-    height: 100%;
 }
 
 .m-plugin-panel-title {
@@ -849,9 +862,4 @@ div.m-control button[class^=g-cartografia-]:hover,
     .m-panel.m-layerswitcher>div.m-panel-controls {
         max-width: 100vw;
     }
-
-    .m-panel.m-layerswitcher button.m-panel-btn.g-cartografia-flecha-derecha {
-        color: #fff;
-    }
-
 }
