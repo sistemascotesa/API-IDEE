@@ -72,8 +72,9 @@
 .m-api-idee-up-panel {
     position: relative;
     pointer-events: auto;
-    background-color: #fff;
     z-index: 3;
+    background-color: #fff;
+    display: flex;
 }
 
 .m-api-idee-up-panel {
@@ -276,6 +277,15 @@
     gap: 0.5em;
 }
 
+.m-plugin-panel {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    height: 100%;
+    width: 100%;
+    z-index: 0;
+}
+
 .m-plugin-panel-title {
     padding: 16px;
     font-size: 18px;
@@ -285,6 +295,8 @@
     white-space: normal;
     word-break: break-word;
     text-overflow: ellipsis;
+    height: 1.5rem;
+    width: fit-content;
 }
 
 .m-plugin-panel-content {

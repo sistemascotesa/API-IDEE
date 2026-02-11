@@ -6,6 +6,7 @@ import panelTemplate from 'templates/panel';
 import * as Position from './position';
 import {
   isArray, isNullOrEmpty, isString, includes,
+  isNumber,
 } from '../util/Utils';
 import MObject from '../Object';
 import * as EventType from '../event/eventtype';
@@ -28,10 +29,8 @@ class Panel extends MObject {
    * @param {Mx.parameters.Panel} options Opciones del panel.
    * - collapsible: Indica si el panel se puede colapsar.
    * - position: Posición del panel.
-   *   - BL: ".m-bottom.m-left".
-   *   - BR: ".m-bottom.m-right".
-   *   - TL: ".m-top.m-left".
-   *   - TR: ".m-top.m-right".
+   *   - L: "left".
+   *   - R: "right".
    * - collapsed: Indica si el panel aparece por defecto colapsado o no.
    * - multiActivation: Si el panel puede estar activado o no.
    * - className: Clase CSS del panel.
@@ -78,16 +77,14 @@ class Panel extends MObject {
      * @expose
      */
     this.position = Position.RIGHT;
-    if (!isNullOrEmpty(options.position)) {
-      this.position = options.position;
-    }
+    if (Position.isRightOrLeft(options.position)) this.position = options.position;
 
     /**
      * @type {Number}
      * @api
      * @expose
      */
-    if (!isNullOrEmpty(options.minWidth)) {
+    if (isNumber(options.minWidth)) {
       this.minWidth = options.minWidth;
     }
 
@@ -96,8 +93,30 @@ class Panel extends MObject {
      * @api
      * @expose
      */
-    if (!isNullOrEmpty(options.maxWidth)) {
+    if (isNumber(options.maxWidth)) {
       this.maxWidth = options.maxWidth;
+    }
+
+    /**
+     * Defines minimun height of this panel if is in compact mode
+     *
+     * @type {Number}
+     * @api
+     * @expose
+     */
+    if (isNumber(options.minHeightCompact)) {
+      this.minHeightCompact = options.minHeightCompact;
+    }
+
+    /**
+     * Defines maximun height of this panel if is in compact mode
+     *
+     * @type {Number}
+     * @api
+     * @expose
+     */
+    if (isNumber(options.maxHeightCompact)) {
+      this.maxHeightCompact = options.maxHeightCompact;
     }
 
     /**

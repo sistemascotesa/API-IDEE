@@ -4473,20 +4473,20 @@ class Map extends Base {
     /** THIS PANEL IS USED ONLY IN MOBILE VERSION */
     this.upPanel = document.createElement('m-api-idee-up-panel');
     this.upPanel.classList.add('m-api-idee-up-panel');
-    this.upPanel.style.visibility = 'hidden';
     this.toolPanelsContainer.appendChild(this.upPanel);
 
     this.upHandle = document.createElement('up-handle');
     this.upHandle.classList.add('m-api-idee-up-handle');
+    this.upHandle.style.visibility = 'hidden';
     this.upPanel.appendChild(this.upHandle);
 
     this.leftPanel = document.createElement('left-panel');
     this.leftPanel.classList.add('m-api-idee-left-panel');
-    this.leftPanel.style.visibility = 'hidden';
     this.toolPanelsContainer.appendChild(this.leftPanel);
 
     this.leftHandle = document.createElement('left-handle');
     this.leftHandle.classList.add('m-api-idee-left-handle');
+    this.leftHandle.style.visibility = 'hidden';
     this.leftPanel.appendChild(this.leftHandle);
 
     this.leftButtons = document.createElement('left-buttons');
@@ -4525,11 +4525,11 @@ class Map extends Base {
 
     this.rightPanel = document.createElement('right-panel');
     this.rightPanel.classList.add('m-api-idee-right-panel');
-    this.rightPanel.style.visibility = 'hidden';
     this.toolPanelsContainer.appendChild(this.rightPanel);
 
     this.rightHandle = document.createElement('right-handle');
     this.rightHandle.classList.add('m-api-idee-right-handle');
+    this.rightHandle.style.visibility = 'hidden';
     this.rightPanel.appendChild(this.rightHandle);
 
     this.downPanel = document.createElement('down-panel');
@@ -4593,23 +4593,25 @@ class Map extends Base {
   }
 
   /**
-   * This will open a left or right panel, if is possible depending on the map view.
+   * This method open one lateral panel, if is possible depending on the map view.
    * In compact mode, it will open a top panel.
    *
-   * @param {Position.RIGHT | Position.LEFT} side
-   * @param {number} minWidth
-   * @param {number} maxWidth
+   * @param {Panel} panel a panel used by plugins
    */
-  openPanel(side, minWidth, maxWidth) {
+  openSidePanel(panel) {
     if (this.isCompactMode()) {
-      this.openCompactMode();
+      this.openPanelCompactMode(panel);
     } else {
-      let panel; let panelAttribute;
-      if (side === 'left') {
-        panel = this.leftPanel;
+      const { minWidth, maxWidth, position } = panel;
+      let sidePanel; let handle;
+      let panelAttribute;
+      if (position === Position.LEFT) {
+        sidePanel = this.leftPanel;
+        handle = this.leftHandle;
         panelAttribute = '--left-width';
-      } else if (side === 'right') {
-        panel = this.rightPanel;
+      } else if (position === 'right') {
+        sidePanel = this.rightPanel;
+        handle = this.rightHandle;
         panelAttribute = '--right-width';
       }
 
@@ -4624,7 +4626,7 @@ class Map extends Base {
         this.maxPanelWidth = maxWidth;
       }
 
-      this.openPanelWidth = panel.offsetWidth;
+      this.openPanelWidth = sidePanel.offsetWidth;
       if (this.openPanelWidth < this.minPanelWidth) {
         this.openPanelWidth = this.minPanelWidth;
       }
@@ -4632,8 +4634,9 @@ class Map extends Base {
         this.openPanelWidth = this.maxPanelWidth;
       }
 
-      panel.style.visibility = 'visible';
-      this.toolPanelsContainer.style.setProperty(panelAttribute, `${this.maxPanelWidth}px`);
+      this.addPanelToPanelContainer(sidePanel, panel);
+      handle.style.visibility = 'visible';
+      this.toolPanelsContainer.style.setProperty(panelAttribute, `${this.openPanelWidth}px`);
     }
   }
 
@@ -4642,13 +4645,23 @@ class Map extends Base {
    *
    */
   closeSidePanels() {
-    ['--up-height', '--left-width', '--right-width'].forEach((panelAttribute) => {
-      this.toolPanelsContainer.style.setProperty(panelAttribute, '0px');
-    });
-    [this.upPanel, this.leftPanel, this.rightPanel].forEach((panel) => {
+    [
+      [this.upPanel, this.upHandle, '--up-height'],
+      [this.leftPanel, this.leftHandle, '--left-width'],
+      [this.rightPanel, this.rightHandle, '--right-width'],
+    ].forEach((panelComponents) => {
+      this.toolPanelsContainer.style.setProperty(panelComponents[2], '0px');
       // eslint-disable-next-line no-param-reassign
-      panel.style.visibility = 'hidden';
+      panelComponents[1].style.visibility = 'hidden';
     });
+  }
+
+  /**
+   * @param {HTMLElement} mapPanel represents one avaliable tool panel to add content
+   * @param {Panel} panel
+   */
+  addPanelToPanelContainer(mapPanel, panel) {
+    mapPanel.appendChild(panel.element);
   }
 
   /**
@@ -4661,27 +4674,29 @@ class Map extends Base {
   }
 
   /**
-   * Changes the view of the map to compact mode "mobile view"
+   * Opens one Panel in compact "mobile view"
+   *
+   * @param {Panel} panel a panel used by plugins
    */
-  openCompactMode(
-    minHeight = 350,
-    maxHeight = this.toolPanelsContainer.clientHeight * 0.6 < 450
-      ? 550 : this.toolPanelsContainer.clientHeight * 0.6,
-  ) {
-    const panel = this.upPanel;
+  openPanelCompactMode(panel) {
+    const {
+      minHeightCompact = 250,
+      maxHeightCompact = this.toolPanelsContainer.clientHeight * 0.6 < 450
+        ? 550 : this.toolPanelsContainer.clientHeight * 0.6,
+    } = panel;
 
     this.minUpPanelHeight = this.toolPanelsContainer.clientHeight * 0.25;
     this.maxUpPanelHeight = this.toolPanelsContainer.clientHeight * 0.6;
 
-    if (minHeight >= this.minUpPanelHeight && minHeight <= this.maxUpPanelHeight) {
-      this.minUpPanelHeight = minHeight;
+    if (minHeightCompact >= this.minUpPanelHeight && minHeightCompact <= this.maxUpPanelHeight) {
+      this.minUpPanelHeight = minHeightCompact;
     }
 
-    if (maxHeight >= this.minUpPanelHeight && maxHeight <= this.maxUpPanelHeight) {
-      this.maxUpPanelHeight = maxHeight;
+    if (maxHeightCompact >= this.minUpPanelHeight && maxHeightCompact <= this.maxUpPanelHeight) {
+      this.maxUpPanelHeight = maxHeightCompact;
     }
 
-    this.openUpPanelHeight = panel.offsetWidth;
+    this.openUpPanelHeight = this.upPanel.offsetWidth;
     if (this.openUpPanelHeight < this.minUpPanelHeight) {
       this.openUpPanelHeight = this.minUpPanelHeight;
     }
@@ -4689,7 +4704,8 @@ class Map extends Base {
       this.openUpPanelHeight = this.maxUpPanelHeight;
     }
 
-    panel.style.visibility = 'visible';
+    this.addPanelToPanelContainer(this.upPanel, panel);
+    this.upHandle.style.visibility = 'visible';
     this.toolPanelsContainer.style.setProperty('--up-height', `${this.openUpPanelHeight}px`);
   }
 
