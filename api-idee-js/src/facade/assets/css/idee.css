@@ -233,21 +233,46 @@
     box-shadow: 5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
 }
 
+.m-api-idee-left-handle::before,
+.m-api-idee-right-handle::before,
+.m-api-idee-up-handle::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: calc(50% - .5rem);
+    left: calc(50% - .5rem);
+    width: 1rem;
+    aspect-ratio: 1;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-image: url('../images/elevation.svg');
+    mask-image: url('../images/elevation.svg');
+}
+
 .m-api-idee-up-handle {
     cursor: n-resize;
     bottom: -8px;
     left: 50%;
     transform: translateX(-50%);
-    width: 48px;
-    height: 16px;
+    width: 2rem;
+    height: 1rem;
+}
+
+.m-api-idee-up-handle::before {
+    transform: rotate(90deg);
 }
 
 .m-api-idee-left-handle,
 .m-api-idee-right-handle {
     cursor: ew-resize;
     top: 50%;
-    width: 16px;
-    height: 48px;
+    width: 1rem;
+    height: 3rem;
     transform: translateY(-50%);
 }
 
