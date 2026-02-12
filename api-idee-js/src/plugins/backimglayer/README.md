@@ -38,12 +38,11 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 
 
 - **position**:  Ubicación del plugin sobre el mapa.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: "Capas de fondo".
 - **layerId**: Índice de la capa que se quiera cargar por defecto. Por ejemplo, si se pasa el número 2 se mostrará la capa que se encuentre en la segunda posición. Por defecto: 0
 - **columnsNumber**: Número de columnas que parametrizan la tabla de capas de fondo disponibles. Por defecto: 2
@@ -75,7 +74,7 @@ URL_API?backimglayer=position*!collapsed*!collapsible*!tooltip*!layerVisibility*
     </tr>
     <tr>
         <td>position</td>
-        <td>TR/TL/BR/BL</td>
+        <td>RIGHT/LEFT</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
      <tr>
@@ -86,6 +85,11 @@ URL_API?backimglayer=position*!collapsed*!collapsible*!tooltip*!layerVisibility*
      <tr>
         <td>collapsible</td>
         <td>true/false</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>order</td>
+        <td>Número entero positivo</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
     <tr>
@@ -160,9 +164,10 @@ IDEE.utils.encodeBase64(obj_params);
 Ejemplo de constructor:
 ```javascript
 {
-  position: "TR",
+  position: "right",
   collapsed: true,
   collapsible: true,
+  order: 0,
   tooltip: "Capas de fondo",
   layerVisibility: true,
   columnsNumber: 0,
@@ -203,6 +208,7 @@ const mp = new IDEE.plugin.BackImgLayer({
     position: 'TR',
     collapsible: true,
     collapsed: true,
+    order: 0,
     layerId: 0,
     columnsNumber: 2,
     layerVisibility: true,

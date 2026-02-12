@@ -11,6 +11,10 @@ Plugin que permite utilizar diferentes herramientas de zoom.
 - Navegar entre las vistas visitadas del mapa (hacia delante y atrás).
 - Acercar o alejar a una vista del mapa.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Viewmanagement abierto](./src/facade/assets/images/viewmanagement-abierto.png)|![Viewmanagement cerrado](./src/facade/assets/images/viewmanagement-cerrado.png)|
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
@@ -41,12 +45,11 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**:  Ubicación del plugin sobre el mapa.
-  - 'TL': (top left) - Arriba a la izquierda (por defecto).
-  - 'TR': (top right) - Arriba a la derecha.
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Gestión de la vista.
 - **isDraggable**: Permite mover el plugin por el mapa. Por defecto: false.
 - **predefinedZoom**: Indica si el control PredefinedZoom se añade al plugin (true/false). Por defecto: true (zoom a España). Para añadir los zooms deseados en los que se podrá centrar el mapa se seguirá el siguiente formato:
@@ -80,7 +83,7 @@ URL_API?viewmanagement=position*collapsed*collapsible*tooltip*isDraggable*predef
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -92,6 +95,11 @@ URL_API?viewmanagement=position*collapsed*collapsible*tooltip*isDraggable*predef
     <td>collapsed</td>
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
     <td>tooltip</td>

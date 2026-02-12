@@ -8,7 +8,7 @@ const map = IDEE.map({
 });
 
 const mp2 = new IDEE.plugin.Infocoordinates({
-  position: 'TL',
+  position: 'right',
   decimalGEOcoord: 4,
   decimalUTMcoord: 2,
 });

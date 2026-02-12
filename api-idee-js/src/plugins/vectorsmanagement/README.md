@@ -7,6 +7,10 @@
 
 Plugin que permite el dibujo y edición de geometrías sobre un mapa, cálculo de perfiles topográficos y áreas de influencia, así como su descarga.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Vectorsmanagement abierto](./src/facade/assets/images/vectorsmanagement-abierto.png)|![Vectorsmanagement cerrado](./src/facade/assets/images/vectorsmanagement-cerrado.png)|
+
 # Dependencias
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
@@ -38,12 +42,11 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 
 
 - **position**:  Ubicación del plugin sobre el mapa.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **selection**: Indica si se incluye la herramienta de selección de elementos (true/false). Por defecto: true.
 - **addlayer**: Indica si se incluye la herramienta de creación de capas vectoriales (true/false). Por defecto: true.
 - **analysis**: Indica si se incluye la herramienta de análisis (cálculo de perfil topografico y área de influencia) (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección para poder añadir esta.
@@ -61,7 +64,7 @@ URL_API?vectorsmanagement=position*!collapsed*!collapsible*!selection*!addlayer*
 ```
 Ejemplo:
 ```javascript
-https://componentes.idee.es/api-idee/?vectorsmanagement=TR*true*true
+https://componentes.idee.es/api-idee/?vectorsmanagement=RIGHT*true*true
 ```
 
 # Ejemplo de uso
@@ -72,9 +75,10 @@ const map = IDEE.map({
 });
 
 const mp = new IDEE.plugin.VectorsManagement({
-    position: 'TR',
+    position: 'right',
     collapsible: true,
     collapsed: true,
+    order: 1,
     selection: true,
     addlayer: true,
     creation: true,

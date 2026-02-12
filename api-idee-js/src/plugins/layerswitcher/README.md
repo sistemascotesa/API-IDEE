@@ -8,7 +8,9 @@
 Extensión que permite listar y gestionar las capas (servicios web y/o ficheros) añadidas en el mapa, de forma fácil y rápida.
 La carga de nuevos servicios se pueden realizar mediante el listado predefinido o indicando la URL del servicio.
 
-
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Layerswitcher abierto](./src/facade/assets/images/layerswitcher-abierto.png)|![Layerswitcher cerrado](./src/facade/assets/images/layerswitcher-cerrado.png)|
 
 # Dependencias
 
@@ -40,12 +42,11 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**:  Ubicación del plugin sobre el mapa.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Gestor de capas.
 - **isDraggable**: Permite mover el plugin por el mapa. Por defecto: false.
 - **http**: Si es *true* se permite la carga de capas de servicios desplegados con http, si se le da valor *false* no se permitirá la carga de servicios http. Por defecto: true.
@@ -84,7 +85,7 @@ https://componentes.idee.es/api-idee/?layerswitcher=position*collapsed*collapsib
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -96,6 +97,11 @@ https://componentes.idee.es/api-idee/?layerswitcher=position*collapsed*collapsib
     <td>collapsible</td>
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
     <td>tooltip</td>
@@ -182,8 +188,9 @@ Ejemplo de constructor del plugin:
 ```
      {
            collapsed: false,
-           position: 'TL',
-           tooltip: 'Capas',
+           position: 'right',
+           order: 1,
+           tooltip: 'Gestor de capas',
            collapsible: true,
            isDraggable: true,
            modeSelectLayers: 'eyes',
@@ -208,8 +215,9 @@ const map = IDEE.map({
 
 const mp = new IDEE.plugin.Layerswitcher({
   collapsed: false,
-  position: 'TL',
-  tooltip: 'Capas',
+  position: 'left',
+  order: 1,
+  tooltip: 'Gestor de capas',
   collapsible: true,
   isDraggable: true,
   modeSelectLayers: 'eyes',
