@@ -4,8 +4,12 @@
 import Base from './Base';
 import Button from './ui/Button';
 import Panel from './ui/Panel';
-
-import { isArray, isNullOrEmpty, isNumber } from './util/Utils';
+import {
+  isArray,
+  isNullOrEmpty,
+  isNumber,
+  isString,
+} from './util/Utils';
 import Control from './control/Control';
 import Tool from './tool/Tool';
 import Exception from './exception/exception';
@@ -26,7 +30,7 @@ class Plugin extends Base {
      * @type {string}
      */
     this.name = name;
-    this.tooltip = options.tooltip || '';
+    this.tooltip = isString(options.tooltip) ? options.tooltip : '';
 
     /**
      * Position on one of map container tools, default 'right'
