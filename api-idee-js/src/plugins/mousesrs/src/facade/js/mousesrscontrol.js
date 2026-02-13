@@ -44,7 +44,6 @@ class MouseSRSControl extends IDEE.Control {
       position,
       order,
     });
-    this.tooltip_ = tooltip;
     this.order = order;
   }
 
@@ -61,7 +60,7 @@ class MouseSRSControl extends IDEE.Control {
       const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
-            tooltip: this.tooltip_,
+            tooltip: this.tooltip,
           },
           order: this.order,
         },
