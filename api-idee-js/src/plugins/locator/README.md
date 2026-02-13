@@ -16,6 +16,10 @@ Plugin que permite utilizar diferentes herramientas para la localización:
 Esta extensión es una fachada del servicio geocoder. En la siguiente dirección se puede encontrar toda la información sobre el servicio geocoder:
 https://www.idee.es/resources/documentos/Cartociudad/CartoCiudad_ServiciosWeb.pdf#page=6&zoom=100,109,585
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Locator abierto](./src/facade/assets/images/locator-abierto.png)|![Locator cerrado](./src/facade/assets/images/locator-cerrado.png)|
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
@@ -46,10 +50,11 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**:  Ubicación del plugin sobre el mapa.
-  - 'left' - Arriba a la izquierda.
-  - 'right - Arriba a la derecha (por defecto).
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Buscar un lugar.
 - **zoom**: Zoom que aplicará al mostrar resultado de tipo puntual. Por defecto: 16.
 - **useProxy**: Determina si se desea que las peticiones que se realizan en el control de búsqueda de lugares se realizan con el proxy o no. Por defecto: true.
@@ -144,7 +149,7 @@ URL_API?locator=position*collapsed*collapsible*tooltip*zoom*pointStyle*isDraggab
   </tr>
   <tr>
     <td>position</td>
-    <td>left/right</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -156,6 +161,11 @@ URL_API?locator=position*collapsed*collapsible*tooltip*zoom*pointStyle*isDraggab
     <td>collapsible</td>
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
     <td>tooltip</td>
@@ -218,7 +228,7 @@ IDEE.utils.encodeBase64(obj_params);
 ```
 
 ```
-Ejemplo de constructor del plugin: {position:'TL', collapsible: true, collapsed: true, tooltip: 'Localización', byParcelCadastre: true, byCoordinates: false, byPlaceAddressPostal: true}
+Ejemplo de constructor del plugin: {position:'left', collapsible: true, collapsed: true, tooltip: 'Localización', byParcelCadastre: true, byCoordinates: false, byPlaceAddressPostal: true}
 
 https://componentes.idee.es/api-idee?locator=base64=eyJwb3NpdGlvbiI6IlRMIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6IkxvY2FsaXphY2nDs24iLCJieVBhcmNlbENhZGFzdHJlIjp0cnVlLCJieUNvb3JkaW5hdGVzIjpmYWxzZSwiYnlQbGFjZUFkZHJlc3NQb3N0YWwiOnRydWV9
 ```
@@ -269,6 +279,7 @@ const mp = new IDEE.plugin.Locator({
   position: 'right',
   collapsible: true,
   collapsed: true,
+  order: 1,
   zoom: 16,
   pointStyle: 'pinMorado',
   byParcelCadastre: false,

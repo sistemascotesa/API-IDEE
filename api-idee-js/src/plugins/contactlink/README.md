@@ -7,6 +7,10 @@
 
 Provee de enlaces a sitios, redes sociales y correo institucionales.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Contactlink abierto](./src/facade/assets/images/contactlink-abierto.png)|![Contactlink cerrado](./src/facade/assets/images/contactlink-cerrado.png)|
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
@@ -38,12 +42,11 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**: Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **descargascnig**: Indica la url al centro de descargas CNIG. Por defecto: 'http://centrodedescargas.cnig.es/CentroDescargas/index.jsp'
 - **pnoa**: Indica la url al comparador PNOA. Por defecto: 'https://www.ign.es/web/'comparador_pnoa/index.html
 - **visualizador3d**: Indica la url al Visualizador3D. Por defecto: 'https://visualizadores.ign.es/estereoscopico/'
@@ -71,7 +74,7 @@ URL_API?contactlink=position*collapsed*collapsible*tooltip*descargascnig*pnoa*vi
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -82,6 +85,11 @@ URL_API?contactlink=position*collapsed*collapsible*tooltip*descargascnig*pnoa*vi
   <tr>
     <td>collapsible</td>
     <td>true/false</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -157,7 +165,10 @@ https://componentes.idee.es/api-idee/?contactlink=TR*true*true
 Ejemplo del constructor:
 ```javascript
 {
-  position:"TL",
+  position:"left",
+  collapsed:true,
+  collapsible:true,
+  order:2
   descargascnig:"http://centrodedescargas.cnig.es/CentroDescargas/index.jsp",
   pnoa:"https://www.ign.es/web/comparador_pnoa/index.html",
   visualizador3d:"https://www.ign.es/3D-Stereo/",
@@ -180,7 +191,10 @@ https://componentes.idee.es/api-idee/?contactlink=base64=eyJwb3NpdGlvbiI6IlRMIiw
 
 ```javascript
 const mp = new ContactLink({
-  position: 'TR',
+  position: 'left',
+  collapsed: false,
+  collapsed: false,
+  order: 2,
   descargascnig: 'http://centrodedescargas.cnig.es/CentroDescargas/index.jsp',
   pnoa: 'https://www.ign.es/web/comparador_pnoa/index.html',
   visualizador3d: 'https://visualizadores.ign.es/estereoscopico/',

@@ -9,6 +9,10 @@
 <p>Para utilizar un sistema de referencia nuevo, basta con elegir la opción 'Añadir EPSG'. Una vez elegida, el usuario podrá escribir el sistema que desee, siempre y cuando exista.</p>
 <p>El sistema de referencia nuevo se registrará a nivel de toda la API, por lo que se podrá utilizar en otras funcionalidades.</p>
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Mousesrs abierto](./src/facade/assets/images/mousesrs-abierto.png)|![Mcerradoo](./src/facade/assets/images/mousesrs-cerrado.png)|
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
@@ -40,6 +44,9 @@ Ejemplo:
 
 El constructor se inicializa con un JSON con los siguientes atributos:
 
+- **position**:  Ubicación del plugin sobre el mapa.
+  - 'down': Abajo.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**. Tooltip que se muestra sobre el plugin (Se muestra al dejar el ratón encima del plugin como información). Por defecto: Coordenadas.
 - **srs**. Código EPSG del SRS sobre el que se mostrarán las coordenadas del ratón. Por defecto: EPSG:4326
 - **label**. Nombre del SRS sobre el que se mostrarán las coordenadas del ratón. Por defecto: WGS84
@@ -82,6 +89,16 @@ URL_API?mousesrs=tooltip*srs*label*precision*geoDecimalDigits*utmDecimalDigits*a
     <th>Opciones/Descripción</th>
     <th>Disponibilidad</th>
   <tr>
+  <tr>
+    <td>position</td>
+    <td>DOWN</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
+  </tr>
   <tr>
     <td>tooltip</td>
     <td>Texto informativo</td>
@@ -162,7 +179,7 @@ https://componentes.idee.es/api-idee?mousesrs=base64=eyJsYWJlbCI6IkVQU0c6NDMyNiI
 
 ```javascript
 const mp = new IDEE.plugin.MouseSRS({
-  position: 'BL',
+  position: 'down',
   tooltip: 'Muestra coordenadas',
   srs: 'EPSG:4326',
   label: 'WGS84',

@@ -39,12 +39,16 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**: Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda (por defecto).
-  - 'TR': (top right) - Arriba a la derecha.
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - Arriba a la izquierda.
+  - 'right' (RIGHT) - Arriba a la derecha (por defecto).
+  - 'down' (DOWN) - Abajo.
+  - 'center-bottom-right' (CBR) - Zona central, abajo a la derecha.
+  - 'center-bottom-left' (CBL) - Zona central, abajo a la izquierda.
+  - 'center-top-right' (CTR) - Zona central, arriba a la derecha.
+  - 'center-top-left' (CTL) - Zona central, arriba a la izquierda.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: Herramientas de medición
 
 # API-REST
@@ -61,7 +65,7 @@ URL_API?measurebar=position*collapsed*collapsible*tooltip
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>CTL/CTR/CBL/CBR/LEFT/RIGHT/DOWN</td>
     <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
@@ -75,6 +79,11 @@ URL_API?measurebar=position*collapsed*collapsible*tooltip
     <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
+  </tr>
+  <tr>
     <td>tooltip</td>
     <td>Valor a mostrar en el tooltip del plugin</td>
     <td>Base64 ✔️  | Separador ✔️ </td>
@@ -85,7 +94,7 @@ URL_API?measurebar=position*collapsed*collapsible*tooltip
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee?measurebar=TL*true*true*measurebar%20plugin
+https://componentes.idee.es/api-idee?measurebar=LEFT*true*true*measurebar%20plugin
 ```
 
 ```
@@ -96,9 +105,10 @@ https://componentes.idee.es/api-idee?measurebar=BL
 Ejemplo de constructor del plugin:
 ```javascript
 {
-  position:'TR',
+  position:'right',
   collapsible: true,
   collapsed: true,
+  order: 1,
   tooltip: 'Medidas',
 }
 ```
@@ -114,7 +124,7 @@ const map = IDEE.map({
 });
 
 const mp = new IDEE.plugin.MeasureBar({
-  position: 'TR',
+  position: 'right',
 });
 
 map.addPlugin(mp);

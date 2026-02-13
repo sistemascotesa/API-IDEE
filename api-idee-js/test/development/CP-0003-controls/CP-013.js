@@ -6,6 +6,7 @@ import Scale from 'IDEE/control/Scale';
 import ScaleLine from 'IDEE/control/ScaleLine';
 import Panzoom from 'IDEE/control/Panzoom';
 import * as Position from 'IDEE/ui/position';
+import BackImgLayer from '../../../src/plugins/backimglayer/src/facade/js/backimglayer';
 
 /**
  * Este test debería contener todos los controles para comprobar la funcionalidad de
@@ -50,9 +51,17 @@ const githubPLugin = new Plugin('github', {
   order: 2,
 });
 
+const githubPLugin2 = new Plugin('github', {
+  tooltip: 'GitHub',
+  position: Position.LEFT,
+  svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
+  order: 3,
+});
+
 const tools = [
   ...controlsDown,
   githubPLugin,
+  githubPLugin2,
 ];
 
 const log = tools.reduce((acc, ctrl) => {

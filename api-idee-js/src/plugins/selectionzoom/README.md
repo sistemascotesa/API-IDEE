@@ -2,6 +2,10 @@
 
 Plugin que permite la elección del área geográfica de la capa de fondo. Existen varias vistas predefinidas disponibles.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Selectionzoom abierto](./src/facade/assets/images/selectionzoom-abierto.png)|![Selectionzoom cerrado](./src/facade/assets/images/selectionzoom-cerrado.png)|
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
@@ -33,12 +37,11 @@ Ejemplo:
 El constructor se inicializa con un JSON de options con los siguientes atributos:
 
 - **position**:  Ubicación del plugin sobre el mapa.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha.
-  - 'BL': (bottom left) - Abajo a la izquierda (por defecto).
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Vistas predefinidas.
 - **options**: Lista con las opciones de las capas.
   - **id**: Identificador de la capa
@@ -56,9 +59,10 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
    });
 
    const mp = new IDEE.plugin.SelectionZoom({
-    position: 'TL',
+    position: 'left',
     collapsible: true,
     collapsed: true,
+    order: 1,
     options: [
       {
         id: 'peninsula',

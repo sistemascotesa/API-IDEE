@@ -435,8 +435,8 @@ const mp1 = new Layerswitcher({
   collapsed: false,
   collapsible: true,
   isDraggable: true,
-  position: 'TL', // TL | TR | BR | BL
-  tooltip: 'Tooltip de Gestor de Capas',
+  position: 'right',
+  tooltip: 'Gestor de Capas',
   modeSelectLayers: 'eyes', // eyes | radio
   // tools: [],
   tools: ['transparency', 'zoom', 'legend', 'information', 'style', 'delete'],

@@ -25,6 +25,10 @@ La simbología puede ser compuesta, y a medida que se van aplicando simbologías
 ![Imagen](./docs/images/StyleManager4.PNG)
 En dispositivos móviles, la interfaz se adaptará para ocupar la pantalla completa.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Stylemanager abierto](./src/facade/assets/images/stylemanager-abierto.png)|![Stylemanager cerrado](./src/facade/assets/images/stylemanager-cerrado.png)|
+
 
 # Dependencias
 
@@ -56,12 +60,11 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**: Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda (por defecto).
-  - 'TR': (top right) - Arriba a la derecha.
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: 'Gestor de estilos'.
 - **layer**: Capa pre seleccionada (se mostrará seleccionada en el selector de capas del plugin).
 Como requisito para usar este parámetro la capa debe de estar cargada en el mapa (ver ejemplo de uso). Además dicha capa debe de tener features (no puede estar vacía).
@@ -82,7 +85,7 @@ URL_API?stylemanager=position*collapsed*collapsible*tooltip
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -94,6 +97,11 @@ URL_API?stylemanager=position*collapsed*collapsible*tooltip
     <td>collapsible</td>
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
     <td>tooltip</td>
@@ -110,7 +118,7 @@ URL_API?stylemanager=position*collapsed*collapsible*tooltip
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee/??layers=WFS*Campamentos*https://hcsigc.juntadeandalucia.es/geoserver/IECA/wfs?*sigc_campamentos_1724753464727*MPOINT,OSM&stylemanager=TR*true*true*gestor%20de%20estilos
+https://componentes.idee.es/api-idee/??layers=WFS*Campamentos*https://hcsigc.juntadeandalucia.es/geoserver/IECA/wfs?*sigc_campamentos_1724753464727*MPOINT,OSM&stylemanager=RIGHT*true*true*gestor%20de%20estilos
 ```
 
 
@@ -125,7 +133,7 @@ IDEE.utils.encodeBase64(obj_params);
 Ejemplo de constructor del plugin:
 ```javascript
 {
-  position:'TR',
+  position:'right',
   collapsible: true,
   collapsed: true,
   tooltip: 'Gestor de estilos'
@@ -147,7 +155,7 @@ capaVectorial.on(IDEE.evt.LOAD, function() {
   const mp = new IDEE.plugin.StyleManager({
       collapsed: true,
       collapsible: true,
-      position: 'TL',
+      position: 'right',
       layer: capaVectorial
   });
   map.addPlugin(mp);

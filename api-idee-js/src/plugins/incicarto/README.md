@@ -7,6 +7,10 @@
 
 Plugin que permite la identificación de incidencias sobre la cartografía. El usuario puede describir el error y si lo desea categorizar el error. Despúes el error puede notificarse por correo electrónico a uno de los buzones de incidencias habilitados o darse de alta en el gestor de incidencias.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Incicarto abierto](./src/facade/assets/images/incicarto-abierto.png)|![Incicarto cerrado](./src/facade/assets/images/incicarto-cerrado.png)|
+
 
 # Dependencias
 
@@ -55,12 +59,11 @@ Disponemos de dos posibilidades para notificar la incidencia.
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**: Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: Notificar incidencia en cartografía.
 - **wfszoom**: Valor del zoom. Por defecto: 12.
 - **prefixSubject**: Prefijo que llevará el *subject* del correo electrónico enviado. Por defecto: 'Incidencia cartografía - '.
@@ -118,7 +121,7 @@ URL_API?incicarto=position*collapsed*collapsible*tooltip*wfszoom*prefixSubject*i
   </tr>
    <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
    <tr>
@@ -129,6 +132,11 @@ URL_API?incicarto=position*collapsed*collapsible*tooltip*wfszoom*prefixSubject*i
    <tr>
     <td>collapsible</td>
     <td>true/false</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -206,7 +214,9 @@ Ejemplo del constructor:
 {
   collapsed: true,
   collapsible: true,
-  position: "TL",
+  position: "left",
+  order: 2,
+  tooltip: "Notificar incidencia en cartografía",
   wfszoom: 12,
   prefixSubject: "Incidencia cartogrfica - ",
   interfazmode: "simple",
@@ -293,7 +303,8 @@ https://componentes.idee.es/api-idee?incicarto=base64=eyJjb2xsYXBzZWQiOnRydWUsIm
 const mp = new IDEE.plugin.Incicarto({
   collapsed: false,
   collapsible: true,
-  position: 'TL',
+  position: 'right',
+  order: 1,
   interfazmode:'both', //simple, advance, both
   buzones: [{
     name: 'Cartografía (MTN, BTN, RT, HY, Pob, BCN, Prvinciales, escalas pequeñas)',

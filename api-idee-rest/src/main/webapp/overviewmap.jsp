@@ -79,7 +79,7 @@
 
                     <label for="inputTooltip">Parámetro tooltip</label>
                     <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug"
-                        value="Herramientas de medición">
+                        value="Mapa">
                 </div>
                 <div>
                     <button id="removeButton">Eliminar Control</button>

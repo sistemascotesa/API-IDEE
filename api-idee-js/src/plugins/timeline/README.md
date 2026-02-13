@@ -39,18 +39,19 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**: Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
-
+  - 'left' (LEFT) - Arriba a la izquierda.
+  - 'right' (RIGHT) - Arriba a la derecha (por defecto).
+  - 'down' (DOWN) - Abajo.
+  - 'center-bottom-right' (CBR) - Zona central, abajo a la derecha.
+  - 'center-bottom-left' (CBL) - Zona central, abajo a la izquierda.
+  - 'center-top-right' (CTR) - Zona central, arriba a la derecha.
+  - 'center-top-left' (CTL) - Zona central, arriba a la izquierda.
+- **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: 'Gestor de estilos'.
 - **intervals**: Parámetro obligatorio. Array que contiene cada capa junto a sus datos, dependiendo del valor del timelinetype tendrá unos parámetros u otros.
-
 - **timelineType**: Determina el tipo del timeline.
   - _absoluteSimple_: Representación de las capas de manera lineal, sin consultas.
   - _absolute_: Representación de las capas de manera lineal, con consultas.
   - _relative_: Representación de las capas mediante intervalos, con consultas.
-
   **AbsoluteSimple**:
   - Nombre: nombre descriptivo de la capa.
   - Etiqueta: etiqueta o fecha de la capa.
@@ -60,7 +61,8 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   Insertar intervalos a través de servicios WMS. La URL en formato API-IDEE sigue la siguiente estructura: Servicio,Leyenda,URL,Nombre. Separados por "*".
   ```javascript
     const mp = new IDEE.plugin.Timeline({
-    position: 'TL',
+    position: 'LEFT',
+    tooltip: 'Línea de tiempo',
     timelineType: 'absoluteSimple',
     intervals: [
       ["NACIONAL 1981-1986", "1986", "WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986"],

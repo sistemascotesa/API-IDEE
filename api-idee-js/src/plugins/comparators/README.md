@@ -55,17 +55,12 @@ Ejemplo:
 El constructor se inicializa con un JSON de options con los siguientes atributos:
 
 - **position**: Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
-
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
-
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
-
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **enabledDisplayInLayerSwitcher**: Define si se incluirán en el selector de capas las capas con displayInLayerSwitcher *true*.
-
 - **listLayers**: Array de capas (String o Object), estas capas se verán en el selector (WMS o WMTS).
 ```JavaScript
 // Ejemplos de definiciones de capas esperadas por el
@@ -93,7 +88,6 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
   - 'transparecyParams': Comparador de zona o puntual.
   - 'windowsyncParams': Comparador en ventana.
   - 'none': no arranca ninguno de los comparadores.
-
 - **enabledKeyFunctions**:
 Comparación en modo espejo:
 Si es true, se pueden usar las combinaciones de teclas Ctrl + Shift + [F1-F8] para cambiar entre los distintos modos de visualización. Con la tecla Escape se destruye el plugin.  <br>
@@ -101,13 +95,11 @@ Comparación en modo transparecyParams:
 Ctrl + Shift + Enter: Alterna el estado de congelación.
 Ctrl + Shift + Flecha hacia arriba: Aumenta el radio, si el radio alcanza el valor máximo de 200, no ocurre ningún cambio.
 Ctrl + Shift + Flecha hacia abajo: Disminuye el radio, si el radio llega al valor mínimo de 32, no ocurre ningún cambio.
-
 - **transparencyParams**: Parámetros opcionales del control transparency, en el caso de no querer cargar este control su valor será "false".
   - radius (numérico): radio del efecto transparencia. Tiene un rango entre 30 y 200. Defecto: 100.
   - maxRadius Radio máximo, por defecto 200.
   - minRadius: Radio mínimo, por defecto 30.
   - tooltip: Valor a usar para mostrar en el tooltip del control, por defecto Transparencia / Transparency.
-
 - **lyrcompareParams**: Parámetros opcionales del plugin lyrcompare, en el caso de no querer cargar este control su valor será "false".
   - defaultLyrA (numérico): Capa cargada al inicio en posición 1. Valores de 0 al número de capas disponibles. Defecto, 0.
   - defaultLyrB (numérico): Capa cargada al inicio en posición 2. Valores de 0 al número de capas disponibles. Defecto, 1.
@@ -121,7 +113,6 @@ Ctrl + Shift + Flecha hacia abajo: Disminuye el radio, si el radio llega al valo
     - 1: dos mapas en vertical.
     - 2: dos mapas en horizontal.
     - 3: cuatro mapas.
-
 - **mirrorpanelParams**: Parámetros opcionales del plugin mirrorpanel, en el caso de no querer cargar este control su valor será "false".
   - showCursors (true/false): Si es true, muestra cursores sincronizados en cada unao de los mapas espejo. Defecto: *true*.
   - principalMap (true/false): indica en qué posición de la pantalla se mantiene el mapa principal (el que contiene el botón con las herramientas de comparación) con respecto a los demás. *False*: se sitúa a la izquierda. *True*: se sitúa a la derecha. Defecto: *false*.
@@ -137,7 +128,6 @@ Ctrl + Shift + Flecha hacia abajo: Disminuye el radio, si el radio llega al valo
     - 3: mosaico con cuatro mapas.
     - 4: dos mapas a la izquierda y uno a la derecha.
     - 5: dos mapas a la derecha y uno a la izquierda.
-
 - **windowsyncParams**: Parámetro opcionales del plugin windowsync, en caso de no querer cargar este control su valor será "false".
   - controls: (Array de Strings) Define que controles tendrán los mapas.
   - plugins: (Array de Objetos) Define los plugins que tendrán los mapas. Es necesario tener el script del plugin en el html principal.
@@ -189,7 +179,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
       },
       map4: {
         BackImgLayer: {
-          position: 'TR',
+          position: 'right',
           collapsible: true,
           collapsed: true,
           layerId: 0,
@@ -285,7 +275,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
       {
         name: 'Layerswitcher',
         params: {
-          position: 'TL',
+          position: 'left',
         },
       },
     ],
@@ -309,7 +299,7 @@ URL_API?comparators=position*!collapsed*!collapsible*!tooltip*!listLayers*!defau
     </tr>
     <tr>
         <td>position</td>
-        <td>TR/TL/BR/BL</td>
+        <td>RIGHT/LEFT</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
      <tr>
@@ -320,6 +310,11 @@ URL_API?comparators=position*!collapsed*!collapsible*!tooltip*!listLayers*!defau
      <tr>
         <td>collapsible</td>
         <td>true/false</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>order</td>
+        <td>Número entero positivo</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
     <tr>
@@ -386,6 +381,7 @@ Ejemplo de constructor:
   position: 'left',
   collapsed: false,
   collapsible: true,
+  order: 0,
   tooltip: 'Plugin Comparators',
   defaultCompareMode: 'mirror',
   enabledDisplayInLayerSwitcher: true,
