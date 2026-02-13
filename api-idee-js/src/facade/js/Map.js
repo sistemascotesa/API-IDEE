@@ -582,7 +582,7 @@ class Map extends Base {
    * @api
    */
   removeAttribution(id) {
-    if (id) {
+    if (id && this.controlAttributions) {
       const attributions = this.controlAttributions.getAttributions();
       let filterAttributions = attributions.filter((attribution) => attribution.id !== id);
       filterAttributions = filterAttributions.filter((attribution) => attribution.name !== id);
@@ -3953,7 +3953,7 @@ class Map extends Base {
 
       const plugins = this.plugins.filter((plugin2) => plugin2.position === plugin.position);
       if (plugins.length === 0) {
-        this.closeSidePanels(plugin.position);
+        this.closeSidePanels();
       }
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -4593,6 +4593,14 @@ class Map extends Base {
   }
 
   /**
+   * @param {HTMLElement} mapPanel represents one avaliable tool panel to add content
+   * @param {Panel} panel
+   */
+  addPanelToPanelContainer(mapPanel, panel) {
+    mapPanel.appendChild(panel.element);
+  }
+
+  /**
    * This method open one lateral panel, if is possible depending on the map view.
    * In compact mode, it will open a top panel.
    *
@@ -4642,26 +4650,22 @@ class Map extends Base {
 
   /**
    * Closses all side active panels
-   *
    */
   closeSidePanels() {
     [
       [this.upPanel, this.upHandle, '--up-height'],
       [this.leftPanel, this.leftHandle, '--left-width'],
       [this.rightPanel, this.rightHandle, '--right-width'],
-    ].forEach((panelComponents) => {
-      this.toolPanelsContainer.style.setProperty(panelComponents[2], '0px');
+    ].forEach(([panel, handle, gridSizeVar]) => {
+      this.toolPanelsContainer.style.setProperty(gridSizeVar, '0px');
       // eslint-disable-next-line no-param-reassign
-      panelComponents[1].style.visibility = 'hidden';
+      handle.style.visibility = 'hidden';
+      Array.from(panel.children).forEach((child) => {
+        if (child !== handle) {
+          panel.removeChild(child);
+        }
+      });
     });
-  }
-
-  /**
-   * @param {HTMLElement} mapPanel represents one avaliable tool panel to add content
-   * @param {Panel} panel
-   */
-  addPanelToPanelContainer(mapPanel, panel) {
-    mapPanel.appendChild(panel.element);
   }
 
   /**

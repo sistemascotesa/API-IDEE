@@ -166,8 +166,12 @@ class Attributions extends ControlBase {
   }
 
   changeVisibility(idLayer, isVisible) {
-    this.html_.querySelector(`#${idLayer}`)
-      .style.display = isVisible ? 'block' : 'none';
+    if (idLayer) {
+      const layerElm = this.html_.querySelector(`#${idLayer}`);
+      if (layerElm && layerElm.style) {
+        this.html_.querySelector(`#${idLayer}`).style.display = isVisible ? 'block' : 'none';
+      }
+    }
   }
 
   /**

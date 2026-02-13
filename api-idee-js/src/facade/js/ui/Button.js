@@ -174,18 +174,12 @@ class Button extends MObject {
   }
 
   closePanel() {
-    this.map.closeSidePanels();
-    if (this.position === Position.LEFT) {
-      if (this.map.leftPanel.contains(this.panel.element)) {
-        this.map.leftPanel.removeChild(this.panel.element);
-      }
-    } else if (this.map.rightPanel.contains(this.panel.element)) {
-      this.map.rightPanel.removeChild(this.panel.element);
+    if (this.panel) {
+      this.map.closeSidePanels();
+      this.panel.collapse();
+      this.pressed = false;
+      this.element.classList.remove('active');
     }
-
-    this.panel.collapse();
-    this.pressed = false;
-    this.element.classList.remove('active');
   }
 
   equals(obj) {

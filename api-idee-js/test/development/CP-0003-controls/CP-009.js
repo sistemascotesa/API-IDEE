@@ -10,6 +10,7 @@ const map = Mmap({
   // eslint-disable-next-line max-len
   // controls: ['location', 'attributions*<p>Contenido del control</p>', 'rotate', 'ImplementationSwitcher'],
   center: [-443273.10081370454, 4757481.749296248],
+  // layers: ['OSM'],
   zoom: 6,
 });
 

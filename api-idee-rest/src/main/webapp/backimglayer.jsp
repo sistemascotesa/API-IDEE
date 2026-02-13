@@ -99,7 +99,7 @@ html, body {
 
         const map = IDEE.map({
             container: 'mapjs',
-			layers: ['OSM'],
+			// layers: ['OSM'],
             zoom: 5,
             maxZoom: 20,
             minZoom: 4,
