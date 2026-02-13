@@ -6,16 +6,11 @@
     white-space: nowrap;
     order: 4;
     background-color: var(--idee-color-primary);
-    margin-bottom: 10px;
     display: flex;
     align-items: flex-start;
     border: 2px solid white;
     gap: 2px;
     position: relative;
-    left: auto;
-    right: auto;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .m-control.m-container.m-mousesrs-container .m-mouse-srs {
