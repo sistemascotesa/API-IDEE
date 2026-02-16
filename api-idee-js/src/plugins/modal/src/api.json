@@ -10,7 +10,11 @@
       "type": "simple",
       "name": "position",
       "position": 0,
+<<<<<<< HEAD
       "possibleValues": ["center-top-left", "center-top-right", "center-bottom-left", "center-bottom-right", "left", "right", "down"]
+=======
+      "possibleValues": ["left", "right"]
+>>>>>>> ec69d66c9 (Fix: Cambio a la nueva versión)
     }, {
       "type": "boolean",
       "name": "collapsed",
@@ -20,17 +24,21 @@
       "name": "collapsible",
       "position": 2
     }, {
-      "type": "simple",
-      "name": "tooltip",
+      "type": "number",
+      "name": "order",
       "position": 3
     }, {
       "type": "simple",
-      "name": "url_es",
+      "name": "tooltip",
       "position": 4
     }, {
       "type": "simple",
-      "name": "url_en",
+      "name": "url_es",
       "position": 5
+    }, {
+      "type": "simple",
+      "name": "url_en",
+      "position": 6
     }]
   }],
   "files": {
@@ -55,7 +63,7 @@
     "name": "Modal",
     "description": "Plugin que muestra información en un modal",
     "text": "Plugin que muestra información en un modal.",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "date": "1st June 2020",
     "author": "CNIG",
     "org": "CNIG",

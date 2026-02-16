@@ -12,10 +12,7 @@
           "type": "simple",
           "name": "position",
           "position": 0,
-          "possibleValues": [
-            "left",
-            "right"
-          ]
+          "possibleValues": ["left", "right"]
         },
         {
           "type": "boolean",
@@ -28,44 +25,49 @@
           "position": 2
         },
         {
+          "type": "number",
+          "name": "order",
+          "position": 3
+        },
+        {
           "type": "simple",
           "name": "tooltip",
-          "position": 3
+          "position": 4
         },
         {
           "type": "number",
           "name": "zoom",
-          "position": 4
+          "position": 5
         },
         {
           "type": "simple",
           "name": "pointStyle",
-          "position": 5
-        },
-        {
-          "type": "boolean",
-          "name": "isDraggable",
           "position": 6
         },
         {
           "type": "boolean",
-          "name": "byParcelCadastre",
+          "name": "isDraggable",
           "position": 7
         },
         {
           "type": "boolean",
-          "name": "byCoordinates",
+          "name": "byParcelCadastre",
           "position": 8
         },
         {
           "type": "boolean",
-          "name": "byPlaceAddressPostal",
+          "name": "byCoordinates",
           "position": 9
         },
         {
           "type": "boolean",
-          "name": "useProxy",
+          "name": "byPlaceAddressPostal",
           "position": 10
+        },
+        {
+          "type": "boolean",
+          "name": "useProxy",
+          "position": 11
         }
       ]
     }
@@ -92,7 +94,7 @@
     "name": "locator",
     "description": "Plugin que ofrece diferentes herramientas de localización.",
     "text": "Ofrece diferentes herramientas de localización.",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "date": "30th May 2023",
     "author": "CNIG",
     "org": "CNIG",

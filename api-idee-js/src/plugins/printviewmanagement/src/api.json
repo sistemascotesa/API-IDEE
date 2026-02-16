@@ -11,12 +11,7 @@
       "type": "simple",
       "name": "position",
       "position": 0,
-      "possibleValues": [
-        "TL",
-        "TR",
-        "BR",
-        "BL"
-      ]
+      "possibleValues": ["left", "right"]
     },
     {
       "type": "boolean",
@@ -29,34 +24,39 @@
       "position": 2
     },
     {
-      "type": "simple",
-      "name": "tooltip",
+      "type": "number",
+      "name": "order",
       "position": 3
     },
     {
       "type": "simple",
-      "name": "isDraggable",
+      "name": "tooltip",
       "position": 4
     },
     {
-      "type": "boolean",
-      "name": "georefImageEpsg",
+      "type": "simple",
+      "name": "isDraggable",
       "position": 5
     },
     {
       "type": "boolean",
-      "name": "georefImage",
+      "name": "georefImageEpsg",
       "position": 6
     },
     {
       "type": "boolean",
-      "name": "printermap",
+      "name": "georefImage",
       "position": 7
+    },
+    {
+      "type": "boolean",
+      "name": "printermap",
+      "position": 8
     },
     {
       "type": "number",
       "name": "defaultOpenControl",
-      "position": 8,
+      "position": 9,
       "possibleValues": [0, 1, 2, 3]
     }
   ]
@@ -83,7 +83,7 @@
     "name": "printviewmanagement",
     "description": "Offer different zoom tools",
     "text": "It offers different zoom tools.",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "date": "27th April 2023",
     "author": "CNIG",
     "org": "CNIG",

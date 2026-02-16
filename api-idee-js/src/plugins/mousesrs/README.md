@@ -45,7 +45,13 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**:  Ubicación del plugin sobre el mapa.
-  - 'down': Abajo.
+  - 'left' (LEFT) - Arriba a la izquierda.
+  - 'right' (RIGHT) - Arriba a la derecha (por defecto).
+  - 'down' (DOWN) - Abajo.
+  - 'center-bottom-right' (CBR) - Zona central, abajo a la derecha.
+  - 'center-bottom-left' (CBL) - Zona central, abajo a la izquierda.
+  - 'center-top-right' (CTR) - Zona central, arriba a la derecha.
+  - 'center-top-left' (CTL) - Zona central, arriba a la izquierda.
 - **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**. Tooltip que se muestra sobre el plugin (Se muestra al dejar el ratón encima del plugin como información). Por defecto: Coordenadas.
 - **srs**. Código EPSG del SRS sobre el que se mostrarán las coordenadas del ratón. Por defecto: EPSG:4326
