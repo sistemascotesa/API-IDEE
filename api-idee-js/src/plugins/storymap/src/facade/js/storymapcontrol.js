@@ -67,12 +67,6 @@ export default class StoryMapControl extends IDEE.Control {
         this.createPointerSteps(0);
       });
 
-      if (window.innerWidth <= 772) {
-        this.handleMovil();
-        document.querySelector('.m-plugin-storymap .m-panel-btn')
-          .addEventListener('click', this.handleMovil);
-      }
-
       html = this.createPlayPause(html);
       html = this.arrowEvent(html);
       html = this.eventIndex(html);
@@ -532,24 +526,6 @@ export default class StoryMapControl extends IDEE.Control {
    */
   deactivate() {
     super.deactivate();
-  }
-
-  handleMovil() {
-    if (document.querySelector('.m-plugin-storymap.opened')) {
-      document.querySelectorAll('.m-panel').forEach((p) => {
-        if (!p.classList.contains('m-plugin-storymap')) {
-          // eslint-disable-next-line no-param-reassign
-          p.style.display = 'none';
-        }
-      });
-    } else {
-      document.querySelectorAll('.m-panel').forEach((p) => {
-        if (!p.classList.contains('m-plugin-storymap')) {
-        // eslint-disable-next-line no-param-reassign
-          p.style.display = 'flex';
-        }
-      });
-    }
   }
 
   /**

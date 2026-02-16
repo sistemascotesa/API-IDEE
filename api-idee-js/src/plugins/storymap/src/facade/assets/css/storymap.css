@@ -17,16 +17,27 @@
   justify-content: center;
 }
 
+#plugin-panel-content-storymap {
+  flex-grow: 1;
+  display: block;
+  overflow: auto;
+}
+
+#contentStoryMap {
+  height: inherit;
+  display: flex;
+  flex-direction: column;
+  row-gap: .25rem;
+}
 
 /******************
 * HEADER STORYMAP *
 *******************/
-.header_contentStoryMap{
+.header_contentStoryMap {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-bottom: 24px;
-  margin-bottom: 16px;
+  gap: .5rem;
+  padding-bottom: 1rem;
   color: #364b5f;
   border-bottom: 2px solid #71a7d3;
 }
@@ -49,17 +60,23 @@
   overflow-y: unset;
 }
 
-.m-storymap .m-storymap-panel {
+.m-storymap-panel {
   height: inherit;
+  flex-grow: 1;
 }
 
 .m-storymap-panel .mainStoryMap {
   height: inherit;
+  overflow-y: auto;
+  align-items: center;
   gap: 8px;
+  scrollbar-width: none;
 }
 
 .mainStoryMap .navPointer,
 .mainStoryMap .navStep {
+  height: 100%;
+  justify-content: center;
   align-items: center;
   gap: 8px;
 }
@@ -82,17 +99,28 @@
   position: absolute;
   bottom: 0;
   z-index: 100;
-  margin: 24px 16px;
+  margin: 1.5rem 1rem;
   padding: 8px;
   background: #49d793;
   border-radius: 4px;
   line-height: 1.2;
 }
 
-
 /*******************
 * CONTENT STORYMAP *
 ********************/
+
+.navContent {
+  height: inherit;
+}
+
+.chapters {
+  display: flex;
+  height: inherit;
+  max-height: 550px;
+  flex-grow: 1;
+}
+
 .m-storymap-chapters {
   justify-content: flex-start;
   gap: 16px;
@@ -111,17 +139,16 @@
   color: var(--idee-color-primary-dark);
 }
 
-.chapters {
-  height: 90vh;
+.m-plugin-panel-content {
+  height: 100%;
+  overflow: auto;
 }
 
 .step {
-  overflow-y: scroll;
-  height: 95%;
+  overflow: auto;
+  height: calc(100% - 1rem);
   font-size: 12px;
   line-height: 1.2;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 
 .pointerEffect {

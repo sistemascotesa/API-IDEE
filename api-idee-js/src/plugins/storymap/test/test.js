@@ -32,5 +32,5 @@ const mp = new StoryMap({
   delay: 2000, // Tiempo entre animaciones de scroll al usar play
 });
 
-map.addPlugin(mp); window.mp = mp;
-
+map.addPlugin(mp);
+window.mp = mp;
