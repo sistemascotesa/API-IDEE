@@ -78,21 +78,6 @@ export default class Modal extends IDEE.Plugin {
     this.metadata_ = api.metadata;
 
     /**
-     * Name of the plugin
-     * @public
-     * @type {String}
-     */
-    this.name = 'modal';
-
-    /**
-     * Plugin tooltip
-     *
-     * @private
-     * @type {string}
-     */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
-
-    /**
      * Plugin parameters
      * @public
      * @type {object}

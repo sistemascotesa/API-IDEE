@@ -20,7 +20,9 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: auto;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
     </style>
     <%
@@ -40,7 +42,7 @@
     <div>
         <label for="selectPosicion">Selector de posición del plugin</label>
         <select name="position" id="selectPosicion">
-            <option value="left">Izquierda (left)</option>
+            <option value="left" selected="selected">Izquierda (left)</option>
             <option value="right">Derecha (right)</option>
         </select>
         <label for="selectCollapsed">Selector de collapsed</label>
@@ -146,17 +148,8 @@
             }
         }
 
-        // let mp2 = new IDEE.plugin.ShareMap({
-        //     baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
-        //     position: "TR",
-        // });
-        // map.addPlugin(mp2);
-
         botonEliminar.addEventListener("click", eliminarPlugin);
         cambiarTest();
-        // botonEliminar.addEventListener("click", function() {
-        //     map.removePlugins(mp);
-        // });
         let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",

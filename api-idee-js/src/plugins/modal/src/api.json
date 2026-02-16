@@ -10,7 +10,7 @@
       "type": "simple",
       "name": "position",
       "position": 0,
-      "possibleValues": ["TL", "TR", "BR", "BL"]
+      "possibleValues": ["center-top-left", "center-top-right", "center-bottom-left", "center-bottom-right", "left", "right", "down"]
     }, {
       "type": "boolean",
       "name": "collapsed",

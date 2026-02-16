@@ -6,7 +6,6 @@ import Scale from 'IDEE/control/Scale';
 import ScaleLine from 'IDEE/control/ScaleLine';
 import Panzoom from 'IDEE/control/Panzoom';
 import * as Position from 'IDEE/ui/position';
-import BackImgLayer from '../../../src/plugins/backimglayer/src/facade/js/backimglayer';
 
 /**
  * Este test debería contener todos los controles para comprobar la funcionalidad de
