@@ -185,36 +185,6 @@ input[type="checkbox"].m-input+label.check-inactive:before {
     display: none !important;
 }
 
-.m-areas>div.m-area>div.m-panel.m-stylemanager {
-    border-radius: 0px;
-}
-
-.m-areas>div.m-area>div.m-panel.m-stylemanager.collapsed {
-    border-radius: 20px;
-}
-
-.m-stylemanager.collapsed .m-panel-controls,
-.m-tools.collapsed .m-panel-controls {
-    display: none !important;
-}
-
-.m-areas>div.m-area>div.m-panel.m-stylemanager>button.m-panel-btn {
-    background-color: var(--idee-color-primary);
-    position: absolute;
-    left: initial;
-    color: #fff;
-    z-index: 999999;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
-}
-
-.m-areas>div.m-area>div.m-panel.m-stylemanager.collapsed>button.m-panel-btn {
-    color: white;
-}
-
-.m-areas>div.m-area>div.m-panel.m-stylemanager.opened>button.m-panel-btn {
-    left: 100%;
-}
-
 /* CONTROL */
 
 .m-stylemanager-container-select {
@@ -860,28 +830,6 @@ label.submenu-label {
     padding-left: 57px !important;
 }
 
-.m-areas>div.m-area>div.m-panel>button.m-panel-btn.stylemanager-palette {
-    font-family: 'stylemanager' !important;
-    font-size: 23px;
-    padding-left: 4px;
-}
-
-.m-areas>div.m-area.m-bottom {
-    bottom: 0;
-    width: fit-content !important;
-    max-width: none !important;
-}
-
-div.m-areas>div.m-area.m-bottom.m-right>div.m-panel.m-stylemanager>button.m-panel-btn {
-    position: absolute;
-    bottom: 1px;
-}
-
-div.m-areas>div.m-area.m-right>div.m-panel.m-stylemanager.collapsed>button.m-panel-btn {
-    position: absolute;
-    left: -40px;
-}
-
 .styles-panel .m-stylemanager-buttons-wrap button {
     margin-left: 5px;
 }
@@ -957,24 +905,6 @@ select:disabled {
 }
 
 @media only screen and (max-width: 768px) {
-    .m-stylemanager-container-select .m-stylemanager-buttons-wrap #m-stylemanager-select {
-        margin-left: 0;
-    }
-
-    .m-stylemanager-container-select[open-select] .m-stylemanager-buttons-wrap #m-stylemanager-select {
-        margin-left: 0;
-    }
-
-    .m-areas>div.m-area>div.m-panel.m-stylemanager.opened {
-        width: 100vw;
-        height: 100vh;
-        position: fixed;
-        top: 0;
-        left: 0;
-        margin: 0;
-        z-index: 10000;
-        overflow: auto;
-    }
 
     .m-stylemanager-control {
         min-width: auto;
@@ -1018,21 +948,6 @@ select:disabled {
 
     .m-stylemanager-simple-section {
         height: 100%;
-    }
-
-    .m-stylemanager-buttons-wrap {
-        height: 27px !important;
-    }
-
-    .m-areas>div.m-area>div.m-panel.m-stylemanager.opened>button.m-panel-btn {
-        left: auto;
-        right: 0px;
-        box-shadow: none;
-        height: 48px;
-    }
-
-    .m-areas>div.m-area>div.m-panel>div.m-panel-controls>div {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, .2), 0 -1px 0 rgba(0, 0, 0, .02);
     }
 
     .m-stylemanager-container-select {
