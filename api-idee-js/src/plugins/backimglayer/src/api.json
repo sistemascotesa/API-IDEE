@@ -10,7 +10,11 @@
       "type": "simple",
       "name": "position",
       "position": 0,
+<<<<<<< HEAD
       "possibleValues": ["right", "left"]
+=======
+      "possibleValues": ["left", "right"]
+>>>>>>> ec69d66c9 (Fix: Cambio a la nueva versión)
     }, {
       "type": "boolean",
       "name": "collapsed",
@@ -20,41 +24,45 @@
       "name": "collapsible",
       "position": 2
     }, {
+      "type": "number",
+      "name": "order",
+      "position": 3
+    }, {
       "type": "simple",
       "name": "tooltip",
-      "position": 3
+      "position": 4
     }, {
       "type": "boolean",
       "name": "layerVisibility",
-      "position": 4
-    }, {
-      "type": "number",
-      "name": "layerId",
       "position": 5
     }, {
       "type": "number",
-      "name": "columnsNumber",
+      "name": "layerId",
       "position": 6
+    }, {
+      "type": "number",
+      "name": "columnsNumber",
+      "position": 7
     }, {
       "type": "boolean",
       "name": "empty",
-      "position": 7
-    }, {
-      "type": "simple",
-      "name": "ids",
       "position": 8
     }, {
       "type": "simple",
-      "name": "titles",
+      "name": "ids",
       "position": 9
     }, {
       "type": "simple",
-      "name": "previews",
+      "name": "titles",
       "position": 10
     }, {
       "type": "simple",
-      "name": "layers",
+      "name": "previews",
       "position": 11
+    }, {
+      "type": "simple",
+      "name": "layers",
+      "position": 12
     }]
   }],
   "files": {
@@ -79,7 +87,7 @@
     "name": "backimglayer",
     "description": "Sets background layer",
     "text": "Shows different options for background layer as clickable images and changes background layer on click on an option.",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "date": "3rd September 2019",
     "author": "CNIG",
     "org": "CNIG",

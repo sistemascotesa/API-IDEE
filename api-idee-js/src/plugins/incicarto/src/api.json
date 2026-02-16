@@ -20,25 +20,29 @@
       "name": "collapsible",
       "position": 2
     }, {
-      "type": "simple",
-      "name": "tooltip",
+      "type": "number",
+      "name": "order",
       "position": 3
     }, {
       "type": "simple",
-      "name": "wfszoom",
+      "name": "tooltip",
       "position": 4
     }, {
       "type": "simple",
-      "name": "prefixSubject",
+      "name": "wfszoom",
       "position": 5
     }, {
       "type": "simple",
-      "name": "interfazmode",
+      "name": "prefixSubject",
       "position": 6
+    }, {
+      "type": "simple",
+      "name": "interfazmode",
+      "position": 7
     }, {
       "type": "boolean",
       "name": "isDraggable",
-      "position": 7
+      "position": 8
     }]
   }],
   "files": {
@@ -55,7 +59,7 @@
     "name": "Incicarto",
     "description": "Plugin para dar de alta incidencias.",
     "text": "Plugin para dar de alta incidencias.",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "date": "May 2020",
     "author": "",
     "org": "",

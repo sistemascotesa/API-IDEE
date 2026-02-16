@@ -11,12 +11,7 @@
       "type": "simple",
       "name": "position",
       "position": 0,
-      "possibleValues": [
-        "TL",
-        "TR",
-        "BR",
-        "BL"
-      ]
+      "possibleValues": ["left", "right"]
     },
     {
       "type": "boolean",
@@ -27,51 +22,56 @@
       "type": "boolean",
       "name": "collapsible",
       "position": 2
+    }, 
+    {
+      "type": "number",
+      "name": "order",
+      "position": 3
     },
     {
       "type": "simple",
       "name": "tooltip",
-      "position": 3
+      "position": 4
     },
     {
       "type": "boolean",
       "name": "isDraggable",
-      "position": 4
-    },
-    {
-      "type": "simple",
-      "name": "listLayers",
       "position": 5
     },
     {
       "type": "simple",
-      "name": "defaultCompareMode",
+      "name": "listLayers",
       "position": 6
     },
     {
-      "type": "boolean",
-      "name": "enabledKeyFunctions",
+      "type": "simple",
+      "name": "defaultCompareMode",
       "position": 7
     },
     {
       "type": "boolean",
-      "name": "transparencyParams",
+      "name": "enabledKeyFunctions",
       "position": 8
     },
     {
       "type": "boolean",
-      "name": "lyrcompareParams",
+      "name": "transparencyParams",
       "position": 9
     },
     {
       "type": "boolean",
-      "name": "mirrorpanelParams",
+      "name": "lyrcompareParams",
       "position": 10
     },
     {
       "type": "boolean",
-      "name": "windowsyncParams",
+      "name": "mirrorpanelParams",
       "position": 11
+    },
+    {
+      "type": "boolean",
+      "name": "windowsyncParams",
+      "position": 12
     }
   ]
   }],
@@ -97,7 +97,7 @@
     "name": "comparators",
     "description": "Herramienta de comparación.",
     "text": "Herramienta de comparación.",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "date": "02th January 2026",
     "author": "",
     "org": "CNIG",

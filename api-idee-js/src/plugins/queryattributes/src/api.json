@@ -20,17 +20,21 @@
       "name": "collapsible",
       "position": 2
     }, {
-      "type": "simple",
-      "name": "tooltip",
+      "type": "number",
+      "name": "order",
       "position": 3
     }, {
-      "type": "boolean",
-      "name": "filters",
+      "type": "simple",
+      "name": "tooltip",
       "position": 4
     }, {
       "type": "boolean",
-      "name": "refreshBBOXFilterOnPanning",
+      "name": "filters",
       "position": 5
+    }, {
+      "type": "boolean",
+      "name": "refreshBBOXFilterOnPanning",
+      "position": 6
     }]
   }],
   "files": {
@@ -47,7 +51,7 @@
     "name": "queryattributes",
     "description": "Búsqueda con filtros",
     "text": "Permite realizar búsquedas y aplicar diferentes filtros. Da la posibilidad de poder exportar la consulta",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "date": "Abril, 2020",
     "author": "",
     "org": "Guadaltel",
