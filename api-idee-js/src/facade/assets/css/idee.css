@@ -43,9 +43,9 @@
 
     --left-width: 0px;
     --right-width: 0px;
-    --buttons-width: 3.5rem;
+    --buttons-width: minmax(3.5rem, max-content);
     --up-height: 0px;
-    --down-height: 72px;
+    --down-height: minmax(72px, max-content);
 
     grid-template-columns:
         var(--left-width) var(--buttons-width) auto var(--buttons-width) var(--right-width);
