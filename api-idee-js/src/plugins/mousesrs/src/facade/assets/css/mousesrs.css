@@ -11,7 +11,7 @@
     border: 2px solid white;
     gap: 2px;
     position: relative;
-    box-shadow: 5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
 }
 
 .m-control.m-container.m-mousesrs-container .m-mouse-srs {
