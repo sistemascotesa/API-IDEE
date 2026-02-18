@@ -1,7 +1,5 @@
 #m-rotate-button {
-  /* top: 50%;
-  left: 50%;
-  position: absolute; */
+  background-color: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
 }
