@@ -11,10 +11,10 @@
     border: 2px solid white;
     gap: 2px;
     position: relative;
+    box-shadow: 5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
 }
 
 .m-control.m-container.m-mousesrs-container .m-mouse-srs {
-    font-family: 'Muli', sans-serif !important;
     font-size: 12px;
 }
 

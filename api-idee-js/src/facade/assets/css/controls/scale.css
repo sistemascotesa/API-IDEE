@@ -1,24 +1,27 @@
-
 .m-control.m-scale-container {
+    min-height: calc(28px - 1.6px * 2);
+    height: auto;
     display: flex !important;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.25em;
-    justify-content: center;
     align-items: center;
-    padding: .25em .75em !important;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-radius: 20px;
+    gap: 0.25em;
+    padding: 0 .75em !important;
     margin: 0;
-    border-radius: 16px;
     width: 100%;
     min-width: 132px;
-    height: auto !important;
-    font-size: 12px !important;
-    vertical-align: middle !important;
+    font-size: 12px;
+    vertical-align: middle;
     white-space: pre;
     order: 3;
-    font-weight: bold;
-    font-size: smaller;
     font-weight: normal;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02) ;
+}
+
+.m-control.m-scale-container:before {
+    color: #a35d38;
+    margin-right: 5px;
 }
 
 .m-control.m-scale-container>.m-unit:before {
@@ -90,6 +93,4 @@
     }
 }
 
-@media only screen and (max-width: 768px) {
-
-}
+@media only screen and (max-width: 768px) {}

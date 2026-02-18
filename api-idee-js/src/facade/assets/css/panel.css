@@ -331,12 +331,14 @@ div.m-panel>button {
     background-color: transparent !important;
     border-radius: 0px !important;
 }
+
 .m-panel>div.m-panel-controls>div {
     position: inherit !important;
     overflow: hidden;
     padding: 0px;
     display: table;
 }
+
 /****************************
      CONTROLS WITHOUTH SHADOW
 ****************************/
@@ -430,32 +432,6 @@ div.m-panel>button {
         border-top-left-radius: 20px !important;
         border-bottom-left-radius: 20px !important;
     }
-}
-
-.m-areas>div.m-area>div.m-panel>div.m-panel-controls .m-mouse-position {
-    background-color: white !important;
-    padding: 6px 12px 3px 12px !important;
-    font-family: 'Muli', 'sans-serif' !important;
-    font-size: 12px !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02) !important;
-    display: inline;
-    height: 15px !important;
-}
-
-.m-scale-container {
-    background-color: white !important;
-    padding: 6px 12px 3px 12px !important;
-    font-family: 'Muli', 'sans-serif' !important;
-    font-size: 12px !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02) !important;
-    display: flex !important;
-    height: 15px;
-    white-space: pre;
-}
-
-.m-scale-container:before {
-    color: #a35d38;
-    margin-right: 5px;
 }
 
 .m-wmcselector-container {
