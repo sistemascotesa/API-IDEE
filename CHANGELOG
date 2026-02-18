@@ -73,6 +73,7 @@
 - Se incorpora a API-IDEE el plugin wfstcontrols.
 - Refactoriza el añadido de controles para extraer la lógica a un builder. Soluciona problema al añadir controles por duplicado. Soluciona problemas al añadir controles con constructor.
 - Se añade creación de visualizadores mediante peticiones POST.
+- Se soluciona problemas con el parseo de etiquetas CSS en plugin information.
 
 
 01/01/25 - Versión 1.0.0
