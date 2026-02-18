@@ -5,12 +5,13 @@ import { map as Mmap } from 'IDEE/api-idee';
 // import ScaleLine from 'IDEE/control/ScaleLine';
 // import Scale from 'IDEE/control/Scale';
 
-const map = Mmap({
+// eslint-disable-next-line no-unused-vars
+const mapa = Mmap({
   container: 'map',
+  position: '',
   projection: 'EPSG:3857',
-  controls: ['scaleline', 'scale'],
-  // controls: [Panzoombar.NAME],
-  // controls: [Panzoom.NAME],
+  controls: ['scale*false', 'scaleline', 'panzoom', 'panzoombar'],
+  // controls: ['scale*true', 'scaleline', 'panzoom', 'panzoombar'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 5,
   maxZoom: 20,

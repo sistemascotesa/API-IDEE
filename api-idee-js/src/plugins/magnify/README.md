@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Magnify</small></h1>
 
@@ -81,7 +81,7 @@ https://componentes.idee.es/api-idee?magnify=position*layers*zoomMax*zoom
 ```
 
 ```
-https://componentes.idee.es/api-idee?layers=OSM,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*EPSG:25830*imagen*true*image/jpeg&projection=EPSG:25830&magnify=TL*OI.OrthoimageCoverage*16*5
+https://componentes.idee.es/api-idee?layers=OSM,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*EPSG:25830*imagen*true*image/jpeg&projection=EPSG:25830&magnify=TL*OI.OrthoimageCoverage*16*5&bbox=-2595076.7019215897,3568596.502104186,2066485.2270033162,4625706.608821015
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -103,7 +103,7 @@ Ejemplo de constructor:
 ```
 
 ```
-https://componentes.idee.es/api-idee?layers=OSM,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*EPSG:25830*imagen*true*image/jpeg&projection=EPSG:25830&magnify=base64=eyJwb3NpdGlvbiI6IlRMIiwiem9vbU1heCI6MTksInpvb20iOjUsImxheWVycyI6Ik9JLk9ydGhvaW1hZ2VDb3ZlcmFnZSJ9
+https://componentes.idee.es/api-idee?layers=OSM,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*EPSG:25830*imagen*true*image/jpeg&projection=EPSG:25830&magnify=base64=eyJwb3NpdGlvbiI6IlRMIiwiem9vbU1heCI6MTksInpvb20iOjUsImxheWVycyI6Ik9JLk9ydGhvaW1hZ2VDb3ZlcmFnZSJ9&bbox=-2595076.7019215897,3568596.502104186,2066485.2270033162,4625706.608821015
 ```
 
 

@@ -328,6 +328,14 @@ params.forEach((param) => {
   IDEE.config('DPI', 72);
 
   /**
+   * MAP Viewer - DPI OGC (Dots per inch for OGC services)
+   * 
+   * @private
+   * @type {Number}
+   */
+  IDEE.config('DPI_OGC', 90.714285714);
+
+  /**
    * Mueve el mapa cuando se hace clic sobre un objeto
    * geográfico, (extract = true) o no (extract = false)
    *

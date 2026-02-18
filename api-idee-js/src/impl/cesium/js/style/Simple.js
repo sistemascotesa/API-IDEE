@@ -92,9 +92,11 @@ class Simple extends Style {
           if (!isNullOrEmpty(cesiumFeature[cesiumType])) {
             if (!isNullOrEmpty(label)) {
               cesiumFeature.label = label;
-              cesiumFeature.label.disableDepthTestDistance = Number.POSITIVE_INFINITY;
               if (type !== 'point') {
-                cesiumFeature.position = ImplUtils.getCenter(cesiumFeature[cesiumType]);
+                cesiumFeature.position = ImplUtils.getCenter(
+                  cesiumFeature[cesiumType],
+                  style.extrudedHeight,
+                );
               }
             } else {
               cesiumFeature.label = undefined;

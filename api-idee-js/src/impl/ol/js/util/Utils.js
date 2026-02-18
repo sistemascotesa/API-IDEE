@@ -11,7 +11,6 @@ import {
   get as getProj,
   getTransform,
   transformExtent,
-  getPointResolution,
 } from 'ol/proj';
 import OLFeature from 'ol/Feature';
 import WKB from 'ol/format/WKB';
@@ -663,16 +662,25 @@ class Utils {
     const ang = pix2[2] - pix2[0];
     // (numero de metros en el mapa / numero de pixeles) / metros por pixel
     let scale = (((mpu * ang) / pix) * 1000) / 0.28;
-    if (!exact === true) {
-      if (scale >= 1000 && scale <= 950000) {
-        scale = Math.round(scale / 1000) * 1000;
-      } else if (scale >= 950000) {
-        scale = Math.round(scale / 1000000) * 1000000;
-      } else {
-        scale = Math.round(scale);
-      }
-    }
+    if (!exact === true) scale = Utils.getRoundScale(scale);
     return Math.trunc(scale);
+  }
+
+  /**
+   * Returns an integer representing a valid scale
+   * @param {number} scale
+   * @returns {number}
+   */
+  static getRoundScale(scale) {
+    let newScale = scale;
+    if (newScale >= 1000 && newScale <= 950000) {
+      newScale = Math.round(newScale / 1000) * 1000;
+    } else if (newScale >= 950000) {
+      newScale = Math.round(newScale / 1000000) * 1000000;
+    } else {
+      newScale = Math.round(newScale);
+    }
+    return newScale;
   }
 
   /**
@@ -680,22 +688,13 @@ class Utils {
    *
    * @function
    * @param {Number} resolution Resolución del mapa.
-   * @param {View} view Vista del mapa.
-   * @param {Number} dpi DPI del mapa (por defecto 72).
-   * @returns {Number} Escala calculada.
+   * @param {Boolean} exact Devuelve la escala exacta o aproximada.
    * @public
    * @api
    */
-  static getScaleForResolution(resolution, view, dpi = 72) {
-    const projection = view.getProjection();
-    const center = view.getCenter();
-    const inchesPerMeter = 39.3700787;
-    const units = projection.getUnits();
-
-    const pointResolution = getPointResolution(projection, resolution, center, units);
-    const scale = pointResolution * inchesPerMeter * dpi;
-
-    return Math.round(scale);
+  static getScaleForResolution(resolution, exact) {
+    const scale = Math.round(resolution / 0.00028);
+    return exact ? scale : Math.round(Utils.getRoundScale(scale));
   }
 
   /**
@@ -705,19 +704,19 @@ class Utils {
    * @function
    * @param {View} view Vista del mapa.
    * @param {String} inputValue Valor de entrada para la escala.
-   * @param {Number} dpi DPI del mapa (por defecto 72).
+   * @param {Number} dpi DPI del mapa.
    * @returns {Number} Resolución de la vista correspondiente a la escala.
    * @public
    * @api
    */
-  static getCurrentScale(view, inputValue, dpi = 72) {
+  static getCurrentScale(inputValue, dpi) {
     const inchesPerMeter = 39.3700787;
     const scale = parseFloat(inputValue.replace(/\./g, ''));
     const calculateResolution = (targetScale) => {
       let resolution = targetScale / (inchesPerMeter * dpi);
 
       for (let i = 0; i < 3; i + 1) {
-        const currentScale = this.getScaleForResolution(resolution, view, dpi);
+        const currentScale = this.getScaleForResolution(resolution);
         const error = targetScale - currentScale;
         resolution *= (targetScale / currentScale);
 
@@ -764,6 +763,7 @@ class Utils {
    *
    * @function
    * @param {String} json Objeto GeoJSON a parsear
+   * @param {IDEE.Projection|String} mapProjection proyección del mapa
    * @param {IDEE.Projection|String} featureProjection proyección con la que
    * se va a crear cada una de las features al ser leidas por el formato WKB
    * @returns {Array<IDEE.Feature>} objeto en formato WKB
@@ -791,19 +791,23 @@ class Utils {
    *
    * @function
    * @param {String} json Objeto WKT a parsear
+   * @param {IDEE.Projection|String} mapProjection proyección del mapa
    * @param {IDEE.Projection|String} featureProjection proyección con la que
    * se va a crear cada una de las features al ser leidas por el formato WKB
    * @returns {Array<IDEE.Feature>} objeto en formato WKB
    * @public
    * @api
    */
-  static parseWKTToWKB(wkt, projection) {
+  static parseWKTToWKB(wkt, mapProjection, featureProjection) {
     const wkbFormat = new WKB();
     const wktFormat = new WKTFormat();
-    const olFeature = wktFormat.read(wkt, {
-      featureProjection: projection,
+    const olFeatures = wktFormat.readCollection(wkt, {
+      mapProjection,
+      featureProjection,
     });
-    return wkbFormat.writeFeatures(olFeature.getImpl().getFeature());
+    return olFeatures.map((feature) => {
+      return wkbFormat.writeFeature(feature.getImpl().getFeature());
+    });
   }
 }
 export default Utils;

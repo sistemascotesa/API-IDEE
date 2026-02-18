@@ -1,19 +1,17 @@
 24/10/25 Versión 2.0.0
 - Se añade el método getImageMap para generar la imagen del mapa.
 - Se soluciona problemas con filtros espaciales en Cesium.
-- Se añaden a utilidades los métodos: getWMTSCapabilities.
 - Se soluciona problema en estilos con patrones en polígonos.
 - No se va a tener en cuenta el label para determinar si un estilo es dinámico o no.
 - Mejora la visualización de leyendas.
 - Se elimina el tipo de capa draw (implementación).
 - Se añade el método enableMouseWheel para controlar la interacción de zoom con la rueda del ratón.
 - Se añaden los métodos get y remove OverlayLayers.
-- Se añaden a utilidades los métodos: removeHTML, replaceNode, classToggle, setEquals, getFeaturesExtent
+- Se añaden a utilidades los métodos: removeHTML, replaceNode, classToggle, setEquals, getFeaturesExtent, getWMTSCapabilities, rgbaToHex y rgbToHex.
 - Mejoras sobre el método getWMSGetCapabilitiesUrl de utilidades.
 - Se elimina replace del método loadInternal_ de JSONP.
 - Se desarrolla la implementación en Cesium del control rotate.
 - Se mejora el lanzamiento del evento REMOVED_FROM_MAP en WMS y LayerGroup.
-- Se añaden a utilidades los métodos: rgbaToHex, rgbToHex
 - Se modifica imagen de dynamicLegend usada en estilos con funciones y se soluciona problemas con estilos genéricos y leyendas con funciones.
 - Se permite añadir nuevas proyecciones con el método addProjections sin tener que ponerlas en forma de array, además se controla el añadido de proyecciones duplicadas.
 - Añadido método hasControl en la clase Map para comprobar si un control está añadido al mapa.
@@ -22,7 +20,7 @@
 - En capas MBTilesVectors tileLoadFunction_ pasa a público por lo que ahora se renombra a tileLoadFunction.
 - MBTilesVector hereda de Vector la funcionalidad extract.
 - Se implementa el uso de ticket en WFS.
-- Se añade el metodo generateRandomStyle a utilidades de estilo.
+- Se añade el método generateRandomStyle a utilidades de estilo.
 - Se configura la URL de recursos estáticos para poder personalizar la URL del despliegue del mismo.
 - Se modifica el desarrollo del método getCentroid de utilidades (implementación).
 - El control location sitúa al usuario y detectará cambios de posición.
@@ -31,7 +29,6 @@
 - Se elimina código innecesario y se soluciona problema con asignación de estilos en capas MBTilesVector.
 - Añadido método activateBaseLayer en Layer, para que cuando una capa base sea eliminada, se active otra si hay.
 - Se implementa la posibilidad de enviar un callback a getMaxExtent de mbtiles.
-- Mejora la visualización de leyendas.
 - Soluciona errores en el comportamiento de isVisible en MVT.
 - Se soluciona un error al devolver el legendURL de una capa Vector con estilos cluster composite.
 - Se elimina el método getFeaturesExtentPromise de GeoJSON para que herede de Vector.
@@ -59,8 +56,23 @@
 - Se implementan las capas externas y sus dependencias.
 - Añadido el método privado addUpClass_ para evitar choque con controles wmcselector, scale y scaleline.
 - Se incorporan a API-IDEE los plugins mapheader y mapfooter.
-- Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los plugins queryattributes, infoccordinates y modal.
-- se modifica el comportamiento del método getMaxExtent de MVT para que devuelva el extent en el siguiente orden: el especificado por el usuario, el de la extensión de los features, el especificado en el mapa o el de la proyección en función del que pueda obtener.
+- Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: queryattributes, infocoordinates, modal, vectorsmanagement, incicarto, locator, measurebar, viewmanagement y storymap.
+- Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: selectionzoom, contactlink, printviewmanagement, sharemap, information, backimglayer, comparators y timeline.
+- Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: basic, help, layerswitcher, locatorscn, mousesrs, overviewmap y stereoscopic
+- Se modifica el comportamiento del método getMaxExtent de MVT para que devuelva el extent en el siguiente orden: el especificado por el usuario, el de la extensión de los features, el especificado en el mapa o el de la proyección en función del que pueda obtener.
+- Se incorpora el método setToClosestScale a la clase Mapa que permite aplicar una resolución al mapa en función de una escala dada.
+- Se resuelve problema con gestión de evento change cuando se llaman a los métodos redraw, addfeatures y removefeatures.
+- El evento ADDED_TO_MAP de Vector se disparará desde fachada.
+- Se añade el método enablePan para permitir o no arrastrar el mapa, y se incluye enableDrag como método deprecado.
+- Implementa la posibilidad de rotar en mapa en el control rotate usando la bolita como en Mapea. Soluciona problemas de estilo.
+- Soluciona problemas de reproyección en capas MBTiles y WMC.
+- Se incorpora a API-IDEE el plugin filteredsearch.
+- Se añade nuevo tipo de capa Geopackage disponible en Mapea (se incluyen los eventos added_geopackage y added_geopackage_tile).
+- Implementado el parámetro rotación en el constructor de mapa.
+- En el método drawPath_ de OLStyleFontSymbol se elimina un +1 que daba un efecto insignificante.
+- Se incorpora a API-IDEE el plugin wfstcontrols.
+- Refactoriza el añadido de controles para extraer la lógica a un builder. Soluciona problema al añadir controles por duplicado. Soluciona problemas al añadir controles con constructor.
+- Se añade creación de visualizadores mediante peticiones POST.
 
 
 01/01/25 - Versión 1.0.0
@@ -182,4 +194,5 @@
 - Se parametriza los niveles de DPI y los layouts en los que no está permitido el cambio de DPI.
 - Se modifica Punto, Linea, Poligono, Genérico y proporcional para que use isNUllOrEmpty a secas donde procede, y modificado isNullOrEmpty para solucionar un error.
 - Mejoras sobre las plantillas y Handlebars que permite el registro de funciones tanto en núcleo como en extensiones (plugins).
+- Se optimiza la eliminacion de todas las features en el redeaw de Vector
 

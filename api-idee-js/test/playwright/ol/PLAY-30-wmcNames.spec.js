@@ -4,7 +4,7 @@ test.describe('IDEE.layer.WMC', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/test/playwright/ol/basic-ol.html');
     await page.evaluate(() => {
-      IDEE.proxy(true);
+      // IDEE.proxy(true);
       const map = IDEE.map({
         container: 'map',
         projection: 'EPSG:25830*d',

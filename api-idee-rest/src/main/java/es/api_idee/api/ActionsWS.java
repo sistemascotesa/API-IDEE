@@ -137,7 +137,6 @@ public class ActionsWS {
 
 		JSONObject projectionJSON = new JSONObject();
 		projectionJSON.put("code", projection[0]);
-		projectionJSON.put("units", projection[1]);
 
 		return JSBuilder.wrapCallback(projectionJSON, callbackFn);
 	}

@@ -73,6 +73,7 @@ export let useproxy = false;
  */
 export const proxy = (enable) => {
   if (typeof enable === 'boolean') {
+    IDEE.useproxy = enable;
     useproxy = enable;
   }
 };
