@@ -108,7 +108,7 @@ export const getScaleLinePanel = (control, map, params = {}) => {
  * @api stable
  */
 export const getMeasureBarPanel = (control, map, params = {}) => {
-  const panel = ControlPanel(MeasureBar.NAME, {
+  const panel = new ControlPanel(MeasureBar.NAME, {
     ...getDefaultPanelOptions(control, params),
     className: `m-control-${MeasureBar.NAME}`,
     collapsedButtonClass: 'g-cartografia-regla',
