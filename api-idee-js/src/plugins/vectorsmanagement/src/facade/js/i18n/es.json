@@ -175,5 +175,6 @@
   "fill": "Relleno",
   "stroke": "Trazo",
   "opts_point": "Opciones de puntos",
-  "readingAltitude": "Consultando..."
+  "readingAltitude": "Consultando...",
+  "info_remove_vertex": "Para eliminar el vértice, utiliza 'alt + clic' sobre el vértice a eliminar"
 }

@@ -496,6 +496,7 @@ export default class EditionControl extends IDEE.Control {
    * @api stable
    */
   activateEdition() {
+    IDEE.toast.info(getValue('info_remove_vertex'), null, 6000);
     this.getImpl().activateSelection(this.defaultSnap);
   }
 
