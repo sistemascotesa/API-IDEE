@@ -6,6 +6,7 @@ const map = IDEE.map({
   container: 'mapjs',
   projection: 'EPSG:3857',
   // controls: ['backgroundlayers', 'scale'],
+  // controls: ['rotate', 'panzoombar', 'scale', 'scaleline'],
   center: [-443729, 4860856],
   zoom: 8,
 });
