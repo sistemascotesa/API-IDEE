@@ -20,7 +20,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api stable
    */
-  constructor(decimalGEOcoord, decimalUTMcoord, helpUrl, order, outputDownloadFormat) {
+  // constructor(decimalGEOcoord, decimalUTMcoord, helpUrl, order, outputDownloadFormat) {
+  constructor(options = {}) {
     // 1. checks if the implementation can create PluginControl
     if (IDEE.utils.isUndefined(InfocoordinatesImplControl)
       || (IDEE.utils.isObject(InfocoordinatesImplControl)
@@ -29,18 +30,18 @@ export default class InfocoordinatesControl extends IDEE.Control {
     }
     // 2. implementation of this control
     const impl = new InfocoordinatesImplControl();
-    super('Infocoordinates', impl);
+    super('Infocoordinates', impl, options);
     this.map = null;
     this.numTabs = 0;
     this.layerFeatures = new IDEE.layer.Vector();
     this.layerFeatures.name = 'infocoordinatesLayerFeatures';
     this.layerFeatures.displayInLayerSwitcher = false;
-    this.decimalGEOcoord_ = decimalGEOcoord;
-    this.decimalUTMcoord_ = decimalUTMcoord;
-    this.helpUrl = helpUrl;
+    this.decimalGEOcoord_ = options.decimalGEOcoord;
+    this.decimalUTMcoord_ = options.decimalUTMcoord;
+    this.helpUrl = options.helpUrl;
     this.clickedDeactivate = false;
-    this.order = order;
-    this.outputDownloadFormat = outputDownloadFormat;
+    this.order = options.order;
+    this.outputDownloadFormat = options.outputDownloadFormat;
     this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
     this.selectedProjection = null;
 

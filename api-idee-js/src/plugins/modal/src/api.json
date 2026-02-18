@@ -10,11 +10,7 @@
       "type": "simple",
       "name": "position",
       "position": 0,
-<<<<<<< HEAD
       "possibleValues": ["center-top-left", "center-top-right", "center-bottom-left", "center-bottom-right", "left", "right", "down"]
-=======
-      "possibleValues": ["left", "right"]
->>>>>>> ec69d66c9 (Fix: Cambio a la nueva versión)
     }, {
       "type": "boolean",
       "name": "collapsed",
