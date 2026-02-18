@@ -16,8 +16,8 @@ test.describe('IDEE.control.Scale', () => {
   });
 
   test('Verificar escala al cambiar el nivel de zoom', async ({ page }) => {
-    const zoomLevel = 7;
-    const expectedScale = 2761266;
+    const zoomLevel = 4;
+    const expectedScale = 34942642;
 
     await page.evaluate(async (zoom) => {
       const zoomElement = document.querySelector('#m-level-number');
