@@ -40,7 +40,8 @@ class Rotate extends Control {
   addTo(map, template) {
     super.addTo(map, template);
     const olMap = map.getMapImpl();
-    // panel que envuelve el control, no es padre
+    this.olMap = olMap;
+    // panel
     this.panel = template;
     // REV_OL
     // El funcionamiento por defecto en OL es mostrar el control oculto
@@ -50,7 +51,7 @@ class Rotate extends Control {
     // this.panel.style.display = 'none';
     // }
     this.panel.querySelector('button').addEventListener('click', () => {
-      olMap.getView().setRotation(0);
+      this.resetRotation();
     });
 
     this.addRotationEvent(olMap);
@@ -98,6 +99,31 @@ class Rotate extends Control {
   destroy() {
     this.facadeMap_.getMapImpl().removeControl(this);
     this.facadeMap_ = null;
+  }
+
+  /**
+   * Restaura la rotación del mapa a 0.
+   *
+   * @public
+   * @function
+   * @api
+   */
+  resetRotation() {
+    this.olMap.getView().setRotation(0);
+  }
+
+  /**
+   * TODO:
+   */
+  onChangeView(html) {
+    const marker = html.querySelector('#m-rotate-marker');
+    this.olMap.on('change:view', (e) => {
+      e.target.getView().on('change:rotation', (ev) => {
+        const newView = ev.target;
+        const rotation = newView.getRotation();
+        marker.style.transform = `rotate(${(rotation * (180 / Math.PI)) + 45}deg)`;
+      });
+    });
   }
 }
 

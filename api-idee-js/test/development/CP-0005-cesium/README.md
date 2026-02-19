@@ -48,3 +48,10 @@ CP-009
     [] Example #3: Patrones en líneas.
     [] Example #4: Patrones con imágenes en líneas.
 
+CP-010
+    [] Example #1: Etiquetas en puntos 2D
+    [] Example #2: Etiquetas en puntos 3D 
+    [] Example #3: Etiquetas en polígonos 2D
+    [] Example #4: Etiquetas en polígonos 3D
+    [] Example #5: Etiquetas en líneas 2D
+    [] Example #6: Etiquetas en líneas 3D

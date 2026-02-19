@@ -1,10 +1,19 @@
 #m-rotate-button {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
-  overflow: hidden;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
 #m-rotate-button:hover {
   background-color: var(--idee-color-links) !important;
+}
+
+.m-rotate-slider {
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  cursor: pointer;
+  position: absolute;
 }
 
 .m-control-panel.m-rotate.opened.no-collapsible>div.m-controls-panel {
@@ -14,7 +23,7 @@
 }
 
 div.m-control.m-rotate-container {
-  overflow: hidden;
+  overflow: visible !important;
 }
 
 .m-panel.m-rotate.opened {
@@ -40,34 +49,9 @@ div.m-control.m-rotate-container {
   fill: var(--idee-color-primary);
 }
 
-.m-rotate-background-exterior,
-.m-rotate-svgPath-svg {
-  position: absolute;
-  width: 99px;
-  height: 99px;
-}
-
-.m-rotate-svgPath-svg {
-  width: 100px;
-}
-
-.m-rotate-exterior-svg {
-  position: absolute;
-  width: 120px;
-  height: 120px;
-  overflow: hidden;
-}
-
 .m-rotate-exterior-svg.g-cartografia-exterior-1:before {
   color: #fff;
   font-size: 100px;
-}
-
-.m-rotate-giroscopio-svg {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  box-sizing: content-box;
 }
 
 .m-rotate-giroscopio-svg.g-cartografia-giroscopio:before {
@@ -94,6 +78,33 @@ div.m-control.m-rotate-container {
   text-align: center;
   font-family: 'Muli', 'sans-serif';
   font-size: 18px;
+}
+
+#m-rotate-slider-container {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: #fff !important;
+  opacity: 1;
+  background-color: var(--idee-color-primary) !important;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+}
+
+#m-rotate-marker {
+  position: absolute;
+  left: -5%;
+  top: -5%;
+  width: 110%;
+  height: fit-content;
+  aspect-ratio: 1;
+}
+
+#m-rotate-marker-circle {
+  stroke: var(--idee-color-primary-dark);
+  fill: #fff;
+  cursor: pointer;
 }
 
 .m-rotate-help-button:hover {

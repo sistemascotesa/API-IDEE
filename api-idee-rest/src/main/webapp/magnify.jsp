@@ -81,6 +81,7 @@
             container: 'mapjs',
             layers: ['OSM', 'WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*EPSG:25830*imagen*true*image/jpeg&projection=EPSG:25830&magnify=TL*OI.OrthoimageCoverage*16'],
             projection: 'EPSG:25830',
+            bbox: [-2595076.7019215897, 3568596.502104186, 2066485.2270033162, 4625706.608821015],
         });
 
         let mp = null;

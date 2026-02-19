@@ -34,7 +34,7 @@ const updateElement = (container, map) => {
   const containerVariable = container;
   const view = map.getMapImpl().getView();
   const resolution = view.getResolution();
-  const dpi = IDEE.config.DPI;
+  const dpi = IDEE.config.DPI_OGC;
   const num = Utils.getScaleForResolution(resolution, view, dpi);
 
   if (!isNullOrEmpty(num)) {
@@ -64,7 +64,7 @@ class Scale extends Control {
    * @api stable
    */
   constructor(options = {}) {
-    super(options);
+    super();
     this.facadeMap_ = null;
   }
 
@@ -157,9 +157,8 @@ class Scale extends Control {
             this.scaleContainer_.textContent = scaleText;
             const view = this.facadeMap_.getMapImpl().getView();
             const resolution = Utils.getCurrentScale(
-              this.facadeMap_.getMapImpl().getView(),
               scaleText,
-              IDEE.config.DPI,
+              IDEE.config.DPI_OGC,
             );
             view.animate({
               center: view.getCenter(),

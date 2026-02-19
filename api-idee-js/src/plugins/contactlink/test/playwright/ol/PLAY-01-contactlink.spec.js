@@ -19,7 +19,7 @@ test('Test contactlink', async ({ page }) => {
       facebook: 'https://www.facebook.com/IGNSpain/',
       pinterest: 'https://www.pinterest.es/IGNSpain/',
       youtube: 'https://www.youtube.com/user/IGNSpain',
-      mail: 'mailto:ign@fomento.es',
+      mail: 'mailto:consulta@cnig.es',
       tooltip: 'Contacta con nosotros',
       // order: 1, //
     });

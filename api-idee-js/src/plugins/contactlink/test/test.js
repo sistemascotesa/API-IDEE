@@ -3,7 +3,6 @@ import ContactLink from 'facade/contactlink';
 import { LEFT } from '../../../facade/js/ui/position';
 
 IDEE.language.setLang('es');
-// IDEE.language.setLang('en');
 
 const map = IDEE.map({
   container: 'mapjs',

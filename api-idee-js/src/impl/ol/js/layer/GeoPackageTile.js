@@ -130,12 +130,7 @@ class GeoPackageTile extends Layer {
         this.olLayer.setVisible(visibility);
       }
 
-      // updates resolutions and keep the bbox
-      const oldZoom = this.map.getZoom();
       this.map.getImpl().updateResolutionsFromBaseLayer();
-      if (!isNullOrEmpty(oldZoom)) {
-        this.map.setZoom(oldZoom);
-      }
     } else if (!isNullOrEmpty(this.olLayer)) {
       this.olLayer.setVisible(visibility);
     }

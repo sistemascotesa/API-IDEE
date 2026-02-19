@@ -218,7 +218,7 @@ class WMC extends Layer {
 
       // eslint-disable-next-line no-underscore-dangle
       this.map._resolutionsBaseLayer = true;
-      this.map.zoomToMaxExtent();
+      this.map.zoomToMaxExtent(true);
 
       // checks if it was the first time to
       // calculate resolutions in that case

@@ -120,7 +120,7 @@ export default class ContactLink extends IDEE.Plugin {
      * @private
      * @type {String}
      */
-    this.linksMail = options.mail || 'mailto:ign@fomento.es';
+    this.linksMail = options.mail || 'mailto:consulta@cnig.es';
 
     /**
      * Metadata from api.json

@@ -37,7 +37,6 @@
 
 .m-api-idee-tool-panels-container {
     position: absolute;
-    pointer-events: none;
     inset: 0;
     display: grid;
 
@@ -71,7 +70,6 @@
 .m-api-idee-right-panel,
 .m-api-idee-up-panel {
     position: relative;
-    pointer-events: auto;
     z-index: 3;
     background-color: #fff;
     display: flex;
@@ -105,7 +103,6 @@
 .m-api-idee-center-panel {
     grid-area: center;
     position: relative;
-    pointer-events: none;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
@@ -118,11 +115,6 @@
 .m-api-idee-right-buttons {
     grid-area: rightBtns;
     align-items: flex-end;
-    pointer-events: none;
-}
-
-.m-api-idee-right-buttons>* {
-    pointer-events: auto;
 }
 
 .m-api-idee-right-buttons .m-panel.opened {
@@ -146,11 +138,6 @@
 .m-api-idee-left-buttons {
     grid-area: leftBtns;
     align-items: flex-start;
-    pointer-events: none;
-}
-
-.m-api-idee-left-buttons>* {
-    pointer-events: auto;
 }
 
 .m-api-idee-left-buttons .m-panel.opened {
@@ -167,28 +154,24 @@
     grid-column: 1;
     grid-row: 1;
     position: relative;
-    pointer-events: auto;
 }
 
 .m-api-idee-center-panel-top-right {
     grid-column: 2;
     grid-row: 1;
     position: relative;
-    pointer-events: auto;
 }
 
 .m-api-idee-center-panel-bottom-left {
     grid-column: 1;
     grid-row: 2;
     position: relative;
-    pointer-events: auto;
 }
 
 .m-api-idee-center-panel-bottom-right {
     grid-column: 2;
     grid-row: 2;
     position: relative;
-    pointer-events: auto;
 }
 
 .m-api-idee-center-panel-top-left,
@@ -198,7 +181,6 @@
     justify-content: flex-start;
     align-items: flex-start;
     gap: 0.5em;
-    pointer-events: auto;
 }
 
 .m-api-idee-center-panel-top-right,
@@ -208,7 +190,6 @@
     justify-content: flex-start;
     align-items: flex-end;
     gap: 0.5em;
-    pointer-events: auto;
 }
 
 .m-api-idee-center-panel-bottom-left,
