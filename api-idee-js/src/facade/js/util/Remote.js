@@ -316,7 +316,7 @@ export const get = (url, data, options) => {
   if (!isNullOrEmpty(options) && 'useProxy' in options) {
     useProxyValue = options.useProxy;
   } else {
-    useProxyValue = null;
+    useProxyValue = useproxy;
   }
 
   const useJsonp = useProxyValue === true
