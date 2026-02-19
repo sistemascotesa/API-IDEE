@@ -1,11 +1,12 @@
 import { map as Mmap } from 'IDEE/api-idee';
+import Polygon from 'IDEE/style/Polygon';
 // import { vector_001 } from '../layers/vector/vector';
 // import { wfs_001 } from '../layers/wfs/wfs';
 // import { geojson_001 } from '../layers/geojson/geojson';
 // import { kml_001 } from '../layers/kml/kml';
 // import { mvt_001 } from '../layers/mvt/mvt';
 // import { ogcAPIFeatures_001 } from '../layers/ogcApiFeatures/ogcApiFeatures';
-// import { mbtileVector_001 } from '../layers/mbTilesVector/mbTilesVector';
+import { mbtileVectorSimple as mbTileVector } from '../layers/mbTilesVector/mbTilesVector';
 // import { generic_002 } from '../layers/generic/generic';
 
 // ---
@@ -14,22 +15,17 @@ import { map as Mmap } from 'IDEE/api-idee';
 // import { wms_001 } from '../layers/wms/wms';
 // import { wmts_001 } from '../layers/wmts/wmts';
 // import { xyz_001 } from '../layers/xyz/xyz';
-// import { osm } from '../layers/osm/osm';
-import { mbtile_01 } from '../layers/mbtiles/mbtiles';
+import { osm } from '../layers/osm/osm';
+// import { mbtile_01 as mbTile1 } from '../layers/mbtiles/mbtiles';
 // import { generic_001 } from '../layers/generic/generic';
-
-
 
 const mapa = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
-  layers: [
-    mbtile_01,
-  ],
+  layers: [osm],
 });
-
 
 // [-] KML
 // mapa.addLayers(kml_001)
@@ -66,12 +62,21 @@ const mapa = Mmap({
 //     geojson_001.setMaxExtent([-1259872.4694101033, 4359275.566199489, -85799.71494979598, 4620384.454821652])
 // }, 5000);
 
-// [-] mbtilesvector
-// mapa.addLayers(mbtileVector_001)
-// console.log(mbtileVector_001.getMaxExtent())
-// setTimeout(() => {
-//   mbtileVector_001.setMaxExtent([-1259872.4694101033, 4359275.566199489, -85799.71494979598, 4620384.454821652])
-// }, 5000);
+// [-] MBTilesVector
+mapa.addLayers(mbTileVector);
+mbTileVector.setMaxExtent(
+  [-1259872.4694101033, 4359275.566199489, -85799.71494979598, 4620384.454821652],
+);
+const capaEstilo = new Polygon({
+  fill: {
+    color: 'orange',
+  },
+  stroke: {
+    color: 'red',
+    width: 2,
+  },
+});
+// mbTileVector.setStyle(capaEstilo);
 
 // [-] OGCAPI
 // mapa.addLayers(ogcAPIFeatures_001)

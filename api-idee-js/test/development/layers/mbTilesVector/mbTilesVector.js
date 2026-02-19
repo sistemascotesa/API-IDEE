@@ -122,3 +122,10 @@ export const mbtileVector_002 = new MBTilesVector({
     }),
   }),
 });
+
+export const mbtileVectorSimple = new MBTilesVector({
+  url: 'https://componentes.idee.es/estaticos/Datos/mbtiles/countries.mbtiles',
+  layers: 'cosas',
+  visibility: true,
+  extract: true,
+});

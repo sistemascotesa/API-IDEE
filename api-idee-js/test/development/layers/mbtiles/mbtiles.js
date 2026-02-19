@@ -23,7 +23,7 @@ export const mbtile_01 = new MBTiles({
   // opacity: 0.5,
   // opacity: 1,
   // maxZoomLevel: 4,
-  // maxZoomLevel: 12,
+  maxZoomLevel: 12,
   // visibility: false,
   visibility: true,
   // isBase: false,
@@ -40,7 +40,7 @@ export const mbtile_01 = new MBTiles({
 }, {
   // minZoom: 5,
   // maxZoom: 10,
-  // crossOrigin: true,
+  crossOrigin: false,
   // displayInLayerSwitcher: true,
   // displayInLayerSwitcher: false,
 }, {
