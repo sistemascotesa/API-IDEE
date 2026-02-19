@@ -2052,6 +2052,7 @@ export const filterList = (inputId, listId) => {
 /**
  * Esta función carga un SVG desde la URL de un plugin
  *
+ * @public
  * @param {String} pluginName Nombre del plugin
  * @param {String} iconName Nombre del icono
  * @param {HTMLElement} domElement Elemento DOM donde se cargará el SVG
