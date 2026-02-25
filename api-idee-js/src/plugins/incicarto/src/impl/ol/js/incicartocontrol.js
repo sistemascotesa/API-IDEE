@@ -1201,7 +1201,6 @@ export default class IncicartoControl extends IDEE.impl.Control {
           const geom = feature.getGeometry();
           const gType = (geom.type || '').toLowerCase();
           if (gType.indexOf('point') > -1) {
-            // Usamos la propiedad .coordinates en lugar del método .setCoordinates()
             geom.coordinates = response[0];
           } else if (gType.indexOf('linestring') > -1) {
             geom.coordinates = response;
@@ -1213,7 +1212,7 @@ export default class IncicartoControl extends IDEE.impl.Control {
       }
       this._cleanLoading(calculateProfile);
     }).catch((err) => {
-      console.error('Error en perfil:', err);
+      // console.error('Error en perfil:', err);
       this._cleanLoading(calculateProfile);
     });
   }
