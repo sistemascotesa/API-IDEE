@@ -1,3 +1,4 @@
+/* eslint-disable operator-linebreak */
 /**
  * @module IDEE/control/IncicartoControl
  */
@@ -381,6 +382,7 @@ export default class IncicartoControl extends IDEE.Control {
     const strokeOptions = strokeOptionsContainer.querySelectorAll('.stroke-option');
 
     const defaultOption = strokeOptionsContainer.querySelector('.stroke-option.active');
+    // eslint-disable-next-line no-nested-ternary
     strokeOptionDefault.className = `stroke-option-default ${defaultOption.classList.contains('stroke-continuous') ? 'stroke-continuous' : defaultOption.classList.contains('stroke-dots') ? 'stroke-dots' : defaultOption.classList.contains('stroke-lines') ? 'stroke-lines' : 'stroke-dots-lines'}`;
     strokeOptionDefault.setAttribute('data-value', defaultOption.getAttribute('data-value'));
 
@@ -393,10 +395,12 @@ export default class IncicartoControl extends IDEE.Control {
         strokeOptions.forEach((opt) => opt.classList.remove('active'));
         option.classList.add('active');
         const value = option.getAttribute('data-value');
+        // eslint-disable-next-line no-nested-ternary
         const strokeClass = option.classList.contains('stroke-continuous') ? 'stroke-continuous' :
+          // eslint-disable-next-line no-nested-ternary
           option.classList.contains('stroke-dots') ? 'stroke-dots' :
-          option.classList.contains('stroke-lines') ? 'stroke-lines' :
-          'stroke-dots-lines';
+            option.classList.contains('stroke-lines') ? 'stroke-lines' :
+              'stroke-dots-lines';
         strokeOptionDefault.className = `stroke-option-default ${strokeClass}`;
         strokeOptionDefault.setAttribute('data-value', value);
 
@@ -422,21 +426,26 @@ export default class IncicartoControl extends IDEE.Control {
 
   toogleCollapse(e) {
     const elem = document.querySelector('#drawingtools .drawingToolsContainer');
-    if (elem !== null) {
+
+    const collapsor = document.querySelector('#drawingtools .collapsor');
+    const span = collapsor?.querySelector('span');
+    const svg = collapsor?.querySelector('svg');
+
+    if (elem) {
       if (elem.style.display !== 'none') {
         elem.style.display = 'none';
         const cond = this.drawLayer.getGeometryType() !== null && this.drawLayer.getGeometryType().toLowerCase() === 'linestring';
-        if (cond || (this.drawLayer.geometry !== undefined && this.drawLayer.geometry !== '' && this.drawLayer.geometry.toLowerCase() === 'linestring')) {
-          document.querySelector('#drawingtools .collapsor span').innerHTML = `${getValue('symbology_profile')}`;
-          document.querySelector('#drawingtools .collapsor svg').style.transform = '';
-        } else {
-          document.querySelector('#drawingtools .collapsor span').innerHTML = `${getValue('symbology')}`;
-          document.querySelector('#drawingtools .collapsor svg').style.transform = '';
-        }
+
+        const text = (cond || (this.drawLayer.geometry && this.drawLayer.geometry.toLowerCase() === 'linestring'))
+          ? getValue('symbology_profile')
+          : getValue('symbology');
+
+        if (span) span.innerHTML = text;
+        if (svg) svg.style.transform = '';
       } else {
         elem.style.display = 'block';
-        document.querySelector('#drawingtools .collapsor span').innerHTML = `${getValue('collapse')}`;
-        document.querySelector('#drawingtools .collapsor svg').style.transform = 'rotate(180deg)';
+        if (span) span.innerHTML = getValue('collapse');
+        if (svg) svg.style.transform = 'rotate(180deg)';
       }
     }
   }

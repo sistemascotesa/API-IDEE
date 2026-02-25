@@ -1070,6 +1070,10 @@ export default class IncicartoControl extends IDEE.impl.Control {
     const elem = document.querySelector(`#${id}`);
     const flatLength = this.getFeatureLength();
     this.calculateProfilePoints(this.facadeControl.feature, (points) => {
+      if (!points || !elem) {
+        return;
+      }
+
       let length = 0;
       for (let i = 0, ii = points.length - 1; i < ii; i += 1) {
         const geom = new ol.geom.LineString([points[i], points[i + 1]]);
@@ -1151,23 +1155,30 @@ export default class IncicartoControl extends IDEE.impl.Control {
     return parsedFeatures;
   }
 
+  // eslint-disable-next-line default-param-last
   calculateElevations(feature, calculateProfile = false, calculateProfilePoints = false, callback) {
     let coordinates = [];
+    const geometry = feature.getGeometry();
+    if (!geometry) return;
 
-    if (feature.getGeometry().type === 'MultiLineString') {
-      feature.getGeometry().coordinates.forEach((path) => {
+    const type = geometry.type;
+
+    if (type === 'MultiLineString') {
+      geometry.coordinates.forEach((path) => {
         coordinates = coordinates.concat(path);
       });
-    } else if (feature.getGeometry().type === 'Polygon') {
-      coordinates = [].concat(feature.getGeometry().coordinates[0]);
+    } else if (type === 'LineString') {
+      coordinates = [].concat(geometry.coordinates);
+    } else if (type === 'Polygon') {
+      coordinates = [].concat(geometry.coordinates[0]);
       coordinates.pop();
-    } else if (feature.getGeometry().type === 'MultiPolygon') {
-      const polygonsCoords = [].concat(...feature.getGeometry().coordinates.map((c) => c[0]));
+    } else if (type === 'MultiPolygon') {
+      const polygonsCoords = [].concat(...geometry.coordinates.map((c) => c[0]));
       coordinates = polygonsCoords;
-    } else if (feature.getGeometry().type === 'Point') {
-      coordinates = [].concat([feature.getGeometry().coordinates]);
+    } else if (type === 'Point') {
+      coordinates = [].concat([geometry.coordinates]);
     } else {
-      coordinates = [].concat(feature.getGeometry().coordinates);
+      coordinates = [].concat(geometry.coordinates);
     }
 
     let altitudeFromElevationProfileProcess;
@@ -1185,34 +1196,39 @@ export default class IncicartoControl extends IDEE.impl.Control {
         if (calculateProfile) {
           this.showProfile(response);
         } else if (calculateProfilePoints) {
-          callback(response);
+          if (typeof callback === 'function') callback(response);
         } else {
           const geom = feature.getGeometry();
-          if (geom.type.toLowerCase().indexOf('point') > -1) {
+          const gType = (geom.type || '').toLowerCase();
+          if (gType.indexOf('point') > -1) {
+            // Usamos la propiedad .coordinates en lugar del método .setCoordinates()
             geom.coordinates = response[0];
-          } else if (geom.type.toLowerCase().indexOf('linestring') > -1) {
+          } else if (gType.indexOf('linestring') > -1) {
             geom.coordinates = response;
-          } else if (geom.type.toLowerCase().indexOf('polygon') > -1) {
+          } else if (gType.indexOf('polygon') > -1) {
             geom.coordinates = [response];
           }
           feature.setGeometry(geom);
         }
-      } else {
-        if (calculateProfile) {
-          document.querySelector('.m-incicarto .m-incicarto-loading-container').innerHTML = '';
-        }
       }
-    }).catch(() => {
-      // IDEE.proxy(true);
-
-      if (calculateProfile) {
-        document.querySelector('.m-incicarto .m-incicarto-loading-container').innerHTML = '';
-      }
+      this._cleanLoading(calculateProfile);
+    }).catch((err) => {
+      console.error('Error en perfil:', err);
+      this._cleanLoading(calculateProfile);
     });
   }
 
+  _cleanLoading(calculateProfile) {
+    if (calculateProfile) {
+      const container = document.querySelector('.m-incicarto-loading-container');
+      if (container) {
+        container.innerHTML = '';
+      }
+    }
+  }
+
   calculateProfilePoints(feature, callback) {
-    this.calculateElevations(feature, false, true, callback)
+    this.calculateElevations(feature, false, true, callback);
   }
 
   calculateProfile(feature) {
@@ -1281,7 +1297,10 @@ export default class IncicartoControl extends IDEE.impl.Control {
       profilElement.parentNode.removeChild(profilElement);
       document.querySelector('.m-api-idee-right-buttons').appendChild(profilElement);
     }
-    document.querySelector('.m-incicarto .m-incicarto-loading-container').innerHTML = '';
+    const loadingContainer = document.querySelector('.m-incicarto .m-incicarto-loading-container');
+    if (loadingContainer) {
+      loadingContainer.innerHTML = '';
+    }
   }
 
   findNewPoints(originPoint, destPoint) {

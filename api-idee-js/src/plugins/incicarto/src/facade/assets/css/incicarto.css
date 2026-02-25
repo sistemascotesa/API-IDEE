@@ -507,6 +507,7 @@
     text-align: right;
     overflow: hidden;
     top: unset !important;
+    z-index: 9;
 }
 
 .ol-profil button {
@@ -538,10 +539,11 @@
   position: absolute;
   right: 2px;
   top: 0px;
+  height: 27px !important;
 }
 
 .ol-profil button.profile-download-button {
-  right: 20px;
+  right: 46px;
 }
 
 .ol-profil button svg {
@@ -628,6 +630,10 @@
     margin: 0;
     font-weight: bold;
     color: #676767;
+}
+
+.ol-profil p button {
+  z-index: 9;
 }
 
 /*************
