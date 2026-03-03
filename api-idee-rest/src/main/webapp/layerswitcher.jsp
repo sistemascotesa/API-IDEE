@@ -209,6 +209,15 @@
             objeto.isMoveLayers = (selectMoveLayer.options[selectMoveLayer.selectedIndex].value == 'true');
             objeto.modeSelectLayers = selectModeSelectLayers.options[selectModeSelectLayers.selectedIndex].value;
             inputPrecharged.value !== "" ? objeto.precharged = inputPrecharged.value : objeto.precharged = "";
+            // if (inputPrecharged.value.trim() !== "") {
+            //     try {
+            //         objeto.precharged = JSON.parse(inputPrecharged.value);
+            //     } catch (e) {
+            //         objeto.precharged = inputPrecharged.value;
+            //     }
+            // } else {
+            //     objeto.precharged = PRECHARGED; 
+            // }
             objeto.http = (selectHttp.options[selectHttp.selectedIndex].value == 'true');
             objeto.https = (selectHttps.options[selectHttps.selectedIndex].value == 'true');
             objeto.showCatalog = (selectShowCatalog.options[selectShowCatalog.selectedIndex].value == 'true');

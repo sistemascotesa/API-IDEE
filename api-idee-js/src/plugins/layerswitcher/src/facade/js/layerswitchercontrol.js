@@ -1166,30 +1166,28 @@ export default class LayerswitcherControl extends IDEE.Control {
                 this.capabilities = this.filterResults(layers);
                 this.showResults();
               } else {
-                const promise2 = new Promise((success, reject) => {
+                const urlLower = url.toLowerCase();
+                const isWFSPath = urlLower.endsWith('/wfs') || urlLower.includes('service=wfs');
+                const isWMSPath = urlLower.endsWith('/wms') || urlLower.includes('service=wms');
+
+                const promise2 = (isWFSPath) ? Promise.resolve({ text: '' }) : new Promise((success, reject) => {
                   const id = setTimeout(() => reject(), 15000);
-                  // IDEE.proxy(this.useProxy);
                   IDEE.remote.get(IDEE.utils.getWMSGetCapabilitiesUrl(url, '1.3.0')).then((response2) => {
                     clearTimeout(id);
                     success(response2);
                   });
-                  // IDEE.proxy(this.statusProxy);
                 });
-                const promisewfs = new Promise((success, reject) => {
+                const promisewfs = (isWMSPath) ? Promise.resolve({ text: '' }) : new Promise((success, reject) => {
                   const id = setTimeout(() => reject(), 15000);
                   let urlAux = url;
                   urlAux = IDEE.utils.addParameters(url, 'request=GetCapabilities');
                   urlAux = IDEE.utils.addParameters(urlAux, 'service=WFS');
+                  urlAux = IDEE.utils.addParameters(urlAux, { version: '1.3.0' });
 
-                  urlAux = IDEE.utils.addParameters(urlAux, {
-                    version: '1.3.0',
-                  });
-                  // IDEE.proxy(this.useProxy);
                   IDEE.remote.get(urlAux).then((responsewfs) => {
                     clearTimeout(id);
                     success(responsewfs);
                   });
-                  // IDEE.proxy(this.statusProxy);
                 });
                 Promise.all([promise2, promisewfs]).then((response2) => {
                   let wms = false;
