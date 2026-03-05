@@ -117,8 +117,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
 
       if (this.printermap_) { this.addPrinterMapControl(html); }
 
-      if (this.isDraggable_) { IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-printviewmanagement-title'); }
-
       this.accessibilityTab(html);
       this.selectElementHTML();
       this.addEvent();

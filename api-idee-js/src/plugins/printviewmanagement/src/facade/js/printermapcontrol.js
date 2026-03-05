@@ -262,7 +262,7 @@ export default class PrinterMapControl extends IDEE.Control {
 
         const file = { name: `${templateName}.html` };
 
-        this.handleTemplateUpload({ target: { result: content } }, file);
+        this.handleTemplateUpload({ target: { result: content } }, file, false);
       });
 
       await Promise.all(promises);
@@ -316,15 +316,15 @@ export default class PrinterMapControl extends IDEE.Control {
       unit: 'mm',
       format: dimensions,
     });
-
+    const marginPdf = 10;
     try {
       doc.addImage(
         imageData,
         imageType,
-        0,
-        0,
-        dimensions[1],
-        dimensions[0],
+        marginPdf,
+        marginPdf,
+        dimensions[1] - (marginPdf * 2),
+        dimensions[0] - (marginPdf * 2),
       );
       doc.save(`${title}.pdf`);
     } catch (error) {
@@ -413,9 +413,11 @@ export default class PrinterMapControl extends IDEE.Control {
    * Esta funcion comprueba que el template cumpla con los requisitos
    * @param {Event} event Evento de carga del archivo
    * @param {File} file Archivo cargado
+   * @param {boolean} showToast Indica si se muestra un toast de éxito
+   * al guardar el template. Por defecto es true
    * @returns
    */
-  handleTemplateUpload(event, file) {
+  handleTemplateUpload(event, file, showToast = true) {
     const content = event.target.result;
     const templateName = file.name.split('.')[0];
 
@@ -437,7 +439,7 @@ export default class PrinterMapControl extends IDEE.Control {
       this.extractScripts(doc),
     );
 
-    this.saveTemplate(templateData);
+    this.saveTemplate(templateData, showToast);
   }
 
   /**
@@ -586,11 +588,15 @@ export default class PrinterMapControl extends IDEE.Control {
   /**
    * Esta funcion guarda el template en la lista de templates
    * @param {*} templateData Objeto con los datos del template
+   * @param {boolean} showToast Indica si se muestra un toast de éxito
+   * al guardar el template. Por defecto es true
    */
-  saveTemplate(templateData) {
+  saveTemplate(templateData, showToast = true) {
     this.uploadedTemplates.push(templateData);
     this.updateTemplateSelect(templateData.name);
-    IDEE.toast.success(getValue('loadTemplateSuccess'), null, 3000);
+    if (showToast) {
+      IDEE.toast.success(getValue('loadTemplateSuccess'), null, 3000);
+    }
   }
 
   /**
@@ -699,7 +705,7 @@ export default class PrinterMapControl extends IDEE.Control {
       const scripts = this.extractScripts(doc);
       templateData = {
         name: 'default',
-        content: defaultTemplate,
+        content: defaultTemplate.replaceAll('${api-idee.static_resources.url}', IDEE.config.STATIC_RESOURCES_URL),
         types,
         styles,
         scripts,

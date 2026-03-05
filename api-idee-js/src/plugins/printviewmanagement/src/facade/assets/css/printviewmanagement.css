@@ -134,13 +134,13 @@
 
 .m-templateCustomizer-left-wrapper {
     padding: 16px;
-    overflow-y: auto;
     box-sizing: border-box;
-    min-width: 200px;
     height: 100%;
 }
 
 .m-templateCustomizer-left-wrapper .m-customize-template-form {
+    justify-content: start;
+    overflow-y: auto;
     border-right: 1px solid #71A7D3;
     padding-right: 16px;
     gap: 16px;
@@ -161,6 +161,14 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 15px;
+}
+
+.m-templateCustomizer-option legend {
+    font-size: 15px;
 }
 
 .template-option label,

@@ -340,7 +340,6 @@ button:disabled:hover {
 }
 
 button.secondary {
-    width: 32px;
     height: 32px;
     color: var(--idee-color-primary);
     background-color: #e8ecef;
@@ -414,7 +413,7 @@ textarea:focus {
 
 input[type="checkbox"] {
     cursor: pointer;
-    accent-color: var(--idee-color-primary);
+    accent-color: var(--idee-color-links);
     color: #6c6c6c;
     transform: scale(1.5);
     transition: all 0.3s ease;
@@ -448,7 +447,7 @@ input[type="radio"]::after {
     content: "";
     width: 8px;
     height: 8px;
-    background-color: var(--idee-color-primary-dark);
+    background-color: var(--idee-color-links);
     border-radius: 50%;
     position: absolute;
     top: 50%;
@@ -459,7 +458,7 @@ input[type="radio"]::after {
 }
 
 input[type="radio"]:checked {
-    border-color: var(--idee-color-primary-dark);
+    border-color: var(--idee-color-links);
 }
 
 input[type="radio"]:checked::after {

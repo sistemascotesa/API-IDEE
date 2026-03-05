@@ -1,18 +1,18 @@
 <div class="m-templateCustomizer-container" id="m-customize-template">
   <div class="m-templateCustomizer-left-wrapper d-flex">
     <form class="m-customize-template-form d-flex-column">
-      <div class="m-templateCustomizer-option template-option">
-        <span>{{translations.mapElements}}</span>
+      <fieldset class="m-templateCustomizer-option template-option">
+        <legend>{{translations.mapElements}}</legend>
         {{#each templateElements}}
           <label class="d-flex">
             <input type="checkbox" id="m-show-{{this.id}}" name="m-show-{{this.id}}" checked>
             <span>{{this.label}}</span>
           </label>
         {{/each}}
-      </div>
+      </fieldset>
 
-      <div class="m-templateCustomizer-option template-orientation">
-        <span>{{translations.mapOrientation}}</span>
+      <fieldset class="m-templateCustomizer-option template-orientation">
+        <legend>{{translations.mapOrientation}}</legend>
         <label class="d-flex">
           <input type="radio" name="map-orientation" value="vertical">
           <span>{{translations.vertical}}</span>
@@ -21,25 +21,25 @@
           <input type="radio" name="map-orientation" value="horizontal" checked>
           <span>{{translations.horizontal}}</span>
         </label>
-      </div>
+      </fieldset>
 
-      <div class="m-templateCustomizer-option template-layout">
-        <label for="template-layout">{{translations.layout}}</label>
+      <fieldset class="m-templateCustomizer-option template-layout">
+        <legend>{{translations.layout}}</legend>
         <select id="template-layout">
           {{#each layoutOptions}}
             <option value="{{this.value}}" {{#if default}} selected{{/if}}>{{this.label}}</option>
           {{/each}}
         </select>
-      </div>
+      </fieldset>
 
-      <div class="m-templateCustomizer-option template-scale">
-        <label for="template-scale">{{translations.scale}}</label>
+      <fieldset class="m-templateCustomizer-option template-scale">
+        <legend>{{translations.scale}}</legend>
         <input type="text" id="template-scale" value="1:{{defaultScale}}">
-      </div>
+      </fieldset>
 
-      <div class="m-templateCustomizer-option template-srs">
+      <fieldset class="m-templateCustomizer-option template-srs">
         <!-- Deshabilitado hasta que se arregle la reproyección de capas -->
-        <label for="epsg-selected">{{translations.select_srs}}</label>
+        <legend>{{translations.select_srs}}</legend>
         <input
           type="text"
           id="epsg-selected"
@@ -59,16 +59,16 @@
             <li><a href="#" value="{{this.codes.[0]}}">{{this.codes.[0]}}</a></li>
           {{/each}}
         </ul>
-      </div>
+      </fieldset>
 
-      <div class="m-templateCustomizer-option template-dpi">
-        <label for="template-dpi">{{translations.dpi}}</label>
+      <fieldset class="m-templateCustomizer-option template-dpi">
+        <legend>{{translations.dpi}}</legend>
         <select id="template-dpi">
           {{#each dpiOptions}}
             <option value="{{this}}" {{#if default}} selected{{/if}}>{{this}}</option>
           {{/each}}
         </select>
-      </div>
+      </fieldset>
     </form>
     <button id="m-templateCustomizer-download-button" class="templateDownload">{{translations.apply}}</button>
   </div>

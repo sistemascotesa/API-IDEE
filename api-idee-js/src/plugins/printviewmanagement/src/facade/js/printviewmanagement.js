@@ -115,7 +115,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
       this.printermap = {
         filterTemplates: [
           `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConBorde.html`,
-          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConCabezeraYBorde.html`,
+          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConCabeceraYBorde.html`,
           `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConFooterYBorde.html`,
         ],
         showDefaultTemplate: true,

@@ -1,4 +1,4 @@
-import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas-pro';
 import TemplateCustomizerImpl from '../../impl/ol/js/templateCustomizer';
 import templateCustomizer from '../../templates/templateCustomizer';
 import { getValue } from './i18n/language';

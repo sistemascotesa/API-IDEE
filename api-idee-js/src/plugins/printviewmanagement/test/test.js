@@ -188,7 +188,7 @@ const mp = new PrintViewManagement({
   collapsible: true,
   collapsed: true,
   isDraggable: true,
-  position: 'TL', // 'TL' | 'TR' | 'BR' | 'BL'
+  position: 'right', // 'TL' | 'TR' | 'BR' | 'BL'
   tooltip: 'Imprimir',
   defaultOpenControl: 1, // 1 (printermap), 2 (georefImage), 3 (georefImageEpsg) OR 0 , >=4 (Ninguno) Abre el control indicado inicialmente.
   // printermap: true,

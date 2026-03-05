@@ -140,7 +140,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   ```JavaScript
   "filterTemplates": [
     "https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html",
-    "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html",
+    "https://componentes.idee.es/estaticos/plantillas/html/templateConCabeceraYBorde.html",
     "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html",
     ],
   ```
@@ -456,7 +456,7 @@ const mp = new IDEE.plugin.PrintViewManagement({
   printermap: {
     filterTemplates: [
       "https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html",
-      "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html",
+      "https://componentes.idee.es/estaticos/plantillas/html/templateConCabeceraYBorde.html",
       "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html",
     ],
     showDefaultTemplate: true,

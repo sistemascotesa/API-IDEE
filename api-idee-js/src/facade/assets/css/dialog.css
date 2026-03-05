@@ -100,7 +100,7 @@
 
 .m-dialog.info div.m-button>button {
    color: var(--idee-color-primary);
-   border: 1px solid var(--idee-color-primary);
+   border: 2px solid var(--idee-color-primary);
 }
 
 .m-dialog.info div.m-button>button:hover {
