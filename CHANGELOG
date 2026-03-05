@@ -57,7 +57,7 @@
 - Añadido el método privado addUpClass_ para evitar choque con controles wmcselector, scale y scaleline.
 - Se incorporan a API-IDEE los plugins mapheader y mapfooter.
 - Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: queryattributes, infocoordinates, modal, vectorsmanagement, incicarto, locator, measurebar, viewmanagement y storymap.
-- Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: selectionzoom, contactlink, printviewmanagement, sharemap, information, backimglayer, comparators y timeline.
+- Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: selectionzoom, contactlink, printviewmanagement, sharemap, information, backimglayer, comparators, timeline y stylemanager.
 - Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: basic, help, layerswitcher, locatorscn, mousesrs, overviewmap y stereoscopic
 - Se modifica el comportamiento del método getMaxExtent de MVT para que devuelva el extent en el siguiente orden: el especificado por el usuario, el de la extensión de los features, el especificado en el mapa o el de la proyección en función del que pueda obtener.
 - Se incorpora el método setToClosestScale a la clase Mapa que permite aplicar una resolución al mapa en función de una escala dada.
@@ -74,6 +74,7 @@
 - Refactoriza el añadido de controles para extraer la lógica a un builder. Soluciona problema al añadir controles por duplicado. Soluciona problemas al añadir controles con constructor.
 - Se añade creación de visualizadores mediante peticiones POST.
 - Se soluciona problemas con el parseo de etiquetas CSS en plugin information.
+- Se pueden importar archivos .tif, .tiff y .gpkg.
 
 
 01/01/25 - Versión 1.0.0

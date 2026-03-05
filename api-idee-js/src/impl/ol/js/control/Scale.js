@@ -30,15 +30,15 @@ export const formatLongNumber = (num) => {
  * @param {Number} map Mapa.
  * @api stable
  */
-const updateElement = (container, map) => {
-  const containerVariable = container;
+const updateElement = (container, map, exactEscale) => {
   const view = map.getMapImpl().getView();
   const resolution = view.getResolution();
-  const dpi = IDEE.config.DPI_OGC;
-  const num = Utils.getScaleForResolution(resolution, view, dpi);
 
-  if (!isNullOrEmpty(num)) {
-    containerVariable.innerHTML = formatLongNumber(num);
+  const scale = Utils.getScaleForResolution(resolution, view, IDEE.config.DPI_OGC, exactEscale);
+
+  if (!isNullOrEmpty(scale)) {
+    // eslint-disable-next-line no-param-reassign
+    container.innerHTML = formatLongNumber(scale);
   }
   const elem = document.querySelector('#m-level-number');
   if (elem !== null) {
@@ -157,6 +157,7 @@ class Scale extends Control {
             this.scaleContainer_.textContent = scaleText;
             const view = this.facadeMap_.getMapImpl().getView();
             const resolution = Utils.getCurrentScale(
+              view,
               scaleText,
               IDEE.config.DPI_OGC,
             );

@@ -53,6 +53,7 @@
     "cesium": "1.134.0",
     "chroma-js": "1.4.1",
     "draggabilly": "3.0.0",
+    "gdal3.js": "^2.8.1",
     "get-image-colors": "4.0.1",
     "handlebars": "4.7.8",
     "jsdoc": "3.6.11",

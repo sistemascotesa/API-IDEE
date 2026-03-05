@@ -82,6 +82,7 @@ const proj3857 = {
   ],
   units: 'm',
   metersPerUnit: 1,
+  getPointResolution: (resolution, point) => resolution / Math.cosh(point[1] / 6378137),
   datum: 'WGS 84',
   proj: 'Pseudo-Mercator',
   global: true,
@@ -596,6 +597,7 @@ const addProjections = (projs, checkDuplicates = true) => {
         extent: projection.extent,
         units: projection.units,
         metersPerUnit: projection.metersPerUnit,
+        getPointResolution: projection.getPointResolution,
         axisOrientation: projection.axisOrientation,
         global: projection.global,
       });

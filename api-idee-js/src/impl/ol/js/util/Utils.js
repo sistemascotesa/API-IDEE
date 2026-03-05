@@ -11,6 +11,7 @@ import {
   get as getProj,
   getTransform,
   transformExtent,
+  getPointResolution,
 } from 'ol/proj';
 import OLFeature from 'ol/Feature';
 import WKB from 'ol/format/WKB';
@@ -688,13 +689,20 @@ class Utils {
    *
    * @function
    * @param {Number} resolution Resolución del mapa.
+   * @param {View} view Vista del mapa.
+   * @param {Number} dpi DPI del mapa.
    * @param {Boolean} exact Devuelve la escala exacta o aproximada.
    * @public
    * @api
    */
-  static getScaleForResolution(resolution, exact) {
-    const scale = Math.round(resolution / 0.00028);
-    return exact ? scale : Math.round(Utils.getRoundScale(scale));
+  static getScaleForResolution(resolution, view, dpi, exact) {
+    const projection = view.getProjection();
+    const center = view.getCenter();
+    const inchesPerMeter = 1000 / 25.4;
+    const pointResolution = getPointResolution(projection, resolution, center, 'm');
+    const scale = pointResolution * inchesPerMeter * dpi;
+
+    return exact ? Math.round(scale) : Math.round(Utils.getRoundScale(scale));
   }
 
   /**
@@ -709,22 +717,16 @@ class Utils {
    * @public
    * @api
    */
-  static getCurrentScale(inputValue, dpi) {
-    const inchesPerMeter = 39.3700787;
-    const scale = parseFloat(inputValue.replace(/\./g, ''));
-    const calculateResolution = (targetScale) => {
-      let resolution = targetScale / (inchesPerMeter * dpi);
+  static getCurrentScale(view, inputValue, dpi) {
+    const targetScale = parseFloat(inputValue.replace(/\./g, ''));
+    const projection = view.getProjection();
+    const metersPerUnit = projection.getMetersPerUnit();
+    const dotsPerMeter = dpi / 0.0254;
+    const resolution = targetScale / (metersPerUnit * dotsPerMeter);
+    const center = view.getCenter();
+    const pointResolution = getPointResolution(projection, 1, center);
 
-      for (let i = 0; i < 3; i + 1) {
-        const currentScale = this.getScaleForResolution(resolution);
-        const error = targetScale - currentScale;
-        resolution *= (targetScale / currentScale);
-
-        if (Math.abs(error) < 1) break;
-      }
-      return resolution;
-    };
-    return calculateResolution(scale);
+    return resolution / pointResolution;
   }
 
   /**

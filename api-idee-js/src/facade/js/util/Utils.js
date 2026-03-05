@@ -341,6 +341,23 @@ export const getWMTSGetCapabilitiesUrl = (serverUrl, version) => {
 };
 
 /**
+ * Esta función devuelve una función para el parámetro zDirection de los servicios teselados.
+ * @returns {Function} Función para el parámetro zDirection de los servicios teselados.
+ */
+export const getZDirectionFunction = () => {
+  return ((value, high, low) => {
+    const midpoint = low * Math.sqrt(high / low);
+    const diff = value - midpoint;
+    const epsilon = 1e-6;
+
+    if (Math.abs(diff) < epsilon) {
+      return 0;
+    }
+    return diff;
+  });
+};
+
+/**
  * Esta función genera una resolución máxima y mínima.
  *
  * @function

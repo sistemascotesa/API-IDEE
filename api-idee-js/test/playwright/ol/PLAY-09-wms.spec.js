@@ -180,7 +180,7 @@ test.describe('IDEE.layer.WMS', () => {
         });
       });
       const numLayers = await page.evaluate(() => window.map.getLayers().length);
-      expect(numLayers).toEqual(5);
+      expect(numLayers).toEqual(6);
     });
   });
 
