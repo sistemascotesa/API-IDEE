@@ -329,48 +329,48 @@
          * para mantener compatibilidad con la plantilla addservices.html
          */
         function transformPrecharged(obj) {
-            if (!obj || !obj.groups) return obj;
+            if (!obj) return obj;
 
-            const newGroups = [];
-            const rawGroups = obj.groups[0]; 
+            const finalGroups = [];
+            const rawGroups = (Array.isArray(obj.groups) && obj.groups.length > 0) ? obj.groups[0] : {};
 
-            Object.keys(rawGroups).forEach(groupName => {
-                const groupContent = rawGroups[groupName];
-                const services = [];
+            Object.keys(rawGroups).forEach(categoryName => {
+                const categoryContent = rawGroups[categoryName];
+                const servicesList = [];
 
-                Object.keys(groupContent).forEach(serviceName => {
-                    const item = groupContent[serviceName];
-                    
-                    if (item.url) {
-                        services.push({
-                            name: serviceName,
-                            type: item.type,
-                            url: item.url,
-                            white_list: item.white_list
-                        });
-                    } else {
-                        Object.keys(item).forEach(subName => {
-                            services.push({
-                                name: `${serviceName} - ${subName}`,
-                                type: item[subName].type,
-                                url: item[subName].url
+                const processNode = (node) => {
+                    Object.keys(node).forEach(key => {
+                        const item = node[key];
+                        
+                        if (item && typeof item === 'object' && item.url) {
+                            servicesList.push({
+                                name: key,
+                                type: item.type,
+                                url: item.url,
+                                white_list: item.white_list
                             });
-                        });
-                    }
-                });
+                        } 
+                        else if (item && typeof item === 'object') {
+                            processNode(item);
+                        }
+                    });
+                };
 
-                newGroups.push({
-                    name: groupName,
-                    services: services
-                });
+                processNode(categoryContent);
+
+                if (servicesList.length > 0) {
+                    finalGroups.push({
+                        name: categoryName,
+                        services: servicesList
+                    });
+                }
             });
 
             return {
                 services: obj.services || [],
-                groups: newGroups
+                groups: finalGroups
             };
         }
-
 
         function cambiarTest() {
             let objeto = {};
@@ -399,7 +399,6 @@
             objeto.showCatalog = (selectShowCatalog.options[selectShowCatalog.selectedIndex].value == 'true');
             objeto.useProxy = (selectProxy.options[selectProxy.selectedIndex].value == 'true');
             objeto.displayLabel = (selectDisplay.options[selectDisplay.selectedIndex].value == 'true');
-
             if (mp !== null) {
                 map.removePlugins(mp);
             }
