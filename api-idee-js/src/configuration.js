@@ -333,7 +333,7 @@ params.forEach((param) => {
    * @private
    * @type {Number}
    */
-  IDEE.config('DPI_OGC', 90.714285714);
+  IDEE.config('DPI_OGC', 25.4 / 0.28);
 
   /**
    * Mueve el mapa cuando se hace clic sobre un objeto

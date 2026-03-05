@@ -1,7 +1,9 @@
 /**
  * @module IDEE/impl/layer/MBTiles
  */
-import { isNullOrEmpty, isFunction, extend } from 'IDEE/util/Utils';
+import {
+  isNullOrEmpty, isFunction, extend, getZDirectionFunction,
+} from 'IDEE/util/Utils';
 import { get as getProj, transformExtent } from 'ol/proj';
 import OLLayerTile from 'ol/layer/Tile';
 import TileGrid from 'ol/tilegrid/TileGrid';
@@ -108,6 +110,11 @@ class MBTiles extends Layer {
      * MBTiles tileLoadFunction: Función de carga de la tesela proporcionada por el usuario.
      */
     this.tileLoadFunction = userParameters.tileLoadFunction || null;
+
+    /**
+     * MBTiles zDirection: Función de dirección Z para la carga de teselas.
+     */
+    this.zDirection = userParameters.zDirection || getZDirectionFunction();
 
     /**
      * MBTiles url: Url del fichero o servicio que genera el MBTiles.
@@ -325,6 +332,7 @@ class MBTiles extends Layer {
           origin: getBottomLeft(opts.sourceExtent),
           resolutions: opts.resolutions,
         }),
+        zDirection: this.zDirection,
       });
     }
     this.olLayer.setSource(source);

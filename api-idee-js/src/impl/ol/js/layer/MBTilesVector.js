@@ -2,7 +2,9 @@
 /**
  * @module IDEE/impl/layer/MBTilesVector
  */
-import { isNullOrEmpty, extend, isObject } from 'IDEE/util/Utils';
+import {
+  isNullOrEmpty, extend, isObject, getZDirectionFunction,
+} from 'IDEE/util/Utils';
 import { get as getProj, transformExtent } from 'ol/proj';
 // import { inflate } from 'pako';
 // import OLLayerTile from 'ol/layer/Tile';
@@ -114,6 +116,11 @@ class MBTilesVector extends Vector {
      * vectorial proporcionada por el usuario.
      */
     this.tileLoadFunction = userParameters.tileLoadFunction || null;
+
+    /**
+     * MBTilesVector zDirection. Función de dirección Z para la carga de teselas.
+     */
+    this.zDirection = userParameters.zDirection || getZDirectionFunction();
 
     /**
      * MBTilesVector url: Url del fichero o servicio que genera el MBTilesVector.
@@ -299,6 +306,7 @@ class MBTilesVector extends Vector {
         origin: getBottomLeft(opts.sourceExtent),
         resolutions: opts.resolutions,
       }),
+      zDirection: this.zDirection,
     }));
 
     this.olLayer.setExtent(this.maxExtent_ || opts.sourceExtent);

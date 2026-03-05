@@ -1,7 +1,7 @@
 /**
  * @module IDEE/impl/layer/XYZ
  */
-import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import { isNullOrEmpty, extend, getZDirectionFunction } from 'IDEE/util/Utils';
 import OLTileLayer from 'ol/layer/Tile';
 import { get as getProj } from 'ol/proj';
 import XYZSource from 'ol/source/XYZ';
@@ -121,6 +121,12 @@ class XYZ extends Layer {
     this.tileGridMaxZoom = userParameters.tileGridMaxZoom;
 
     /**
+     * XYZ zDirection.
+     * Función de dirección Z para la carga de teselas.
+     */
+    this.zDirection = vendorOptions?.zDirection || getZDirectionFunction();
+
+    /**
      * XYZ displayInLayerSwitcher:
      * Mostrar en el selector de capas.
      */
@@ -187,6 +193,7 @@ class XYZ extends Layer {
         url: this.url,
         tileSize: this.getTileSize(),
         crossOrigin: this.crossOrigin,
+        zDirection: this.zDirection,
       });
     }
     this.olLayer.setSource(source);

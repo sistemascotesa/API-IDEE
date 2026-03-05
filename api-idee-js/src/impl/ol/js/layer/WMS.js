@@ -4,8 +4,8 @@
  */
 import OLSourceImageWMS from 'ol/source/ImageWMS';
 import {
-  isNull, isArray, isNullOrEmpty, addParameters, getWMSGetCapabilitiesUrl, fillResolutions,
-  getResolutionFromScale, generateResolutionsFromExtent, extend,
+  isNull, isArray, isNullOrEmpty, addParameters, getWMSGetCapabilitiesUrl, getZDirectionFunction,
+  fillResolutions, getResolutionFromScale, generateResolutionsFromExtent, extend,
 } from 'IDEE/util/Utils';
 import FacadeLayerBase from 'IDEE/layer/Layer';
 import * as LayerType from 'IDEE/layer/Type';
@@ -116,6 +116,13 @@ class WMS extends LayerBase {
      * @type {Function}
      */
     this.tileLoadFunction = vendorOptions?.tileLoadFunction;
+
+    /**
+     * WMS zDirection. Función de dirección Z para la carga de teselas.
+     * @private
+     * @type {Function}
+     */
+    this.zDirection = vendorOptions?.zDirection || getZDirectionFunction();
 
     /**
      * WMS extentPromise. Extensión de la capa, promesa.
@@ -650,6 +657,7 @@ class WMS extends LayerBase {
       const opacity = this.opacity_;
       const zIndex = this.zIndex_;
       const tileLoadFunction = this.tileLoadFunction;
+      const zDirection = this.zDirection;
       if (this.tiled === true) {
         const tileGrid = (this.useCapabilities)
           ? new OLTileGrid({ resolutions, extent, origin: getBottomLeft(extent) })
@@ -665,6 +673,7 @@ class WMS extends LayerBase {
           opacity,
           zIndex,
           tileLoadFunction,
+          zDirection,
         });
       } else {
         olSource = new ImageWMS({

@@ -2,8 +2,8 @@
  * @module IDEE/impl/layer/WMTS
  */
 import {
-  isNull, isArray, isNullOrEmpty, addParameters, getWMTSGetCapabilitiesUrl, getResolutionFromScale,
-  extend,
+  isNull, isArray, isNullOrEmpty, addParameters, getWMTSGetCapabilitiesUrl, getZDirectionFunction,
+  getResolutionFromScale, extend,
 } from 'IDEE/util/Utils';
 import { default as OLSourceWMTS, optionsFromCapabilities } from 'ol/source/WMTS';
 // import { optionsFromCapabilities } from 'patches';
@@ -84,11 +84,18 @@ class WMTS extends LayerBase {
     this.getCapabilitiesPromise_ = null;
 
     /**
-     * WMS tileLoadFunction. Función de carga de tiles.
+     * WMTS tileLoadFunction. Función de carga de tiles.
      * @private
      * @type {Function}
      */
     this.tileLoadFunction = vendorOptions?.tileLoadFunction;
+
+    /**
+     * WMTS zDirection. Función de dirección Z.
+     * @private
+     * @type {Function}
+     */
+    this.zDirection = vendorOptions?.zDirection || getZDirectionFunction();
 
     /**
      * WMTS minZoom. Minimum zoom applicable to the layer.
@@ -233,6 +240,7 @@ class WMTS extends LayerBase {
           }),
           extent,
           tileLoadFunction: this.tileLoadFunction,
+          zDirection: this.zDirection,
         });
         this.olLayer.setSource(newSource);
       });
@@ -290,6 +298,7 @@ class WMTS extends LayerBase {
           extent,
           crossOrigin: this.crossOrigin,
           tileLoadFunction: this.tileLoadFunction,
+          zDirection: this.zDirection,
         }, true);
         wmtsSource = new OLSourceWMTS(options);
       }
@@ -355,6 +364,7 @@ class WMTS extends LayerBase {
           projection: getProj(this.map.getProjection().code),
           tileGrid,
           tileLoadFunction: this.tileLoadFunction,
+          zDirection: this.zDirection,
         });
       }
       this.facadeLayer_.setFormat(format);

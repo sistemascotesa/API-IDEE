@@ -5,7 +5,9 @@
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import OLLayerVectorTile from 'ol/layer/VectorTile';
 // import { get as getProj } from 'ol/proj';
-import { isNullOrEmpty, extend, isObject } from 'IDEE/util/Utils';
+import {
+  isNullOrEmpty, extend, isObject, getZDirectionFunction,
+} from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
 import TileEventType from 'ol/source/TileEventType';
 import TileState from 'ol/TileState';
@@ -114,6 +116,13 @@ class MVT extends Vector {
     this.tileLoadFunction = vendorOptions?.tileLoadFunction;
 
     /**
+     * MVT zDirection. Función de dirección Z para la carga de teselas.
+     * @private
+     * @type {Function}
+     */
+    this.zDirection = vendorOptions?.zDirection || getZDirectionFunction();
+
+    /**
      * MVT layers_. Otras capas.
      */
     this.layers_ = parameters.layers;
@@ -199,6 +208,7 @@ class MVT extends Vector {
       url,
       projection: this.projection_,
       tileLoadFunction: this.tileLoadFunction,
+      zDirection: this.zDirection,
     });
 
     // register events in order to fire the LOAD event
