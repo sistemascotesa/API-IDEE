@@ -7,6 +7,7 @@ import { getValue } from 'IDEE/i18n/language';
 import * as Dialog from 'IDEE/dialog';
 import Exception from 'IDEE/exception/exception';
 import Control from './Control';
+import { isBoolean } from '../../../../facade/js/util/Utils';
 
 /**
  * Formate un número pasado por parámetro.
@@ -30,11 +31,11 @@ export const formatLongNumber = (num) => {
  * @param {Number} map Mapa.
  * @api stable
  */
-const updateElement = (container, map, exactEscale) => {
+const updateElement = (container, map, exactScale) => {
   const view = map.getMapImpl().getView();
   const resolution = view.getResolution();
 
-  const scale = Utils.getScaleForResolution(resolution, view, IDEE.config.DPI_OGC, exactEscale);
+  const scale = Utils.getScaleForResolution(resolution, view, IDEE.config.DPI_OGC, exactScale);
 
   if (!isNullOrEmpty(scale)) {
     // eslint-disable-next-line no-param-reassign
@@ -65,6 +66,7 @@ class Scale extends Control {
    */
   constructor(options = {}) {
     super();
+    this.exactScale = isBoolean(options.exactScale) ? options.exactScale : false;
     this.facadeMap_ = null;
   }
 
@@ -187,7 +189,7 @@ class Scale extends Control {
   renderCB(mapEvent) {
     const frameState = mapEvent.frameState;
     if (!isNullOrEmpty(frameState)) {
-      updateElement(this.scaleContainer_, this.facadeMap_);
+      updateElement(this.scaleContainer_, this.facadeMap_, this.exactScale);
     }
   }
 
