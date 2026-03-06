@@ -348,26 +348,18 @@ export default class TemplateCustomizer extends IDEE.Control {
    */
   setupViewScaleListener() {
     const view = this.previewMap.getMapImpl().getView();
-    const unidades = view.getProjection().getUnits();
-    const unidadesMapa = this.getImpl().getMetersPerUnit(unidades);
-    const initialResolution = view.getResolution();
-    const dpi = Number.parseInt(document.querySelector(ID_TEMPLATE_DPI).value, 10);
-    const initalScale = this.getScaleForResolution(initialResolution, unidadesMapa, dpi);
+    const resolution = view.getResolution();
+    const scale = IDEE.impl.utils.getScaleForResolution(
+      resolution,
+      view,
+      IDEE.config.DPI_OGC,
+      true,
+    );
     const scaleEl = document.querySelector(ID_TEMPLATE_SCALE);
     if (scaleEl) {
-      scaleEl.value = `1:${initalScale}`;
-      this.scale = initalScale;
+      scaleEl.value = `1:${scale}`;
+      this.scale = scale;
     }
-
-    view.on('change:resolution', () => {
-      const resolution = view.getResolution();
-      const scale = this.getScaleForResolution(resolution, unidadesMapa, dpi);
-      const scaleElement = document.querySelector(ID_TEMPLATE_SCALE);
-      if (scaleElement) {
-        scaleElement.value = `1:${scale}`;
-        this.scale = scale;
-      }
-    });
   }
 
   /**
@@ -376,8 +368,11 @@ export default class TemplateCustomizer extends IDEE.Control {
   setupMapChangeListener() {
     const view = this.previewMap.getMapImpl().getView();
     view.on('change:center', () => this.updateDataTemplate());
-    view.on('change:resolution', () => this.updateDataTemplate());
     view.on('change:rotation', () => this.updateDataTemplate());
+    this.previewMap.getMapImpl().on('postrender', () => {
+      this.updateDataTemplate();
+      this.setupViewScaleListener();
+    });
   }
 
   /**
@@ -782,7 +777,6 @@ export default class TemplateCustomizer extends IDEE.Control {
 
         this.previewMap.getMapImpl().setView(newView);
         this.previewMap.getMapImpl().renderSync();
-        this.setupViewScaleListener();
 
         const scaleElement = document.querySelector(ID_TEMPLATE_SCALE);
         if (scaleElement) {
@@ -856,7 +850,7 @@ export default class TemplateCustomizer extends IDEE.Control {
       if (isEditable && event.key === 'Enter') {
         isEditable = false;
         inputElement.setAttribute('readonly', 'readonly');
-        this.changeProjection(inputElement.value);
+        this.changeProjection(inputElement.value.startsWith('EPSG:') ? inputElement.value : `EPSG:${inputElement.value}`);
         this.updateDataTemplate();
       }
     });
@@ -893,12 +887,12 @@ export default class TemplateCustomizer extends IDEE.Control {
           );
         } catch (err) {
           this.projection = previousProjection;
-          inputElement.value = this.projection;
           IDEE.dialog.error(`${getValue('exception.srs')} ${this.projection}`);
           return;
         }
       }
 
+      inputElement.value = this.projection;
       this.projectionsOptions_ = IDEE.impl.ol.js.projections.getSupportedProjs();
       selectorEl.innerHTML = `
         <li><a class="m-customize-template-option-disabled" href="#" value="default" tabindex="-1" disabled>
@@ -922,8 +916,8 @@ export default class TemplateCustomizer extends IDEE.Control {
       });
 
       this.previewMap.getMapImpl().setView(newView);
+      this.reproyectLayers(previewView);
       this.previewMap.getMapImpl().renderSync();
-      this.setupViewScaleListener();
 
       const scaleElement = document.querySelector(ID_TEMPLATE_SCALE);
       if (scaleElement) {
@@ -932,6 +926,31 @@ export default class TemplateCustomizer extends IDEE.Control {
         this.scale = scale;
       }
     }
+  }
+
+  /**
+   * Reproyecta las capas del mapa de previsualización para que se ajusten a la nueva proyección
+   * @param {Object} previewView - Vista actual del mapa de previsualización
+   * antes del cambio de proyección
+   */
+  reproyectLayers(previewView) {
+    this.previewMap.getLayers().forEach((layer) => {
+      const impl = layer.getImpl();
+      if (typeof impl.recreateLayer === 'function') {
+        impl.recreateLayer();
+      } else if (typeof impl.refresh === 'function') {
+        impl.refresh(true);
+      } else if (impl.constructor?.name === 'MapLibre') {
+        impl.destroy();
+        impl.addTo(this.previewMap.getImpl(), true);
+        /* eslint-disable-next-line no-underscore-dangle */
+      } else if (typeof impl.setProjection_ === 'function') {
+        const oldProj = { code: previewView.getProjection().getCode() };
+        const newProjObj = { code: this.projection };
+        /* eslint-disable-next-line no-underscore-dangle */
+        impl.setProjection_(oldProj, newProjObj);
+      }
+    });
   }
 
   /**

@@ -188,20 +188,19 @@
 }
 
 .template-scale input[type="text"],
-.template-srs input[type="text"] {
+.m-customize-template-select-editable input[type="text"] {
     margin: 0;
 }
 
-.template-srs {
+.m-customize-template-select-editable {
     position: relative;
 }
 
-.template-srs .m-templateCustomizer-input-srs {
+.m-customize-template-select-editable .m-templateCustomizer-input-srs {
     box-sizing: border-box;
-    cursor: not-allowed;
 }
 
-.template-srs .m-templateCustomizer-srs-list {
+.m-customize-template-select-editable .m-templateCustomizer-srs-list {
     display: none;
     position: absolute;
     top: 100%;
