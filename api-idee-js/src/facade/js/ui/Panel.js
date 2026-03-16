@@ -7,6 +7,7 @@ import * as Position from './position';
 import {
   isArray, isNullOrEmpty, isString, includes,
   isNumber,
+  isBoolean,
 } from '../util/Utils';
 import MObject from '../Object';
 import * as EventType from '../event/eventtype';
@@ -59,10 +60,10 @@ class Panel extends MObject {
 
     /**
      * @private
-     * @type {HTMLElement}
+     * @type {IDEE.ui.Button}
      * @expose
      */
-    this.buttonPanel = null;
+    this.button = null;
 
     /**
      * @private
@@ -120,12 +121,14 @@ class Panel extends MObject {
     }
 
     /**
+     * By default panels are collapsible and start collapsed.
+     *
      * @private
      * @type {boolean}
      * @expose
      */
-    this._collapsible = false;
-    if (!isNullOrEmpty(options.collapsible)) {
+    this._collapsible = true;
+    if (isBoolean(options.collapsible)) {
       this._collapsible = options.collapsible;
     }
 
@@ -134,9 +137,12 @@ class Panel extends MObject {
      * @type {boolean}
      * @expose
      */
-    this._collapsed = this._collapsible;
-    if (!isNullOrEmpty(options.collapsed)) {
-      this._collapsed = (options.collapsed && (this._collapsible === true));
+    this._collapsed = true;
+
+    if (!this._collapsible) {
+      this._collapsed = false;
+    } else if (isBoolean(options.collapsed)) {
+      this._collapsed = options.collapsed;
     }
 
     /**
@@ -219,6 +225,12 @@ class Panel extends MObject {
     if (!isNullOrEmpty(options.order)) {
       this._order = options.order;
     }
+
+    this.once(EventType.ADDED_TO_MAP, () => {
+      if (!this._collapsed) {
+        this.button.activate();
+      }
+    });
   }
 
   /**
@@ -258,6 +270,7 @@ class Panel extends MObject {
     }
 
     this.addControls(this.controls);
+
     this.fire(EventType.ADDED_TO_MAP, this.element);
   }
 
@@ -314,9 +327,9 @@ class Panel extends MObject {
    */
   _collapse(html) {
     /* html.classList.remove('opened');
-    this.buttonPanel.classList.remove(this._openedButtonClass);
+    this.button.classList.remove(this._openedButtonClass);
     html.classList.add('collapsed');
-    this.buttonPanel.classList.add(this._collapsedButtonClass); */
+    this.button.classList.add(this._collapsedButtonClass); */
     this._collapsed = true;
     this.fire(EventType.HIDE);
   }
@@ -330,9 +343,9 @@ class Panel extends MObject {
    */
   _open(html) {
     /* html.classList.remove('collapsed');
-    this.buttonPanel.classList.remove(this._collapsedButtonClass);
+    this.button.classList.remove(this._collapsedButtonClass);
     html.classList.add('opened');
-    this.buttonPanel.classList.add(this._openedButtonClass); */
+    this.button.classList.add(this._openedButtonClass); */
     this._collapsed = false;
     this.fire(EventType.SHOW);
   }
@@ -545,7 +558,7 @@ class Panel extends MObject {
     if (!isNullOrEmpty(this.element)) {
       this.element.appendChild(controlElem);
     }
-    control.fire(EventType.ADDED_TO_PANEL);
+    control.fire(EventType.PANEL_VIEW_CHANGE);
   }
 
   /**
@@ -600,7 +613,7 @@ class Panel extends MObject {
    * @returns {HTMLElement} Elemento botón.
    */
   getButtonPanel() {
-    return this.buttonPanel;
+    return this.button;
   }
 
   /**

@@ -6,6 +6,7 @@ import Button from './ui/Button';
 import Panel from './ui/Panel';
 import {
   isArray,
+  isBoolean,
   isNullOrEmpty,
   isNumber,
   isString,
@@ -39,11 +40,29 @@ class Plugin extends Base {
     this.position = Position.isValid(options.position) ? options.position : Position.RIGHT;
 
     /**
+     * Determines if the plugin is collapsible
+     *
+     * @type {boolean}
+     */
+    this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
+
+    /**
+     * Determines if the plugin is initially collapsed
+     *
+     * @type {boolean}
+     */
+    this.collapsed = isBoolean(options.collapsed) ? options.collapsed : true;
+
+    /**
      * Determines the position of the tool when it is inside a map tool container
      * @type {number}
      */
     this.order = isNumber(options.order) ? options.order : 0;
 
+    /**
+     * Url of relative svg
+     * @type {string}
+     */
     this.svgPath = options.svgPath || null;
     this.minPanelWidth = 256;
     this.maxPanelWidth = 360;
@@ -79,12 +98,13 @@ class Plugin extends Base {
       position: this.position,
       minWidth: this.minPanelWidth,
       maxWidth: this.maxPanelWidth,
+      collapsible: this.collapsible,
+      collapsed: this.collapsed,
     });
-    map.addPanels(this.panel);
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
-
+    map.addPanels(this.panel);
     map.addControls(this.controls);
   }
 

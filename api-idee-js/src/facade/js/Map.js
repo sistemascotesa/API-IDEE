@@ -3954,7 +3954,7 @@ class Map extends Base {
 
       const plugins = this.plugins.filter((plugin2) => plugin2.position === plugin.position);
       if (plugins.length === 0) {
-        this.closeSidePanels();
+        this.closeSidePanels(plugin.position);
       }
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -4657,14 +4657,26 @@ class Map extends Base {
   }
 
   /**
-   * Closses all side active panels
+   * Closes all side active panels.
+   *
+   * @param {string} position Map position (Position.LEFT/RIGHT/DOWN/etc.)
    */
-  closeSidePanels() {
-    [
-      [this.upPanel, this.upHandle, '--up-height'],
-      [this.leftPanel, this.leftHandle, '--left-width'],
-      [this.rightPanel, this.rightHandle, '--right-width'],
-    ].forEach(([panel, handle, gridSizeVar]) => {
+  closeSidePanels(position) {
+    const panelElementsList = [];
+    const isCompact = this.isCompactMode();
+    const upPanelElements = [this.upPanel, this.upHandle, '--up-height'];
+    const leftPanelElements = [this.leftPanel, this.leftHandle, '--left-width'];
+    const rightPanelElements = [this.rightPanel, this.rightHandle, '--right-width'];
+    panelElementsList.push(upPanelElements);
+    if (isCompact) {
+      panelElementsList.push(leftPanelElements);
+      panelElementsList.push(rightPanelElements);
+    } else if (position === Position.LEFT) {
+      panelElementsList.push(leftPanelElements);
+    } else if (position === Position.RIGHT) {
+      panelElementsList.push(rightPanelElements);
+    }
+    panelElementsList.forEach(([panel, handle, gridSizeVar]) => {
       this.toolPanelsContainer.style.setProperty(gridSizeVar, '0px');
       // eslint-disable-next-line no-param-reassign
       handle.style.visibility = 'hidden';
@@ -4673,6 +4685,37 @@ class Map extends Base {
           panel.removeChild(child);
         }
       });
+    });
+  }
+
+  /**
+   * This method deactivate all side active panel buttons except the one that is going to be open,
+   * if is possible depending on the map view.
+   *
+   * @param {Button} button represents one avaliable button to open a side panel
+   */
+  deactivateSidePanelButtons(button) {
+    const isCompact = this.isCompactMode();
+    /** @type {IDEE.ui.Button[]} */
+    let buttons = this.buttons ?? [];
+    /** La pantalla ha cambiado de relación tamaño aspecto cambiando a modo PC,
+      pero el panel superior sigue abierto o algún botón sigue presionado sin panel abieto,
+      por lo que se considera que está en modo compacto
+      y se cierran todos aquellos que no sean el botón que se va a abrir,
+      independientemente de su posición.
+    */
+    if (isCompact
+      || this.toolPanelsContainer.style.getPropertyValue('--up-height') !== '0px'
+      || (this.toolPanelsContainer.style.getPropertyValue('--left-width') === '0px' && buttons.filter((btn) => btn.position === Position.LEFT).some((btn) => btn.pressed))
+      || (this.toolPanelsContainer.style.getPropertyValue('--right-width') === '0px' && buttons.filter((btn) => btn.position === Position.RIGHT).some((btn) => btn.pressed))
+    ) {
+      buttons = buttons.filter((mapButton) => !mapButton.equals(button));
+    } else {
+      buttons = buttons.filter((mapButton) => !mapButton.equals(button)
+      && ((mapButton.position === button.position)));
+    }
+    buttons.forEach((mapButton) => {
+      mapButton.deactivate();
     });
   }
 

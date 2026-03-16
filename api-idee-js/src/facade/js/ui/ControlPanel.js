@@ -549,7 +549,7 @@ class ControlPanel extends MObject {
     const controlElem = control.getElement();
     if (!isNullOrEmpty(this._controlsContainer) && !isNullOrEmpty(controlElem)) {
       this._controlsContainer.appendChild(controlElem);
-      control.fire(EventType.ADDED_TO_PANEL);
+      control.fire(EventType.PANEL_VIEW_CHANGE);
     }
   }
 
