@@ -75,6 +75,7 @@
 - Se añade creación de visualizadores mediante peticiones POST.
 - Se soluciona problemas con el parseo de etiquetas CSS en plugin information.
 - Se pueden importar archivos .tif, .tiff y .gpkg.
+- Mousesrs: se soluciona problemas de estilos en mapas pequeños.
 
 
 01/01/25 - Versión 1.0.0
