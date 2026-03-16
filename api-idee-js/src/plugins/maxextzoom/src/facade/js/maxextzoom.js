@@ -26,6 +26,13 @@ export default class MaxExtZoom extends IDEE.Plugin {
     this.map_ = null;
 
     /**
+     * Plugin options.
+     * @private
+     * @type {Object}
+     */
+    this.options = options || {};
+
+    /**
      * Array of controls
      * @private
      * @type {Array<IDEE.Control>}
@@ -61,6 +68,7 @@ export default class MaxExtZoom extends IDEE.Plugin {
     // panel para agregar control - no obligatorio
     this.panel_ = new IDEE.ui.Panel('panelMaxExtZoom', {
       collapsible: false,
+      collapsed: this.options.collapsed,
       position: IDEE.ui.position[this.position],
       className: 'm-maxextzoom',
       tooltip: 'Zoom a la extensión del mapa',

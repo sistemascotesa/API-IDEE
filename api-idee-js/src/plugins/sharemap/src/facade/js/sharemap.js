@@ -280,6 +280,7 @@ export default class ShareMap extends IDEE.Plugin {
 
     this.panel_ = new IDEE.ui.Panel('ShareMap', {
       collapsible: false,
+      collapsed: this.options.collapsed,
       position: IDEE.ui.position[this.position],
       className: 'm-plugin-sharemap',
       tooltip: getValue('tooltipPanel'),

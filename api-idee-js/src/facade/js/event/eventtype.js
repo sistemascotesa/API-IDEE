@@ -11,12 +11,13 @@
 export const ADDED_TO_MAP = 'added:map';
 
 /**
- * Evento que se produce al añadir al panel.
+ * Evento que se produce al añadir al panel. Cuando cambia su vista o su contenido.
  * @public
  * @type {string}
  * @api
  */
-export const ADDED_TO_PANEL = 'added:panel';
+export const PANEL_VIEW_CHANGE = 'changed:panel-view';
+
 /**
  * Evento que se produce al cambiar la visibilidad de la capa.
  * @public
