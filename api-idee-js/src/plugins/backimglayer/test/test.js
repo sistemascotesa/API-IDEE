@@ -31,35 +31,34 @@ const pwImg4 = '../src/facade/assets/images/svqhibrid.png';
 // const i = new IDEE.plugin.Information({}); map.addPlugin(i);
 
 const mp = new BackImgLayer({
-  collapsed: false, // true,
+  collapsed: false,
   tooltip: 'Capas de fondo',
   layerVisibility: false,
   columnsNumber: 3,
   empty: false,
   layerId: 0,
-  /* / PRUEBA 1 // Cuando no se pasa layerOpts, se usan los parámetros ids, titles, previews y layers
-  position: 'TL',
-  ids: 'mapa,hibrido',
-  titles: 'Mapa,Hibrido',
-  previews: pwImg1 + ',' + pwImg3,
-  layers: wmtsLayer1 + ',' + wmtsLayer2,
-  // */
+  // PRUEBA 1 // Cuando no se pasa layerOpts, se usan los parámetros ids, titles, previews y layers
+  // position: 'left',
+  // ids: 'mapa,hibrido',
+  // titles: 'Mapa,Hibrido',
+  // previews: `${pwImg1}, ${pwImg3}`,
+  // layers: `${wmtsLayer1} ,${wmtsLayer2}`,
 
-  /* / PRUEBA 2
-  position: 'TR',
-  columnsNumber: 3,
+  /*
+  // PRUEBA 2
+  position: 'left',
   //ids: ['mapa', 'hibrido'],
   ids: 'mapa,hibrido',
   // titles: ['Mapa', 'Hibrido'],
   titles: 'Mapa,Hibrido',
   // previews: [pwImg3, pwImg4],
-  previews: pwImg3+','+pwImg4,
+  previews: `${pwImg3},${pwImg4}`,
   // layers: [wmtsLayer1, wmtsLayer2 + '+' + wmtsLayer3],
   // layers: wmtsLayer1+','+wmtsLayer2 + '+' + wmtsLayer3,
-  layers: wmtsLayer1+','+wmtsLayer2 + 'sumar' + wmtsLayer3,
+  layers: `${wmtsLayer1},${wmtsLayer2}sumar${wmtsLayer3}`,
   // ids: 'mapa,hibrido,orto', titles: 'Mapa,Hibrido,Orto', layers: wmtsLayer1+','+wmtsLayer2 + ',' + wmtsLayer3,
   // layers: wmtsLayer1 + ',' + wmtsLayer2,
-  // */
+  */
 
   // PRUEBA 3
   position: 'left',
@@ -227,187 +226,15 @@ const mp = new BackImgLayer({
     },
   ],
 
-  /* / PRUEBA 4
+  // PRUEBA 4
+  /*
   position: 'left',
   ids: 'mapa,hibrido',
   titles: 'Mapa,Hibrido',
-  previews: pwImg3 + ',' + pwImg4,
+  previews: `${pwImg3},${pwImg4}`,
   layers: restLayer4,
-  // */
+  */
 });
-
-// const mp = new BackImgLayer({
-//   collapsed: false,
-//   tooltip: 'Capas de fondo',
-//   layerVisibility: false,
-//   columnsNumber: 3,
-//   empty: false,
-//   layerId: 0,
-//   position: 'left',
-//   layerOpts: [
-//     {
-//       id: 'raster',
-//       preview: pwImg1,
-//       title: 'Mapa',
-//       layers: [
-//         new IDEE.layer.WMTS({
-//           url: 'https://www.ign.es/wmts/mapa-raster?',
-//           name: 'MTN',
-//           legend: 'Mapa',
-//           matrixSet: 'GoogleMapsCompatible',
-//           isBase: true,
-//           displayInLayerSwitcher: false,
-//           queryable: false,
-//           visible: true,
-//           format: 'image/jpeg',
-//         }),
-//       ],
-//     },
-//     {
-//       id: 'imagen',
-//       preview: pwImg2,
-//       title: 'Imagen',
-//       layers: [
-//         new IDEE.layer.XYZ({
-//           url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
-//           name: 'PNOA-MA',
-//           legend: 'Imagen',
-//           projection: 'EPSG:3857',
-//           isBase: true,
-//           displayInLayerSwitcher: false,
-//           queryable: false,
-//           visible: true,
-//           maxZoom: 19,
-//         }),
-//         new IDEE.layer.WMTS({
-//           url: 'https://www.ign.es/wmts/pnoa-ma?',
-//           name: 'OI.OrthoimageCoverage',
-//           matrixSet: 'GoogleMapsCompatible',
-//           legend: 'Imagen',
-//           isBase: false,
-//           displayInLayerSwitcher: false,
-//           queryable: false,
-//           visible: true,
-//           format: 'image/jpeg',
-//           minZoom: 19,
-//         }),
-//       ],
-//     },
-//     {
-//       id: 'mapa',
-//       preview: pwImg3,
-//       title: 'Callejero',
-//       layers: [
-//         new IDEE.layer.WMTS({
-//           url: 'https://www.ign.es/wmts/ign-base?',
-//           name: 'IGNBaseTodo',
-//           legend: 'Callejero',
-//           matrixSet: 'GoogleMapsCompatible',
-//           isBase: true,
-//           displayInLayerSwitcher: false,
-//           queryable: false,
-//           visible: true,
-//           format: 'image/jpeg',
-//         }),
-//       ],
-//     },
-//     {
-//       id: 'hibrido',
-//       title: 'Híbrido',
-//       preview: pwImg4,
-//       layers: [
-//         new IDEE.layer.XYZ({
-//           url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
-//           name: 'PNOA-MA',
-//           legend: 'Imagen',
-//           projection: 'EPSG:3857',
-//           isBase: true,
-//           displayInLayerSwitcher: false,
-//           queryable: false,
-//           visible: true,
-//           maxZoom: 19,
-//         }),
-//         new IDEE.layer.WMTS({
-//           url: 'https://www.ign.es/wmts/pnoa-ma?',
-//           name: 'OI.OrthoimageCoverage',
-//           matrixSet: 'GoogleMapsCompatible',
-//           legend: 'Imagen',
-//           isBase: false,
-//           displayInLayerSwitcher: false,
-//           queryable: false,
-//           visible: true,
-//           format: 'image/jpeg',
-//           minZoom: 19,
-//         }),
-//         new IDEE.layer.WMTS({
-//           url: 'https://www.ign.es/wmts/ign-base?',
-//           name: 'IGNBaseOrto',
-//           matrixSet: 'GoogleMapsCompatible',
-//           legend: 'Topónimos',
-//           isBase: false,
-//           displayInLayerSwitcher: false,
-//           queryable: false,
-//           visible: true,
-//           format: 'image/png',
-//         }),
-//       ],
-//     },
-//     {
-//       id: 'lidar',
-//       preview: `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/pre_visualizacion/lidar.png`,
-//       title: 'LiDAR',
-//       layers: [
-//         new IDEE.layer.WMTS({
-//           url: 'https://wmts-mapa-lidar.idee.es/lidar?',
-//           name: 'EL.GridCoverageDSM',
-//           legend: 'LiDAR',
-//           matrixSet: 'GoogleMapsCompatible',
-//           isBase: true,
-//           displayInLayerSwitcher: false,
-//           queryable: false,
-//           visible: true,
-//           format: 'image/png',
-//         }),
-//       ],
-//     },
-//     {
-//       id: 'ocupacion-suelo',
-//       preview: `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/pre_visualizacion/ocupacion_suelo.png`,
-//       title: 'Ocupación',
-//       layers: [
-//         new IDEE.layer.WMTS({
-//           url: 'https://servicios.idee.es/wmts/ocupacion-suelo?',
-//           name: 'LC.LandCoverSurfaces',
-//           legend: 'Ocupación',
-//           matrixSet: 'GoogleMapsCompatible',
-//           isBase: true,
-//           displayInLayerSwitcher: false,
-//           queryable: false,
-//           visible: true,
-//           format: 'image/png',
-//         }),
-//       ],
-//     },
-//     {
-//       id: 'historicos',
-//       preview: `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/pre_visualizacion/historicos.png`,
-//       title: 'Históricos',
-//       layers: [
-//         new IDEE.layer.WMTS({
-//           url: 'https://www.ign.es/wmts/primera-edicion-mtn?',
-//           name: 'mtn50-edicion1',
-//           legend: 'Históricos',
-//           matrixSet: 'GoogleMapsCompatible',
-//           isBase: true,
-//           displayInLayerSwitcher: false,
-//           queryable: false,
-//           visible: true,
-//           format: 'image/jpeg',
-//         }),
-//       ],
-//     },
-//   ]
-// });
 
 map.addPlugin(mp);
 window.mp = mp;
