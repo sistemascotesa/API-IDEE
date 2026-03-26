@@ -99,14 +99,6 @@ export default class BackImgLayer extends IDEE.Plugin {
      * @private
      * @type {string}
      *
-     * Indicates if the plugin can be collapsed into a button (true/false).
-     */
-    this.collapsible = options.collapsible !== undefined ? options.collapsible : true;
-
-    /**
-     * @private
-     * @type {string}
-     *
      * Empty Layer
      */
     this.empty = options.empty !== undefined ? options.empty : false;
@@ -169,7 +161,6 @@ export default class BackImgLayer extends IDEE.Plugin {
       minWidth: this.minPanelWidth,
       maxWidth: this.maxPanelWidth,
       className: 'm-plugin-backimglayer',
-      collapsible: this.collapsible,
       collapsed: this.collapsed,
       collapsedButtonClass: 'backimglyr-simbolo-cuadros',
       order: this.order,
@@ -210,7 +201,7 @@ export default class BackImgLayer extends IDEE.Plugin {
     const layers = this.layerOpts === undefined
       ? `${this.ids}*!${this.titles}*!${this.previews}*!${this.layers}`
       : this.turnLayerOptsIntoUrl();
-    return `${this.name}=${this.position}*!${this.collapsed}*!${this.collapsible}*!${this.tooltip}*!${this.layerVisibility}*!${this.layerId}*!${this.columnsNumber}*!${this.empty}*!${layers}`;
+    return `${this.name}=${this.position}*!${this.collapsed}*!${this.tooltip}*!${this.layerVisibility}*!${this.layerId}*!${this.columnsNumber}*!${this.empty}*!${layers}`;
   }
 
   /**
