@@ -174,7 +174,6 @@ export default class BackImgLayer extends IDEE.Plugin {
       collapsedButtonClass: 'backimglyr-simbolo-cuadros',
       order: this.order,
     });
-    map.addPanels(this.panel);
 
     this.controls.push(new BackImgLayerControl({
       map,
@@ -196,6 +195,8 @@ export default class BackImgLayer extends IDEE.Plugin {
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
+
+    map.addPanels(this.panel);
   }
 
   /**
