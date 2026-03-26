@@ -181,6 +181,7 @@ export default class Help extends IDEE.Plugin {
         className: 'm-plugin-help',
         position: IDEE.ui.position[this.position_],
         tooltip: this.tooltip_,
+        collapsed: this.options.collapsed,
         collapsedButtonClass: 'm-help-icons-query-support',
         order: this.order,
       });

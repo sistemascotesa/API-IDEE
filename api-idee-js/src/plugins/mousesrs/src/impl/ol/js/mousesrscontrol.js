@@ -192,6 +192,7 @@ export default class MouseSRSControl extends IDEE.impl.Control {
                 listElem.style.display = 'none';
                 input.focus();
               } else {
+                input.value = value;
                 this.changeSRS(map, html, value);
               }
             });
@@ -268,19 +269,12 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     return format;
   }
 
-  changeSRS(map, html, newValue) {
-    const val = newValue || document.querySelector('#m-mousesrs-epsg-selected')?.value;
-    if (!val) return;
-    this.srs_ = val;
-    this.label_ = val;
-
-    if (this.mousePositionControl) {
-      this.facadeMap_.getMapImpl().removeControl(this.mousePositionControl);
-    }
-
-    const dialog = document.querySelector('div.m-api-idee-container div.m-dialog');
-    if (dialog) dialog.remove();
-
+  changeSRS(map, html) {
+    const select = document.querySelector('#m-mousesrs-epsg-selected');
+    this.srs_ = select.value.startsWith('EPSG:') ? select.value : `EPSG:${select.value}`;
+    this.label_ = select.value.startsWith('EPSG:') ? select.value : `EPSG:${select.value}`;
+    this.facadeMap_.getMapImpl().removeControl(this.mousePositionControl);
+    document.querySelector('div.m-api-idee-container div.m-dialog').remove();
     this.renderPlugin(map, html);
   }
 
@@ -303,7 +297,7 @@ export default class MouseSRSControl extends IDEE.impl.Control {
         srsUnits = newProj.units_;
       } catch (err) {
         this.srs_ = 'EPSG:4326';
-        this.label_ = 'EPSG:4326';
+        this.label_ = this.formatEPSG(this.srs_);
         IDEE.dialog.error(`${getValue('exception.srs')} ${this.srs_}`);
         // eslint-disable-next-line no-underscore-dangle
         srsUnits = ol.proj.get('EPSG:4326').units_;

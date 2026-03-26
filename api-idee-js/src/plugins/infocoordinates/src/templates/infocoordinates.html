@@ -18,14 +18,29 @@
                         <span class="grid-label">{{translations.datum}}</span>
                         <span id="m-infocoordinates-datum" class="grid-value">ETRS89</span>
                     </div>
-                    <div class="grid-row">
-                        <span class="grid-label">{{translations.latitude}}</span>
-                        <span id="m-infocoordinates-latitude" class="grid-value">--</span>
-                        <button id="m-infocoordinates-copylatlon" class="secondary" title="{{translations.copyLatLon}}"></button>
+                    <div id="m-infocoordinates-geo-coords" class="noDisplay">
+                        <div class="grid-row">
+                            <span class="grid-label">{{translations.latitude}}</span>
+                            <span id="m-infocoordinates-latitude" class="grid-value">--</span>
+                            <button id="m-infocoordinates-copylatlon" class="secondary" title="{{translations.copyLatLon}}"></button>
+                        </div>
+                        <div class="grid-row has-background">
+                            <span class="grid-label">{{translations.longitude}}</span>
+                            <span id="m-infocoordinates-longitude" class="grid-value">--</span>
+                        </div>
                     </div>
-                    <div class="grid-row has-background">
-                        <span class="grid-label">{{translations.longitude}}</span>
-                        <span id="m-infocoordinates-longitude" class="grid-value">--</span>
+                    <div id="m-infocoordinates-utm-coords" class="noDisplay">
+                        <div class="grid-row coordx-row">
+                            <span class="grid-label">{{translations.coordX}}</span>
+                            <span id="m-infocoordinates-coordX" class="grid-value">--</span>
+                        </div>
+
+                        <div class="grid-row has-background">
+                            <span class="grid-label">{{translations.coordY}}</span>
+                            <span id="m-infocoordinates-coordY" class="grid-value">--</span>
+                            <button id="m-infocoordinates-copyxy" class="secondary" title="{{translations.copyxy}}">
+                            </button>
+                        </div>
                     </div>
                     <div class="grid-row gms-row">
                         <div>
@@ -67,18 +82,6 @@
                                 {{/each}}
                             </ul>
                         </div>
-                    </div>
-
-                    <div class="grid-row has-background coordx-row">
-                        <span class="grid-label">{{translations.coordX}}</span>
-                        <span id="m-infocoordinates-coordX" class="grid-value">--</span>
-                    </div>
-
-                    <div class="grid-row">
-                        <span class="grid-label">{{translations.coordY}}</span>
-                        <span id="m-infocoordinates-coordY" class="grid-value">--</span>
-                        <button id="m-infocoordinates-copyxy" class="secondary" title="{{translations.copyxy}}">
-                        </button>
                     </div>
 
                     <div class="grid-row has-background">

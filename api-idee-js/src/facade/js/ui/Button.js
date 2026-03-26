@@ -121,26 +121,26 @@ class Button extends MObject {
           break;
 
           /*
-        case Position.DOWN:
-          map.downPanel.appendChild(this.element);
-          break;
+      case Position.DOWN:
+        map.downPanel.appendChild(this.element);
+        break;
 
-        case Position.TL:
-          map.upPanelTopLeft.appendChild(this.element);
-          break;
+      case Position.TL:
+        map.upPanelTopLeft.appendChild(this.element);
+        break;
 
-        case Position.TR:
-          map.upPanelTopRight.appendChild(this.element);
-          break;
+      case Position.TR:
+        map.upPanelTopRight.appendChild(this.element);
+        break;
 
-        case Position.BL:
-          map.upPanelBottomLeft.appendChild(this.element);
-          break;
+      case Position.BL:
+        map.upPanelBottomLeft.appendChild(this.element);
+        break;
 
-        case Position.BR:
-          map.upPanelBottomRight.appendChild(this.element);
-          break;
-        */
+      case Position.BR:
+        map.upPanelBottomRight.appendChild(this.element);
+        break;
+      */
 
         default:
           Dialog.info(`Posición no soportada para el botón ${this.name}`);
@@ -153,33 +153,59 @@ class Button extends MObject {
     }
 
     this.element.addEventListener('click', (evt) => {
-      if (this.pressed) {
-        this.closePanel();
-      } else {
-        this.openPanel();
-      }
+      this.click.bind(this)(evt);
     });
   }
 
-  openPanel() {
-    this.map.buttons.filter((button) => button.position === this.position).forEach((button) => {
-      button.closePanel();
-    });
+  /**
+   * This event is triggered when the user clicks on the button
+   *
+   * @param {PointerEvent} event
+   */
+  click(event) {
+    if (this.pressed) {
+      this.deactivate();
+    } else {
+      this.activate();
+    }
+  }
 
-    this.map.openSidePanel(this.panel);
-
-    this.panel.open();
+  /**
+   * Activate the button, changing its state to pressed and
+   * adding the 'active' class to its element.
+   */
+  activate() {
     this.pressed = true;
     this.element.classList.add('active');
+    if (this.panel) this.openPanel();
   }
 
+  /**
+   * Deactivate the button, changing its state to not pressed and
+   * removing the 'active' class from its element.
+   */
+  deactivate() {
+    this.pressed = false;
+    this.element.classList.remove('active');
+    if (this.panel) this.closePanel();
+  }
+
+  /**
+   * Open one side panel associated with this button, if it exists, and activate the button.
+   */
+  openPanel() {
+    this.map.deactivateSidePanelButtons(this);
+    this.map.closeSidePanels(this.position);
+    this.map.openSidePanel(this.panel);
+    this.panel.open();
+  }
+
+  /**
+   * Close the panel associated with this button, if it is open, and deactivate the button.
+   */
   closePanel() {
-    if (this.panel) {
-      this.map.closeSidePanels();
-      this.panel.collapse();
-      this.pressed = false;
-      this.element.classList.remove('active');
-    }
+    this.map.closeSidePanels(this.position);
+    this.panel.collapse();
   }
 
   equals(obj) {

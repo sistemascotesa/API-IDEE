@@ -57,8 +57,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
    * @api stable
    */
   createView(map) {
-    this.map = map;
-    this.selectedProjection = this.map.getProjection().code;
+    this.map_ = map;
+    this.selectedProjection = this.map_.getProjection().code;
+    this.isProjGeographic = this.getImpl().isProjGeographic(this.selectedProjection);
     if (!IDEE.template.compileSync) { // JGL: retrocompatibilidad API IDEE
       IDEE.template.compileSync = (string, options) => {
         let templateCompiled;
@@ -86,6 +87,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
           hasHelp: this.helpUrl !== undefined && IDEE.utils.isUrl(this.helpUrl),
           helpUrl: this.helpUrl,
           projections: this.projections,
+          datum: this.getImpl().datumCalc(this.selectedProjection),
+          geographicProj: this.isProjGeographic,
           translations: {
             title: getValue('title'),
             point: getValue('point'),
@@ -125,11 +128,10 @@ export default class InfocoordinatesControl extends IDEE.Control {
       html.querySelector('#m-infocoordinates-buttonRemovePoint').addEventListener('click', this.removePoint.bind(this));
       html.querySelector('#m-infocoordinates-copylatlon').addEventListener('click', this.copylatlon.bind(this));
       html.querySelector('#m-infocoordinates-copyxy').addEventListener('click', this.copyxy.bind(this));
-      html.querySelector('#m-infocoordinates-help-icon').addEventListener('click', this.showHelp.bind(this));
-
-      this.html = html;
-
-      this.addSvgs(html);
+      (this.isProjGeographic
+        ? html.querySelector('#m-infocoordinates-geo-coords')
+        : html.querySelector('#m-infocoordinates-utm-coords')
+      ).classList.remove('noDisplay');
     });
   }
 
@@ -521,11 +523,11 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const datumBox = document.getElementById('m-infocoordinates-datum');
     const coordX = document.getElementById('m-infocoordinates-coordX');
     const coordY = document.getElementById('m-infocoordinates-coordY');
-    // const srsSelector = document.getElementById('m-infocoordinates-epsg-selected').value;
-    const srsElement = document.getElementById('m-infocoordinates-epsg-selected');
-    // 2. Obtenemos el VALOR (el string)
-    const srsSelector = srsElement.value;
-    // const selectSRS = srsSelector.value;
+    const inputSRS = document.querySelector('.m-infocoordinates-input-select');
+    const selector = document.querySelector('#m-infocoordinates-srs-selector');
+
+    // Cojo el srs seleccionado en el select
+    const selectSRS = !inputSRS.value.startsWith('EPSG:') ? `EPSG:${inputSRS.value}` : inputSRS.value;
 
     // Cojo el formato de las coordenadas geográficas
     const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
@@ -535,21 +537,23 @@ export default class InfocoordinatesControl extends IDEE.Control {
     try {
       pointDataOutput = this.getImpl().getCoordinates(
         featureSelected,
-        srsSelector,
+        selectSRS,
         formatGMS,
         this.decimalGEOcoord_,
         this.decimalUTMcoord_,
       );
+      this.selectedProjection = selectSRS;
     } catch (error) {
       try {
-        await IDEE.impl.ol.js.projections.setNewProjection(srsSelector);
+        await IDEE.impl.ol.js.projections.setNewProjection(selectSRS);
         pointDataOutput = this.getImpl().getCoordinates(
           featureSelected,
-          srsSelector,
+          selectSRS,
           formatGMS,
           this.decimalGEOcoord_,
           this.decimalUTMcoord_,
         );
+        this.selectedProjection = selectSRS;
       } catch (err) {
         pointDataOutput = this.getImpl().getCoordinates(
           featureSelected,
@@ -558,27 +562,31 @@ export default class InfocoordinatesControl extends IDEE.Control {
           this.decimalGEOcoord_,
           this.decimalUTMcoord_,
         );
-        srsElement.value = this.selectedProjection;
         IDEE.dialog.error(`${getValue('exception.srs')} ${this.selectedProjection}`);
       }
     }
-
-    this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
-    const srsListElement = document.getElementById('m-infocoordinates-srs-selector');
-    if (srsListElement) {
-      srsListElement.innerHTML = `
-        <li>
-          <a href="#" value="default" tabindex="-1">${getValue('choose_create_epsg')}</a>
-        </li>
-        ${this.projections.map((proj) => `
-          <li>
-            <a href="#" value="${proj.codes[0]}">
-              ${proj.codes[0]}
-            </a>
-          </li>
-        `).join('')}
-      `;
+    inputSRS.value = this.selectedProjection;
+    this.isProjGeographic = this.getImpl().isProjGeographic(this.selectedProjection);
+    if (this.isProjGeographic) {
+      document.getElementById('m-infocoordinates-geo-coords').classList.remove('noDisplay');
+      document.getElementById('m-infocoordinates-utm-coords').classList.add('noDisplay');
+    } else {
+      document.getElementById('m-infocoordinates-geo-coords').classList.add('noDisplay');
+      document.getElementById('m-infocoordinates-utm-coords').classList.remove('noDisplay');
     }
+    this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
+    selector.innerHTML = `
+      <li><a class="m-infocoordinates-option-disabled" href="#" value="default" tabindex="-1" disabled>
+          ${getValue('choose_create_epsg')}
+      </a></li>
+      ${this.projections.map((proj) => `
+          <li>
+              <a href="#" value="${proj.codes[0]}">
+                  ${proj.codes[0]}
+              </a>
+          </li>
+      `).join('')}
+    `;
 
     // pinto
     pointBox.innerHTML = pointDataOutput.NumPoint;
@@ -681,7 +689,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
   }
 
   copyAllPoints() {
-    let printDocument = `${getValue('point').replace(':', '')},Long,Lat,Alt,EPSG,X,Y,Alt,EPSG\n`;
+    let printDocument = `${getValue('point').replace(':', '')},${this.isProjGeographic ? 'Long,Lat' : 'X,Y'},Alt,EPSG\n`;
     for (let i = 0; i < this.layerFeatures.getImpl().getFeatures(true).length; i += 1) {
       const featureSelected = this.layerFeatures.getImpl().getFeatures(true)[i];
       const alt = featureSelected.getAttributes().Altitude !== undefined ? parseFloat(featureSelected.getAttributes().Altitude) : '-';
@@ -700,26 +708,18 @@ export default class InfocoordinatesControl extends IDEE.Control {
         this.decimalGEOcoord_,
         this.decimalUTMcoord_,
       );
-      const proj = pointDataOutput.projectionUTM.code;
 
-      const coordinatesGEO = [
-        pointDataOutput.projectionGEO.coordinatesGEO.longitude,
-        pointDataOutput.projectionGEO.coordinatesGEO.latitude,
-      ];
+      const coordinates = this.isProjGeographic
+        ? [
+          pointDataOutput.projectionGEO.coordinatesGEO.longitude,
+          pointDataOutput.projectionGEO.coordinatesGEO.latitude,
+        ]
+        : [
+          pointDataOutput.projectionUTM.coordinatesUTM.coordX,
+          pointDataOutput.projectionUTM.coordinatesUTM.coordY,
+        ];
 
-      const coordinatesUTM = [
-        pointDataOutput.projectionUTM.coordinatesUTM.coordX,
-        pointDataOutput.projectionUTM.coordinatesUTM.coordY,
-      ];
-
-      let projection;
-      if (proj.indexOf('25829') > -1 || proj.indexOf('25830') > -1 || proj.indexOf('25831') > -1) {
-        projection = ',EPSG:4258';
-      } else {
-        projection = ',EPSG:4326';
-      }
-
-      const result = `${i + 1},${coordinatesGEO},${alt.toString()}${projection.trim()},${coordinatesUTM},${alt.toString()},${proj}\n`;
+      const result = `${i + 1},${coordinates},${alt.toString()},${this.selectedProjection}\n`;
 
       printDocument = printDocument.concat(result);
     }
@@ -731,7 +731,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
   importAllPoints() {
     const printDocument = [];
     if (this.outputDownloadFormat === 'csv') {
-      printDocument.push(`${getValue('point').replace(':', '')},Long,Lat,Alt,EPSG,X,Y,Alt,EPSG\n`);
+      printDocument.push(`${getValue('point').replace(':', '')},${this.isProjGeographic ? 'Long,Lat' : 'X,Y'},Alt,EPSG\n`);
     }
     for (let i = 0; i < this.layerFeatures.getImpl().getFeatures(true).length; i += 1) {
       const featureSelected = this.layerFeatures.getImpl().getFeatures(true)[i];
@@ -751,32 +751,24 @@ export default class InfocoordinatesControl extends IDEE.Control {
         this.decimalGEOcoord_,
         this.decimalUTMcoord_,
       );
-      const proj = pointDataOutput.projectionUTM.code;
 
-      const coordinatesGEO = [
-        pointDataOutput.projectionGEO.coordinatesGEO.longitude,
-        pointDataOutput.projectionGEO.coordinatesGEO.latitude,
-      ];
-
-      const coordinatesUTM = [
-        pointDataOutput.projectionUTM.coordinatesUTM.coordX,
-        pointDataOutput.projectionUTM.coordinatesUTM.coordY,
-      ];
-
-      let projection = 'EPSG:4326: ';
-      if (proj.indexOf('25829') > -1 || proj.indexOf('25830') > -1 || proj.indexOf('25831') > -1) {
-        projection = 'EPSG:4258: ';
-      }
+      const coordinates = this.isProjGeographic
+        ? [
+          pointDataOutput.projectionGEO.coordinatesGEO.longitude,
+          pointDataOutput.projectionGEO.coordinatesGEO.latitude,
+        ]
+        : [
+          pointDataOutput.projectionUTM.coordinatesUTM.coordX,
+          pointDataOutput.projectionUTM.coordinatesUTM.coordY,
+        ];
 
       if (this.outputDownloadFormat === 'csv') {
-        printDocument.push(`${i + 1},${coordinatesGEO},${alt.toString()},${projection.trim().slice(0, -1)},${coordinatesUTM},${alt.toString()},${proj}\n`);
+        printDocument.push(`${i + 1},${coordinates},${alt.toString()},${this.selectedProjection}\n`);
       } else {
         printDocument.push(`${getValue('point').replace(':', ' ')}${i + 1}: \n`);
-        printDocument.push(projection);
+        printDocument.push(`${this.selectedProjection}: `);
 
-        printDocument.push(`[${coordinatesGEO},${alt}]\n`);
-        printDocument.push(`${proj}: `);
-        printDocument.push(`[${coordinatesUTM},${alt}]\n`);
+        printDocument.push(`[${coordinates},${alt}]\n`);
       }
     }
 
@@ -808,7 +800,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       for (let i = 0; i < this.layerFeatures.getImpl().getFeatures(true).length; i += 1) {
         const pos = this.layerFeatures.getImpl()
           .getFeatures(true)[i].getImpl().getFeature().getProperties().coordinates;
-        const varUTM = this.calculateUTMcoordinates(i + 1);
+        const varUTM = this.calculateCoordinates(i + 1);
         const altitude = `${parseFloat(this.layerFeatures.getImpl().getFeatures(true)[i].getImpl().getFeature().getProperties().Altitude).toFixed(2)}`.replace('.', ',');
         const textHTML = `<div class="m-popup m-collapsed" style="padding: 5px 5px 5px 5px !important;background-color: rgba(255, 255, 255, 0.7) !important;">
               <div class="contenedorCoordPunto">
@@ -852,7 +844,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
     }
   }
 
-  calculateUTMcoordinates(numPoint) {
+  calculateCoordinates(numPoint) {
     const featureSelected = this.layerFeatures.getFeatureById(numPoint);
     // Cojo el srs seleccionado en el select
     const selectSRS = document.getElementById('m-infocoordinates-epsg-selected').value;
@@ -869,8 +861,15 @@ export default class InfocoordinatesControl extends IDEE.Control {
       this.decimalUTMcoord_,
     );
 
-    return [pointDataOutput.projectionUTM.coordinatesUTM.coordX,
-      pointDataOutput.projectionUTM.coordinatesUTM.coordY];
+    return this.isProjGeographic
+      ? [
+        pointDataOutput.projectionGEO.coordinatesGEO.longitude,
+        pointDataOutput.projectionGEO.coordinatesGEO.latitude,
+      ]
+      : [
+        pointDataOutput.projectionUTM.coordinatesUTM.coordX,
+        pointDataOutput.projectionUTM.coordinatesUTM.coordY,
+      ];
   }
 
   removeAllDisplaysPoints() {

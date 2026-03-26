@@ -59,6 +59,7 @@ const proj3042 = {
   codes: ['EPSG:3042', 'urn:ogc:def:crs:EPSG::3042', 'http://www.opengis.net/gml/srs/epsg.xml#3042'],
   units: 'm',
   metersPerUnit: 1,
+  datum: 'GRS80 (ETRS89)',
 };
 
 /**
@@ -679,7 +680,11 @@ const getDefProjection = async (code) => {
  * @api
  */
 const setNewProjection = async (projection) => {
-  const code = getCode(projection);
+  let projName = projection;
+  if (!projection.startsWith('EPSG:')) {
+    projName = `EPSG:${projection}`;
+  }
+  const code = getCode(projName);
   const defProjectionRaw = await getDefProjection(code);
   const defProjection = defProjectionRaw.replace(/\+nadgrids=[^\s]+/, '').trim();
   const url = `https://epsg.io/${code}.wkt2`;
@@ -696,7 +701,7 @@ const setNewProjection = async (projection) => {
     extent: jsonResponse.USAGE.BBOX,
     codes: [`${Object.keys(jsonResponse.ID)[0]}:${jsonResponse.ID[Object.keys(jsonResponse.ID)[0]]}`],
     units: refactorUnits(Object.keys(jsonResponse.AXIS[0].LENGTHUNIT)[0]),
-    datum: jsonResponse.BASEGEOGCRS.DATUM.name,
+    datum: jsonResponse.BASEGEOGCRS.name,
     proj: jsonResponse.name,
     coordRefSys: `http://www.opengis.net/def/crs/EPSG/0/${code}`,
   };

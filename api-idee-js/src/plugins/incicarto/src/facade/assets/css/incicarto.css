@@ -397,11 +397,11 @@
 /*************************
 * VENTANA CAMBIAR NOMBRE *
 **************************/
-.m-message > div > .m-incicarto-input-name {
+.m-message .m-incicarto-input-name {
   width: 100%;
 }
 
-.m-message > div > .m-incicarto-button-change-name {
+.m-message .m-incicarto-button-change-name {
   position: absolute;
   bottom: 16px;
   right: 96px;
@@ -411,7 +411,7 @@
 /***********************
 * VENTANA NOTIFICACION *
 ************************/
-.m-message > div {
+.m-plugin-incicarto-dialog {
   display: flex;
   flex-direction: column;
   align-items: center;
