@@ -150,7 +150,7 @@ export default class BackImgLayer extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_fondo.svg',
       order: this.order,
     });
     map.addButtons(this.button);
