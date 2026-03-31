@@ -50,7 +50,7 @@
         var(--left-width) var(--buttons-width) auto var(--buttons-width) var(--right-width);
 
     grid-template-rows:
-        var(--up-height) auto var(--down-height);
+        var(--up-height) minmax(0, 1fr) var(--down-height);
 
     grid-template-areas:
         "up               up           up      up           up"
@@ -879,4 +879,79 @@ div.m-control button[class^=g-cartografia-]:hover,
     .m-panel.m-layerswitcher>div.m-panel-controls {
         max-width: 100vw;
     }
+}
+
+/**********************************
+    TEST STYLES /test/dev.html
+***********************************/
+
+html:has(>body>.m-api-idee-test-form-frame),
+body:has(>.m-api-idee-test-form-frame) {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+body>.m-api-idee-test-form-frame {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding: 0.5rem;
+}
+
+body>.m-api-idee-test-form-frame>.m-test-form {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    max-height: 12rem;
+    overflow: auto;
+}
+
+body>.m-api-idee-test-form-frame>.m-test-form>div {
+    width: 280px;
+    min-height: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+body>.m-api-idee-test-form-frame>.m-test-form>div>input,
+body>.m-api-idee-test-form-frame>.m-test-form>div>select {
+    border: 1px solid rgb(168, 168, 168);
+    margin: 0;
+    margin-left: .15rem;
+}
+
+@media (max-width: calc(280px * 4 + 0.35rem * 4 + 1rem)) {
+    body>.m-api-idee-test-form-frame>.m-test-form {
+        flex-direction: row;
+    }
+
+    body>.m-api-idee-test-form-frame>.m-test-form>div {
+        width: 100%;
+    }
+
+    body>.m-api-idee-test-form-frame>.m-test-buttons {
+        justify-content: center;
+        min-width: 180px;
+    }
+}
+
+body>.m-api-idee-test-form-frame>.m-test-buttons {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+body>.m-api-idee-test-form-frame>.m-test-buttons>.m-test-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 180px;
 }
