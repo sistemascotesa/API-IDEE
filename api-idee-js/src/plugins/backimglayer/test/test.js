@@ -297,20 +297,20 @@ const updatePlugin = () => {
   createPlugin(options);
 };
 
-// [
-//   selectPosicion,
-//   inputTooltip,
-//   ncolumn,
-//   selectCollapsed,
-//   selectVisibility,
-//   selectEmpty,
-//   selectEnableLayerOpts,
-//   inputIds,
-//   inputTitles,
-//   inputPreviews,
-//   inputLayers,
-// ].forEach((ctrl) => {
-//   ctrl.addEventListener('change', updatePlugin);
-// });
+[
+  selectPosicion,
+  inputTooltip,
+  ncolumn,
+  selectCollapsed,
+  selectVisibility,
+  selectEmpty,
+  selectEnableLayerOpts,
+  inputIds,
+  inputTitles,
+  inputPreviews,
+  inputLayers,
+].forEach((ctrl) => {
+  ctrl.addEventListener('change', updatePlugin);
+});
 
 updatePlugin();
