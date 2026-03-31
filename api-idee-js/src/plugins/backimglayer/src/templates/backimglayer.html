@@ -1,5 +1,5 @@
 <div id="plugin-panel-content-backimglayer" class="m-plugin-panel-content" aria-label="Plugin backimglayer" role="menuitem">
-    <div id="backimglayer-previews">
+    <div id="backimglayer-previews" style="--columns-number: {{columnsNumber}}">
         {{#each layers}}
         <div id="backimglayer-layer-{{this.id}}" title="{{this.title}}" role="button" tabindex="0" aria-label="{{this.title}}">
             <img src="{{this.preview}}" alt="{{this.title}}" tabindex="-1" />

@@ -80,7 +80,7 @@ const mp7 = new MouseSRS({
 const mp8 = new TOC();
 
 const mp9 = new BackImgLayer({
-  position: 'TR',
+  position: 'right',
   layerId: 0,
   layerVisibility: true,
   layerOpts: [{
@@ -163,7 +163,7 @@ const mp9 = new BackImgLayer({
 });
 
 const mp10 = new ViewHistory({
-  position: 'TL',
+  position: 'left',
 });
 
 mapjs.addPlugin(mp);
