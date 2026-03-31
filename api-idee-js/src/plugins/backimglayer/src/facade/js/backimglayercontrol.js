@@ -36,46 +36,53 @@ export default class BackImgLayerControl extends IDEE.Control {
     layers,
     empty,
     order,
+    columnsNumber,
   }) {
     const impl = new IDEE.impl.Control();
     super('BackImgLayer', impl);
+
     map.getBaseLayers().forEach((layer) => {
       layer.on(IDEE.evt.LOAD, map.removeLayers(layer));
     });
+
     this.layers = [];
 
-    const idsArray = ids.split(',');
-    const titlesArray = titles.split(',');
-    const previewArray = previews.split(',');
-    const layersArray = layers.split(',');
-    layersArray.forEach((baseLayer, idx) => {
-      let backgroundLayers = baseLayer.split('sumar');
+    if (layerOpts) {
+      this.layers = layerOpts;
+    } else {
+      const idsArray = ids.split(',');
+      const titlesArray = titles.split(',');
+      const previewArray = previews.split(',');
+      const layersArray = layers.split(',');
 
-      backgroundLayers = backgroundLayers.map((urlLayer) => {
-        let aux = null;
-        if (/QUICK.*/.test(urlLayer)) {
-          aux = IDEE.getQuickLayers(urlLayer.replace('QUICK*', ''));
-        }
-        let apiIdeeLayer;
-        if (!IDEE.utils.isNullOrEmpty(aux)) {
-          apiIdeeLayer = aux;
-          if (typeof apiIdeeLayer === 'string') {
-            apiIdeeLayer = new IDEE.layer.WMTS(apiIdeeLayer);
+      layersArray.forEach((baseLayer, idx) => {
+        let backgroundLayers = baseLayer.split('sumar');
+
+        backgroundLayers = backgroundLayers.map((urlLayer) => {
+          let aux = null;
+          if (/QUICK.*/.test(urlLayer)) {
+            aux = IDEE.getQuickLayers(urlLayer.replace('QUICK*', ''));
           }
-        } else {
-          apiIdeeLayer = new IDEE.layer.WMTS(urlLayer);
-        }
-        return apiIdeeLayer;
-      });
+          let apiIdeeLayer;
+          if (!IDEE.utils.isNullOrEmpty(aux)) {
+            apiIdeeLayer = aux;
+            if (typeof apiIdeeLayer === 'string') {
+              apiIdeeLayer = new IDEE.layer.WMTS(apiIdeeLayer);
+            }
+          } else {
+            apiIdeeLayer = new IDEE.layer.WMTS(urlLayer);
+          }
+          return apiIdeeLayer;
+        });
 
-      const apiIdeeLyrsObject = {
-        id: idsArray[idx],
-        title: titlesArray[idx],
-        preview: previewArray[idx],
-        layers: backgroundLayers,
-      };
-      this.layers.push(apiIdeeLyrsObject);
-    });
+        this.layers.push({
+          id: idsArray[idx],
+          title: titlesArray[idx],
+          preview: previewArray[idx],
+          layers: backgroundLayers,
+        });
+      });
+    }
 
     this.flattedLayers = this.layers.reduce((current, next) => current.concat(next.layers), []);
     this.activeLayer = -1;
@@ -83,7 +90,7 @@ export default class BackImgLayerControl extends IDEE.Control {
     this.idLayer = idLayer === null ? 0 : idLayer;
     this.visible = visible;
     this.empty = empty;
-
+    this.columnsNumber = columnsNumber;
     this.order = order;
   }
 
@@ -101,6 +108,7 @@ export default class BackImgLayerControl extends IDEE.Control {
       const html = IDEE.template.compileSync(template, {
         vars: {
           layers: this.layers,
+          columnsNumber: this.columnsNumber,
           empty: this.empty,
           translations: {
             headertitle: getValue('tooltip'),
@@ -132,6 +140,10 @@ export default class BackImgLayerControl extends IDEE.Control {
     });
   }
 
+  /**
+   * Method fire the click event on HTMLElement of *`empty layer`*
+   * @param {HTMLElement} html
+   */
   showEmptyLayer(html) {
     const elem = html.querySelector('#backimglayer-previews div.m-backimglayer-active');
     if (elem !== null) {
@@ -157,7 +169,7 @@ export default class BackImgLayerControl extends IDEE.Control {
       .querySelector(`#backimglayer-layer-${layersInfo.id}`)
       .classList.contains('m-backimglayer-active');
 
-    layers.forEach((layer, index, array) => {
+    layers.forEach((layer, index) => {
       let sumIndex = index;
       if (index !== 0) {
         sumIndex += 16;
@@ -170,15 +182,15 @@ export default class BackImgLayerControl extends IDEE.Control {
     });
 
     e.currentTarget.parentElement.querySelectorAll('div[id^="backimglayer-layer-"]').forEach((imgContainer) => {
-      if (imgContainer.classList.contains('m-backimglayer-active')) {
-        imgContainer.classList.remove('m-backimglayer-active');
-      }
+      imgContainer.classList.remove('m-backimglayer-active');
     });
+
     if (!isActivated) {
       this.visible = true;
       this.activeLayer = i;
       e.currentTarget.parentElement
-        .querySelector(`#backimglayer-layer-${layersInfo.id}`).classList.add('m-backimglayer-active');
+        .querySelector(`#backimglayer-layer-${layersInfo.id}`)
+        .classList.add('m-backimglayer-active');
       // IDEE.proxy(false);
       this.map.addLayers(layers);
       // setTimeout(() => {
@@ -190,8 +202,11 @@ export default class BackImgLayerControl extends IDEE.Control {
         */
       // }, 1000);
     } else if (this.empty) {
-      e.currentTarget.parentElement.querySelector('#backimglayer-layer-empty').classList.add('m-backimglayer-active');
+      e.currentTarget.parentElement
+        .querySelector('#backimglayer-layer-empty')
+        .classList.add('m-backimglayer-active');
     }
+
     this.fire('backimglayer:activeChanges', [{ activeLayerId: this.activeLayer }]);
   }
 

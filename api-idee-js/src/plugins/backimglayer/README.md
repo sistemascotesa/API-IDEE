@@ -41,7 +41,6 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - 'left' (LEFT) - A la izquierda.
   - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
-- **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
 - **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: "Capas de fondo".
 - **layerId**: Índice de la capa que se quiera cargar por defecto. Por ejemplo, si se pasa el número 2 se mostrará la capa que se encuentre en la segunda posición. Por defecto: 0
@@ -63,7 +62,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 # API-REST
 
 ```javascript
-URL_API?backimglayer=position*!collapsed*!collapsible*!tooltip*!layerVisibility*!layerId*!columnsNumber*!empty*!ids*!titles*!previews*!layers
+URL_API?backimglayer=position*!collapsed*!tooltip*!layerVisibility*!layerId*!columnsNumber*!empty*!ids*!titles*!previews*!layers
 ```
 
 <table>
@@ -79,11 +78,6 @@ URL_API?backimglayer=position*!collapsed*!collapsible*!tooltip*!layerVisibility*
     </tr>
      <tr>
         <td>collapsed</td>
-        <td>true/false</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-     <tr>
-        <td>collapsible</td>
         <td>true/false</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
@@ -145,10 +139,10 @@ URL_API?backimglayer=position*!collapsed*!collapsible*!tooltip*!layerVisibility*
 </table>
 
 
-### Ejemplos de uso API-REST
+<!-- ### Ejemplos de uso API-REST
 ```
 https://componentes.idee.es/api-idee?backimglayer=TR*!true*!true*!Capas%20de%20fondo*!true*!0*!0*!true*!mapa,hibrido*!Mapa,Hibrido*!https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqmapa.png,https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqhibrid.png*!WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa%20IGN*false*image/jpeg*false*false*true,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*Imagen%20(PNOA)*false*image/png*false*false*true
-```
+``` -->
 
 ```
 https://componentes.idee.es/api-idee/?backimglayer=TR*!true*!true*!Capas%20de%20fondo*!true
@@ -166,7 +160,6 @@ Ejemplo de constructor:
 {
   position: "right",
   collapsed: true,
-  collapsible: true,
   order: 0,
   tooltip: "Capas de fondo",
   layerVisibility: true,
@@ -205,8 +198,7 @@ const map = IDEE.map({
 });
 
 const mp = new IDEE.plugin.BackImgLayer({
-    position: 'TR',
-    collapsible: true,
+    position: 'left',
     collapsed: true,
     order: 0,
     layerId: 0,

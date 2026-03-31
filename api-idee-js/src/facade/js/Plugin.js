@@ -31,6 +31,11 @@ class Plugin extends Base {
      * @type {string}
      */
     this.name = name;
+
+    /**
+     * Tooltip
+     * @type {string}
+     */
     this.tooltip = isString(options.tooltip) ? options.tooltip : '';
 
     /**
