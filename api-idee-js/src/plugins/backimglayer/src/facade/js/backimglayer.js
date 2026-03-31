@@ -106,10 +106,16 @@ export default class BackImgLayer extends IDEE.Plugin {
     /**
      * @private
      * @type {string}
-     *
-     * Number of columns that parameterize the table of services shown.
-     */
-    this.columnsNumber = options.columnsNumber != null ? options.columnsNumber : 2;
+    *
+    * Number of columns that parameterize the table of services shown.
+    */
+    this.columnsNumber = 1;
+
+    const columnsNumber = options.columnsNumber;
+    if (columnsNumber !== '' && columnsNumber !== null) {
+      const numbCols = Number(columnsNumber);
+      if (!Number.isNaN(numbCols) && columnsNumber > 0) this.columnsNumber = numbCols;
+    }
 
     /**
      * Metadata from api.json
@@ -177,6 +183,7 @@ export default class BackImgLayer extends IDEE.Plugin {
       previews: this.previews,
       layers: this.layers,
       empty: this.empty,
+      columnsNumber: this.columnsNumber,
       order: this.order,
     }));
     this.controls[0].on('backimglayer:activeChanges', (data) => {

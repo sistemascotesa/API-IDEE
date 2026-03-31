@@ -36,6 +36,7 @@ export default class BackImgLayerControl extends IDEE.Control {
     layers,
     empty,
     order,
+    columnsNumber,
   }) {
     const impl = new IDEE.impl.Control();
     super('BackImgLayer', impl);
@@ -89,6 +90,7 @@ export default class BackImgLayerControl extends IDEE.Control {
     this.idLayer = idLayer === null ? 0 : idLayer;
     this.visible = visible;
     this.empty = empty;
+    this.columnsNumber = columnsNumber;
     this.order = order;
   }
 
@@ -106,6 +108,7 @@ export default class BackImgLayerControl extends IDEE.Control {
       const html = IDEE.template.compileSync(template, {
         vars: {
           layers: this.layers,
+          columnsNumber: this.columnsNumber,
           empty: this.empty,
           translations: {
             headertitle: getValue('tooltip'),
