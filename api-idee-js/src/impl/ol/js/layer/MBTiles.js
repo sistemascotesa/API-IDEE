@@ -253,8 +253,7 @@ class MBTiles extends Layer {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    const { code } = this.map.getProjection();
-    const projection = getProj(code);
+    const projection = getProj('EPSG:3857');
     const extent = projection.getExtent();
     this.olLayer = new OLLayerTile(extend({
       visible: this.visibility,

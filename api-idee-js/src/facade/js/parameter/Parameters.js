@@ -446,6 +446,30 @@ export const parseZoomConstrains = (parameter) => {
 };
 
 /**
+ * Esta función analiza un parámetro de "extentConstrains" en un formato legible.
+ * parámetro a API-IDEE y chequea posibles errores.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ * @public
+ * @function
+ * @param {string|Mx.parameters.Map} parameter Parámetros.
+ * @returns {Boolean} Devuelve el "extentConstrains".
+ * @api
+ */
+export const parseExtentConstrains = (parameter) => {
+  let extentConstrains;
+
+  if (isString(parameter)) {
+    extentConstrains = getParameterValue('extentConstrains', parameter);
+  } else if (isObject(parameter)) {
+    extentConstrains = parameter.extentConstrains;
+  } else {
+    Exception(`El tipo del parámetro extentConstrains no es válido: ${typeof parameter}`);
+  }
+
+  return extentConstrains;
+};
+
+/**
  * Esta función analiza un parámetro de resolución en un formato legible.
  * parámetro a API-IDEE y chequea posibles errores.
  * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
@@ -763,6 +787,13 @@ class Parameters {
      * @api
      */
     this.zoomConstrains = parseZoomConstrains(userParameters);
+
+    /**
+     * @public
+     * @type {Boolean}
+     * @api
+     */
+    this.extentConstrains = parseExtentConstrains(userParameters);
 
     /**
      * @public

@@ -481,6 +481,46 @@ export const zoomConstrains = (enableIntermediateZooms) => {
 };
 
 /**
+ * Analiza el parámetro de extent constrains del usuario especificado
+ * en un booleano o cadena de texto.
+ *
+ * @param {Boolean|String} enableExtentConstrains Parámetro de extent constrains especificado.
+ * @returns {Boolean} extent constrains activos o inactivos
+ * @public
+ * @function
+ * @api
+ * @throws {IDEE.exception} Si el parámetro no es especificado o de tipo no soportado.
+ */
+export const extentConstrains = (enableExtentConstrains) => {
+  let extentConstrainsVar;
+
+  if (isNullOrEmpty(enableExtentConstrains)) {
+    Exception(getValue('exception').no_extent_constrains);
+  }
+
+  switch (typeof enableExtentConstrains) {
+    case 'boolean':
+      extentConstrainsVar = enableExtentConstrains;
+      break;
+
+    case 'string':
+      const lowerCaseParameter = enableExtentConstrains.toLowerCase();
+
+      if (lowerCaseParameter === 'true' || lowerCaseParameter === 'false') {
+        extentConstrainsVar = lowerCaseParameter === 'true';
+      } else {
+        Exception(getValue('exception').invalid_extentconstrains_param);
+      }
+      break;
+
+    default:
+      Exception(getValue('exception').invalid_extentconstrains_param);
+  }
+
+  return extentConstrainsVar;
+};
+
+/**
  * Analiza el parámetro multiWorld del usuario especificado
  * en un booleano o cadena de texto.
  *

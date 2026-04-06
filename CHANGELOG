@@ -74,9 +74,21 @@
 - Refactoriza el añadido de controles para extraer la lógica a un builder. Soluciona problema al añadir controles por duplicado. Soluciona problemas al añadir controles con constructor.
 - Se añade creación de visualizadores mediante peticiones POST.
 - Se soluciona problemas con el parseo de etiquetas CSS en plugin information.
-- Se pueden importar archivos .tif, .tiff y .gpkg.
 - Mousesrs: se soluciona problemas de estilos en mapas pequeños.
-
+- Se soluciona problema con plugin overviewmap en 25830.
+- Se soluciona problema con proxy e iconos en estilos
+- Se pueden importar archivos .tif, .tiff y .gpkg y se implementa mejora a la hora de añadir archivos pesados en el plugin LayerSwitcher.
+- Se crean métodos en Utils para la transformación de formato GeoJSON y WKT a WKB, tanto a nivel de feature como de capa.
+- La información recibida de un servicio en formato GeoJSON o KML se proyecta en la proyección estándar de estos formatos, EPSG:4326.
+- Permite la carga de archivos GeoJSON mediante rutas locales, tanto absolutas como relativas.
+- Se permite gestionar la interacción 'snap' dentro de la herramienta 'Edición de geometría' del plugin Vectorsmanagement.
+- La acción 'Área de influencia' del plugin Vectorsmanagement crea una nueva instancia de capa.
+- Modifica la función de carga para todos los servicios teselados para que la solicitud de nuevas tiles se produzca en la frontera x.50
+- Corrige la carga de nuevos EPSGs en Mousesrs e Infocoordinates y habilita dicha funcionalidad en PrintViewManagement.
+- Restaura el parámetro 'exact' del control Scale
+- Se cambia la estructura del archivo GeoJSON que toma como entrada el parámetro 'precharged' de LayerSwitcher.
+- Se reconoce el parámetro 'type' del servicio cargado en LayerSwitcher.
+- Permite la creación de grupos anidados de capas en LayerSwitcher.
 
 01/01/25 - Versión 1.0.0
 - Se incluye implementación 3D con Cesium

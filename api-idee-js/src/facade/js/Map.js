@@ -264,6 +264,11 @@ class Map extends Base {
     this.userMaxExtent = null;
 
     /**
+     * Map: Restricciones de extensión proporcionadas por el usuario
+     */
+    this.userExtentConstrains = params.extentConstrains || null;
+
+    /**
      * Map: Colección de "capabilities".
      */
     this.collectionCapabilities = [];
@@ -389,6 +394,15 @@ class Map extends Base {
       this.setZoomConstrains(IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS);
     } else {
       this.setZoomConstrains(false);
+    }
+
+    // extentConstrains
+    if (!isNullOrEmpty(params.extentConstrains)) {
+      this.setExtentConstrains(params.extentConstrains);
+    } else if (IDEE.config.MAP_VIEWER_EXTENT_CONSTRAINS !== '' && IDEE.config.MAP_VIEWER_EXTENT_CONSTRAINS !== undefined) {
+      this.setExtentConstrains(IDEE.config.MAP_VIEWER_EXTENT_CONSTRAINS);
+    } else {
+      this.setExtentConstrains(false);
     }
 
     // minZoom
@@ -3865,6 +3879,44 @@ class Map extends Base {
     }
 
     return this;
+  }
+
+  /**
+   * Este método establece las restricciones de extensión para esta
+   * instancia del mapa.
+   *
+   * @public
+   * @function
+   * @param {String|Object} extentConstrains Restricciones de extensión.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  setExtentConstrains(extentConstrains) {
+    if (isNullOrEmpty(extentConstrains)) {
+      Exception(getValue('exception').no_extentConstrains);
+    }
+
+    try {
+      const extentCons = parameter.extentConstrains(extentConstrains);
+      this.userExtentConstrains = extentCons;
+    } catch (err) {
+      Dialog.error(err.toString());
+      throw err;
+    }
+    return this;
+  }
+
+  /**
+   * Este método obtiene las restricciones de extensión para esta
+   * instancia del mapa.
+   *
+   * @public
+   * @function
+   * @returns {String|Object} Devuelve las restricciones de extensión.
+   * @api
+   */
+  getExtentConstrains() {
+    return this.userExtentConstrains;
   }
 
   /**

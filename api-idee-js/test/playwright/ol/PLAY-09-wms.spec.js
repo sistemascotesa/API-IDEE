@@ -203,9 +203,9 @@ test.describe('IDEE.layer.WMS', () => {
         window.wms_001 = wms_001;
 
         const wms_002 = new IDEE.layer.WMS({
-          url: 'https://www.ideandalucia.es/wms/mta10v_2007?',
-          name: 'Limites',
-          legend: 'Límites',
+          url: 'https://servicios.idee.es/wms-inspire/hidrografia?',
+          name: 'HY.Network',
+          legend: 'Red hidrográfica',
           isBase: true,
         });
         window.wms_002 = wms_002;

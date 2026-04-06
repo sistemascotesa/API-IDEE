@@ -189,7 +189,7 @@ class XYZ extends Layer {
     let source = this.vendorOptions_.source;
     if (isNullOrEmpty(source)) {
       source = new XYZSource({
-        projection: this.map.getProjection().code,
+        projection,
         url: this.url,
         tileSize: this.getTileSize(),
         crossOrigin: this.crossOrigin,

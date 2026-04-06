@@ -3291,10 +3291,10 @@ class Map extends MObject {
           prevMaxExtent.x.max, prevMaxExtent.y.max,
         ];
       }
-      // console.log(ImplUtils
-      // .transformExtent(prevMaxExtent, olPrevProjection, olProjection));
-      this.setBbox(ImplUtils
-        .transformExtent(prevMaxExtent, olPrevProjection, olProjection), false);
+      if (this.facadeMap_.getExtentConstrains()) {
+        this.setBbox(ImplUtils
+          .transformExtent(prevMaxExtent, olPrevProjection, olProjection), false);
+      }
     }
 
     // recalculates resolutions

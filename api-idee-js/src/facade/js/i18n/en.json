@@ -312,6 +312,8 @@
     "invalid_resolutions_param": "The format of the resolutions parameter is not correct",
     "invalid_zoom_param": "The format of the zoom parameter is not correct",
     "invalid_zoomconstrains_param": "The format of the zoomConstraints parameter is not correct",
+    "no_extent_constrains": "No extentConstrains parameter has been specified",
+    "invalid_extentconstrains_param": "The format of the extentConstrains parameter is not correct",
     "min_gt_max": "A minimum radius greater than the maximum can not be established.",
     "max_lt_min": "A maximum radius of less than the minimum can not be established.",
     "no_geojson": "No GeoJSON has been specified",

@@ -50,7 +50,7 @@ div.m-panel>button.m-panel-btn.overviewmap-mundo,
 }
 
 button.overviewmap-mundo {
-    border: 2px solid white;
+    border: 2px solid white !important;
 }
 
 

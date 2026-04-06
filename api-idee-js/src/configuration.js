@@ -48,6 +48,7 @@ let zoom = '';
 let srs = '';
 let layers = '';
 let zoomConstrains = '';
+let extentConstrains = '';
 params.forEach((param) => {
   if (param.indexOf('center') > -1) {
     const values = param.split('=')[1].split(',');
@@ -55,6 +56,9 @@ params.forEach((param) => {
   } else if (param.indexOf('zoomConstrains') > -1) {
     const value = param.split('=')[1];
     zoomConstrains = value;
+  } else if (param.indexOf('extentConstrains') > -1) {
+    const value = param.split('=')[1];
+    extentConstrains = value;
   } else if (param.indexOf('zoom') > -1) {
     const value = param.split('=')[1];
     zoom = parseInt(value, 10);
@@ -302,6 +306,14 @@ params.forEach((param) => {
    * @type {Object}
    */
   IDEE.config('MAP_VIEWER_ZOOM_CONSTRAINS', zoomConstrains);
+
+  /**
+   * Map Viewer - Extent constrains
+   * 
+   * @private
+   * @type {Object}
+   */
+  IDEE.config('MAP_VIEWER_EXTENT_CONSTRAINS', extentConstrains);
 
   /**
    * MAP Viewer - SRS
