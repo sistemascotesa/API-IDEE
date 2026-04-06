@@ -9,6 +9,7 @@ const map = Mmap({
   // controls: ['attributions*<p>Contenido del control</p>'],
   // eslint-disable-next-line max-len
   // controls: ['location', 'attributions*<p>Contenido del control</p>', 'rotate', 'ImplementationSwitcher'],
+  controls: ['scale', 'rotate'],
   center: [-443273.10081370454, 4757481.749296248],
   // layers: ['OSM'],
   zoom: 6,
@@ -48,6 +49,7 @@ const selectPosition = document.getElementById('selectPosicion');
 const selectCollapsed = document.getElementById('selectCollapsed');
 const selectCollapsible = document.getElementById('selectCollapsible');
 const inputTooltip = document.getElementById('inputTooltip');
+const inputOrder = document.getElementById('inputOrder');
 
 const create = (options) => {
   if (!map.hasControl(Attributions.NAME)) map.addControls(new Attributions(options));
@@ -70,15 +72,23 @@ const recreate = () => {
   const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
   if (collapsed !== '') options.collapsed = (collapsed === 'true');
 
+  const order = inputOrder.value;
+  if (order !== undefined) options.order = Number(order);
+
   if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
 
   create(options);
 };
 
-selectPosition.addEventListener('change', recreate);
-selectCollapsed.addEventListener('change', recreate);
-selectCollapsible.addEventListener('change', recreate);
-inputTooltip.addEventListener('change', recreate);
+[
+  selectPosition,
+  selectCollapsed,
+  selectCollapsible,
+  inputTooltip,
+  inputOrder,
+].forEach((ctrl) => {
+  ctrl.addEventListener('change', recreate);
+});
 
 const removeButton = document.getElementById('removeButton');
 removeButton.addEventListener('click', () => {

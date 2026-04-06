@@ -44,7 +44,7 @@ class Attributions extends ControlBase {
    * @param {Number} scale_ Escala de visualización de la capa de atribuciones.
    * @param {String} tooltip Texto del tooltip.
    * @param {String} position Posición del control.
-   * @param {Number} order Accesibilidad, tabIndex.
+   * @param {Number} order Selección de la posición sobre el panel
    * @param {String} url URL del fichero de atribuciones.
    * @param {Object} collectionsAttributions Colección de atribuciones.
    * @param {Boolean} closePanel Panel cerrado o abierto.
@@ -53,7 +53,6 @@ class Attributions extends ControlBase {
    * @param {Number} scale Define cuando cambiara la atribución.
    * @param {String} defaultAttribution Atribución por defecto.
    * @param {String} defaultURL URL por defecto.
-   * @param {Number} order Accesibilidad, z-index.
    * @api
    */
   constructor(options = {}) {
@@ -78,7 +77,7 @@ class Attributions extends ControlBase {
     this.urlParam_ = options.urlParam || 'url';
     this.defaultAttribution_ = options.defaultAttribution || 'Instituto Geogr&aacute;fico Nacional';
     this.defaultURL_ = options.defaultURL || 'https://www.ign.es/';
-    this.tooltip_ = options.title || this.translation.title;
+    this.tooltip_ = options.tooltip ?? this.translation.title;
     this.collectionsAttributions_ = options.collectionsAttributions || [];
 
     this.collectionsAttributions_ = this.collectionsAttributions_.map((attr) => {

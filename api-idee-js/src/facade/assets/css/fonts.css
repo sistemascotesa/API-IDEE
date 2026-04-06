@@ -50,8 +50,8 @@
 }
 
 .g-cartografia-comments-simple::before {
-    -webkit-mask-image: url('../images/leaf-simple.svg');
-    mask-image: url('../images/leaf-simple.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_notas.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_notas.svg');
 }
 
 .g-cartografia-escala3::before {

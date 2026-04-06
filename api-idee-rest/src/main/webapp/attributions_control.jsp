@@ -15,15 +15,6 @@
                 <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
                 <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
                 </link>
-                <style type="text/css">
-                    html,
-                    body {
-                        margin: 0;
-                        padding: 0;
-                        height: 100%;
-                        overflow: auto;
-                    }
-                </style>
                 <% Map<String, String[]> parameterMap = request.getParameterMap();
                     PluginsManager.init (getServletContext());
                     String[] cssfiles = PluginsManager.getCSSFiles(parameterMap);
@@ -33,42 +24,58 @@
                         <% } %>
             </head>
 
-            <body style="display: flex; flex-direction: column;">
-                <div>
-                    <label for="selectPosicion">Selector de posición del plugin</label>
-                    <select name="position" id="selectPosicion">
-                        <option value="left" selected="selected">Izquierda (left)</option>
-                        <option value="right">Derecha (right)</option>
-                        <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
-                        <option value="center-top-right">Centro superior derecho (center-top-right)</option>
-                        <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
-                        <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)</option>
-                        <option value="down">Abajo (down)</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="selectCollapsed">Parámetro de collapsed</label>
-                    <select name="collapsed" id="selectCollapsed">
-                        <option value=''></option>
-                        <option value="true">true</option>
-                        <option value="false" selected="selected">false</option>
-                    </select>
-
-                    <label for="selectCollapsible">Selector de collapsible</label>
-                    <select name="collapsible" id="selectCollapsible">
-                        <option value=''></option>
-                        <option value="true" selected="selected">true</option>
-                        <option value="false">false</option>
-                    </select>
-
-                    <label for="inputTooltip">Parámetro tooltip</label>
-                    <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug"
-                        value="Esto es un tooltip">
-                </div>
-                <div style="background-color: rgb(172, 161, 147); padding: 0.25rem;">
-                    <button id="removeButton">Eliminar Control</button>
-                    <button id="removeLayerOSM">Eliminar Capa OSM</button>
-                    <button id="addLayerOSM">Añadir Capa OSM</button>
+            <body>
+                <div class="m-api-idee-test-form-frame">
+                    <div class="m-test-form" style="max-height: 8rem;">
+                        <div>
+                            <label for="selectPosicion" title="Posición del Control">Posición del panel
+                                "position"</label>
+                            <select name="position" id="selectPosicion">
+                                <option value="left" selected="selected">Izquierda (left)</option>
+                                <option value="right">Derecha (right)</option>
+                                <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
+                                <option value="center-top-right">Centro superior derecho (center-top-right)</option>
+                                <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)
+                                </option>
+                                <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)
+                                </option>
+                                <option value="down">Abajo (down)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="order"
+                                title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Posición
+                                en el panel "order"</label>
+                            <input type="number" order="tooltip" id="inputOrder" list="orderSug" value="-1">
+                        </div>
+                        <div>
+                            <label for="selectCollapsed">Panel colapsado "collapsed"</label>
+                            <select name="collapsed" id="selectCollapsed">
+                                <option value=''></option>
+                                <option value="true">true</option>
+                                <option value="false" selected="selected">false</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="selectCollapsible">Panel colapsable "collapsible"</label>
+                            <select name="collapsible" id="selectCollapsible">
+                                <option value=''></option>
+                                <option value="true" selected="selected">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="inputTooltip">Título panel y control "tooltip"</label>
+                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug"
+                                value="Esto es un tooltip">
+                        </div>
+                    </div>
+                    <div class="m-test-buttons">
+                        <button name="eliminar control" class="m-test-button" id="removeButton">Eliminar
+                            Control</button>
+                        <button name="eliminar osm" class="m-test-button" id="removeLayerOSM">Eliminar Capa OSM</button>
+                        <button name="eliminar capa OSM" class="m-test-button" id="addLayerOSM">Añadir Capa OSM</button>
+                    </div>
                 </div>
                 <div id="mapjs" class="m-container"></div>
                 <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
@@ -86,6 +93,7 @@
                             const map = IDEE.map({
                                 container: 'mapjs',
                                 // controls: ['attributions*<p>Contenido del control</p>'],
+                                controls: ['scale', 'rotate'],
                                 zoom: 5,
                                 maxZoom: 20,
                                 minZoom: 4,
@@ -126,6 +134,7 @@
                             const selectCollapsed = document.getElementById('selectCollapsed');
                             const selectCollapsible = document.getElementById('selectCollapsible');
                             const inputTooltip = document.getElementById('inputTooltip');
+                            const inputOrder = document.getElementById('inputOrder');
 
                             const create = (options) => {
                                 if (!map.hasControl(IDEE.control.Attributions.NAME))
@@ -149,15 +158,23 @@
                                 const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
                                 if (collapsed !== '') options.collapsed = (collapsed === 'true');
 
+                                const order = inputOrder.value;
+                                if (order !== undefined) options.order = Number(order);
+
                                 if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
 
                                 create(options);
                             };
 
-                            selectPosition.addEventListener('change', recreate);
-                            selectCollapsed.addEventListener('change', recreate);
-                            selectCollapsible.addEventListener('change', recreate);
-                            inputTooltip.addEventListener('change', recreate);
+                            [
+                                selectPosition,
+                                selectCollapsed,
+                                selectCollapsible,
+                                inputTooltip,
+                                inputOrder,
+                            ].forEach((ctrl) => {
+                                ctrl.addEventListener('change', recreate);
+                            });
 
                             const removeButton = document.getElementById('removeButton');
                             removeButton.addEventListener('click', () => {
