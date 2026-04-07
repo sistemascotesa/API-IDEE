@@ -13,7 +13,7 @@ import ControlBase from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
 import { LOAD, ADDED_TO_MAP } from '../event/eventtype';
 import { getValue } from '../i18n/language';
-import * as Position from '../ui/position';
+import { isBoolean, isNumber } from '../util/Utils';
 
 /**
  * Esta constante indica el número máximo de capas base que tendrá el control.
@@ -32,7 +32,8 @@ const MAXIMUM_LAYERS = 5;
  * @property {Array<Layer>} layer Proviene de "IDEE.config.backgroundlayers".
  * @property {Array<Layer>} flattedLayers Concadena las capas generadas.
  * @property {Number} activeLayer Esta propiedad indica la capa que se activa.
- * @property {Number} idLayer Indica la capa que se mostrará primero.
+ * @property {Number} layerIndex Indice de una de las capas de
+ * "layers" que se preactivará si se define.
  * @property {Boolean} visible Indica si sera visible o no.
  *
  * @extends {IDEE.Control}
@@ -43,19 +44,27 @@ class BackgroundLayers extends ControlBase {
    * Constructor principal de la clase.
    * Las capas base provienen de "IDEE.config.backgroundlayers".
    *
-   * @constructor
-   * @param {Number} options.idLayer Identificador de la capa.
-   * @param {Boolean} options.visible Define si será visible.
-   * @param {Number} options.order Orden del control en el contenedor seleccionado del mapa.
-   * @param {Number} options.position define el contener del mapa que usará el control para su vista
+   * @constructor Options
+   * @param {Number} position Define el contener del mapa que usará el control para su vista
+   * @param {Number} order Orden del control en el contenedor seleccionado del mapa.
+   * @param {Number} activeLayer Identificador de la capa. que se preactivará si se define
+   * @param {Boolean} visible Define si será visible.
+   *
+   * @example
+   * {
+   *   tooltip: 'Mi control',
+   *   position: 'left',
+   *   order: 2,
+   *   layerIndex: 1
+   * }
    * @api
    */
   constructor(options = {}) {
     const impl = new ControlImpl(options);
     super(BackgroundLayers.NAME, impl, options);
-    // this.setImpl(impl);
+
     /**
-     * Control layers, proviene de "IDEE.config.backgroundlayers".
+     * layers: Control layers, proviene de "IDEE.config.backgroundlayers".
      */
     this.layers = IDEE.config.backgroundlayers.slice(0, MAXIMUM_LAYERS).map((layer) => {
       return {
@@ -88,24 +97,20 @@ class BackgroundLayers extends ControlBase {
     this.flattedLayers = this.layers.reduce((current, next) => current.concat(next.layers), []);
 
     /**
-     * Active Layer, default -1.
+     * activeLayer: default -1.
      */
     this.activeLayer = -1;
 
     /**
-     * ID layer.
+     * layerIndex: Índice de la capa que se preactivará
      */
-    this.idLayer = options.idLayer == null ? 0 : options.idLayer;
+    this.layerIndex = isNumber(options.layerIndex) && options.layerIndex < this.layers.length
+      ? options.layerIndex : 0;
 
     /**
-     * Visibility.
+     * visible: Visibility.
      */
-    this.visible = options.visible == null ? true : options.visible;
-
-    /**
-     * Position
-     */
-    this.position = options.position ?? Position.DOWN;
+    this.visible = isBoolean(options.visible) ? options.visible : true;
   }
 
   /**
@@ -131,9 +136,9 @@ class BackgroundLayers extends ControlBase {
       // this.uniqueButton.innerHTML = this.layers[0].title;
       this.on(ADDED_TO_MAP, () => {
         const visible = this.visible;
-        if (this.idLayer > -1) {
+        if (this.layerIndex > -1) {
           if (window.innerWidth > IDEE.config.MOBILE_WIDTH) {
-            this.activeLayer = this.idLayer;
+            this.activeLayer = this.layerIndex;
           }
 
           this.showBaseLayer({
@@ -277,7 +282,7 @@ class BackgroundLayers extends ControlBase {
   }
 
   /**
-   * Esta función elimina "this.layers" del mapa.
+   * Esta función elimina "this.flattedLayers" del mapa.
    * @function
    * @public
    * @api

@@ -32,11 +32,13 @@
                 <label for="inputTooltip">Título panel "tooltip"</label>
                 <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Esto es un tooltip">
             </div>
+            <div>
+                <label for="inputLayerIndex" title="Preactivar capa con el índice seleccionado">Índice de capa "layerIndex"</label>
+                <input type="number" name="inputLayer" id="inputLayerIndex" value="0" min="0" max="4">
+            </div>
         </div>
         <div class="m-test-buttons">
             <button name="eliminar control" class="m-test-button" id="removeButton">Eliminar Control</button>
-            <button name="eliminar osm" class="m-test-button" id="removeLayerOSM">Eliminar Capa OSM</button>
-            <button name="eliminar capa OSM" class="m-test-button" id="addLayerOSM">Añadir Capa OSM</button>
         </div>
     </div>
     <div id="map" class="map"></div>

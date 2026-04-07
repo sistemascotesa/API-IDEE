@@ -37,6 +37,37 @@
 </head>
 
 <body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form" style="max-height: 8rem;">
+            <div>
+                <label for="selectPosicion" title="Posición del Control">Posición del panel "position"</label>
+                <select name="position" id="selectPosicion">
+                    <option value="left" selected="selected">Izquierda (left)</option>
+                    <option value="right">Derecha (right)</option>
+                    <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
+                    <option value="center-top-right">Centro superior derecho (center-top-right)</option>
+                    <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
+                    <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)</option>
+                    <option value="down">Abajo (down)</option>
+                </select>
+            </div>
+            <div>
+                <label for="order" title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Posición en el panel "order"</label>
+                <input type="number" order="tooltip" id="inputOrder" list="orderSug" value="-1">
+            </div>
+            <div>
+                <label for="inputTooltip">Título panel "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Esto es un tooltip">
+            </div>
+            <div>
+                <label for="inputLayerIndex" title="Preactivar capa con el índice seleccionado">Índice de capa "layerIndex"</label>
+                <input type="number" name="inputLayer" id="inputLayerIndex" value="0" min="0" max="4">
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar control" class="m-test-button" id="removeButton">Eliminar Control</button>
+        </div>
+    </div>
     <div id="mapjs" class="m-container"></div>
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
     <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
@@ -57,7 +88,7 @@
         IDEE.language.setLang(urlParams.get('language') || 'es');
         const map = IDEE.map({
             container: 'mapjs',
-            controls: ['backgroundlayers'],
+            controls: ['scale'],
             zoom: 5,
             maxZoom: 20,
             minZoom: 4,
@@ -78,12 +109,54 @@
             tiled: false
         }, {});
 
-        map.addLayers([layerinicial, layerUA]);
-        let mp = new IDEE.plugin.ShareMap({
-            baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
-            position: "TR",
+        const layers = [layerinicial, layerUA];
+
+        const selectPosition = document.getElementById('selectPosicion');
+        const inputTooltip = document.getElementById('inputTooltip');
+        const inputOrder = document.getElementById('inputOrder');
+        const inputLayerIndex = document.getElementById('inputLayerIndex');
+
+        const create = (options) => {
+          if (!map.hasControl(IDEE.control.BackgroundLayers.NAME)) map.addControls(new IDEE.control.BackgroundLayers(options));
+        };
+
+        const remove = () => {
+          const ctrls = map.getControls(IDEE.control.BackgroundLayers.NAME);
+          if (ctrls.length === 1) map.removeControls(ctrls[0]);
+        };
+
+        const recreate = () => {
+          remove();
+        
+          const options = {};
+          options.position = selectPosition.options[selectPosition.selectedIndex].value;
+        
+          const order = inputOrder.value;
+          if (order !== undefined) options.order = Number(order);
+        
+          if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
+
+          if (inputLayerIndex.value && inputLayerIndex.value !== '') options.layerIndex = Number(inputLayerIndex.value);
+        
+          create(options);
+        };
+
+        [
+          selectPosition,
+          inputTooltip,
+          inputOrder,
+        ].forEach((ctrl) => {
+          ctrl.addEventListener('change', recreate);
         });
-        map.addPlugin(mp);
+
+        const removeButton = document.getElementById('removeButton');
+        removeButton.addEventListener('click', () => {
+          remove();
+        });
+
+        recreate();
+
+        map.addLayers(layers);
     </script>
 </body>
 
