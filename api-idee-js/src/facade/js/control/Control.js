@@ -84,6 +84,14 @@ class Control extends Base {
     this.element = null;
     this.activationBtn = null;
     this.activated = false;
+
+    this.options = {
+      ...options,
+      svgPath: this.svgPath,
+      position: this.position,
+      order: this.order,
+      tooltip: this.tooltip,
+    };
   }
 
   /**
