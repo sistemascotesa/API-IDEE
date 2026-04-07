@@ -415,6 +415,22 @@ export const buildControl = (controlParam, map) => {
     const controlName = normalizedControlParams[0];
 
     const controls = {
+      [Attributions.NAME]: () => {
+        // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+        map._attributionsMap = [...map._attributionsMap, ...normalizedControlParams];
+        return new Attributions({
+          map,
+          collectionsAttributions: normalizedControlParams.length === 2
+            ? [normalizedControlParams[1]].map((l) => {
+              if (typeof l !== 'string') {
+                const attr = l;
+                attr.id = l.idLayer;
+                return attr;
+              }
+              return l;
+            }) : [],
+        });
+      },
       [Scale.NAME]: () => {
         normalizedControlParams.forEach((p) => {
           if (p === 'true') params.exactScale = true;
@@ -440,22 +456,6 @@ export const buildControl = (controlParam, map) => {
           activated,
         });
       },
-      [Attributions.NAME]: () => {
-        // eslint-disable-next-line no-underscore-dangle, no-param-reassign
-        map._attributionsMap = [...map._attributionsMap, ...normalizedControlParams];
-        return new Attributions({
-          map,
-          collectionsAttributions: normalizedControlParams.length === 2
-            ? [normalizedControlParams[1]].map((l) => {
-              if (typeof l !== 'string') {
-                const attr = l;
-                attr.id = l.idLayer;
-                return attr;
-              }
-              return l;
-            }) : [],
-        });
-      },
       [Rotate.NAME]: () => {
         normalizedControlParams.forEach((p) => {
           if (!isUndefined(p)) {
@@ -475,12 +475,12 @@ export const buildControl = (controlParam, map) => {
         if (/backgroundlayers\*([0-9])+\*(true|false)/.test(controlParam)) {
           const idLayer = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[1];
           const visible = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[2] === 'true';
-          return new BackgroundLayers(map, {
+          return new BackgroundLayers({
             visible,
             idLayer: Number.parseInt(idLayer, 10),
           });
         }
-        return new BackgroundLayers(map);
+        return new BackgroundLayers();
       },
       [ImplementationSwitcher.NAME]: () => new ImplementationSwitcher(),
       [WMCSelector.NAME]: () => new WMCSelector(),

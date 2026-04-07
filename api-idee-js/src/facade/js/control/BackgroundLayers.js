@@ -44,21 +44,16 @@ class BackgroundLayers extends ControlBase {
    * Las capas base provienen de "IDEE.config.backgroundlayers".
    *
    * @constructor
-   * @param {IDEE.map} map Mapa.
    * @param {Number} options.idLayer Identificador de la capa.
    * @param {Boolean} options.visible Define si será visible.
    * @param {Number} options.order Orden del control en el contenedor seleccionado del mapa.
    * @param {Number} options.position define el contener del mapa que usará el control para su vista
    * @api
    */
-  constructor(map, options = {}) {
-    super(BackgroundLayers.NAME, options);
+  constructor(options = {}) {
     const impl = new ControlImpl(options);
-    this.setImpl(impl);
-    map.getBaseLayers().forEach((layer) => {
-      layer.on(LOAD, map.removeLayers(layer));
-    });
-
+    super(BackgroundLayers.NAME, impl, options);
+    // this.setImpl(impl);
     /**
      * Control layers, proviene de "IDEE.config.backgroundlayers".
      */
@@ -124,7 +119,11 @@ class BackgroundLayers extends ControlBase {
   createView(map) {
     this.map = map;
     return new Promise((success, fail) => {
-      const html = compileTemplate(template, { vars: { layers: this.layers } });
+      const html = compileTemplate(template, {
+        vars: {
+          layers: this.layers,
+        },
+      });
       this.html = html;
       this.listen(html);
       // html.querySelector('button').click();
@@ -150,6 +149,22 @@ class BackgroundLayers extends ControlBase {
       });
       success(html);
     });
+  }
+
+  /**
+   * Este método añade el control al mapa.
+   *
+   * @public
+   * @function
+   * @param {IDEE.Map} map Mapa.
+   * @api
+   * @export
+   */
+  addTo(map) {
+    map.getBaseLayers().forEach((layer) => {
+      layer.once(LOAD, map.removeLayers(layer));
+    });
+    super.addTo(map);
   }
 
   /**
@@ -194,7 +209,7 @@ class BackgroundLayers extends ControlBase {
     buttons.forEach((e) => {
       // eslint-disable-next-line no-unused-expressions
       (e.classList.contains('m-background-unique-btn'))
-      // eslint-disable-next-line space-infix-ops
+        // eslint-disable-next-line space-infix-ops
         ? e.style.display = (change) ? 'block' : 'none'
         : e.style.display = (change) ? 'none' : 'block';
     });
