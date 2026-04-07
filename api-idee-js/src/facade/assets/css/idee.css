@@ -906,8 +906,12 @@ body>.m-api-idee-test-form-frame>.m-test-form {
     flex-direction: column;
     flex-wrap: wrap;
     gap: 0.5rem;
-    max-height: 12rem;
+    max-height: 8rem;
     overflow: auto;
+}
+
+body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(7)) {
+    max-height: 12rem;
 }
 
 body>.m-api-idee-test-form-frame>.m-test-form>div {
