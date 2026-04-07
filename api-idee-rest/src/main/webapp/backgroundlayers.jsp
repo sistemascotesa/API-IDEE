@@ -109,7 +109,7 @@
             tiled: false
         }, {});
 
-        const layers = [layerinicial, layerUA];
+        const backgroundLayers = [layerinicial, layerUA];
 
         const selectPosition = document.getElementById('selectPosicion');
         const inputTooltip = document.getElementById('inputTooltip');
@@ -145,6 +145,7 @@
           selectPosition,
           inputTooltip,
           inputOrder,
+          inputLayerIndex,
         ].forEach((ctrl) => {
           ctrl.addEventListener('change', recreate);
         });
@@ -156,7 +157,7 @@
 
         recreate();
 
-        map.addLayers(layers);
+        map.addLayers(backgroundLayers);
     </script>
 </body>
 
