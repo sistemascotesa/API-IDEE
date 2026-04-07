@@ -925,16 +925,31 @@ body>.m-api-idee-test-form-frame>.m-test-form>div>select {
     margin-left: .15rem;
 }
 
-@media (max-width: calc(280px * 4 + 0.35rem * 4 + 1rem)) {
-    body>.m-api-idee-test-form-frame>.m-test-form {
+@media (max-width: calc(280px * 2 + 0.35rem * 2 + 1rem)) {
+    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(2)) {
         flex-direction: row;
     }
 
-    body>.m-api-idee-test-form-frame>.m-test-form>div {
+    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(2)) > div {
         width: 100%;
     }
 
-    body>.m-api-idee-test-form-frame>.m-test-buttons {
+    body > .m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(2)) > .m-test-buttons {
+        justify-content: center;
+        min-width: 180px;
+    }
+}
+
+@media (max-width: calc(280px * 4 + 0.35rem * 4 + 1rem)) {
+    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(4)) {
+        flex-direction: row;
+    }
+
+    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(4)) > div {
+        width: 100%;
+    }
+
+    body > .m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(4)) > .m-test-buttons {
         justify-content: center;
         min-width: 180px;
     }
