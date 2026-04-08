@@ -13,7 +13,7 @@ import Popup from 'IDEE/Popup';
 import { get as getRemote } from 'IDEE/util/Remote';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import {
-  isNullOrEmpty, beautifyAttribute, addParameters, isString,
+  isNullOrEmpty, beautifyAttribute, addParameters, isString, isNumber,
 } from 'IDEE/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
 import Control from './Control';
@@ -23,6 +23,7 @@ import Control from './Control';
  * Agrega la herramienta de consulta de información de capas WMS y WMTS.
  * @property {Array} userFormats Formato de respuesta.
  * @property {Number} buffer  Área de influencia, valor por defecto 5.
+ * @property {Boolean} activated  Preactiva el control.
  * @api
  */
 class GetFeatureInfo extends Control {
@@ -47,16 +48,24 @@ class GetFeatureInfo extends Control {
      */
     this.userFormats = ['text/html', 'text/plain', 'application/vnd.ogc.gml'];
 
+    /**
+     * featureCount: Número de objetos geográficos, por defecto 10.
+     */
     this.featureCount = options.featureCount;
     if (isNullOrEmpty(this.featureCount)) {
       this.featureCount = 10;
     }
 
     /**
-     * Área de influencia.
+     * buffer: Área de influencia afectada.
      */
-    this.buffer = options.buffer || 5;
+    this.buffer = isNumber(options.buffer) ? options.buffer : 5;
+
     this.element = document.createElement('div');
+
+    /**
+     * activated: Activa el control por defecto.
+     */
     this.activated = options.activated;
     this.currentFormat = 0;
   }
@@ -649,6 +658,11 @@ class GetFeatureInfo extends Control {
       target.classList.add('m-arrow-right');
       target.classList.remove('m-arrow-down');
     }
+  }
+
+  destroy() {
+    this.deactivate();
+    super.destroy();
   }
 }
 
