@@ -25,7 +25,6 @@ import Exception from '../exception/exception';
 import { isBoolean, isNumber } from '../util/Utils';
 import MeasureBar from '../control/MeasureBar';
 import OverviewMap from '../control/OverviewMap';
-import * as Position from '../ui/position';
 
 /**
  * This method getDefaultPanelOptions from one control and additional params if necessary
@@ -288,7 +287,6 @@ export const getBackgroundLayersPanel = (control, map, params = {}) => {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
     className: 'm-control-baselayer',
-    position: params.position ?? Position.DOWN,
   });
 };
 
@@ -309,7 +307,6 @@ export const getBackgroundLayersPanel = (control, map, params = {}) => {
 export const getImpSwitcherPanel = (control, map, params = {}) => {
   return new ControlPanel('implementationswitcher', {
     ...getDefaultPanelOptions(control, params),
-    collapsible: true,
     collapsedButtonClass: 'g-cartografia-implementacion',
     tooltip: getValue('implementationswitcher').title,
     className: 'm-implementationswitcher',
@@ -386,7 +383,7 @@ export const getPanelForControl = (control, map, params = {}) => {
     [OverviewMap.NAME]: () => getOverviewMapPanel(control, map, params),
     [Panzoombar.NAME]: () => getPanzoombarPanel(control, map, params),
     [Panzoom.NAME]: () => getPanzoomPanel(control, map, params),
-    [GetFeatureInfo.NAME]: () => null,
+    [GetFeatureInfo.NAME]: () => getGetFeatureInfo(control, map, params),
     [Location.NAME]: () => getLocationPanel(control, map, params),
     [Attributions.NAME]: () => getAttributionsPanel(control, map, params),
     [Rotate.NAME]: () => getRotatePanel(control, map, params),

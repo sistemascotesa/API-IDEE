@@ -6,7 +6,9 @@ import GetFeatureInfoImpl from 'impl/control/GetFeatureInfo';
 import myhelp from 'templates/getfeatureinfohelp';
 import getfeatureinfoTemplate from 'templates/getfeatureinfo';
 import ControlBase from './Control';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isString,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
 import { compileSync as compileTemplate } from '../util/Template';
@@ -37,13 +39,18 @@ class GetFeatureInfo extends ControlBase {
       && isNullOrEmpty(Object.keys(GetFeatureInfoImpl)))) {
       Exception(getValue('exception').getfeatureinfo_method);
     }
-
-    // implementation of this control
     const impl = new GetFeatureInfoImpl(options);
-    // calls the super constructor
     super(GetFeatureInfo.NAME, impl, options);
 
+    /**
+     * position: posición del control
+     */
     this.position = options.position ?? Position.RIGHT;
+
+    /**
+     * tooltip: título del control
+     * */
+    this.tooltip = isString(options.tooltip) ? options.tooltip : null;
   }
 
   /**
@@ -58,7 +65,7 @@ class GetFeatureInfo extends ControlBase {
   createView(map) {
     this.element = compileTemplate(getfeatureinfoTemplate, {
       vars: {
-        title: getValue('getfeatureinfo').title,
+        title: this.tooltip ?? getValue('getfeatureinfo').title,
         order: this.order,
       },
     });

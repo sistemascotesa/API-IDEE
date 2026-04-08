@@ -62,10 +62,16 @@ class Control extends Base {
     if (isString(name)) this.name = name;
     else Exception(getValue('exception').control_name_method);
 
-    this.tooltip = '';
-    if (isString(options.tooltip)) this.tooltip = options.tooltip;
+    /**
+     * @param {tooltip} tooltip título ilustrativo sobre la acción principal del control
+     */
+    this.tooltip = isString(options.tooltip) ? options.tooltip : null;
 
-    this.svgPath = isString(options.svgPath) ?? null;
+    /**
+     * @param {tooltip} svgPath contiene la ruta a la imagen del control,
+     * generalmente lanzado desde un botón
+     */
+    this.svgPath = isString(options.svgPath) ? options.svgPath : null;
 
     /**
      * Position of control on map, default left
@@ -206,9 +212,9 @@ class Control extends Base {
     const element = document.createElement('button');
     element.classList.add('m-control-button');
     element.id = `m-control-button-${this.name}`;
-    element.title = this.tooltip;
+    element.title = this.tooltip ?? '';
     element.role = 'button';
-    element.ariaLabel = this.tooltip;
+    element.ariaLabel = this.tooltip ?? '';
 
     if (this.svgPath) {
       fetch(this.svgPath)

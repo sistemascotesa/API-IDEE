@@ -14,6 +14,7 @@ import { compileSync as compileTemplate } from '../util/Template';
 import { LOAD, ADDED_TO_MAP } from '../event/eventtype';
 import { getValue } from '../i18n/language';
 import { isBoolean, isNumber } from '../util/Utils';
+import * as Position from '../ui/position';
 
 /**
  * Esta constante indica el número máximo de capas base que tendrá el control.
@@ -111,6 +112,8 @@ class BackgroundLayers extends ControlBase {
      * visible: Visibility.
      */
     this.visible = isBoolean(options.visible) ? options.visible : true;
+
+    this.position = options.position ?? Position.DOWN;
   }
 
   /**

@@ -1,5 +1,11 @@
-.m-control-panel.m-location.opened.no-collapsible>.m-controls-panel {
+.m-control-panel.m-location.opened.no-collapsible>div.m-controls-panel {
+    background-color: transparent;
+    box-shadow: none;
     border-radius: 50%;
+}
+
+.m-control.m-location-container>button#m-location-button {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
 }
 
 /* .m-location-container.m-locating>button#m-location-button:before {
