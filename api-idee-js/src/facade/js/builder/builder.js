@@ -307,7 +307,6 @@ export const getBackgroundLayersPanel = (control, map, params = {}) => {
 export const getImpSwitcherPanel = (control, map, params = {}) => {
   return new ControlPanel('implementationswitcher', {
     ...getDefaultPanelOptions(control, params),
-    collapsible: true,
     collapsedButtonClass: 'g-cartografia-implementacion',
     tooltip: getValue('implementationswitcher').title,
     className: 'm-implementationswitcher',
