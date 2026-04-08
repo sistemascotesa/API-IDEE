@@ -145,8 +145,8 @@
 }
 
 .g-cartografia-implementacion::before {
-    -webkit-mask-image: url('../images/icon_ue913.svg');
-    mask-image: url('../images/icon_ue913.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_implementationSwitcher.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_implementationSwitcher.svg');
 }
 
 .g-cartografia-cancelar2::before {
