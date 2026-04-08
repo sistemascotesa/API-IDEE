@@ -855,9 +855,7 @@ div.m-control button[class^=g-cartografia-]:hover,
     background-color: #71A7D3 !important;
 }
 
-.m-control.m-getfeatureinfo-container.activated>button#m-getfeatureinfo-button {
-    color: #71A7D3 !important;
-}
+
 
 .m-panel.m-tools {
     order: -65;

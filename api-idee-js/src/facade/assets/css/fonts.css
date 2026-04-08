@@ -95,8 +95,8 @@
 }
 
 .g-cartografia-featureInfo:before {
-    -webkit-mask-image: url('../images/getFeatureInfo.svg');
-    mask-image: url('../images/getFeatureInfo.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_infoCoor.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_infoCoor.svg');
 }
 
 .g-cartografia-papelera:before {

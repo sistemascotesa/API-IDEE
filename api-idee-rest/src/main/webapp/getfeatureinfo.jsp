@@ -34,18 +34,47 @@
             </head>
 
 <body>
-    <label for="selectPosicion">Selector de posición del plugin</label>
-    <select name="position" id="selectPosicion">
-        <option value="left" selected="selected">Izquierda (left)</option>
-        <option value="right">Derecha (right)</option>
-        <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
-        <option value="center-top-right">Centro superior derecho (center-top-right)</option>
-        <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
-        <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)</option>
-        <option value="down">Abajo (down)</option>
-    </select>
-    </div>
-        <input type="button" value="Eliminar Control" name="eliminar" id="removeButton">
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosicion" title="Posición del Control">Posición del panel "position"</label>
+                <select name="position" id="selectPosicion">
+                    <option value="left" selected="selected">Izquierda (left)</option>
+                    <option value="right">Derecha (right)</option>
+                    <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
+                    <option value="center-top-right">Centro superior derecho (center-top-right)</option>
+                    <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
+                    <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)</option>
+                    <option value="down">Abajo (down)</option>
+                </select>
+            </div>
+            <div>
+                <label for="order" title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Posición en el panel "order"</label>
+                <input type="number" order="tooltip" id="inputOrder" list="orderSug" value="-1">
+            </div>
+            <div>
+                <label for="inputTooltip">Título "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Título de control">
+            </div>
+            <div>
+                <label for="inputBuffer" title="Área de influencia sobre el click">Área de influencia "buffer"</label>
+                <input type="number" order="inputBuffer" id="inputBuffer" list="bufferSug" value="5" min="0">
+            </div>
+            <div>
+                <label for="inputFeatureCount" title="Features que colisionarán como máximo">Contador de features "featureCount"</label>
+                <input type="number" order="inputFeatureCount" id="inputFeatureCount" list="featureCountSug" value="5" min="0">
+            </div>
+            <div>
+                <label for="selectActivated">Preactivado "activated"</label>
+                <select name="activated" id="selectActivated">
+                    <option value="true">true</option>
+                    <option value="false" selected="selected">false</option>
+                </select>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar control" class="m-test-button" id="removeButton">Eliminar Control</button>
+        </div>
     </div>
     <div id="mapjs" class="m-container"></div>
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
@@ -66,40 +95,66 @@
                             const map = IDEE.map({
                                 container: 'mapjs',
                                 // controls: ['getfeatureinfo'],
+                                controls: ['location'],
                                 zoom: 5,
                                 maxZoom: 20,
                                 minZoom: 4,
                                 center: [-467062.8225, 4683459.6216],
                             });
 
-                            let ctrl;
-                            const selectPosicion = document.getElementById('selectPosicion');
+                            const selectPosition = document.getElementById('selectPosicion');
+                            const inputTooltip = document.getElementById('inputTooltip');
+                            const inputOrder = document.getElementById('inputOrder');
+                            const inputBuffer = document.getElementById('inputBuffer');
+                            const inputFeatureCount = document.getElementById('inputFeatureCount');
+                            const selectActivated = document.getElementById('selectActivated');
 
-                            const createControl = (propiedades) => {
-                                ctrl = new IDEE.control.GetFeatureInfo(propiedades);
-                                map.addControls(ctrl);
+                            const create = (options) => {
+                              if (!map.hasControl(IDEE.control.GetFeatureInfo.NAME)) map.addControls(new IDEE.control.GetFeatureInfo(options));
                             };
 
-                            const removeControl = () => {
-                                map.removeControls(ctrl);
-                                ctrl = null;
+                            const remove = () => {
+                              const ctrls = map.getControls(IDEE.control.GetFeatureInfo.NAME);
+                              if (ctrls.length === 1) map.removeControls(ctrls[0]);
                             };
 
-                            createControl();
-
-                            const updateControl = () => {
-                                if (ctrl != null) removeControl();
-                                createControl({
-                                    position: selectPosicion.options[selectPosicion.selectedIndex].value,
-                                });
+                            const recreate = () => {
+                              remove();
+                            
+                              const options = {};
+                              options.position = selectPosition.options[selectPosition.selectedIndex].value;
+                            
+                              if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
+                            
+                              if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
+                            
+                              if (inputBuffer.value !== '') options.buffer = Number(inputBuffer.value);
+                            
+                              const featuresCount = Number(inputFeatureCount.value);
+                              if (featuresCount > 0) options.featureCount = featuresCount;
+                            
+                              options.activated = (selectActivated.options[selectActivated.selectedIndex].value === 'true');
+                            
+                              create(options);
                             };
 
-                            selectPosicion.addEventListener('change', updateControl);
+                            [
+                              selectPosition,
+                              inputTooltip,
+                              inputOrder,
+                              inputBuffer,
+                              inputFeatureCount,
+                              selectActivated,
+                            ].forEach((ctrl) => {
+                              ctrl.addEventListener('change', recreate);
+                            });
 
                             const removeButton = document.getElementById('removeButton');
                             removeButton.addEventListener('click', () => {
-                                removeControl();
+                              remove();
                             });
+
+                            recreate();
 
                             const layerinicial = new IDEE.layer.WMS({
                                 url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
@@ -126,28 +181,11 @@
 
                             map.addLayers([layerinicial, layerUA, layer5]);
 
-                            // map.addLayers(layer5);
-                            // map.addLayers(layerinicial);
-
-                            // const layerinicial = new IDEE.layer.WMS({
-                            //     url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
-                            //     name: 'AU.AdministrativeBoundary',
-                            //     legend: 'Limite administrativo',
-                            //     tiled: false,
-                            // }, {});
-
-                            // const layerUA = new IDEE.layer.WMS({
-                            //     url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
-                            //     name: 'AU.AdministrativeUnit',
-                            //     legend: 'Unidad administrativa',
-                            //     tiled: false
-                            // }, {});
-
-                            // map.addLayers([layerinicial, layerUA]);
                             let mp = new IDEE.plugin.ShareMap({
                                 baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
-                                position: "TR",
+                                position: "left",
                             });
+                            
                             map.addPlugin(mp);
                         </script>
             </body>

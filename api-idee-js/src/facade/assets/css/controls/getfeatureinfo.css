@@ -1,12 +1,17 @@
-.m-getfeatureinfo-container {
-    top: 20px;
-    left: 300px;
+.m-control-panel.m-getfeatureinfo.opened.no-collapsible>div.m-controls-panel {
+  background-color: transparent;
+  box-shadow: none;
+  border-radius: 50%;
+}
+
+.m-control.m-getfeatureinfo-container>button#m-getfeatureinfo-button {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
 }
 
 .m-popup table.api-idee-table td.header {
     text-align: center;
     padding-top: 10px;
-    border-bottom: 1px ridge #6C6C6C
+    border-bottom: 1px ridge #6C6C6C;
 }
 
 .m-getfeatureinfo-content-info {
@@ -46,15 +51,17 @@ span.m-content-collapsed {
     display: inline-block;
 }
 
-.m-getfeatureinfo-content-info-body.m-content-collapsed ~ .m-getfeatureinfo-content-info-header .m-arrow-right,
+.m-getfeatureinfo-content-info-body.m-content-collapsed~.m-getfeatureinfo-content-info-header .m-arrow-right,
 .m-getfeatureinfo-content-info .m-arrow-right {
-    transform: rotate(-135deg); /* Gira el ángulo hacia arriba */
+    transform: rotate(-135deg);
+    /* Gira el ángulo hacia arriba */
     margin-top: 4px;
 }
 
-.m-getfeatureinfo-content-info-body:not(.m-content-collapsed) ~ .m-getfeatureinfo-content-info-header .m-arrow-down,
+.m-getfeatureinfo-content-info-body:not(.m-content-collapsed)~.m-getfeatureinfo-content-info-header .m-arrow-down,
 .m-getfeatureinfo-content-info .m-arrow-down {
-    transform: rotate(45deg); /* Gira el ángulo hacia abajo */
+    transform: rotate(45deg);
+    /* Gira el ángulo hacia abajo */
     margin-bottom: 4px;
 }
 
@@ -65,14 +72,15 @@ span.m-content-collapsed {
     margin-right: 5px;
     margin-left: 10px;
 }
+
 h5 {
     margin: 11px;
 }
 
-.m-getfeatureinfo-content-info-body td, 
+.m-getfeatureinfo-content-info-body td,
 .m-getfeatureinfo-content-info-body th {
     padding: 3px !important;
-    vertical-align: middle; 
+    vertical-align: middle;
 }
 
 .m-getfeatureinfo-content-info-body td.titulo,
@@ -118,4 +126,3 @@ h5 {
 .m-content.m-header.m-popup-closer {
     padding: 19px 37px 7px 12px;
 }
-
