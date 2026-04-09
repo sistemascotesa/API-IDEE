@@ -2,8 +2,8 @@
   background-color: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
-  height: 38px;
-  width: 38px;
+  height: 36.8px;
+  width: 36.8px;
 }
 
 #m-rotate-button:hover {
@@ -95,7 +95,7 @@ div.m-control.m-rotate-container {
 #m-rotate-marker {
   position: absolute;
   top: -8%;
-  left: -7%;
+  left: -8%;
   width: 115%;
   height: 115%;
 }
