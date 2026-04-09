@@ -10,7 +10,9 @@ import ControlBase from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject,
+} from '../util/Utils';
 
 /**
  * @classdesc
@@ -55,7 +57,7 @@ class ImplementationSwitcher extends ControlBase {
     return new Promise((resolve) => {
       this.html = compileTemplate(template, {
         vars: {
-          title: getValue('implementationswitcher').title,
+          title: this.tooltip ?? getValue('implementationswitcher').title,
           description: getValue('implementationswitcher').description,
           implementations: window.implementations,
         },
