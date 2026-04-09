@@ -310,6 +310,8 @@ export const getImpSwitcherPanel = (control, map, params = {}) => {
     collapsedButtonClass: 'g-cartografia-implementacion',
     tooltip: getValue('implementationswitcher').title,
     className: 'm-implementationswitcher',
+    collapsible: isBoolean(params.collapsible) ? params.collapsible
+      : isBoolean(control.collapsible) ? control.collapsible : true,
   });
 };
 

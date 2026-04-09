@@ -7,7 +7,9 @@ import myhelp from 'templates/locationhelp';
 import 'assets/css/controls/location';
 import { getValue } from '../i18n/language';
 import ControlBase from './Control';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isBoolean,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import { compileSync as compileTemplate } from '../util/Template';
 import * as Position from '../ui/position';
@@ -38,9 +40,9 @@ class Location extends ControlBase {
    * @api
    */
   constructor(options = {}) {
-    const tracking = options.tracking ?? true;
-    const highAccuracy = options.highAccuracy ?? false;
-    const vendorOptions = options.vendorOptions ?? {};
+    const tracking = isBoolean(options.tracking) ? options.tracking : true;
+    const highAccuracy = isBoolean(options.highAccuracy) ? options.highAccuracy : false;
+    const vendorOptions = isObject(options.vendorOptions) ? options.vendorOptions : {};
 
     if (isUndefined(LocationImpl) || (isObject(LocationImpl)
       && isNullOrEmpty(Object.keys(LocationImpl)))) {
@@ -54,8 +56,20 @@ class Location extends ControlBase {
     super(Location.NAME, impl, options);
 
     this.position = options.position ?? Position.LEFT;
+
+    /**
+     * @param {Boolean} tracking Seguimiento de la localización, por defecto verdadero.
+     * */
     this.tracking = tracking;
+
+    /**
+     * @param {Boolean} highAccuracy Seguimiento de alta precisión por defecto falso.
+     */
     this.highAccuracy = highAccuracy;
+
+    /**
+     * @param {Object} vendorOptions Opciones para la implementación
+     */
     this.vendorOptions = vendorOptions;
   }
 
@@ -71,7 +85,7 @@ class Location extends ControlBase {
   createView(map) {
     const element = compileTemplate(locationTemplate, {
       vars: {
-        title: getValue('location').title,
+        title: this.tooltip ?? getValue('location').title,
       },
     });
 

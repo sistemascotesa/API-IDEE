@@ -5,15 +5,13 @@ import Mouse from 'IDEE/control/Mouse';
 import Panzoom from 'IDEE/control/Panzoom';
 import Panzoombar from 'IDEE/control/Panzoombar';
 import ScaleLine from 'IDEE/control/ScaleLine';
-import Feature from 'IDEE/feature/Feature';
+import Location from 'IDEE/control/Location';
 import GeoJSON from 'IDEE/layer/GeoJSON';
 import KML from 'IDEE/layer/KML';
 import Vector from 'IDEE/layer/Vector';
 import WFS from 'IDEE/layer/WFS';
 import WMS from 'IDEE/layer/WMS';
 import WMTS from 'IDEE/layer/WMTS';
-import Popup from 'IDEE/Popup';
-// import View from 'IDEE/impl/View';
 
 import Panel from 'IDEE/ui/Panel';
 import * as Position from 'IDEE/ui/position';
@@ -33,28 +31,15 @@ window.vendorLocation = (evt) => {
   if (window.confirm(`
     {
       tracking: false,
-      trackingOptions: {
-        enableHighAccuracy: true,
-        timeout: 100,
-        maximumAge: 15
-      },
+      enableHighAccuracy: true,
+      maximumAge: 15,
     }
   `)) {
-    const locationCtrl = new Location(true, false, {
+    mapjs.addControls(new Location({
       tracking: false,
-      trackingOptions: {
-        enableHighAccuracy: true,
-        timeout: 100,
-        maximumAge: 15,
-      },
-    });
-    const locationPanel = new Panel(Location.NAME, {
-      collapsible: false,
-      className: 'm-location',
-      position: Position.BR,
-    });
-    locationPanel.addControls(locationCtrl);
-    mapjs.addPanels(locationPanel);
+      enableHighAccuracy: true,
+      maximumAge: 15,
+    }));
   }
 };
 
