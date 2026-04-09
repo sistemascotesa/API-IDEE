@@ -2,6 +2,8 @@
   background-color: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
+  height: 36.8px;
+  width: 36.8px;
 }
 
 #m-rotate-button:hover {
@@ -10,8 +12,6 @@
 
 .m-rotate-slider {
   border-radius: 50%;
-  height: 30px;
-  width: 30px;
   cursor: pointer;
   position: absolute;
 }
@@ -94,14 +94,14 @@ div.m-control.m-rotate-container {
 
 #m-rotate-marker {
   position: absolute;
-  left: -5%;
-  top: -5%;
-  width: 110%;
-  height: fit-content;
-  aspect-ratio: 1;
+  top: -8%;
+  left: -8%;
+  width: 115%;
+  height: 115%;
 }
 
 #m-rotate-marker-circle {
+  pointer-events: none;
   stroke: var(--idee-color-primary-dark);
   fill: #fff;
   cursor: pointer;

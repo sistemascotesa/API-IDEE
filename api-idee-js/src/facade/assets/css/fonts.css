@@ -85,8 +85,8 @@
 }
 
 .g-cartografia-gps2::before {
-    -webkit-mask-image: url('../images/g-cartografia-gps2.svg');
-    mask-image: url('../images/g-cartografia-gps2.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_posicion.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_posicion.svg');
 }
 
 .g-cartografia-info::before {
