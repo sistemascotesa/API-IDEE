@@ -11,7 +11,7 @@ import * as Position from '../ui/position';
 import 'assets/css/controls/measurebar';
 
 import { compileSync } from '../util/Template';
-import { encodeBase64 } from '../util/Utils';
+import { encodeBase64, isBoolean } from '../util/Utils';
 
 /**
  * @classdesc
@@ -34,19 +34,12 @@ class MeasureBar extends Control {
     super(MeasureBar.NAME, undefined, options);
 
     /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map_ = null;
-
-    /**
      * Array of controls
      *
      * @private
      * @type {Array<Control>}
      */
-    this.controls_ = [];
+    this.controls = [];
 
     /**
      * position of control on map, default left
@@ -59,21 +52,21 @@ class MeasureBar extends Control {
      * @private
      * @type {IDEE.control.MeasureLength}
      */
-    this.measureLength_ = null;
+    this.measureLength = null;
 
     /**
      * Control MeasureArea
      * @private
      * @type {IDEE.control.MeasureArea}
      */
-    this.measureArea_ = null;
+    this.measureArea = null;
 
     /**
      * Control MeasureClear
      * @private
      * @type {IDEE.control.MeasureClear}
      */
-    this.measureClear_ = null;
+    this.measureClear = null;
 
     /**
      *@private
@@ -86,16 +79,14 @@ class MeasureBar extends Control {
      * @private
      * @type {Boolean}
      */
-    this.collapsed_ = options.collapsed;
-    if (this.collapsed_ === undefined) this.collapsed_ = true;
+    this.collapsed = isBoolean(options.collapsed) ? options.collapsed : true;
 
     /**
      * Option to allow the control to be collapsible or not
      * @private
      * @type {Boolean}
-     */
-    this.collapsible_ = options.collapsible;
-    if (this.collapsible_ === undefined) this.collapsible_ = true;
+    */
+    this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
 
     /**
      * Control tooltip
@@ -103,7 +94,7 @@ class MeasureBar extends Control {
      * @private
      * @type {string}
      */
-    this.tooltip_ = options.tooltip ?? Measure.translation.text.tooltip;
+    this.tooltip = options.tooltip ?? Measure.translation.text.tooltip;
 
     /**
      * Control parameters
@@ -121,20 +112,19 @@ class MeasureBar extends Control {
    * @api stable
    */
   addTo(map) {
-    this.map_ = map;
-    this.measureLength_ = new MeasureLength({ order: this.order });
-    this.measureArea_ = new MeasureArea({ order: this.order });
-    this.measureClear_ = new MeasureClear(
-      this.measureLength_,
-      this.measureArea_,
-      { order: this.order },
+    this.map = map;
+    this.measureLength = new MeasureLength();
+    this.measureArea = new MeasureArea();
+    this.measureClear = new MeasureClear(
+      this.measureLength,
+      this.measureArea,
     );
-    [this.measureLength_, this.measureArea_, this.measureClear_].forEach((control) => {
+    [this.measureLength, this.measureArea, this.measureClear].forEach((control) => {
       // eslint-disable-next-line no-param-reassign
-      control.facadeMap = this.map_;
+      control.facadeMap = this.map;
     });
-    this.controls_.push(this.measureLength_, this.measureArea_, this.measureClear_);
-    this.panel_.addControls(this.controls_);
+    this.controls.push(this.measureLength, this.measureArea, this.measureClear);
+    this.panel_.addControls(this.controls);
   }
 
   /**
@@ -145,7 +135,7 @@ class MeasureBar extends Control {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position_}*${this.collapsed_}*${this.collapsible_}*${this.tooltip_}`;
+    return `${this.name}=${this.position_}*${this.collapsed}*${this.collapsible}*${this.tooltip}`;
   }
 
   /**
@@ -167,11 +157,12 @@ class MeasureBar extends Control {
    * @api stable
    */
   destroy() {
-    this.map_.removeControls([this.measureLength_, this.measureArea_, this.measureClear_, this]);
-    this.map_ = null;
-    this.measureLength_ = null;
-    this.measureArea_ = null;
-    this.measureClear_ = null;
+    this.map.removeControls(this.getControls());
+    this.map = null;
+    this.panel_ = null;
+    this.measureLength = null;
+    this.measureArea = null;
+    this.measureClear = null;
   }
 
   /**
@@ -182,9 +173,7 @@ class MeasureBar extends Control {
    * @api stable
    */
   getControls() {
-    const aControls = [];
-    aControls.push(this.measureArea_, this.measureClear_, this.measureLength_);
-    return aControls;
+    return [this.measureArea, this.measureClear, this.measureLength];
   }
 
   /**
