@@ -50,6 +50,7 @@
 - Se evita que quede "&" al final de la URL al usar addParameters de Utilidades.
 - Mejoras sobre las plantillas y Handlebars que permite el registro de funciones tanto en núcleo como en plugins.
 - Se añade comprobación de plantilla en el método getKML (impl).
+- Se mejora el posicionamiento de etiquetas en Cesium.
 - Se añade a getLayerExtent y getExtentRecursive_ (WMS) la posibilidad de especificar una proyección de forma opcional.
 - Implementa la lectura de iconos mediante proxy en caso de que no se encuentre en el mismo dominio que la aplicación y tenga el proxy activado para la leyenda en estilos generic de tipo punto.
 - Se sobrescribe el método inview de OL para que se muestren las capas desde el maxResolution especificado por el usuario.. Se comentan los patches optionsFromCapabilities y writePos_ para que funcionen como en OL.
