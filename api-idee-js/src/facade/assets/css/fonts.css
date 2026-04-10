@@ -105,8 +105,8 @@
 }
 
 .g-cartografia-papelera-2:before {
-    -webkit-mask-image: url('../images/rabish_2.svg');
-    mask-image: url('../images/rabish_2.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');
 }
 
 .g-cartografia-pin::before {
@@ -628,11 +628,11 @@
 }
 
 .g-cartografia-measure-area::before {
-    -webkit-mask-image: url('../images/medir_area.svg');
-    mask-image: url('../images/medir_area.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_area.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_area.svg');
 }
 
 .g-cartografia-measure-length::before {
-    -webkit-mask-image: url('../images/medir_distancia.svg');
-    mask-image: url('../images/medir_distancia.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_distancias.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_distancias.svg');
 }

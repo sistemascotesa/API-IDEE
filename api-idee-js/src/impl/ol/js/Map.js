@@ -2594,7 +2594,6 @@ class Map extends MObject {
       filtersVar.forEach((filterControl) => {
         foundControls = foundControls.concat(controlsToSearch.filter((control) => {
           let controlMatched = false;
-
           if (!includes(foundControls, control)) {
             if (isString(filterControl)) {
               controlMatched = (filterControl === control.name);

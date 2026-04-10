@@ -13,17 +13,7 @@
                 <meta name="idee" content="yes">
                 <title>Visor base</title>
                 <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
-                <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
                 </link>
-                <style type="text/css">
-                    html,
-                    body {
-                        margin: 0;
-                        padding: 0;
-                        height: 100%;
-                        overflow: auto;
-                    }
-                </style>
                 <% Map<String, String[]> parameterMap = request.getParameterMap();
                     PluginsManager.init (getServletContext());
                     String[] cssfiles = PluginsManager.getCSSFiles(parameterMap);
@@ -33,38 +23,56 @@
                         <% } %>
             </head>
 
-            <body style="display: flex; flex-direction: column;">
-                <div>
-                    <label for="selectPosicion">Selector de posición del plugin</label>
-                    <select name="position" id="selectPosicion">
-                        <option value="left">Izquierda (left)</option>
-                        <option value="right" selected="selected">Derecha (right)</option>
-                        <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
-                        <option value="center-top-right">Centro superior derecho (center-top-right)</option>
-                        <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
-                        <option value="center-bottom-right">Centro inferior derecho (center-bottom-right)</option>
-                        <option value="down">Abajo (down)</option>
-                    </select>
-                    <label for="selectCollapsed">Parámetro de collapsed</label>
-                    <select name="collapsed" id="selectCollapsed">
-                        <option value=''></option>
-                        <option value="true" selected="selected">true</option>
-                        <option value="false">false</option>
-                    </select>
-
-                    <label for="selectCollapsible">Selector de collapsible</label>
-                    <select name="collapsible" id="selectCollapsible">
-                        <option value=''></option>
-                        <option value="true" selected="selected">true</option>
-                        <option value="false">false</option>
-                    </select>
-
-                    <label for="inputTooltip">Parámetro tooltip</label>
-                    <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug"
-                        value="Herramientas de medición">
-                </div>
-                <div>
-                    <input type="button" value="Eliminar Control" name="eliminar" id="removeButton">
+            <body>
+                <div class="m-api-idee-test-form-frame">
+                    <div class="m-test-form">
+                        <div>
+                            <label for="selectPosicion" title="Posición del Control">Posición del panel
+                                "position"</label>
+                            <select name="position" id="selectPosicion">
+                                <option value="left" selected="selected">Izquierda (left)</option>
+                                <option value="right">Derecha (right)</option>
+                                <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
+                                <option value="center-top-right">Centro superior derecho (center-top-right)</option>
+                                <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)
+                                </option>
+                                <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)
+                                </option>
+                                <option value="down">Abajo (down)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="inputOrder"
+                                title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                                entre controles / plugins "order"</label>
+                            <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+                        </div>
+                        <div>
+                            <label for="inputTooltip" title="Título ilustrativo que aporta información adicional">Título
+                                "tooltip"</label>
+                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
+                        </div>
+                        <div>
+                            <label for="selectCollapsed">Panel colapsado "collapsed"</label>
+                            <select name="collapsed" id="selectCollapsed">
+                                <option value='' selected="selected"></option>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="selectCollapsible">Panel colapsable "collapsible"</label>
+                            <select name="collapsible" id="selectCollapsible">
+                                <option value='' selected="selected"></option>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="m-test-buttons">
+                        <button name="eliminar control" class="m-test-button" id="removeButton">Eliminar
+                            Control</button>
+                    </div>
                 </div>
                 <div id="mapjs" class="m-container"></div>
                 <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
@@ -76,50 +84,70 @@
                     <script type="text/javascript" src="plugins/<%=jsfile%>"></script>
 
                     <% } %>
-                    <script type="text/javascript">
-                        const urlParams = new URLSearchParams(window.location.search);
-                        IDEE.language.setLang(urlParams.get('language') || 'es');
-                        const map = IDEE.map({
-                            container: 'mapjs',
-                            zoom: 5,
-                            maxZoom: 20,
-                            minZoom: 4,
-                            center: [-467062.8225, 4783459.6216],
-                        });
-                        let ctrl;
-                        const createControl = (options) => {
-                            ctrl = new IDEE.control.MeasureBar(options);
-                            map.addControls(ctrl);
-                        };
-                        const removeControl = () => {
-                            map.removeControls(ctrl);
-                            ctrl = null;
-                        };
-                        const selectPosition = document.getElementById('selectPosicion');
-                        const selectCollapsed = document.getElementById('selectCollapsed');
-                        const selectCollapsible = document.getElementById('selectCollapsible');
-                        const inputTooltip = document.getElementById('inputTooltip');
-                        const recreateControl = () => {
-                          if (ctrl) removeControl();
-                          const options = {};
-                          options.position = selectPosition.options[selectPosition.selectedIndex].value;
-                          const collapsible = selectCollapsible.options[selectCollapsible.selectedIndex].value;
-                          if (collapsible !== '') options.collapsible = (collapsible === 'true');
-                          const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
-                          if (collapsed !== '') options.collapsed = (collapsed === 'true');
-                          if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
-                          createControl(options);
-                        };
-                        selectPosition.addEventListener('change', recreateControl);
-                        selectCollapsed.addEventListener('change', recreateControl);
-                        selectCollapsible.addEventListener('change', recreateControl);
-                        inputTooltip.addEventListener('change', recreateControl);
-                        const removeButton = document.getElementById('removeButton');
-                        removeButton.addEventListener('click', () => {
-                            removeControl();
-                        });
-                        recreateControl();
-                    </script>
+                        <script type="text/javascript">
+                            const urlParams = new URLSearchParams(window.location.search);
+                            IDEE.language.setLang(urlParams.get('language') ?? 'es');
+                            const map = IDEE.map({
+                                container: 'mapjs',
+                                zoom: 5,
+                                maxZoom: 20,
+                                minZoom: 4,
+                                center: [-467062.8225, 4783459.6216],
+                            });
+                            const MeasureBar = IDEE.control.MeasureBar;
+                            const selectPosition = document.getElementById('selectPosicion');
+                            const inputTooltip = document.getElementById('inputTooltip');
+                            const inputOrder = document.getElementById('inputOrder');
+                            const selectCollapsed = document.getElementById('selectCollapsed');
+                            const selectCollapsible = document.getElementById('selectCollapsible');
+
+                            const create = (options) => {
+                                if (!map.hasControl(MeasureBar.NAME)) {
+                                    map.addControls(new MeasureBar(options));
+                                }
+                            };
+
+                            const remove = () => {
+                                const ctrls = map.getControls(MeasureBar.NAME);
+                                if (ctrls.length === 1) map.removeControls(ctrls);
+                            };
+
+                            const recreate = () => {
+                                remove();
+
+                                const options = {};
+                                options.position = selectPosition.options[selectPosition.selectedIndex].value;
+
+                                if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
+
+                                if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
+
+                                const collapsible = selectCollapsible.options[selectCollapsible.selectedIndex].value;
+                                if (collapsible !== '') options.collapsible = (collapsible === 'true');
+
+                                const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
+                                if (collapsed !== '') options.collapsed = (collapsed === 'true');
+
+                                create(options);
+                            };
+
+                            [
+                                selectPosition,
+                                inputTooltip,
+                                inputOrder,
+                                selectCollapsed,
+                                selectCollapsible,
+                            ].forEach((ctrl) => {
+                                ctrl.addEventListener('change', recreate);
+                            });
+
+                            const removeButton = document.getElementById('removeButton');
+                            removeButton.addEventListener('click', () => {
+                                remove();
+                            });
+
+                            recreate();
+                        </script>
             </body>
 
             <!-- Global site tag (gtag.js) - Google Analytics -->

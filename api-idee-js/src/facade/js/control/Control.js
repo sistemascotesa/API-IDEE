@@ -46,6 +46,12 @@ class Control extends Base {
    */
   constructor(name, impl, options = {}) {
     super(impl);
+
+    /**
+     * Facade of the map
+     * @private
+     * @type {IDEE.Map}
+     */
     this.map = null;
 
     /**
