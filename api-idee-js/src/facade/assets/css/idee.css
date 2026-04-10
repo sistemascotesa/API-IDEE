@@ -943,15 +943,15 @@ body>.m-api-idee-test-form-frame>.m-test-form>div>select {
 }
 
 @media (max-width: calc(280px * 4 + 0.35rem * 4 + 1rem)) {
-    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(4)) {
+    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(5)) {
         flex-direction: row;
     }
 
-    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(4)) > div {
+    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(5)) > div {
         width: 100%;
     }
 
-    body > .m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(4)) > .m-test-buttons {
+    body > .m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(5)) > .m-test-buttons {
         justify-content: center;
         min-width: 180px;
     }

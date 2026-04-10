@@ -93,7 +93,7 @@ export default class MeasureClear extends Control {
  * @public
  * @api stable
  */
-MeasureClear.NAME = 'measurebar';
+MeasureClear.NAME = 'measureclear';
 
 /**
  * Template for this controls

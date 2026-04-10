@@ -174,7 +174,6 @@ test('Test backimglayer', async ({ page }) => {
     });
     window.mapjs.addPlugin(window.mp);
   });
-  
   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins().length);
   expect(nPlugins).toBe(1);
 });

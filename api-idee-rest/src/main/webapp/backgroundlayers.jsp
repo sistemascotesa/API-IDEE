@@ -14,15 +14,6 @@
     <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
     <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
     </link>
-    <style type="text/css">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: auto;
-        }
-    </style>
     <%
       Map<String, String[]> parameterMap = request.getParameterMap();
       PluginsManager.init (getServletContext());
@@ -52,8 +43,8 @@
                 </select>
             </div>
             <div>
-                <label for="order" title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Posición en el panel "order"</label>
-                <input type="number" order="tooltip" id="inputOrder" list="orderSug" value="-1">
+                <label for="order" title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
             </div>
             <div>
                 <label for="inputTooltip">Título panel "tooltip"</label>
@@ -110,18 +101,18 @@
         }, {});
 
         const backgroundLayers = [layerinicial, layerUA];
+        const BackgroundLayers = IDEE.control.BackgroundLayers;
 
         const selectPosition = document.getElementById('selectPosicion');
         const inputTooltip = document.getElementById('inputTooltip');
         const inputOrder = document.getElementById('inputOrder');
         const inputLayerIndex = document.getElementById('inputLayerIndex');
-
         const create = (options) => {
-          if (!map.hasControl(IDEE.control.BackgroundLayers.NAME)) map.addControls(new IDEE.control.BackgroundLayers(options));
+          if (!map.hasControl(BackgroundLayers.NAME)) map.addControls(new BackgroundLayers(options));
         };
 
         const remove = () => {
-          const ctrls = map.getControls(IDEE.control.BackgroundLayers.NAME);
+          const ctrls = map.getControls(BackgroundLayers.NAME);
           if (ctrls.length === 1) map.removeControls(ctrls[0]);
         };
 

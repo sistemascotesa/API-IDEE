@@ -42,6 +42,28 @@ export const getDefaultPanelOptions = (control, params) => ({
 });
 
 /**
+ * Esta función devuelve el panel para el control Attributions.
+ *
+ * @public
+ * @function
+ *
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
+ * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
+ *
+ * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @api stable
+ */
+export const getAttributionsPanel = (control, map, params = {}) => {
+  return new ControlPanel(Attributions.NAME, {
+    ...getDefaultPanelOptions(control, params),
+    collapsible: isBoolean(params.collapsible) ? params.collapsible : true,
+    collapsedButtonClass: 'g-cartografia-comments-simple',
+  });
+};
+
+/**
  * Esta función devuelve el panel para el control Scale.
  *
  * @public
@@ -200,28 +222,6 @@ export const getGetFeatureInfo = (control, map, params = {}) => {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
     collapsedButtonClass: 'g-cartografia-featureInfo',
-  });
-};
-
-/**
- * Esta función devuelve el panel para el control Attributions.
- *
- * @public
- * @function
- *
- * @param {IDEE.Control} control Control.
- * @param {IDEE.Map} map Mapa.
- * @param {Object} params Parámetros del control.
- * @param {Object} defaultOptions Parámetros por defecto para el panel
- *
- * @return {ControlPanel} Devuelve un panel de control compatible.
- * @api stable
- */
-export const getAttributionsPanel = (control, map, params = {}) => {
-  return new ControlPanel(Attributions.NAME, {
-    ...getDefaultPanelOptions(control, params),
-    collapsible: isBoolean(params.collapsible) ? params.collapsible : true,
-    collapsedButtonClass: 'g-cartografia-comments-simple',
   });
 };
 
