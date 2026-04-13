@@ -24,6 +24,7 @@ import * as Position from '../ui/position';
  * @property {Number} scale_ Escala de visualización de la capa de atribuciones.
  * @property {String} tooltip_ Texto del tooltip.
  * @property {String} position Posición del control.
+ * @property {Boolean} collapsible Indica si el control es colapsable.
  * @property {Number} order Accesibilidad, tabIndex.
  * @property {String} url_ URL del fichero de atribuciones.
  * @property {Object} collectionsAttributions Colección de atribuciones.
