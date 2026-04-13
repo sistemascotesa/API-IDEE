@@ -58,7 +58,6 @@ export const getDefaultPanelOptions = (control, params) => ({
 export const getAttributionsPanel = (control, map, params = {}) => {
   return new ControlPanel(Attributions.NAME, {
     ...getDefaultPanelOptions(control, params),
-    collapsible: isBoolean(params.collapsible) ? params.collapsible : true,
     collapsedButtonClass: 'g-cartografia-comments-simple',
   });
 };
