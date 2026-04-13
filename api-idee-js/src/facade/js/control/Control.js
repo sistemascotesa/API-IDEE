@@ -30,19 +30,32 @@ class Control extends Base {
    * @constructor
    * @api
    * @param {String} name Nombre del control.
-   * @param {Object} impl Control de implementación
+   * @param {Object | null | undefined} impl Control de implementación
    * @param {Object} options Opciones para el control de fachada
-   * - tooltip: Representa el valor del título del control
-   * - svgPath: Representa el vínculo para la imagen del botón
-   * - position: Posición que tendrá en el marco del mapa, un contenedor disponible
-   * - order: Orden en el que se colocará dentro del contenedor
-   * * @example
-   * {
+   * @param {String} options.tooltip: Representa el valor del título del control
+   * @param {String} options.svgPath: Representa el vínculo para la imagen del botón
+   * @param {String} options.position: Posición que tendrá en el marco del mapa,
+   * un contenedor disponible
+   * @param {Number} options.order: Orden en el que se colocará dentro del contenedor,
+   * para que este parámetro funcione adecuadamente deberemos contener el control dentro de un
+   * {@link IDEE.ui.ControlPanel}, de lo contrario se colocará en el orden que se añada al mapa.
+   *
+   *
+   * @example
+   * const map = IDEE.map({
+   *   container: 'map',
+   *   zoom: 6,
+   * };
+   *
+   * // Creación de un control personalizado, para la implementación podremos extender de
+   * // un control de implementación IDEE/impl/Control
+   *
+   * const control = new IDEE.Control('MiControl', null, {
    *   tooltip: 'Mi control',
    *   svgPath: '/assets/icons/control.svg',
    *   position: 'left',
    *   order: 2
-   * }
+   * })
    */
   constructor(name, impl, options = {}) {
     super(impl);
