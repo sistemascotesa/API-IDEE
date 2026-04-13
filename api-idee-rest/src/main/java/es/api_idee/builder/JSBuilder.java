@@ -1,7 +1,9 @@
 package es.api_idee.builder;
 
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -173,7 +175,7 @@ public class JSBuilder {
 	}
 
 	public static String createPlugin(PluginAPI plugin) {
-		return createPlugin(plugin, null);
+		return createPlugin(plugin, (String) null);
 	}
 
 	public static String createPlugin(PluginAPI plugin, String paramValue) {
@@ -290,6 +292,185 @@ public class JSBuilder {
 		}
 
 		return pluginParam;
+	}
+
+	/**
+	 * Creates a plugin using OpenAPI key=value style parameters.
+	 * Example URL: ?layerswitcher.position=BL&layerswitcher.collapsed=true
+	 *
+	 * @param plugin       the plugin API definition
+	 * @param keyValueParams map of paramName->value extracted from URL
+	 * @return plugin instantiation code
+	 */
+	public static String createPlugin(PluginAPI plugin, Map<String, String> keyValueParams) {
+		StringBuilder pluginBuilder = new StringBuilder();
+		pluginBuilder.append("new ").append(plugin.getConstructor()).append("(");
+
+		if (keyValueParams != null && !keyValueParams.isEmpty()) {
+			Map<String, String> paramTypes = getParamTypes(plugin);
+			JSONObject paramsObj = new JSONObject();
+
+			for (Map.Entry<String, String> entry : keyValueParams.entrySet()) {
+				String paramName = entry.getKey();
+				String paramValue = entry.getValue();
+				String paramType = paramTypes.containsKey(paramName) ? paramTypes.get(paramName) : null;
+
+				if (paramType != null && paramType.equalsIgnoreCase(PluginAPIParam.BOOLEAN)) {
+					paramsObj.put(paramName, Boolean.parseBoolean(paramValue));
+				} else if (paramType != null && paramType.equalsIgnoreCase(PluginAPIParam.NUMBER)) {
+					try {
+						paramsObj.put(paramName, Double.parseDouble(paramValue));
+					} catch (NumberFormatException e) {
+						paramsObj.put(paramName, paramValue);
+					}
+				} else if (paramType != null && paramType.equalsIgnoreCase(PluginAPIParam.ARRAY)) {
+					paramsObj.put(paramName, parseArrayValue(paramValue));
+				} else {
+					// Type unknown from API definition: use heuristic inference
+					inferAndPutValue(paramsObj, paramName, paramValue);
+				}
+			}
+
+			pluginBuilder.append(paramsObj.toString());
+		}
+
+		pluginBuilder.append(")");
+		return pluginBuilder.toString();
+	}
+
+	/**
+	 * Creates a layer using OpenAPI key=value style parameters.
+	 * The "type" entry in params is used as the layer class name (e.g. "WMTS", "WMS").
+	 * Example URL: ?layers.0.type=WMTS&layers.0.url=http://...&layers.0.name=MTN
+	 *
+	 * @param layerType the layer type/class name (e.g. "WMTS", "WMS", "WFS")
+	 * @param params    map of paramName->value (must NOT contain "type")
+	 * @return layer instantiation code
+	 */
+	public static String createLayerWithParams(String layerType, Map<String, String> params) {
+		StringBuilder layerBuilder = new StringBuilder();
+		layerBuilder.append("new IDEE.layer.").append(layerType).append("(");
+		if (params != null && !params.isEmpty()) {
+			JSONObject paramsObj = new JSONObject();
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				inferAndPutValue(paramsObj, entry.getKey(), entry.getValue());
+			}
+			layerBuilder.append(paramsObj.toString());
+		}
+		layerBuilder.append(")");
+		return layerBuilder.toString();
+	}
+
+	/**
+	 * Creates a control with parameters using OpenAPI key=value style.
+	 * Example URL: ?controls.scale.exactScale=false
+	 *
+	 * @param controlName the control name (e.g. "scale")
+	 * @param params      map of paramName->value
+	 * @return control instantiation code
+	 */
+	public static String createControlWithParams(String controlName, Map<String, String> params) {
+		StringBuilder controlBuilder = new StringBuilder();
+		String controlClass = controlName.substring(0, 1).toUpperCase() + controlName.substring(1);
+		controlBuilder.append("new IDEE.control.").append(controlClass).append("(");
+
+		if (params != null && !params.isEmpty()) {
+			JSONObject paramsObj = new JSONObject();
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				inferAndPutValue(paramsObj, entry.getKey(), entry.getValue());
+			}
+			controlBuilder.append(paramsObj.toString());
+		}
+
+		controlBuilder.append(")");
+		return controlBuilder.toString();
+	}
+
+	/**
+	 * Puts a value into a JSONObject using heuristic type inference:
+	 *   "true"/"false"       → boolean
+	 *   numeric string       → double
+	 *   "[a, b, c]"          → JSONArray  (brackets optional)
+	 *   "{\"k\":\"v\"}"      → JSONObject (inline JSON)
+	 *   anything else        → string
+	 */
+	private static void inferAndPutValue(JSONObject obj, String key, String value) {
+		String trimmed = value.trim();
+		if ("true".equalsIgnoreCase(trimmed) || "false".equalsIgnoreCase(trimmed)) {
+			obj.put(key, Boolean.parseBoolean(trimmed));
+		} else if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+			try {
+				obj.put(key, new JSONObject(trimmed));
+			} catch (Exception e) {
+				obj.put(key, value);
+			}
+		} else if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+			obj.put(key, parseArrayValue(trimmed));
+		} else {
+			try {
+				obj.put(key, Double.parseDouble(trimmed));
+			} catch (NumberFormatException e) {
+				obj.put(key, value);
+			}
+		}
+	}
+
+	/**
+	 * Parses a comma-separated array value, with or without surrounding brackets.
+	 * Handles: [legend,style,delete] | legend,style,delete | ["a","b"] | [1,2,3]
+	 * Each element is trimmed and surrounding quotes are stripped.
+	 */
+	private static JSONArray parseArrayValue(String value) {
+		String trimmed = value.trim();
+		if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+			trimmed = trimmed.substring(1, trimmed.length() - 1);
+		}
+		JSONArray arr = new JSONArray();
+		for (String element : trimmed.split(",")) {
+			String el = element.trim();
+			// Strip surrounding quotes if present
+			if (el.length() >= 2
+					&& ((el.startsWith("\"") && el.endsWith("\""))
+					|| (el.startsWith("'") && el.endsWith("'")))) {
+				el = el.substring(1, el.length() - 1);
+			}
+			if ("true".equalsIgnoreCase(el) || "false".equalsIgnoreCase(el)) {
+				arr.put(Boolean.parseBoolean(el));
+			} else {
+				try {
+					arr.put(Double.parseDouble(el));
+				} catch (NumberFormatException e) {
+					arr.put(el);
+				}
+			}
+		}
+		return arr;
+	}
+
+	/**
+	 * Builds a flat map of paramName -> paramType from a plugin's API definition.
+	 * Recurses into OBJECT-type parameters to extract their properties.
+	 */
+	private static Map<String, String> getParamTypes(PluginAPI plugin) {
+		Map<String, String> types = new HashMap<>();
+		List<PluginAPIParam> params = plugin.getParameters();
+		if (params != null) {
+			for (PluginAPIParam param : params) {
+				if (PluginAPIParam.OBJECT.equalsIgnoreCase(param.getType())) {
+					List<PluginAPIParam> properties = param.getProperties();
+					if (properties != null) {
+						for (PluginAPIParam prop : properties) {
+							if (prop.getName() != null) {
+								types.put(prop.getName(), prop.getType());
+							}
+						}
+					}
+				} else if (param.getName() != null) {
+					types.put(param.getName(), param.getType());
+				}
+			}
+		}
+		return types;
 	}
 
 	/**

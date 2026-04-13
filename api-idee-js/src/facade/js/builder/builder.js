@@ -401,6 +401,83 @@ export const getPanelForControl = (control, map, params = {}) => {
 };
 
 /**
+ * Infers the JS type of a raw string value coming from a URL query parameter.
+ * Handles: boolean, number, JSON array ([a,b,c] or [1,2,3]), JSON object ({...}), string.
+ * @private
+ */
+const inferValue = (rawVal) => {
+  const v = rawVal.trim();
+  if (v === 'true') return true;
+  if (v === 'false') return false;
+  // eslint-disable-next-line no-restricted-globals
+  if (!isNaN(v) && v !== '') return Number(v);
+  if (v.startsWith('{') && v.endsWith('}')) {
+    try { return JSON.parse(v); } catch (e) { return v; }
+  }
+  if (v.startsWith('[') && v.endsWith(']')) {
+    const inner = v.slice(1, -1);
+    return inner.split(',').map((el) => {
+      const e = el.trim().replace(/^['"]|['"]$/g, ''); // strip quotes
+      if (e === 'true') return true;
+      if (e === 'false') return false;
+      // eslint-disable-next-line no-restricted-globals
+      if (!isNaN(e) && e !== '') return Number(e);
+      return e;
+    });
+  }
+  return rawVal;
+};
+
+/**
+ * Parses an OpenAPI key=value layer string like:
+ *   'layers.0.type=WMTS&layers.0.url=http://...&layers.0.name=MTN'
+ * into an object like:
+ *   { type: 'WMTS', url: 'http://...', name: 'MTN' }
+ * which Map.getLayerByString() can use via its switch(type) block.
+ *
+ * Multiple layers in a single string are not supported here — each
+ * array element must correspond to one layer.
+ * @private
+ */
+export const parseKeyValueLayer = (layerStr) => {
+  const params = {};
+  layerStr.split('&').forEach((pair) => {
+    const eqIndex = pair.indexOf('=');
+    if (eqIndex <= 0) return;
+    const key = pair.substring(0, eqIndex);
+    const value = pair.substring(eqIndex + 1);
+    // extract the param name after the second dot: layers.0.type → type
+    const parts = key.split('.');
+    if (parts.length >= 3) {
+      params[parts.slice(2).join('.')] = inferValue(value);
+    }
+  });
+  return params;
+};
+
+/**
+ * Parses an OpenAPI key=value control string like 'scale.exactScale=true'
+ * into { name: 'scale', exactScale: true }.
+ * Returns null if the string is not in key=value format.
+ * @private
+ */
+const parseKeyValueControl = (controlStr) => {
+  const dotIndex = controlStr.indexOf('.');
+  if (dotIndex <= 0 || controlStr.indexOf('*') !== -1) return null;
+  const name = controlStr.substring(0, dotIndex);
+  const rest = controlStr.substring(dotIndex + 1); // e.g. 'exactScale=true'
+  const params = { name };
+  rest.split('&').forEach((pair) => {
+    const eqIndex = pair.indexOf('=');
+    if (eqIndex > 0) {
+      const key = pair.substring(0, eqIndex);
+      params[key] = inferValue(pair.substring(eqIndex + 1));
+    }
+  });
+  return params;
+};
+
+/**
  * This method create the mapea control from its name string.
  * @function
  * @param {string|Object} controlParam Control name or control instance.
@@ -412,94 +489,127 @@ export const buildControl = (controlParam, map) => {
   const params = {};
 
   if (isString(controlParam)) {
-    const normalizedControlParams = normalize(controlParam).split('*');
-    const controlName = normalizedControlParams[0];
+    // New OpenAPI key=value format: 'scale.exactScale=true'
+    const keyValueParsed = parseKeyValueControl(controlParam);
 
-    const controls = {
-      [Attributions.NAME]: () => {
-        // eslint-disable-next-line no-underscore-dangle, no-param-reassign
-        map._attributionsMap = [...map._attributionsMap, ...normalizedControlParams];
-        return new Attributions({
-          map,
-          collectionsAttributions: normalizedControlParams.length === 2
-            ? [normalizedControlParams[1]].map((l) => {
-              if (typeof l !== 'string') {
-                const attr = l;
-                attr.id = l.idLayer;
-                return attr;
-              }
-              return l;
-            }) : [],
-        });
-      },
-      [Scale.NAME]: () => {
-        normalizedControlParams.forEach((p) => {
-          if (p === 'true') params.exactScale = true;
-          // eslint-disable-next-line no-restricted-globals
-          if (!isNaN(p)) params.order = Number(p);
-        });
-        return new Scale(params);
-      },
-      [ScaleLine.NAME]: () => new ScaleLine(),
-      [MeasureBar.NAME]: () => new MeasureBar(),
-      [OverviewMap.NAME]: () => new OverviewMap(),
-      [Panzoombar.NAME]: () => new Panzoombar(),
-      [Panzoom.NAME]: () => new Panzoom(),
-      [Location.NAME]: () => new Location(),
-      // [GetFeatureInfo.NAME]: () => new GetFeatureInfo(true),
-      [GetFeatureInfo.NAME]: () => {
-        let activated = true;
-        // Si el usuario define false...
-        if (normalizedControlParams.includes('false')) {
-          activated = false;
-        }
-        return new GetFeatureInfo({
-          activated,
-        });
-      },
-      [Rotate.NAME]: () => {
-        normalizedControlParams.forEach((p) => {
-          if (!isUndefined(p)) {
-            const bbox = p.split(',');
-            if (bbox.length === 4) {
-              params.viewInitial = bbox;
-            }
-            if (p === 'false') params.help = false;
-            // eslint-disable-next-line no-restricted-globals
-            if (!isNaN(p)) params.order = Number(p);
-          }
-        });
-        return new Rotate(params);
-      },
-      [BackgroundLayers.NAME]: () => {
-        // Check for special pattern: backgroundlayers*[0-9]*true|false
-        if (/backgroundlayers\*([0-9])+\*(true|false)/.test(controlParam)) {
-          const idLayer = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[1];
-          const visible = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[2] === 'true';
-          return new BackgroundLayers({
-            visible,
-            idLayer: Number.parseInt(idLayer, 10),
-          });
-        }
-        return new BackgroundLayers();
-      },
-      [ImplementationSwitcher.NAME]: () => new ImplementationSwitcher(),
-      [WMCSelector.NAME]: () => new WMCSelector(),
-      [Timeline.NAME]: () => new Timeline({
-        timelineType: 'absoluteSimple',
-      }),
-    };
-
-    const builderFunction = controls[controlName];
-    if (isFunction(builderFunction)) {
-      builtControl = builderFunction();
-      if (builtControl) {
-        builtControl.builderParams = params; // Store params for panel creation
+    if (keyValueParsed !== null) {
+      // Build directly from parsed key=value params without recursion
+      const { name: kvName, ...kvParams } = keyValueParsed;
+      const controlName = normalize(kvName);
+      const kvControls = {
+        [Attributions.NAME]: () => { map.createAttribution(kvParams); return null; },
+        [Scale.NAME]: () => new Scale(kvParams),
+        [ScaleLine.NAME]: () => new ScaleLine(kvParams),
+        [MeasureBar.NAME]: () => new MeasureBar(kvParams),
+        [OverviewMap.NAME]: () => new OverviewMap(kvParams),
+        [Panzoombar.NAME]: () => new Panzoombar(kvParams),
+        [Panzoom.NAME]: () => new Panzoom(kvParams),
+        [Location.NAME]: () => new Location(kvParams),
+        [GetFeatureInfo.NAME]: () => new GetFeatureInfo(kvParams),
+        [Rotate.NAME]: () => new Rotate(kvParams),
+        [BackgroundLayers.NAME]: () => new BackgroundLayers(map, kvParams),
+        [ImplementationSwitcher.NAME]: () => new ImplementationSwitcher(kvParams),
+        [WMCSelector.NAME]: () => new WMCSelector(kvParams),
+        [Timeline.NAME]: () => new Timeline(kvParams),
+      };
+      const kvBuilderFn = kvControls[controlName];
+      if (isFunction(kvBuilderFn)) {
+        builtControl = kvBuilderFn();
+        if (builtControl) builtControl.builderParams = kvParams;
+      } else {
+        const getControlsAvailable = concatUrlPaths([window.IDEE.config.MAPEA_URL, '/api/actions/controls']);
+        dialog.error(`El control ${kvName} no está definido. Consulte los controles disponibles <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
       }
     } else {
-      const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);
-      const exceptionMessage = getValue('exception').undefined_control;
-      dialog.error(`( "${controlParam}" ) ${exceptionMessage} <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
+      const normalizedControlParams = normalize(controlParam).split('*');
+      const controlName = normalizedControlParams[0];
+
+      const controls = {
+        [Attributions.NAME]: () => {
+          // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+          map._attributionsMap = [...map._attributionsMap, ...normalizedControlParams];
+          return new Attributions({
+            map,
+            collectionsAttributions: normalizedControlParams.length === 2
+              ? [normalizedControlParams[1]].map((l) => {
+                if (typeof l !== 'string') {
+                  const attr = l;
+                  attr.id = l.idLayer;
+                  return attr;
+                }
+                return l;
+              }) : [],
+          });
+        },
+        [Scale.NAME]: () => {
+          normalizedControlParams.forEach((p) => {
+            if (p === 'true') params.exactScale = true;
+            // eslint-disable-next-line no-restricted-globals
+            if (!isNaN(p)) params.order = Number(p);
+          });
+          return new Scale(params);
+        },
+        [ScaleLine.NAME]: () => new ScaleLine(),
+        [MeasureBar.NAME]: () => new MeasureBar(),
+        [OverviewMap.NAME]: () => new OverviewMap(),
+        [Panzoombar.NAME]: () => new Panzoombar(),
+        [Panzoom.NAME]: () => new Panzoom(),
+        [Location.NAME]: () => new Location(),
+        // [GetFeatureInfo.NAME]: () => new GetFeatureInfo(true),
+        [GetFeatureInfo.NAME]: () => {
+          let activated = true;
+          // Si el usuario define false...
+          if (normalizedControlParams.includes('false')) {
+            activated = false;
+          }
+          return new GetFeatureInfo({
+            activated,
+          });
+        },
+        [Rotate.NAME]: () => {
+          normalizedControlParams.forEach((p) => {
+            if (!isUndefined(p)) {
+              const bbox = p.split(',');
+              if (bbox.length === 4) {
+                params.viewInitial = bbox;
+              }
+              if (p === 'false') params.help = false;
+              // eslint-disable-next-line no-restricted-globals
+              if (!isNaN(p)) params.order = Number(p);
+            }
+          });
+          return new Rotate(params);
+        },
+        [BackgroundLayers.NAME]: () => {
+          // Check for special pattern: backgroundlayers*[0-9]*true|false
+          if (/backgroundlayers\*([0-9])+\*(true|false)/.test(controlParam)) {
+            const idLayer = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[1];
+            const visible = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[2] === 'true';
+            return new BackgroundLayers({
+              visible,
+              idLayer: Number.parseInt(idLayer, 10),
+            });
+          }
+          return new BackgroundLayers();
+        },
+        [ImplementationSwitcher.NAME]: () => new ImplementationSwitcher(),
+        [WMCSelector.NAME]: () => new WMCSelector(),
+        [Timeline.NAME]: () => new Timeline({
+          timelineType: 'absoluteSimple',
+        }),
+      };
+
+      const builderFunction = controls[controlName];
+      if (isFunction(builderFunction)) {
+        builtControl = builderFunction();
+        if (builtControl) {
+          builtControl.builderParams = params; // Store params for panel creation
+        }
+      } else {
+        const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);
+        const exceptionMessage = getValue('exception').undefined_control;
+        dialog.error(`( "${controlParam}" ) ${exceptionMessage} <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
+      }
     }
   } else if (controlParam instanceof Control) {
     builtControl = controlParam;
