@@ -24,6 +24,7 @@ import * as Position from '../ui/position';
  * @property {Number} scale_ Escala de visualización de la capa de atribuciones.
  * @property {String} tooltip_ Texto del tooltip.
  * @property {String} position Posición del control.
+ * @property {Boolean} collapsible Indica si el control es colapsable.
  * @property {Number} order Accesibilidad, tabIndex.
  * @property {String} url_ URL del fichero de atribuciones.
  * @property {Object} collectionsAttributions Colección de atribuciones.
@@ -41,18 +42,23 @@ class Attributions extends ControlBase {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Number} scale_ Escala de visualización de la capa de atribuciones.
-   * @param {String} tooltip Texto del tooltip.
-   * @param {String} position Posición del control.
-   * @param {Number} order Selección de la posición sobre el panel
-   * @param {String} url URL del fichero de atribuciones.
-   * @param {Object} collectionsAttributions Colección de atribuciones.
-   * @param {Boolean} closePanel Panel cerrado o abierto.
-   * @param {String} urlAttribute Texto de la url.
-   * @param {String} type geojson o kml, dependiendo de la url.
-   * @param {Number} scale Define cuando cambiara la atribución.
-   * @param {String} defaultAttribution Atribución por defecto.
-   * @param {String} defaultURL URL por defecto.
+   * @param {Object} options Opciones de configuración del control.
+   * @param {String} options.position Posición del control.
+   * @param {String} options.collapsible Indica si el control es colapsable.
+   * (usada por ControlPanel)
+   * @param {String} options.layerName Nombre de la capa de atribuciones.
+   * @param {Object} options.layer Capa de atribuciones.
+   * @param {String} options.attributionParam Parámetro de las features que contiene la atribución.
+   * @param {String} options.urlParam Parámetro de las features que contiene la url.
+   * @param {String} options.defaultAttribution Atribución por defecto.
+   * @param {String} options.defaultURL URL por defecto.
+   * @param {String} options.tooltip Texto del tooltip.
+   * @param {String} options.type Tipo de fichero de atribuciones, geojson o kml.
+   * @param {Number} options.scale Escala de visualización de la capa de atribuciones.
+   * @param {String} options.urlAttribute Texto de la url.
+   * @param {Number} options.order Selección de la posición sobre el panel
+   * @param {String} options.url URL del fichero de atribuciones.
+   * @param {Object} options.collectionsAttributions Colección de atribuciones.
    * @api
    */
   constructor(options = {}) {
@@ -63,22 +69,33 @@ class Attributions extends ControlBase {
     const impl = new AttributionsImpl();
     super(Attributions.NAME, impl, options);
 
-    this.position = options.position || Position.LEFT;
-    this.closePanel = options.closePanel;
-    this.urlAttribute = options.urlAttribute || 'Gobierno de España';
-    this.options = options;
+    this.position = options.position ?? Position.LEFT;
 
-    this.url_ = options.url || `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`;
-    this.type_ = options.type || 'kml';
-    this.layerName_ = options.layerName || 'attributions';
+    this.collapsible = options.collapsible ?? true;
+
+    this.urlAttribute = options.urlAttribute ?? 'Gobierno de España';
+
+    this.url_ = options.url ?? `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`;
+
+    this.type_ = options.type ?? 'kml';
+
+    this.layerName_ = options.layerName ?? 'attributions';
+
     this.layer_ = options.layer;
-    this.scale_ = Number.parseInt(options.scale, 10) || 10000;
-    this.attributionParam_ = options.attributionParam || 'atribucion';
-    this.urlParam_ = options.urlParam || 'url';
-    this.defaultAttribution_ = options.defaultAttribution || 'Instituto Geogr&aacute;fico Nacional';
-    this.defaultURL_ = options.defaultURL || 'https://www.ign.es/';
+
+    this.scale_ = Number.parseInt(options.scale, 10) ?? 10000;
+
+    this.attributionParam_ = options.attributionParam ?? 'atribucion';
+
+    this.urlParam_ = options.urlParam ?? 'url';
+
+    this.defaultAttribution_ = options.defaultAttribution ?? 'Instituto Geogr&aacute;fico Nacional';
+
+    this.defaultURL_ = options.defaultURL ?? 'https://www.ign.es/';
+
     this.tooltip_ = options.tooltip ?? this.translation.title;
-    this.collectionsAttributions_ = options.collectionsAttributions || [];
+
+    this.collectionsAttributions_ = options.collectionsAttributions ?? [];
 
     this.collectionsAttributions_ = this.collectionsAttributions_.map((attr) => {
       if (typeof attr === 'string') {
@@ -458,15 +475,6 @@ class Attributions extends ControlBase {
   }
 
   /**
-   * Este método elimina el panel.
-   * @function
-   * @public
-   */
-  closePanel() {
-    this.getPanel().collapse();
-  }
-
-  /**
    * Este método actualiza el bbox con sus features.
    * @function
    * @public
@@ -489,24 +497,6 @@ class Attributions extends ControlBase {
         ],
       },
     });
-  }
-
-  /**
-   * Este método cierra el panel si la pantalla es pequeña.
-   * @function
-   * @public
-   * @param {Event} e Evento.
-   */
-  setCollapsiblePanel(e) {
-    if (this.getPanel() && this.getPanel().getTemplatePanel()) {
-      if (e.target.innerWidth < 769) {
-        this.getPanel().getTemplatePanel().classList.remove('no-collapsible');
-        this.closePanel();
-      } else {
-        this.getPanel().getTemplatePanel().classList.add('no-collapsible');
-        this.getPanel().getTemplatePanel().classList.remove('collapsed');
-      }
-    }
   }
 
   /**

@@ -43,5 +43,5 @@ Control timeline
 CP-015
 Control measurebar
 
-CP-015
-Control overview
+CP-016
+Control overviewmap

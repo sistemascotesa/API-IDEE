@@ -14,9 +14,8 @@ import { extend, isNullOrEmpty, isNumber } from '../../../../facade/js/util/Util
 
 /**
  * @classdesc
- * Esta clase se encarga de general el panel de los controles.
- * @property {String} name Nombre del panel.
- * @property {String} position Posición del panel.
+ * Esta clase es la implementación del control de vista general, que muestra un mapa en miniatura
+ * basándose en la clase de base de OpenLayers ol.control.OverviewMap
  *
  * @api
  */
@@ -24,6 +23,19 @@ class OverviewMap extends OlControlOverviewMap {
   /**
    * @constructor
    * @extends {ol.control.OverviewMap}
+   * @param {Object} options Opciones de configuración del control.
+   * @param {String} options.tipLabel Etiqueta del botón de la vista general.
+   * @param {Number} options.zoom Zoom del minimapa.
+   * @param {Number} options.maxZoom Zoom máximo del minimapa.
+   * @param {Number} options.minZoom Zoom mínimo del minimapa.
+   * @param {Number} options.ratio Ratio del minimapa respecto al mapa principal.
+   * @param {String} options.baseLayer Capa base del minimapa,
+   * en formato tipo*url*layer*matrixSet*format.
+   * @param {Boolean} options.vendorOptions Opciones para la biblioteca de OpenLayers
+   * @param {Boolean} options.vendorOptions.collapsible Si el control es colapsable o no.
+   * (deprecated) se usa en la clase de fachada.
+   * @param {Boolean} options.vendorOptions.collapsed Si el control está colapsado o no.
+   * (deprecated) se usa en la clase de fachada.
    * @api stable
    */
   constructor(options) {

@@ -340,8 +340,8 @@
 }
 
 .g-cartografia-mundo::before {
-    -webkit-mask-image: url('../images/icon_ue93b.svg');
-    mask-image: url('../images/icon_ue93b.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_overview.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_overview.svg');
 }
 
 .g-cartografia-mundo2::before {

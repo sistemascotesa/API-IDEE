@@ -28,15 +28,15 @@ class ControlPanel extends MObject {
    * Constructor principal de la clase.
    * @constructor
    * @param {string} name Nombre del panel.
-   * @param {Mx.parameters.ControlPanel} options Opciones del panel.
-   * - collapsible: Indica si el panel se puede colapsar.
-   * - position: Posición del panel.
-   * - collapsed: Indica si el panel aparece por defecto colapsado o no.
-   * - multiActivation: Si el panel puede estar activado o no.
-   * - className: Clase CSS del panel.
-   * - collapsedButtonClass: Clase CSS del botón del panel.
-   * - tooltip: Información sobre la herramienta.
-   * - order: Orden del panel respecto a los otros paneles y su posición.
+   * @param {Object} options Opciones del panel.
+   * @param {Boolean} options.collapsible: Indica si el panel se puede colapsar.
+   * @param {String} options.position: Posición del panel.
+   * @param {Boolean} options.collapsed: Indica si el panel aparece por defecto colapsado o no.
+   * @param {Boolean} options.multiActivation: Si el panel puede estar activado o no.
+   * @param {String} options.className: Clase CSS del panel.
+   * @param {String} options.collapsedButtonClass: Clase CSS del botón del panel.
+   * @param {String} options.tooltip: Información sobre la herramienta.
+   * @param {Number} options.order: Orden del panel respecto a los otros paneles y su posición.
    * @extends {IDEE.Object}
    * @api
    */

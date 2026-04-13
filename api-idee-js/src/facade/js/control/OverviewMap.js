@@ -4,7 +4,9 @@
 import 'assets/css/controls/overviewmap';
 import myhelp from 'templates/overviewmaphelp';
 import OverviewMapImpl from 'impl/control/OverviewMap';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isBoolean,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import * as Position from '../ui/position';
 // eslint-disable-next-line import/no-relative-packages
@@ -29,10 +31,9 @@ class OverviewMap extends Control {
         && isNullOrEmpty(Object.keys(OverviewMapImpl)))) {
       Exception(getValue('exception').impl_overviewmap);
     }
-
     const impl = new OverviewMapImpl(
       {
-        tipLabel: OverviewMap.translation.tooltip,
+        tipLabel: OverviewMap.translation.title,
         ...options,
       },
     );
@@ -109,6 +110,20 @@ class OverviewMap extends Control {
     }
 
     /**
+    * Vendor options
+    * @public
+    * @type {Object}
+    */
+    this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
+
+    /**
+    * Vendor options
+    * @public
+    * @type {Object}
+    */
+    this.collapsed = isBoolean(options.collapsed) ? options.collapsed : this.collapsible;
+
+    /**
     * Metadata from api.json
     * @private
     * @type {Object}
@@ -127,7 +142,6 @@ class OverviewMap extends Control {
   * Este método es el que busca Map.js para insertar el control en el DOM
   */
   getView() {
-    // Elemento real de OpenLayers
     return this.getImpl().getView();
   }
 
