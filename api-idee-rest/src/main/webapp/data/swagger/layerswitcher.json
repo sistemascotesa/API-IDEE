@@ -1,0 +1,349 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API IDEE - Layerswitcher",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "http://localhost:8080/api-idee",                      "description": "Local"      },
+    { "url": "https://componentes-desarrollo.idee.es/api-idee",     "description": "Desarrollo" },
+    { "url": "https://componentes.idee.es/api-idee",                "description": "Producción" }
+  ],
+  "tags": [
+    {
+      "name": "Layerswitcher",
+      "description": "Configuración del plugin Layerswitcher para visualizadores cartográficos IDEE"
+    }
+  ],
+  "paths": {
+    "/api/js": {
+      "get": {
+        "tags": ["Layerswitcher"],
+        "summary": "Configura el plugin Layerswitcher (GET)",
+        "description": "Genera el código JavaScript que inicializa un mapa IDEE con el plugin **Layerswitcher**.\nLos parámetros del plugin se pasan con el prefijo `layerswitcher.` seguido del nombre del campo.\n\n**Ejemplo de llamada:**\n```\nGET /api/js?layerswitcher.collapsed=false\n```\n**Respuesta:**\n```javascript\nIDEE.map({\"container\":\"map\"}).addPlugin(new IDEE.plugin.Layerswitcher({\"collapsed\":false}))\n```\n",
+        "operationId": "layerswitcherGet",
+        "parameters": [
+          {
+            "name": "layerswitcher.position",
+            "in": "query",
+            "description": "Posición del panel en el mapa.",
+            "schema": { "type": "string", "enum": ["left", "right"], "default": "right" },
+            "example": "right"
+          },
+          {
+            "name": "layerswitcher.collapsed",
+            "in": "query",
+            "description": "Panel colapsado al inicio.",
+            "schema": { "type": "boolean", "default": true },
+            "example": false
+          },
+          {
+            "name": "layerswitcher.order",
+            "in": "query",
+            "description": "Orden de renderizado respecto a otros plugins.",
+            "schema": { "type": "integer" },
+            "example": 0
+          },
+          {
+            "name": "layerswitcher.tooltip",
+            "in": "query",
+            "description": "Texto del tooltip del botón del panel.",
+            "schema": { "type": "string" },
+            "example": "Capas"
+          },
+          {
+            "name": "layerswitcher.isMoveLayers",
+            "in": "query",
+            "description": "Permite reordenar capas mediante drag & drop.",
+            "schema": { "type": "boolean", "default": false },
+            "example": false
+          },
+          {
+            "name": "layerswitcher.modeSelectLayers",
+            "in": "query",
+            "description": "Modo de selección/visibilidad de capas.",
+            "schema": { "type": "string", "enum": ["eyes", "radio"], "default": "eyes" },
+            "example": "eyes"
+          },
+          {
+            "name": "layerswitcher.tools",
+            "in": "query",
+            "description": "Herramientas visibles en cada capa, separadas por coma.",
+            "schema": { "type": "string", "default": "transparency,legend,zoom,information,style,delete" },
+            "example": "transparency,information,delete"
+          },
+          {
+            "name": "layerswitcher.http",
+            "in": "query",
+            "description": "Permite añadir servicios HTTP al catálogo.",
+            "schema": { "type": "boolean", "default": true },
+            "example": true
+          },
+          {
+            "name": "layerswitcher.https",
+            "in": "query",
+            "description": "Permite añadir servicios HTTPS al catálogo.",
+            "schema": { "type": "boolean", "default": true },
+            "example": true
+          },
+          {
+            "name": "layerswitcher.showCatalog",
+            "in": "query",
+            "description": "Muestra el catálogo de servicios precargados.",
+            "schema": { "type": "boolean", "default": false },
+            "example": false
+          },
+          {
+            "name": "layerswitcher.useProxy",
+            "in": "query",
+            "description": "Usa el proxy del servidor para las peticiones de capas.",
+            "schema": { "type": "boolean" },
+            "example": true
+          },
+          {
+            "name": "layerswitcher.displayLabel",
+            "in": "query",
+            "description": "Muestra la etiqueta del tipo de capa junto al nombre.",
+            "schema": { "type": "boolean", "default": false },
+            "example": false
+          },
+          {
+            "name": "layerswitcher.addLayers",
+            "in": "query",
+            "description": "Muestra el botón para añadir capas desde la UI.",
+            "schema": { "type": "boolean" },
+            "example": true
+          },
+          {
+            "name": "layerswitcher.statusLayers",
+            "in": "query",
+            "description": "Muestra el botón para ocultar/mostrar capas desde la UI.",
+            "schema": { "type": "boolean" },
+            "example": true
+          },
+          {
+            "name": "layerswitcher.useAttributions",
+            "in": "query",
+            "description": "Añade los créditos/atribuciones de las capas al mapa.",
+            "schema": { "type": "boolean", "default": false },
+            "example": false
+          },
+          {
+            "name": "layerswitcher.precharged",
+            "in": "query",
+            "description": "Añade los servicios predefinidos que mostrará el plugin.",
+            "schema": { "type": "Object", "default": {"groups":[{"name":"Cartografía","services":[{"name":"Mapas","type":"WMTS","url":"https://www.ign.es/wmts/mapa-raster?"},{"name":"Callejero","type":"WMTS","url":"https://www.ign.es/wmts/ign-base?"},{"name":"Primera edición MTN y Minutas de 1910-1970","type":"WMTS","url":"https://www.ign.es/wmts/primera-edicion-mtn?"},{"name":"Planimetrías (1870 y 1950)","type":"WMS","url":"https://www.ign.es/wms/minutas-cartograficas?"},{"name":"Planos de Madrid (1622 - 1960)","type":"WMTS","url":"https://www.ign.es/wmts/planos?"},{"name":"Hojas kilométricas (Madrid - 1860)","type":"WMS","url":"https://www.ign.es/wms/hojas-kilometricas?"},{"name":"Cuadrículas Mapa Topográfico Nacional","type":"WMS","url":"https://www.ign.es/wms-inspire/cuadriculas?"}]}]} },
+            "example": { "groups":[{"name":"Cartografía","services":[{"name":"Mapas","type":"WMTS","url":"https://www.ign.es/wmts/mapa-raster?"},{"name":"Callejero","type":"WMTS","url":"https://www.ign.es/wmts/ign-base?"},{"name":"Primera edición MTN y Minutas de 1910-1970","type":"WMTS","url":"https://www.ign.es/wmts/primera-edicion-mtn?"},{"name":"Planimetrías (1870 y 1950)","type":"WMS","url":"https://www.ign.es/wms/minutas-cartograficas?"},{"name":"Planos de Madrid (1622 - 1960)","type":"WMTS","url":"https://www.ign.es/wmts/planos?"},{"name":"Hojas kilométricas (Madrid - 1860)","type":"WMS","url":"https://www.ign.es/wms/hojas-kilometricas?"},{"name":"Cuadrículas Mapa Topográfico Nacional","type":"WMS","url":"https://www.ign.es/wms-inspire/cuadriculas?"}]}] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Código JavaScript que inicializa el mapa con el plugin Layerswitcher.",
+            "content": {
+              "text/plain": {
+                "examples": {
+                  "colapsadoFalse": {
+                    "summary": "?layerswitcher.collapsed=false",
+                    "value": "IDEE.map({\"container\":\"map\"}).addPlugin(new IDEE.plugin.Layerswitcher({\"collapsed\":false}))\n"
+                  },
+                  "posicionYModo": {
+                    "summary": "?layerswitcher.position=left&layerswitcher.modeSelectLayers=check&layerswitcher.showCatalog=true",
+                    "value": "IDEE.map({\"container\":\"map\"}).addPlugin(new IDEE.plugin.Layerswitcher({\"position\":\"left\",\"modeSelectLayers\":\"check\",\"showCatalog\":true}))\n"
+                  },
+                  "completo": {
+                    "summary": "?layerswitcher.position=right&layerswitcher.collapsed=false&layerswitcher.isMoveLayers=true&layerswitcher.displayLabel=true",
+                    "value": "IDEE.map({\"container\":\"map\"}).addPlugin(new IDEE.plugin.Layerswitcher({\"position\":\"right\",\"collapsed\":false,\"isMoveLayers\":true,\"displayLabel\":true}))\n"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Layerswitcher"],
+        "summary": "Configura el plugin Layerswitcher (POST JSON)",
+        "description": "Genera el código JavaScript que inicializa un mapa IDEE con el plugin **Layerswitcher**.\nEl cuerpo de la petición es un objeto JSON con la clave `plugins`.\n",
+        "operationId": "layerswitcherPost",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LayerswitcherPostRequest" },
+              "examples": {
+                "minimo": {
+                  "summary": "Configuración mínima",
+                  "value": {
+                    "plugins": [
+                      {
+                        "type": "Layerswitcher",
+                        "params": { "collapsed": false, "position": "left" }
+                      }
+                    ]
+                  }
+                },
+                "completo": {
+                  "summary": "Configuración completa con catálogo precargado",
+                  "value": {
+                    "plugins": [
+                      {
+                        "type": "Layerswitcher",
+                        "params": {
+                          "collapsed": false,
+                          "position": "right",
+                          "tooltip": "Capas",
+                          "modeSelectLayers": "radio",
+                          "tools": ["transparency", "legend", "zoom", "information", "style", "delete"],
+                          "isMoveLayers": true,
+                          "https": true,
+                          "http": true,
+                          "showCatalog": true,
+                          "displayLabel": true,
+                          "precharged": {
+                            "groups": [
+                              {
+                                "name": "Cartografía",
+                                "services": [
+                                  { "name": "Mapas",                              "type": "WMTS", "url": "https://www.ign.es/wmts/mapa-raster?"          },
+                                  { "name": "Callejero",                          "type": "WMTS", "url": "https://www.ign.es/wmts/ign-base?"              },
+                                  { "name": "Primera edición MTN y Minutas",      "type": "WMTS", "url": "https://www.ign.es/wmts/primera-edicion-mtn?"   },
+                                  { "name": "Planimetrías (1870 y 1950)",         "type": "WMS",  "url": "https://www.ign.es/wms/minutas-cartograficas?"  },
+                                  { "name": "Planos de Madrid (1622 - 1960)",     "type": "WMTS", "url": "https://www.ign.es/wmts/planos?"                },
+                                  { "name": "Hojas kilométricas (Madrid - 1860)", "type": "WMS",  "url": "https://www.ign.es/wms/hojas-kilometricas?"     },
+                                  { "name": "Cuadrículas MTN",                    "type": "WMS",  "url": "https://www.ign.es/wms-inspire/cuadriculas?"    }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Código JavaScript que inicializa el mapa con el plugin Layerswitcher.",
+            "content": {
+              "text/plain": {
+                "examples": {
+                  "respuestaMinima": {
+                    "summary": "JS para configuración mínima",
+                    "value": "IDEE.map({\"container\":\"map\"}).addPlugin(new IDEE.plugin.Layerswitcher({\"collapsed\":false,\"position\":\"right\"}))\n"
+                  },
+                  "respuestaCompleta": {
+                    "summary": "JS para configuración completa con catálogo",
+                    "value": "IDEE.map({\"container\":\"map\"}).addPlugin(new IDEE.plugin.Layerswitcher({\"collapsed\":false,\"position\":\"right\",\"tooltip\":\"Capas\",\"modeSelectLayers\":\"radio\",\"tools\":[\"transparency\",\"legend\",\"zoom\",\"information\",\"style\",\"delete\"],\"isMoveLayers\":true,\"https\":true,\"http\":true,\"showCatalog\":true,\"displayLabel\":true,\"precharged\":{\"groups\":[{\"name\":\"Cartografía\",\"services\":[{\"name\":\"Mapas\",\"type\":\"WMTS\",\"url\":\"https://www.ign.es/wmts/mapa-raster?\"},{\"name\":\"Callejero\",\"type\":\"WMTS\",\"url\":\"https://www.ign.es/wmts/ign-base?\"}]}]}}))\n"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "JSON inválido o parámetros incorrectos.",
+            "content": {
+              "text/plain": { "example": "// Error processing JSON: Unexpected token ..." }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LayerswitcherPostRequest": {
+        "type": "object",
+        "required": ["plugins"],
+        "description": "Cuerpo de la petición POST. El servidor procesa el array `plugins` llamando a `createPluginFromJSON` por cada elemento (`type` → nombre del constructor, `params` → opciones).",
+        "properties": {
+          "plugins": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["type", "params"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Nombre del plugin tal como aparece en `IDEE.plugin.{type}`.",
+                  "example": "Layerswitcher"
+                },
+                "params": { "$ref": "#/components/schemas/LayerswitcherOptions" }
+              }
+            }
+          }
+        }
+      },
+      "LayerswitcherOptions": {
+        "type": "object",
+        "description": "Opciones de configuración del plugin Layerswitcher.",
+        "properties": {
+          "position":        { "type": "string",  "description": "Posición del panel en el mapa.",                       "enum": ["right", "left"], "default": "right",   "example": "right"   },
+          "collapsed":       { "type": "boolean", "description": "Panel colapsado al inicio.",                           "default": true,              "example": true   },
+          "tooltip":         { "type": "string",  "description": "Texto del tooltip del botón del panel.",               "example": "Capas"            },
+          "isMoveLayers":    { "type": "boolean", "description": "Permite reordenar las capas mediante drag & drop.",    "default": false,             "example": false  },
+          "modeSelectLayers":{ "type": "string",  "description": "Modo de selección/visibilidad de capas.",              "enum": ["eyes", "radio"], "default": "eyes", "example": "eyes" },
+          "tools": {
+            "type": "array",
+            "description": "Herramientas disponibles en cada capa del panel.",
+            "items": { "type": "string", "enum": ["transparency","legend","zoom","information","style","delete"] },
+            "default": ["transparency","legend","zoom","information","style","delete"],
+            "example": ["transparency","legend","zoom","information","style","delete"]
+          },
+          "http":            { "type": "boolean", "description": "Permite añadir servicios HTTP al catálogo.",           "default": true  },
+          "https":           { "type": "boolean", "description": "Permite añadir servicios HTTPS al catálogo.",          "default": true  },
+          "showCatalog":     { "type": "boolean", "description": "Muestra el catálogo de servicios precargados.",        "default": false, "example": false },
+          "useProxy":        { "type": "boolean", "description": "Usa el proxy del servidor para las peticiones."        },
+          "displayLabel":    { "type": "boolean", "description": "Muestra la etiqueta del tipo de capa.",                "default": false },
+          "addLayers":       { "type": "boolean", "description": "Muestra el botón para añadir capas desde la UI."       },
+          "statusLayers":    { "type": "boolean", "description": "Muestra el botón para ocultar/mostrar capas."          },
+          "useAttributions": { "type": "boolean", "description": "Añade los créditos/atribuciones de las capas.",        "default": false },
+          "order":           { "type": "integer", "description": "Orden de renderizado respecto a otros plugins.",       "example": 0     },
+          "precharged": {
+            "type": "object",
+            "description": "Catálogo de servicios precargados. Estructura: `{ groups: [ { name, services: [ { name, type, url, white_list? } ] } ] }`",
+            "properties": {
+              "groups": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "services"],
+                  "properties": {
+                    "name": { "type": "string", "example": "Cartografía" },
+                    "services": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["name", "type", "url"],
+                        "properties": {
+                          "name":       { "type": "string",                        "example": "Mapas"                             },
+                          "type":       { "type": "string", "enum": ["WMS","WMTS"], "example": "WMTS"                             },
+                          "url":        { "type": "string",                        "example": "https://www.ign.es/wmts/mapa-raster?" },
+                          "white_list": { "type": "array", "description": "Lista de capas permitidas (si se omite, se permiten todas).", "items": { "type": "string" } }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "example": {
+              "groups": [
+                {
+                  "name": "Cartografía",
+                  "services": [
+                    { "name": "Mapas",     "type": "WMTS", "url": "https://www.ign.es/wmts/mapa-raster?" },
+                    { "name": "Callejero", "type": "WMTS", "url": "https://www.ign.es/wmts/ign-base?"    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
