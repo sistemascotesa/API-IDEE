@@ -13,9 +13,10 @@ import { getValue } from '../i18n/language';
 import * as Position from '../ui/position';
 
 /**
- * @typedef {Object & ControlBaseOptions} Options Opciones de configuración para el control Panzoom.
- * @property {string} [position='down'] Posición del control en el mapa.
- * @property {Object} [vendorOptions] Opciones del proveedor del control en el mapa.
+ * @typedef {Object} Options
+ * @extends ControlBaseOptions
+ * @property {String}  [position='down']  Posición del control en el mapa.
+ * @property {Object}  [vendorOptions]    Opciones del proveedor.
  */
 
 /**
