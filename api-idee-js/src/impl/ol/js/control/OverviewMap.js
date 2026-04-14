@@ -2,7 +2,8 @@
  * @module IDEE/impl/control/OverviewMap
  */
 import LayerGroup from 'IDEE/layer/LayerGroup';
-import OlControlOverviewMap from 'ol/control/OverviewMap';
+// eslint-disable-next-line no-unused-vars
+import OlControlOverviewMap, { Options as OverviewMapOptions } from 'ol/control/OverviewMap';
 import { get } from 'ol/proj';
 import TileLayer from 'ol/layer/Tile';
 import TileWMS from 'ol/source/TileWMS';
@@ -14,6 +15,7 @@ import { extend, isNullOrEmpty, isNumber } from '../../../../facade/js/util/Util
 
 /**
   * @typedef {Object} VendorOptions Opciones para la biblioteca de OpenLayers
+  * @extends OverviewMapOptions
   * @param {boolean} [collapsible] Si el control es colapsable o no.
   * (deprecated) se usa en la clase de fachada.
   * @param {boolean} [collapsed] Si el control está colapsado o no.
