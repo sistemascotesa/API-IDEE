@@ -19,6 +19,29 @@ import Exception from '../exception/exception';
 import * as Position from '../ui/position';
 
 /**
+ * @typedef {Object} Options opciones de configuración para el control Attributions.
+ * @property {String} [position='left'] Posición del control en el mapa.
+ * @property {Boolean} [collapsible=true] Indica si el control es colapsable.
+ * (usada por ControlPanel)
+ * @property {Boolean} [collapsed=false] Indica si el control está colapsado.
+ * (usada por ControlPanel)
+ * @property {String} [urlAttribute='url'] Texto de la url.
+ * @property {String} [url] URL del fichero de atribuciones.
+ * @property {String} [type='kml'] Tipo de fichero de atribuciones, geojson o kml.
+ * @property {String} [layerName='attributions'] Nombre de la capa de atribuciones.
+ * @property {Object} [layer] Capa de atribuciones.
+ * @property {Number} [scale=10000] Escala de visualización de la capa de atribuciones.
+ * @property {String} [attributionParam='atribucion'] Parámetro de las features que contiene la
+ * atribución.
+ * @property {String} [urlParam='url'] Parámetro de las features que contiene la url.
+ * @property {String} [defaultAttribution='Instituto Geogr&aacute;fico Nacional']
+ * Atribución por defecto.
+ * @property {String} [defaultURL='https://www.ign.es/'] URL por defecto.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Object} [collectionsAttributions] Colección de atribuciones.
+ */
+
+/**
  * @classdesc
  * Panel de atribuciones API-CING.
  * @property {Number} scale_ Escala de visualización de la capa de atribuciones.
@@ -28,7 +51,6 @@ import * as Position from '../ui/position';
  * @property {Number} order Accesibilidad, tabIndex.
  * @property {String} url_ URL del fichero de atribuciones.
  * @property {Object} collectionsAttributions Colección de atribuciones.
- * @property {Boolean} closePanel Panel cerrado o abierto.
  * @property {String} urlAttribute Texto de la url.
  * @property {String} type geojson o kml, dependiendo de la url.
  * @property {Number} scale Define cuando cambiara la atribución.
@@ -42,23 +64,7 @@ class Attributions extends ControlBase {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} options Opciones de configuración del control.
-   * @param {String} options.position Posición del control.
-   * @param {String} options.collapsible Indica si el control es colapsable.
-   * (usada por ControlPanel)
-   * @param {String} options.layerName Nombre de la capa de atribuciones.
-   * @param {Object} options.layer Capa de atribuciones.
-   * @param {String} options.attributionParam Parámetro de las features que contiene la atribución.
-   * @param {String} options.urlParam Parámetro de las features que contiene la url.
-   * @param {String} options.defaultAttribution Atribución por defecto.
-   * @param {String} options.defaultURL URL por defecto.
-   * @param {String} options.tooltip Texto del tooltip.
-   * @param {String} options.type Tipo de fichero de atribuciones, geojson o kml.
-   * @param {Number} options.scale Escala de visualización de la capa de atribuciones.
-   * @param {String} options.urlAttribute Texto de la url.
-   * @param {Number} options.order Selección de la posición sobre el panel
-   * @param {String} options.url URL del fichero de atribuciones.
-   * @param {Object} options.collectionsAttributions Colección de atribuciones.
+   * @param {Options} options Opciones de configuración del control.
    * @api
    *
    * @example
@@ -80,6 +86,8 @@ class Attributions extends ControlBase {
     this.position = options.position ?? Position.LEFT;
 
     this.collapsible = options.collapsible ?? true;
+
+    this.collapsed = options.collapsed ?? this.collapsible;
 
     this.urlAttribute = options.urlAttribute ?? 'Gobierno de España';
 
