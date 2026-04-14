@@ -176,9 +176,10 @@ export const addFileToMap = (map, file) => {
         Dialog.error(getValue('exception').file_extension);
       }
     }
-  } else {
-    Dialog.error(getValue('exception').file_empty);
   }
+  // else {
+  //   Dialog.error(getValue('exception').file_empty);
+  // }
 };
 
 export default {};
