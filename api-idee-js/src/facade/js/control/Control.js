@@ -14,12 +14,12 @@ import isControlImpl from '../../../impl/util/control/isControlImpl';
 import getControlImpl from '../../../impl/util/control/getControlImpl';
 
 /**
- * @typedef {Object} FacadeControlOptions
- * @param {String} [tooltip] Representa el valor del título del control.
- * @param {String} [svgPath] Representa el vínculo para la imagen del botón.
- * @param {String} [position] Posición que tendrá en el marco del mapa,
+ * @typedef {Object} Options opciones de configuración para el control de fachada.
+ * @property {String} [tooltip] Representa el valor del título del control.
+ * @property {String} [svgPath] Representa el vínculo para la imagen del botón si es usado.
+ * @property {String} [position] Posición que tendrá en el marco del mapa,
  * un contenedor disponible. Por defecto {@link IDEE.ui.position.LEFT}.
- * @param {Number} [order] Orden en el que se colocará dentro del contenedor,
+ * @property {Number} [order] Orden en el que se colocará dentro del contenedor,
  * para que este parámetro funcione adecuadamente deberemos contener el control dentro de un
  * {@link IDEE.ui.ControlPanel}, de lo contrario se colocará en el orden que se añada al mapa.
 */
@@ -44,7 +44,7 @@ class Control extends Base {
    * @api
    * @param {String} name Nombre del control.
    * @param {Object | null | undefined} impl Control de implementación.
-   * @param {FacadeControlOptions} [options] Opciones para el control de fachada.
+   * @param {Options} [options] Opciones para el control de fachada.
    *
    * @example
    * const map = IDEE.map({
