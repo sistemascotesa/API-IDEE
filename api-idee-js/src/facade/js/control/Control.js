@@ -32,7 +32,7 @@ class Control extends Base {
    * @api
    * @param {String} name Nombre del control.
    * @param {Object | null | undefined} impl Control de implementación.
-   * @param {Object} [options = {}] Opciones para el control de fachada.
+   * @param {Object} [options={}] Opciones para el control de fachada.
    * @param {String} options.tooltip Representa el valor del título del control.
    * @param {String} options.svgPath Representa el vínculo para la imagen del botón.
    * @param {String} options.position Posición que tendrá en el marco del mapa,
@@ -56,7 +56,9 @@ class Control extends Base {
    *   svgPath: '/assets/icons/control.svg',
    *   position: 'left',
    *   order: 2
-   * })
+   * });
+   *
+   * map.addControls(control);
    */
   constructor(name, impl, options = {}) {
     super(impl);
