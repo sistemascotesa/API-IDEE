@@ -2,7 +2,8 @@
  * @module IDEE/impl/control/Location
  */
 
-import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import { isNullOrEmpty, extend, setEquals } from 'IDEE/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
 // import * as Dialog from 'IDEE/dialog';
 // import { getValue } from 'IDEE/i18n/language';
 import { get as getProj } from 'ol/proj';
@@ -94,6 +95,20 @@ class Location extends Control {
     this.activated_ = false;
 
     /**
+     * Referencia a la fachada del control (IDEE.control.Location).
+     * @private
+     * @type {Object|null}
+     */
+    this.facadeObj_ = null;
+
+    /**
+     * Última coordenada emitida.
+     * @private
+     * @type {Object|null}
+     */
+    this.lastCoord_ = [];
+
+    /**
      * Objeto geográfico de la posición.
      * @private
      * @type {OLFeature}
@@ -102,6 +117,18 @@ class Location extends Control {
     olPositionFeature.setStyle(Location.POSITION_STYLE);
     olPositionFeature.set('isUtilityFeature', true); // No interactivo
     this.positionFeature_ = Feature.feature2Facade(olPositionFeature);
+  }
+
+  /**
+   * Asocia la fachada del control para poder emitir eventos.
+   *
+   * @public
+   * @function
+   * @param {IDEE.control.Location} obj Fachada del control.
+   * @api stable
+   */
+  setFacadeObj(obj) {
+    this.facadeObj_ = obj;
   }
 
   /**
@@ -142,6 +169,13 @@ class Location extends Control {
         this.element.classList.add('m-located');
 
         this.geolocation_.setTracking(this.tracking_);
+
+        if (!isNullOrEmpty(this.facadeObj_)) {
+          if (!setEquals(newCoord, this.lastCoord_)) {
+            this.facadeObj_.fire(EventType.CHANGE, [newCoord]);
+            this.lastCoord_ = newCoord;
+          }
+        }
       });
       // this.geolocation_.on('error', (evt) => {
       //   this.element.classList.remove('m-locating');
