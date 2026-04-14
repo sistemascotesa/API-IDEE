@@ -19,6 +19,7 @@ import getControlImpl from '../../../impl/util/control/getControlImpl';
  *
  * @property {Boolean} activated Define si el control esta activado, por defecto falso.
  * @property {String} name Nombre del control.
+ * @property {String} svgPath contiene la ruta a la imagen del control.
  *
  * @api
  * @extends {IDEE.Base}
@@ -30,13 +31,13 @@ class Control extends Base {
    * @constructor
    * @api
    * @param {String} name Nombre del control.
-   * @param {Object | null | undefined} impl Control de implementación
-   * @param {Object} options Opciones para el control de fachada
-   * @param {String} options.tooltip: Representa el valor del título del control
-   * @param {String} options.svgPath: Representa el vínculo para la imagen del botón
-   * @param {String} options.position: Posición que tendrá en el marco del mapa,
-   * un contenedor disponible
-   * @param {Number} options.order: Orden en el que se colocará dentro del contenedor,
+   * @param {Object | null | undefined} impl Control de implementación.
+   * @param {Object} options Opciones para el control de fachada.
+   * @param {String} options.tooltip Representa el valor del título del control.
+   * @param {String} options.svgPath Representa el vínculo para la imagen del botón.
+   * @param {String} options.position Posición que tendrá en el marco del mapa,
+   * un contenedor disponible.
+   * @param {Number} options.order Orden en el que se colocará dentro del contenedor,
    * para que este parámetro funcione adecuadamente deberemos contener el control dentro de un
    * {@link IDEE.ui.ControlPanel}, de lo contrario se colocará en el orden que se añada al mapa.
    *
@@ -61,34 +62,40 @@ class Control extends Base {
     super(impl);
 
     /**
-     * Facade of the map
      * @private
-     * @type {IDEE.Map}
+     * @property {IDEE.Map} map Es el mapa de fachada que se asigna al control.
      */
     this.map = null;
 
     /**
-     * @param {Plugin | null} parentPlugin existe quiere decir que está contenido en un Plugin
+     * @property {Plugin | null} parentPlugin existe quiere decir que está contenido en un Plugin
      */
     this.parentPlugin = null;
 
     /**
-     * @param {HTMLElement} parentContainer define el contenedor que envuelve el control
+     * @property {HTMLElement} parentContainer define el contenedor que envuelve el control
      */
     this.parentContainer = null;
 
+    /**
+     * @public
+     * @property {String} name nombre del control, se usará para la traducción de los textos
+     * del control y su creación en la plantilla, por lo que es importante que el nombre sea
+     * único y descriptivo.
+     */
     this.name = null;
     if (isString(name)) this.name = name;
     else Exception(getValue('exception').control_name_method);
 
     /**
-     * @param {tooltip} tooltip título ilustrativo sobre la acción principal del control
+     * @public
+     * @property {tooltip} tooltip título ilustrativo sobre la acción principal del control
      */
     this.tooltip = isString(options.tooltip) ? options.tooltip : null;
 
     /**
-     * @param {tooltip} svgPath contiene la ruta a la imagen del control,
-     * generalmente lanzado desde un botón
+     * @public
+     * @property {String} svgPath contiene la ruta a la imagen del control.
      */
     this.svgPath = isString(options.svgPath) ? options.svgPath : null;
 
@@ -105,9 +112,26 @@ class Control extends Base {
     this.order = isNumber(options.order) ? options.order : 0;
 
     this.controls = null;
+
+    /**
+     * @private
+     * @property {IDEE.ui.ControlPanel} panel_ Panel asociado al control, si el control
+     * se encuentra dentro de un ControlPanel, este atributo se asignará automáticamente
+     * al panel que lo contiene.
+     */
     this.panel_ = null;
+
+    /**
+     * @private
+     * @property {HTMLElement} element Elemento HTML del control.
+     */
     this.element = null;
     this.activationBtn = null;
+
+    /**
+     * @public
+     * @property {Boolean} activated Define si el control esta activado, por defecto falso.
+     */
     this.activated = false;
 
     this.options = {
@@ -214,7 +238,7 @@ class Control extends Base {
       template.then((templateReady) => {
         buildImpl(templateReady);
       });
-    } else { // view is an HTML or text
+    } else {
       buildImpl(template);
     }
   }
