@@ -32,11 +32,11 @@ class Control extends Base {
    * @api
    * @param {String} name Nombre del control.
    * @param {Object | null | undefined} impl Control de implementación.
-   * @param {Object} options Opciones para el control de fachada.
+   * @param {Object} [options = {}] Opciones para el control de fachada.
    * @param {String} options.tooltip Representa el valor del título del control.
    * @param {String} options.svgPath Representa el vínculo para la imagen del botón.
    * @param {String} options.position Posición que tendrá en el marco del mapa,
-   * un contenedor disponible.
+   * un contenedor disponible. Por defecto {@link IDEE.ui.position.LEFT}.
    * @param {Number} options.order Orden en el que se colocará dentro del contenedor,
    * para que este parámetro funcione adecuadamente deberemos contener el control dentro de un
    * {@link IDEE.ui.ControlPanel}, de lo contrario se colocará en el orden que se añada al mapa.
