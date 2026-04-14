@@ -60,6 +60,14 @@ class Attributions extends ControlBase {
    * @param {String} options.url URL del fichero de atribuciones.
    * @param {Object} options.collectionsAttributions Colección de atribuciones.
    * @api
+   *
+   * @example
+   * const control = new IDEE.control.Attributions({
+   *   position: 'left',
+   *   tooltip: 'Reconocimientos de la capa',
+   *   order: 2,
+   *   collapsible: false,
+   * });
    */
   constructor(options = {}) {
     if (isUndefined(AttributionsImpl) || (isObject(AttributionsImpl)

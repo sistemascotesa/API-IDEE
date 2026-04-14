@@ -13,6 +13,26 @@ import { fromExtent } from 'ol/geom/Polygon';
 import { extend, isNullOrEmpty, isNumber } from '../../../../facade/js/util/Utils';
 
 /**
+  * @typedef {Object} VendorOptions Opciones para la biblioteca de OpenLayers
+  * @param {boolean} [collapsible] Si el control es colapsable o no.
+  * (deprecated) se usa en la clase de fachada.
+  * @param {boolean} [collapsed] Si el control está colapsado o no.
+  * (deprecated) se usa en la clase de fachada.
+*/
+
+/**
+  * @typedef {Object} Options Opciones de configuración del control de implementación
+  * @param {String} [tipLabel] Etiqueta del botón de la vista general.
+  * @param {Number} [zoom] Zoom del minimapa.
+  * @param {Number} [maxZoom] Zoom máximo del minimapa.
+  * @param {Number} [minZoom] Zoom mínimo del minimapa.
+  * @param {Number} [ratio] Ratio del minimapa respecto al mapa principal.
+  * @param {String} [baseLayer] Capa base del minimapa,
+  * en formato tipo*url*layer*matrixSet*format.
+  * @param {VendorOptions} [vendorOptions]
+*/
+
+/**
  * @classdesc
  * Esta clase es la implementación del control de vista general, que muestra un mapa en miniatura
  * basándose en la clase de base de OpenLayers ol.control.OverviewMap
@@ -23,22 +43,10 @@ class OverviewMap extends OlControlOverviewMap {
   /**
    * @constructor
    * @extends {ol.control.OverviewMap}
-   * @param {Object} options Opciones de configuración del control.
-   * @param {String} options.tipLabel Etiqueta del botón de la vista general.
-   * @param {Number} options.zoom Zoom del minimapa.
-   * @param {Number} options.maxZoom Zoom máximo del minimapa.
-   * @param {Number} options.minZoom Zoom mínimo del minimapa.
-   * @param {Number} options.ratio Ratio del minimapa respecto al mapa principal.
-   * @param {String} options.baseLayer Capa base del minimapa,
-   * en formato tipo*url*layer*matrixSet*format.
-   * @param {Boolean} options.vendorOptions Opciones para la biblioteca de OpenLayers
-   * @param {Boolean} options.vendorOptions.collapsible Si el control es colapsable o no.
-   * (deprecated) se usa en la clase de fachada.
-   * @param {Boolean} options.vendorOptions.collapsed Si el control está colapsado o no.
-   * (deprecated) se usa en la clase de fachada.
+   * @param {Options} options
    * @api stable
    */
-  constructor(options) {
+  constructor(options = {}) {
     super(extend({
       layers: [],
       tipLabel: options.tipLabel ?? '',
