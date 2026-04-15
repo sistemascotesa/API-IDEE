@@ -1,9 +1,15 @@
 /**
  * @module IDEE/impl/Control
  */
-import OLControl from 'ol/control/Control';
+// eslint-disable-next-line no-unused-vars
+import OLControl, { Options as OlControlOptions } from 'ol/control/Control';
 
 /**
+ * @typedef {OlControlOptions} Options
+ */
+
+/**
+ * @public
  * @classdesc
  * Es la clase de la que heredan todos los controles de la implementación,
  * crea el "OLControl".
@@ -15,10 +21,11 @@ class Control extends OLControl {
    *
    * @constructor
    * @extends {OLControl}
+   * @param {Options} [options] Control options.
    * @api stable
    */
-  constructor() {
-    super({});
+  constructor(options = {}) {
+    super(options);
     /**
      * @private
      * @type {string}
