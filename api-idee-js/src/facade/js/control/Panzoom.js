@@ -4,8 +4,7 @@
 import panzoomTemplate from 'templates/panzoom';
 import myhelp from 'templates/panzoomhelp';
 import PanzoomImpl from 'impl/control/Panzoom';
-// eslint-disable-next-line no-unused-vars, import/named
-import ControlBase, { Options as ControlBaseOptions } from './Control';
+import ControlBase from './Control';
 import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { compileSync as compileTemplate } from '../util/Template';
@@ -14,7 +13,6 @@ import * as Position from '../ui/position';
 
 /**
  * @typedef {Object} Options
- * @extends ControlBaseOptions
  * @property {String}  [position='down']  Posición del control en el mapa.
  * @property {Object}  [vendorOptions]    Opciones del proveedor.
  */
