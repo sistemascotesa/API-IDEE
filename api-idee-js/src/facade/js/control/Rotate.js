@@ -226,7 +226,7 @@ class Rotate extends Control {
       const textHelp = getValue('rotate').help;
       compTemplate = compileTemplate(templateCesium, {
         vars: {
-          title: getValue('rotate').titleCesium,
+          title: this.tooltip ?? getValue('rotate').titleCesium,
           title_help: getValue('rotate').title_help,
           title_help_container: textHelp.title,
           title1: textHelp.title1,
@@ -246,7 +246,7 @@ class Rotate extends Control {
     } else {
       compTemplate = compileTemplate(template, {
         vars: {
-          title: getValue('rotate').title,
+          title: this.tooltip ?? getValue('rotate').title,
           order: this.order,
         },
       });
