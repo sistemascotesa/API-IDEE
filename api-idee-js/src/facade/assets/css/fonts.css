@@ -35,8 +35,8 @@
 }
 
 .g-cartografia-brujula-norte::before {
-    -webkit-mask-image: url('../images/icon_ue900.svg');
-    mask-image: url('../images/icon_ue900.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_brujula.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_brujula.svg');
 }
 
 .g-cartografia-capas2::before {
