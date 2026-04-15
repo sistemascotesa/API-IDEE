@@ -40,7 +40,7 @@ import * as Position from '../ui/position';
  * Atribución por defecto.
  * @property {String} [defaultURL='https://www.ign.es/'] URL por defecto.
  * @property {String} [tooltip] Texto del tooltip.
- * @property {Array=[]} [collectionsAttributions] Colección de atribuciones.
+ * @property {Array.<String>} [collectionsAttributions] Colección de atribuciones.
  */
 
 /**
@@ -53,7 +53,7 @@ import * as Position from '../ui/position';
  * @property {Boolean} collapsed Indica si el control está colapsado.
  * @property {Number} order Accesibilidad, tabIndex.
  * @property {String} url_ URL del fichero de atribuciones.
- * @property {Array=[]} collectionsAttributions_ Colección de atribuciones,
+ * @property {Array.<String>} collectionsAttributions_ Colección de atribuciones,
  * se especificarán como una colección de textos.
  * @property {String} urlAttribute Texto de la url.
  * @property {String} type geojson o kml, dependiendo de la url.
