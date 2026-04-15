@@ -12,23 +12,35 @@ import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
 import {
   isUndefined, isNullOrEmpty, isObject,
+  isBoolean,
 } from '../util/Utils';
+
+/**
+ * @typedef {Object} Options
+ */
 
 /**
  * @classdesc
  * Agrega la herramienta de cambio de implementación.
+ * @property {Boolean} collapsible Indica si el control es colapsable.
+ * @property {Boolean} collapsed Indica si el control está colapsado.
  *
  * @api
  * @extends {IDEE.Control}
  */
 class ImplementationSwitcher extends ControlBase {
-  constructor(options) {
+  /**
+   * @param {Options} options Opciones de configuración para el control de fachada.
+   */
+  constructor(options = {}) {
     if (isUndefined(ImplementationSwitcherImpl) || (isObject(ImplementationSwitcherImpl)
         && isNullOrEmpty(Object.keys(ImplementationSwitcherImpl)))) {
       Exception(getValue('exception').implementationswitcher_method);
     }
 
-    super(ImplementationSwitcher.NAME, new ImplementationSwitcherImpl(), options);
+    const implementationSwitcherImpl = new ImplementationSwitcherImpl();
+
+    super(ImplementationSwitcher.NAME, implementationSwitcherImpl, options);
 
     if (!window.implementations) {
       window.implementations = IDEE.config.implementationswitcher;
@@ -42,6 +54,10 @@ class ImplementationSwitcher extends ControlBase {
         }));
       }
     }
+
+    this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
+
+    this.collapsed = isBoolean(options.collapsed) ? options.collapsed : this.collapsible;
   }
 
   /**
@@ -57,8 +73,8 @@ class ImplementationSwitcher extends ControlBase {
     return new Promise((resolve) => {
       this.html = compileTemplate(template, {
         vars: {
-          title: this.tooltip ?? getValue('implementationswitcher').title,
-          description: getValue('implementationswitcher').description,
+          title: this.tooltip ?? getValue(ImplementationSwitcher.NAME).title,
+          description: getValue(ImplementationSwitcher.NAME).description,
           implementations: window.implementations,
         },
       });
@@ -174,7 +190,7 @@ class ImplementationSwitcher extends ControlBase {
    * @api
   */
   getHelp() {
-    const textHelp = getValue('implementationswitcher').textHelp;
+    const textHelp = getValue(ImplementationSwitcher.NAME).textHelp;
     return {
       title: ImplementationSwitcher.NAME,
       content: new Promise((success) => {

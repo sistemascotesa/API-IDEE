@@ -27,7 +27,10 @@ import MeasureBar from '../control/MeasureBar';
 import OverviewMap from '../control/OverviewMap';
 
 /**
- * This method getDefaultPanelOptions from one control and additional params if necessary
+ * Get default panel options for a control.
+ *
+ * @public
+ * @function
  * @param {IDEE.Control} control Control instance.
  * @param {Object} params Additional parameters for panel creation.
  * @returns {Object}
@@ -304,13 +307,10 @@ export const getBackgroundLayersPanel = (control, map, params = {}) => {
  * @api stable
  */
 export const getImpSwitcherPanel = (control, map, params = {}) => {
-  return new ControlPanel('implementationswitcher', {
+  return new ControlPanel(ImplementationSwitcher.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsedButtonClass: 'g-cartografia-implementacion',
-    tooltip: getValue('implementationswitcher').title,
     className: 'm-implementationswitcher',
-    collapsible: isBoolean(params.collapsible) ? params.collapsible
-      : isBoolean(control.collapsible) ? control.collapsible : true,
   });
 };
 
