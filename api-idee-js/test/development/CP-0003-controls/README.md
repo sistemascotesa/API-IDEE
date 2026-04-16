@@ -44,4 +44,4 @@ CP-015
 Control measurebar
 
 CP-016
-Control overviewmap
+Control panzoom

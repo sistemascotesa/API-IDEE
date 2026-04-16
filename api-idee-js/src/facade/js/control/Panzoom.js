@@ -4,7 +4,8 @@
 import panzoomTemplate from 'templates/panzoom';
 import myhelp from 'templates/panzoomhelp';
 import PanzoomImpl from 'impl/control/Panzoom';
-import ControlBase from './Control';
+// eslint-disable-next-line no-unused-vars, import/named
+import ControlBase, { Options as ControlBaseOptions } from './Control';
 import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { compileSync as compileTemplate } from '../util/Template';
@@ -12,8 +13,15 @@ import { getValue } from '../i18n/language';
 import * as Position from '../ui/position';
 
 /**
+ * @typedef {Object} Options
+ * @extends ControlBaseOptions
+ * @property {String}  [position='down']  Posición del control en el mapa.
+ * @property {Object}  [vendorOptions]    Opciones del proveedor.
+ */
+
+/**
  * @classdesc
- * Agregue los botones '+' y '-' para acercar y alejar el mapa.
+ * Control que muestra los botones '+' y '-' para acercar y alejar el mapa.
  *
  * @api
  * @extends {IDEE.Control}
@@ -23,7 +31,8 @@ class Panzoom extends ControlBase {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} options recibe las opciones de configuración por defecto
+   * @param {Options} [options] recibe las opciones de configuración
+   * por defecto
    * @api
    */
   constructor(options = {}) {
@@ -33,7 +42,7 @@ class Panzoom extends ControlBase {
     }
 
     // implementation of this control
-    const impl = new PanzoomImpl(options);
+    const impl = new PanzoomImpl(options.vendorOptions);
 
     // calls the super constructor
     super(Panzoom.NAME, impl, options);

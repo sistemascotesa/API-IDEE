@@ -418,8 +418,8 @@ class Utils {
       if (geometry.getType() === 'Point') {
         const units = getUnitsPerMeter(projectionCode, 1000);
         const auxCoord = geometry.getCoordinates();
-        const coordX = auxCoord[0];
-        const coordY = auxCoord[1];
+        const coordX = parseFloat(auxCoord[0]);
+        const coordY = parseFloat(auxCoord[1]);
         extents = [
           [
             coordX - units,
