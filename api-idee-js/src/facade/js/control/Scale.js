@@ -38,8 +38,6 @@ class Scale extends ControlBase {
       ...isObject(options.vendorOptions) ? options.vendorOptions : {},
       exactScale: options.exactScale,
     };
-    // eslint-disable-next-line no-console
-    console.log(vendorOptions);
 
     const impl = new ScaleImpl(vendorOptions);
 

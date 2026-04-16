@@ -67,8 +67,7 @@ class Scale extends Control {
   constructor(options = {}) {
     super();
     this.exactScale = isBoolean(options.exactScale) ? options.exactScale : false;
-    // eslint-disable-next-line no-console
-    console.log(this.exactScale);
+
     this.facadeMap_ = null;
   }
 
