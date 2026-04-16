@@ -51,7 +51,7 @@ function fun(IDEE_) {
    * @public
    * @api stable
    */
-  IDEE_.config('API_IDEE_URL', 'https://componentes-desarrollo.idee.es/api-idee/');
+  IDEE_.config('API_IDEE_URL', 'https://api-ideedes.grupotecopy.es/api-idee/');
 
   /**
    * The path to the API-IDEE proxy to send

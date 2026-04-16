@@ -219,7 +219,7 @@
                                 youtube = inputYoutube.value;
                                 mail = inputMail.value;
 
-                                window.location.href = 'https://componentes-desarrollo.idee.es/api-idee/?contactlink=' + posicion + '*' + descargascnig + '*' + fototeca + '*' + visualizador3d + '*' + pnoa +
+                                window.location.href = 'https://api-ideedes.grupotecopy.es/api-idee/?contactlink=' + posicion + '*' + descargascnig + '*' + fototeca + '*' + visualizador3d + '*' + pnoa +
                                     '*' + twitter + '*' + instagram + '*' + pinterest + '*' + youtube + '*' + mail;
                             });
 

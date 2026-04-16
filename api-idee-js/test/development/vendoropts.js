@@ -83,7 +83,7 @@ window.vendorKML = (evt) => {
   `)) {
     const kml = new KML({
       name: 'arbda_sing_se',
-      url: 'https://componentes-desarrollo.idee.es/files/kml/arbda_sing_se.kml',
+      url: 'https://api-ideedes.grupotecopy.es/files/kml/arbda_sing_se.kml',
       extract: false,
     }, undefined, {
       opacity: 0.3,
