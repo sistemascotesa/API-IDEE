@@ -274,7 +274,7 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  IDEE.config('implementationswitcher', implementationSwitcherOpts);
+  IDEE.config(IDEE.control.ImplementationSwitcher.NAME, implementationSwitcherOpts);
 
   /**
    * URL of sql wasm file

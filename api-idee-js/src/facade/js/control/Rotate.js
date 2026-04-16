@@ -7,9 +7,11 @@ import template from 'templates/rotate';
 import templateCesium from 'templates/rotateCesium';
 import myhelp from 'templates/rotatehelp';
 import myhelpCesium from 'templates/rotatehelpCesium';
-import ControlBase from './Control';
+import Control from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isBoolean,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
 import * as Position from '../ui/position';
@@ -145,22 +147,46 @@ export const onMouseMove = (instance, html, map) => {
 };
 
 /**
+ * @typedef {Object} Options
+ * Extiende de {@link Control.Options}
+ * @property {String} [position=Position.LEFT] Posición del control. Por defecto, izquierda.
+ * @property {Boolean} [help=true] Indica si se muestra la ayuda al crear el control.
+ * Por defecto, true. Solo disponible para Cesium.
+ * @api
+ */
+
+/**
  * @classdesc
  * Agrega la funcionalidad para rotar el mapa.
  *
  * @api
  * @extends {IDEE.Control}
  */
-class Rotate extends ControlBase {
+class Rotate extends Control {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {String} options Opciones del control.
-   * - viewInitial: Vista inicial. Solo disponible para Cesium.
-   * - help: Indica si se muestra la ayuda al crear el control.
-   * Por defecto, verdadero. Solo disponible para Cesium.
    * @api
+   * @param {Options} options
+   *
+   *  @example
+   * const map = IDEE.map({
+   *   container: 'map',
+   *   zoom: 6,
+   * };
+   *
+   * // Creación de un control personalizado, para la implementación podremos extender de
+   * // un control de implementación IDEE/impl/Control
+   *
+   * const control = new IDEE.Control('MiControl', null, {
+   *   tooltip: 'Mi control',
+   *   svgPath: '/assets/icons/control.svg',
+   *   position: 'left',
+   *   order: 2
+   * });
+   *
+   * map.addControls(control);
    */
   constructor(options = {}) {
     if (isUndefined(RotateImpl) || (isObject(RotateImpl)
@@ -169,8 +195,8 @@ class Rotate extends ControlBase {
     }
 
     const opts = {
-      help: isNullOrEmpty(options.help) || isUndefined(options.help) ? true : options.help,
       ...options,
+      help: isBoolean(options.help) ? true : options.help,
     };
 
     // implementation of this control
@@ -200,7 +226,7 @@ class Rotate extends ControlBase {
       const textHelp = getValue('rotate').help;
       compTemplate = compileTemplate(templateCesium, {
         vars: {
-          title: getValue('rotate').titleCesium,
+          title: this.tooltip ?? getValue('rotate').titleCesium,
           title_help: getValue('rotate').title_help,
           title_help_container: textHelp.title,
           title1: textHelp.title1,
@@ -220,7 +246,7 @@ class Rotate extends ControlBase {
     } else {
       compTemplate = compileTemplate(template, {
         vars: {
-          title: getValue('rotate').title,
+          title: this.tooltip ?? getValue('rotate').title,
           order: this.order,
         },
       });

@@ -3,7 +3,8 @@
  */
 import { extend } from 'IDEE/util/Utils';
 
-import OLControlZoomSlider from 'ol/control/ZoomSlider';
+// eslint-disable-next-line no-unused-vars
+import OLControlZoomSlider, { Options } from 'ol/control/ZoomSlider';
 
 /**
  * @classdesc
@@ -15,17 +16,12 @@ class Panzoombar extends OLControlZoomSlider {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base, estas opciones
-   * se pasarán en formato objeto. Opciones disponibles:
-   * - className: Nombre de la clase CSS.
-   * - duration: Duración de la animación en milisegundos.
-   * - render: Función llamada cuando se debe volver
-   * a representar el control.
+   * @param {Options} [vendorOptions] Opciones de proveedor para la biblioteca base
    * Esto se llama en una devolución de llamada de "requestAnimationFrame".
    * @extends {ol.control.Control}
    * @api stable
    */
-  constructor(vendorOptions) {
+  constructor(vendorOptions = {}) {
     super(extend({}, vendorOptions, true));
     this.facadeMap_ = null;
   }

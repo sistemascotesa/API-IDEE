@@ -172,7 +172,7 @@
             https = (selectHttps.options[selectHttps.selectedIndex].value == 'true');
             posicion = selectPosicion.options[selectPosicion.selectedIndex].value;
             codsi = (selectCODSI.options[selectCODSI.selectedIndex].value == 'true');
-            window.location.href = 'https://componentes-desarrollo.idee.es/api-idee//api-idee/?fulltoc=' + posicion + '*' + collapsed + '*' + collapsible + '*' + codsi;
+            window.location.href = 'https://api-ideedes.grupotecopy.es/api-idee//api-idee/?fulltoc=' + posicion + '*' + collapsed + '*' + collapsible + '*' + codsi;
         });
 
         // const precharged = {
