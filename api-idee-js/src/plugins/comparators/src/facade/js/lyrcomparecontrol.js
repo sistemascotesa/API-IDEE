@@ -234,8 +234,6 @@ export default class LyrCompareControl extends IDEE.Control {
     */
   active(html) {
     const templateResult = new Promise((success, fail) => {
-      this.comparisonMode = 0;
-
       const emptyLayer = new IDEE.layer.WMS({
         url: 'https://www.ign.es/wms-inspire/ign-base?',
         name: 'empty_layer',
@@ -255,13 +253,6 @@ export default class LyrCompareControl extends IDEE.Control {
     templateResult
       .then((t) => {
         html.querySelector('#m-comparators-contents').appendChild(t);
-
-        setTimeout(() => {
-          const selectFirst = document.querySelector('#m-lyrcompare-void');
-          if (selectFirst) {
-            selectFirst.click();
-          }
-        }, 1000);
         this.addSvgIcons(t);
       });
   }
@@ -333,19 +324,20 @@ export default class LyrCompareControl extends IDEE.Control {
    * @api stable
    */
   destroy() {
+    const layerNames = this.getLayersNames();
     this.deactivate();
     const swipeControl = document.querySelector('.lyrcompare-swipe-control');
     if (swipeControl) { swipeControl.remove(); }
 
-    this.control_.removeCurtainLayers(this.control_.getLayersNames());
+    this.removeCurtainLayers(layerNames);
 
     [this.name_, this.error_, this.map_,
       this.layers_,
-      this.position, this.collapsed, this.collapsible,
+      this.position, this.collapsed,
       this.staticDivision, this.opacityVal, this.comparisonMode, this.metadata_,
       this.tooltip_, this.interface, this.defaultLyrA,
       this.defaultLyrB, this.defaultLyrC, this.defaultLyrD,
-    ] = [null, null, null, null, null, null, null, null, null, null,
+    ] = [null, null, null, null, null, null, null, null, null,
       null, null, null, null, null, null, null, null];
   }
 
@@ -1059,7 +1051,7 @@ export default class LyrCompareControl extends IDEE.Control {
   addSvgIcons(html) {
     IDEE.utils.loadSvgByUrl('comparators', 'icn_mapStan', html.querySelector('#m-lyrcompare-void'));
     IDEE.utils.loadSvgByUrl('comparators', 'icn_dosMap', html.querySelector('#m-lyrcompare-hcurtain'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_dosMapVertical', html.querySelector('#m-lyrcompare-vcurtain'));
+    IDEE.utils.loadSvgByUrl('comparators', 'icn_mapVert', html.querySelector('#m-lyrcompare-vcurtain'));
     IDEE.utils.loadSvgByUrl('comparators', 'icn_mosaico', html.querySelector('#m-lyrcompare-multicurtain'));
   }
 }

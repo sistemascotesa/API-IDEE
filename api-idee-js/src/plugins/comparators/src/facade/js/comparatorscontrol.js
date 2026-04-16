@@ -614,9 +614,17 @@ export default class ComparatorsControl extends IDEE.Control {
   }
 
   addSvgIcons(html) {
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_zoom_recuad', html.querySelector('#mirrorpanel-btn'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_sincro', html.querySelector('#windowsync-btn'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_vent', html.querySelector('#lyrcompare-btn'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_posicion', html.querySelector('#transparency-btn'));
+    const configs = [
+      { param: this.mirrorpanelParams, id: '#mirrorpanel-btn', icon: 'icn_zoom_recuad' },
+      { param: this.windowsyncParams, id: '#windowsync-btn', icon: 'icn_sincro' },
+      { param: this.lyrcompareParams, id: '#lyrcompare-btn', icon: 'icn_vent' },
+      { param: this.transparencyParams, id: '#transparency-btn', icon: 'icn_posicion' },
+    ];
+
+    configs.forEach(({ param, id, icon }) => {
+      if (param !== false) {
+        IDEE.utils.loadSvgByUrl('comparators', icon, html.querySelector(id));
+      }
+    });
   }
 }

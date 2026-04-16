@@ -303,7 +303,7 @@ export default class TransparencyControl extends IDEE.Control {
 
     // filtrar pot this.fatherControl.saveLayers
     removeLayer.forEach((l) => {
-      if (!this.fatherControl.saveLayers.includes(l.name)) {
+      if (this.fatherControl.saveLayers.includes(l.name)) {
         this.map_.removeLayers(l);
       }
     });
@@ -360,6 +360,7 @@ export default class TransparencyControl extends IDEE.Control {
   }
 
   destroy() {
+    this.removeLayers_();
     this.removeEffects();
 
     this.name_ = null;

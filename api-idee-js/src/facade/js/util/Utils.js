@@ -2079,7 +2079,7 @@ export const filterList = (inputId, listId) => {
 export const loadSvgByUrl = (pluginName, iconName, domElement) => {
   const existingSvgs = domElement.querySelectorAll('svg');
   existingSvgs.forEach((svg) => svg.remove());
-  const url = `plugins/${pluginName}/images/${iconName}.svg`;
+  const url = `https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/${iconName}.svg`;
   fetch(url)
     .then((response) => response.text())
     .then((svgContent) => {

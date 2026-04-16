@@ -106,12 +106,18 @@
 
 .m-windowsync-container button {
     width: 32px;
+    padding: 0;
+    line-height: 0;
 }
 
 
 /********************
 * LYRCOMPARECONTROL *
 ********************/
+.div-m-lyrcompare-panel {
+    container-type: inline-size;
+}
+
 .m-lyrcompare-effect-buttoms {
     display: flex;
     justify-content: center;
@@ -159,10 +165,23 @@
     display: flex;
     gap: 16px;
     flex-direction: column;
+    align-items: flex-start;
     margin: 32px 0 24px 0;
     padding: 24px 0;
     border-top: 1px solid #ced4daFF;
     border-bottom: 1px solid #ced4daFF;
+}
+
+.div-m-lyrcompare-transparent-static div {
+    display: flex;
+    gap: 16px;
+}
+
+@container (min-width: 260px) {
+    .div-m-lyrcompare-transparent-static {
+        flex-direction: row;
+        justify-content: space-between;
+    }
 }
 
 .m-lycrcompare-options {
@@ -318,6 +337,14 @@ Establece la visibilidad del icono de dragging
 
 .div-m-transparency-transparent-radius div input[type=range] {
     width: 85% !important;
+}
+
+.div-m-transparency-transparent-radius .cp-lock-icon {
+    color: #e65244FF;
+}
+
+.div-m-transparency-transparent-radius .cp-unlock-icon {
+    color: #136a37FF;
 }
 
 .m-transparency-select {
