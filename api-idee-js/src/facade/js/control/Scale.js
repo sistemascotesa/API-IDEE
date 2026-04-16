@@ -58,7 +58,7 @@ class Scale extends ControlBase {
   createView(map) {
     return compileTemplate(scaleTemplate, {
       vars: {
-        title: this.tooltip ?? getValue('scale').title,
+        title: this.tooltip ?? `Control ${getValue('scale').title}`,
         scale: getValue('scale').scale,
         level: getValue('scale').level,
         order: this.order,
