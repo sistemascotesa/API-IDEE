@@ -111,7 +111,7 @@ export const getScaleLinePanel = (control, map, params = {}) => {
   const panel = new ControlPanel(ScaleLine.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
-    order: 0,
+    tooltip: params.tooltip ?? control.title ?? getValue('scaleline').title,
   });
   map.addUpClass_(panel); // eslint-disable-line no-underscore-dangle
   return panel;

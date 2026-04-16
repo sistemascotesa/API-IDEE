@@ -147,32 +147,37 @@ export const onMouseMove = (instance, html, map) => {
 };
 
 /**
- * @typedef {Object} Options
- * Extiende de {@link Control.Options|Options}
- * @property {String} [position='left'] Posición del control. Por defecto, 'left'.
- * @property {Boolean} [help=true] Indica si se muestra la ayuda al crear el control.
- * Por defecto, true. Solo disponible para Cesium.
+ * @typedef {Object} module:IDEE/control/Rotate~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Boolean} [help] Indica si se muestra la ayuda al crear el control. Solo para Cesium.
+ * @property {Number} [order] Accesibilidad, z-index.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
  */
 
 /**
  * @classdesc
  * Agrega la funcionalidad para rotar el mapa.
- *
+ * @property {String} [position='left'] Posición del control.
+ * @property {String} [tooltip] Texto del tooltip. por defecto la tradcución
+ * @property {Boolean} [help=true] Indica si se muestra la ayuda al crear el control.
+ * Solo para Cesium.
+ * @property {Number} [order=0] Accesibilidad, z-index.
+ * @property {Boolean} [active_=false] Estado activo del control.
+ * @property {Boolean} [isMouseDown_=false] Estado de pulsación del ratón.
  * @api
  * @extends {IDEE.Control}
- * @property {String} [position='left'] Posición del control. Por defecto, Position.LEFT.
- * @property {Boolean} [help=true] Indica si se muestra la ayuda al crear el control.
- * Por defecto, true. Solo disponible para Cesium.
- * @property {Number} [order=0] Orden que tendrá con respecto al resto de plugins
- * y controles por pantalla.
-*/
+ *
+ * @note Para más opciones heredadas, ver {@link module:IDEE/control/Control~Options}.
+ */
 class Rotate extends Control {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
    * @api
-   * @param {Options} options
+   * @param {module:IDEE/control/Rotate~Options} options Opciones del control.
    *
    *  @example
    * const map = IDEE.map({

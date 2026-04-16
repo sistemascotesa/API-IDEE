@@ -16,6 +16,18 @@ import * as Position from '../ui/position';
 import * as EventType from '../event/eventtype';
 
 /**
+ * @typedef {Object} module:IDEE/control/GetFeatureInfo~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Boolean} [activated] Indica si el control se activa al añadirlo al mapa.
+ * @property {Number} [featureCount] Número máximo de objetos geográficos.
+ * @property {Number} [buffer] Radio de búsqueda del evento getFeatureInfo.
+ * @property {Number} [order] Accesibilidad, z-index.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
+ */
+
+/**
  * @classdesc
  * Agrega la herramienta de consulta de información de capas
  * WMS y WMTS a través de su servicio getFeatureInfo.
@@ -28,10 +40,15 @@ class GetFeatureInfo extends ControlBase {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {object} options Opciones del control.
-   * - activated. Booleano que activa o no el control.
-   * - featureCount. Número de objetos geográficos, por defecto 10.
-   * - buffer. Configuración del "buffer", por defecto 5.
+   * @param {module:IDEE/control/GetFeatureInfo~Options} options Opciones del control.
+   * @example
+   * const control = new IDEE.control.GetFeatureInfo({
+   *   position: 'right',
+   *   tooltip: 'Consulta de capas',
+   *   activated: true,
+   *   featureCount: 20,
+   *   buffer: 10,
+   * });
    * @api
    */
   constructor(options = {}) {
@@ -39,7 +56,13 @@ class GetFeatureInfo extends ControlBase {
       && isNullOrEmpty(Object.keys(GetFeatureInfoImpl)))) {
       Exception(getValue('exception').getfeatureinfo_method);
     }
-    const impl = new GetFeatureInfoImpl(options);
+    const vendorOptions = {
+      activated: options.activated,
+      featureCount: options.featureCount,
+      buffer: options.buffer,
+      ...isObject(options.vendorOptions) ? options.vendorOptions : {},
+    };
+    const impl = new GetFeatureInfoImpl(vendorOptions);
     super(GetFeatureInfo.NAME, impl, options);
 
     /**

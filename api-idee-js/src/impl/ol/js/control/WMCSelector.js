@@ -5,10 +5,13 @@ import Control from './Control';
 
 /**
  * @classdesc
- * Agregar selector de capas WMC.
+ * Hereda de {@link module:IDEE/impl/control/Control|Control}.
+ * Selector de contextos de mapas WMC (Web Map Context). Permite cargar y cambiar entre
+ * diferentes contextos de mapas guardados, restaurando las capas, estilos y extensión
+ * del mapa seleccionado.
  *
  * @api
- * @extends {IDEE.impl.Control}
+ * @extends {module:IDEE/impl/control/Control}
  */
 class WMCSelector extends Control {
   /**

@@ -36,16 +36,30 @@ import { extend, isNullOrEmpty, isNumber } from '../../../../facade/js/util/Util
 
 /**
  * @classdesc
- * Esta clase es la implementación del control de vista general, que muestra un mapa en miniatura
- * basándose en la clase de base de OpenLayers ol.control.OverviewMap
+ * Implementación del control de vista general (OverviewMap) que extiende
+ * {@link https://openlayers.org/en/latest/apidoc/module-ol_control_OverviewMap-OverviewMap.html|ol.control.OverviewMap}.
+ * Muestra un mapa en miniatura del área visible en el mapa principal.
+ *
+ * @property {Number} [toggleDelay_=1000] Retardo en milisegundos para el toggle del control.
+ * @property {Number} [zoom_=15] Nivel de zoom del minimapa.
+ * @property {Number} [maxZoom_=22] Zoom máximo del minimapa.
+ * @property {Number} [minZoom_=0] Zoom mínimo del minimapa.
+ * @property {Number} [ratio_=0.25] Ratio del minimapa respecto al mapa principal.
  *
  * @api
+ * @extends {ol.control.OverviewMap}
  */
 class OverviewMap extends OlControlOverviewMap {
   /**
    * @constructor
    * @extends {ol.control.OverviewMap}
    * @param {Options} options
+   * @example
+   * const control = new IDEE.impl.ol.control.OverviewMap({
+   *   tipLabel: 'Mapa general',
+   *   zoom: 6,
+   *   ratio: 0.25,
+   * });
    * @api stable
    */
   constructor(options = {}) {

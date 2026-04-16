@@ -20,6 +20,16 @@ import { compileSync } from '../util/Template';
 
 const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
 
+/**
+ * @typedef {Object} module:IDEE/control/Timeline~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {Boolean} [animation] Indica si la línea de tiempo se anima.
+ * @property {Number} [speed] Velocidad de la animación.
+ * @property {Number} [order] Accesibilidad, z-index.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
+ */
+
 class Timeline extends Control {
   get translation() {
     return getValue('timeline');
@@ -30,6 +40,14 @@ class Timeline extends Control {
    * object which has an implementation Object
    *
    * @constructor
+   * @param {module:IDEE/control/Timeline~Options} options Opciones del control.
+   * @example
+   * const control = new IDEE.control.Timeline({
+   *   position: 'bottom',
+   *   animation: true,
+   *   speed: 2,
+   *   order: 3,
+   * });
    * @api
    */
   constructor(options = {}) {

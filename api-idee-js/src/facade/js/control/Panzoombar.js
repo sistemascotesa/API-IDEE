@@ -11,10 +11,12 @@ import { getValue } from '../i18n/language';
 import * as Position from '../ui/position';
 
 /**
- * @typedef {Object} Options
- * @property {string} [position=Position.DOWN] Posición del control en el mapa.
- * Por defecto usada por el panel en el que se añade el control.
+ * @typedef {Object} module:IDEE/control/Panzoombar~Options
+ * @api
+ * @property {string} [position] Posición del control en el mapa.
  * @property {Object} [vendorOptions] Opciones de proveedor para la biblioteca base.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Number} [order] Accesibilidad, z-index.
  */
 
 /**
@@ -29,7 +31,15 @@ class Panzoombar extends FacadeControl {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Options} options recibe las opciones de configuración por defecto
+   * @param {module:IDEE/control/Panzoombar~Options} options recibe las opciones de
+   * configuración por defecto
+   * @example
+   * const control = new IDEE.control.Panzoombar({
+   *   position: 'down',
+   *   tooltip: 'Barra de zoom',
+   *   order: 1,
+   *   vendorOptions: { className: 'm-panzoombar' },
+   * });
    * @api
    */
   constructor(options = {}) {

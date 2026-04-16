@@ -13,6 +13,15 @@ import { compileSync as compileTemplate } from '../util/Template';
 import { getValue } from '../i18n/language';
 
 /**
+ * @typedef {Object} module:IDEE/control/WMCSelector~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Number} [order] Accesibilidad, z-index.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
+ */
+
+/**
  * @classdesc
  * Agregar selector de capas WMC.
  *
@@ -24,6 +33,13 @@ class WMCSelector extends ControlBase {
    * Constructor principal de la clase.
    *
    * @constructor
+   * @param {module:IDEE/control/WMCSelector~Options} [options] Opciones del control.
+   * @example
+   * const control = new IDEE.control.WMCSelector({
+   *   position: 'left',
+   *   tooltip: 'Selector WMC',
+   *   order: 2,
+   * });
    * @api
    */
   constructor(options) {

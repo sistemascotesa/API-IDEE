@@ -27,6 +27,14 @@ class MeasureBar extends Control {
    * object which has an implementation Object
    *
    * @constructor
+   * @param {Object} [options] Opciones de configuración.
+   * @example
+   * const control = new IDEE.control.MeasureBar({
+   *   position: 'left',
+   *   tooltip: 'Medidas',
+   *   order: 3,
+   *   collapsed: false,
+   * });
    * @extends {Control}
    * @api stable
    */

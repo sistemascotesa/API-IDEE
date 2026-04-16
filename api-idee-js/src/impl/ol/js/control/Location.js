@@ -19,8 +19,20 @@ import Feature from '../feature/Feature';
 
 /**
  *  @classdesc
- *  Localiza la posición del usuario en el mapa.
- *  @api
+ *  Hereda de {@link module:IDEE/impl/control/Control|Control}.
+ *  Control de localización geográfica. Localiza la posición actual del usuario en el mapa
+ *  usando la API de Geolocalización del navegador. Dibuja el punto de ubicación y el área
+ *  de precisión del posicionamiento.
+ *
+ *  @property {Boolean} [tracking=true] Seguimiento continuo de la localización.
+ *  @property {Boolean} [highAccuracy=false] Alta precisión del seguimiento.
+ *  @property {Number} [maximumAge=60000] Antigüedad máxima en milisegundos de una
+ * posición en caché.
+ *  @property {ol.Geolocation} [locationAPI_] API de geolocalización de OpenLayers.
+ *  @property {ol.Feature} [locationFeature_] Feature que representa la ubicación del usuario.
+ *
+ *  @api stable
+ *  @extends {module:IDEE/impl/control/Control}
  */
 class Location extends Control {
   /**
@@ -36,6 +48,10 @@ class Location extends Control {
    * Valor por defecto 60000.
    * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base,
    * por defecto objeto vacío. Estos valores no son configurables.
+   * @example
+   * const control = new IDEE.impl.ol.control.Location(true, false, 60000, {
+   *   enableHighAccuracy: true,
+   * });
    * @extends {IDEE.impl.Control}
    * @api stable
    */

@@ -6,14 +6,24 @@ import OLControl, { Options as OlControlOptions } from 'ol/control/Control';
 
 /**
  * @typedef {OlControlOptions} Options
+ * @api
+ * @see {@link https://openlayers.org/en/latest/apidoc/module-ol_control_Control-Control.html|ol.control.Control Options}
  */
 
 /**
  * @public
  * @classdesc
- * Es la clase de la que heredan todos los controles de la implementación,
- * crea el "OLControl".
+ * Clase base de la que heredan todos los controles de la implementación.
+ * Extiende {@link https://openlayers.org/en/latest/apidoc/module-ol_control_Control-Control.html|ol.control.Control}.
+ * Proporciona la funcionalidad común para todos los controles, permitiendo añadir,
+ * remover y gestionar controles en el mapa.
+ *
+ * @property {IDEE.Map} [facadeMap_] Referencia al mapa de fachada (IDEE.Map).
+ * @property {HTMLElement} [element] El elemento DOM del control.
+ * @property {String} [target_] Identificador o referencia del elemento objetivo.
+ *
  * @api
+ * @extends {ol.control.Control}
  */
 class Control extends OLControl {
   /**

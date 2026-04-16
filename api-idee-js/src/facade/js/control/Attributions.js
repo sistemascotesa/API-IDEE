@@ -42,6 +42,7 @@ import * as Position from '../ui/position';
  * @property {String} [defaultAttribution] Atribución por defecto.
  * @property {String} [defaultURL] URL por defecto.
  * @property {Array.<String>} [collectionsAttributions] Colección de atribuciones.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
  */
 
 /**
@@ -89,7 +90,7 @@ class Attributions extends ControlBase {
       && isNullOrEmpty(Object.keys(AttributionsImpl)))) {
       Exception(getValue('exception').attributions_method);
     }
-    const impl = new AttributionsImpl();
+    const impl = new AttributionsImpl(options.vendorOptions ?? {});
     super(Attributions.NAME, impl, options);
 
     this.position = options.position ?? Position.LEFT;

@@ -10,6 +10,12 @@ import Control from './Control';
 import { isBoolean } from '../../../../facade/js/util/Utils';
 
 /**
+ * @typedef {Object} module:IDEE/impl/control/Scale~Options
+ * @api
+ * @property {Boolean} [exactScale] Indica si se debe mostrar la escala exacta.
+ */
+
+/**
  * Formate un número pasado por parámetro.
  * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
  * @public
@@ -49,18 +55,23 @@ const updateElement = (container, map, exactScale) => {
 
 /**
  * @classdesc
- * Agregar escala numérica.
+ * Control de escala numérica. Hereda de {@link module:IDEE/impl/control/Control|Control}
+ * que a su vez hereda de {@link https://openlayers.org/en/latest/apidoc/module-ol_control_Control-Control.html|ol.control.Control}.
+ * Muestra la escala numérica del mapa en la esquina inferior izquierda.
+ *
+ * @property {Boolean} [exactScale=false] Indica si se debe mostrar la escala exacta del mapa.
+ * @property {HTMLElement} [scaleContainer_] Contenedor HTML del valor de escala.
+ * @property {HTMLElement} [zoomLevelContainer_] Contenedor HTML del nivel de zoom.
+ *
  * @api
+ * @extends {module:IDEE/impl/control/Control}
  */
 class Scale extends Control {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} options Opciones del control.
-   * - Order: Orden que tendrá con respecto al
-   * resto de plugins y controles por pantalla.
-   * - exactScale: Escala exacta.
+   * @param {module:IDEE/impl/control/Scale~Options} options Opciones del control.
    * @extends {ol.control.Control}
    * @api stable
    */
