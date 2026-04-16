@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * @module IDEE/control/ImplementationSwitcher
  */
@@ -14,6 +15,7 @@ import {
   isUndefined, isNullOrEmpty, isObject,
   isBoolean,
 } from '../util/Utils';
+import * as Dialog from '../dialog';
 
 /**
  * @typedef {Object} Options
@@ -109,7 +111,6 @@ class ImplementationSwitcher extends ControlBase {
    */
   loadImplementation(implementation) {
     const API_IDEE_URL = IDEE.config.API_IDEE_URL;
-
     window.implementations.forEach((impl) => {
       // eslint-disable-next-line no-param-reassign
       delete impl.selected;
@@ -144,13 +145,19 @@ class ImplementationSwitcher extends ControlBase {
           .then((response) => response.text())
           .then((scriptContent) => {
             // eslint-disable-next-line no-eval
-            eval(scriptContent);
+            const scriptFn = eval(scriptContent);
+            scriptFn.call(window);
 
             this.loadMap(implementation);
           });
       } else {
         this.loadMap(implementation);
       }
+    };
+    script.onerror = (err) => {
+      // eslint-disable-next-line no-console
+      console.error('SCRIPT ERROR', script.src, err);
+      Dialog.error(script.src, 'La implementación no se pudo cargar:');
     };
     document.body.appendChild(script);
 
@@ -162,23 +169,23 @@ class ImplementationSwitcher extends ControlBase {
   }
 
   loadMap(implementation) {
-    const div = this.map_.getContainer().id === ''
-      ? this.map_.getContainer().parentElement.parentElement : this.map_.getContainer();
+    const div = this.map.getContainer().id === ''
+      ? this.map.getContainer().parentElement.parentElement : this.map.getContainer();
     div.innerHTML = '';
 
-    const center = [this.map_.getCenter().x, this.map_.getCenter().y];
-    const sourceProjection = this.map_.getProjection().code;
+    const center = [this.map.getCenter().x, this.map.getCenter().y];
+    const sourceProjection = this.map.getProjection().code;
     const destProjection = implementation.epsg;
 
     IDEE.map({
       container: div.id,
-      zoom: this.map_.getZoom(),
+      zoom: this.map.getZoom(),
       center: (typeof ol !== 'undefined' && ol !== null)
         ? ol.proj.transform(center, sourceProjection, destProjection)
         : transform(center, sourceProjection, destProjection),
-      controls: Array.from(this.map_.getControls()).map((control) => control.name),
-      plugins: this.map_.getPlugins(),
-      layers: this.map_.getLayers(),
+      controls: Array.from(this.map.getControls()).map((control) => control.name),
+      plugins: this.map.getPlugins(),
+      layers: this.map.getLayers(),
     });
   }
 
