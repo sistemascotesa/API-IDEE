@@ -34,11 +34,17 @@ class Scale extends ControlBase {
     if (isUndefined(ScaleImpl) || (isObject(ScaleImpl) && isNullOrEmpty(Object.keys(ScaleImpl)))) {
       Exception(getValue('exception').scale_method);
     }
-    // implementation of this control
-    const impl = new ScaleImpl(options);
+    const vendorOptions = {
+      ...isObject(options.vendorOptions) ? options.vendorOptions : {},
+      exactScale: options.exactScale,
+    };
+    // eslint-disable-next-line no-console
+    console.log(vendorOptions);
 
-    // calls the super constructor
+    const impl = new ScaleImpl(vendorOptions);
+
     super(Scale.NAME, impl, options);
+
     this.position = options.position ?? Position.DOWN;
   }
 
@@ -54,7 +60,7 @@ class Scale extends ControlBase {
   createView(map) {
     return compileTemplate(scaleTemplate, {
       vars: {
-        title: getValue('scale').title,
+        title: this.tooltip ?? getValue('scale').title,
         scale: getValue('scale').scale,
         level: getValue('scale').level,
         order: this.order,

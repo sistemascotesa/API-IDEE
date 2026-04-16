@@ -148,11 +148,10 @@ export const onMouseMove = (instance, html, map) => {
 
 /**
  * @typedef {Object} Options
- * Extiende de {@link Control.Options}
- * @property {String} [position=Position.LEFT] Posición del control. Por defecto, izquierda.
+ * Extiende de {@link Control.Options|Options}
+ * @property {String} [position='left'] Posición del control. Por defecto, 'left'.
  * @property {Boolean} [help=true] Indica si se muestra la ayuda al crear el control.
  * Por defecto, true. Solo disponible para Cesium.
- * @api
  */
 
 /**
@@ -161,7 +160,12 @@ export const onMouseMove = (instance, html, map) => {
  *
  * @api
  * @extends {IDEE.Control}
- */
+ * @property {String} [position='left'] Posición del control. Por defecto, Position.LEFT.
+ * @property {Boolean} [help=true] Indica si se muestra la ayuda al crear el control.
+ * Por defecto, true. Solo disponible para Cesium.
+ * @property {Number} [order=0] Orden que tendrá con respecto al resto de plugins
+ * y controles por pantalla.
+*/
 class Rotate extends Control {
   /**
    * Constructor principal de la clase.
@@ -176,14 +180,11 @@ class Rotate extends Control {
    *   zoom: 6,
    * };
    *
-   * // Creación de un control personalizado, para la implementación podremos extender de
-   * // un control de implementación IDEE/impl/Control
-   *
-   * const control = new IDEE.Control('MiControl', null, {
-   *   tooltip: 'Mi control',
-   *   svgPath: '/assets/icons/control.svg',
+   * const control = new IDEE.control.Rotate({
    *   position: 'left',
-   *   order: 2
+   *   tooltip: 'Control de rotación',
+   *   order: 2,
+   *   collapsible: false,
    * });
    *
    * map.addControls(control);
@@ -196,7 +197,7 @@ class Rotate extends Control {
 
     const opts = {
       ...options,
-      help: isBoolean(options.help) ? true : options.help,
+      help: isBoolean(options.help) ? options.help : true,
     };
 
     // implementation of this control
