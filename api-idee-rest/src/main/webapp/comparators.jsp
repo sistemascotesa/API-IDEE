@@ -81,6 +81,12 @@
                                 </select>
                             </div>
                             <div>
+                                <label for="inputOrder"
+                                    title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                                    entre controles / plugins "order"</label>
+                                <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+                            </div>
+                            <div>
                                 <label for="enabledKeyFunctions" title="Activa o desactiva los atajos de teclado del comparador espejo y zonal">Atajos de teclado "enabledKeyFunctions"</label>
                                 <select name="enabledKeyFunctions" id="enabledKeyFunctions">
                                     <option value=""></option>
@@ -202,6 +208,7 @@
 
                                 const map = IDEE.map({
                                     container: 'mapjs',
+                                    controls: ['rotate'],
                                     center: [-467062.8225, 4683459.6216],
                                     zoom: 6,
                                 });
@@ -210,6 +217,7 @@
 
                                 const selectPosicion = document.getElementById("selectPosicion");
                                 const selectCollapsed = document.getElementById("selectCollapsed");
+                                const inputOrder = document.getElementById('inputOrder');
                                 const selectEnabledKeyFunctions = document.getElementById("enabledKeyFunctions");
                                 const selectDefaultCompareMode = document.getElementById("defaultCompareMode");
                                 const inputListLayers = document.getElementById("listLayers");
@@ -228,6 +236,7 @@
                                 [
                                     selectPosicion,
                                     selectCollapsed,
+                                    inputOrder,
                                     selectEnabledKeyFunctions,
                                     selectDefaultCompareMode,
                                     inputListLayers,
@@ -249,6 +258,7 @@
                                     crearPlugin({
                                         position: selectPosicion.options[selectPosicion.selectedIndex].value,
                                         collapsed: selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true',
+                                        order: Number(inputOrder.value),
                                         defaultCompareMode: selectDefaultCompareMode.options[selectDefaultCompareMode.selectedIndex].value,
                                         listLayers: JSON.parse(inputListLayers.value.replace(/'/g, "\"")),
                                         tooltip: tooltipComparatorParams.value,
