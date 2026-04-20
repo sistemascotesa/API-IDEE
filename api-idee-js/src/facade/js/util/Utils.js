@@ -2070,13 +2070,12 @@ export const filterList = (inputId, listId) => {
  * Esta función carga un SVG desde la URL de un plugin
  *
  * @public
- * @param {String} pluginName Nombre del plugin
  * @param {String} iconName Nombre del icono
  * @param {HTMLElement} domElement Elemento DOM donde se cargará el SVG
  * @function
  * @api
  */
-export const loadSvgByUrl = (pluginName, iconName, domElement) => {
+export const loadSvgByUrl = (iconName, domElement) => {
   const existingSvgs = domElement.querySelectorAll('svg');
   existingSvgs.forEach((svg) => svg.remove());
   const url = `https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/${iconName}.svg`;

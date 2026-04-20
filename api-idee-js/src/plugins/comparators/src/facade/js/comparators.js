@@ -123,7 +123,7 @@ export default class Comparators extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.controls}*${this.collapsed}*${this.tooltip}*${this.options.listLayers}*${this.options.defaultCompareMode}*${this.options.enabledKeyFunctions}*${!!this.options.transparencyParams}*${!!this.options.lyrcompareParams}*${!!this.options.mirrorpanelParams}*${!!this.options.windowsyncParams}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${this.options.listLayers}*${this.options.defaultCompareMode}*${this.options.enabledKeyFunctions}*${!!this.options.transparencyParams}*${!!this.options.lyrcompareParams}*${!!this.options.mirrorpanelParams}*${!!this.options.windowsyncParams}`;
   }
 
   /**

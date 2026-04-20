@@ -623,7 +623,7 @@ export default class ComparatorsControl extends IDEE.Control {
 
     configs.forEach(({ param, id, icon }) => {
       if (param !== false) {
-        IDEE.utils.loadSvgByUrl('comparators', icon, html.querySelector(id));
+        IDEE.utils.loadSvgByUrl(icon, html.querySelector(id));
       }
     });
   }

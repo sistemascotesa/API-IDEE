@@ -2,7 +2,7 @@
  * @module IDEE/control/GeorefimageControl
  */
 import GeorefimageControlImpl from 'impl/georefimagecontrol';
-import { reproject, transformExt } from 'impl/utils';
+import { transformExt } from 'impl/utils';
 import georefimageHTML from '../../templates/georefimage';
 import { getValue } from './i18n/language';
 import {
@@ -10,6 +10,7 @@ import {
   generateTitle, getBase64Image, formatImageBase64, createLoadingSpinner,
 } from './utils';
 import { DPI_OPTIONS, GEOREFIMAGE_FORMATS } from '../../constants';
+
 // ID ELEMENTS
 const ID_TITLE = '#m-georefimage-title';
 const ID_FORMAT_SELECT = '#m-georefimage-format';
@@ -32,14 +33,7 @@ export default class GeorefimageControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api stable
    */
-  constructor(
-    {
-      defaultDpiOptions,
-    },
-    map,
-    statusProxy,
-    useProxy,
-  ) {
+  constructor({ defaultDpiOptions }, map) {
     if (IDEE.utils.isUndefined(GeorefimageControlImpl)
       || (IDEE.utils.isObject(GeorefimageControlImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(GeorefimageControlImpl)))) {
@@ -61,20 +55,6 @@ export default class GeorefimageControl extends IDEE.Control {
     this.elementTitle_ = null;
 
     /**
-     * Descripción del mapa
-     * @private
-     * @type {HTMLElement}
-     */
-    this.areaDescription_ = null;
-
-    /**
-     * Layout
-     * @private
-     * @type {HTMLElement}
-     */
-    this.layout_ = null;
-
-    /**
      * Formato de impresión
      * @private
      * @type {HTMLElement}
@@ -87,35 +67,6 @@ export default class GeorefimageControl extends IDEE.Control {
      * @type {HTMLElement}
      */
     this.projection_ = null;
-
-    /**
-     * Mapfish params
-     * @private
-     * @type {String}
-     */
-    this.params_ = {
-      layout: {
-        outputFilename: 'mapa_${yyyy-MM-dd_hhmmss}',
-      },
-      pages: {
-        clientLogo: '', // logo url
-        creditos: getValue('printInfo'),
-      },
-      parameters: {},
-    };
-
-    /**
-     * Mapfish options params
-     * @private
-     * @type {String}
-     */
-    this.options_ = {
-      dpi: 150,
-      forceScale: false,
-      format: 'jpg',
-      legend: 'false',
-      layout: 'A4 horizontal jpg',
-    };
 
     /**
      * Opciones de DPI
@@ -139,20 +90,6 @@ export default class GeorefimageControl extends IDEE.Control {
     this.documentRead_ = document.createElement('img');
 
     /**
-     *  Estado del proxy
-     * @private
-     * @type {String}
-     */
-    this.statusProxy = statusProxy;
-
-    /**
-     * Estado del uso del proxy
-     * @private
-     * @type {Boolean}
-     */
-    this.useProxy = useProxy;
-
-    /**
      * Elemento SVG de carga
      * @private
      * @type {HTMLElement}
@@ -162,7 +99,11 @@ export default class GeorefimageControl extends IDEE.Control {
 
   /**
    * Activa el control de impresión
-   * @param {*} html
+   * @param {HTMLElement} html
+   *
+   * @private
+   * @function
+   * @api stable
    */
   active(html) {
     this.html_ = html;
@@ -210,8 +151,12 @@ export default class GeorefimageControl extends IDEE.Control {
   }
 
   /**
-   * Inicializa los elementos del control de impresión
-   * @param {*} html
+   * Selecciona los elementos HTML del control
+   * @param {HTMLElement} html
+   *
+   * @private
+   * @function
+   * @api stable
    */
   selectElementHTML(html) {
     this.elementTitle_ = html.querySelector(ID_TITLE);
@@ -221,10 +166,12 @@ export default class GeorefimageControl extends IDEE.Control {
   }
 
   /**
-   * Ejectua la acción de impresión al hacer click en el botón
+   * Evento click del botón de descarga
+   * @param {Event} evt
    *
-   * @private
+   * @public
    * @function
+   * @api stable
    */
   printClick(evt) {
     evt.preventDefault();
@@ -232,7 +179,11 @@ export default class GeorefimageControl extends IDEE.Control {
   }
 
   /**
-   * Descarga el mapa usando el DPI seleccionado y el formato elegido.
+   * Descarga el mapa en formato imagen con georreferenciación
+   *
+   * @private
+   * @function
+   * @api stable
    */
   downloadClient() {
     const format = document.querySelector(ID_FORMAT_SELECT).value;
@@ -288,100 +239,6 @@ export default class GeorefimageControl extends IDEE.Control {
   }
 
   /**
-   * Obtiene el contenido de una URL como un DOM
-   * @param {*} url - URL de la que se quiere obtener el contenido
-   * @returns
-   */
-  getSourceAsDOM(url) {
-    const xmlhttp = new XMLHttpRequest();
-    xmlhttp.open('GET', url, true);
-    xmlhttp.send();
-    const parser = new DOMParser();
-    const parser2 = parser.parseFromString(xmlhttp.responseText, 'text/html');
-    return parser2;
-  }
-
-  /**
-   * Converts decimal degrees coordinates to degrees, minutes, seconds
-   * @public
-   * @function
-   * @param {String} coordinate - single coordinate (one of a pair)
-   * @api
-   */
-  converterDecimalToDMS(coordinate) {
-    let dms;
-    let aux;
-    const coord = coordinate.toString();
-    const splittedCoord = coord.split('.');
-    // Degrees
-    dms = `${splittedCoord[0]}º `;
-    // Minutes
-    aux = `0.${splittedCoord[1]}`;
-    aux *= 60;
-    aux = aux.toString();
-    aux = aux.split('.');
-    dms = `${dms}${aux[0]}' `;
-    // Seconds
-    aux = `0.${aux[1]}`;
-    aux *= 60;
-    aux = aux.toString();
-    aux = aux.split('.');
-    dms = `${dms}${aux[0]}'' `;
-    return dms;
-  }
-
-  /**
-   * Converts original bbox coordinates to DMS coordinates.
-   * @public
-   * @function
-   * @api
-   * @param {Array<Object>} bbox - { x: {min, max}, y: {min, max} }
-   */
-  convertBboxToDMS(bbox) {
-    const proj = this.map_.getProjection();
-    let dmsBbox = bbox;
-    if (proj.units === 'm') {
-      const min = [bbox.x.min, bbox.y.min];
-      const max = [bbox.x.max, bbox.y.max];
-      const newMin = reproject(proj.code, min);
-      const newMax = reproject(proj.code, max);
-      dmsBbox = {
-        x: {
-          min: newMin[0],
-          max: newMax[0],
-        },
-        y: {
-          min: newMin[1],
-          max: newMax[1],
-        },
-      };
-    }
-
-    dmsBbox = this.convertDecimalBoxToDMS(dmsBbox);
-    return dmsBbox;
-  }
-
-  /**
-   * Converts decimal coordinates Bbox to DMS coordinates Bbox.
-   * @public
-   * @function
-   * @api
-   * @param { Array < Object > } bbox - { x: { min, max }, y: { min, max } }
-   */
-  convertDecimalBoxToDMS(bbox) {
-    return {
-      x: {
-        min: this.converterDecimalToDMS(bbox.x.min),
-        max: this.converterDecimalToDMS(bbox.x.max),
-      },
-      y: {
-        min: this.converterDecimalToDMS(bbox.y.min),
-        max: this.converterDecimalToDMS(bbox.y.max),
-      },
-    };
-  }
-
-  /**
    * Descarga el mapa en formato ZIP con la imagen y el WLD
    *
    * @public
@@ -414,7 +271,7 @@ export default class GeorefimageControl extends IDEE.Control {
       base64: true,
     };
 
-    const extension = formatImage === 'jpeg' ? '.jgw' : '.pgw';
+    const extension = '.wld';
     const files = (addWLD) ? [{
       name: titulo.concat(extension),
       data: createWLD(bbox, dpi, this.map_.getMapImpl().getSize(), null),
@@ -432,57 +289,12 @@ export default class GeorefimageControl extends IDEE.Control {
   }
 
   /**
-   *  Converts epsg code to projection name.
+   * Desactiva el control
+   *
    * @public
    * @function
-   * @param {String} projection - EPSG:xxxx
    * @api
    */
-  turnProjIntoLegend(projection) {
-    let projectionLegend;
-    switch (projection) {
-      case 'EPSG:4258':
-        projectionLegend = 'ETRS89 (4258)';
-        break;
-      case 'EPSG:4326':
-        projectionLegend = 'WGS84 (4326)';
-        break;
-      case 'EPSG:3857':
-        projectionLegend = 'WGS84 (3857)';
-        break;
-      case 'EPSG:25831':
-        projectionLegend = 'UTM zone 31N (25831)';
-        break;
-      case 'EPSG:25830':
-        projectionLegend = 'UTM zone 30N (25830)';
-        break;
-      case 'EPSG:25829':
-        projectionLegend = 'UTM zone 29N (25829)';
-        break;
-      case 'EPSG:25828':
-        projectionLegend = 'UTM zone 28N (25828)';
-        break;
-      default:
-        projectionLegend = '';
-    }
-    return projectionLegend;
-  }
-
-  /**
-   * This function checks if an object is equal to this control.
-   *
-   * @function
-   * @api stable
-   */
-  equals(obj) {
-    let equals = false;
-    if (obj instanceof GeorefimageControl) {
-      equals = (this.name === obj.name);
-    }
-
-    return equals;
-  }
-
   deactive() {
     this.template_.remove();
 
@@ -491,7 +303,7 @@ export default class GeorefimageControl extends IDEE.Control {
   }
 
   /**
-   * This function destroys this control
+   * Destruye este control
    *
    * @public
    * @function

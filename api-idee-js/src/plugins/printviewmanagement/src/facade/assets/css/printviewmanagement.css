@@ -167,10 +167,6 @@
     padding: 15px;
 }
 
-.m-templateCustomizer-option legend {
-    font-size: 15px;
-}
-
 .template-option label,
 .template-orientation label {
     justify-content: flex-start;

@@ -328,7 +328,7 @@ export default class WindowSyncControl extends IDEE.Control {
   }
 
   addSvgIcons(html) {
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_vent', html.querySelector('#new_windowsync'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_vent_cerrar', html.querySelector('#deleteAll_windowsync'));
+    IDEE.utils.loadSvgByUrl('icn_vent', html.querySelector('#new_windowsync'));
+    IDEE.utils.loadSvgByUrl('icn_vent_cerrar', html.querySelector('#deleteAll_windowsync'));
   }
 }
