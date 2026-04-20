@@ -736,11 +736,11 @@ export default class MirrorpanelControl extends IDEE.Control {
   }
 
   addSvgIcons(html) {
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_mapStan', html.querySelector('#set-mirror-0'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_mapVert', html.querySelector('#set-mirror-1'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_dosMap', html.querySelector('#set-mirror-2'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_mosaico', html.querySelector('#set-mirror-3'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_tresMapDer', html.querySelector('#set-mirror-4'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_tresMapIzq', html.querySelector('#set-mirror-5'));
+    IDEE.utils.loadSvgByUrl('icn_mapStan', html.querySelector('#set-mirror-0'));
+    IDEE.utils.loadSvgByUrl('icn_mapVert', html.querySelector('#set-mirror-1'));
+    IDEE.utils.loadSvgByUrl('icn_dosMap', html.querySelector('#set-mirror-2'));
+    IDEE.utils.loadSvgByUrl('icn_mosaico', html.querySelector('#set-mirror-3'));
+    IDEE.utils.loadSvgByUrl('icn_tresMapDer', html.querySelector('#set-mirror-4'));
+    IDEE.utils.loadSvgByUrl('icn_tresMapIzq', html.querySelector('#set-mirror-5'));
   }
 }

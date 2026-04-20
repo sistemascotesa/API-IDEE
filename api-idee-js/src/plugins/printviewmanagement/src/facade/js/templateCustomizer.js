@@ -1,4 +1,4 @@
-import html2canvas from 'html2canvas-pro';
+import { domToCanvas } from 'modern-screenshot';
 import TemplateCustomizerImpl from '../../impl/ol/js/templateCustomizer';
 import templateCustomizer from '../../templates/templateCustomizer';
 import { getValue } from './i18n/language';
@@ -150,13 +150,6 @@ export default class TemplateCustomizer extends IDEE.Control {
      * @type {number}
      */
     this.dpi = this.dpiOptions_[0];
-
-    /**
-     * DPI base para el cálculo del parametro scale de la libreria html2canvas
-     * @private
-     * @type {number}
-     */
-    this.baseDpi_ = 28;
 
     /**
      * Escala inicial del mapa de previsualización
@@ -429,8 +422,8 @@ export default class TemplateCustomizer extends IDEE.Control {
     const epsgTemplate = epsgTemplateObject;
     const dateTemplate = dateTemplateObject;
     const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate());
+    const month = String(today.getMonth() + 1);
     const year = today.getFullYear();
     const formattedDate = `${day}/${month}/${year}`;
     epsgTemplate.textContent = this.projection;
@@ -712,7 +705,7 @@ export default class TemplateCustomizer extends IDEE.Control {
 
   /**
    * Maneja el evento de cambio de escala al escribir en el campo de entrada
-   * @param {*} e - Evento de cambio en el campo de entrada de escala
+   * @param {Event} e - Evento de cambio en el campo de entrada de escala
    */
   zoomToInputScale(e) {
     const writtenScale = e.target.value.trim().replace(/ /g, '').replace(/\./g, '').replace(/,/g, '');
@@ -727,7 +720,7 @@ export default class TemplateCustomizer extends IDEE.Control {
 
   /**
    * Zooms the map to a specific scale
-   * @param {*} scale - La escala a la que se desea hacer zoom
+   * @param {number} scale - La escala a la que se desea hacer zoom
    */
   zoomToScale(scale) {
     if (!scale || Number.isNaN(scale)) return;
@@ -857,8 +850,7 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
-   * Cambia la proyección del mapa de previsualización
-   * a la indicada por parámetro
+   * Cambia la proyección del mapa de previsualización a la indicada por parámetro
    * @param {String} epsg - Código EPSG de la proyección a aplicar
    */
   async changeProjection(epsg) {
@@ -987,7 +979,7 @@ export default class TemplateCustomizer extends IDEE.Control {
       if (this.layoutsRestraintFromDpi.includes(this.layout)) {
         document.querySelector(ID_TEMPLATE_DPI).disabled = true;
         IDEE.toast.warning(getValue('exception.disabledDpiSelector'), null, 6000);
-        this.dpi = 72;
+        this.dpi = 96;
       } else {
         document.querySelector(ID_TEMPLATE_DPI).disabled = false;
         this.dpi = document.querySelector(ID_TEMPLATE_DPI).value;
@@ -1042,73 +1034,42 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
-   * Genera una imagen en base64 del mapa de previsualización
+   * Genera una imagen en base64 del mapa de previsualización.
+   * Clona el contenedor del template y copia los canvas de OpenLayers (GPU-rendered)
+   * para que modern-screenshot capture el DOM a tamaño real sin distorsiones de escala.
    * @returns {Promise<string>} Promesa que resuelve con la imagen en base64
    */
   async generateTemplateImage64() {
-    const templateContainer = document.querySelector(ID_CONTAINER_DEFAULT_TEMPLATE);
-    const currentLayout = this.layoutOptions_.find((layout) => layout.value === this.layout);
-    const originalStyles = this.applyExportStyles(currentLayout);
-    const html2canvasScale = this.getHtml2CanvasScale(this.dpi);
-    const canvas = await html2canvas(templateContainer, {
-      useCORS: true,
-      allowTaint: true,
+    const mapContainer = document.querySelector(CLASS_MAP_CONTAINER);
+
+    const clone = mapContainer.cloneNode(true);
+    clone.style.transform = 'none';
+    clone.style.position = 'fixed';
+    clone.style.top = '0';
+    clone.style.left = '0';
+
+    document.body.appendChild(clone);
+
+    const targetElement = clone.querySelector(ID_CONTAINER_DEFAULT_TEMPLATE) || clone;
+    const screenshotScale = this.getScreenshotScale(this.dpi);
+    const canvas = await domToCanvas(targetElement, {
       backgroundColor: 'white',
-      scale: html2canvasScale,
+      scale: screenshotScale,
     });
-    if (this.styleContainer_) {
-      this.styleContainer_.textContent = originalStyles;
-    }
+
+    document.body.removeChild(clone);
     return canvas.toDataURL('image/png', 1.0);
   }
 
   /**
-   * Funcion que devuelve el factor de escala de la libreria
-   * html2canvas según el dpi elegido.
+   * Devuelve el factor de escala para modern-screenshot según el DPI elegido.
+   * Se garantiza un mínimo de devicePixelRatio para no bajar de la resolución de pantalla.
    * @param {Number} dpi DPI elegido por el usuario
-   * @returns {Number} Factor de escala para html2canvas
+   * @returns {Number} Factor de escala para modern-screenshot
    */
-  getHtml2CanvasScale(dpi) {
-    return Number(dpi) / this.baseDpi_;
-  }
-
-  /**
-   * Aplica estilos escalados según DPI solo para la exportación
-   * @returns {string} Los estilos originales para restauración
-   * @param {Object} currentLayout El layout actual
-   */
-  applyExportStyles(currentLayout) {
-    if (!this.styleContainer_) return '';
-
-    const originalStyles = this.styleContainer_.textContent;
-    let fontSizeScaleFactor = currentLayout.fontSizeMultiplier;
-    let letterSpacingScaleFactor = currentLayout.letterSpacingMultiplier;
-
-    let cssContent = this.templateData_.styles.styleTags.join('\n');
-
-    if (this.mapOrientation === 'vertical') {
-      fontSizeScaleFactor *= 0.625;
-      letterSpacingScaleFactor *= 2.5;
-    }
-
-    cssContent = cssContent.replace(/font-size\s*:\s*(\d+\.?\d*)px/g, (match, fontSize) => {
-      const originalFontSize = parseFloat(fontSize);
-      const scaledFontSize = Math.max(originalFontSize * fontSizeScaleFactor, 1);
-      return `font-size: ${scaledFontSize.toFixed(2)}px`;
-    });
-
-    cssContent = cssContent.replace(/letter-spacing\s*:\s*(\d+\.?\d*)px/g, (match, letterSpacing) => {
-      const originalLetterSpacing = parseFloat(letterSpacing);
-      const scaledLetterSpacing = originalLetterSpacing * letterSpacingScaleFactor;
-      return `letter-spacing: ${scaledLetterSpacing.toFixed(2)}px`;
-    });
-
-    cssContent = cssContent.replace(/\.small-text\s*\{([^}]*)\}/g, `.small-text {$1
-      line-height: ${currentLayout.lineHeight}em;
-    }`);
-
-    this.styleContainer_.textContent = cssContent;
-    return originalStyles;
+  getScreenshotScale(dpi) {
+    const deviceScale = window.devicePixelRatio || 1;
+    return Math.max(Number(dpi) / 96, deviceScale);
   }
 
   /**
@@ -1137,7 +1098,7 @@ export default class TemplateCustomizer extends IDEE.Control {
     const originalSize = map.getSize();
     const originalResolution = map.getView().getResolution();
 
-    const scaleFactor = this.dpi / 72;
+    const scaleFactor = this.dpi / 96;
     const newWidth = Math.round(originalSize[0] * scaleFactor);
     const newHeight = Math.round(originalSize[1] * scaleFactor);
     const maskImageContainer = document.querySelector(`${ID_MAP_CONTAINER_TEMPLATE} #mapPanel`) || document.querySelector(`.${MAP_CONTAINER} #mapPanel`);
@@ -1165,7 +1126,7 @@ export default class TemplateCustomizer extends IDEE.Control {
               context.setTransform(...matrix);
             }
 
-            context.drawImage(layerCanvas, 0, 0, newWidth, newHeight);
+            context.drawImage(layerCanvas, 0, 0);
           }
         },
       );

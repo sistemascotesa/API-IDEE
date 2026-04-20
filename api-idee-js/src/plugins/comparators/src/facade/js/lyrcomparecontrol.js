@@ -1049,9 +1049,9 @@ export default class LyrCompareControl extends IDEE.Control {
   }
 
   addSvgIcons(html) {
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_mapStan', html.querySelector('#m-lyrcompare-void'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_dosMap', html.querySelector('#m-lyrcompare-hcurtain'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_mapVert', html.querySelector('#m-lyrcompare-vcurtain'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_mosaico', html.querySelector('#m-lyrcompare-multicurtain'));
+    IDEE.utils.loadSvgByUrl('icn_mapStan', html.querySelector('#m-lyrcompare-void'));
+    IDEE.utils.loadSvgByUrl('icn_dosMap', html.querySelector('#m-lyrcompare-hcurtain'));
+    IDEE.utils.loadSvgByUrl('icn_mapVert', html.querySelector('#m-lyrcompare-vcurtain'));
+    IDEE.utils.loadSvgByUrl('icn_mosaico', html.querySelector('#m-lyrcompare-multicurtain'));
   }
 }
