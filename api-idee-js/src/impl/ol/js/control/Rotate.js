@@ -7,10 +7,7 @@ import Control from './Control';
  * @classdesc
  * Agrega la funcionalidad para rotar el mapa para que el norte esté arriba.
  *
- * @param {Object} options Opciones para la biblioteca base.
- * - element. Contenedor del control.
- * - target. Elemento donde se va a añadir el control.
- * - render. Función que devuelve el HTML del control.
+ * @extends {Control} implementación basada en OpenLayers.
  * @api
  */
 class Rotate extends Control {
@@ -18,7 +15,8 @@ class Rotate extends Control {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @extends {ol.control.Control}
+   * @extends {module:IDEE/impl/Control~Options} opciones del control de implementación.
+   * @param {module:IDEE/impl/Control~Options} options Opciones para la biblioteca base.
    * @api stable
    */
   constructor(options) {

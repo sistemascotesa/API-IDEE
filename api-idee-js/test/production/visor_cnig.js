@@ -67,7 +67,7 @@ const mp2 = new Attributions({
   scale: 10000,
 });
 const mp3 = new ShareMap({
-  baseUrl: 'https://componentes-desarrollo.idee.es/api-idee/',
+  baseUrl: 'https://api-ideedes.grupotecopy.es/api-idee/',
   position: 'BR',
 });
 const mp4 = new XYLocator({

@@ -10,7 +10,9 @@ import ControlBase from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
 import { getValue } from '../i18n/language';
 import { INTERSECT } from '../filter/Module';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isBoolean,
+} from '../util/Utils';
 import Feature from '../feature/Feature';
 import GeoJSON from '../layer/GeoJSON';
 import KML from '../layer/KML';
@@ -38,7 +40,7 @@ import * as Position from '../ui/position';
  * Atribución por defecto.
  * @property {String} [defaultURL='https://www.ign.es/'] URL por defecto.
  * @property {String} [tooltip] Texto del tooltip.
- * @property {Object} [collectionsAttributions] Colección de atribuciones.
+ * @property {Array.<String>} [collectionsAttributions] Colección de atribuciones.
  */
 
 /**
@@ -48,9 +50,11 @@ import * as Position from '../ui/position';
  * @property {String} tooltip_ Texto del tooltip.
  * @property {String} position Posición del control.
  * @property {Boolean} collapsible Indica si el control es colapsable.
+ * @property {Boolean} collapsed Indica si el control está colapsado.
  * @property {Number} order Accesibilidad, tabIndex.
  * @property {String} url_ URL del fichero de atribuciones.
- * @property {Object} collectionsAttributions Colección de atribuciones.
+ * @property {Array.<String>} collectionsAttributions_ Colección de atribuciones,
+ * se especificarán como una colección de textos.
  * @property {String} urlAttribute Texto de la url.
  * @property {String} type geojson o kml, dependiendo de la url.
  * @property {Number} scale Define cuando cambiara la atribución.
@@ -85,9 +89,9 @@ class Attributions extends ControlBase {
 
     this.position = options.position ?? Position.LEFT;
 
-    this.collapsible = options.collapsible ?? true;
+    this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
 
-    this.collapsed = options.collapsed ?? this.collapsible;
+    this.collapsed = isBoolean(options.collapsed) ? options.collapsed : this.collapsible;
 
     this.urlAttribute = options.urlAttribute ?? 'Gobierno de España';
 

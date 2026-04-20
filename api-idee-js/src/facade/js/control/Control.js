@@ -14,14 +14,17 @@ import isControlImpl from '../../../impl/util/control/isControlImpl';
 import getControlImpl from '../../../impl/util/control/getControlImpl';
 
 /**
+ * @public
  * @typedef {Object} Options opciones de configuración para el control de fachada.
- * @property {String} [tooltip] Representa el valor del título del control.
- * @property {String} [svgPath] Representa el vínculo para la imagen del botón si es usado.
- * @property {String} [position] Posición que tendrá en el marco del mapa,
- * un contenedor disponible. Por defecto {@link IDEE.ui.position.LEFT}.
- * @property {Number} [order] Orden en el que se colocará dentro del contenedor,
+ * @property {String} [tooltip=null] Representa el valor del título del control.
+ * @property {String} [svgPath=null] Representa el vínculo para la imagen del botón si es usado.
+ * @property {String} [position='left'] Posición que tendrá
+ * en el marco del mapa,
+ * un contenedor disponible. Por defecto {@link module:IDEE/ui/position.LEFT|LEFT}.
+ * @property {Number} [order=0] Orden en el que se colocará dentro del contenedor,
  * para que este parámetro funcione adecuadamente deberemos contener el control dentro de un
- * {@link IDEE.ui.ControlPanel}, de lo contrario se colocará en el orden que se añada al mapa.
+ * {@link module:IDEE/ui/ControlPanel|ControlPanel}, de lo contrario se colocará en el orden que
+ * se añada al mapa.
 */
 
 /**
@@ -29,12 +32,17 @@ import getControlImpl from '../../../impl/util/control/getControlImpl';
  * Clase control de fachada.
  * @extends {IDEE.Base}
  *
+ * @property {IDEE.Map} map Es el mapa de fachada que se asigna al control.
  * @property {Boolean} activated Define si el control esta activado, por defecto falso.
  * @property {String} name Nombre del control.
- * @property {String} svgPath contiene la ruta a la imagen del control.
+ * @property {String} [tooltip] título ilustrativo sobre la acción principal del control.
+ * @property {String} [position] Posición del control en el mapa, por defecto
+ * {@link module:IDEE/ui/position.LEFT|LEFT}.
+ * @property {Number} [order=0] Determina la posición de la herramienta cuando se encuentra
+ * dentro de un contenedor de herramientas del mapa.
+ * @property {String} [svgPath=null] contiene la ruta a la imagen del control.
  *
  * @api
- * @extends {IDEE.Base}
  */
 class Control extends Base {
   /**

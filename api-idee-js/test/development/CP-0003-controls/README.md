@@ -32,7 +32,7 @@ CP-011
 Control Implementation Switcher
 
 CP-012
-Control Rotate para 3D
+Control rotate
 
 CP-013
 Control parametro de ordenación (Plugins + Controles)
@@ -44,4 +44,16 @@ CP-015
 Control measurebar
 
 CP-016
+Control overviewmap
+
+CP-017
 Control panzoom
+
+CP-018
+Control panzoombar
+
+CP-019
+Control scale
+
+CP-020
+Control scaleline

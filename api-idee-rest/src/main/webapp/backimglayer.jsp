@@ -44,6 +44,12 @@
                             </datalist>
                         </div>
                         <div>
+                            <label for="inputOrder"
+                                title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                                entre controles / plugins "order"</label>
+                            <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+                        </div>
+                        <div>
                             <label for="ncolumn"
                                 title="Número de columnas que tendrá el UI de capas, el valor mínimo deberá ser 1 o superior">Número
                                 de columnas "columnsNumber"</label>
@@ -143,6 +149,7 @@
                             IDEE.language.setLang(urlParams.get('language') || 'es');
                             const map = IDEE.map({
                                 container: 'mapjs',
+                                controls: ['rotate'],
                                 // layers: ['OSM'],
                                 zoom: 5,
                                 maxZoom: 20,
@@ -169,6 +176,7 @@
                             const inputTooltip = document.getElementById('inputTooltip');
                             const ncolumn = document.getElementById('ncolumn');
                             const selectCollapsed = document.getElementById('selectCollapsed');
+                            const inputOrder = document.getElementById('inputOrder');
                             const selectVisibility = document.getElementById('selectVisibility');
                             const selectEmpty = document.getElementById('selectEmpty');
                             const selectEnableLayerOpts = document.getElementById('selectEnableLayerOpts');
@@ -184,6 +192,7 @@
                                 options.columnsNumber = ncolumn.value ?? 2;
 
                                 options.collapsed = (selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true');
+                                if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
                                 options.layerVisibility = (selectVisibility.options[selectVisibility.selectedIndex].value === 'true');
                                 options.empty = (selectEmpty.options[selectEmpty.selectedIndex].value === 'true');
 
@@ -378,6 +387,7 @@
                                 inputTooltip,
                                 ncolumn,
                                 selectCollapsed,
+                                inputOrder,
                                 selectVisibility,
                                 selectEmpty,
                                 selectEnableLayerOpts,

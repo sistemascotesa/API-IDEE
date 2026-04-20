@@ -52,6 +52,7 @@ removeButton.addEventListener('click', () => { removePlugin(); });
 
 const selectPosicion = document.getElementById('selectPosicion');
 const selectCollapsed = document.getElementById('selectCollapsed');
+const inputOrder = document.getElementById('inputOrder');
 const selectEnabledKeyFunctions = document.getElementById('enabledKeyFunctions');
 const selectDefaultCompareMode = document.getElementById('defaultCompareMode');
 const inputListLayers = document.getElementById('listLayers');
@@ -65,6 +66,7 @@ const updatePlugin = () => {
   const options = {};
   options.position = selectPosicion.options[selectPosicion.selectedIndex].value;
   options.collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true';
+  options.order = Number(inputOrder.value);
   options.enabledKeyFunctions = selectEnabledKeyFunctions.options[selectEnabledKeyFunctions.selectedIndex].value === 'true';
   options.defaultCompareMode = selectDefaultCompareMode.options[selectDefaultCompareMode.selectedIndex].value;
   options.listLayers = JSON.parse(inputListLayers.value.replace(/'/g, '"'));
@@ -81,6 +83,7 @@ const updatePlugin = () => {
 [
   selectPosicion,
   selectCollapsed,
+  inputOrder,
   selectEnabledKeyFunctions,
   selectDefaultCompareMode,
   inputListLayers,

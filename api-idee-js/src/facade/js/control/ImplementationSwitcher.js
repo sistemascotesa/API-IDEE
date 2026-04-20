@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * @module IDEE/control/ImplementationSwitcher
  */
@@ -12,23 +13,36 @@ import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
 import {
   isUndefined, isNullOrEmpty, isObject,
+  isBoolean,
 } from '../util/Utils';
+import * as Dialog from '../dialog';
+
+/**
+ * @typedef {Object} Options
+ */
 
 /**
  * @classdesc
  * Agrega la herramienta de cambio de implementación.
+ * @property {Boolean} collapsible Indica si el control es colapsable.
+ * @property {Boolean} collapsed Indica si el control está colapsado.
  *
  * @api
  * @extends {IDEE.Control}
  */
 class ImplementationSwitcher extends ControlBase {
-  constructor(options) {
+  /**
+   * @param {Options} options Opciones de configuración para el control de fachada.
+   */
+  constructor(options = {}) {
     if (isUndefined(ImplementationSwitcherImpl) || (isObject(ImplementationSwitcherImpl)
         && isNullOrEmpty(Object.keys(ImplementationSwitcherImpl)))) {
       Exception(getValue('exception').implementationswitcher_method);
     }
 
-    super(ImplementationSwitcher.NAME, new ImplementationSwitcherImpl(), options);
+    const implementationSwitcherImpl = new ImplementationSwitcherImpl();
+
+    super(ImplementationSwitcher.NAME, implementationSwitcherImpl, options);
 
     if (!window.implementations) {
       window.implementations = IDEE.config.implementationswitcher;
@@ -42,6 +56,10 @@ class ImplementationSwitcher extends ControlBase {
         }));
       }
     }
+
+    this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
+
+    this.collapsed = isBoolean(options.collapsed) ? options.collapsed : this.collapsible;
   }
 
   /**
@@ -57,8 +75,8 @@ class ImplementationSwitcher extends ControlBase {
     return new Promise((resolve) => {
       this.html = compileTemplate(template, {
         vars: {
-          title: this.tooltip ?? getValue('implementationswitcher').title,
-          description: getValue('implementationswitcher').description,
+          title: this.tooltip ?? getValue(ImplementationSwitcher.NAME).title,
+          description: getValue(ImplementationSwitcher.NAME).description,
           implementations: window.implementations,
         },
       });
@@ -93,7 +111,6 @@ class ImplementationSwitcher extends ControlBase {
    */
   loadImplementation(implementation) {
     const API_IDEE_URL = IDEE.config.API_IDEE_URL;
-
     window.implementations.forEach((impl) => {
       // eslint-disable-next-line no-param-reassign
       delete impl.selected;
@@ -128,13 +145,19 @@ class ImplementationSwitcher extends ControlBase {
           .then((response) => response.text())
           .then((scriptContent) => {
             // eslint-disable-next-line no-eval
-            eval(scriptContent);
+            const scriptFn = eval(scriptContent);
+            scriptFn.call(window);
 
             this.loadMap(implementation);
           });
       } else {
         this.loadMap(implementation);
       }
+    };
+    script.onerror = (err) => {
+      // eslint-disable-next-line no-console
+      console.error('SCRIPT ERROR', script.src, err);
+      Dialog.error(script.src, 'La implementación no se pudo cargar:');
     };
     document.body.appendChild(script);
 
@@ -146,23 +169,23 @@ class ImplementationSwitcher extends ControlBase {
   }
 
   loadMap(implementation) {
-    const div = this.map_.getContainer().id === ''
-      ? this.map_.getContainer().parentElement.parentElement : this.map_.getContainer();
+    const div = this.map.getContainer().id === ''
+      ? this.map.getContainer().parentElement.parentElement : this.map.getContainer();
     div.innerHTML = '';
 
-    const center = [this.map_.getCenter().x, this.map_.getCenter().y];
-    const sourceProjection = this.map_.getProjection().code;
+    const center = [this.map.getCenter().x, this.map.getCenter().y];
+    const sourceProjection = this.map.getProjection().code;
     const destProjection = implementation.epsg;
 
     IDEE.map({
       container: div.id,
-      zoom: this.map_.getZoom(),
+      zoom: this.map.getZoom(),
       center: (typeof ol !== 'undefined' && ol !== null)
         ? ol.proj.transform(center, sourceProjection, destProjection)
         : transform(center, sourceProjection, destProjection),
-      controls: Array.from(this.map_.getControls()).map((control) => control.name),
-      plugins: this.map_.getPlugins(),
-      layers: this.map_.getLayers(),
+      controls: Array.from(this.map.getControls()).map((control) => control.name),
+      plugins: this.map.getPlugins(),
+      layers: this.map.getLayers(),
     });
   }
 
@@ -174,7 +197,7 @@ class ImplementationSwitcher extends ControlBase {
    * @api
   */
   getHelp() {
-    const textHelp = getValue('implementationswitcher').textHelp;
+    const textHelp = getValue(ImplementationSwitcher.NAME).textHelp;
     return {
       title: ImplementationSwitcher.NAME,
       content: new Promise((success) => {

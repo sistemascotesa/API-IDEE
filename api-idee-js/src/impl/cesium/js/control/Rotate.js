@@ -22,6 +22,13 @@ const centerScratch = new Cartesian3();
 const vectorScratch = new Cartesian2();
 
 /**
+ * @typedef {Object} Options Opciones específicas para cada implementación.
+ * @property {Boolean} [help] Indica si se muestra la ayuda al crear el control.
+ * Por defecto, true. Solo disponible para Cesium.
+ * @property {Object} [viewInitial] Vista inicial. Solo disponible para Cesium.
+ */
+
+/**
  *  @classdesc
  *  Control de movimiento 3D.
  *  @api
@@ -31,17 +38,14 @@ class Rotate extends Control {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} options Opciones del control.
-   * - viewInitial: Vista inicial.
-   * - help: Indica si se muestra la ayuda al crear el control.
-   * Por defecto, verdadero.
+   * @param {Options} options Opciones del control.
    * @api stable
    */
   constructor(options = {}) {
     super();
 
     this.viewInitial = options.viewInitial;
-    this.showHelp = options.help;
+    this.showHelp = options.help ?? true;
 
     this.handleExteriorMouseDown = (e) => this.handleMouseDown('exterior', e);
     this.handleGiroscopioMouseDown = (e) => this.handleMouseDown('giroscopio', e);

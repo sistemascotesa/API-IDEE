@@ -131,7 +131,7 @@
             collapsible = (selectCollapsible.options[selectCollapsible.selectedIndex].value == 'true');
             posicion = selectPosicion.options[selectPosicion.selectedIndex].value;
 
-            window.location.href = 'https://componentes-desarrollo.idee.es/api-idee//api-idee/?zoompanel=' + posicion + '*' + collapsed + '*' + collapsible;
+            window.location.href = 'https://api-ideedes.grupotecopy.es/api-idee//api-idee/?zoompanel=' + posicion + '*' + collapsed + '*' + collapsible;
         })
 
         function crearPlugin(collapsed, collapsible, posicion) {
