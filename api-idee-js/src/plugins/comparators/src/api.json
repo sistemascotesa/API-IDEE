@@ -1,7 +1,7 @@
 {
   "url": {
     "name": "comparators",
-    "separator": "*"
+    "separator": "*!"
   },
   "constructor": "IDEE.plugin.Comparators",
   "parameters": [{
@@ -30,38 +30,43 @@
     },
     {
       "type": "simple",
-      "name": "listLayers",
+      "name": "enabledDisplayInLayerSwitcher",
       "position": 4
     },
     {
       "type": "simple",
-      "name": "defaultCompareMode",
+      "name": "listLayers",
       "position": 5
     },
     {
-      "type": "boolean",
-      "name": "enabledKeyFunctions",
+      "type": "simple",
+      "name": "defaultCompareMode",
       "position": 6
     },
     {
       "type": "boolean",
-      "name": "transparencyParams",
+      "name": "enabledKeyFunctions",
       "position": 7
     },
     {
       "type": "boolean",
-      "name": "lyrcompareParams",
+      "name": "transparencyParams",
       "position": 8
     },
     {
       "type": "boolean",
-      "name": "mirrorpanelParams",
+      "name": "lyrcompareParams",
       "position": 9
     },
     {
       "type": "boolean",
-      "name": "windowsyncParams",
+      "name": "mirrorpanelParams",
       "position": 10
+    },
+    {
+      "type": "boolean",
+      "name": "windowsyncParams",
+      "position": 11
     }
   ]
   }],

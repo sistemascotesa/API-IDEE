@@ -58,8 +58,8 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
   - 'left' (LEFT) - A la izquierda.
   - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
-- **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
 - **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
+- **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: tooltipComparator.
 - **enabledDisplayInLayerSwitcher**: Define si se incluirán en el selector de capas las capas con displayInLayerSwitcher *true*.
 - **listLayers**: Array de capas (String o Object), estas capas se verán en el selector (WMS o WMTS).
 ```JavaScript
@@ -137,13 +137,11 @@ Ctrl + Shift + Flecha hacia abajo: Disminuye el radio, si el radio llega al valo
 Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue la siguiente estructura:
   - Servicio,Leyenda,URL,Nombre. Separados por "*".
 ```javascript
- const mp = new IDEE.plugin.Comparators({
+ const comparators = new IDEE.plugin.Comparators({
   position: 'right',
   enabledDisplayInLayerSwitcher: true,
   collapsed: false,
-  collapsible: true,
   defaultCompareMode: 'mirrorpanelParams', // mirrorpanelParams - lyrcompareParams - transparecyParams - none
-  order: 4,
   listLayers: [
     'WMS*Huellas Sentinel2*https://wms-satelites-historicos.idee.es/satelites-historicos*teselas_sentinel2_espanna*true',
     'WMS*Invierno 2022 falso color natural*https://wms-satelites-historicos.idee.es/satelites-historicos*SENTINEL.2022invierno_432-1184*true',
@@ -282,13 +280,13 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
   },
 });
 
-   map.addPlugin(mp);
+   map.addPlugin(comparators);
 ```
 
 # API-REST
 
 ```javascript
-URL_API?comparators=position*!collapsed*!collapsible*!tooltip*!listLayers*!defaultCompareMode*!enabledKeyFunctions*!transparencyParams*!lyrcompareParams*!mirrorpanelParams*!windowsyncParams
+URL_API?comparators=position*!collapsed*!tooltip*! *!defaultCompareMode*!enabledKeyFunctions*!transparencyParams*!lyrcompareParams*!mirrorpanelParams*!windowsyncParams
 ```
 
 <table>
@@ -305,16 +303,6 @@ URL_API?comparators=position*!collapsed*!collapsible*!tooltip*!listLayers*!defau
      <tr>
         <td>collapsed</td>
         <td>true/false</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-     <tr>
-        <td>collapsible</td>
-        <td>true/false</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-    <tr>
-        <td>order</td>
-        <td>Número entero positivo</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
     <tr>
@@ -362,7 +350,7 @@ URL_API?comparators=position*!collapsed*!collapsible*!tooltip*!listLayers*!defau
 
 ### Ejemplos de uso API-REST
 ```
-https://componentes.idee.es/api-idee?comparators=TR*false*true*comparador*true**mirror*true*10*true*true*true*true
+https://componentes.idee.es/api-idee?comparators=right*false*true*comparador*true**mirror*true*10*true*true*true*true
 
 ```
 No funciona ```https://componentes.idee.es/api-idee?comparators``` es necesario espeficiar alguno de los siguientes parámetros: transparencyParams, lyrcompareParams, mirrorpanelParams.
@@ -380,8 +368,6 @@ Ejemplo de constructor:
 {
   position: 'left',
   collapsed: false,
-  collapsible: true,
-  order: 0,
   tooltip: 'Plugin Comparators',
   defaultCompareMode: 'mirror',
   enabledDisplayInLayerSwitcher: true,
@@ -427,7 +413,7 @@ Ejemplo de constructor:
 }
 ```
 ```
-https://componentes.idee.es/api-idee?comparators=base64=eyJwb3NpdGlvbiI6IlRMIiwiY29sbGFwc2VkIjpmYWxzZSwiY29sbGFwc2libGUiOnRydWUsImlzRHJhZ2dhYmxlIjp0cnVlLCJ0b29sdGlwIjoiUGx1Z2luIENvbXBhcmF0b3JzIiwiZGVmYXVsdENvbXBhcmVNb2RlIjoibWlycm9yIiwiZW5hYmxlZERpc3BsYXlJbkxheWVyU3dpdGNoZXIiOnRydWUsImxpc3RMYXllcnMiOlsiV01TKkxhbmRzYXQgNSBUTSAxOTk2LiBDb2xvciBuYXR1cmFsKmh0dHBzOi8vd21zLXNhdGVsaXRlcy1oaXN0b3JpY29zLmlkZWUuZXMvc2F0ZWxpdGVzLWhpc3Rvcmljb3MqTEFORFNBVDUuMTk5Nl8zMjEtNTQzKnRydWUiLCJXTVMqTGFuZHNhdCA1IFRNIDE5OTYuIEZhbHNvIGNvbG9yIGluZnJhcnJvam8qaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcypMQU5EU0FUNS4xOTk2XzQzMip0cnVlIiwiV01TKkxhbmRzYXQgNSBUTSAxOTkxLiBDb2xvciBuYXR1cmFsKmh0dHBzOi8vd21zLXNhdGVsaXRlcy1oaXN0b3JpY29zLmlkZWUuZXMvc2F0ZWxpdGVzLWhpc3Rvcmljb3MqTEFORFNBVDUuMTk5MV8zMjEtNTQzKnRydWUiLCJXTVMqTGFuZHNhdCA1IFRNIDE5OTEuIEZhbHNvIGNvbG9yIGluZnJhcnJvam8qaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcypMQU5EU0FUNS4xOTkxXzQzMip0cnVlIiwiV01TKkxhbmRzYXQgNSBUTSAxOTg2LiBDb2xvciBuYXR1cmFsKmh0dHBzOi8vd21zLXNhdGVsaXRlcy1oaXN0b3JpY29zLmlkZWUuZXMvc2F0ZWxpdGVzLWhpc3Rvcmljb3MqTEFORFNBVDUuMTk4Nl8zMjEtNTQzKnRydWUiXSwiZW5hYmxlZEtleUZ1bmN0aW9ucyI6dHJ1ZSwidHJhbnNwYXJlbmN5UGFyYW1zIjp7InJhZGl1cyI6MTAwLCJtYXhSYWRpdXMiOjEwMCwibWluUmFkaXVzIjoxMCwidG9vbHRpcCI6InRvb2x0aXBUcmFuc3BhcmVuY3kifSwibHlyY29tcGFyZVBhcmFtcyI6eyJzdGF0aWNEaXZpc2lvbiI6MSwiZGVmYXVsdEx5ckEiOjAsImRlZmF1bHRMeXJCIjoxLCJkZWZhdWx0THlyQyI6MiwiZGVmYXVsdEx5ckQiOjMsIm9wYWNpdHlWYWwiOjEwMCwidG9vbHRpcCI6InRvb2x0aXBMeXJDb21wYXJlIiwiZGVmYXVsdENvbXBhcmVWaXoiOjF9LCJtaXJyb3JwYW5lbFBhcmFtcyI6eyJzaG93Q3Vyc29ycyI6dHJ1ZSwicHJpbmNpcGFsTWFwIjp0cnVlLCJlbmFibGVkQ29udHJvbHNQbHVnaW5zIjp7Im1hcDIiOnsiY29udHJvbHMiOlsic2NhbGUiXX19LCJkZWZhdWx0Q29tcGFyZVZpeiI6MiwibW9kZVZpelR5cGVzIjpbMCwyXSwidG9vbHRpcCI6InRvb2x0aXBNaXJyb3IifSwid2luZG93c3luY1BhcmFtcyI6eyJjb250cm9scyI6WyJzY2FsZSJdfX0=
+https://api-ideedes.grupotecopy.es/api-idee/?comparators=base64=eyJwb3NpdGlvbiI6InJpZ2h0IiwiY29sbGFwc2VkIjpmYWxzZSwib3JkZXIiOjEsInRvb2x0aXAiOiJNaUNvbXBhcmFkb3IiLCJlbmFibGVkRGlzcGxheUluTGF5ZXJTd2l0Y2hlciI6dHJ1ZSwibGlzdExheWVycyI6WyJXTVMqSHVlbGxhcyBTZW50aW5lbDIqaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcyp0ZXNlbGFzX3NlbnRpbmVsMl9lc3Bhbm5hKnRydWUiLCJXTVMqRmlsb21lbmEqdHRwczovL3dtcy1zYXRlbGl0ZXMtaGlzdG9yaWNvcy5pZGVlLmVzL3NhdGVsaXRlcy1oaXN0b3JpY29zKkZpbG9tZW5hKnRydWUiXSwiZGVmYXVsdENvbXBhcmVNb2RlIjoibWlycm9yIiwiZW5hYmxlZEtleUZ1bmN0aW9ucyI6dHJ1ZSwidHJhbnNwYXJlbmN5UGFyYW1zIjp0cnVlLCJseXJjb21wYXJlUGFyYW1zIjp0cnVlLCJtaXJyb3JwYW5lbFBhcmFtcyI6dHJ1ZSwid2luZG93c3luY1BhcmFtcyI6ZmFsc2V9
 ```
 
 

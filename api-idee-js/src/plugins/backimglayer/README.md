@@ -7,6 +7,10 @@
 
 Plugin que permite la elección de la capa de fondo mediante la previsualización de las posibles capas.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Comparador abierto](./src/facade/assets/images/backimglayer-abierto.png)|![Comparador cerrado](./src/facade/assets/images/backimglayer-cerrado.png)|
+
 # Dependencias
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
@@ -41,10 +45,8 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - 'left' (LEFT) - A la izquierda.
   - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
-- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: "Capas de fondo".
-- **layerId**: Índice de la capa que se quiera cargar por defecto. Por ejemplo, si se pasa el número 2 se mostrará la capa que se encuentre en la segunda posición. Por defecto: 0
-- **columnsNumber**: Número de columnas que parametrizan la tabla de capas de fondo disponibles. Por defecto: 2
+- **columnsNumber**: Número de columnas que parametrizan la tabla de capas de fondo disponibles. Por defecto: 1
 - **layerVisibility**: Valor que indica si se muestra la capa cargada o no. Por defecto: true
 - **layerOpts**: Array con las capas que se quieren utilizar como opciones para capa de fondo. Puede ser undefined (Por ejemplo cuando se accede por API-REST), en este caso, se cogen los valores de ids,previews, titles.
     - **id**: Identificador de la capa.
@@ -54,15 +56,15 @@ El constructor se inicializa con un JSON con los siguientes atributos:
        - [Como añadir las capas y qué parámetros se tienen que usar](https://github.com/Desarrollos-IDEE/API-IDEE/wiki/Capas)
 - **empty**: Habilita la posibilidad de mostrar el mapa sin las capas de fondo cargadas del plugin (capa de fondo "vacía"). Verdadero "true", se activa esta funcionalidad. Falso por defecto.
 
-- **ids**: (Cuando layerOpts no se define) ids de las capas separados por ','. Por defecto: 'wmts'
+- **ids**: (Cuando layerOpts no se define) ids de las capas separados por ','. Por defecto: 'mapa,hibrido'
 - **previews**: (Cuando layerOpts no se define) Rutas a las imagenes de previsualización de las capas separados por ','. Por defecto: 'https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqmapa.png'.
-- **titles**: (Cuando layerOpts no se define) Titulos de las capas separados por ','. Por defecto: 'IGNBaseTodo'.
+- **titles**: (Cuando layerOpts no se define) Titulos de las capas separados por ','. Por defecto: 'Mapa,Hibrido'.
 - **layers**: (Cuando layerOpts no se define) Capas que se quieren cargar. Por defecto: ```WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*false*true```
 
 # API-REST
 
 ```javascript
-URL_API?backimglayer=position*!collapsed*!tooltip*!layerVisibility*!layerId*!columnsNumber*!empty*!ids*!titles*!previews*!layers
+URL_API?backimglayer=position*!collapsed*!collapsible*!order*!tooltip*!layerVisibility*!layerId*!columnsNumber*!empty*!ids*!titles*!previews*!layers
 ```
 
 <table>
@@ -76,7 +78,7 @@ URL_API?backimglayer=position*!collapsed*!tooltip*!layerVisibility*!layerId*!col
         <td>RIGHT/LEFT</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
-     <tr>
+    <tr>
         <td>collapsed</td>
         <td>true/false</td>
         <td>Base64 ✔️ | Separador ✔️</td>
@@ -94,11 +96,6 @@ URL_API?backimglayer=position*!collapsed*!tooltip*!layerVisibility*!layerId*!col
     <tr>
         <td>layerVisibility</td>
         <td>true/false</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-     <tr>
-        <td>layerId</td>
-        <td>Índice de la capa a cargar por defecto</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
      <tr>
@@ -138,14 +135,14 @@ URL_API?backimglayer=position*!collapsed*!tooltip*!layerVisibility*!layerId*!col
     </tr>
 </table>
 
+# Design Tokens (v2.0):
 
-<!-- ### Ejemplos de uso API-REST
-```
-https://componentes.idee.es/api-idee?backimglayer=TR*!true*!true*!Capas%20de%20fondo*!true*!0*!0*!true*!mapa,hibrido*!Mapa,Hibrido*!https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqmapa.png,https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqhibrid.png*!WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa%20IGN*false*image/jpeg*false*false*true,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*Imagen%20(PNOA)*false*image/png*false*false*true
-``` -->
+Este plugin hereda los colores definidos en **IDEE.config.token.activeTOKEN**. El color primary se aplica automáticamente a los bordes de selección de las miniaturas y botones de activación.
+
+### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee/?backimglayer=TR*!true*!true*!Capas%20de%20fondo*!true
+https://api-ideedes.grupotecopy.es/api-idee/?backimglayer=right*!true*!0*!Capas%20de%20fondo*!true*!0*!0*!true*!mapa,hibrido*!Mapa,Hibrido*!https://componentes.cnig.es/api-core/plugins/backimglayer/images/svqmapa.png,https://componentes.cnig.es/api-core/plugins/backimglayer/images/svqhibrid.png*!WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa%20IGN*false*image/jpeg*false*false*true,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*Imagen%20(PNOA)*false*image/png*false*false*true
 ```
 ### Ejemplo de uso API-REST en base64
 
@@ -160,10 +157,9 @@ Ejemplo de constructor:
 {
   position: "right",
   collapsed: true,
-  order: 0,
   tooltip: "Capas de fondo",
   layerVisibility: true,
-  columnsNumber: 0,
+  columnsNumber: 2,
   empty: true,
   ids: "mapa,hibrido",
   titles: "Mapa,Hibrido",
@@ -174,7 +170,7 @@ Ejemplo de constructor:
 }
 ```
 ```
-https://componentes.idee.es/api-idee?backimglayer=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2VkIjp0cnVlLCJjb2xsYXBzaWJsZSI6dHJ1ZSwidG9vbHRpcCI6IkNhcGFzIGRlIGZvbmRvIiwibGF5ZXJWaXNpYmlsaXR5Ijp0cnVlLCJjb2x1bW5zTnVtYmVyIjowLCJlbXB0eSI6dHJ1ZSwiaWRzIjoibWFwYSxoaWJyaWRvIiwidGl0bGVzIjoiTWFwYSxIaWJyaWRvIiwicHJldmlld3MiOiJodHRwczovL2NvbXBvbmVudGVzLmNuaWcuZXMvYXBpLWNvcmUvcGx1Z2lucy9iYWNraW1nbGF5ZXIvaW1hZ2VzL3N2cW1hcGEucG5nLGh0dHBzOi8vY29tcG9uZW50ZXMuY25pZy5lcy9hcGktY29yZS9wbHVnaW5zL2JhY2tpbWdsYXllci9pbWFnZXMvc3ZxaGlicmlkLnBuZyIsImxheWVycyI6IldNVFMqaHR0cHM6Ly93d3cuaWduLmVzL3dtdHMvaWduLWJhc2U/KklHTkJhc2VUb2RvKkdvb2dsZU1hcHNDb21wYXRpYmxlKk1hcGEgSUdOKmZhbHNlKmltYWdlL2pwZWcqZmFsc2UqZmFsc2UqdHJ1ZSxXTVRTKmh0dHBzOi8vd3d3Lmlnbi5lcy93bXRzL3Bub2EtbWE/Kk9JLk9ydGhvaW1hZ2VDb3ZlcmFnZSpHb29nbGVNYXBzQ29tcGF0aWJsZSpJbWFnZW4gKFBOT0EpKmZhbHNlKmltYWdlL3BuZypmYWxzZSpmYWxzZSp0cnVlIn0=
+https://api-ideedes.grupotecopy.es/api-idee/?backimglayer=base64=eyJwY3NpdGlvbiI6InJpZ2h0IiwiY29sbGFwc2VkIjp0cnVlLCJvcmRlciI6MCwidG9vbHRpcCI6IkNhcGFzIGRlIGZvbmRvIiwibGF5ZXJWaXNpYmlsaXR5Ijp0cnVlLCJsYXllcklkIjowLCJjb2x1bW5zTnVtYmVyIjowLCJlbXB0eSI6dHJ1ZSwiaWRzIjoibWFwYSxoaWJyaWRvIiwidGl0bGVzIjoiTWFwYSxIaWJyaWRvIiwicHJldmlld3MiOiJodHRwczovL2NvbXBvbmVudGVzLmNuaWcuZXMvYXBpLWNvcmUvcGx1Z2lucy9iYWNraW1nbGF5ZXIvaW1hZ2VzL3N2cW1hcGEucG5nLGh0dHBzOi8vY29tcG9uZW50ZXMuY25pZy5lcy9hcGktY29yZS9wbHVnaW5zL2JhY2tpbWdsYXllci9pbWFnZXMvc3ZxaGlicmlkLnBuZyIsImxheWVycyI6IldNVFMqaHR0cHM6Ly93d3cuaWduLmVzL3dtdHMvaWduLWJhc2U/KklHTkJhc2VUb2RvKkdvb2dsZU1hcHNDb21wYXRpYmxlKk1hcGEgSUdOKmZhbHNlKmltYWdlL2pwZWcqZmFsc2UqZmFsc2UqdHJ1ZSxXTVRTKmh0dHBzOi8vd3d3Lmlnbi5lcy93bXRzL3Bub2EtbWE/Kk9JLk9ydGhvaW1hZ2VDb3ZlcmFnZSpHb29nbGVNYXBzQ29tcGF0aWJsZSpJbWFnZW4gKFBOT0EpKmZhbHNlKmltYWdlL3BuZypmYWxzZSpmYWxzZSp0cnVlIn0=
 ```
 
 
@@ -197,21 +193,21 @@ const map = IDEE.map({
     container: 'map'
 });
 
-const mp = new IDEE.plugin.BackImgLayer({
-    position: 'left',
+const backImgLayer = new IDEE.plugin.BackImgLayer({
+    position: 'right',
     collapsed: true,
-    order: 0,
-    layerId: 0,
+    tooltip: 'Capas de fondo',
     columnsNumber: 2,
     layerVisibility: true,
+    empty: false,
     layerOpts: [{
         id: 'mapa',
-        preview: 'plugins/backimglayer/images/svqmapa.png', // ruta relativa, edite por la deseada
-        title: 'Mapa',
+        title: 'Callejero',
+        preview: 'https://api-ideedes.grupotecopy.es/api-idee/plugins/backimglayer/images/svqmapa.png', // ruta relativa, edite por la deseada
         layers: [new IDEE.layer.WMTS({
             url: 'http://www.ign.es/wmts/ign-base?',
             name: 'IGNBaseTodo',
-            legend: 'Mapa IGN',
+            legend: 'Callejero',
             matrixSet: 'GoogleMapsCompatible',
             isBase: true,
             displayInLayerSwitcher: false,
@@ -223,51 +219,61 @@ const mp = new IDEE.plugin.BackImgLayer({
     {
         id: 'imagen',
         title: 'Imagen',
-        preview: 'plugins/backimglayer/images/svqimagen.png', // ruta relativa, edite por la deseada
-        layers: [new IDEE.layer.WMTS({
-            url: 'http://www.ign.es/wmts/pnoa-ma?',
-            name: 'OI.OrthoimageCoverage',
-            legend: 'Imagen (PNOA)',
-            matrixSet: 'GoogleMapsCompatible',
-            isBase: true,
-            displayInLayerSwitcher: false,
-            queryable: false,
-            visible: true,
-            format: 'image/jpeg',
-        })],
-    },
-    {
-        id: 'hibrido',
-        title: 'Híbrido',
-        preview: 'plugins/backimglayer/images/svqhibrid.png', // ruta relativa, edite por la deseada
-        layers: [new IDEE.layer.WMTS({
-                url: 'http://www.ign.es/wmts/pnoa-ma?',
-                name: 'OI.OrthoimageCoverage',
-                legend: 'Imagen (PNOA)',
-                matrixSet: 'GoogleMapsCompatible',
-                isBase: false,
-                displayInLayerSwitcher: false,
-                queryable: false,
-                visible: true,
-                format: 'image/png',
-            }),
-            new IDEE.layer.WMTS({
-                url: 'http://www.ign.es/wmts/ign-base?',
-                name: 'IGNBaseOrto',
-                matrixSet: 'GoogleMapsCompatible',
-                legend: 'Mapa IGN',
+        preview: 'https://www.ign.es/iberpix/static/media/raster.c7a904f3.png', // URL de previsualización oficial [cite: 67]
+        layers: [
+            new IDEE.layer.XYZ({
+                url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
+                name: 'PNOA-MA',
+                legend: 'Imagen',
+                projection: 'EPSG:3857',
                 isBase: true,
                 displayInLayerSwitcher: false,
                 queryable: false,
                 visible: true,
-                format: 'image/png',
+                maxZoom: 19
+            }),
+            new IDEE.layer.WMTS({
+                url: 'https://www.ign.es/wmts/pnoa-ma?',
+                name: 'OI.OrthoimageCoverage',
+                matrixSet: 'GoogleMapsCompatible',
+                legend: 'Imagen',
+                isBase: false,
+                displayInLayerSwitcher: false,
+                queryable: false,
+                visible: true,
+                format: 'image/jpeg',
+                minZoom: 19
+            })
+        ] // Combinación XYZ/WMTS para máxima resolución según JSP [cite: 66-80]
+    },
+    {
+        id: 'hibrido',
+        title: 'Híbrido',
+        preview: 'https://api-ideedes.grupotecopy.es/api-idee/plugins/backimglayer/images/svqhibrid.png', // ruta relativa, edite por la deseada
+        layers: [new IDEE.layer.XYZ({
+                url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
+                name: 'PNOA-MA',
+                isBase: true,
+                displayInLayerSwitcher: false,
+                visible: true,
+                maxZoom: 19,
+            }),
+            new IDEE.layer.WMTS({
+                url: 'https://www.ign.es/wmts/ign-base?',
+                name: 'IGNBaseOrto',
+                matrixSet: 'GoogleMapsCompatible',
+                legend: 'Topónimos',
+                isBase: false,
+                displayInLayerSwitcher: false,
+                visible: true,
+                format: 'image/png'
             })
         ],
     },
     {
         id: 'lidar',
-        preview: 'plugins/backimglayer/images/svqlidar.png', // ruta relativa, edite por la deseada
         title: 'LIDAR',
+        preview: 'https://api-ideedes.grupotecopy.es/api-idee/plugins/backimglayer/images/svqlidar.png', // ruta relativa, edite por la deseada
         layers: [new IDEE.layer.WMTS({
             url: 'https://wmts-mapa-lidar.idee.es/lidar?',
             name: 'EL.GridCoverageDSM',
@@ -283,7 +289,7 @@ const mp = new IDEE.plugin.BackImgLayer({
     ],
 });
 
-map.addPlugin(mp);
+map.addPlugin(backImgLayer);
 ```
 
 # 👨‍💻 Desarrollo
