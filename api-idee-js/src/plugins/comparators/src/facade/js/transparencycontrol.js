@@ -454,7 +454,7 @@ export default class TransparencyControl extends IDEE.Control {
   }
 
   addSvgIcons(html) {
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_candado_cerrado', html.querySelector('#m-transparency-lock'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_candado', html.querySelector('#m-transparency-unlock'));
+    IDEE.utils.loadSvgByUrl('icn_candado_cerrado', html.querySelector('#m-transparency-lock'));
+    IDEE.utils.loadSvgByUrl('icn_candado', html.querySelector('#m-transparency-unlock'));
   }
 }

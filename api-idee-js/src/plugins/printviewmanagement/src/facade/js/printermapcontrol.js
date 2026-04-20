@@ -3,7 +3,6 @@
  */
 
 import PrinterMapControlImpl from 'impl/printermapcontrol';
-import { reproject } from 'impl/utils';
 import jsPDF from 'jspdf';
 import printermapHTML from '../../templates/printermap';
 import { getValue } from './i18n/language';
@@ -47,8 +46,6 @@ export default class PrinterMapControl extends IDEE.Control {
       layoutsRestraintFromDpi,
     },
     map,
-    statusProxy,
-    useProxy,
   ) {
     if (IDEE.utils.isUndefined(PrinterMapControlImpl)
       || (IDEE.utils.isObject(PrinterMapControlImpl)
@@ -155,20 +152,6 @@ export default class PrinterMapControl extends IDEE.Control {
      * Tooltip para el control de impresión del mapa.
      */
     this.tooltip_ = tooltip || getValue('tooltip');
-
-    /**
-     * Estado del proxy
-     * @private
-     * @type {Boolean}
-     */
-    this.statusProxy = statusProxy;
-
-    /**
-     * Indica si se utiliza un proxy para las peticiones.
-     * @private
-     * @type {Boolean}
-     */
-    this.useProxy = useProxy;
 
     /**
      *  Array de paths donde se encuentran las plantillas por defecto (opcional)
@@ -317,16 +300,35 @@ export default class PrinterMapControl extends IDEE.Control {
       format: dimensions,
     });
     const marginPdf = 10;
+    const availableWidth = dimensions[1] - marginPdf * 2;
+    const availableHeight = dimensions[0] - marginPdf * 2;
     try {
-      doc.addImage(
-        imageData,
-        imageType,
-        marginPdf,
-        marginPdf,
-        dimensions[1] - (marginPdf * 2),
-        dimensions[0] - (marginPdf * 2),
-      );
-      doc.save(`${title}.pdf`);
+      const img = new Image();
+      img.onload = () => {
+        const imgWidth = img.naturalWidth;
+        const imgHeight = img.naturalHeight;
+        const imgAspectRatio = imgWidth / imgHeight;
+        const areaAspectRatio = availableWidth / availableHeight;
+
+        let finalWidth;
+        let finalHeight;
+
+        if (imgAspectRatio > areaAspectRatio) {
+          finalWidth = availableWidth;
+          finalHeight = availableWidth / imgAspectRatio;
+        } else {
+          finalHeight = availableHeight;
+          finalWidth = availableHeight * imgAspectRatio;
+        }
+
+        const offsetX = marginPdf + (availableWidth - finalWidth) / 2;
+        const offsetY = marginPdf + (availableHeight - finalHeight) / 2;
+
+        doc.addImage(imageData, imageType, offsetX, offsetY, finalWidth, finalHeight);
+        doc.save(`${title}.pdf`);
+      };
+      img.onerror = (error) => errorCallback(error);
+      img.src = imageData;
     } catch (error) {
       errorCallback(error);
     } finally {
@@ -756,86 +758,6 @@ export default class PrinterMapControl extends IDEE.Control {
   handleTemplateConfig(config) {
     this.templateConfig = config;
     this.downloadClient(config);
-  }
-
-  /**
-    * Converts decimal degrees coordinates to degrees, minutes, seconds
-    * @public
-    * @function
-    * @param {String} coordinate - single coordinate (one of a pair)
-    * @api
-    */
-  converterDecimalToDMS(coordinate) {
-    const coord = Number.parseFloat(coordinate);
-    const deg = Math.abs(coord);
-    const min = (deg % 1) * 60;
-    // sign Degrees Minutes Seconds
-    return `${Math.sign(coord) === -1 ? '-' : ''}${Math.trunc(deg)}º ${Math.trunc(min)}' ${Math.trunc((min % 1) * 60)}'' `;
-  }
-
-  /**
-    * Converts original bbox coordinates to DMS coordinates.
-    * @public
-    * @function
-    * @api
-    * @param {Array<Object>} bbox - { x: {min, max}, y: {min, max} }
-    */
-  convertBboxToDMS(bbox) {
-    const proj = this.map_.getProjection();
-    let dmsBbox = bbox;
-    if (proj.units === 'm') {
-      const min = [bbox.x.min, bbox.y.min];
-      const max = [bbox.x.max, bbox.y.max];
-      const newMin = reproject(proj.code, min);
-      const newMax = reproject(proj.code, max);
-      dmsBbox = {
-        x: {
-          min: newMin[0],
-          max: newMax[0],
-        },
-        y: {
-          min: newMin[1],
-          max: newMax[1],
-        },
-      };
-    }
-
-    dmsBbox = this.convertDecimalBoxToDMS(dmsBbox);
-    return dmsBbox;
-  }
-
-  /**
-    * Converts decimal coordinates Bbox to DMS coordinates Bbox.
-    * @public
-    * @function
-    * @api
-    * @param { Array < Object > } bbox - { x: { min, max }, y: { min, max } }
-    */
-  convertDecimalBoxToDMS(bbox) {
-    return {
-      x: {
-        min: this.converterDecimalToDMS(bbox.x.min),
-        max: this.converterDecimalToDMS(bbox.x.max),
-      },
-      y: {
-        min: this.converterDecimalToDMS(bbox.y.min),
-        max: this.converterDecimalToDMS(bbox.y.max),
-      },
-    };
-  }
-
-  /**
-    * This function checks if an object is equal to this control.
-    *
-    * @function
-    * @api stable
-    */
-  equals(obj) {
-    let equals = false;
-    if (obj instanceof PrinterMapControl) {
-      equals = (this.name === obj.name);
-    }
-    return equals;
   }
 
   /**

@@ -6,6 +6,8 @@
     <style>
         body {
             margin: 0;
+            padding: 0;
+            height: 100%;
             overflow: hidden;
         }
 
@@ -164,34 +166,27 @@
             padding: 7px;
         }
         .titulo-principal {
-            font-size: 17.6px;
+            font-size: 18px;
             font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: flex-start;
             padding-left: 20px;
-            letter-spacing: 2px;
             height: 100%;
         }
 
         .body-text {
-            font-size: 9.6px;
-            letter-spacing: 0.8px;
+            font-size: 10px;
+            letter-spacing: 1px;
             display: flex;
             align-items: center;
             justify-content: flex-start;
             padding-left: 20px;
             height: 100%;
-            line-height: 4em;
         }
-        .small-text {
-            font-size: 8px;
-            letter-spacing: 1.5px;
-        }
-
-        .small-text-inferior {
-            font-size: 8px;
-            letter-spacing: 1.5px;
+        .small-text, .small-text-inferior {
+            font-size: 0.5em;
+            letter-spacing: 1px;
         }
         .small-top-text,
         .small-bottom-text {
@@ -211,7 +206,7 @@
             <div class="logo-left">
                 <img src="${api-idee.static_resources.url}/imagenes/logos/IDEE-logo.png" alt="Logo IDEE">
             </div>
-            <div class="titulo-principal" contenteditable="true">Introduzca título</div>
+            <div class="titulo-principal" contenteditable="true">Introduzca título...</div>
             <div class="logo-right">
                 <img src="${api-idee.static_resources.url}/imagenes/logos/API_IDEE/API_1/API_1.png" alt="Logo API-IDEE">
             </div>
