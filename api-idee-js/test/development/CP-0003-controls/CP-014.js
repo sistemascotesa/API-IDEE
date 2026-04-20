@@ -1,9 +1,11 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-use-before-define */
 import { map as Mmap } from 'IDEE/api-idee';
 import Timeline from 'IDEE/control/Timeline';
 
 const map = Mmap({
   container: 'map',
+  controls: ['rotate'],
   projection: 'EPSG:3857',
   center: [-467062.8225, 4683459.6216],
   zoom: 6,
@@ -11,12 +13,12 @@ const map = Mmap({
 
 let ctrl;
 
-const createControl = (propiedades) => {
+const create = (propiedades) => {
   ctrl = new Timeline(propiedades);
   map.addControls(ctrl);
 };
 
-const removeControl = () => {
+const remove = () => {
   map.removeControls(ctrl);
   ctrl = null;
 };
@@ -27,6 +29,11 @@ const selectAnimation = document.getElementById('selectAnimation');
 const inputSpeed = document.getElementById('inputSpeed');
 const selectPosicion = document.getElementById('selectPosicion');
 const position = selectPosicion.options[selectPosicion.selectedIndex].value;
+
+const inputTooltip = document.getElementById('inputTooltip');
+const selectCollapsible = document.getElementById('selectCollapsible');
+const selectCollapsed = document.getElementById('selectCollapsed');
+const inputOrder = document.getElementById('inputOrder');
 
 const intervals = [
   ['NACIONAL 1981-1986', '1986', 'WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986'],
@@ -65,7 +72,7 @@ const formatMove = 'continuous';
 // Type
 const typeTimeLine = document.getElementById('typeTimeLine');
 if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
-  createControl({
+  create({
     timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
     intervals: time,
     speedDate,
@@ -76,79 +83,92 @@ if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
     sizeWidthDinamic,
   });
 } else {
-  createControl({
+  create({
     timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
     position,
     intervals,
   });
 }
 
-// Original
-typeTimeLine.addEventListener('change', ({ target }) => {
-  if (target.value === 'absolute' || target.value === 'relative') {
-    document.querySelector('#dinamic').style.display = 'block';
-    document.querySelector('#origin').style.display = 'none';
-  } else {
-    document.querySelector('#dinamic').style.display = 'none';
-    document.querySelector('#origin').style.display = 'block';
-  }
-  changeTest();
-});
+const changeTestFormsDisplay = (formValue = typeTimeLine) => {
+  const isDynamic = formValue.value === 'absolute' || formValue.value === 'relative';
 
-selectPosicion.addEventListener('change', changeTest);
-inputIntervals.addEventListener('change', changeTest);
-selectIntervals.addEventListener('change', () => {
-  inputIntervals.value = selectIntervals.value;
-  changeTest();
-});
+  document.querySelectorAll('.dynamic').forEach((el) => {
+    el.style.display = isDynamic ? 'flex' : 'none';
+  });
 
-selectAnimation.addEventListener('change', changeTest);
-inputSpeed.addEventListener('change', changeTest);
+  document.querySelectorAll('.origin').forEach((el) => {
+    el.style.display = isDynamic ? 'none' : 'flex';
+  });
+};
 
 // Dinamic
 const elementTime = document.getElementById('time');
 const elementSpeedDate = document.getElementById('speedDate');
 const elementParamsDate = document.getElementById('paramsDate');
 const elementStepValue = document.getElementById('stepValue');
-const elementSizeWidthDinamic = document.getElementById('sizeWidthDinamic');
+const elementSizeWidth = document.getElementById('sizeWidthDinamic');
 const elementFormatValue = document.getElementById('formatValueDinamic');
 const elementFormatMove = document.getElementById('formatMove');
 
-[elementTime, elementSpeedDate, elementParamsDate, elementStepValue,
-  elementSizeWidthDinamic, elementFormatMove, elementFormatValue].forEach((el) => el.addEventListener('change', changeTest));
+[
+  selectPosicion, inputIntervals, selectAnimation, inputSpeed,
+  elementTime, elementSpeedDate, elementParamsDate, elementStepValue,
+  elementSizeWidth, elementFormatValue, elementFormatMove,
+  inputTooltip, selectCollapsible, selectCollapsed, inputOrder,
+].forEach((el) => { el.addEventListener('change', changeTest); });
 
-if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
-  document.querySelector('#dinamic').style.display = 'block';
-  document.querySelector('#origin').style.display = 'none';
-} else {
-  document.querySelector('#dinamic').style.display = 'none';
-  document.querySelector('#origin').style.display = 'block';
-}
+selectIntervals.addEventListener('change', () => {
+  inputIntervals.value = selectIntervals.value;
+  changeTest();
+});
+
+typeTimeLine.addEventListener('change', (event) => {
+  if (event.target) {
+    changeTestFormsDisplay(event.target);
+    changeTest();
+  }
+});
+
+changeTestFormsDisplay();
 
 function changeTest() {
-  if (ctrl) removeControl();
+  if (ctrl) remove();
   const options = {};
-  options.position = selectPosicion.options[selectPosicion.selectedIndex].value;
+
+  const selectPosition = selectPosicion.options[selectPosicion.selectedIndex].value;
+  if (selectPosition !== '') options.position = selectPosition;
+
+  if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
+
+  const collapsible = selectCollapsible.options[selectCollapsible.selectedIndex].value;
+  if (collapsible !== '') options.collapsible = (collapsible === 'true');
+
+  const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
+  if (collapsed !== '') options.collapsed = (collapsed === 'true');
+
+  if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
 
   if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
     options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
     options.intervals = elementTime.value !== '' ? elementTime.value : time;
-    options.speedDate = elementSpeedDate.value >= 1 ? elementSpeedDate.value : 1;
+    options.speedDate = elementSpeedDate.value >= 1 ? Number(elementSpeedDate.value) : 1;
     options.paramsDate = elementParamsDate.options[elementParamsDate.selectedIndex].value;
-    options.stepValue = elementStepValue.value >= 1 ? elementStepValue.value : 1;
-    options.sizeWidthDinamic = elementSizeWidthDinamic
-      .options[elementSizeWidthDinamic.selectedIndex].value;
+    options.stepValue = elementStepValue.value >= 1 ? Number(elementStepValue.value) : 1;
+    options.sizeWidthDinamic = elementSizeWidth.options[elementSizeWidth.selectedIndex].value;
     options.formatValue = elementFormatValue.options[elementFormatValue.selectedIndex].value;
     options.formatMove = elementFormatMove.options[elementFormatMove.selectedIndex].value;
   } else {
     options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
     options.intervals = inputIntervals.value !== '' ? inputIntervals.value : intervals;
-    // const animationValor = selectAnimation.options[selectAnimation.selectedIndex].value;
+    const animation = selectAnimation.options[selectAnimation.selectedIndex].value;
+    if (animation !== '') options.animation = animation === 'true';
+    if (inputSpeed.value !== '') options.speed = Number(inputSpeed.value);
   }
-  createControl(options);
+  create(options);
 }
 
 const removeButton = document.getElementById('removeButton');
 removeButton.addEventListener('click', () => {
-  removeControl();
+  remove();
 });

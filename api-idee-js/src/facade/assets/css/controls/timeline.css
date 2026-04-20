@@ -2,6 +2,11 @@
     padding: .5rem;
 }
 
+.m-control-panel.m-control-timeline.opened .m-controls-panel {
+    width: 100%;
+    max-width: none;
+}
+
 .m-control-panel.m-control-timeline.opened .div-m-timeline-panel {
     --num: 7;
     --valor: '';
@@ -125,7 +130,7 @@
     --left: 0;
     --opacity: 0;
     color: #000000;
-    padding: 0.5rem 2rem 1rem;
+    padding: 1rem 2rem;
 }
 
 .m-control-panel.m-control-timeline.opened .div-m-timeline-slider input {
