@@ -60,7 +60,6 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: tooltipComparator.
-- **enabledDisplayInLayerSwitcher**: Define si se incluirán en el selector de capas las capas con displayInLayerSwitcher *true*.
 - **listLayers**: Array de capas (String o Object), estas capas se verán en el selector (WMS o WMTS).
 ```JavaScript
 // Ejemplos de definiciones de capas esperadas por el
@@ -139,7 +138,6 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
 ```javascript
  const comparators = new IDEE.plugin.Comparators({
   position: 'right',
-  enabledDisplayInLayerSwitcher: true,
   collapsed: false,
   defaultCompareMode: 'mirrorpanelParams', // mirrorpanelParams - lyrcompareParams - transparecyParams - none
   listLayers: [
@@ -178,7 +176,6 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
       map4: {
         BackImgLayer: {
           position: 'right',
-          collapsible: true,
           collapsed: true,
           layerId: 0,
           columnsNumber: 2,
@@ -286,7 +283,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
 # API-REST
 
 ```javascript
-URL_API?comparators=position*!collapsed*!tooltip*! *!defaultCompareMode*!enabledKeyFunctions*!transparencyParams*!lyrcompareParams*!mirrorpanelParams*!windowsyncParams
+URL_API?comparators=position*!collapsed*!tooltip*!listlayers*! *!defaultCompareMode*!enabledKeyFunctions*!transparencyParams*!lyrcompareParams*!mirrorpanelParams*!windowsyncParams
 ```
 
 <table>
@@ -303,6 +300,11 @@ URL_API?comparators=position*!collapsed*!tooltip*! *!defaultCompareMode*!enabled
      <tr>
         <td>collapsed</td>
         <td>true/false</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>order</td>
+        <td>Número entero positivo</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
     <tr>
@@ -350,8 +352,7 @@ URL_API?comparators=position*!collapsed*!tooltip*! *!defaultCompareMode*!enabled
 
 ### Ejemplos de uso API-REST
 ```
-https://componentes.idee.es/api-idee?comparators=right*false*true*comparador*true**mirror*true*10*true*true*true*true
-
+https://api-ideedes.grupotecopy.es//api-idee/?comparators=right*!false*!0*!MiComparador*!%5B%27WMS*Huellas%20Sentinel2*https://wms-satelites-historicos.idee.es/satelites-historicos*teselas_sentinel2_espanna*true%27,%27WMS*Invierno%202022%20falso%20color%20natural*https://wms-satelites-historicos.idee.es/satelites-historicos*SENTINEL.2022invierno_432-1184*true%27,%27WMS*Invierno%202022%20falso%20color%20infrarrojo*https://wms-satelites-historicos.idee.es/satelites-historicos*SENTINEL.2022invierno_843*true%27,%27WMS*Filomena*https://wms-satelites-historicos.idee.es/satelites-historicos*Filomena*true%27%5D*!mirror*!true*!true*!true*!true*!false
 ```
 No funciona ```https://componentes.idee.es/api-idee?comparators``` es necesario espeficiar alguno de los siguientes parámetros: transparencyParams, lyrcompareParams, mirrorpanelParams.
 
@@ -370,7 +371,6 @@ Ejemplo de constructor:
   collapsed: false,
   tooltip: 'Plugin Comparators',
   defaultCompareMode: 'mirror',
-  enabledDisplayInLayerSwitcher: true,
   listLayers: [
     'WMS*Landsat 5 TM 1996. Color natural*https://wms-satelites-historicos.idee.es/satelites-historicos*LANDSAT5.1996_321-543*true',
     'WMS*Landsat 5 TM 1996. Falso color infrarrojo*https://wms-satelites-historicos.idee.es/satelites-historicos*LANDSAT5.1996_432*true',
@@ -413,7 +413,7 @@ Ejemplo de constructor:
 }
 ```
 ```
-https://api-ideedes.grupotecopy.es/api-idee/?comparators=base64=eyJwb3NpdGlvbiI6InJpZ2h0IiwiY29sbGFwc2VkIjpmYWxzZSwib3JkZXIiOjEsInRvb2x0aXAiOiJNaUNvbXBhcmFkb3IiLCJlbmFibGVkRGlzcGxheUluTGF5ZXJTd2l0Y2hlciI6dHJ1ZSwibGlzdExheWVycyI6WyJXTVMqSHVlbGxhcyBTZW50aW5lbDIqaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcyp0ZXNlbGFzX3NlbnRpbmVsMl9lc3Bhbm5hKnRydWUiLCJXTVMqRmlsb21lbmEqdHRwczovL3dtcy1zYXRlbGl0ZXMtaGlzdG9yaWNvcy5pZGVlLmVzL3NhdGVsaXRlcy1oaXN0b3JpY29zKkZpbG9tZW5hKnRydWUiXSwiZGVmYXVsdENvbXBhcmVNb2RlIjoibWlycm9yIiwiZW5hYmxlZEtleUZ1bmN0aW9ucyI6dHJ1ZSwidHJhbnNwYXJlbmN5UGFyYW1zIjp0cnVlLCJseXJjb21wYXJlUGFyYW1zIjp0cnVlLCJtaXJyb3JwYW5lbFBhcmFtcyI6dHJ1ZSwid2luZG93c3luY1BhcmFtcyI6ZmFsc2V9
+https://api-ideedes.grupotecopy.es/api-idee/?comparators=base64=eyJwb3NpdGlvbiI6InJpZ2h0IiwiY29sbGFwc2VkIjpmYWxzZSwib3JkZXIiOjAsInRvb2x0aXAiOiJNaUNvbXBhcmFkb3IiLCJsaXN0TGF5ZXJTIjpbIldNUypIdWVsbGFzIFNlbnRpbmVsMippdHRwczovL3dtcy1zYXRlbGl0ZXMtaGlzdG9yaWNvcy5pZGVlLmVzL3NhdGVsaXRlcy1oaXN0b3JpY29zKnRlc2VsYXNfc2VudGluZWwyX2VzcGFubmEqdHJ1ZSIsIldNUypJbnZpZXJubyAyMDIyIGZhbHNvIGNvbG9yIG5hdHVyYWwqaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcypTRU5USU5FTC4yMDIyaW52aWVybm9fNDMyLTExODQqdHJ1ZSIsIldNUypJbnZpZXJubyAyMDIyIGZhbHNvIGNvbG9yIGluZnJhcnJvam8qaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcypTRU5USU5FTC4yMDIyaW52aWVybm9fODQzKnRydWUiLCJXTVMqRmlsb21lbmEqdHRwczovL3dtcy1zYXRlbGl0ZXMtaGlzdG9yaWNvcy5pZGVlLmVzL3NhdGVsaXRlcy1oaXN0b3JpY29zKkZpbG9tZW5hKnRydWUiXSwiZGVmYXVsdENvbXBhcmVNb2RlIjoibWlycm9yIiwiZW5hYmxlZEtleUZ1bmN0aW9ucyI6dHJ1ZSwidHJhbnNwYXJlbmN5UGFyYW1zIjp0cnVlLCJseXJjb21wYXJlUGFyYW1zIjp0cnVlLCJtaXJyb3JwYW5lbFBhcmFtcyI6dHJ1ZSwid2luZG93c3luY1BhcmFtcyI6ZmFsc2V9
 ```
 
 

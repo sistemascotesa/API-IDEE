@@ -74,6 +74,14 @@ export default class Comparators extends IDEE.Plugin {
     this.map = map;
     this.options.listLayers = this.options.listLayers || [];
 
+    if (typeof this.options.listLayers === 'string' && this.options.listLayers !== '') {
+      try {
+        this.options.listLayers = JSON.parse(this.options.listLayers.replace(/'/g, '"'));
+      } catch (e) {
+        this.options.listLayers = [];
+      }
+    }
+
     // Prevent Generic
     this.options.listLayers = this.options.listLayers.filter((layer) => {
       if (typeof layer === 'string') {
@@ -123,7 +131,7 @@ export default class Comparators extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${this.options.listLayers}*${this.options.defaultCompareMode}*${this.options.enabledKeyFunctions}*${!!this.options.transparencyParams}*${!!this.options.lyrcompareParams}*${!!this.options.mirrorpanelParams}*${!!this.options.windowsyncParams}`;
+    return `${this.name}=${this.position}*!${this.collapsed}*!${this.order}*!${this.tooltip}*!${this.options.listLayers}*!${this.options.defaultCompareMode}*!${this.options.enabledKeyFunctions}*!${!!this.options.transparencyParams}*!${!!this.options.lyrcompareParams}*!${!!this.options.mirrorpanelParams}*!${!!this.options.windowsyncParams}`;
   }
 
   /**
