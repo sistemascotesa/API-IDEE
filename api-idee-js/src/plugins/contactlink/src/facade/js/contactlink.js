@@ -173,7 +173,7 @@ export default class ContactLink extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_link.svg',
       order: this.order,
     });
     map.addButtons(this.button);
@@ -181,12 +181,13 @@ export default class ContactLink extends IDEE.Plugin {
     this.panel = new IDEE.ui.Panel(this.name, {
       collapsed: this.collapsed,
       position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
       className: this.className,
       collapsedButtonClass: 'g-contactlink-link',
       tooltip: this.tooltip,
       order: this.order,
     });
-    map.addPanels(this.panel);
 
     this.control_ = new ContactLinkControl({
       descargascnig: this.linksDescargasCnig,
@@ -209,6 +210,8 @@ export default class ContactLink extends IDEE.Plugin {
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
+
+    map.addPanels(this.panel);
   }
 
   /**
