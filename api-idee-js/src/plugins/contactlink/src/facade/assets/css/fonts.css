@@ -3,23 +3,23 @@
 *********************/
 
 .g-cartografia-download::before {
-    -webkit-mask-image: url('../icons/download.svg');
-    mask-image: url('../icons/download.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_descargasContactlink.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_descargasContactlink.svg');
 }
 
 .g-cartografia-compare::before {
-    -webkit-mask-image: url('../icons/compare.svg');
-    mask-image: url('../icons/compare.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_comparadorContactlink.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_comparadorContactlink.svg');
 }
 
 .g-cartografia-3d::before {
-    -webkit-mask-image: url('../icons/3d.svg');
-    mask-image: url('../icons/3d.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tresd.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tresd.svg');
 }
 
 .g-cartografia-images::before {
-    -webkit-mask-image: url('../icons/images.svg');
-    mask-image: url('../icons/images.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_fototeca.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_fototeca.svg');
 }
 
 /****************
@@ -27,31 +27,31 @@
 *****************/
 
 .g-cartografia-twitter::before {
-    -webkit-mask-image: url('../icons/twitter.svg');
-    mask-image: url('../icons/twitter.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_twitter.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_twitter.svg');
 }
 
 .g-cartografia-instagram::before {
-    -webkit-mask-image: url('../icons/instagram.svg');
-    mask-image: url('../icons/instagram.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_instagram.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_instagram.svg');
 }
 
 .g-cartografia-facebook::before {
-    -webkit-mask-image: url('../icons/facebook.svg');
-    mask-image: url('../icons/facebook.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_facebook.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_facebook.svg');
 }
 
 .g-cartografia-pinterest::before {
-    -webkit-mask-image: url('../icons/pinterest.svg');
-    mask-image: url('../icons/pinterest.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/pinterest.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/pinterest.svg');
 }
 
 .g-cartografia-youtube::before {
-    -webkit-mask-image: url('../icons/youtube.svg');
-    mask-image: url('../icons/youtube.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_youtube.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_youtube.svg');
 }
 
 .g-cartografia-mail::before {
-    -webkit-mask-image: url('../icons/mail.svg');
-    mask-image: url('../icons/mail.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mail.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mail.svg');
 }
