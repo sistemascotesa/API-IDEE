@@ -68,11 +68,9 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - 'left' (LEFT) - A la izquierda.
   - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
-- **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
 - **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Impresión del mapa.
-- **isDraggable**: "True" para que el plugin se pueda desplazar, por defecto false.
-- **useProxy**: Define si el plugin utilizará el proxy o no, valores true o false. Por defecto: false.
+- **defaultOpenControl**: Indica el control que aparecerá abierto al inicio. 0=ninguno, 1=printermap, 2=georefImage, 3=georefImageEpsg Por defecto: 0.
 - **georefImageEpsg**: Indica si el control "Impresión de imágenes de capas precargadas" se añade al plugin (true/false). Por defecto: true.
   - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Impresión del mapa.
   - **layers**: Array de objetos con información de las capas a imprimir.
@@ -81,7 +79,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
     - format: Formato de la capa.
     - legend: Leyenda de la capa.
     - EPSG: Opcional, por defecto 3857.
-  ```JavaScript
+    ```JavaScript
       layers: [
       {
                 url: 'http://www.ign.es/wms-inspire/mapa-raster?',
@@ -144,7 +142,6 @@ El constructor se inicializa con un JSON con los siguientes atributos:
     "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html",
     ],
   ```
-  - **defaultOpenControl**: Indica el control que aparecerá abierto al inicio. Por defecto: 0.
   - **showDefaultTemplate**: Si se quiere mostrar la opción de elegir la plantilla por defecto que tiene el plugin asignado. Por defecto: false.
   - **defaultDpiOptions**: Valores DPI a elegir en el modo de impresión. Por defecto 72, 150 y 300.
   - **layoutsRestraintFromDpi**: Plantillas en las que no se puede elegir el DPI debido al esfuerzo computaciona. Por defecto no se puede en A2, A1, A0 y tamaño pantalla.
@@ -270,7 +267,7 @@ A continuación, se muestran ejemplos de elementos correctamente configurados pa
 # API-REST
 
 ```javascript
-URL_API?printviewmanagement=position*collapsed*collapsible*tooltip*isDraggable*georefImageEpsg*georefImage*printermap*defaultOpenControl
+URL_API?printviewmanagement=position*collapsed*order*tooltip*defaultOpenControl*georefImageEpsg*georefImage*printermap
 ```
 
 <table>
@@ -290,11 +287,6 @@ URL_API?printviewmanagement=position*collapsed*collapsible*tooltip*isDraggable*g
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
-    <td>collapsible</td>
-    <td>true/false</td>
-    <td>Base64 ✔️ | Separador ✔️</td>
-  </tr>
-  <tr>
     <td>order</td>
     <td>Número entero positivo</td>
     <td>Base64 ✔️  | Separador ✔️ </td>
@@ -305,8 +297,8 @@ URL_API?printviewmanagement=position*collapsed*collapsible*tooltip*isDraggable*g
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
-    <td>isDraggable</td>
-    <td>true/false</td>
+    <td>defaultOpenControl</td>
+    <td>0, 1, 2, 3</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -324,22 +316,17 @@ URL_API?printviewmanagement=position*collapsed*collapsible*tooltip*isDraggable*g
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
-  <tr>
-    <td>defaultOpenControl</td>
-    <td>0, 1, 2, 3</td>
-    <td>Base64 ✔️ | Separador ✔️</td>
-  </tr>
 </table>
 (*) Este parámetro podrá ser enviado por API-REST con los valores true o false. Si es true indicará al plugin que se añada el control con los valores por defecto. Para añadir los zooms deseados en los que se podrá centrar el mapa se deberá realizar mediante API-REST en base64.
 
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee?printviewmanagement=LEFT*false*false*imprimir*true*true*true*true*2
+https://api-ideedes.grupotecopy.es/api-idee?printviewmanagement=right*false*0*Imprimir*2*true*true*true
 ```
 
 ```
-https://componentes.idee.es/api-idee?printviewmanagement=LEFT*true*true*Imprimir*true***false*true*true*1
+https://api-ideedes.grupotecopy.es/api-idee?printviewmanagement=left*false*0*Imprimir*1*true*true*true
 ```
 
 
@@ -355,9 +342,7 @@ IDEE.utils.encodeBase64(obj_params);
 
 ```javascript
 {
-  isDraggable: true,
   position: 'left',
-  collapsible: true,
   collapsed: true,
   order: 0,
   tooltip: 'Imprimir',
@@ -390,16 +375,14 @@ IDEE.utils.encodeBase64(obj_params);
 }
 ```
 ```
-https://componentes.idee.es/api-idee?printviewmanagement=base64=eyJpc0RyYWdnYWJsZSI6dHJ1ZSwicG9zaXRpb24iOiJUTCIsImNvbGxhcHNpYmxlIjp0cnVlLCJjb2xsYXBzZWQiOnRydWUsInRvb2x0aXAiOiJJbXByaW1pciIsImdlb3JlZkltYWdlRXBzZyI6eyJ0b29sdGlwIjoiR2VvcmVmZXJlbmNpYXIgaW1hZ2VuIiwibGF5ZXJzIjpbeyJ1cmwiOiJodHRwOi8vd3d3Lmlnbi5lcy93bXMtaW5zcGlyZS9tYXBhLXJhc3Rlcj8iLCJuYW1lIjoibXRuX3Jhc3Rlcml6YWRvIiwiZm9ybWF0IjoiaW1hZ2UvanBlZyIsImxlZ2VuZCI6Ik1hcGEgRVRSUzg5IFVUTSIsIkVQU0ciOiJFUFNHOjQzMjYifSx7InVybCI6Imh0dHA6Ly93d3cuaWduLmVzL3dtcy1pbnNwaXJlL3Bub2EtbWE/IiwibmFtZSI6Ik9JLk9ydGhvaW1hZ2VDb3ZlcmFnZSIsImZvcm1hdCI6ImltYWdlL2pwZWciLCJsZWdlbmQiOiJJbWFnZW4gKFBOT0EpIEVUUlM4OSBVVE0ifV19LCJnZW9yZWZJbWFnZSI6eyJ0b29sdGlwIjoiR2VvcmVmZXJlbmNpYXIgaW1hZ2VuIiwicHJpbnRUZW1wbGF0ZVVybCI6Imh0dHBzOi8vY29tcG9uZW50ZXMuY25pZy5lcy9nZW9wcmludC9wcmludC9tYXBleHBvcnQiLCJwcmludFNlbGVjdG9yIjp0cnVlfSwicHJpbnRlcm1hcCI6dHJ1ZSwiZGVmYXVsdE9wZW5Db250cm9sIjozfQ==
+https://api-ideedes.grupotecopy.es/api-idee?printviewmanagement=base64=eyJwb3NpdGlvbiI6ImxlZnQiLCJjb2xsYXBzZWQiOnRydWUsIm9yZGVyIjowLCJ0b29sdGlwIjoiSW1wcmltaXIiLCJnZW9yZWZJbWFnZUVwc2ciOnsidG9vbHRpcCI6Ikdlb3JlZmVyZW5jaWFyIGltYWdlbiIsImxheWVycyI6W3sidXJsIjoiaHR0cDovL3d3dy5pZ24uZXMvd21zLWluc3BpcmUvbWFwYS1yYXN0ZXI/IiwibmFtZSI6Im10bl9yYXN0ZXJpemFkbyIsImZvcm1hdCI6ImltYWdlL2pwZWciLCJsZWdlbmQiOiJNYXBhIEVUUlM4OSBVVE0iLCJFUEVHIjoiRVBTRzo0MzI2In0seyJ1cmwiOiJodHRwOi8vd3d3Lmlnbi5lcy93bXMtaW5zcGlyZS9wbm9hLW1hPyIsIm5hbWUiOiJPSS5PcnRob2ltYWdlQ292ZXJhZ2UiLCJmb3JtYXQiOiJpbWFnZS9qcGVnIiwibGVnZW5kIjoiSW1hZ2VuIChQTk9BKSBFVFJTMTkgVVRNIn1dLCJkZWZhdWx0RHBpT3B0aW9ucyI6WzcyLDE1MCwzMDBdfSwiZ2VvcmVmSW1hZ2UiOnsidG9vbHRpcCI6Ikdlb3JlZmVyZW5jaWFyIGltYWdlbiIsInByaW50U2VsZWN0b3IiOnRydWUsImRlZmF1bHREcGlPcHRpb25zIjpbNzIsMTUwLDMwMF19LCJwcmludGVybWFwIjp0cnVlLCJkZWZhdWx0T3BlbkNvbnRyb2wiOjN9
 ```
 
 
 2) Ejemplo de constructor del plugin:
 ```javascript
 {
-  isDraggable: true,
   position: 'left',
-  collapsible: true,
   collapsed: true,
   order: 0,
   tooltip: 'Imprimir',
@@ -409,7 +392,7 @@ https://componentes.idee.es/api-idee?printviewmanagement=base64=eyJpc0RyYWdnYWJs
 }
 ```
 ```
-https://componentes.idee.es/api-idee?printviewmanagement=base64=eyJpc0RyYWdnYWJsZSI6dHJ1ZSwicG9zaXRpb24iOiJUTCIsImNvbGxhcHNpYmxlIjp0cnVlLCJjb2xsYXBzZWQiOnRydWUsInRvb2x0aXAiOiJJbXByaW1pciIsImdlb3JlZkltYWdlRXBzZyI6ZmFsc2UsImdlb3JlZkltYWdlIjpmYWxzZSwicHJpbnRlcm1hcCI6dHJ1ZX0=
+https://componentes.idee.es/api-idee?printviewmanagement=base64=eyJwb3NpdGlvbiI6ImxlZnQiLCJjb2xsYXBzZWQiOnRydWUsIm9yZGVyIjowLCJ0b29sdGlwIjoiSW1wcmltaXIiLCJnZW9yZWZJbWFnZUVwc2ciOmZhbHNlLCJnZW9yZWZJbWFnZSI6ZmFsc2UsInByaW50ZXJtYXAiOnRydWV9
 ```
 
 # Ejemplo de uso
@@ -420,9 +403,7 @@ const map = IDEE.map({
 });
 
 const mp = new IDEE.plugin.PrintViewManagement({
-  isDraggable: true,
   position: 'left',
-  collapsible: true,
   collapsed: true,
   order: 0,
   tooltip: 'Imprimir',

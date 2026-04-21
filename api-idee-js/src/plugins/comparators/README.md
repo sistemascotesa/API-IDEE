@@ -283,7 +283,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
 # API-REST
 
 ```javascript
-URL_API?comparators=position*!collapsed*!tooltip*!listlayers*! *!defaultCompareMode*!enabledKeyFunctions*!transparencyParams*!lyrcompareParams*!mirrorpanelParams*!windowsyncParams
+URL_API?comparators=position*!collapsed*!order*!tooltip*!listlayers*! *!defaultCompareMode*!enabledKeyFunctions*!transparencyParams*!lyrcompareParams*!mirrorpanelParams*!windowsyncParams
 ```
 
 <table>
