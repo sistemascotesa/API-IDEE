@@ -17,6 +17,28 @@ import apiIdee from '../api-idee';
 
 /**
  * @typedef {Object} Options
+ * @param {string} [position] posición del control en el mapa.
+ * @param {string} [tooltip] información sobre herramientas del control.
+ * @param {boolean} [collapsible] indica si el control es plegable o no.
+ * @param {boolean} [collapsed] indica si el control está plegado o no por defecto.
+ * @param {boolean} [fixed] indica si el control muestra un mapa fijo.
+ * @param {Number} [zoom] Zoom del minimapa.
+ * @param {Number} [maxZoom] Zoom máximo del minimapa.
+ * @param {Number} [minZoom] Zoom mínimo del minimapa.
+ * @param {Number} [ratio] Relación del minimapa con respecto al mapa principal.
+ * @param {string} [baseLayer] Capa base que se mostrará en el mapa general.
+*/
+
+/**
+ * @classdesc
+ * OverviewMap control class.
+ * Esta clase implementa el control de vista general,
+ * que muestra un mapa pequeño con la ubicación del mapa principal. El control se puede
+ * configurar para mostrar un mapa fijo o para mostrar el mismo mapa que el mapa principal.
+ * El control se puede configurar para ser colapsable o no colapsable,
+ * y para estar colapsado o no colapsado por defecto.
+ *
+ * @typedef {Object} Options
  * @param {string} [position='left'] posición del control en el mapa.
  * @param {string} [tooltip] información sobre herramientas del control.
  * Por defecto es 'Mapa general'.
@@ -33,17 +55,9 @@ import apiIdee from '../api-idee';
  * @param {string} [baseLayer] Capa base que se mostrará en el mapa general.
  * El valor predeterminado es:
  * 'WMTS*http://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*'
-*/
-
-/**
- * @classdesc
- * OverviewMap control class.
  *
- * Esta clase implementa el control de vista general,
- * que muestra un mapa pequeño con la ubicación del mapa principal. El control se puede
- * configurar para mostrar un mapa fijo o para mostrar el mismo mapa que el mapa principal.
- * El control se puede configurar para ser colapsable o no colapsable,
- * y para estar colapsado o no colapsado por defecto.
+ * @api
+ * @extends {IDEE.Control}
  */
 class OverviewMap extends Control {
   /**

@@ -31,8 +31,8 @@ import * as Dialog from '../dialog';
 /**
  * @classdesc
  * Agrega la herramienta de cambio de implementación.
- * @property {Boolean} collapsible Indica si el control es colapsable.
- * @property {Boolean} collapsed Indica si el control está colapsado.
+ * @property {Boolean} [collapsible=true] Indica si el control es colapsable.
+ * @property {Boolean} [collapsed=true] Indica si el control está colapsado.
  *
  * @api
  * @extends {IDEE.Control}

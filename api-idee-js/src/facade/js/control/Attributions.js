@@ -6,7 +6,7 @@ import attributionsTemplate from 'templates/attributions';
 import myhelp from 'templates/attributionshelp';
 import * as EventType from 'IDEE/event/eventtype';
 import AttributionsImpl from 'impl/control/Attributions';
-import ControlBase from './Control';
+import Control from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
 import { getValue } from '../i18n/language';
 import { INTERSECT } from '../filter/Module';
@@ -66,9 +66,11 @@ import * as Position from '../ui/position';
  * @property {String} [defaultURL_='https://www.ign.es/'] URL por defecto.
  * @property {Array.<String>} [collectionsAttributions_=[]] Colección de atribuciones,
  * se especificarán como una colección de textos.
+ *
+ * @extends {IDEE.Control}
  * @api
  */
-class Attributions extends ControlBase {
+class Attributions extends Control {
   /**
    * Constructor principal de la clase.
    *
