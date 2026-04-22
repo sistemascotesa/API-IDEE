@@ -111,7 +111,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
       this.selectElementHTML();
       this.addEvent();
       this.defaultOpenControl_(html);
-      this.addSvgIcons(html);
       success(html);
     });
   }
@@ -172,19 +171,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
       this.deactive(html, 'georefImageEpsg');
       this.georefImageEpsgControl.active(html);
     }
-  }
-
-  addSvgIcons(html) {
-    const configs = [
-      { param: this.printermap_, id: '#m-printviewmanagement-printermap', icon: 'icn_impresora' },
-      { param: this.georefImage_, id: '#m-printviewmanagement-georefImage', icon: 'icn_foto' },
-      { param: this.georefImageEpsg_, id: '#m-printviewmanagement-georefImageEpsg', icon: 'icn_fototeca' },
-    ];
-    configs.forEach(({ param, id, icon }) => {
-      if (param !== false) {
-        IDEE.utils.loadSvgByUrl(icon, html.querySelector(id));
-      }
-    });
   }
 
   /**

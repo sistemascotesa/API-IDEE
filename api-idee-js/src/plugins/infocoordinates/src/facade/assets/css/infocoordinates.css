@@ -234,13 +234,13 @@
 /************
 * AYUDA CRS *
 ************/
-.btn-infocoordinates-help {
+.g-cartografia-btn-infocoordinates-help {
     background-color: var(--idee-color-white) !important;
     color: var(--idee-color-primary) !important;
     box-shadow: inset 0 0 0 2px var(--idee-color-primary);
 }
 
-.btn-infocoordinates-help:hover {
+.g-cartografia-btn-infocoordinates-help:hover {
     box-shadow: none !important;
     background-color: var(--idee-color-links) !important;
     color: var(--idee-color-white) !important;
