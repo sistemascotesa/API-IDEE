@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-nested-ternary */
 /**
  * @module IDEE/facade/builder
@@ -22,7 +23,7 @@ import WMCSelector from '../control/WMCSelector';
 import Timeline from '../control/Timeline';
 import * as dialog from '../dialog';
 import Exception from '../exception/exception';
-import { isBoolean, isNumber } from '../util/Utils';
+import { decodeBase64Utf8, isBoolean, isNumber } from '../util/Utils';
 import MeasureBar from '../control/MeasureBar';
 import OverviewMap from '../control/OverviewMap';
 
@@ -358,12 +359,10 @@ export const getWMCSelectorPanel = (control, map, params = {}) => {
  */
 export const getTimelinePanel = (control, map, params = {}) => {
   const defaultOptions = getDefaultPanelOptions(control, params);
-  return new ControlPanel('timeline', {
+  return new ControlPanel(Timeline.NAME, {
     ...defaultOptions,
-    collapsible: isBoolean(defaultOptions.collapsible) ? defaultOptions.collapsible : true,
     className: 'm-control-timeline',
     collapsedButtonClass: 'g-cartografia-gestion-reloj2',
-    tooltip: params.tooltip ?? getValue('timeline').tooltip,
   });
 };
 
@@ -400,6 +399,97 @@ export const getPanelForControl = (control, map, params = {}) => {
 };
 
 /**
+ * Intelligently parses a value based on its content.
+ * Supports: boolean, number, JSON (object/array), base64-encoded values, and strings.
+ * If a value starts with 'base64~', it will be decoded and recursively parsed.
+ * @private
+ * @function
+ * @param {string} rawValue The raw value to parse.
+ * @param {string} paramKey The parameter key for error messages.
+ * @param {string} controlName The control name for error messages.
+ * @returns {*} Parsed value with detected type.
+ */
+const parseValueByType = (rawValue, paramKey, controlName) => {
+  if (!rawValue) return rawValue;
+  const value = rawValue.trim();
+  if (value.startsWith('base64~')) {
+    try {
+      const encoded = value.substring(7);
+      const decoded = decodeBase64Utf8(encoded);
+      return parseValueByType(decoded, paramKey, controlName);
+    } catch (e) {
+      dialog.error(getValue('exception').parseControlParamError
+        .replace('{param}', paramKey)
+        .replace('{control}', controlName)
+        .replace('{error}', getValue('exception').invalidBase64Encoding));
+      return null;
+    }
+  }
+
+  if (value === 'true') {
+    return true;
+  }
+  if (value === 'false') {
+    return false;
+  }
+
+  if (value !== '') {
+    const numValue = Number(value);
+    if (!Number.isNaN(numValue)) {
+      return numValue;
+    }
+  }
+
+  const trimmed = value.trim();
+  if ((trimmed.startsWith('[') && trimmed.endsWith(']')) || (trimmed.startsWith('{') && trimmed.endsWith('}'))) {
+    try {
+      return JSON.parse(trimmed);
+    } catch (e) {
+      dialog.error(getValue('exception').parseControlParamError
+        .replace('{param}', paramKey)
+        .replace('{control}', controlName)
+        .replace('{error}', getValue('exception').invalidJsonFormat));
+      return value;
+    }
+  }
+
+  return value;
+};
+
+/**
+ * Parses control parameters from a string with automatic type detection.
+ * No longer requires allowedAttributes - intelligently detects types from values.
+ * Supports: boolean (true/false), numbers, JSON (objects/arrays), base64-encoded values, and strings.
+ * Base64 encoding is indicated by 'base64~' prefix.
+ *
+ * Default separators: semicolon (;) for fields, equals (=) for key-value pairs.
+ * These separators are chosen to minimize conflicts with JSON syntax.
+ *
+ * @function
+ * @param {string} stringToParse The string to parse (e.g., "collapsed=false;position=right").
+ * @param {string} controlName The name of the control for error messages.
+ * @param {string} fieldSeparator Separator for fields (default ';').
+ * @param {string} keyValueSeparator Separator for key-value pairs (default '=').
+ * @returns {Object} Parsed options object.
+ */
+export const parseControlParams = (stringToParse, controlName, fieldSeparator = ';', keyValueSeparator = '=') => {
+  const result = {};
+  if (!stringToParse) return result;
+
+  const fields = stringToParse.split(fieldSeparator);
+  fields.forEach((field) => {
+    const parts = field.split(keyValueSeparator, 2);
+    if (parts.length === 2) {
+      const [key, rawValue] = parts;
+      if (key && rawValue) {
+        result[key] = parseValueByType(rawValue, key, controlName);
+      }
+    }
+  });
+  return result;
+};
+
+/**
  * This method create the mapea control from its name string.
  * @function
  * @param {string|Object} controlParam Control name or control instance.
@@ -411,8 +501,10 @@ export const buildControl = (controlParam, map) => {
   const params = {};
 
   if (isString(controlParam)) {
-    const normalizedControlParams = normalize(controlParam).split('*');
+    const controlNameSeparator = '*';
+    const normalizedControlParams = normalize(controlParam).split(controlNameSeparator);
     const controlName = normalizedControlParams[0];
+    const controlParams = controlParam.split(controlNameSeparator).slice(1).join(controlNameSeparator);
 
     const controls = {
       [Attributions.NAME]: () => {
@@ -484,16 +576,20 @@ export const buildControl = (controlParam, map) => {
       },
       [ImplementationSwitcher.NAME]: () => new ImplementationSwitcher(),
       [WMCSelector.NAME]: () => new WMCSelector(),
-      [Timeline.NAME]: () => new Timeline({
-        timelineType: 'absoluteSimple',
-      }),
+      [Timeline.NAME]: () => {
+        const parsedOptions = parseControlParams(controlParams, controlName);
+        return new Timeline({
+          timelineType: 'absoluteSimple',
+          ...parsedOptions,
+        });
+      },
     };
 
     const builderFunction = controls[controlName];
     if (isFunction(builderFunction)) {
       builtControl = builderFunction();
       if (builtControl) {
-        builtControl.builderParams = params; // Store params for panel creation
+        builtControl.builderParams = params;
       }
     } else {
       const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);

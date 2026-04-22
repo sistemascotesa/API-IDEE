@@ -1,26 +1,32 @@
+/* eslint-disable max-len */
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-use-before-define */
 import { map as Mmap } from 'IDEE/api-idee';
 import Timeline from 'IDEE/control/Timeline';
 
+const intervals64 = 'W1siTkFDSU9OQUwgMTk4MS0xOTg2IiwiMTk4NiIsIldNUypOQUNJT05BTF8xOTgxLTE5ODYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypOQUNJT05BTF8xOTgxLTE5ODYiXSxbIk9MSVNUQVQiLCIxOTk4IiwiV01TKk9MSVNUQVQqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypPTElTVEFUIl0sWyJTSUdQQUMiLCIyMDAzIiwiV01TKlNJR1BBQypodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKlNJR1BBQyJdLFsiUE5PQSAyMDA0IiwiMjAwNCIsIldNUypwbm9hMjAwNCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDA0Il0sWyJQTk9BIDIwMDUiLCIyMDA1IiwiV01TKnBub2EyMDA1Kmh0dHBzOi8vd3d3Lmlnbi5lcy93bXMvcG5vYS1oaXN0b3JpY28qcG5vYTIwMDUiXSxbIlBOT0EgMjAwNiIsIjIwMDYiLCJXTVMqcG5vYTIwMDYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3Rvcmljbypwbm9hMjAwNiJdLFsiUE5PQSAyMDEwIiwiMjAxMCIsIldNUypwbm9hMjAxMCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDEwIl1d';
+
 const map = Mmap({
   container: 'map',
   controls: ['rotate'],
+  // controls: ['timeline*collapsible=false;tooltip=Tooltip de ejemplo;position=down'],
+  // controls: ['timeline*collapsible=false;position=right;intervals=[["NACIONAL 1981-1986","1986","WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986"],["OLISTAT","1998","WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT"],["SIGPAC","2003","WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC"],["PNOA 2004","2004","WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004"],["PNOA 2005","2005","WMS*pnoa2005*https://www.ign.es/wms/pnoa-historico*pnoa2005"],["PNOA 2006","2006","WMS*pnoa2006*https://www.ign.es/wms/pnoa-historico*pnoa2006"],["PNOA 2010","2010","WMS*pnoa2010*https://www.ign.es/wms/pnoa-historico*pnoa2010"]]'],
+  // controls: [`timeline*collapsible=false;position=right;intervals=base64~${intervals64}`],
   projection: 'EPSG:3857',
   center: [-467062.8225, 4683459.6216],
   zoom: 6,
 });
 
-let ctrl;
-
-const create = (propiedades) => {
-  ctrl = new Timeline(propiedades);
-  map.addControls(ctrl);
+const create = (options) => {
+  if (!map.hasControl(Timeline.NAME)) {
+    map.addControls(new Timeline(options));
+  }
 };
 
 const remove = () => {
-  map.removeControls(ctrl);
-  ctrl = null;
+  const ctrls = map.getControls(Timeline.NAME);
+  if (ctrls.length === 1) map.removeControls(ctrls);
 };
 
 const inputIntervals = document.getElementById('inputIntervals');
@@ -133,7 +139,7 @@ typeTimeLine.addEventListener('change', (event) => {
 changeTestFormsDisplay();
 
 function changeTest() {
-  if (ctrl) remove();
+  remove();
   const options = {};
 
   const selectPosition = selectPosicion.options[selectPosicion.selectedIndex].value;

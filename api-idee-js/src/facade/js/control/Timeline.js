@@ -13,7 +13,7 @@ import Vector from 'IDEE/layer/Vector';
 import FilterFunction from 'IDEE/filter/Function';
 import * as EventType from 'IDEE/event/eventtype';
 import {
-  isArray, isNullOrEmpty, isObject, isString, isUndefined,
+  isArray, isBoolean, isNullOrEmpty, isObject, isString, isUndefined,
 } from '../util/Utils';
 import Control from './Control';
 import { getValue } from '../i18n/language';
@@ -26,10 +26,15 @@ const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
 /**
  * @typedef {Object} module:IDEE/control/Timeline~Options
  * @api
+ * @property {Array|String} intervals Intervalos de tiempo. (obligatorio)
  * @property {String} [position] Posición del control en el mapa.
  * Posibles valores: 'left', 'right'.
- * @property {Array|String} [intervals] Intervalos de tiempo.
+ * @property {String} [tooltip] Texto del tooltip para el control.
+ * @property {Number} [order] Accesibilidad, z-index del control.
+ * @property {Boolean} [collapsible] Indica si el control puede colapsarse.
+ * @property {Boolean} [collapsed] Indica si el control está colapsado.
  * Puede ser un array de objetos con atributos [name, tag, service] o una cadena JSON.
+ * Por defecto se utilizan intervalos de ejemplo con capas WMS del IGN.
  * @property {Boolean} [animation] Indica si la línea de tiempo se anima automáticamente.
  * @property {Number} [speed] Velocidad de la animación en segundos (rango: 1-100).
  * @property {Number} [speedDate] Velocidad de la animación para timelines dinámicos.
@@ -41,10 +46,8 @@ const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
  * @property {String} [formatMove] Formato de movimiento: 'discrete' o 'continuous'.
  * @property {String} [formatValue] Formato de valores:
  * 'linear', 'logarithmic', 'exponential'.
- * @property {String|Boolean} [timelineType] Tipo de timeline:
+ * @property {String} [timelineType] Tipo de timeline:
  * 'absoluteSimple', 'absolute', 'relative'.
- * @property {String} [tooltip] Texto del tooltip para el control.
- * @property {Number} [order] Accesibilidad, z-index del control.
  * @property {Object} [vendorOptions] Opciones específicas para la implementación.
  */
 
@@ -56,11 +59,15 @@ const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
  * momentos en el tiempo.
  * Soporta diferentes tipos de timeline: absoluteSimple, absolute y relative.
  *
- * @property {String} [position='left'] Posición del control en el mapa.
- * @property {String} [tooltip] Texto del tooltip para el control.
- * @property {Number} [order=0] Accesibilidad, z-index del control.
- * @property {Array|String} [intervals=[]] Intervalos de tiempo. Puede ser un array de objetos
+ * @property {Array|String} intervals Intervalos de tiempo. Puede ser un array de objetos
  * con atributos [name, tag, service] o una cadena JSON parseada.
+ * @property {String} [position='left'] Posición del control en el mapa.
+ * @property {Boolean} [collapsible=true] Indica si el control puede colapsarse.
+ * @property {Boolean} [collapsed=true] Indica si el control está colapsado.
+ * Depende de collapsible, solo se aplica si collapsible es true.
+ * @property {String} [tooltip] Texto del tooltip para el control.
+ * Por defecto la traducción del idioma.
+ * @property {Number} [order=0] Accesibilidad, z-index del control.
  * @property {Boolean} [animation=true] Indica si la animación de la línea de tiempo está
  * activada (true) o desactivada (false).
  * @property {Number} [speed=1] Velocidad de reproducción de la animación en segundos,
@@ -76,7 +83,7 @@ const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
  * 'discrete' para movimientos discretos o 'continuous' para continuos.
  * @property {String} [formatValue='linear'] Formato de valores para la escala:
  * 'linear', 'logarithmic', 'exponential'.
- * @property {String|Boolean} [timelineType=false] Tipo de timeline a utilizar:
+ * @property {String} [timelineType=false] Tipo de timeline a utilizar:
  * 'absoluteSimple', 'absolute', 'relative'. Debe ser uno de los tipos soportados.
  * @property {Boolean} [running=false] Indica si la animación está actualmente ejecutándose.
  * @property {Object} [date] Objeto que contiene las fechas inicial y final para el timeline.
@@ -215,26 +222,27 @@ class Timeline extends Control {
     if (isString(options.intervals)) {
       this.intervals = JSON.parse(options.intervals.replace(/!!/g, '[').replace(/¡¡/g, ']'));
     } else if (isArray(options.intervals)) {
-      this.intervals = options.intervals;
-    }
-
-    // Dinamic TimeLine
-    if (this.intervals.length > 0 && ['absolute', 'relative'].includes(this.timelineType)) {
-      this.intervals = Object.entries(options.intervals)
-        .map(([key, values]) => {
+      // Dinamic TimeLine
+      if (['absolute', 'relative'].includes(this.timelineType)) {
+        this.intervals = Object.entries(options.intervals).map(([key, values]) => {
           const valuesNew = values;
           const [init, end] = this.transformTime_NumbToDate(valuesNew.init, valuesNew.end);
           valuesNew.init = init;
           valuesNew.end = end;
           return valuesNew;
         });
+      } else {
+        this.intervals = options.intervals;
+      }
     }
 
-    /**
-     * position
-     * @type {Position}
-     */
     this.position = Position.isValid(options.position) ? options.position : Position.LEFT;
+
+    this.tooltip = isString(options.tooltip) ? options.tooltip : this.translation.tooltip ?? '';
+
+    this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
+
+    this.collapsed = (isBoolean(options.collapsed) && this.collapsible) ? options.collapsed : true;
 
     this.running = false;
 
