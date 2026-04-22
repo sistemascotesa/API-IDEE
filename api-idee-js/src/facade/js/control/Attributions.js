@@ -6,7 +6,7 @@ import attributionsTemplate from 'templates/attributions';
 import myhelp from 'templates/attributionshelp';
 import * as EventType from 'IDEE/event/eventtype';
 import AttributionsImpl from 'impl/control/Attributions';
-import ControlBase from './Control';
+import Control from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
 import { getValue } from '../i18n/language';
 import { INTERSECT } from '../filter/Module';
@@ -21,54 +21,62 @@ import Exception from '../exception/exception';
 import * as Position from '../ui/position';
 
 /**
- * @typedef {Object} Options opciones de configuración para el control Attributions.
- * @property {String} [position='left'] Posición del control en el mapa.
- * @property {Boolean} [collapsible=true] Indica si el control es colapsable.
- * (usada por ControlPanel)
- * @property {Boolean} [collapsed=false] Indica si el control está colapsado.
- * (usada por ControlPanel)
- * @property {String} [urlAttribute='url'] Texto de la url.
- * @property {String} [url] URL del fichero de atribuciones.
- * @property {String} [type='kml'] Tipo de fichero de atribuciones, geojson o kml.
- * @property {String} [layerName='attributions'] Nombre de la capa de atribuciones.
- * @property {Object} [layer] Capa de atribuciones.
- * @property {Number} [scale=10000] Escala de visualización de la capa de atribuciones.
- * @property {String} [attributionParam='atribucion'] Parámetro de las features que contiene la
- * atribución.
- * @property {String} [urlParam='url'] Parámetro de las features que contiene la url.
- * @property {String} [defaultAttribution='Instituto Geogr&aacute;fico Nacional']
- * Atribución por defecto.
- * @property {String} [defaultURL='https://www.ign.es/'] URL por defecto.
+ * @typedef {Object} module:IDEE/control/Attributions~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
  * @property {String} [tooltip] Texto del tooltip.
+ * @property {Boolean} [collapsible] Indica si el control es colapsable.
+ * (usada por ControlPanel)
+ * @property {Boolean} [collapsed] Indica si el control está colapsado.
+ * (usada por ControlPanel)
+ * @property {Number} [order] Accesibilidad, tabIndex.
+ * @property {String} [urlAttribute] Texto de la url.
+ * @property {String} [url] URL del fichero de atribuciones.
+ * @property {String} [type] Tipo de fichero de atribuciones, geojson o kml.
+ * @property {String} [layerName] Nombre de la capa de atribuciones.
+ * @property {Object} [layer] Capa de atribuciones.
+ * @property {Number} [scale] Escala de visualización de la capa de atribuciones.
+ * @property {String} [attributionParam] Parámetro de las features que contiene la
+ * atribución.
+ * @property {String} [urlParam] Parámetro de las features que contiene la url.
+ * @property {String} [defaultAttribution] Atribución por defecto.
+ * @property {String} [defaultURL] URL por defecto.
  * @property {Array.<String>} [collectionsAttributions] Colección de atribuciones.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
  */
 
 /**
  * @classdesc
  * Panel de atribuciones API-CING.
- * @property {Number} scale_ Escala de visualización de la capa de atribuciones.
- * @property {String} tooltip_ Texto del tooltip.
- * @property {String} position Posición del control.
- * @property {Boolean} collapsible Indica si el control es colapsable.
- * @property {Boolean} collapsed Indica si el control está colapsado.
- * @property {Number} order Accesibilidad, tabIndex.
- * @property {String} url_ URL del fichero de atribuciones.
- * @property {Array.<String>} collectionsAttributions_ Colección de atribuciones,
+ * @property {String} [position='left'] Posición del control.
+ * @property {String} [tooltip_] Texto del tooltip. por defecto la tradcución
+ * @property {Boolean} [collapsible=true] Indica si el control es colapsable.
+ * @property {Boolean} [collapsed=false] Indica si el control está colapsado.
+ * @property {Number} [order=0] Accesibilidad, z-index.
+ * @property {String} [urlAttribute='url'] Texto de la url.
+ * @property {String} [url_] URL del fichero de atribuciones.
+ * @property {String} [type_='kml'] geojson o kml, dependiendo de la url.
+ * @property {String} [layerName_='attributions'] Nombre de la capa de atribuciones.
+ * @property {Object} [layer_] Capa de atribuciones.
+ * @property {Number} [scale_=10000] Define cuando cambiara la atribución.
+ * @property {String} [urlParam_] Parámetro de las features que contiene la url.
+ * @property {String} [attributionParam_] Parámetro de las features que contiene la
+ * atribución.
+ * @property {String} [defaultAttribution_='Instituto Geográfico Nacional'] Atribución por defecto.
+ * @property {String} [defaultURL_='https://www.ign.es/'] URL por defecto.
+ * @property {Array.<String>} [collectionsAttributions_=[]] Colección de atribuciones,
  * se especificarán como una colección de textos.
- * @property {String} urlAttribute Texto de la url.
- * @property {String} type geojson o kml, dependiendo de la url.
- * @property {Number} scale Define cuando cambiara la atribución.
- * @property {String} defaultAttribution Atribución por defecto.
- * @property {String} defaultURL URL por defecto.
- * @property {Number} order Accesibilidad, z-index.
+ *
+ * @extends {IDEE.Control}
  * @api
  */
-class Attributions extends ControlBase {
+class Attributions extends Control {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Options} options Opciones de configuración del control.
+   * @param {module:IDEE/control/Attributions~Options} options Opciones de configuración
+   * del control.
    * @api
    *
    * @example
@@ -84,7 +92,7 @@ class Attributions extends ControlBase {
       && isNullOrEmpty(Object.keys(AttributionsImpl)))) {
       Exception(getValue('exception').attributions_method);
     }
-    const impl = new AttributionsImpl();
+    const impl = new AttributionsImpl(options.vendorOptions ?? {});
     super(Attributions.NAME, impl, options);
 
     this.position = options.position ?? Position.LEFT;

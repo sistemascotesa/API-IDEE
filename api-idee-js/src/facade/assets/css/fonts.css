@@ -608,13 +608,13 @@
 }
 
 .g-cartografia-control-pausa::before {
-    -webkit-mask-image: url('../images/pausa.svg');
-    mask-image: url('../images/pausa.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_pausa.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_pausa.svg');
 }
 
 .g-cartografia-control-siguiente::before {
-    -webkit-mask-image: url('../images/siguiente.svg');
-    mask-image: url('../images/siguiente.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_play.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_play.svg');
 }
 
 .g-cartografia-gestion-reloj2::before {

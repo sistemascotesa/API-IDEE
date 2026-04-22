@@ -17,6 +17,17 @@ import { isBoolean, isNumber } from '../util/Utils';
 import * as Position from '../ui/position';
 
 /**
+ * @typedef {Object} module:IDEE/control/BackgroundLayers~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {Number} [order] Accesibilidad, z-index.
+ * @property {Number} [layerIndex] Índice de la capa base preseleccionada.
+ * @property {Boolean} [visible] Indicador de visibilidad inicial.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
+ */
+
+/**
  * Esta constante indica el número máximo de capas base que tendrá el control.
  *
  * @type {number}
@@ -45,23 +56,20 @@ class BackgroundLayers extends ControlBase {
    * Constructor principal de la clase.
    * Las capas base provienen de "IDEE.config.backgroundlayers".
    *
-   * @constructor Options
-   * @param {Number} position Define el contener del mapa que usará el control para su vista
-   * @param {Number} order Orden del control en el contenedor seleccionado del mapa.
-   * @param {Number} activeLayer Identificador de la capa. que se preactivará si se define
-   * @param {Boolean} visible Define si será visible.
-   *
+   * @constructor
+   * @param {module:IDEE/control/BackgroundLayers~Options} options Opciones del control.
    * @example
-   * {
-   *   tooltip: 'Mi control',
+   * const control = new IDEE.control.BackgroundLayers({
    *   position: 'left',
    *   order: 2,
-   *   layerIndex: 1
-   * }
+   *   layerIndex: 1,
+   *   visible: true,
+   *   tooltip: 'Selector de capas base',
+   * });
    * @api
    */
   constructor(options = {}) {
-    const impl = new ControlImpl(options);
+    const impl = new ControlImpl(options.vendorOptions);
     super(BackgroundLayers.NAME, impl, options);
 
     /**

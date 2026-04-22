@@ -4,19 +4,25 @@
 import Control from './Control';
 
 /**
- * @classdesc
- * Agrega la funcionalidad para rotar el mapa para que el norte esté arriba.
- *
- * @extends {Control} implementación basada en OpenLayers.
+ * @typedef {module:IDEE/impl/Control~Options} module:IDEE/impl/control/Rotate~Options
  * @api
+ */
+
+/**
+ * @classdesc
+ * Hereda de {@link module:IDEE/impl/control/Control|Control}.
+ * Agrega la funcionalidad para rotar el mapa de manera que el norte apunte hacia arriba.
+ * Proporciona una brújula interactiva que permite rotar el mapa.
+ *
+ * @api
+ * @extends {module:IDEE/impl/control/Control}
  */
 class Rotate extends Control {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @extends {module:IDEE/impl/Control~Options} opciones del control de implementación.
-   * @param {module:IDEE/impl/Control~Options} options Opciones para la biblioteca base.
+   * @param {module:IDEE/impl/control/Rotate~Options} options Opciones del control.
    * @api stable
    */
   constructor(options) {

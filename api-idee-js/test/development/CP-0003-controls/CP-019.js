@@ -3,7 +3,7 @@ import Scale from 'IDEE/control/Scale';
 
 const map = Mmap({
   container: 'map',
-  controls: ['rotate'],
+  controls: ['scaleline'],
   projection: 'EPSG:3857',
   center: [-467062.8225, 4683459.6216],
   zoom: 6,
@@ -23,16 +23,22 @@ const remove = () => {
 const selectPosition = document.getElementById('selectPosicion');
 const inputTooltip = document.getElementById('inputTooltip');
 const inputOrder = document.getElementById('inputOrder');
+const selectExactScale = document.getElementById('selectExactScale');
 
 const recreate = () => {
   remove();
   const options = {};
 
-  options.position = selectPosition.options[selectPosition.selectedIndex].value;
+  const position = selectPosition.options[selectPosition.selectedIndex].value;
+  if (position !== '') options.position = position;
 
   if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
 
   if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
+
+  const exactScale = selectExactScale.options[selectExactScale.selectedIndex].value;
+  if (exactScale !== '') options.exactScale = exactScale === 'true';
+
   create(options);
 };
 
@@ -40,6 +46,7 @@ const recreate = () => {
   selectPosition,
   inputTooltip,
   inputOrder,
+  selectExactScale,
 ].forEach((ctrl) => {
   ctrl.addEventListener('change', recreate);
 });

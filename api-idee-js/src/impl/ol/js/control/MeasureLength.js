@@ -12,13 +12,17 @@ const { measurements } = require('../../../../geoprocesses');
 
 /**
  * @classdesc
- * Main constructor of the class. Creates a MeasureLength
- * control
+ * Hereda de {@link module:IDEE/impl/control/Measure|Measure}.
+ * Control especializado para medir distancias en el mapa. Permite al usuario
+ * dibujar líneas y calcula automáticamente la distancia en diferentes unidades.
  *
- * @constructor
- * @extends {MeasureBase}
+ * @property {string} [helpMsg_] Mensaje de ayuda para comenzar a medir distancia.
+ * @property {string} [helpMsgContinue_] Mensaje de ayuda para continuar dibujando.
+ * @property {number} [distance_] Distancia calculada de la última medida.
+ *
  * @api stable
- */
+ * @extends {module:IDEE/impl/control/Measure}
+ * */
 class MeasureLength extends Measure {
   constructor() {
     super('LineString');

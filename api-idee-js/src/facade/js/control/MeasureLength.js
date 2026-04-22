@@ -19,6 +19,19 @@ import { getValue } from '../i18n/language';
  */
 
 export default class MeasureLength extends Measure {
+  /**
+   * Constructor principal de la clase.
+   *
+   * @constructor
+   * @param {Object} [options] Opciones de configuración.
+   * @example
+   * const control = new IDEE.control.MeasureLength({
+   *   tooltip: 'Medir distancia',
+   *   order: 1,
+   * });
+   * @extends {IDEE.control.Measure}
+   * @api stable
+   */
   constructor(options) {
     // checks if the implementation can create WMC layers
     if (isUndefined(MeasureLengthImpl) || (isObject(MeasureLengthImpl)

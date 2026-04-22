@@ -12,25 +12,41 @@ import { getValue } from '../i18n/language';
 import * as Position from '../ui/position';
 
 /**
- * @typedef {Object} Options
- * @property {String}  [position='down']  Posición del control en el mapa.
- * @property {Object}  [vendorOptions]    Opciones del proveedor.
+ * @typedef {Object} module:IDEE/control/Panzoom~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Number} [order] Accesibilidad, z-index.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
  */
 
 /**
  * @classdesc
  * Control que muestra los botones '+' y '-' para acercar y alejar el mapa.
- *
+ * @property {String} [position='down'] Posición del control.
+ * @property {String} [tooltip_] Texto del tooltip. por defecto la tradcución
+ * @property {Number} [order=0] Accesibilidad, z-index.
  * @api
  * @extends {IDEE.Control}
+ *
+ * @note Para más opciones heredadas, ver {@link module:IDEE/control/Control~Options}.
  */
 class Panzoom extends ControlBase {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Options} [options] recibe las opciones de configuración
-   * por defecto
+   * @param {module:IDEE/control/Panzoom~Options} options Opciones del control.
+   * @example
+   * const control = new IDEE.control.Panzoom({
+   *   position: 'left',
+   *   tooltip: 'Zoom',
+   *   order: 2,
+   *   vendorOptions: {
+   *     zoomInLabel: '+',
+   *     zoomOutLabel: '-',
+   *   },
+   * });
    * @api
    */
   constructor(options = {}) {
