@@ -7,9 +7,10 @@ test('Test contactlink', async ({ page }) => {
       container: 'mapjs',
     });
     window.mp = new IDEE.plugin.ContactLink({
-      position: 'BL', // TR, BR, TL, BL
+      position: 'left',
       collapsed: false,
-      collapsible: false, // false, 
+      order: 1,
+      tooltip: 'Contacta con nosotros',
       descargascnig: 'http://centrodedescargas.cnig.es/CentroDescargas/index.jsp',
       pnoa: 'https://www.ign.es/web/comparador_pnoa/index.html',
       visualizador3d: 'https://visualizadores.ign.es/estereoscopico/',
@@ -20,8 +21,6 @@ test('Test contactlink', async ({ page }) => {
       pinterest: 'https://www.pinterest.es/IGNSpain/',
       youtube: 'https://www.youtube.com/user/IGNSpain',
       mail: 'mailto:consulta@cnig.es',
-      tooltip: 'Contacta con nosotros',
-      // order: 1, //
     });
     window.mapjs.addPlugin(window.mp);
   });
