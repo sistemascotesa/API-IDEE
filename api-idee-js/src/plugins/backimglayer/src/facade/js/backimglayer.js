@@ -208,7 +208,7 @@ export default class BackImgLayer extends IDEE.Plugin {
     const layers = this.layerOpts === undefined
       ? `${this.ids}*!${this.titles}*!${this.previews}*!${this.layers}`
       : this.turnLayerOptsIntoUrl();
-    return `${this.name}=${this.position}*!${this.collapsed}*!${this.tooltip}*!${this.layerVisibility}*!${this.layerId}*!${this.columnsNumber}*!${this.empty}*!${layers}`;
+    return `${this.name}=${this.position}*!${this.collapsed}*!${this.order}*!${this.tooltip}*!${this.layerVisibility}*!${this.layerId}*!${this.columnsNumber}*!${this.empty}*!${layers}`;
   }
 
   /**

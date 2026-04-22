@@ -2088,6 +2088,26 @@ export const loadSvgByUrl = (iconName, domElement) => {
 };
 
 /**
+ * Convierte una cadena base64 a un Uint8Array.
+ * @param {*} base64 cadena base64 a convertir.
+ * @returns {Uint8Array} El Uint8Array resultante de la conversión.
+ * @function
+ * @api
+ */
+export function decodeBase64Utf8(base64) {
+  try {
+    const binary = atob(base64);
+    const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+    const decoded = new TextDecoder('utf-8').decode(bytes);
+    return decoded;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error al decodificar base64:', error);
+    throw error;
+  }
+}
+
+/**
  * Este comentario no se verá, es necesario incluir
  * una exportación por defecto para que el compilador
  * muestre las funciones.

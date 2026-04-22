@@ -5,8 +5,13 @@ import Control from './Control';
 
 /**
  * @classdesc
- * Añadir un control de linea de tiempo
+ * Hereda de {@link module:IDEE/impl/control/Control|Control}.
+ * Control de línea de tiempo que permite visualizar y controlar datos temporales en el mapa.
+ * Proporciona una interfaz para reproducir animaciones y navegar por diferentes momentos
+ * en el tiempo.
+ *
  * @api
+ * @extends {module:IDEE/impl/control/Control}
  */
 class Timeline extends Control {
   /**

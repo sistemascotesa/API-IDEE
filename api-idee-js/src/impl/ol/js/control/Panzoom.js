@@ -6,11 +6,17 @@ import OLControlZoom, { Options } from 'ol/control/Zoom';
 
 /**
  * @classdesc
- * Control de Panzoom dee implementación de OpenLayers.
+ * Control de Zoom (Panzoom) que extiende
+ * {@link https://openlayers.org/en/latest/apidoc/module-ol_control_Zoom-Zoom.html|ol.control.Zoom}.
+ * Proporciona botones para acercar y alejar el mapa.
+ *
+ * @property {String} [className='ol-zoom'] Nombre de la clase CSS.
+ * @property {Number} [duration=250] Duración de la animación de zoom en milisegundos.
+ * @property {Number} [zoomInClassName='ol-zoom-in'] Clase CSS para el botón de zoom in.
+ * @property {Number} [zoomOutClassName='ol-zoom-out'] Clase CSS para el botón de zoom out.
  *
  * @api
- * @extends {OLControlZoom}
- * @api
+ * @extends {ol.control.Zoom}
  */
 class Panzoom extends OLControlZoom {
   /**

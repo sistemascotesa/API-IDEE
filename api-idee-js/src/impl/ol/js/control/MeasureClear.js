@@ -1,21 +1,27 @@
 /**
  * @module IDEE/impl/control/MeasureClear
- */
+*/
 import FacadeMeasureArea from 'IDEE/control/MeasureArea';
 import FacadeMeasureLength from 'IDEE/control/MeasureLength';
 import Control from './Control';
+// eslint-disable-next-line max-len
+// eslint-disable-next-line no-unused-vars, import/no-named-as-default, import/no-named-as-default-member
+import MeasureLength from './MeasureLength';
 // eslint-disable-next-line no-unused-vars
 import MeasureArea from './MeasureArea';
-// eslint-disable-next-line no-unused-vars
-import MeasureLength from './MeasureLength';
+
 /**
  * @classdesc
- * Main constructor of the class. Creates a MeasureClear
- * control
+ * Hereda de {@link module:IDEE/impl/control/Control|Control}.
+ * Control para limpiar las mediciones realizadas. Elimina las geometrías dibujadas
+ * y restablece los controles de medición a su estado inicial.
  *
- * @constructor
- * @extends {Control}
+ * @property {MeasureLength} [measureLengthControl_] Referencia al control de medición
+ * de distancias.
+ * @property {MeasureArea} [measureAreaControl_] Referencia al control de medición de áreas.
+ * @property {IDEE.Map} [facadeMap_] Referencia al mapa para acceder a otros controles.
  * @api stable
+ * @extends {module:IDEE/impl/control/Control}
  */
 class MeasureClear extends Control {
   constructor(measureLengthControl, measureAreaControl) {

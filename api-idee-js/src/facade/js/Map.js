@@ -2953,8 +2953,10 @@ class Map extends Base {
    *
    * @public
    * @function
-   * @param {string|Object|Array<String>|Array<Object>} controlTypeObj
+   * @param {string|Object|Array<String>|Array<Object>} controlsParamVar
    * Colección o nombre de los controles.
+   * @param {Boolean} skipCheckDuplicate Indica si se debe omitir la
+   * comprobación de controles duplicados.
    * @returns {Map} Devuelve el estado del mapa.
    * @api
    */

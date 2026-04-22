@@ -9,7 +9,7 @@
     "properties": [{
         "type": "simple",
         "name": "position",
-        "possibleValues": ["center-top-left", "center-top-right", "center-bottom-left", "center-bottom-right", "left", "right", "down"],
+        "possibleValues": ["left", "right"],
         "position": 0
       },
       {

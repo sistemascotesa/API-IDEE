@@ -16,6 +16,18 @@ import exception from '../exception/exception';
  * @extends {IDEE.Control.Measure}
  */
 export default class MeasureArea extends Measure {
+  /**
+   * Constructor principal de la clase.
+   *
+   * @constructor
+   * @param {Object} [options] Opciones de configuración.
+   * @example
+   * const control = new IDEE.control.MeasureArea({
+   *   tooltip: 'Medir área',
+   *   order: 1,
+   * });
+   * @api stable
+   */
   constructor(options) {
     // checks if the implementation can create WMC layers
     if (isUndefined(MeasureAreaImpl) || (isObject(MeasureAreaImpl)
