@@ -28,7 +28,6 @@ const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
  * @api
  * @property {Array|String} intervals Intervalos de tiempo. (obligatorio)
  * @property {String} [position] Posición del control en el mapa.
- * Posibles valores: 'left', 'right'.
  * @property {String} [tooltip] Texto del tooltip para el control.
  * @property {Number} [order] Accesibilidad, z-index del control.
  * @property {Boolean} [collapsible] Indica si el control puede colapsarse.
