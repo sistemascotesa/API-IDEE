@@ -1,0 +1,62 @@
+.btn-infocoordinates-removePoint::before,
+.btn-infocoordinates-removeAllPoints::before,
+.btn-infocoordinates-copylatlon::before,
+.btn-infocoordinates-copyxy::before,
+.btn-infocoordinates-copyAllPoints::before,
+.btn-infocoordinates-importAllPoints::before,
+.btn-infocoordinates-displayAllPoints::before,
+.btn-infocoordinates-help::before {
+    content: '' !important;
+    display: block;
+    margin: auto;
+    width: 24px;
+    aspect-ratio: 1;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+}
+
+/*********************
+    BUTTONS
+*********************/
+
+.btn-infocoordinates-removePoint::before,
+.btn-infocoordinates-removeAllPoints::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');
+}
+
+.btn-infocoordinates-copylatlon::before,
+.btn-infocoordinates-copyxy::before,
+.btn-infocoordinates-copyAllPoints::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_copy.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_copy.svg');
+}
+
+.btn-infocoordinates-importAllPoints::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_notas.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_notas.svg');
+}
+
+.btn-infocoordinates-displayAllPoints::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojoLine.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojoLine.svg');
+}
+
+.btn-infocoordinates-displayAllPoints.hidden::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojoOculto.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojoOculto.svg');
+}
+
+/*********************
+    HELP ICON
+*********************/
+
+.btn-infocoordinates-help::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ayuda.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ayuda.svg');
+}

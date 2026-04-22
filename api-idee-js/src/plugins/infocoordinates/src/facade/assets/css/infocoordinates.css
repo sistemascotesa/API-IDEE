@@ -1,36 +1,8 @@
-.m-panel.m-plugin-infocoordinates {
-    z-index: 99999;
-    pointer-events: none;
-}
-
-/*Para que los números de los puntos no se vean por encima de los popups de info*/
+/********************
+* PUNTOS EN EL MAPA *
+*********************/
 .m-popup {
     z-index: 999999999;
-}
-
-.m-panel.m-plugin-infocoordinates.opened>button {
-    color: var(--idee-color-primary) !important;
-    background-color: white !important;
-}
-
-.m-right .m-panel.m-plugin-infocoordinates.opened>button {
-    position: absolute;
-    left: -40px;
-}
-
-.m-left .m-panel.m-plugin-infocoordinates.opened>button {
-    position: absolute;
-    right: -40px;
-}
-
-.m-panel.m-plugin-infocoordinates.collapsed {
-    height: 30px;
-    min-height: 30px; /* Asegura que la altura mínima también sea 30px */
-}
-
-.div-m-infocoordinates-panel {
-    width: 100%;
-    pointer-events: auto;
 }
 
 .contenedorCoordPunto {
@@ -42,9 +14,8 @@
     top: -22px;
     left: -8px;
     font-size: 19px;
-    color: white;
-    font-family: sans;
-    -webkit-text-stroke: 0.8px black;
+    color: var(--idee-color-white);
+    -webkit-text-stroke: 0.8px var(--idee-color-black);
     z-index: 999;
 }
 
@@ -53,12 +24,15 @@
     top: -22px;
     left: -8px;
     font-size: 19px;
-    color: white;
-    font-family: sans;
-    -webkit-text-stroke: 0.8px #2690e7;
+    color: var(--idee-color-white);
+    -webkit-text-stroke: 0.8px var(--idee-color-primary);
     z-index: 999;
 }
 
+
+/*******
+* TABS *
+*******/
 .m-infocoordinates-tabs {
     overflow-y: auto;
     margin-left: auto;
@@ -79,11 +53,6 @@
     border-radius: 5px;
 }
 
-/* .m-infocoordinates-tabs button:hover {
-    background-color: var(--idee-color-links);
-} */
-
-
 .m-infocoordinates-tabs button.active {
     background-color: var(--idee-color-primary-dark);
 }
@@ -94,176 +63,114 @@
     text-align: justify;
 }
 
-.m-infocoordinates-content {
-    max-height: 305px;
-}
-
-.m-infocoordinates-div-buttonRemoveAllPoints {
-    text-align: center;
-    padding: 5px;
-    width: 19%;
-    display: inline-block;
-}
-
-.m-infocoordinates-div-buttonImportAllPoints {
-    text-align: center;
-    padding: 5px;
-    width: 19%;
-    display: inline-block;
-}
-
-.m-infocoordinates-div-buttonCopyAllPoints {
-    text-align: center;
-    padding: 5px;
-    width: 19%;
-    display: inline-block;
-}
-
-.m-infocoordinates-div-buttonDisplayAllPoints {
-    text-align: center;
-    padding: 5px;
-    width: 19%;
-    display: inline-block;
-}
-
-
 .m-infocoordinates-content .noDisplay {
     display: none;
 }
 
-.m-plugin-infocoordinates .icon-target:before {
-    font-size: 22px;
-    -webkit-text-stroke: 1px var(--idee-color-primary);
-    text-stroke: 1px var(--idee-color-primary);
-}
-/*------A PARTIR DE AQUÍ SON MIS CAMBIOS------*/
 
-.m-control.m-container.m-infocoordinates {
-    cursor: default;
-    overflow: visible !important;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-
-}
-
-/* El contenedor principal solo se encarga de apilar las filas verticalmente */
+/**********************
+* GRID DE COORDENADAS *
+**********************/
 .infocoordinates-data-grid {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding: 0 5px;
-    border-top: 1px solid #e5e7eb;
-    border-bottom: 1px solid #e5e7eb;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding: 16px 5px;
+    border-top: 1px solid var(--idee-color-neutral-40);
+    border-bottom: 1px solid var(--idee-color-neutral-40);
 }
 
-/* Cada fila es un contenedor flex */
 .grid-row {
     display: flex;
     align-items: center;
     padding-bottom: 5px;
 }
 
-/* 1. LA CLAVE: Todas las etiquetas ocupan el mismo espacio */
+.grid-row--2col {
+    display: grid;
+    grid-template-columns: 74px 1fr;
+    column-gap: 8px;
+    align-items: center;
+}
+
+.grid-row--3col {
+    display: grid;
+    grid-template-columns: 74px 74px 36px;
+    column-gap: 8px;
+    align-items: center;
+}
+
 .grid-label {
-    flex-basis: 74px;
-    flex-shrink: 0;
-    margin-right: 2px;
+    text-align: left;
 }
 
-.grid-value {
-    margin-left: 4px;
-    width: 95px;
-}
-
-/* Estilos adicionales que ya teníamos */
-.grid-row.has-background {
-    background-color: #f0f2f5;
-}
-
-.gms-row {
-    margin-top: 7px;
-}
-
-.grid-label-gms-row {
-    margin-right: 37px;
-}
-
-.gms-row label {
-    margin-left: 14px;
-}
-.crs-row {
-    margin-top: 7px;
-    position: relative;
-}
-
-.crs-row .grid-label {
+.grid-row--2col .grid-label,
+.grid-row--3col .grid-label {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-basis: unset;
+    margin-right: 0;
 }
 
-.help-icon {
-    display: flex;
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    margin-left: 7px;
-    justify-content: center;
-    align-items: center;
-    text-decoration: none;
+.grid-value {
+    text-align: left;
 }
 
-.help-icon img { 
-    width:32px;
-    height:27px;
-    display:block;
+.grid-row--2col .grid-value,
+.grid-row--3col .grid-value {
+    margin-left: 0;
+    width: auto;
+}
+
+.grid-row.has-background {
+    background-color: var(--idee-color-neutral-20);
 }
 
 .coordx-row {
     margin-top: 4px;
 }
 
-#m-infocoordinates-epsg-selected {
-    width: 100%;
-    font-size: 1rem;
-    height: auto;
-    margin: 0;
-    padding: 2px 25px 2px 6px;
-    border: 1px solid #d1d5db;
-    border-radius: 2px;
-    /* box-sizing: border-box; */
-    background: #fff;
-    font-family: inherit;
-    line-height: inherit;
-}
 
+/***************
+* SELECTOR CRS *
+****************/  
 .m-infocoordinates-comboDatum {
     position: relative;
     width: 130px;
 }
 
+#m-infocoordinates-epsg-selected {
+    width: 100%;
+    font-size: 0.9rem;
+    cursor: pointer;
+    height: auto;
+    margin: 0;
+    padding: 2px 25px 2px 6px;
+    border: 1px solid var(--idee-color-neutral-40);
+    border-radius: 2px;
+    background: var(--idee-color-white);
+    line-height: inherit;
+}
+
 .arrow-down {
-  position: absolute;
-  top: 50%;
-  right: 8px;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 5px solid #6B7280;
-  cursor: pointer; /* Cambia el cursor para indicar que es clicable */
-  pointer-events: auto; /* Permite que la flecha reciba eventos del ratón */
-  z-index: 2; /* Asegura que la flecha esté por encima del input */
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--idee-color-neutral-70);
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 2;
 }
 
 .arrow-up {
-  border-top: none;
-  border-bottom: 5px solid #6B7280;
+    border-top: none;
+    border-bottom: 5px solid var(--idee-color-neutral-70);
 }
 
 .m-infocoordinates-srs-selector {
@@ -275,180 +182,66 @@
     width: 100%;
     max-height: 140px;
     overflow-y: auto;
-    background: #fff;
-    border: 1px solid #d1d5db;
+    background: var(--idee-color-white);
+    border: 1px solid var(--idee-color-neutral-40);
     border-top: none;
     z-index: 1001;
     list-style: none;
     padding: 0;
     margin: 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .m-infocoordinates-srs-selector.noDisplay {
-  display: none;
+    display: none;
 }
 
 .m-infocoordinates-srs-selector li a {
-  display: block;
-  padding: 4px 8px;
-  text-decoration: none;
-  color: #333;
-  font-size: 0.8rem;
-  line-height: 1.8;
-  white-space: nowrap;
-  cursor: pointer;
+    display: block;
+    padding: 4px 8px;
+    text-decoration: none;
+    color: var(--idee-color-neutral-60);
+    font-size: 0.8rem;
+    line-height: 1.8;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
 .m-infocoordinates-srs-selector li a:hover {
-  background: #e8f2ff;
+    background: var(--idee-color-neutral-20);
 }
 
-.m-infocoordinates-srs-selector li a[value="default"] {
-  color: #005a9e;
-  font-style: italic;
+
+/*********************
+* BOTONES INFERIORES *
+*********************/
+.m-infocoordinates-div-footerButtons {
+    display: flex;
+    justify-content: center;
 }
 
-#m-infocoordinates-epsg-selected {
-    width: 100%;
-    font-size: 0.9rem;
-    /* Reseteamos los estilos del tema que interfieren */
-    height: auto;
-    margin: 0;
-    padding: 2px 6px;
-    border: 1px solid #d1d5db;
+.m-infocoordinates-div-buttonRemoveAllPoints,
+.m-infocoordinates-div-buttonImportAllPoints,
+.m-infocoordinates-div-buttonCopyAllPoints,
+.m-infocoordinates-div-buttonDisplayAllPoints {
+    text-align: center;
+    padding: 5px;
+    width: 19%;
+    display: inline-block;
 }
 
-#plugin-panel-content-infocoordinates svg{
-    width: 80%;
-    height: 80%;
-}
-/* 
-#m-infocoordinates-buttonRemovePoint,
-#m-infocoordinates-copylatlon,
-#m-infocoordinates-copyxy,
-#m-infocoordinates-buttonRemoveAllPoints,
-#m-infocoordinates-buttonImportAllPoints,
-#m-infocoordinates-buttonCopyAllPoints,
-#m-infocoordinates-buttonDisplayAllPoints,
-#m-infocoordinates-help-icon {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    border: none;
-    background-color: #f0f2f5;
-    cursor: pointer;
-    transition: all 0.3s ease;
+
+/************
+* AYUDA CRS *
+************/
+.btn-infocoordinates-help {
+    background-color: var(--idee-color-white) !important;
+    color: var(--idee-color-primary) !important;
+    box-shadow: inset 0 0 0 2px var(--idee-color-primary);
 }
 
-#m-infocoordinates-buttonRemovePoint::before,
-#m-infocoordinates-copylatlon::before,
-#m-infocoordinates-copyxy::before,
-#m-infocoordinates-buttonRemoveAllPoints::before,
-#m-infocoordinates-buttonImportAllPoints::before,
-#m-infocoordinates-buttonCopyAllPoints::before,
-#m-infocoordinates-buttonDisplayAllPoints::before,
-#m-infocoordinates-help-icon::before {
-    content: "";
-    display: block;
-    width: 22px;
-    height: 22px;
-    background-color: var(--idee-color-primary); 
-    -webkit-mask-size: contain;
-    mask-size: contain;
-    transition: background-color 0.3s ease;
-}
-
-#m-infocoordinates-buttonRemovePoint:hover::before,
-#m-infocoordinates-copylatlon:hover::before,
-#m-infocoordinates-copyxy:hover::before,
-#m-infocoordinates-buttonRemoveAllPoints:hover::before,
-#m-infocoordinates-buttonImportAllPoints:hover::before,
-#m-infocoordinates-buttonCopyAllPoints:hover::before,
-#m-infocoordinates-buttonDisplayAllPoints:hover::before,
-#m-infocoordinates-help-icon:hover::before {
-    background-color: var(--idee-color-primary-dark);
-}
-
-#m-infocoordinates-buttonRemovePoint::before,
-#m-infocoordinates-buttonRemoveAllPoints::before {
-    -webkit-mask-image: url('../images/trash.svg');
-    mask-image: url('../images/trash.svg');
-}
-#m-infocoordinates-copylatlon::before,
-#m-infocoordinates-copyxy::before,
-#m-infocoordinates-buttonCopyAllPoints::before {
-    -webkit-mask-image: url('../images/copy.svg');
-    mask-image: url('../images/copy.svg');
-}
-#m-infocoordinates-buttonImportAllPoints::before {
-    -webkit-mask-image: url('../images/import.svg');
-    mask-image: url('../images/import.svg');
-}
-#m-infocoordinates-buttonDisplayAllPoints::before {
-    -webkit-mask-image: url('../images/show_coordinates.svg');
-    mask-image: url('../images/show_coordinates.svg');
-}
-#m-infocoordinates-help-icon::before {
-    -webkit-mask-image: url('../images/help.svg');
-    mask-image: url('../images/help.svg');
-}
-
-#m-infocoordinates-help-icon:hover {
-    color: var(--idee-color-primary-dark);
-}
-
-#m-infocoordinates-help-icon i::before {
-    content: "";
-    display: block;
-    width: 18px;
-    height: 18px;
-    background-color: var(--idee-color-primary);
-    -webkit-mask: url('../images/help.svg') no-repeat center;
-    mask: url('../images/help.svg') no-repeat center;
-    -webkit-mask-size: contain;
-    mask-size: contain;
-}
-
-#m-infocoordinates-help-icon:hover i::before {
-    background-color: var(--idee-color-primary-dark);
-} */
-
-#m-infocoordinates-buttonRemovePoint,
-#m-infocoordinates-copylatlon,
-#m-infocoordinates-copyxy,
-#m-infocoordinates-buttonRemoveAllPoints,
-#m-infocoordinates-buttonImportAllPoints,
-#m-infocoordinates-buttonCopyAllPoints,
-#m-infocoordinates-buttonDisplayAllPoints,
-#m-infocoordinates-help-icon {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background-color: transparent !important;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    color: var(--idee-color-primary); 
-    transition: color 0.2s ease;
-}
-
-#plugin-panel-content-infocoordinates button svg,
-#plugin-panel-content-infocoordinates button svg path,
-#plugin-panel-content-infocoordinates button svg g {
-    fill: currentColor !important;
-}
-
-#m-infocoordinates-buttonRemovePoint:hover,
-#m-infocoordinates-copylatlon:hover,
-#m-infocoordinates-copyxy:hover,
-#m-infocoordinates-buttonRemoveAllPoints:hover,
-#m-infocoordinates-buttonImportAllPoints:hover,
-#m-infocoordinates-buttonCopyAllPoints:hover,
-#m-infocoordinates-buttonDisplayAllPoints:hover,
-#m-infocoordinates-help-icon:hover {
-    color: var(--idee-color-primary-dark) !important;
+.btn-infocoordinates-help:hover {
+    box-shadow: none !important;
+    background-color: var(--idee-color-links) !important;
+    color: var(--idee-color-white) !important;
 }

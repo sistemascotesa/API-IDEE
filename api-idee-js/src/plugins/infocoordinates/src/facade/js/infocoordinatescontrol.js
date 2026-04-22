@@ -128,6 +128,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
       html.querySelector('#m-infocoordinates-buttonRemovePoint').addEventListener('click', this.removePoint.bind(this));
       html.querySelector('#m-infocoordinates-copylatlon').addEventListener('click', this.copylatlon.bind(this));
       html.querySelector('#m-infocoordinates-copyxy').addEventListener('click', this.copyxy.bind(this));
+      const helpBtn = html.querySelector('#m-infocoordinates-help-icon');
+      if (helpBtn) helpBtn.addEventListener('click', this.showHelp.bind(this));
       (this.isProjGeographic
         ? html.querySelector('#m-infocoordinates-geo-coords')
         : html.querySelector('#m-infocoordinates-utm-coords')
@@ -215,12 +217,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
   activate() {
     this.invokeEscKey();
     this.map.on(IDEE.evt.CLICK, this.addPoint, this);
-    document.body.style.cursor = 'crosshair';
+    document.body.style.cursor = "url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_infoPointer.svg'), auto";
     this.map.getFeatureHandler().deactivate();
     document.addEventListener('keyup', this.checkEscKey.bind(this));
-    /* if (this.clickedDeactivate) {
-      document.querySelector('div.m-panel.m-plugin-infocoordinates > button').click();
-    } */
   }
 
   checkEscKey(evt) {
@@ -272,7 +271,6 @@ export default class InfocoordinatesControl extends IDEE.Control {
   addPoint(evt) {
     const numPoint = this.numTabs + 1;
     document.getElementById('m-infocoordinates-srs-selector').removeAttribute('disabled');
-    document.getElementById('m-infocoordinates-buttonConversorFormat').removeAttribute('disabled');
 
     if (this.numTabs === 0) {
       document.getElementById('m-infocoordinates-buttonRemovePoint').classList.remove('noDisplay');
@@ -421,31 +419,20 @@ export default class InfocoordinatesControl extends IDEE.Control {
       },
     });
 
-    // Calculamos el número de elementos de numPoints que hay
     const countPoints = document.getElementsByClassName('contenedorPunto').length + document.getElementsByClassName('contenedorPuntoSelect').length;
-    // Si el numPoint que se pasa es mayor que la cantidad de numPoints
-    // que existe, quiere decir que es nuevo, se añade.
-    // En el caso de que no sea nuevo, se modifica el estilo del punto.
     if (numPoint > countPoints) {
       this.displayPoint(numPoint);
-    } else if (numPoint === countPoints) {
+    } else {
+      const currentSelected = document.querySelector('.contenedorPuntoSelect');
+      if (currentSelected) {
+        currentSelected.classList.replace('contenedorPuntoSelect', 'contenedorPunto');
+      }
       document.querySelectorAll('.contenedorPunto').forEach((elem) => {
-        if (parseInt(elem.textContent, 10) === numPoint) {
+        if (parseInt(elem.textContent.trim(), 10) === numPoint) {
           elem.classList.replace('contenedorPunto', 'contenedorPuntoSelect');
         }
       });
 
-      // Eliminamos las etiquetas de los puntos
-      if (this.displayON && this.map.getMapImpl().getOverlays().getLength() > 0) {
-        this.removeAllDisplaysPoints();
-      }
-    } else {
-      document.getElementsByClassName('contenedorPuntoSelect')[0].classList.replace('contenedorPuntoSelect', 'contenedorPunto');
-      try {
-        document.getElementsByClassName('contenedorPunto')[document.getElementsByClassName('contenedorPunto').length - numPoint].classList.replace('contenedorPunto', 'contenedorPuntoSelect');
-      } catch (err) { /* Continue */ }
-
-      // Eliminamos las etiquetas de los puntos
       if (this.displayON && this.map.getMapImpl().getOverlays().getLength() > 0) {
         this.removeAllDisplaysPoints();
       }
@@ -471,7 +458,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
                 <table>
                     <tbody>
                       <tr>
-                        <td style="font-weight: bold; font-family: arial;">${numPoint}</td></b>
+                        <td style="font-weight: bold;">${numPoint}</td></b>
                       </tr>
                     </tbody>
                 </table>
@@ -567,12 +554,16 @@ export default class InfocoordinatesControl extends IDEE.Control {
     }
     inputSRS.value = this.selectedProjection;
     this.isProjGeographic = this.getImpl().isProjGeographic(this.selectedProjection);
+    const gmsButton = document.getElementById('m-infocoordinates-buttonConversorFormat');
     if (this.isProjGeographic) {
       document.getElementById('m-infocoordinates-geo-coords').classList.remove('noDisplay');
       document.getElementById('m-infocoordinates-utm-coords').classList.add('noDisplay');
+      gmsButton.removeAttribute('disabled');
     } else {
       document.getElementById('m-infocoordinates-geo-coords').classList.add('noDisplay');
       document.getElementById('m-infocoordinates-utm-coords').classList.remove('noDisplay');
+      gmsButton.checked = false;
+      gmsButton.setAttribute('disabled', 'disabled');
     }
     this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
     selector.innerHTML = `
@@ -786,8 +777,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
       this.removeAllDisplaysPoints();
     } else {
       // Modificamos el icono
-      const buttonDisplayAllPointsElem = this.html.querySelector('#m-infocoordinates-buttonDisplayAllPoints');
-      IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'all_points_disabled', buttonDisplayAllPointsElem);
+      const buttonDisplayAllPointsElem = document.querySelector('#m-infocoordinates-buttonDisplayAllPoints');
+      buttonDisplayAllPointsElem.classList.add('hidden');
       buttonDisplayAllPointsElem.title = getValue('displayOFFAllPoints');
 
       // Eliminamos el num sobre el punto
@@ -874,15 +865,17 @@ export default class InfocoordinatesControl extends IDEE.Control {
 
   removeAllDisplaysPoints() {
     // Modificamos el icono
-    const buttonDisplayAllPointsElem = this.html.querySelector('#m-infocoordinates-buttonDisplayAllPoints');
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'all_points', buttonDisplayAllPointsElem);
+    const buttonDisplayAllPointsElem = document.querySelector('#m-infocoordinates-buttonDisplayAllPoints');
+    if (!buttonDisplayAllPointsElem) return;
+    buttonDisplayAllPointsElem.classList.remove('hidden');
     buttonDisplayAllPointsElem.title = getValue('displayONAllPoints');
 
     // Mostramos el num sobre el punto
     for (let i = 0; i < document.getElementsByClassName('contenedorPunto').length; i += 1) {
       document.getElementsByClassName('contenedorPunto')[i].style = 'display: block';
     }
-    document.getElementsByClassName('contenedorPuntoSelect')[0].style = 'display: block';
+    const contenedorPuntoSelect = document.getElementsByClassName('contenedorPuntoSelect')[0];
+    if (contenedorPuntoSelect) contenedorPuntoSelect.style = 'display: block';
 
     // Eliminamos todas las etiquetas de los puntos
     const numOverlays = this.map.getMapImpl().getOverlays().getArray().length;
@@ -914,6 +907,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
 
   removeAllPoints() {
     const divTabContainer = document.getElementsByClassName('m-infocoordinates-tabs')[0];
+    if (!divTabContainer) return;
     divTabContainer.innerHTML = '';
 
     document.getElementById('m-infocoordinates-point').innerHTML = '--';
@@ -969,25 +963,6 @@ export default class InfocoordinatesControl extends IDEE.Control {
 
   accessibilityTab(html) {
     html.querySelectorAll('[tabindex="0"]').forEach((el) => el.setAttribute('tabindex', this.order));
-  }
-
-  addSvgs(html) {
-    const buttonRemovePointElem = html.querySelector('#m-infocoordinates-buttonRemovePoint');
-    const buttonCopyLatLonElem = html.querySelector('#m-infocoordinates-copylatlon');
-    const buttonCopyXyElem = html.querySelector('#m-infocoordinates-copyxy');
-    const buttonRemoveAllPointsElem = html.querySelector('#m-infocoordinates-buttonRemoveAllPoints');
-    const buttonImportAllPointsElem = html.querySelector('#m-infocoordinates-buttonImportAllPoints');
-    const buttonCopyAllPointsElem = html.querySelector('#m-infocoordinates-buttonCopyAllPoints');
-    const buttonDisplayAllPointsElem = html.querySelector('#m-infocoordinates-buttonDisplayAllPoints');
-    const helpIconElem = html.querySelector('#m-infocoordinates-help-icon');
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'trash', buttonRemovePointElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'copy', buttonCopyLatLonElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'copy', buttonCopyXyElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'trash', buttonRemoveAllPointsElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'import', buttonImportAllPointsElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'copy', buttonCopyAllPointsElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'all_points', buttonDisplayAllPointsElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'help', helpIconElem);
   }
 
   showHelp() {

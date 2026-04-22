@@ -343,30 +343,23 @@ button:disabled:hover {
 
 button.secondary {
     height: 32px;
-    color: var(--idee-color-primary);
-    background-color: #e8ecef;
+    color: var(--idee-color-primary-dark);
+    background-color: var(--idee-color-neutral-20);
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-family: var(--control-font-family);
     font-size: 14px;
     transition: all 0.3s ease;
 }
 
 button.secondary:hover {
-    color: #f1f3f5;
+    color: var(--idee-color-white);
     background-color: var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
 button.secondary:disabled {
-    color: #c5c5c5;
-}
-
-button.secondary:disabled:hover {
-    color: #c5c5c5;
-    cursor: default;
-    transition: all 0.3s ease;
+    color: var(--idee-color-neutral-40);
 }
 
 input[type="text"],
@@ -416,19 +409,18 @@ textarea:focus {
 input[type="checkbox"] {
     cursor: pointer;
     accent-color: var(--idee-color-links);
-    color: #6c6c6c;
+    border-color: var(--idee-color-neutral-50);
     transform: scale(1.5);
     transition: all 0.3s ease;
 }
 
 input[type="checkbox"]:hover {
-    color: var(--idee-color-links);
+    border-color: var(--idee-color-white);
     accent-color: var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
 input[type="radio"] {
-    border-color: #6c6c6c;
     appearance: none;
     -webkit-appearance: none;
     content: "";
@@ -437,10 +429,10 @@ input[type="radio"] {
     height: 16px;
     border-radius: 50%;
     transform: scale(1);
-    background-color: white;
+    background-color: var(--idee-color-white);
     vertical-align: middle;
     margin: 0px;
-    border: 1px solid #6c6c6c;
+    border: 1px solid var(--idee-color-neutral-50);
     cursor: pointer;
     transition: all 0.3s ease;
 }

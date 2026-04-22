@@ -1,66 +1,69 @@
 /* eslint-disable max-len */
 import Infocoordinates from 'facade/infocoordinates';
-// eslint-disable-next-line import/no-relative-packages
-import { RIGHT } from '../../../facade/js/ui/position';
+
+window.IDEE.plugin.Infocoordinates = Infocoordinates;
 
 IDEE.language.setLang('es');
-// IDEE.language.setLang('en');
 
 const map = IDEE.map({
   container: 'mapjs',
-  zoom: 7,
-  center: [-467062.8225, 4783459.6216],
+  zoom: 5.5,
+  maxZoom: 20,
+  minZoom: 4,
+  center: [-467062.8225, 4683459.6216],
 });
 window.map = map;
 
-let plugin;
+let mp;
 
-const createControl = (options) => {
-  plugin = new Infocoordinates({
-    position: RIGHT,
-    collapsed: true,
-    collapsible: true,
-    tooltip: 'Información coordenadas',
-    decimalGEOcoord: 12,
-    decimalUTMcoord: 12,
-    helpUrl: 'https://www.ign.es/',
-    outputDownloadFormat: 'txt', // csv | txt
-  });
-  map.addPlugin(plugin);
+const createPlugin = (options) => {
+  mp = new IDEE.plugin.Infocoordinates(options);
+  window.mp = mp;
+  map.addPlugin(mp);
 };
 
 const removePlugin = () => {
-  if (plugin) {
-    map.removePlugin(plugin);
-  }
+  if (mp) map.removePlugins(mp);
 };
 
-const selectPosition = document.getElementById('selectPosicion');
+const botonEliminar = document.getElementById('botonEliminar');
+botonEliminar.addEventListener('click', () => { removePlugin(); });
+
+const selectPosicion = document.getElementById('selectPosicion');
 const selectCollapsed = document.getElementById('selectCollapsed');
+const inputOrder = document.getElementById('inputOrder');
+const inputTooltip = document.getElementById('inputTooltip');
+const inputHelpUrl = document.getElementById('inputHelpUrl');
+const inputDecimalGEOcoord = document.getElementById('inputDecimalGEOcoord');
+const inputDecimalUTMcoord = document.getElementById('inputDecimalUTMcoord');
+const selectOutputDownloadFormat = document.getElementById('selectOutputDownloadFormat');
 
-const recreatePlugin = () => {
-  removePlugin();
+const updatePlugin = () => {
   const options = {};
-  options.position = selectPosition.options[selectPosition.selectedIndex].value;
-  const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
-  if (collapsed !== '') options.collapsed = (collapsed === 'true');
-  createControl(options);
+  options.position = selectPosicion.options[selectPosicion.selectedIndex].value;
+  options.collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value === '' || selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true';
+  options.order = Number(inputOrder.value);
+  options.tooltip = inputTooltip.value;
+  options.helpUrl = inputHelpUrl.value;
+  options.decimalGEOcoord = Number(inputDecimalGEOcoord.value);
+  options.decimalUTMcoord = Number(inputDecimalUTMcoord.value);
+  options.outputDownloadFormat = selectOutputDownloadFormat.options[selectOutputDownloadFormat.selectedIndex].value;
+
+  removePlugin();
+  createPlugin(options);
 };
 
-selectPosition.addEventListener('change', recreatePlugin);
-selectCollapsed.addEventListener('change', recreatePlugin);
-
-const removeButton = document.getElementById('removeButton');
-removeButton.addEventListener('click', () => {
-  removePlugin();
+[
+  selectPosicion,
+  selectCollapsed,
+  inputOrder,
+  inputTooltip,
+  inputHelpUrl,
+  inputDecimalGEOcoord,
+  inputDecimalUTMcoord,
+  selectOutputDownloadFormat,
+].forEach((ctrl) => {
+  ctrl.addEventListener('change', updatePlugin);
 });
 
-recreatePlugin();
-
-/* / PRUEBA con otros plugins
-const mp2 = new IDEE.plugin.Information({ position: 'TR', buffer: 100 });
-const mp3 = new IDEE.plugin.Vectors({ position: 'TR', collapsed: true, collapsible: true, wfszoom: 12 });
-const mp4 = new IDEE.plugin.MeasureBar({ position: 'TR' });
-map.addPlugin(mp2); window.mp2 = mp2;
-map.addPlugin(mp3); window.mp3 = mp3;
-map.addPlugin(mp4); window.mp4 = mp4; // */
+updatePlugin();
