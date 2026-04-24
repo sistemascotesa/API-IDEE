@@ -62,10 +62,8 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - 'left' (LEFT) - A la izquierda.
   - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
-- **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
 - **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: Notificar incidencia en cartografía.
-- **wfszoom**: Valor del zoom. Por defecto: 12.
 - **prefixSubject**: Prefijo que llevará el *subject* del correo electrónico enviado. Por defecto: 'Incidencia cartografía - '.
 - **interfazmode**: Indica la modalidad de envío de la incidencia. Por defecto: simple.
   - 'simple': se usará un cleinte de correo para enviar la incidencia.
@@ -110,7 +108,7 @@ Por defecto:
 # API-REST
 
 ```javascript
-URL_API?incicarto=position*collapsed*collapsible*tooltip*wfszoom*prefixSubject*interfazmode*isDraggable
+URL_API?incicarto=position*collapsed*tooltip*prefixSubject*interfazmode*isDraggable
 ```
 
 <table>
@@ -129,11 +127,6 @@ URL_API?incicarto=position*collapsed*collapsible*tooltip*wfszoom*prefixSubject*i
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
-   <tr>
-    <td>collapsible</td>
-    <td>true/false</td>
-    <td>Base64 ✔️ | Separador ✔️</td>
-  </tr>
   <tr>
     <td>order</td>
     <td>Número entero positivo</td>
@@ -142,11 +135,6 @@ URL_API?incicarto=position*collapsed*collapsible*tooltip*wfszoom*prefixSubject*i
   <tr>
     <td>tooltip</td>
     <td>Valor a usar para mostrar en el tooltip del plugin</td>
-    <td>Base64 ✔️ | Separador ✔️</td>
-  </tr>
-  <tr>
-    <td>wfszoom</td>
-    <td>Valor del zoom</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -213,11 +201,9 @@ Ejemplo del constructor:
 ```javascript
 {
   collapsed: true,
-  collapsible: true,
   position: "left",
   order: 2,
   tooltip: "Notificar incidencia en cartografía",
-  wfszoom: 12,
   prefixSubject: "Incidencia cartogrfica - ",
   interfazmode: "simple",
   buzones: [
@@ -302,7 +288,6 @@ https://componentes.idee.es/api-idee?incicarto=base64=eyJjb2xsYXBzZWQiOnRydWUsIm
 ```javascript
 const mp = new IDEE.plugin.Incicarto({
   collapsed: false,
-  collapsible: true,
   position: 'right',
   order: 1,
   interfazmode:'both', //simple, advance, both
