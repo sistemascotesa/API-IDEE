@@ -1,0 +1,89 @@
+/*********************
+    TAB BUTTONS
+*********************/
+
+.g-cartografia-btn-comparators-mirrorpanel::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_zoom_recuad.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_zoom_recuad.svg');
+}
+
+.g-cartografia-btn-comparators-windowsync::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_sincro.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_sincro.svg');
+}
+
+.g-cartografia-btn-comparators-lyrcompare::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent.svg');
+}
+
+.g-cartografia-btn-comparators-transparency::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_posicion.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_posicion.svg');
+}
+
+/*********************
+    LYRCOMPARE BUTTONS
+*********************/
+
+.g-cartografia-btn-comparators-mapStan::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mapStan.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mapStan.svg');
+}
+
+.g-cartografia-btn-comparators-mapVert::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mapVert.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mapVert.svg');
+}
+
+.g-cartografia-btn-comparators-dosMap::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_dosMap.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_dosMap.svg');
+}
+
+.g-cartografia-btn-comparators-mosaico::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mosaico.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mosaico.svg');
+}
+
+/*********************
+    MIRRORPANEL BUTTONS
+*********************/
+
+.g-cartografia-btn-comparators-tresMapDer::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tresMapDer.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tresMapDer.svg');
+}
+
+.g-cartografia-btn-comparators-tresMapIzq::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tresMapIzq.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tresMapIzq.svg');
+}
+
+/*********************
+    TRANSPARENCY BUTTONS
+*********************/
+
+.g-cartografia-btn-comparators-candadoCerrado::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_candado_cerrado.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_candado_cerrado.svg');
+}
+
+.g-cartografia-btn-comparators-candado::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_candado.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_candado.svg');
+}
+
+/*********************
+    WINDOWSYNC BUTTONS
+*********************/
+
+.g-cartografia-btn-comparators-windowsync-open::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent.svg');
+}
+
+.g-cartografia-btn-comparators-windowsync-close::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent_cerrar.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent_cerrar.svg');
+}

@@ -6,44 +6,49 @@
   "constructor": "IDEE.plugin.Infocoordinates",
   "parameters": [{
     "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": ["left", "right"]
-    }, {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    }, {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 2
-    }, {
-      "type": "number",
-      "name": "order",
-      "position": 3
-    }, {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 4
-    }, {
-      "type": "simple",
-      "name": "decimalGEOcoord",
-      "position": 5
-    }, {
-      "type": "simple",
-      "name": "decimalUTMcoord",
-      "position": 6
-    }, {
-      "type": "simple",
-      "name": "helpUrl",
-      "position": 7
-    },{
-      "type": "simple",
-      "name": "outputDownloadFormat",
-      "position": 8
-    }]
+    "properties": [
+      {
+        "type": "simple",
+        "name": "position",
+        "position": 0,
+        "possibleValues": ["left", "right"]
+      },
+      {
+        "type": "boolean",
+        "name": "collapsed",
+        "position": 1
+      },
+      {
+        "type": "number",
+        "name": "order",
+        "position": 2
+      },
+      {
+        "type": "simple",
+        "name": "tooltip",
+        "position": 3
+      },
+      {
+        "type": "simple",
+        "name": "decimalGEOcoord",
+        "position": 4
+      },
+      {
+        "type": "simple",
+        "name": "decimalUTMcoord",
+        "position": 5
+      },
+      {
+        "type": "simple",
+        "name": "helpUrl",
+        "position": 6
+      },
+      {
+        "type": "simple",
+        "name": "outputDownloadFormat",
+        "position": 7
+      }
+    ]
   }],
   "files": {
     "ol": {

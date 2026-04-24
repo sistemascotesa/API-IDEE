@@ -18,21 +18,40 @@ import {
 import * as Dialog from '../dialog';
 
 /**
- * @typedef {Object} Options
+ * @typedef {Object} module:IDEE/control/ImplementationSwitcher~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {Boolean} [collapsible] Indica si el control es colapsable.
+ * @property {Boolean} [collapsed] Indica si el control está colapsado.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Number} [order] Accesibilidad, z-index.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
  */
 
 /**
  * @classdesc
  * Agrega la herramienta de cambio de implementación.
- * @property {Boolean} collapsible Indica si el control es colapsable.
- * @property {Boolean} collapsed Indica si el control está colapsado.
+ * @property {Boolean} [collapsible=true] Indica si el control es colapsable.
+ * @property {Boolean} [collapsed=true] Indica si el control está colapsado.
  *
  * @api
  * @extends {IDEE.Control}
  */
 class ImplementationSwitcher extends ControlBase {
   /**
-   * @param {Options} options Opciones de configuración para el control de fachada.
+   * Constructor principal de la clase.
+   *
+   * @constructor
+   * @param {module:IDEE/control/ImplementationSwitcher~Options} options Opciones de configuración
+   * para el control de fachada.
+   * @example
+   * const control = new IDEE.control.ImplementationSwitcher({
+   *   position: 'left',
+   *   tooltip: 'Cambiar implementación',
+   *   order: 1,
+   *   collapsible: true,
+   * });
+   * @api
    */
   constructor(options = {}) {
     if (isUndefined(ImplementationSwitcherImpl) || (isObject(ImplementationSwitcherImpl)

@@ -7,6 +7,24 @@ import { getPointResolution, METERS_PER_UNIT } from 'ol/proj';
 import { assert } from 'ol/asserts';
 
 /**
+ * @typedef {Object} module:IDEE/impl/control/ScaleLine~Options
+ * @api
+ * @property {String} [className='ol-scale-line'] Nombre de la clase CSS.
+ * @property {Number} [minWidth=64] Ancho mínimo en píxeles.
+ * @property {Function} [render] Función de renderizado personalizada.
+ * @property {HTMLElement|String} [target] Elemento objetivo donde se renderiza el control.
+ * @property {String} [units='metric'] Unidades de medida:
+ * 'degrees', 'imperial', 'nautical', 'metric', 'us'.
+ * @property {Boolean} [bar=false] Si es verdadero representa barras de escala
+ * en lugar de una línea.
+ * @property {Number} [steps=4] Número de pasos para la barra de escala.
+ * @property {Boolean} [text=false] Si es verdadero representa texto encima de la barra.
+ * @property {Number} [dpi] DPI del dispositivo de salida.
+ *
+ * @see {@link https://openlayers.org/en/latest/apidoc/module-ol_control_ScaleLine-ScaleLine.html|OpenLayers ScaleLine}
+ */
+
+/**
  * @type {string}
  */
 const UNITS_PROP = 'units';
@@ -23,40 +41,19 @@ const LEADING_DIGITS = [1, 2, 5];
 
 /**
  * @classdesc
- * Añadir escala gráfica.
+ * Implementación del control de escala gráfica que extiende
+ * {@link https://openlayers.org/en/latest/apidoc/module-ol_control_ScaleLine-ScaleLine.html|ol.control.ScaleLine}.
+ * Muestra la escala del mapa en la unidad de medida especificada.
+ *
  * @api
+ * @extends {ol.control.ScaleLine}
  */
 class ScaleLine extends OLControlScaleLine {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} options Opciones de proveedor para la biblioteca base, estas opciones
-   * se pasarán en formato objeto.
-   * - options: Opciones de proveedor para la biblioteca base, estas opciones
-   * se pasarán en formato objeto.
-   * Opciones disponibles:
-   * - className: Nombre de la clase CSS.
-   * El valor predeterminado es ol-scale-bar
-   * cuando se configura con bar: Verdadero. De lo contrario, el valor
-   * predeterminado es ol-scale-line.
-   * - minWidth: Ancho mínimo en píxeles en los dpi predeterminados de OGC.
-   * El ancho se ajustará para que coincida con los dpi utilizados.
-   * - render: Función llamada cuando se debe volver a
-   * representar el control.
-   * Esto se llama en una devolución de llamada de requestAnimationFrame.
-   * - target: Especifique un objetivo si desea que
-   * el control se represente fuera de la ventana gráfica del mapa.
-   * - units: Unidades.
-   * - bar: Representa barras de escala en lugar de una línea.
-   * - steps: Número de pasos que debe usar la barra de escala.
-   * Utilice números pares para obtener mejores resultados. Solo se aplica cuando
-   * la barra es verdadera.
-   * - text: Representa la escala de texto arriba de la barra de escala.
-   * Solo se aplica cuando la barra es verdadera.
-   * - dpi: dpi del dispositivo de salida, como una impresora.
-   * Solo se aplica cuando la barra es verdadera.
-   * Si no se define, se asumirá el tamaño de píxel de pantalla predeterminado de OGC de 0,28 mm.
+   * @param {module:IDEE/impl/control/ScaleLine~Options} options Opciones del control.
    * @api
    */
   constructor(options) {

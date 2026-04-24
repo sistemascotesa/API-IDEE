@@ -7,7 +7,6 @@ IDEE.language.setLang('es');
 
 const map = IDEE.map({
   container: 'mapjs',
-  controls: ['rotate'],
   zoom: 9,
   minZoom: 4,
   maxZoom: 20,

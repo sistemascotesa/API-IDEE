@@ -208,7 +208,6 @@
 
                                 const map = IDEE.map({
                                     container: 'mapjs',
-                                    controls: ['rotate'],
                                     center: [-467062.8225, 4683459.6216],
                                     zoom: 6,
                                 });

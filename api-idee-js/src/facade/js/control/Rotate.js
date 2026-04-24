@@ -147,20 +147,29 @@ export const onMouseMove = (instance, html, map) => {
 };
 
 /**
- * @typedef {Object} Options
- * Extiende de {@link Control.Options}
- * @property {String} [position=Position.LEFT] Posición del control. Por defecto, izquierda.
- * @property {Boolean} [help=true] Indica si se muestra la ayuda al crear el control.
- * Por defecto, true. Solo disponible para Cesium.
+ * @typedef {Object} module:IDEE/control/Rotate~Options
  * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Boolean} [help] Indica si se muestra la ayuda al crear el control. Solo para Cesium.
+ * @property {Number} [order] Accesibilidad, z-index.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
  */
 
 /**
  * @classdesc
  * Agrega la funcionalidad para rotar el mapa.
- *
+ * @property {String} [position='left'] Posición del control.
+ * @property {String} [tooltip] Texto del tooltip. por defecto la tradcución
+ * @property {Boolean} [help=true] Indica si se muestra la ayuda al crear el control.
+ * Solo para Cesium.
+ * @property {Number} [order=0] Accesibilidad, z-index.
+ * @property {Boolean} [active_=false] Estado activo del control.
+ * @property {Boolean} [isMouseDown_=false] Estado de pulsación del ratón.
  * @api
  * @extends {IDEE.Control}
+ *
+ * @note Para más opciones heredadas, ver {@link module:IDEE/control/Control~Options}.
  */
 class Rotate extends Control {
   /**
@@ -168,7 +177,7 @@ class Rotate extends Control {
    *
    * @constructor
    * @api
-   * @param {Options} options
+   * @param {module:IDEE/control/Rotate~Options} options Opciones del control.
    *
    *  @example
    * const map = IDEE.map({
@@ -176,14 +185,11 @@ class Rotate extends Control {
    *   zoom: 6,
    * };
    *
-   * // Creación de un control personalizado, para la implementación podremos extender de
-   * // un control de implementación IDEE/impl/Control
-   *
-   * const control = new IDEE.Control('MiControl', null, {
-   *   tooltip: 'Mi control',
-   *   svgPath: '/assets/icons/control.svg',
+   * const control = new IDEE.control.Rotate({
    *   position: 'left',
-   *   order: 2
+   *   tooltip: 'Control de rotación',
+   *   order: 2,
+   *   collapsible: false,
    * });
    *
    * map.addControls(control);
@@ -196,7 +202,7 @@ class Rotate extends Control {
 
     const opts = {
       ...options,
-      help: isBoolean(options.help) ? true : options.help,
+      help: isBoolean(options.help) ? options.help : true,
     };
 
     // implementation of this control

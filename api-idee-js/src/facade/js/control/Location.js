@@ -15,11 +15,30 @@ import { compileSync as compileTemplate } from '../util/Template';
 import * as Position from '../ui/position';
 
 /**
+ * @typedef {Object} module:IDEE/control/Location~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {Boolean} [tracking] Indica si el seguimiento de la localización está activado.
+ * Por defecto verdadero.
+ * @property {Boolean} [highAccuracy] Indica si el seguimiento es de alta precisión.
+ * Por defecto falso.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación subyacente.
+ */
+
+/**
  * @classdesc
- * Localiza la posición del usuario en el mapa.
+ * Hereda de {@link module:IDEE/control/Control|Control}.
+ * Localiza la posición del usuario en el mapa y permite dibujarla.
+ *
+ * @property {String} [position='left'] Posición del control en el mapa.
+ * @property {Boolean} [tracking=true] Seguimiento de la localización activado (true)
+ * o desactivado (false).
+ * @property {Boolean} [highAccuracy=false] Seguimiento de alta precisión activado (true)
+ * o desactivado (false).
+ * @property {Object} [vendorOptions={}] Opciones para la implementación subyacente.
  *
  * @api
- * @extends {IDEE.Control}
+ * @extends {module:IDEE/control/Control}
  */
 class Location extends ControlBase {
   /**
@@ -28,8 +47,7 @@ class Location extends ControlBase {
    * posición en el mapa.
    *
    * @constructor
-   * @param {Object} options recibe las opciones de configuración por defecto
-   * position: {@link Position posicion}
+   * @param {module:IDEE/control/Location~Options} options Opciones del control.
    * @example
    * new Location({
    *  position: "left",

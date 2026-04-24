@@ -22,12 +22,18 @@ const arc = require('arc');
 
 /**
  * @classdesc
- * Main constructor of the measure control.
+ * Hereda de {@link module:IDEE/impl/control/Control|Control}.
+ * Control base para herramientas de medición en el mapa. Proporciona la funcionalidad
+ * de dibujar geometrías (líneas, polígonos) y calcular sus medidas (distancia, área).
  *
- * @constructor
- * @param {string} type - Type of the measure geometry
- * @extends {Control}
+ * @property {string} [type] Tipo de geometría a medir (LineString o Polygon).
+ * @property {VectorLayer} [drawLayer_] Capa de vector donde se dibuja la geometría.
+ * @property {Draw} [draw_] Interación de dibujo de OpenLayers.
+ * @property {Overlay} [pointerTooltip_] Tooltip que sigue al ratón.
+ * @property {Overlay} [measureTooltip_] Tooltip con el resultado de la medida.
+ * @property {IDEE.Map} [facadeMap_] Referencia al mapa de fachada.
  * @api stable
+ * @extends {module:IDEE/impl/control/Control}
  */
 class Measure extends Control {
   constructor(type) {

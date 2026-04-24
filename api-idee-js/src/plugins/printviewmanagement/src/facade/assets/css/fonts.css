@@ -1,0 +1,18 @@
+/*********************
+    PANEL BUTTONS
+*********************/
+
+.g-cartografia-btn-printviewmanagement-printermap::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_impresora.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_impresora.svg');
+}
+
+.g-cartografia-btn-printviewmanagement-georefimage::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_foto.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_foto.svg');
+}
+
+.g-cartografia-btn-printviewmanagement-georefimageepsg::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_fototeca.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_fototeca.svg');
+}

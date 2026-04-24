@@ -2,6 +2,7 @@
  * @module IDEE/plugin/PrintViewManagement
  */
 import '../assets/css/printviewmanagement';
+import 'assets/css/fonts';
 import PrintViewManagementControl from './printviewmanagementcontrol';
 import es from './i18n/es';
 import en from './i18n/en';

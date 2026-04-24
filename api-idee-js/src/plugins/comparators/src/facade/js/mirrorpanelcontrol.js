@@ -218,7 +218,6 @@ export default class MirrorpanelControl extends IDEE.Control {
     if (this.showCursors) {
       this.addLayerCursor('A');
     }
-    this.addSvgIcons(this.template);
     if (this.enabledKeyFunctions) this.addEventKey_();
   }
 
@@ -733,14 +732,5 @@ export default class MirrorpanelControl extends IDEE.Control {
       }
     };
     document.addEventListener('keydown', this.keyHandler_);
-  }
-
-  addSvgIcons(html) {
-    IDEE.utils.loadSvgByUrl('icn_mapStan', html.querySelector('#set-mirror-0'));
-    IDEE.utils.loadSvgByUrl('icn_mapVert', html.querySelector('#set-mirror-1'));
-    IDEE.utils.loadSvgByUrl('icn_dosMap', html.querySelector('#set-mirror-2'));
-    IDEE.utils.loadSvgByUrl('icn_mosaico', html.querySelector('#set-mirror-3'));
-    IDEE.utils.loadSvgByUrl('icn_tresMapDer', html.querySelector('#set-mirror-4'));
-    IDEE.utils.loadSvgByUrl('icn_tresMapIzq', html.querySelector('#set-mirror-5'));
   }
 }

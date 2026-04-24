@@ -253,7 +253,6 @@ export default class LyrCompareControl extends IDEE.Control {
     templateResult
       .then((t) => {
         html.querySelector('#m-comparators-contents').appendChild(t);
-        this.addSvgIcons(t);
       });
   }
 
@@ -1046,12 +1045,5 @@ export default class LyrCompareControl extends IDEE.Control {
 
   addlayersControl(layer) {
     this.layers.push(layer);
-  }
-
-  addSvgIcons(html) {
-    IDEE.utils.loadSvgByUrl('icn_mapStan', html.querySelector('#m-lyrcompare-void'));
-    IDEE.utils.loadSvgByUrl('icn_dosMap', html.querySelector('#m-lyrcompare-hcurtain'));
-    IDEE.utils.loadSvgByUrl('icn_mapVert', html.querySelector('#m-lyrcompare-vcurtain'));
-    IDEE.utils.loadSvgByUrl('icn_mosaico', html.querySelector('#m-lyrcompare-multicurtain'));
   }
 }

@@ -2,6 +2,7 @@
  * @module IDEE/plugin/Comparators
  */
 import '../assets/css/comparators';
+import 'assets/css/fonts';
 import ComparatorsControl from './comparatorscontrol';
 import es from './i18n/es';
 import en from './i18n/en';
