@@ -254,7 +254,6 @@ let mp = null;
 
 const selectPosicion = document.getElementById('selectPosicion');
 const inputTooltip = document.getElementById('inputTooltip');
-const selectCollapsible = document.getElementById('selectCollapsible');
 const selectCollapsed = document.getElementById('selectCollapsed');
 const inputOrder = document.getElementById('inputOrder');
 const inputPrefixSubject = document.getElementById('inputPrefixSubject');
@@ -284,9 +283,6 @@ function changeTest() {
 
   if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
 
-  const collapsible = selectCollapsible.options[selectCollapsible.selectedIndex].value;
-  if (collapsible !== '') options.collapsible = (collapsible === 'true');
-
   const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
   if (collapsed !== '') options.collapsed = (collapsed === 'true');
 
@@ -313,7 +309,7 @@ function changeTest() {
 [
   selectPosicion,
   selectCollapsed,
-  selectCollapsible,
+  inputOrder,
   inputTooltip,
   inputPrefixSubject,
   selectInterfazmode,

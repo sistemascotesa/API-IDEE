@@ -120,7 +120,6 @@ export default class Incicarto extends IDEE.Plugin {
    */
   addTo(map) {
     this.map = map;
-
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,

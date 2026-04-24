@@ -55,14 +55,6 @@
                             </select>
                         </div>
                         <div>
-                            <label for="selectCollapsible">Panel colapsable "collapsible"</label>
-                            <select name="collapsible" id="selectCollapsible">
-                                <option value='' selected="selected"></option>
-                                <option value="true">true</option>
-                                <option value="false">false</option>
-                            </select>
-                        </div>
-                        <div>
                             <label for="inputPrefixSubject">Prefijo email "prefixSubject"</label>
                             <input type="text" id="inputPrefixSubject" value="Incidencia cartogrfica - " />
                         </div>
@@ -172,7 +164,6 @@
 
                             const selectPosicion = document.getElementById('selectPosicion');
                             const inputTooltip = document.getElementById('inputTooltip');
-                            const selectCollapsible = document.getElementById('selectCollapsible');
                             const selectCollapsed = document.getElementById('selectCollapsed');
                             const inputOrder = document.getElementById('inputOrder');
                             const inputPrefixSubject = document.getElementById('inputPrefixSubject');
@@ -204,9 +195,6 @@
 
                                 if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
 
-                                const collapsible = selectCollapsible.options[selectCollapsible.selectedIndex].value;
-                                if (collapsible !== '') options.collapsible = (collapsible === 'true');
-
                                 const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
                                 if (collapsed !== '') options.collapsed = (collapsed === 'true');
 
@@ -233,7 +221,6 @@
                             [
                                 selectPosicion,
                                 selectCollapsed,
-                                selectCollapsible,
                                 inputTooltip,
                                 inputPrefixSubject,
                                 selectInterfazmode,
