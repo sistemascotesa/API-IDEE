@@ -45,8 +45,8 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - 'left' (LEFT) - A la izquierda.
   - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
-- **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
 - **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
+- **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: "Enlaces y contacto IGN".
 - **descargascnig**: Indica la url al centro de descargas CNIG. Por defecto: 'http://centrodedescargas.cnig.es/CentroDescargas/index.jsp'
 - **pnoa**: Indica la url al comparador PNOA. Por defecto: 'https://www.ign.es/web/'comparador_pnoa/index.html
 - **visualizador3d**: Indica la url al Visualizador3D. Por defecto: 'https://visualizadores.ign.es/estereoscopico/'
@@ -57,13 +57,11 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **pinterest**: Indica la url al Pinterest del CNIG. Por defecto: 'https://www.pinterest.es/IGNSpain/'
 - **youtube**: Indica la url al Youtube del CNIG. Por defecto: 'https://www.youtube.com/user/IGNSpain'
 - **mail**: Indica la url para escribir correo al CNIG. Por defecto: 'mailto:consulta@cnig.es'
-- **tooltip**. Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: 'Enlaces y contacto IGN'
 
 # API-REST
 
 ```javascript
-URL_API?contactlink=position*collapsed*collapsible*tooltip*descargascnig*pnoa*visualizador3d*fototeca*twitter
-*instagram*facebook*pinterest*youtube*mail
+URL_API?contactlink=position*collapsed*order*tooltip*descargascnig*pnoa*visualizador3d*fototeca*twitter*instagram*facebook*pinterest*youtube*mail
 ```
 
 <table>
@@ -79,11 +77,6 @@ URL_API?contactlink=position*collapsed*collapsible*tooltip*descargascnig*pnoa*vi
   </tr>
   <tr>
     <td>collapsed</td>
-    <td>true/false</td>
-    <td>Base64 ✔️ | Separador ✔️</td>
-  </tr>
-  <tr>
-    <td>collapsible</td>
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
@@ -153,11 +146,11 @@ URL_API?contactlink=position*collapsed*collapsible*tooltip*descargascnig*pnoa*vi
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee/?contactlink=TR*true*true*Enlaces*http%3A%2F%2Fcentrodedescargas.cnig.es%2FCentroDescargas%2Findex.jsp*https%3A%2F%2Fwww.ign.es%2Fweb%2Fcomparador_pnoa%2Findex.html*https%3A%2F%2Fwww.ign.es%2F3D-Stereo%2F*https%3A%2F%2Ffototeca.cnig.es%2F*https%3A%2F%2Ftwitter.com%2FIGNSpain*https%3A%2F%2Fwww.instagram.com%2Fignspain%2F*https%3A%2F%2Fwww.facebook.com%2FIGNSpain%2F*https%3A%2F%2Fwww.pinterest.es%2FIGNSpain%2F*https%3A%2F%2Fwww.youtube.com%2Fuser%2FIGNSpain*mailto:consulta@cnig.es
+https://componentes.idee.es/api-idee/?contactlink=left*true*2*Contacta%20con%20nosotros*http://centrodedescargas.cnig.es/CentroDescargas/index.jsp*https://www.ign.es/web/comparador_pnoa/index.html*https://www.ign.es/3D-Stereo/*https://fototeca.cnig.es/*https://twitter.com/IGNSpain*https://www.instagram.com/ignspain/*https://www.facebook.com/IGNSpain/*https://www.pinterest.es/IGNSpain/*https://www.youtube.com/user/IGNSpain*mailto:consulta@cnig.es
 ```
 
 ```
-https://componentes.idee.es/api-idee/?contactlink=TR*true*true
+https://componentes.idee.es/api-idee/?contactlink=right*true*0
 ```
 
 ### Ejemplos de uso API-REST en base64
@@ -167,7 +160,6 @@ Ejemplo del constructor:
 {
   position:"left",
   collapsed:true,
-  collapsible:true,
   order:2
   descargascnig:"http://centrodedescargas.cnig.es/CentroDescargas/index.jsp",
   pnoa:"https://www.ign.es/web/comparador_pnoa/index.html",
@@ -183,7 +175,7 @@ Ejemplo del constructor:
 }
 ```
 ```
-https://componentes.idee.es/api-idee/?contactlink=base64=eyJwb3NpdGlvbiI6IlRMIiwiZGVzY2FyZ2FzY25pZyI6Imh0dHA6Ly9jZW50cm9kZWRlc2Nhcmdhcy5jbmlnLmVzL0NlbnRyb0Rlc2Nhcmdhcy9pbmRleC5qc3AiLCJwbm9hIjoiaHR0cHM6Ly93d3cuaWduLmVzL3dlYi9jb21wYXJhZG9yX3Bub2EvaW5kZXguaHRtbCIsInZpc3VhbGl6YWRvcjNkIjoiaHR0cHM6Ly93d3cuaWduLmVzLzNELVN0ZXJlby8iLCJmb3RvdGVjYSI6Imh0dHBzOi8vZm90b3RlY2EuY25pZy5lcy8iLCJ0d2l0dGVyIjoiaHR0cHM6Ly90d2l0dGVyLmNvbS9JR05TcGFpbiIsImluc3RhZ3JhbSI6Imh0dHBzOi8vd3d3Lmluc3RhZ3JhbS5jb20vaWduc3BhaW4vIiwiZmFjZWJvb2siOiJodHRwczovL3d3dy5mYWNlYm9vay5jb20vSUdOU3BhaW4vIiwicGludGVyZXN0IjoiaHR0cHM6Ly93d3cucGludGVyZXN0LmVzL0lHTlNwYWluLyIsInlvdXR1YmUiOiJodHRwczovL3d3dy55b3V0dWJlLmNvbS91c2VyL0lHTlNwYWluIiwibWFpbCI6Im1haWx0bzpjb25zdWx0YUBjbmlnLmVzIiwidG9vbHRpcCI6IkNvbnRhY3RhIGNvbiBub3NvdHJvcyJ9
+https://api-ideedes.grupotecopy.es/api-idee/?contactlink=base64=eyJwb3NpdGlvbiI6ImxlZnQiLCJjb2xsYXBzZWQiOnRydWUsIm9yZGVyIjoyLCJ0b29sdGlwIjoiQ29udGFjdGEgY29uIG5vc290cm9zIiwiZGVzY2FyZ2FzY25pZyI6Imh0dHA6Ly9jZW50cm9kZWRlc2Nhcmdhcy5jbmlnLmVzL0NlbnRyb0Rlc2Nhcmdhcy9pbmRleC5qc3AiLCJwbm9hIjoiaHR0cHM6Ly93d3cuaWduLmVzL3dlYi9jb21wYXJhZG9yX3Bub2EvaW5kZXguaHRtbCIsInZpc3VhbGl6YWRvcjNkIjoiaHR0cHM6Ly93d3cuaWduLmVzLzNELVN0ZXJlby8iLCJmb3RvdGVjYSI6Imh0dHBzOi8vZm90b3RlY2EuY25pZy5lcy8iLCJ0d2l0dGVyIjoiaHR0cHM6Ly90d2l0dGVyLmNvbS9JR05TcGFpbiIsImluc3RhZ3JhbSI6Imh0dHBzOi8vd3d3Lmluc3RhZ3JhbS5jb20vaWduc3BhaW4vIiwiZmFjZWJvb2siOiJodHRwczovL3d3dy5mYWNlYm9vay5jb20vSUdOU3BhaW4vIiwicGludGVyZXN0IjoiaHR0cHM6Ly93d3cucGludGVyZXN0LmVzL0lHTlNwYWluLyIsInlvdXR1YmUiOiJodHRwczovL3d3dy55b3V0dWJlLmNvbS91c2VyL0lHTlNwYWluIiwibWFpbCI6Im1haWx0bzpjb25zdWx0YUBjbmlnLmVzIn0=
 ```
 
 
@@ -192,7 +184,6 @@ https://componentes.idee.es/api-idee/?contactlink=base64=eyJwb3NpdGlvbiI6IlRMIiw
 ```javascript
 const mp = new ContactLink({
   position: 'left',
-  collapsed: false,
   collapsed: false,
   order: 2,
   descargascnig: 'http://centrodedescargas.cnig.es/CentroDescargas/index.jsp',
