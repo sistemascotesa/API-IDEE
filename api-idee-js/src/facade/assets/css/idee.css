@@ -233,8 +233,8 @@
     mask-repeat: no-repeat;
     mask-position: center;
     mask-size: contain;
-    -webkit-mask-image: url('../images/elevation.svg');
-    mask-image: url('../images/elevation.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_flexChevron.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_flexChevron.svg');
 }
 
 .m-api-idee-up-handle {
@@ -309,8 +309,13 @@
 
 .m-plugin-panel-content {
     flex-grow: 1;
-    padding: 0 16px;
+    padding: 0 8px;
+    margin: 0 8px;
     overflow-y: auto;
+}
+
+button::-moz-focus-inner {
+    border: 0;
 }
 
 button {
@@ -621,12 +626,6 @@ div.m-control button[class*=" g-cartografia-"]:focus,
     white-space: nowrap;
 }
 
-
-/***********************
-     INPUTS
-************************/
-
-
 /* TEXT */
 
 
@@ -635,13 +634,6 @@ div.m-control button[class*=" g-cartografia-"]:focus,
         word-break: break-all;
         white-space: none;
     }
-}
-
-
-/* BUTTON */
-
-button::-moz-focus-inner {
-    border: 0;
 }
 
 

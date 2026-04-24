@@ -24,8 +24,8 @@ export default class BackImgLayer extends IDEE.Plugin {
    */
   constructor(options = {}) {
     super('backimglayer', {
-      position: options.position || 'right',
-      tooltip: options.tooltip || getValue('tooltip'),
+      position: options.position ?? 'right',
+      tooltip: options.tooltip ?? getValue('tooltip'),
       order: options.order,
     });
 
