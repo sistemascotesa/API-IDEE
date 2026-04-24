@@ -123,7 +123,7 @@
 }
 
 .m-incicarto-layer-actions span {
-  color: #495057;
+  color: var(--idee-color-neutral-50);
   cursor: pointer;
   transition: all 0.3s ease;
 }
