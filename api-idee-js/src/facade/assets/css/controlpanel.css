@@ -137,7 +137,7 @@
 
 .m-control-panel.opened>button.m-control-panel-btn:hover {
     color: white;
-    background-color: rgb(221, 21, 37);
+    background-color: var(--idee-color-links);
 }
 
 .m-control-panel.m-tools>button.m-control-panel-btn {
