@@ -29,6 +29,8 @@ const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
  * @property {Array|String} intervals Intervalos de tiempo. (obligatorio)
  * @property {String} [position] Posición del control en el mapa.
  * @property {String} [tooltip] Texto del tooltip para el control.
+ * @property {String} [title] Texto del título para el panel de este control.
+ * Por defecto se asignará {@link tooltip}.
  * @property {Number} [order] Accesibilidad, z-index del control.
  * @property {Boolean} [collapsible] Indica si el control puede colapsarse.
  * @property {Boolean} [collapsed] Indica si el control está colapsado.
@@ -64,8 +66,10 @@ const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
  * @property {Boolean} [collapsible=true] Indica si el control puede colapsarse.
  * @property {Boolean} [collapsed=true] Indica si el control está colapsado.
  * Depende de collapsible, solo se aplica si collapsible es true.
- * @property {String} [tooltip] Texto del tooltip para el control.
- * Por defecto la traducción del idioma.
+ * @property {String} [tooltip] Texto de información sobre la herramienta para el control.
+ * Por defecto la traducción al idioma.
+ * @property {String} [title] Texto del título para el panel de este control.
+ * Por defecto se asignará {@link tooltip}.
  * @property {Number} [order=0] Accesibilidad, z-index del control.
  * @property {Boolean} [animation=true] Indica si la animación de la línea de tiempo está
  * activada (true) o desactivada (false).
@@ -239,6 +243,8 @@ class Timeline extends Control {
 
     this.tooltip = isString(options.tooltip) ? options.tooltip : this.translation.tooltip ?? '';
 
+    this.title = isString(options.title) ? options.title : this.tooltip;
+
     this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
 
     this.collapsed = (isBoolean(options.collapsed) && this.collapsible) ? options.collapsed : true;
@@ -271,7 +277,7 @@ class Timeline extends Control {
       const template = compileSync((isType) ? timelineDinamicTemplate : timelineTemplate, {
         vars: {
           translations: {
-            title: this.translation.title,
+            title: this.title ?? this.translation.title,
             play: this.translation.play,
             initValue: this.translation.initValue,
             endValue: this.translation.endValue,

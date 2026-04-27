@@ -41,7 +41,8 @@ export const getDefaultPanelOptions = (control, params) => ({
   position: control.position ?? params.position,
   collapsible: isBoolean(control.collapsible) ? control.collapsible : params.collapsible,
   collapsed: isBoolean(control.collapsed) ? control.collapsed : params.collapsed,
-  tooltip: control.translation ? control.translation.title : (params.tooltip ?? null),
+  tooltip: isString(control.tooltip) ? control.tooltip
+    : isString(params.tooltip) ? (control.translation ? control.translation.title : null) : null,
   className: `m-${control.name}`,
 });
 
@@ -578,8 +579,6 @@ export const buildControl = (controlParam, map) => {
       [WMCSelector.NAME]: () => new WMCSelector(),
       [Timeline.NAME]: () => {
         const parsedOptions = parseControlParams(controlParams, controlName);
-        // eslint-disable-next-line no-console
-        // console.log(parsedOptions);
         return new Timeline({
           timelineType: 'absoluteSimple',
           ...parsedOptions,
