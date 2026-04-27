@@ -41,8 +41,7 @@ export const getDefaultPanelOptions = (control, params) => ({
   position: control.position ?? params.position,
   collapsible: isBoolean(control.collapsible) ? control.collapsible : params.collapsible,
   collapsed: isBoolean(control.collapsed) ? control.collapsed : params.collapsed,
-  tooltip: isString(control.tooltip) ? control.tooltip
-    : isString(params.tooltip) ? (control.translation ? control.translation.title : null) : null,
+  tooltip: control.translation ? control.translation.title : (params.tooltip ?? null),
   className: `m-${control.name}`,
 });
 
