@@ -1,8 +1,10 @@
 import Incicarto from 'facade/incicarto';
+
 window.Incicarto = Incicarto;
 
 IDEE.language.setLang('es'); // Español
 // IDEE.language.setLang('en');
+// https://api-ideedes.grupotecopy.es
 
 const map = IDEE.map({
   container: 'mapjs',
@@ -11,9 +13,10 @@ const map = IDEE.map({
     y: 4493011,
     draw: false,
   },
+  controls: ['rotate'],
   projection: 'EPSG:3857',
   zoom: 6,
-  /*/ Capas precargadas
+  /* / Capas precargadas
   layers: [
     'WMTS*http://www.ideandalucia.es/geowebcache/service/wmts?*toporaster*SIG-C:25830*WMTS*false',
     'WFS*CampamentosCampamentosCampamentosCampamentos*http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows*sepim:campamentos*POINT***eyJwYXJhbWV0ZXJzIjpbeyJpY29uIjp7ImZvcm0iOiJDSVJDTEUiLCJjbGFzcyI6ImctY2FydG9ncmFmaWEtYmFuZGVyYSIsImZvbnRzaXplIjowLjUsInJhZGl1cyI6MTUsImZpbGwiOiJ3aGl0ZSJ9LCJyYWRpdXMiOjV9XSwiZGVzZXJpYWxpemVkTWV0aG9kIjoiKChzZXJpYWxpemVkUGFyYW1ldGVycykgPT4gTS5zdHlsZS5TaW1wbGUuZGVzZXJpYWxpemUoc2VyaWFsaXplZFBhcmFtZXRlcnMsICdNLnN0eWxlLlBvaW50JykpIn0',
@@ -21,7 +24,7 @@ const map = IDEE.map({
 });
 window.map = map;
 
-/*/ Añadimos el BackImgLayer
+/* / Añadimos el BackImgLayer
 const mpBIL = new IDEE.plugin.BackImgLayer({
   position: 'TR',
   collapsible: true,
@@ -136,7 +139,7 @@ map.addPlugin(mpBIL); // */
 // addWMSLayer('TN.RoadTransportNetwork.RoadLink', 'Vías de comunicación por carretera', 'https://www.ign.es/wms-inspire/ign-base?', '1.3.0', true, { visibility: false, displayInLayerSwitcher: true, queryable: false, zIndex: 506 });
 // addWMSLayer('TN.RailTransportNetwork.RailwayLink', 'Vías de comunicación ferroviarias', 'https://www.ign.es/wms-inspire/ign-base?', '1.3.0', true, { visibility: false, displayInLayerSwitcher: true, queryable: fals
 
-/*/ PRUEBA con capas WMS
+/* / PRUEBA con capas WMS
 const objLyrREDNAP = new IDEE.layer.WMS({ url: 'https://www.ign.es/wms-inspire/redes-geodesicas?',
   name: 'RED_NAP', legend: 'Red de Nivelación de Alta Precisión',
   tiled: false, visibility: false,
@@ -163,65 +166,69 @@ const objLyrNGBE = new IDEE.layer.WMS({ url: 'https://www.ign.es/wms-inspire/ngb
 }, {});
 map.addLayers([objLyrREDNAP, objLyrBDLJE, objLyrRTRoads, objLyrRTRailways, objLyrNGBE]); // */
 
-const nameTest = 'alvaro';
-const emailTest = 'alvaroramirez@guadaltel.com';
-const mp = new Incicarto({
-  collapsed: false,
-  collapsible: true,
-  position: 'right',
-  interfazmode: 'simple', //simple, advance, both
-  buzones: [
-  {
-    name: nameTest,
-    email: emailTest,
-  },
-  ],
-  controllist: [
-    {
-      id: 'themeList',
-      name: 'Temas de errores',
-      mandatory: true,
-    },
-    {
-      id: 'errorList',
-      name: 'Tipos de errores',
-      mandatory: true,
-    },
-    {
-      id: 'productList',
-      name: 'Lista de productos',
-      mandatory: true,
-    }
-  ],
-  themeList: [
-    {
-      idTheme: 1,
-      nameTheme: nameTest+'1',
-      emailTheme: emailTest,
-    },
-    {
-      idTheme: 2,
-      nameTheme: nameTest+'2',
-      emailTheme: emailTest,
-    },
-  ],
-  errorList: [
-    'No especificado',
-    'Omisión',
-    'Comisión',
-    '...',
-  ],
-  productList: [
-    'No especificado',
-    'Serie MTN25',
-    'Serie MTN50',
-    '...',
-  ],
-});
-window.mp = mp;
+// const nameTest = 'alvaro';
+// const emailTest = 'alvaroramirez@guadaltel.com';
+// const mp = new Incicarto({
+//   collapsed: false,
+//   collapsible: true,
+//   position: 'right',
+//   interfazmode: 'simple', // simple, advance, both
+//   buzones: [
+//     {
+//       name: nameTest,
+//       email: emailTest,
+//     },
+//   ],
+//   controllist: [
+//     {
+//       id: 'themeList',
+//       name: 'Temas de errores',
+//       mandatory: true,
+//     },
+//     {
+//       id: 'errorList',
+//       name: 'Tipos de errores',
+//       mandatory: true,
+//     },
+//     {
+//       id: 'productList',
+//       name: 'Lista de productos',
+//       mandatory: true,
+//     },
+//   ],
+//   themeList: [
+//     {
+//       idTheme: 1,
+//       nameTheme: `${nameTest}1`,
+//       emailTheme: emailTest,
+//     },
+//     {
+//       idTheme: 2,
+//       nameTheme: `${nameTest}2`,
+//       emailTheme: emailTest,
+//     },
+//   ],
+//   errorList: [
+//     'No especificado',
+//     'Omisión',
+//     'Comisión',
+//     '...',
+//   ],
+//   productList: [
+//     'No especificado',
+//     'Serie MTN25',
+//     'Serie MTN50',
+//     '...',
+//   ],
+// });
+// window.mp = mp;
 
-/*/ PRUEBA con múltiples plugins
-const mp2 = new IDEE.plugin.Infocoordinates({ position: 'TR', decimalGEOcoord: 4, decimalUTMcoord: 4 });
+/* / PRUEBA con múltiples plugins
+const mp2 = new IDEE.plugin.Infocoordinates({
+  position: 'TR',
+  decimalGEOcoord: 4,
+  decimalUTMcoord: 4
+});
 const mp3 = new IDEE.plugin.Information({ position: 'TR', buffer: 100 });
 const mp4 = new IDEE.plugin.MeasureBar({ position: 'TR' });
 
@@ -241,6 +248,287 @@ map.addPlugin(mp2); window.mp2 = mp2;
 map.addPlugin(mp3); window.mp3 = mp3;
 map.addPlugin(mp4); window.mp4 = mp4; // */
 
-map.addPlugin(mp);
+// map.addPlugin(mp);
 // map.addPlugin(new IDEE.plugin.MeasureBar({ position: 'TR' }));
+let mp = null;
 
+const selectPosicion = document.getElementById('selectPosicion');
+const inputTooltip = document.getElementById('inputTooltip');
+const selectCollapsed = document.getElementById('selectCollapsed');
+const inputOrder = document.getElementById('inputOrder');
+const inputPrefixSubject = document.getElementById('inputPrefixSubject');
+const selectInterfazmode = document.getElementById('selectInterfazmode');
+const inputErrorList = document.getElementById('inputErrorList');
+const inputProductList = document.getElementById('inputProductList');
+const inputBuzones = document.getElementById('inputBuzones');
+const inputControllist = document.getElementById('inputControllist');
+const inputThemeList = document.getElementById('inputThemeList');
+
+function create(propiedades) {
+  mp = new Incicarto(propiedades);
+  map.addPlugin(mp);
+}
+
+function remove() {
+  if (mp) map.removePlugin(mp);
+  mp = null;
+}
+
+function changeTest() {
+  remove();
+  const options = {};
+
+  const selectPosition = selectPosicion.options[selectPosicion.selectedIndex].value;
+  if (selectPosition !== '') options.position = selectPosition;
+
+  if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
+
+  const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
+  if (collapsed !== '') options.collapsed = (collapsed === 'true');
+
+  if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
+
+  const interfazMode = selectInterfazmode.options[selectInterfazmode.selectedIndex].value;
+  if (interfazMode !== '') options.interfazmode = interfazMode;
+
+  if (inputPrefixSubject.value !== '') options.prefixSubject = inputPrefixSubject.value; // 'Incidencia cartogrfica - '
+
+  if (inputErrorList.value !== '') options.errorList = inputErrorList.value.split(','); // ['No especificado', 'Omisión', 'Otros']
+
+  if (inputProductList.value !== '') options.productList = inputProductList.value.split(','); // ['No especificado', 'IGN Base', 'Otros productos'];
+
+  if (inputBuzones.value !== '') options.buzones = JSON.parse(inputBuzones.value);
+
+  if (inputControllist.value !== '') options.controllist = JSON.parse(inputControllist.value);
+
+  if (inputThemeList.value !== '') options.themeList = JSON.parse(inputThemeList.value);
+
+  create(options);
+}
+
+[
+  selectPosicion,
+  selectCollapsed,
+  inputOrder,
+  inputTooltip,
+  inputPrefixSubject,
+  selectInterfazmode,
+  inputErrorList,
+  inputProductList,
+  inputBuzones,
+  inputControllist,
+  inputThemeList,
+].forEach((elm) => { elm.addEventListener('change', changeTest); });
+
+const removeButton = document.getElementById('removeButton');
+removeButton.addEventListener('click', () => { remove(); });
+
+create({
+  collapsed: true,
+  collapsible: true,
+  position: 'right',
+  interfazmode: 'advance',
+  isDraggable: true,
+  buzones: [{
+    name: 'Cartografía (MTN, BTN, RT, HY, Pob, BCN, Provinciales, escalas pequeñas)',
+    email: 'cartografia.ign@mitma.es',
+  },
+  {
+    name: 'Atlas Nacional de España',
+    email: 'ane@mitma.es',
+  },
+  {
+    name: 'Fototeca',
+    email: 'fototeca@cnig.es',
+  },
+  {
+    name: 'Geodesia',
+    email: 'buzon-geodesia@mitma.es',
+  },
+  {
+    name: 'Líneas Límite Municipales',
+    email: 'limites_municipales@mitma.es',
+  },
+  {
+    name: 'Nombres geográficos',
+    email: 'toponimia.ign@mitma.es',
+  },
+  {
+    name: 'Ocupación del suelo',
+    email: 'siose@mitma.es',
+  },
+  {
+    name: 'Teledetección',
+    email: 'pnt@mitma.es',
+  },
+  {
+    name: 'Documentación histórica, Archivo, Cartoteca y biblioteca',
+    email: 'documentacionign@mitma.es',
+  },
+  {
+    name: 'Registro Central de Cartografía',
+    email: 'rcc@mitma.es',
+  },
+  {
+    name: 'Naturaleza, Cultura y Ocio',
+    email: 'naturalezaculturaocio@mitma.es',
+  },
+  {
+    name: 'Cartociudad',
+    email: 'cartociudad@mitma.es',
+  },
+  {
+    name: 'Infraestructura de Datos Espaciales',
+    email: 'idee@mitma.es',
+  },
+  {
+    name: 'Sistemas de Información Geográfica (SIGNA)',
+    email: 'signa@mitma.es',
+  },
+  {
+    name: 'Volcanología',
+    email: 'volcanologia@mitma.es',
+  },
+  {
+    name: 'Red Sísmica Nacional',
+    email: 'sismologia@mitma.es',
+  },
+  ],
+  controllist: [{
+    id: 'themeList',
+    name: 'Temas de errores',
+    mandatory: true,
+  },
+  {
+    id: 'errorList',
+    name: 'Tipos de errores',
+    mandatory: true,
+  },
+  {
+    id: 'productList',
+    name: 'Lista de productos',
+    mandatory: true,
+  },
+  ],
+  themeList: [{
+    idTheme: 1,
+    nameTheme: 'No especificado',
+    emailTheme: 'consultas@cnig.es',
+  },
+  {
+    idTheme: 2,
+    nameTheme: 'Relieve',
+    emailTheme: 'cartografia.ign@mitma.es',
+  },
+  {
+    idTheme: 3,
+    nameTheme: 'Hidrografía',
+    emailTheme: 'cartografia.ign@mitma.es',
+  },
+  {
+    idTheme: 4,
+    nameTheme: 'Edificaciones',
+    emailTheme: 'cartografia.ign@mitma.es',
+  },
+  {
+    idTheme: 5,
+    nameTheme: 'Carretera',
+    emailTheme: 'cartociudad@mitma.es',
+  },
+  {
+    idTheme: 6,
+    nameTheme: 'Camino o senda',
+    emailTheme: 'cartociudad@mitma.es',
+  },
+  {
+    idTheme: 7,
+    nameTheme: 'Ferrocarriles',
+    emailTheme: 'cartociudad@mitma.es',
+  },
+  {
+    idTheme: 8,
+    nameTheme: 'Topónimo o nombre geográfico',
+    emailTheme: 'toponimia.ign@mitma.es',
+  },
+  {
+    idTheme: 9,
+    nameTheme: 'Límite de CCAA o municipio',
+    emailTheme: 'limites_municipales@mitma.es',
+  },
+  {
+    idTheme: 10,
+    nameTheme: 'Pruebas',
+    emailTheme: 'danielleon@guadaltel.com',
+  },
+  {
+    idTheme: 11,
+    nameTheme: 'Pruebas Guadaltel',
+    emailTheme: 'albertobuces@guadaltel.com',
+  },
+  {
+    idTheme: 12,
+    nameTheme: 'Pruebas Guadaltel 2',
+    emailTheme: 'jesusdiaz@guadaltel.com',
+  },
+  {
+    idTheme: 13,
+    nameTheme: 'Pruebas Guadaltel - IGN',
+    emailTheme: 'esteban.emolin@gmail.com',
+  },
+  {
+    idTheme: 14,
+    nameTheme: 'Pruebas IGN',
+    emailTheme: 'aurelio.aragon@cnig.es',
+  },
+  {
+    idTheme: 15,
+    nameTheme: 'Pruebas Outlook 1',
+    emailTheme: 'daleji75@gmail.com',
+  },
+  {
+    idTheme: 16,
+    nameTheme: 'Pruebas Outlook 2',
+    emailTheme: 'pruebasdlj@outlook.es',
+  },
+  ],
+  errorList: [
+    'No especificado',
+    'Omisión',
+    'Comisión',
+    'Clasificación',
+    'Nombre',
+    'Valor del atributo',
+    'Forma',
+    'Localización',
+    'Otros',
+  ],
+  productList: [
+    'No especificado',
+    'Serie MTN25',
+    'Serie MTN50',
+    'BTN25',
+    'BTN100',
+    'MP200',
+    'BCN200',
+    'BCN500',
+    'Mapa Autonómico',
+    'Mapa España 1:500 000',
+    'Mapa España 1:1 000 000',
+    'Cartociudad',
+    'Redes de Transporte',
+    'Hidrografía',
+    'Poblaciones',
+    'Mundo real',
+    'IGN Base',
+    'Otros productos',
+  ],
+  baseLayers: [
+    ['NACIONAL 1981-1986', '1986', 'WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986'],
+    ['OLISTAT', '1998', 'WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT'],
+    ['SIGPAC', '2003', 'WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC'],
+    ['PNOA 2004', '2004', 'WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004'],
+    ['PNOA 2005', '2005', 'WMS*pnoa2005*https://www.ign.es/wms/pnoa-historico*pnoa2005'],
+    ['PNOA 2006', '2006', 'WMS*pnoa2006*https://www.ign.es/wms/pnoa-historico*pnoa2006'],
+    ['PNOA 2010', '2010', 'WMS*pnoa2010*https://www.ign.es/wms/pnoa-historico*pnoa2010'],
+  ],
+});

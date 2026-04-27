@@ -1,0 +1,55 @@
+.g-cartografia-puntual::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_puntual.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_puntual.svg');
+}
+
+.g-cartografia-lineal::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lineal.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lineal.svg');
+}
+
+.g-cartografia-subirArchivo::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_subirArchivo.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_subirArchivo.svg');
+}
+
+.g-cartografia-editarGeoMarco::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_editarGeoMarco.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_editarGeoMarco.svg');
+}
+
+.g-cartografia-zoom_incid::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_zoom_incid.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_zoom_incid.svg');
+}
+
+.g-cartografia-notificar::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_notificar.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_notificar.svg');
+}
+
+#plugin-panel-content-incicarto #drawingtools .g-cartografia-flecha-arriba2::before,
+#plugin-panel-content-incicarto #incicarto-hide.g-cartografia-flecha-arriba2::before,
+#plugin-panel-content-incicarto #drawingtools .g-cartografia-flecha-abajo2::before,
+#plugin-panel-content-incicarto #incicarto-hide.g-cartografia-flecha-abajo2::before {
+    width: 18px;
+    margin: 0 0 .1rem 0;
+    border-radius: 50%;
+}
+
+#plugin-panel-content-incicarto .m-incicarto-actions>.m-incicarto-layer-type {
+    background-color: currentColor;
+}
+
+#plugin-panel-content-incicarto .m-incicarto-layer-type,
+#plugin-panel-content-incicarto .m-icon-layer {
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+}
+
+#plugin-panel-content-incicarto .m-incicarto-layer-legend>.m-incicarto-layer-type,
+#plugin-panel-content-incicarto .m-icon-layer.active-tool {
+    color: var(--idee-color-primary)
+}
+

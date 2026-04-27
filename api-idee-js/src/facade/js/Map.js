@@ -3991,6 +3991,10 @@ class Map extends Base {
     return this;
   }
 
+  /**
+   * @param {IDEE.Pugin | string} plugin a plugin or one plugin name
+   * @returns {IDEE.Map}
+   */
   removePlugin(plugin) {
     // checks if the param is null or empty
     if (isNullOrEmpty(plugin)) {

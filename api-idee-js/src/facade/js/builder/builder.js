@@ -578,6 +578,8 @@ export const buildControl = (controlParam, map) => {
       [WMCSelector.NAME]: () => new WMCSelector(),
       [Timeline.NAME]: () => {
         const parsedOptions = parseControlParams(controlParams, controlName);
+        // eslint-disable-next-line no-console
+        // console.log(parsedOptions);
         return new Timeline({
           timelineType: 'absoluteSimple',
           ...parsedOptions,
