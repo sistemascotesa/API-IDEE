@@ -145,8 +145,8 @@
 }
 
 .g-cartografia-implementacion::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_implementationSwitcher.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_implementationSwitcher.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_implementationswitcher.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_implementationswitcher.svg');
 }
 
 .g-cartografia-cancelar2::before {
