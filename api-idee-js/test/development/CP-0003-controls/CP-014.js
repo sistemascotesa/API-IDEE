@@ -74,6 +74,7 @@ const stepValue = 5;
 const formatValue = 'logarithmic';
 const sizeWidthDinamic = 'sizeWidthDinamic_medium';
 const formatMove = 'continuous';
+const collapsible = selectCollapsible.value === 'true';
 
 // Type
 const typeTimeLine = document.getElementById('typeTimeLine');
@@ -87,12 +88,14 @@ if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
     formatMove,
     formatValue,
     sizeWidthDinamic,
+    collapsible,
   });
 } else {
   create({
     timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
     position,
     intervals,
+    collapsible,
   });
 }
 
@@ -147,8 +150,8 @@ function changeTest() {
 
   if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
 
-  const collapsible = selectCollapsible.options[selectCollapsible.selectedIndex].value;
-  if (collapsible !== '') options.collapsible = (collapsible === 'true');
+  const collapsibleVal = selectCollapsible.value === 'true';
+  if (selectCollapsible.value !== '') options.collapsible = collapsibleVal;
 
   const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
   if (collapsed !== '') options.collapsed = (collapsed === 'true');
