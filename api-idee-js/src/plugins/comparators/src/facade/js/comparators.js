@@ -75,7 +75,7 @@ export default class Comparators extends IDEE.Plugin {
     this.map = map;
     this.options.listLayers = this.options.listLayers || [];
 
-    if (typeof this.options.listLayers === 'string' && this.options.listLayers !== '') {
+    if (IDEE.utils.isString(this.options.listLayers)) {
       try {
         this.options.listLayers = JSON.parse(this.options.listLayers.replace(/'/g, '"'));
       } catch (e) {

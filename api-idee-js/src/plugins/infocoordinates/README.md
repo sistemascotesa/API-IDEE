@@ -47,18 +47,17 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - 'left' (LEFT) - A la izquierda.
   - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
-- **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
 - **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: Información Coordenadas.
-- **decimalGEOcoord**: Indica el número de decimales de las coordenadas geográficas. Por defecto: 4
-- **decimalUTMcoord**: Indica el número de decimales de las coordenadas proyectadas en UTM. Por defecto: 2
+- **decimalGEOcoord**: Indica el número de decimales de las coordenadas geográficas (0-10). Por defecto: 4
+- **decimalUTMcoord**: Indica el número de decimales de las coordenadas proyectadas en UTM (0-5). Por defecto: 2
 - **helpUrl**: URL a la ayuda para el icono. Por defecto: 'https://www.ign.es/'
 - **outputDownloadFormat**: Indica el formato de salida del documento que se va a descargar. Se puede elegir entre 'txt' o 'csv'. Por defecto: txt.
 
 # API-REST
 
 ```javascript
-URL_API?infocoordinates=position*collapsed*collapsible*tooltip*decimalGEOcoord*decimalUTMcoord*helpUrl*outputDownloadFormat
+URL_API?infocoordinates=position*collapsed*order*tooltip*decimalGEOcoord*decimalUTMcoord*helpUrl*outputDownloadFormat
 ```
 
 <table>
@@ -74,11 +73,6 @@ URL_API?infocoordinates=position*collapsed*collapsible*tooltip*decimalGEOcoord*d
   </tr>
   <tr>
     <td>collapsed</td>
-    <td>true/false</td>
-    <td>Base64 ✔️  | Separador ✔️ </td>
-  </tr>
-  <tr>
-    <td>collapsible</td>
     <td>true/false</td>
     <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
@@ -118,7 +112,7 @@ URL_API?infocoordinates=position*collapsed*collapsible*tooltip*decimalGEOcoord*d
 ### Ejemplo de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee?infocoordinates=TL*true*true*Coordenadas*4*2*https%3A%2F%2Fvisores-cnig-gestion-publico.desarrollo.guadaltel.es%2Fiberpix%2Fhelp%3Fnode%3Dnode107*txt
+https://api-ideedes.grupotecopy.es/api-idee?infocoordinates=right*false*0*Coordenadas*6*2*https://www.ign.es/*csv
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -133,7 +127,6 @@ Ejemplo del constructor:
 ```javascript
 {
   position: "right",
-  collapsible: true,
   collapsed: true,
   order: 0,
   tooltip: "Información coordenadas",
@@ -145,7 +138,7 @@ Ejemplo del constructor:
 ```
 
 ```
-https://componentes.idee.es/api-idee?infocoordinates=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6IkNvb3JkZW5hZGFzIiwib3V0cHV0RG93bmxvYWRGb3JtYXQiOiJ0eHQiLCJkZWNpbWFsR0VPY29vcmQiOjQsImRlY2ltYWxVVE1jb29yZCI6NCwiaGVscFVybCI6Imh0dHBzOi8vd3d3Lmlnbi5lcy8ifQ==
+https://api-ideedes.grupotecopy.es/api-idee/?infocoordinates=base64=eyJwb3NpdGlvbiI6InJpZ2h0IiwiY29sbGFwc2VkIjpmYWxzZSwib3JkZXIiOjAsInRvb2x0aXAiOiJDb29yZGVuYWRhcyIsImRlY2ltYWxHRU9jb29yZCI6NiwiZGVjaW1hbFVUTWNvb3JkIjoyLCJoZWxwVXJsIjoiaHR0cHM6Ly93d3cuaWduLmVzLyIsIm91dHB1dERvd25sb2FkRm9ybWF0IjoiY3N2In0=
 ```
 
 # Ejemplo de uso
@@ -158,7 +151,6 @@ const map = IDEE.map({
 const mp = new IDEE.plugin.Infocoordinates({
   position: 'right',
   collapsed: true,
-  collapsible: true,
   order: 0,
   tooltip: 'Información coordenadas',
   decimalGEOcoord: 4,

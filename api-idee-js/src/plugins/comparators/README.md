@@ -93,7 +93,7 @@ Si es true, se pueden usar las combinaciones de teclas Ctrl + Shift + [F1-F8] pa
 Comparación en modo transparecyParams:
 Ctrl + Shift + Enter: Alterna el estado de congelación.
 Ctrl + Shift + Flecha hacia arriba: Aumenta el radio, si el radio alcanza el valor máximo de 200, no ocurre ningún cambio.
-Ctrl + Shift + Flecha hacia abajo: Disminuye el radio, si el radio llega al valor mínimo de 32, no ocurre ningún cambio.
+Ctrl + Shift + Flecha hacia abajo: Disminuye el radio, si el radio llega al valor mínimo de 30, no ocurre ningún cambio.
 - **transparencyParams**: Parámetros opcionales del control transparency, en el caso de no querer cargar este control su valor será "false".
   - radius (numérico): radio del efecto transparencia. Tiene un rango entre 30 y 200. Defecto: 100.
   - maxRadius Radio máximo, por defecto 200.
@@ -112,6 +112,8 @@ Ctrl + Shift + Flecha hacia abajo: Disminuye el radio, si el radio llega al valo
     - 1: dos mapas en vertical.
     - 2: dos mapas en horizontal.
     - 3: cuatro mapas.
+    - 4
+    - 5
 - **mirrorpanelParams**: Parámetros opcionales del plugin mirrorpanel, en el caso de no querer cargar este control su valor será "false".
   - showCursors (true/false): Si es true, muestra cursores sincronizados en cada unao de los mapas espejo. Defecto: *true*.
   - principalMap (true/false): indica en qué posición de la pantalla se mantiene el mapa principal (el que contiene el botón con las herramientas de comparación) con respecto a los demás. *False*: se sitúa a la izquierda. *True*: se sitúa a la derecha. Defecto: *false*.
@@ -352,7 +354,7 @@ URL_API?comparators=position*!collapsed*!order*!tooltip*!listlayers*! *!defaultC
 
 ### Ejemplos de uso API-REST
 ```
-https://api-ideedes.grupotecopy.es//api-idee/?comparators=right*!false*!0*!MiComparador*!%5B%27WMS*Huellas%20Sentinel2*https://wms-satelites-historicos.idee.es/satelites-historicos*teselas_sentinel2_espanna*true%27,%27WMS*Invierno%202022%20falso%20color%20natural*https://wms-satelites-historicos.idee.es/satelites-historicos*SENTINEL.2022invierno_432-1184*true%27,%27WMS*Invierno%202022%20falso%20color%20infrarrojo*https://wms-satelites-historicos.idee.es/satelites-historicos*SENTINEL.2022invierno_843*true%27,%27WMS*Filomena*https://wms-satelites-historicos.idee.es/satelites-historicos*Filomena*true%27%5D*!mirror*!true*!true*!true*!true*!false
+https://api-ideedes.grupotecopy.es/api-idee/?comparators=right*!false*!0*!MiComparador*!%5B%27WMS*Huellas%20Sentinel2*https://wms-satelites-historicos.idee.es/satelites-historicos*teselas_sentinel2_espanna*true%27,%27WMS*Invierno%202022%20falso%20color%20natural*https://wms-satelites-historicos.idee.es/satelites-historicos*SENTINEL.2022invierno_432-1184*true%27,%27WMS*Invierno%202022%20falso%20color%20infrarrojo*https://wms-satelites-historicos.idee.es/satelites-historicos*SENTINEL.2022invierno_843*true%27,%27WMS*Filomena*https://wms-satelites-historicos.idee.es/satelites-historicos*Filomena*true%27%5D*!mirror*!true*!true*!true*!true*!false
 ```
 No funciona ```https://componentes.idee.es/api-idee?comparators``` es necesario espeficiar alguno de los siguientes parámetros: transparencyParams, lyrcompareParams, mirrorpanelParams.
 
