@@ -1,4 +1,4 @@
-24/10/25 Versión 2.0.0
+24/10/25 Versión 1.1.0
 - Se añade el método getImageMap para generar la imagen del mapa.
 - Se soluciona problemas con filtros espaciales en Cesium.
 - Se soluciona problema en estilos con patrones en polígonos.
@@ -79,19 +79,24 @@
 - Se soluciona problema con plugin overviewmap en 25830.
 - Se soluciona problema con proxy e iconos en estilos.
 - Se adapta WMC para que indique displayInLayerSwitcher internamente en el primer objeto de WMS.
-- se soluciona problema al obtener la extensión de una capa vector con un solo punto mediante el método getFeaturesExtent.
+- Se soluciona problema con enlace a controles que no existen.
+- Se soluciona problema al obtener la extensión de una capa vector con un solo punto mediante el método getFeaturesExtent.
+- El control location disparará un evento CHANGE en cada cambio de posición.
 - Se pueden importar archivos .tif, .tiff y .gpkg y se implementa mejora a la hora de añadir archivos pesados en el plugin LayerSwitcher.
 - Se crean métodos en Utils para la transformación de formato GeoJSON y WKT a WKB, tanto a nivel de feature como de capa.
 - La información recibida de un servicio en formato GeoJSON o KML se proyecta en la proyección estándar de estos formatos, EPSG:4326.
 - Permite la carga de archivos GeoJSON mediante rutas locales, tanto absolutas como relativas.
 - Se permite gestionar la interacción 'snap' dentro de la herramienta 'Edición de geometría' del plugin Vectorsmanagement.
 - La acción 'Área de influencia' del plugin Vectorsmanagement crea una nueva instancia de capa.
-- Modifica la función de carga para todos los servicios teselados para que la solicitud de nuevas tiles se produzca en la frontera x.50
+- Modifica la función de carga para todos los servicios teselados para que la solicitud de nuevas tiles se produzca en la frontera x.50.
 - Corrige la carga de nuevos EPSGs en Mousesrs e Infocoordinates y habilita dicha funcionalidad en PrintViewManagement.
-- Restaura el parámetro 'exact' del control Scale
+- Restaura el parámetro 'exact' del control Scale.
 - Se cambia la estructura del archivo GeoJSON que toma como entrada el parámetro 'precharged' de LayerSwitcher.
 - Se reconoce el parámetro 'type' del servicio cargado en LayerSwitcher.
 - Permite la creación de grupos anidados de capas en LayerSwitcher.
+- Se sube la versión de OpenLayers de la 10.4 a la 10.7.
+- Se implementa funcionalidad de resoluciones automáticas y configuración para activar dicha funcionalidad.
+- Se implementa multilenguaje en plugin maxextzoom.
 
 01/01/25 - Versión 1.0.0
 - Se incluye implementación 3D con Cesium

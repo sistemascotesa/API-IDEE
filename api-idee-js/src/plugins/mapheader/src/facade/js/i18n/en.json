@@ -1,0 +1,7 @@
+{
+  "exception": {
+    "impl": "The implementation used cannot create MapheaderControl controls"
+  },
+  "hideheader": "Hide header",
+  "showheader": "Show header"
+}

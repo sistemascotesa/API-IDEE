@@ -4,6 +4,7 @@
 
 import MagnifyImplControl from 'impl/magnifycontrol';
 import template from 'templates/magnify';
+import { getValue } from './i18n/language';
 
 export default class MagnifyControl extends IDEE.Control {
   /**
@@ -18,7 +19,7 @@ export default class MagnifyControl extends IDEE.Control {
   constructor(values) {
     // 1. checks if the implementation can create PluginControl
     if (IDEE.utils.isUndefined(MagnifyImplControl)) {
-      IDEE.exception('La implementación usada no puede crear controles MagnifyControl');
+      IDEE.exception(getValue('exception.impl'));
     }
     // 2. implementation of this control
     const impl = new MagnifyImplControl();

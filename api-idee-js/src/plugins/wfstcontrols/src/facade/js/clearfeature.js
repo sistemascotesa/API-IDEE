@@ -3,6 +3,7 @@
  */
 import ClearFeatureImpl from '../../impl/ol/js/clearfeature';
 import ClearFeatureHTML from '../../templates/clearfeature.html';
+import { getValue } from './i18n/language';
 
 export default class ClearFeature extends IDEE.Control {
   /**
@@ -23,7 +24,7 @@ export default class ClearFeature extends IDEE.Control {
     super(impl, ClearFeature.NAME);
 
     if (IDEE.utils.isUndefined(ClearFeatureImpl)) {
-      IDEE.exception('La implementación usada no puede crear controles ClearFeature');
+      IDEE.exception(getValue('exception.impl_clear'));
     }
   }
 
@@ -39,6 +40,11 @@ export default class ClearFeature extends IDEE.Control {
   createView(map) {
     return IDEE.template.compileSync(ClearFeatureHTML, {
       jsonp: true,
+      vars: {
+        translations: {
+          clear: getValue('clear'),
+        },
+      },
     });
   }
 

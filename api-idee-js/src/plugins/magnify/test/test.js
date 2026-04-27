@@ -1,5 +1,8 @@
 import Magnify from 'facade/magnify';
 
+// IDEE.language.setLang('en');
+IDEE.language.setLang('es');
+
 const map = IDEE.map({
   container: "mapjs",
   projection: 'EPSG:25830',

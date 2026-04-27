@@ -5,6 +5,7 @@
 
 import MapheaderImplControl from 'impl/mapheadercontrol';
 import template from 'templates/mapheader';
+import { getValue } from './i18n/language';
 
 export default class MapheaderControl extends IDEE.Control {
   /**
@@ -19,7 +20,7 @@ export default class MapheaderControl extends IDEE.Control {
   constructor(config) {
     // 1. checks if the implementation can create PluginControl
     if (IDEE.utils.isUndefined(MapheaderImplControl)) {
-      IDEE.exception('La implementación usada no puede crear controles MapheaderControl');
+      IDEE.exception(getValue('exception.impl'));
     }
     // 2. implementation of this control
     const impl = new MapheaderImplControl();
@@ -127,14 +128,14 @@ export default class MapheaderControl extends IDEE.Control {
       const btnMapHeader = panelMapheader ? panelMapheader.querySelector('button.m-panel-btn') : null;
 
       if (btnMapHeader) {
-        btnMapHeader.title = this.opened ? 'Ocultar cabecera de página' : 'Mostrar cabecera de página';
+        btnMapHeader.title = this.opened ? getValue('hideheader') : getValue('showheader');
         btnMapHeader.addEventListener('click', () => {
           if (this.opened) {
-            btnMapHeader.title = 'Mostrar cabecera de página';
+            btnMapHeader.title = getValue('showheader');
             this.opened = false;
             this.setTopMargin(false);
           } else {
-            btnMapHeader.title = 'Ocultar cabecera de página';
+            btnMapHeader.title = getValue('hideheader');
             this.opened = true;
             this.checkHeaderheight();
             this.setTopMargin(true);

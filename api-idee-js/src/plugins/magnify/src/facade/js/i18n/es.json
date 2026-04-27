@@ -1,0 +1,10 @@
+{
+  "exception": {
+    "nolayersavai": "No existen capas disponibles para aplicar el efecto transparencia",
+    "impl": "La implementación usada no puede crear controles MagnifyControl"
+  },
+  "tooltip": "Lupa",
+  "title": "Lupa",
+  "actmagnifier": "Activar lupa",
+  "zoomlevel": "Nivel de zoom: "
+}

@@ -1,0 +1,29 @@
+{
+  "exception": {
+    "impl_clear": "The implementation used cannot create ClearFeature controls",
+    "impl_delete": "The implementation used cannot create DeleteFeature controls",
+    "impl_draw": "The implementation used cannot create DrawFeature controls",
+    "impl_edit": "The implementation used cannot create EditAttribute controls",
+    "impl_modify": "The implementation used cannot create ModifyFeature controls",
+    "impl_save": "The implementation used cannot create SaveFeature controls",
+    "WFSlayernotfound": "An error occurred while loading the plugin: No WFS layer found",
+    "errorgeometryparameter": "An error occurred while loading the plugin: The layer geometry could not be assigned automatically, you must do it manually using the geometry parameter.",
+    "errorloadingplugin": "An error occurred while loading the plugin: The layer geometry could not be assigned manually.",
+    "noWFSlayerloaded": "The controls ",
+    "noWFSlayerloaded1": " cannot be added to the map because no WFS layer is loaded",
+    "noloadedWFSlayer": "The layer ",
+    "noloadedWFSlayer1": " is not a loaded WFS layer",
+    "save_element_before": "You must save the element before",
+    "save_element_error": "An error occurred while saving: ",
+    "save_error_unauthorized": "An error occurred while saving: Unauthorized user"
+  },
+  "tooltip": "Editing tools",
+  "clear": "Clear",
+  "delete": "Delete",
+  "draw": "Draw",
+  "save": "Save",
+  "edit": "Edit",
+  "modify": "Modify",
+  "save_element_successfully": "The element has been saved successfully",
+  "save_successfully": "The element has been saved successfully"
+}

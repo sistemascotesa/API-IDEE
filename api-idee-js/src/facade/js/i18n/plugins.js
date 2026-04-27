@@ -20,6 +20,10 @@ import enContactlink from '../../../plugins/contactlink/src/facade/js/i18n/en';
 import esHelp from '../../../plugins/help/src/facade/js/i18n/es';
 import enHelp from '../../../plugins/help/src/facade/js/i18n/en';
 
+// Maxextzoom
+import esMaxextzoom from '../../../plugins/maxextzoom/src/facade/js/i18n/es';
+import enMaxextzoom from '../../../plugins/maxextzoom/src/facade/js/i18n/en';
+
 // Incicarto
 import esIncicarto from '../../../plugins/incicarto/src/facade/js/i18n/es';
 import enIncicarto from '../../../plugins/incicarto/src/facade/js/i18n/en';
@@ -35,6 +39,18 @@ import enInformation from '../../../plugins/information/src/facade/js/i18n/en';
 // Layerswitcher
 import esLayerswitcher from '../../../plugins/layerswitcher/src/facade/js/i18n/es';
 import enLayerswitcher from '../../../plugins/layerswitcher/src/facade/js/i18n/en';
+
+// Mapheader
+import esMapheader from '../../../plugins/mapheader/src/facade/js/i18n/es';
+import enMapheader from '../../../plugins/mapheader/src/facade/js/i18n/en';
+
+// Mapfooter
+import esMapfooter from '../../../plugins/mapfooter/src/facade/js/i18n/es';
+import enMapfooter from '../../../plugins/mapfooter/src/facade/js/i18n/en';
+
+// Magnify
+import esMagnify from '../../../plugins/magnify/src/facade/js/i18n/es';
+import enMagnify from '../../../plugins/magnify/src/facade/js/i18n/en';
 
 // Measurebar
 import esMeasurebar from '../../../plugins/measurebar/src/facade/js/i18n/es';
@@ -92,6 +108,10 @@ import enLocatorscn from '../../../plugins/locatorscn/src/facade/js/i18n/en';
 import esVectorsmanagement from '../../../plugins/vectorsmanagement/src/facade/js/i18n/es';
 import enVectorsmanagement from '../../../plugins/vectorsmanagement/src/facade/js/i18n/en';
 
+// Wfstcontrols
+import esWfstcontrols from '../../../plugins/wfstcontrols/src/facade/js/i18n/es';
+import enWfstcontrols from '../../../plugins/wfstcontrols/src/facade/js/i18n/en';
+
 // Filteredsearch
 import esFilteredsearch from '../../../plugins/filteredsearch/src/facade/js/i18n/es';
 import enFilteredsearch from '../../../plugins/filteredsearch/src/facade/js/i18n/en';
@@ -121,6 +141,10 @@ const pluginsLanguage = {
     esHelp,
     enHelp,
   },
+  maxextzoom: {
+    esMaxextzoom,
+    enMaxextzoom,
+  },
   incicarto: {
     esIncicarto,
     enIncicarto,
@@ -136,6 +160,18 @@ const pluginsLanguage = {
   layerswitcher: {
     esLayerswitcher,
     enLayerswitcher,
+  },
+  mapheader: {
+    esMapheader,
+    enMapheader,
+  },
+  mapfooter: {
+    esMapfooter,
+    enMapfooter,
+  },
+  magnify: {
+    esMagnify,
+    enMagnify,
   },
   measurebar: {
     esMeasurebar,
@@ -198,6 +234,10 @@ const pluginsLanguage = {
   filteredsearch: {
     esFilteredsearch,
     enFilteredsearch,
+  },
+  wfstcontrols: {
+    esWfstcontrols,
+    enWfstcontrols,
   },
 };
 

@@ -328,6 +328,14 @@ function fun(IDEE_) {
   IDEE_.config('DEFAULT_ZOOM', '3');
 
   /**
+   * Activar las resoluciones.
+   *
+   * @public
+   * @type {Boolean}
+   */
+  IDEE.config('ACTIVATE_RESOLUTIONS', '${activateResolutions}');
+
+  /**
    * Hace el popup inteligente
    *
    * @private

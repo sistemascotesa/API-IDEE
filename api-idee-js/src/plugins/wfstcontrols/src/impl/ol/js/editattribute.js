@@ -3,6 +3,7 @@
  */
 import { POPUP_TITLE } from '../../../facade/js/editattribute';
 import templatePopupHTML from '../../../templates/editattribute_popup';
+import { getValue } from '../../../facade/js/i18n/language';
 
 export default class EditAttribute extends IDEE.impl.Control {
   /**
@@ -74,7 +75,7 @@ export default class EditAttribute extends IDEE.impl.Control {
     // avoid editing new features
     if (IDEE.utils.isNullOrEmpty(this.editFeature.getId())) {
       this.editFeature = null;
-      IDEE.dialog.info('Debe guardar el elemento previamente');
+      IDEE.dialog.info(getValue('save_element_before'));
     } else {
       this.editFeature.setStyle(EditAttribute.SELECTED_STYLE);
 
@@ -186,9 +187,9 @@ export default class EditAttribute extends IDEE.impl.Control {
       IDEE.remote.post(fixurl, wfstRequestText).then((response) => {
         popupButton.classList.remove('m-savefeature-saving');
         if (response.code === 200) {
-          IDEE.dialog.success('Se ha guardado correctamente el elemento');
+          IDEE.dialog.success(getValue('save_element_successfully'));
         } else {
-          IDEE.dialog.error('Ha ocurrido un error al guardar: '.concat(response.text));
+          IDEE.dialog.error(getValue('save_element_error').concat(response.text));
         }
         this.unselectFeature_();
       });

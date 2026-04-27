@@ -381,6 +381,14 @@ params.forEach((param) => {
   IDEE.config('DEFAULT_ZOOM', '${defaultZoom}');
 
   /**
+   * Activar las resoluciones.
+   *
+   * @public
+   * @type {Boolean}
+   */
+  IDEE.config('ACTIVATE_RESOLUTIONS', '${activateResolutions}');
+
+  /**
    * Hace el popup y dialog inteligente
    *
    * @private
