@@ -436,7 +436,7 @@ class Timeline extends Control {
    */
   changeSlider(elem) {
     document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '0');
-    const left = (((elem.value - elem.min) / (elem.max - elem.min)) * ((256 - 5) - 5)) + 5;
+    const left = (((elem.value - elem.min) / (elem.max - elem.min)) * ((256 - 20) - 5));
     document.querySelector('.div-m-timeline-slider').style.setProperty('--left', `${left}px`);
     if (this.animation || this.intervals[0].name !== '') {
       document.querySelector('.m-timeline-names').style.display = 'block';
@@ -514,8 +514,10 @@ class Timeline extends Control {
     const slider = document.querySelector('#input-slider');
     let step = parseInt(slider.value, 10);
     if (this.running) {
-      this.getPlayTimeButton().classList.add('g-cartografia-control-siguiente');
-      this.getPlayTimeButton().classList.remove('g-cartografia-control-pausa');
+      this.getPlayTimeButton().classList.replace(
+        'g-cartografia-control-pausa',
+        'g-cartografia-control-siguiente',
+      );
       clearTimeout(this.running);
     }
     if (!next) {

@@ -15,6 +15,7 @@ import {
 import { isUndefined } from 'IDEE/util/Utils';
 import Control from './Control';
 import ImplUtils from '../util/Utils';
+import { isArray } from '../../../../facade/js/util/Utils';
 
 const oldTransformScratch = new Matrix4();
 const newTransformScratch = new Matrix4();
@@ -26,6 +27,7 @@ const vectorScratch = new Cartesian2();
  * @property {Boolean} [help] Indica si se muestra la ayuda al crear el control.
  * Por defecto, true. Solo disponible para Cesium.
  * @property {Object} [viewInitial] Vista inicial. Solo disponible para Cesium.
+ * Debe ser una colección que representa un bbox en la misma proyeección del mapa
  */
 
 /**
@@ -44,7 +46,8 @@ class Rotate extends Control {
   constructor(options = {}) {
     super();
 
-    this.viewInitial = options.viewInitial;
+    this.viewInitial = (isArray(options.viewInitial) && options.viewInitial.length === 4)
+      ? options.viewInitial : undefined;
     this.showHelp = options.help ?? true;
 
     this.handleExteriorMouseDown = (e) => this.handleMouseDown('exterior', e);

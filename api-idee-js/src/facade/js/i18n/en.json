@@ -255,7 +255,7 @@
     "invalid_control": "The specified control is invalid.",
     "remove_control": "You have not specified any control to delete.",
     "control_already_added": "The control is already added to the map.",
-    "parseControlParamError": "Error parsing parameter '{param}' of control '{control}': {error}",
+    "parseParamError": "Error parsing parameter '{param}' of '{name}': {error}",
     "paramNotAllowed": "Parameter '{param}' is not allowed for control '{control}' and has been omitted.",
     "invalidBase64Encoding": "Invalid base64 encoding",
     "invalidJsonFormat": "Invalid JSON format",

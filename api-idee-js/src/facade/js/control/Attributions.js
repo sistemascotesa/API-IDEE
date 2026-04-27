@@ -123,9 +123,7 @@ class Attributions extends Control {
 
     this.tooltip_ = options.tooltip ?? this.translation.title;
 
-    this.collectionsAttributions_ = options.collectionsAttributions ?? [];
-
-    this.collectionsAttributions_ = this.collectionsAttributions_.map((attr) => {
+    this.collectionsAttributions_ = (options.collectionsAttributions ?? []).map((attr) => {
       if (typeof attr === 'string') {
         return this.transformString(attr);
       }

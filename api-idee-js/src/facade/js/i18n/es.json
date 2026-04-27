@@ -256,7 +256,7 @@
     "invalid_control": "El control especificado es inválido",
     "remove_control": "No ha especificado ningún control a eliminar.",
     "control_already_added": "El control ya ha sido añadido al mapa previamente",
-    "parseControlParamError": "Error al parsear el parámetro '{param}' del control '{control}': {error}",
+    "parseParamError": "Error al parsear el parámetro '{param}' de '{name}': {error}",
     "paramNotAllowed": "El parámetro '{param}' no está permitido para el control '{control}' y ha sido omitido.",
     "invalidBase64Encoding": "Codificación base64 inválida",
     "invalidJsonFormat": "Formato JSON inválido",
