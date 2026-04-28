@@ -25,6 +25,7 @@ import * as Position from '../ui/position';
  * @api
  * @property {String} [position] Posición del control en el mapa.
  * @property {String} [tooltip] Texto del tooltip.
+ * @property {String} [title] Título del control.
  * @property {Boolean} [collapsible] Indica si el control es colapsable.
  * (usada por ControlPanel)
  * @property {Boolean} [collapsed] Indica si el control está colapsado.
@@ -49,7 +50,8 @@ import * as Position from '../ui/position';
  * @classdesc
  * Panel de atribuciones API-CING.
  * @property {String} [position='left'] Posición del control.
- * @property {String} [tooltip_] Texto del tooltip. por defecto la tradcución
+ * @property {String} [tooltip] Texto del tooltip. por defecto la traducción.
+ * @property {String} [title] Texto del título.
  * @property {Boolean} [collapsible=true] Indica si el control es colapsable.
  * @property {Boolean} [collapsed=false] Indica si el control está colapsado.
  * @property {Number} [order=0] Accesibilidad, z-index.
@@ -121,7 +123,9 @@ class Attributions extends Control {
 
     this.defaultURL_ = options.defaultURL ?? 'https://www.ign.es/';
 
-    this.tooltip_ = options.tooltip ?? this.translation.title;
+    this.tooltip = options.tooltip ?? this.translation.title;
+
+    this.title = options.title ?? this.tooltip;
 
     this.collectionsAttributions_ = (options.collectionsAttributions ?? []).map((attr) => {
       if (typeof attr === 'string') {
@@ -172,7 +176,8 @@ class Attributions extends Control {
         vars: {
           collapsible: window.innerWidth < 769,
           order: this.order,
-          tooltip: this.tooltip_,
+          title: this.title,
+          tooltip: this.tooltip,
         },
       });
 
@@ -181,7 +186,7 @@ class Attributions extends Control {
       setTimeout(() => {
         const panel = this.getPanel();
         if (panel && panel.getButtonPanel()) {
-          panel.getButtonPanel().setAttribute('title', this.tooltip_);
+          panel.getButtonPanel().setAttribute('title', this.tooltip);
         }
       }, 0);
 
