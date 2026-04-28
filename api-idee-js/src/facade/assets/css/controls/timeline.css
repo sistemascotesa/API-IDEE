@@ -8,6 +8,7 @@
 }
 
 .m-control-panel.m-control-timeline.opened .div-m-timeline-panel {
+    position: relative;
     --num: 7;
     --valor: '';
     --tpVisible: 'visible';
@@ -41,7 +42,7 @@
     background: #fff;
     -webkit-appearance: none;
     margin-top: -4px;
-    background-color: var(--idee-color-primary)
+    background-color: var(--idee-color-primary);
 }
 
 .m-control-panel.m-control-timeline.opened .m-timeline-container input[type=range]::-moz-range-track {
@@ -58,6 +59,7 @@
     cursor: pointer;
     border: none;
     background: #fff;
+    appearance: none;
     -webkit-appearance: none;
     margin-top: 20px;
     background-color: var(--idee-color-primary)
@@ -74,7 +76,7 @@
     padding: .3rem;
     border-radius: 4px;
     margin-top: -1.35rem;
-    margin-left: 3.25rem;
+    margin-left: 0.4rem;
     height: 1rem;
     left: var(--left);
     width: max-content;
@@ -119,11 +121,7 @@
 }
 
 .m-control-panel.m-control-timeline.opened .m-timeline-names {
-    display: none;
-    margin: 0 1rem 0.5rem;
-    border-top: 1px solid #b0b0b057;
-    padding-top: 1rem;
-    min-height: 17px;
+    display: hidden;
 }
 
 .m-control-panel.m-control-timeline.opened .div-m-timeline-slider {
@@ -162,12 +160,21 @@
     width: 16px;
 }
 
+.m-control-panel.m-control-timeline.opened .m-timeline-controls {
+    margin: 0 .75rem 0;
+    padding: .5rem .25rem 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-top: 1px solid #b0b0b057;
+    /* padding-top: 1rem; */
+    min-height: 17px;
+}
+
 .m-control-panel.m-control-timeline.opened .m-timeline-button {
     width: auto;
-    position: absolute;
-    bottom: 0.5rem;
-    left: auto;
-    right: 1rem;
 }
 
 .m-control-panel.m-control-timeline.opened #m-timeline-play {

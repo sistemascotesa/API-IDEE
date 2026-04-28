@@ -77,6 +77,11 @@ export const getTranslation = (lang) => {
       .esVectorsmanagement;
     configuration.translations[lang].filteredsearch = pluginsLanguage.filteredsearch
       .esFilteredsearch;
+    configuration.translations[lang].maxextzoom = pluginsLanguage.maxextzoom.esMaxextzoom;
+    configuration.translations[lang].wfstcontrols = pluginsLanguage.wfstcontrols.esWfstcontrols;
+    configuration.translations[lang].mapheader = pluginsLanguage.mapheader.esMapheader;
+    configuration.translations[lang].mapfooter = pluginsLanguage.mapfooter.esMapfooter;
+    configuration.translations[lang].magnify = pluginsLanguage.magnify.esMagnify;
   } else if (lang === 'en') {
     configuration.translations[lang].backimglayer = pluginsLanguage.backimglayer.enBackimglayer;
     configuration.translations[lang].comparators = pluginsLanguage.comparators.enComparators;
@@ -109,6 +114,11 @@ export const getTranslation = (lang) => {
       .enVectorsmanagement;
     configuration.translations[lang].filteredsearch = pluginsLanguage.filteredsearch
       .enFilteredsearch;
+    configuration.translations[lang].maxextzoom = pluginsLanguage.maxextzoom.enMaxextzoom;
+    configuration.translations[lang].wfstcontrols = pluginsLanguage.wfstcontrols.enWfstcontrols;
+    configuration.translations[lang].mapheader = pluginsLanguage.mapheader.enMapheader;
+    configuration.translations[lang].mapfooter = pluginsLanguage.mapfooter.enMapfooter;
+    configuration.translations[lang].magnify = pluginsLanguage.magnify.enMagnify;
   }
   return configuration.translations[lang];
 };

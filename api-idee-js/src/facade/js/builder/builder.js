@@ -4,7 +4,7 @@
  * @module IDEE/facade/builder
  */
 import {
-  isUndefined, isNullOrEmpty, isFunction, isString, concatUrlPaths, normalize,
+  isNullOrEmpty, isFunction, isString, concatUrlPaths, normalize,
 } from 'IDEE/util/Utils';
 import ControlPanel from '../ui/ControlPanel';
 import { getValue } from '../i18n/language';
@@ -23,7 +23,7 @@ import WMCSelector from '../control/WMCSelector';
 import Timeline from '../control/Timeline';
 import * as dialog from '../dialog';
 import Exception from '../exception/exception';
-import { decodeBase64Utf8, isBoolean, isNumber } from '../util/Utils';
+import { isBoolean, isNumber, parseUrlParams } from '../util/Utils';
 import MeasureBar from '../control/MeasureBar';
 import OverviewMap from '../control/OverviewMap';
 
@@ -399,97 +399,6 @@ export const getPanelForControl = (control, map, params = {}) => {
 };
 
 /**
- * Intelligently parses a value based on its content.
- * Supports: boolean, number, JSON (object/array), base64-encoded values, and strings.
- * If a value starts with 'base64~', it will be decoded and recursively parsed.
- * @private
- * @function
- * @param {string} rawValue The raw value to parse.
- * @param {string} paramKey The parameter key for error messages.
- * @param {string} controlName The control name for error messages.
- * @returns {*} Parsed value with detected type.
- */
-const parseValueByType = (rawValue, paramKey, controlName) => {
-  if (!rawValue) return rawValue;
-  const value = rawValue.trim();
-  if (value.startsWith('base64~')) {
-    try {
-      const encoded = value.substring(7);
-      const decoded = decodeBase64Utf8(encoded);
-      return parseValueByType(decoded, paramKey, controlName);
-    } catch (e) {
-      dialog.error(getValue('exception').parseControlParamError
-        .replace('{param}', paramKey)
-        .replace('{control}', controlName)
-        .replace('{error}', getValue('exception').invalidBase64Encoding));
-      return null;
-    }
-  }
-
-  if (value === 'true') {
-    return true;
-  }
-  if (value === 'false') {
-    return false;
-  }
-
-  if (value !== '') {
-    const numValue = Number(value);
-    if (!Number.isNaN(numValue)) {
-      return numValue;
-    }
-  }
-
-  const trimmed = value.trim();
-  if ((trimmed.startsWith('[') && trimmed.endsWith(']')) || (trimmed.startsWith('{') && trimmed.endsWith('}'))) {
-    try {
-      return JSON.parse(trimmed);
-    } catch (e) {
-      dialog.error(getValue('exception').parseControlParamError
-        .replace('{param}', paramKey)
-        .replace('{control}', controlName)
-        .replace('{error}', getValue('exception').invalidJsonFormat));
-      return value;
-    }
-  }
-
-  return value;
-};
-
-/**
- * Parses control parameters from a string with automatic type detection.
- * No longer requires allowedAttributes - intelligently detects types from values.
- * Supports: boolean (true/false), numbers, JSON (objects/arrays), base64-encoded values, and strings.
- * Base64 encoding is indicated by 'base64~' prefix.
- *
- * Default separators: semicolon (;) for fields, equals (=) for key-value pairs.
- * These separators are chosen to minimize conflicts with JSON syntax.
- *
- * @function
- * @param {string} stringToParse The string to parse (e.g., "collapsed=false;position=right").
- * @param {string} controlName The name of the control for error messages.
- * @param {string} fieldSeparator Separator for fields (default ';').
- * @param {string} keyValueSeparator Separator for key-value pairs (default '=').
- * @returns {Object} Parsed options object.
- */
-export const parseControlParams = (stringToParse, controlName, fieldSeparator = ';', keyValueSeparator = '=') => {
-  const result = {};
-  if (!stringToParse) return result;
-
-  const fields = stringToParse.split(fieldSeparator);
-  fields.forEach((field) => {
-    const parts = field.split(keyValueSeparator, 2);
-    if (parts.length === 2) {
-      const [key, rawValue] = parts;
-      if (key && rawValue) {
-        result[key] = parseValueByType(rawValue, key, controlName);
-      }
-    }
-  });
-  return result;
-};
-
-/**
  * This method create the mapea control from its name string.
  * @function
  * @param {string|Object} controlParam Control name or control instance.
@@ -497,101 +406,53 @@ export const parseControlParams = (stringToParse, controlName, fieldSeparator = 
  * @returns {Object} Built control instance.
  */
 export const buildControl = (controlParam, map) => {
-  let builtControl = null;
-  const params = {};
+  let control = null;
+  const controlNameSeparator = '*';
+  const normalizedControlParams = normalize(controlParam).split(controlNameSeparator);
+  const controlName = normalizedControlParams[0];
 
   if (isString(controlParam)) {
-    const controlNameSeparator = '*';
-    const normalizedControlParams = normalize(controlParam).split(controlNameSeparator);
-    const controlName = normalizedControlParams[0];
-    const controlParams = controlParam.split(controlNameSeparator).slice(1).join(controlNameSeparator);
-
     const controls = {
-      [Attributions.NAME]: () => {
+      [Attributions.NAME]: (options) => {
+        const collectionsAttributions = options.collectionsAttributions ?? [];
         // eslint-disable-next-line no-underscore-dangle, no-param-reassign
-        map._attributionsMap = [...map._attributionsMap, ...normalizedControlParams];
+        map._attributionsMap = [...map._attributionsMap, ...collectionsAttributions];
         return new Attributions({
-          map,
-          collectionsAttributions: normalizedControlParams.length === 2
-            ? [normalizedControlParams[1]].map((l) => {
-              if (typeof l !== 'string') {
-                const attr = l;
-                attr.id = l.idLayer;
-                return attr;
-              }
-              return l;
-            }) : [],
-        });
-      },
-      [Scale.NAME]: () => {
-        normalizedControlParams.forEach((p) => {
-          if (p === 'true') params.exactScale = true;
-          // eslint-disable-next-line no-restricted-globals
-          if (!isNaN(p)) params.order = Number(p);
-        });
-        return new Scale(params);
-      },
-      [ScaleLine.NAME]: () => new ScaleLine(),
-      [MeasureBar.NAME]: () => new MeasureBar(),
-      [OverviewMap.NAME]: () => new OverviewMap(),
-      [Panzoombar.NAME]: () => new Panzoombar(),
-      [Panzoom.NAME]: () => new Panzoom(),
-      [Location.NAME]: () => new Location(),
-      // [GetFeatureInfo.NAME]: () => new GetFeatureInfo(true),
-      [GetFeatureInfo.NAME]: () => {
-        let activated = true;
-        // Si el usuario define false...
-        if (normalizedControlParams.includes('false')) {
-          activated = false;
-        }
-        return new GetFeatureInfo({
-          activated,
-        });
-      },
-      [Rotate.NAME]: () => {
-        normalizedControlParams.forEach((p) => {
-          if (!isUndefined(p)) {
-            const bbox = p.split(',');
-            if (bbox.length === 4) {
-              params.viewInitial = bbox;
+          collectionsAttributions: collectionsAttributions.map((l) => {
+            if (typeof l !== 'string') {
+              const attr = l;
+              attr.id = l.idLayer;
+              return attr;
             }
-            if (p === 'false') params.help = false;
-            // eslint-disable-next-line no-restricted-globals
-            if (!isNaN(p)) params.order = Number(p);
-          }
-        });
-        return new Rotate(params);
-      },
-      [BackgroundLayers.NAME]: () => {
-        // Check for special pattern: backgroundlayers*[0-9]*true|false
-        if (/backgroundlayers\*([0-9])+\*(true|false)/.test(controlParam)) {
-          const idLayer = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[1];
-          const visible = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[2] === 'true';
-          return new BackgroundLayers({
-            visible,
-            idLayer: Number.parseInt(idLayer, 10),
-          });
-        }
-        return new BackgroundLayers();
-      },
-      [ImplementationSwitcher.NAME]: () => new ImplementationSwitcher(),
-      [WMCSelector.NAME]: () => new WMCSelector(),
-      [Timeline.NAME]: () => {
-        const parsedOptions = parseControlParams(controlParams, controlName);
-        // eslint-disable-next-line no-console
-        // console.log(parsedOptions);
-        return new Timeline({
-          timelineType: 'absoluteSimple',
-          ...parsedOptions,
+            return l;
+          }),
         });
       },
+      [Scale.NAME]: (options) => new Scale(options),
+      [ScaleLine.NAME]: (options) => new ScaleLine(options),
+      [MeasureBar.NAME]: (options) => new MeasureBar(options),
+      [OverviewMap.NAME]: (options) => new OverviewMap(options),
+      [Panzoombar.NAME]: (options) => new Panzoombar(options),
+      [Panzoom.NAME]: (options) => new Panzoom(options),
+      [Location.NAME]: (options) => new Location(options),
+      [GetFeatureInfo.NAME]: (options) => new GetFeatureInfo(options),
+      [Rotate.NAME]: (options) => new Rotate(options),
+      [BackgroundLayers.NAME]: (options) => new BackgroundLayers(options),
+      [ImplementationSwitcher.NAME]: (options) => new ImplementationSwitcher(options),
+      [WMCSelector.NAME]: (options) => new WMCSelector(options),
+      [Timeline.NAME]: (options) => new Timeline({
+        timelineType: 'absoluteSimple',
+        ...options,
+      }),
     };
 
     const builderFunction = controls[controlName];
     if (isFunction(builderFunction)) {
-      builtControl = builderFunction();
-      if (builtControl) {
-        builtControl.builderParams = params;
+      const controlParams = controlParam.split(controlNameSeparator).slice(1).join(controlNameSeparator);
+      const controlOptions = parseUrlParams(controlParams, controlName);
+      control = builderFunction(controlOptions);
+      if (control) {
+        control.builderParams = controlOptions;
       }
     } else {
       const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);
@@ -599,12 +460,12 @@ export const buildControl = (controlParam, map) => {
       dialog.error(`( "${controlParam}" ) ${exceptionMessage} <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
     }
   } else if (controlParam instanceof Control) {
-    builtControl = controlParam;
+    control = controlParam;
   } else {
     Exception(`${getValue('exception').invalid_control} ( ${controlParam} )`);
   }
 
-  return builtControl;
+  return control;
 };
 
 /**

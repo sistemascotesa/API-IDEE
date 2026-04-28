@@ -268,7 +268,8 @@ export default class LayerswitcherControl extends IDEE.Control {
           const isTransparent = (layer.transparent === true);
           const displayInLayerSwitcher = (layer.displayInLayerSwitcher === true);
           const isLayerGroup = (layer instanceof IDEE.layer.LayerGroup);
-          return isTransparent && displayInLayerSwitcher && !isLayerGroup;
+          const isNotWMC = (layer.type !== IDEE.layer.type.WMC);
+          return isTransparent && displayInLayerSwitcher && !isLayerGroup && isNotWMC;
         });
 
         const overlayLayersPromise = Promise

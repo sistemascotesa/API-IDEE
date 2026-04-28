@@ -499,7 +499,7 @@ class Map extends Base {
    */
   createAttribution(options = {}, control = null) {
     // Comprobar si existe el control
-    if (this.getControls().some(({ name }) => name === 'attributions')) {
+    if (this.getControls().some(({ name }) => name === Attributions.NAME)) {
       return;
     }
     const {
@@ -528,7 +528,7 @@ class Map extends Base {
         position: Position[position] || Position.LEFT,
         className: 'm-attributions',
         collapsedButtonClass: 'g-cartografia-comentarios',
-        tooltip: tooltip || getValue('attributions').title,
+        tooltip: tooltip || getValue(Attributions.NAME).title,
         order,
       });
       this.addPanels(panel);

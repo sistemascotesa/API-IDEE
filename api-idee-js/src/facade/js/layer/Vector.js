@@ -563,6 +563,14 @@ class Vector extends LayerBase {
    * @api
    */
   getMaxExtent() {
+    let maxExtent = this.userMaxExtent;
+    if (isNullOrEmpty(maxExtent)) {
+      maxExtent = this.map_?.userMaxExtent;
+    }
+    const normalized = maxExtent;
+    if (!isNullOrEmpty(normalized)) {
+      return normalized;
+    }
     return this.getFeaturesExtent();
   }
 
@@ -575,6 +583,14 @@ class Vector extends LayerBase {
    * @api
    */
   calculateMaxExtent() {
+    let maxExtent = this.userMaxExtent;
+    if (isNullOrEmpty(maxExtent)) {
+      maxExtent = this.map_?.userMaxExtent;
+    }
+    const normalized = maxExtent;
+    if (!isNullOrEmpty(normalized)) {
+      return Promise.resolve(normalized);
+    }
     return this.getImpl().getFeaturesExtentPromise(true, this.filter_);
   }
 

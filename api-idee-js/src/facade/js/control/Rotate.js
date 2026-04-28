@@ -190,6 +190,7 @@ class Rotate extends Control {
    *   tooltip: 'Control de rotación',
    *   order: 2,
    *   collapsible: false,
+   *   vendorOptions: {}
    * });
    *
    * map.addControls(control);

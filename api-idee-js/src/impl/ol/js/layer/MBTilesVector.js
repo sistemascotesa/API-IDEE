@@ -19,6 +19,7 @@ import { getValue } from 'IDEE/i18n/language';
 import TileState from 'ol/TileState';
 // import Feature from 'ol/Feature';
 import ImplMap from '../Map';
+import ImplUtils from '../util/Utils';
 import Vector from './Vector';
 
 /**
@@ -485,13 +486,18 @@ class MBTilesVector extends Vector {
    *
    * @function
    * @public
+   * @param {boolean} skipFilter Indica si el filtro es de tipo "skip".
+   * @param {IDEE.Filter} filter Filtro que se ejecutará.
    * @returns {Array<IDEE.Feature>} Todos los objetos geográficos.
    * @api
    */
-  getFeatures() {
+  getFeatures(skipFilter, filter) {
     let features = [];
     if (this.olLayer) {
       const olSource = this.olLayer.getSource();
+      if (isNullOrEmpty(olSource) || isNullOrEmpty(olSource.sourceTiles_)) {
+        return features;
+      }
       const tileCache = Object.values(olSource.sourceTiles_);
       if (tileCache.length === 0) {
         return features;
@@ -508,6 +514,31 @@ class MBTilesVector extends Vector {
       });
     }
     return features;
+  }
+
+  /**
+   * Este método devuelve la extensión de todos los objetos geográficos
+   * o discrimina por el filtro, asíncrono.
+   * Las capas MBTiles vectoriales no exponen `requestFeatures_` (no hay una
+   * petición remota única como en WFS); se calcula a partir de las teselas
+   * cargadas en el cliente, igual que MVT.
+   *
+   * @function
+   * @param {boolean} skipFilter Indica si se salta el filtro.
+   * @param {IDEE.Filter} filter Filtro para ejecutar.
+   * @return {Array<number>} Alcance de los objetos geográficos.
+   * @api stable
+   */
+  getFeaturesExtentPromise(skipFilter, filter) {
+    return new Promise((resolve) => {
+      const codeProj = this.map.getProjection().code;
+      const features = this.getFeatures(skipFilter, filter);
+      let extent = ImplUtils.getFeaturesExtent(features, codeProj);
+      if (isNullOrEmpty(extent) && !isNullOrEmpty(this.maxExtent_)) {
+        extent = this.maxExtent_;
+      }
+      resolve(extent);
+    });
   }
 
   /**

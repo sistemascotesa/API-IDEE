@@ -3,6 +3,7 @@
  */
 import EditAttributeImpl from '../../impl/ol/js/editattribute';
 import editattributeHTML from '../../templates/editattribute';
+import { getValue } from './i18n/language';
 
 export default class EditAttribute extends IDEE.Control {
   /**
@@ -30,7 +31,7 @@ export default class EditAttribute extends IDEE.Control {
     this.name = EditAttribute.NAME;
 
     if (IDEE.utils.isUndefined(EditAttributeImpl)) {
-      IDEE.exception('La implementación usada no puede crear controles EditAttribute');
+      IDEE.exception(getValue('exception.impl_edit'));
     }
   }
 
@@ -46,6 +47,11 @@ export default class EditAttribute extends IDEE.Control {
   createView(map) {
     return IDEE.template.compileSync(editattributeHTML, {
       jsonp: true,
+      vars: {
+        translations: {
+          edit: getValue('edit'),
+        },
+      },
     });
   }
 

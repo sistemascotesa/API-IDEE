@@ -81,13 +81,6 @@ export default class Incicarto extends IDEE.Plugin {
     this.metadata_ = api.metadata;
 
     /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
-
-    /**
      * Plugin parameters
      * @public
      * @type {object}
@@ -159,7 +152,6 @@ export default class Incicarto extends IDEE.Plugin {
       errThemes: this.errThemes_,
       errTypes: this.errTypes_,
       errProducts: this.errProducts_,
-      isDraggable: this.isDraggable,
     });
 
     this.controls.push(this.control);

@@ -3,6 +3,7 @@
  */
 import DeleteFeatureImpl from '../../impl/ol/js/deletefeature';
 import deletefeatureHTML from '../../templates/deletefeature.html';
+import { getValue } from './i18n/language';
 
 export default class DeleteFeature extends IDEE.Control {
   /**
@@ -25,7 +26,7 @@ export default class DeleteFeature extends IDEE.Control {
     this.name = DeleteFeature.NAME;
 
     if (IDEE.utils.isUndefined(DeleteFeatureImpl)) {
-      IDEE.exception('La implementación usada no puede crear controles DeleteFeature');
+      IDEE.exception(getValue('exception.impl_delete'));
     }
   }
 
@@ -41,6 +42,11 @@ export default class DeleteFeature extends IDEE.Control {
   createView(map) {
     return IDEE.template.compileSync(deletefeatureHTML, {
       jsonp: true,
+      vars: {
+        translations: {
+          delete: getValue('delete'),
+        },
+      },
     });
   }
 

@@ -5,6 +5,7 @@ import FDrawFeature from '../../../facade/js/drawfeature';
 import FModifyFeature from '../../../facade/js/modifyfeature';
 import FDeleteFeature from '../../../facade/js/deletefeature';
 import FClearFeature from '../../../facade/js/clearfeature';
+import { getValue } from '../../../facade/js/i18n/language';
 
 export default class SaveFeature extends IDEE.impl.Control {
   /**
@@ -150,11 +151,11 @@ export default class SaveFeature extends IDEE.impl.Control {
           const clearCtrl = this.facadeMap_.getControls(FClearFeature.NAME)[0];
           clearCtrl.getImpl().clear();
           if (response.code === 200 && response.text.indexOf('ExceptionText') === -1 && response.text.indexOf('<error><descripcion>') === -1) {
-            IDEE.dialog.success('Se ha guardado correctamente');
+            IDEE.dialog.success(getValue('save_successfully'));
           } else if (response.code === 401) {
-            IDEE.dialog.error('Ha ocurrido un error al guardar: Usuario no autorizado');
+            IDEE.dialog.error(getValue('save_error_unauthorized'));
           } else {
-            IDEE.dialog.error('Ha ocurrido un error al guardar: '.concat(response.text));
+            IDEE.dialog.error(getValue('save_element_error').concat(response.text));
           }
         });
 

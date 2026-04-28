@@ -1,10 +1,13 @@
 import Mapheader from 'facade/mapheader';
 
+// IDEE.language.setLang('en');
+IDEE.language.setLang('es');
+
 const map = IDEE.map({
   container: 'mapjs',
 });
 
-map.addControls(['scaleline', 'panzoombar', ]);
+map.addControls(['scaleline', 'panzoombar']);
 
 window.map = map;
 

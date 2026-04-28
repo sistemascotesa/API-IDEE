@@ -1,0 +1,7 @@
+{
+  "exception": {
+    "impl": "La implementación usada no puede crear controles MaxExtZoomControl"
+  },
+  "tooltip": "Zoom a la extensión del mapa",
+  "zoommapextend": "Zoom a la extensión del mapa"
+}

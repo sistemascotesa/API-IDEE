@@ -1,0 +1,10 @@
+{
+  "exception": {
+    "nolayersavai": "There are no layers available to apply the transparency effect",
+    "impl": "The implementation used cannot create MagnifyControl controls"
+  },
+  "tooltip": "Magnifier",
+  "title": "Magnifier",
+  "actmagnifier": "Activate magnifier",
+  "zoomlevel": "Zoom level: "
+}
