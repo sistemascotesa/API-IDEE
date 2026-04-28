@@ -14,6 +14,7 @@ import * as Position from 'IDEE/ui/position';
 
 const map = Mmap({
   container: 'map',
+  // controls: ['attributions*title=postada;position=down;collapsed=false'],
 });
 
 window.mapa = map;
