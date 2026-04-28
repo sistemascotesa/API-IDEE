@@ -2136,9 +2136,15 @@ const parseValueByType = (rawValue, paramKey, objectName) => {
     }
   }
 
+  const trimmed = value.trim();
+  if (trimmed.startsWith("'") && trimmed.endsWith("'")) {
+    return value.substring(1, value.length - 1);
+  }
+
   if (value === 'true') {
     return true;
   }
+
   if (value === 'false') {
     return false;
   }
@@ -2150,7 +2156,6 @@ const parseValueByType = (rawValue, paramKey, objectName) => {
     }
   }
 
-  const trimmed = value.trim();
   if ((trimmed.startsWith('[') && trimmed.endsWith(']')) || (trimmed.startsWith('{') && trimmed.endsWith('}'))) {
     try {
       return JSON.parse(trimmed);
