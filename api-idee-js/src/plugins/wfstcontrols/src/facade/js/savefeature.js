@@ -3,6 +3,7 @@
  */
 import SaveFeatureImpl from '../../impl/ol/js/savefeature';
 import savefeatureHTML from '../../templates/savefeature';
+import { getValue } from './i18n/language';
 
 export default class SaveFeature extends IDEE.Control {
   /**
@@ -30,7 +31,7 @@ export default class SaveFeature extends IDEE.Control {
     this.name = SaveFeature.NAME;
 
     if (IDEE.utils.isUndefined(SaveFeatureImpl)) {
-      IDEE.exception('La implementación usada no puede crear controles SaveFeature');
+      IDEE.exception('exception.impl_save');
     }
   }
 
@@ -47,6 +48,11 @@ export default class SaveFeature extends IDEE.Control {
     this.facadeMap_ = map;
     return IDEE.template.compileSync(savefeatureHTML, {
       jsonp: true,
+      vars: {
+        translations: {
+          save: getValue('save'),
+        },
+      },
     });
   }
 

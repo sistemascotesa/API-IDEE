@@ -4,6 +4,7 @@
 
 import MaxExtZoomImplControl from 'impl/maxextzoomcontrol';
 import template from 'templates/maxextzoom';
+import { getValue } from './i18n/language';
 
 export default class MaxExtZoomControl extends IDEE.Control {
   /**
@@ -17,7 +18,7 @@ export default class MaxExtZoomControl extends IDEE.Control {
    */
   constructor() {
     if (IDEE.utils.isUndefined(MaxExtZoomImplControl)) {
-      IDEE.exception('La implementación usada no puede crear controles MaxExtZoomControl');
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new MaxExtZoomImplControl();
     super(impl, 'MaxExtZoom');
@@ -34,7 +35,13 @@ export default class MaxExtZoomControl extends IDEE.Control {
   createView(map) {
     this.map = map;
     return new Promise((success, fail) => {
-      const html = IDEE.template.compileSync(template);
+      const html = IDEE.template.compileSync(template, {
+        vars: {
+          translations: {
+            zoommapextend: getValue('zoommapextend'),
+          },
+        },
+      });
       html.querySelector('#m-maxextzoom-button').addEventListener('click', this.zoomToDefaultBox.bind(this));
       success(html);
     });

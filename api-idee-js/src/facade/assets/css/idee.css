@@ -233,8 +233,8 @@
     mask-repeat: no-repeat;
     mask-position: center;
     mask-size: contain;
-    -webkit-mask-image: url('../images/elevation.svg');
-    mask-image: url('../images/elevation.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_flexChevron.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_flexChevron.svg');
 }
 
 .m-api-idee-up-handle {
@@ -309,228 +309,289 @@
 
 .m-plugin-panel-content {
     flex-grow: 1;
-    padding: 0 16px;
+    padding: 0 8px;
+    margin: 0 8px;
     overflow-y: auto;
 }
 
-button {
-    height: 32px;
-    color: var(--font-color);
-    background-color: var(--idee-color-primary);
-    border: 2px solid var(--idee-color-primary);
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: var(--control-font-family);
-    font-size: 14px;
-    transition: all 0.3s ease;
-}
+@layer base {
 
-button:hover {
-    color: var(--font-color);
-    background-color: var(--idee-color-links);
-    border: 2px solid var(--idee-color-links);
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button,
+    .m-api-idee-container button {
+        height: 32px;
+        color: var(--font-color);
+        background-color: var(--idee-color-primary);
+        border: 2px solid var(--idee-color-primary);
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: var(--control-font-family);
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
 
-button:disabled {
-    color: #c5c5c5;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button::-moz-focus-inner,
+    .m-api-idee-container button::-moz-focus-inner {
+        border: 0;
+    }
 
-button:disabled:hover {
-    color: #c5c5c5;
-    cursor: default;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button:hover,
+    .m-api-idee-container button:hover {
+        color: var(--font-color);
+        background-color: var(--idee-color-links);
+        border: 2px solid var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
 
-button.secondary {
-    height: 32px;
-    color: var(--idee-color-primary-dark);
-    background-color: var(--idee-color-neutral-20);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button:disabled,
+    .m-api-idee-container button:disabled {
+        color: #c5c5c5;
+    }
 
-button.secondary:hover {
-    color: var(--idee-color-white);
-    background-color: var(--idee-color-links);
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button:disabled:hover,
+    .m-api-idee-container button:disabled:hover {
+        color: #c5c5c5;
+        cursor: default;
+    }
 
-button.secondary:disabled {
-    color: var(--idee-color-neutral-40);
-}
+    html:has(>body>.m-api-idee-test-form-frame) button.secondary,
+    .m-api-idee-container button.secondary {
+        height: 32px;
+        color: var(--idee-color-primary-dark);
+        background-color: var(--idee-color-neutral-20);
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
 
-input[type="text"],
-input[type="number"],
-input[type="email"],
-input[type="color"],
-textarea {
-    margin: 4px;
-    padding: 4px;
-    height: 32px;
-    background-color: transparent;
-    cursor: auto;
-    border-radius: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    box-sizing: border-box;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    color: #6C6C6C;
-    font-family: var(--control-font-family);
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button.secondary:hover,
+    .m-api-idee-container button.secondary:hover {
+        color: var(--idee-color-white);
+        background-color: var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
 
-input[type="color"] {
-    cursor: pointer;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button.secondary:disabled,
+    .m-api-idee-container button.secondary:disabled {
+        color: var(--idee-color-neutral-40);
+    }
 
-input[type="text"]:hover,
-input[type="number"]:hover,
-input[type="email"]:hover,
-input[type="color"]:hover,
-textarea:hover {
-    border: 1px solid var(--idee-color-links);
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="text"],
+    .m-api-idee-container input[type="text"],
+    html:has(>body>.m-api-idee-test-form-frame) input[type="number"],
+    .m-api-idee-container input[type="number"],
+    html:has(>body>.m-api-idee-test-form-frame) input[type="email"],
+    .m-api-idee-container input[type="email"],
+    html:has(>body>.m-api-idee-test-form-frame) input[type="color"],
+    .m-api-idee-container input[type="color"],
+    html:has(>body>.m-api-idee-test-form-frame) textarea,
+    .m-api-idee-container textarea {
+        margin: 4px;
+        padding: 4px;
+        height: 32px;
+        background-color: transparent;
+        cursor: auto;
+        border-radius: 4px;
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        box-sizing: border-box;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        color: #6C6C6C;
+        font-family: var(--control-font-family);
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
 
-input[type="text"]:focus,
-input[type="number"]:focus,
-input[type="email"]:focus,
-input[type="color"]:focus,
-textarea:focus {
-    outline: none;
-    border: 1px solid var(--idee-color-primary-dark);
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="color"],
+    .m-api-idee-container input[type="color"] {
+        cursor: pointer;
+    }
 
-input[type="checkbox"] {
-    cursor: pointer;
-    accent-color: var(--idee-color-links);
-    border-color: var(--idee-color-neutral-50);
-    transform: scale(1.5);
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="text"]:hover,
+    .m-api-idee-container input[type="text"]:hover,
+    html:has(>body>.m-api-idee-test-form-frame) input[type="number"]:hover,
+    .m-api-idee-container input[type="number"]:hover,
+    html:has(>body>.m-api-idee-test-form-frame) input[type="email"]:hover,
+    .m-api-idee-container input[type="email"]:hover,
+    html:has(>body>.m-api-idee-test-form-frame) input[type="color"]:hover,
+    .m-api-idee-container input[type="color"]:hover,
+    html:has(>body>.m-api-idee-test-form-frame) textarea:hover,
+    .m-api-idee-container textarea:hover {
+        border: 1px solid var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
 
-input[type="checkbox"]:hover {
-    border-color: var(--idee-color-white);
-    accent-color: var(--idee-color-links);
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="text"]:focus,
+    .m-api-idee-container input[type="text"]:focus,
+    html:has(>body>.m-api-idee-test-form-frame) input[type="number"]:focus,
+    .m-api-idee-container input[type="number"]:focus,
+    html:has(>body>.m-api-idee-test-form-frame) input[type="email"]:focus,
+    .m-api-idee-container input[type="email"]:focus,
+    html:has(>body>.m-api-idee-test-form-frame) input[type="color"]:focus,
+    .m-api-idee-container input[type="color"]:focus,
+    html:has(>body>.m-api-idee-test-form-frame) textarea:focus,
+    .m-api-idee-container textarea:focus {
+        outline: none;
+        border: 1px solid var(--idee-color-primary-dark);
+    }
 
-input[type="radio"] {
-    appearance: none;
-    -webkit-appearance: none;
-    content: "";
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    transform: scale(1);
-    background-color: var(--idee-color-white);
-    vertical-align: middle;
-    margin: 0px;
-    border: 1px solid var(--idee-color-neutral-50);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="checkbox"],
+    .m-api-idee-container input[type="checkbox"] {
+        cursor: pointer;
+        accent-color: var(--idee-color-links);
+        border-color: var(--idee-color-neutral-50);
+        transform: scale(1.5);
+        transition: all 0.3s ease;
+    }
 
-input[type="radio"]::after {
-    content: "";
-    width: 8px;
-    height: 8px;
-    background-color: var(--idee-color-links);
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: scale(0) translate(-50%, -50%);
-    transform-origin: 0px 0px;
-    transition: transform 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="checkbox"]:hover,
+    .m-api-idee-container input[type="checkbox"]:hover {
+        border-color: var(--idee-color-white);
+        accent-color: var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
 
-input[type="radio"]:checked {
-    border-color: var(--idee-color-links);
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="radio"],
+    .m-api-idee-container input[type="radio"] {
+        appearance: none;
+        -webkit-appearance: none;
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        transform: scale(1);
+        background-color: var(--idee-color-white);
+        vertical-align: middle;
+        margin: 0px;
+        border: 1px solid var(--idee-color-neutral-50);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
 
-input[type="radio"]:checked::after {
-    transform: scale(1) translate(-50%, -50%);
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]::after,
+    .m-api-idee-container input[type="radio"]::after {
+        content: "";
+        width: 8px;
+        height: 8px;
+        background-color: var(--idee-color-links);
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: scale(0) translate(-50%, -50%);
+        transform-origin: 0px 0px;
+        transition: transform 0.3s ease;
+    }
 
-input[type="radio"]:hover {
-    border-color: var(--idee-color-links);
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]:checked,
+    .m-api-idee-container input[type="radio"]:checked {
+        border-color: var(--idee-color-links);
+    }
 
-input[type="radio"]:hover+label {
-    color: var(--idee-color-links);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]:checked::after,
+    .m-api-idee-container input[type="radio"]:checked::after {
+        transform: scale(1) translate(-50%, -50%);
+    }
 
-input[type="range"] {
-    cursor: pointer;
-    accent-color: var(--idee-color-primary);
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]:hover,
+    .m-api-idee-container input[type="radio"]:hover {
+        border-color: var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
 
-input[type="range"]:hover {
-    accent-color: var(--idee-color-links);
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]:hover+label,
+    .m-api-idee-container input[type="radio"]:hover+label {
+        color: var(--idee-color-links);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
 
-input[type="range"]:focus {
-    outline: none;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="range"],
+    .m-api-idee-container input[type="range"] {
+        cursor: pointer;
+        accent-color: var(--idee-color-primary);
+        transition: all 0.3s ease;
+    }
 
-select {
-    cursor: pointer;
-    color: #6c6c6c;
-    border-radius: 4px;
-    background: none;
-    border: 1px solid #e9ecef;
-    font-family: var(--control-font-family);
-    font-size: 16px;
-    height: 32px;
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="range"]:hover,
+    .m-api-idee-container input[type="range"]:hover {
+        accent-color: var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
 
-select:hover {
-    border: 1px solid var(--idee-color-links);
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="range"]:focus,
+    .m-api-idee-container input[type="range"]:focus {
+        outline: none;
+    }
 
-select:focus {
-    outline: none;
-    border: 1px solid var(--idee-color-primary-dark);
-}
+    html:has(>body>.m-api-idee-test-form-frame) select,
+    .m-api-idee-container select {
+        cursor: pointer;
+        color: #6c6c6c;
+        border-radius: 4px;
+        background: none;
+        border: 1px solid #e9ecef;
+        font-family: var(--control-font-family);
+        font-size: 16px;
+        height: 32px;
+        transition: all 0.3s ease;
+    }
 
-option {
-    font-family: var(--control-font-family);
-    font-size: 16px;
-    cursor: pointer;
-}
+    html:has(>body>.m-api-idee-test-form-frame) select:hover,
+    .m-api-idee-container select:hover {
+        border: 1px solid var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
 
-a {
-    color: var(--idee-color-primary);
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) select:focus,
+    .m-api-idee-container select:focus {
+        outline: none;
+        border: 1px solid var(--idee-color-primary-dark);
+    }
 
-a:hover {
-    color: var(--idee-color-links);
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) option,
+    .m-api-idee-container option {
+        font-family: var(--control-font-family);
+        font-size: 16px;
+        cursor: pointer;
+    }
 
-a:visited {
-    color: var(--idee-color-primary);
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) a,
+    .m-api-idee-container a {
+        color: var(--idee-color-primary);
+        transition: all 0.3s ease;
+    }
 
-a:visited:hover {
-    color: var(--idee-color-links);
-    transition: all 0.3s ease;
+    html:has(>body>.m-api-idee-test-form-frame) a:hover,
+    .m-api-idee-container a:hover {
+        color: var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
+
+    html:has(>body>.m-api-idee-test-form-frame) a:visited,
+    .m-api-idee-container a:visited {
+        color: var(--idee-color-primary);
+        transition: all 0.3s ease;
+    }
+
+    html:has(>body>.m-api-idee-test-form-frame) a:visited:hover,
+    .m-api-idee-container a:visited:hover {
+        color: var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
+
+    .m-api-idee-container .ol-overviewmap>button {
+        opacity: 0.75;
+        -webkit-transition: opacity 0.25s ease 0s;
+        transition: opacity 0.25s ease 0s;
+    }
+
+    .m-api-idee-container .ol-overviewmap>button:hover {
+        opacity: 1 !important;
+    }
 }
 
 /***********************
@@ -566,15 +627,7 @@ div.m-control button[class*=" g-cartografia-"] {
     opacity: 1;
 }
 
-.ol-overviewmap>button {
-    opacity: 0.75;
-    -webkit-transition: opacity 0.25s ease 0s;
-    transition: opacity 0.25s ease 0s;
-}
 
-.ol-overviewmap>button:hover {
-    opacity: 1 !important;
-}
 
 div.m-control.activated button[class^="g-cartografia-"],
 div.m-control button[class^="g-cartografia-"]:hover,
@@ -612,7 +665,6 @@ div.m-control button[class*=" g-cartografia-"]:focus,
     display: none;
 }
 
-
 /***********************
      LABEL
 ************************/
@@ -621,69 +673,8 @@ div.m-control button[class*=" g-cartografia-"]:focus,
     white-space: nowrap;
 }
 
-
-/***********************
-     INPUTS
-************************/
-
-
-/* TEXT */
-
-
-@media only screen and (max-width: 768px) {
-    .m-wordbreak {
-        word-break: break-all;
-        white-space: none;
-    }
-}
-
-
-/* BUTTON */
-
-button::-moz-focus-inner {
-    border: 0;
-}
-
-
-/***********************
-     LOADING ANIMATION
-************************/
-
-@-moz-keyframes mloading {
-    100% {
-        -moz-transform: rotate(360deg);
-    }
-}
-
-@-webkit-keyframes mloading {
-    100% {
-        -webkit-transform: rotate(360deg);
-    }
-}
-
-@keyframes mloading {
-    100% {
-        -webkit-transform: rotate(360deg);
-        transform: rotate(360deg);
-    }
-}
-
-
-/********************************/
-
-
-/* correcciones tamaño relativo */
-
-
-/*#map {
-	width: 600px !important;
-	height: 500px !important;
-}*/
-
-.ol-viewport,
-.ol-overlaycontainer-stopevent,
-.m-areas,
-.m-area.m-top.m-right {
+.m-api-idee-container .ol-viewport,
+.m-api-idee-container .ol-overlaycontainer-stopevent {
     height: inherit !important;
 }
 
@@ -845,12 +836,6 @@ div.m-control button[class^=g-cartografia-]:hover,
     min-width: 250px;
 }
 
-.ol-overviewmap:not(.ol-collapsed) button {
-    background-color: #71A7D3 !important;
-}
-
-
-
 .m-panel.m-tools {
     order: -65;
 }
@@ -861,6 +846,40 @@ div.m-control button[class^=g-cartografia-]:hover,
 
 .m-panel.m-layerswitcher>div.m-panel-controls {
     max-width: 33vw;
+}
+
+/***********************
+     TEXT
+************************/
+
+@media only screen and (max-width: 768px) {
+    .m-wordbreak {
+        word-break: break-all;
+        white-space: none;
+    }
+}
+
+/***********************
+     LOADING ANIMATION
+************************/
+
+@-moz-keyframes mloading {
+    100% {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes mloading {
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes mloading {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }
 
 @media only screen and (max-width: 768px) {
@@ -922,30 +941,30 @@ body>.m-api-idee-test-form-frame>.m-test-form>div>select {
 }
 
 @media (max-width: calc(280px * 2 + 0.35rem * 2 + 1rem)) {
-    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(2)) {
+    body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(2)) {
         flex-direction: row;
     }
 
-    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(2)) > div {
+    body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(2))>div {
         width: 100%;
     }
 
-    body > .m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(2)) > .m-test-buttons {
+    body>.m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(2))>.m-test-buttons {
         justify-content: center;
         min-width: 180px;
     }
 }
 
 @media (max-width: calc(280px * 4 + 0.35rem * 4 + 1rem)) {
-    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(5)) {
+    body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(5)) {
         flex-direction: row;
     }
 
-    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(5)) > div {
+    body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(5))>div {
         width: 100%;
     }
 
-    body > .m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(5)) > .m-test-buttons {
+    body>.m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(5))>.m-test-buttons {
         justify-content: center;
         min-width: 180px;
     }

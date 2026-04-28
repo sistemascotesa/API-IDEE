@@ -3,6 +3,7 @@
  */
 import DrawFeatureImpl from '../../impl/ol/js/drawfeature';
 import drawfeatureHTML from '../../templates/drawfeature';
+import { getValue } from './i18n/language';
 
 export default class DrawFeature extends IDEE.Control {
   /**
@@ -29,7 +30,7 @@ export default class DrawFeature extends IDEE.Control {
     this.name = DrawFeature.NAME;
 
     if (IDEE.utils.isUndefined(DrawFeatureImpl)) {
-      IDEE.Exception('La implementación usada no puede crear controles DrawFeature');
+      IDEE.Exception(getValue('exception.impl_draw'));
     }
   }
 
@@ -45,6 +46,11 @@ export default class DrawFeature extends IDEE.Control {
   createView(map) {
     return IDEE.template.compileSync(drawfeatureHTML, {
       jsonp: true,
+      vars: {
+        translations: {
+          draw: getValue('draw'),
+        },
+      },
     });
   }
 

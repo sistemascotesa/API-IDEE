@@ -1,24 +1,27 @@
 import Mapfooter from 'facade/mapfooter';
 
+// IDEE.language.setLang('en');
+IDEE.language.setLang('es');
+
 const ortofoto2016_color = new IDEE.layer.WMS({
   url: 'http://www.ideandalucia.es/wms/ortofoto2016?',
   name: 'ortofotografia_2016_rgb',
   legend: 'Ortofotografía Color 0,5 metros/pixel (Año 2016)',
   transparent: false,
-  tiled: true
+  tiled: true,
 }, {
-  styles: 'default'
-})
+  styles: 'default',
+});
 
 const pnoa = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/pnoa-ma?',
   name: 'OI.OrthoimageCoverage',
   legend: 'PNOA',
   transparent: false,
-  tiled: true
+  tiled: true,
 }, {
-  styles: 'default'
-})
+  styles: 'default',
+});
 
 const map = IDEE.map({
   container: 'mapjs',
@@ -27,8 +30,6 @@ const map = IDEE.map({
 });
 
 map.addControls(['scaleline', 'panzoombar']);
-
-
 
 const configAyuntamientoSevilla = {
   open: true,
@@ -58,9 +59,9 @@ const configAyuntamientoSevilla = {
                 </div>
               </div>`,
   cssList: [
-    'https://centrodedescargas.cnig.es/CentroDescargas/css/estilos-css-cnig-2024.css'
-  ]
-}
+    'https://centrodedescargas.cnig.es/CentroDescargas/css/estilos-css-cnig-2024.css',
+  ],
+};
 
 const mp = new Mapfooter(configAyuntamientoSevilla);
 

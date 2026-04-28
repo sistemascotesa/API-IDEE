@@ -121,7 +121,12 @@ class OSM extends Layer {
         }
 
         // updates resolutions and keep the bbox
-        const oldBbox = this.map.getBbox();
+        let oldBbox = this.map.getBbox();
+        // eslint-disable-next-line no-underscore-dangle
+        if (!isNullOrEmpty(this.map.impl_.userBbox_)) {
+          // eslint-disable-next-line no-underscore-dangle
+          oldBbox = this.map.impl_.userBbox_;
+        }
         this.map.getImpl().updateResolutionsFromBaseLayer();
         if (!isNullOrEmpty(oldBbox)) {
           this.map.setBbox(oldBbox);

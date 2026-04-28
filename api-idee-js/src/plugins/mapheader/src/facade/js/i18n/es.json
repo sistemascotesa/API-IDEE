@@ -1,0 +1,7 @@
+{
+  "exception": {
+    "impl": "La implementación usada no puede crear controles MapheaderControl"
+  },
+  "hideheader": "Ocultar cabecera de página",
+  "showheader": "Mostrar cabecera de página"
+}

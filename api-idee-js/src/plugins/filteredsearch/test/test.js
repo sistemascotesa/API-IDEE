@@ -1,4 +1,8 @@
 import FilteredSearch from 'facade/filteredsearch';
+
+// IDEE.language.setLang('en');
+IDEE.language.setLang('es');
+
 window.FilteredSearch = FilteredSearch;
 
 const map = IDEE.map({
@@ -12,14 +16,14 @@ const geodesia = new IDEE.layer.WFS({
   legend: 'Red Geodésica Nacional por Técnicas Espaciales (REGENTE)',
   name: 'RED_REGENTE',
   geometry: 'POINT',
-  extract: true
+  extract: true,
 });
 
 const provincias = new IDEE.layer.WFS({
-  url: "https://hcsigc.juntadeandalucia.es/geoserver/wfs?",
-  namespace: "IECA",
-  name: "sigc_provincias_1724753768757",
-  legend: "Provincias",
+  url: 'https://hcsigc.juntadeandalucia.es/geoserver/wfs?',
+  namespace: 'IECA',
+  name: 'sigc_provincias_1724753768757',
+  legend: 'Provincias',
   geometry: 'MPOLYGON',
 });
 
@@ -31,4 +35,3 @@ const mp = new FilteredSearch({
 });
 
 map.addPlugin(mp);
-

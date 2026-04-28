@@ -23,7 +23,7 @@ export default class FilteredSearchControl extends IDEE.Control {
    */
   constructor(values) {
     if (IDEE.utils.isUndefined(FilteredSearchImplControl)) {
-      IDEE.exception('La implementación usada no puede crear controles FilteredSearchControl');
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new FilteredSearchImplControl();
     super(impl, 'FilteredSearch');
@@ -653,7 +653,7 @@ export default class FilteredSearchControl extends IDEE.Control {
           // AND nueva query
           combinedFilter = IDEE.filter.AND([this.oldFilter, mapeaFilter]);
         } else {
-          IDEE.dialog.error(getValue('no_previous_query'));
+          IDEE.dialog.error(getValue('exception.no_previous_query'));
         }
         break;
       case '3':
@@ -661,7 +661,7 @@ export default class FilteredSearchControl extends IDEE.Control {
           // AND NOT nueva query
           combinedFilter = IDEE.filter.AND([this.oldFilter, IDEE.filter.NOT(mapeaFilter)]);
         } else {
-          IDEE.dialog.error(getValue('no_previous_query'));
+          IDEE.dialog.error(getValue('exception.no_previous_query'));
         }
         break;
       case '4':
@@ -669,11 +669,11 @@ export default class FilteredSearchControl extends IDEE.Control {
           // OR nueva query
           combinedFilter = IDEE.filter.OR([this.oldFilter, mapeaFilter]);
         } else {
-          IDEE.dialog.error(getValue('no_previous_query'));
+          IDEE.dialog.error(getValue('exception.no_previous_query'));
         }
         break;
       default:
-        IDEE.dialog.error(getValue('must_select_method'));
+        IDEE.dialog.error(getValue('exception.must_select_method'));
         break;
     }
 
@@ -695,7 +695,7 @@ export default class FilteredSearchControl extends IDEE.Control {
     switch (action) {
       case 'aceptar-btn':
         if (this.layer_ === undefined) {
-          IDEE.dialog.error(getValue('must_select_layer'));
+          IDEE.dialog.error(getValue('exception.must_select_layer'));
         } else {
           if (this.selectionMethod === '1') {
             this.oldFilter = undefined;
@@ -728,7 +728,7 @@ export default class FilteredSearchControl extends IDEE.Control {
             layer: this.layer_,
           });
         } else {
-          IDEE.dialog.error(getValue('invalid_query'));
+          IDEE.dialog.error(getValue('exception.invalid_query'));
         }
         break;
       case 'misconsultas-btn':
@@ -903,12 +903,12 @@ export default class FilteredSearchControl extends IDEE.Control {
   setNewFilter() {
     // Sets new filter
     if (this.sqlQuery === '') {
-      IDEE.dialog.error(getValue('must_query'));
+      IDEE.dialog.error(getValue('exception.must_query'));
       // Resets last saved query
       this.mapeaFilterQuery = this.oldFilter;
       this.layer_ = this.oldLayer;
     } else if (this.oldLayer !== undefined && this.oldLayer !== this.layer_) {
-      IDEE.dialog.error(getValue('cant_apply'));
+      IDEE.dialog.error(getValue('exception.cant_apply'));
       // Resets last saved query
       this.mapeaFilterQuery = this.oldFilter;
       this.layer_ = this.oldLayer;
@@ -929,11 +929,11 @@ export default class FilteredSearchControl extends IDEE.Control {
           this.isValidQuery = true;
         } else {
           this.isValidQuery = false;
-          throw new Error(getValue('invalid_filter'));
+          throw new Error(getValue('exception.invalid_filter'));
         }
       } catch (err) {
         this.isValidQuery = false;
-        IDEE.dialog.error(getValue('cant_apply_filter'));
+        IDEE.dialog.error(getValue('exception.cant_apply_filter'));
       }
     }
   }
@@ -950,7 +950,7 @@ export default class FilteredSearchControl extends IDEE.Control {
       const csvString = this.dataToCsv(features);
       this.downloadCsv(csvString);
     } else {
-      IDEE.dialog.error(getValue('no_export_data'));
+      IDEE.dialog.error(getValue('exception.no_export_data'));
     }
   }
 
@@ -1268,7 +1268,7 @@ export default class FilteredSearchControl extends IDEE.Control {
         this.addpageBtnEvt();
       }
     } else {
-      IDEE.dialog.error(getValue('layer_load'));
+      IDEE.dialog.error(getValue('exception.layer_load'));
     }
   }
 
@@ -1499,7 +1499,7 @@ export default class FilteredSearchControl extends IDEE.Control {
     const layersFind = [];
     if (IDEE.utils.isNullOrEmpty(layerSearch) || (!IDEE.utils.isArray(layerSearch)
       && !IDEE.utils.isString(layerSearch) && !(layerSearch instanceof IDEE.Layer))) {
-      IDEE.dialog.error(getValue('hasLayer_error'), getValue('error'));
+      IDEE.dialog.error(getValue('exception.hasLayer_error'), getValue('exception.error'));
       return layersFind;
     }
 
