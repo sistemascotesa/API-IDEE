@@ -41,7 +41,8 @@ export const getDefaultPanelOptions = (control, params) => ({
   position: control.position ?? params.position,
   collapsible: isBoolean(control.collapsible) ? control.collapsible : params.collapsible,
   collapsed: isBoolean(control.collapsed) ? control.collapsed : params.collapsed,
-  tooltip: control.translation ? control.translation.title : (params.tooltip ?? null),
+  tooltip: isString(control.tooltip) ? control.tooltip
+    : (control.translation ? control.translation.title : (params.tooltip ?? null)),
   className: `m-${control.name}`,
 });
 
@@ -376,6 +377,7 @@ export const getTimelinePanel = (control, map, params = {}) => {
  */
 export const getPanelForControl = (control, map, params = {}) => {
   const panels = {
+    [Attributions.NAME]: () => getAttributionsPanel(control, map, params),
     [Scale.NAME]: () => getScalePanel(control, map, params),
     [`${Scale.NAME}*true`]: () => getScalePanel(control, map, params),
     [ScaleLine.NAME]: () => getScaleLinePanel(control, map, params),
@@ -385,7 +387,6 @@ export const getPanelForControl = (control, map, params = {}) => {
     [Panzoom.NAME]: () => getPanzoomPanel(control, map, params),
     [GetFeatureInfo.NAME]: () => getGetFeatureInfo(control, map, params),
     [Location.NAME]: () => getLocationPanel(control, map, params),
-    [Attributions.NAME]: () => getAttributionsPanel(control, map, params),
     [Rotate.NAME]: () => getRotatePanel(control, map, params),
     [BackgroundLayers.NAME]: () => getBackgroundLayersPanel(control, map, params),
     [ImplementationSwitcher.NAME]: () => getImpSwitcherPanel(control, map, params),
@@ -418,6 +419,7 @@ export const buildControl = (controlParam, map) => {
         // eslint-disable-next-line no-underscore-dangle, no-param-reassign
         map._attributionsMap = [...map._attributionsMap, ...collectionsAttributions];
         return new Attributions({
+          ...options,
           collectionsAttributions: collectionsAttributions.map((l) => {
             if (typeof l !== 'string') {
               const attr = l;
