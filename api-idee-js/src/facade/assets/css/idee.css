@@ -26,6 +26,7 @@
         linear-gradient(-45deg, transparent 75%, color-mix(in srgb, var(--idee-color-primary) 25%, transparent) 75%);
     background-size: 16px 16px;
     background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+
 }
 
 .m-api-idee-map-panel {
@@ -314,11 +315,8 @@
     overflow-y: auto;
 }
 
-button::-moz-focus-inner {
-    border: 0;
-}
-
-button {
+html:has(>body>.m-api-idee-test-form-frame) button,
+.m-api-idee-container button {
     height: 32px;
     color: var(--font-color);
     background-color: var(--idee-color-primary);
@@ -330,23 +328,31 @@ button {
     transition: all 0.3s ease;
 }
 
-button:hover {
+html:has(>body>.m-api-idee-test-form-frame) button::-moz-focus-inner,
+.m-api-idee-container button::-moz-focus-inner {
+    border: 0;
+}
+
+html:has(>body>.m-api-idee-test-form-frame) button:hover,
+.m-api-idee-container button:hover {
     color: var(--font-color);
     background-color: var(--idee-color-links);
     border: 2px solid var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
-button:disabled {
+html:has(>body>.m-api-idee-test-form-frame) button:disabled,
+.m-api-idee-container button:disabled {
     color: #c5c5c5;
 }
 
-button:disabled:hover {
+html:has(>body>.m-api-idee-test-form-frame) button:disabled:hover,
+.m-api-idee-container button:disabled:hover {
     color: #c5c5c5;
     cursor: default;
 }
 
-button.secondary {
+html:has(>body>.m-api-idee-test-form-frame) button.secondary .m-api-idee-container button.secondary {
     height: 32px;
     color: var(--idee-color-primary-dark);
     background-color: var(--idee-color-neutral-20);
@@ -357,21 +363,28 @@ button.secondary {
     transition: all 0.3s ease;
 }
 
-button.secondary:hover {
+html:has(>body>.m-api-idee-test-form-frame) button.secondary:hover,
+.m-api-idee-container button.secondary:hover {
     color: var(--idee-color-white);
     background-color: var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
-button.secondary:disabled {
+html:has(>body>.m-api-idee-test-form-frame) button.secondary:disabled,
+.m-api-idee-container button.secondary:disabled {
     color: var(--idee-color-neutral-40);
 }
 
-input[type="text"],
-input[type="number"],
-input[type="email"],
-input[type="color"],
-textarea {
+html:has(>body>.m-api-idee-test-form-frame) input[type="text"],
+.m-api-idee-container input[type="text"],
+html:has(>body>.m-api-idee-test-form-frame) input[type="number"],
+.m-api-idee-container input[type="number"],
+html:has(>body>.m-api-idee-test-form-frame) input[type="email"],
+.m-api-idee-container input[type="email"],
+html:has(>body>.m-api-idee-test-form-frame) input[type="color"],
+.m-api-idee-container input[type="color"],
+html:has(>body>.m-api-idee-test-form-frame) textarea,
+.m-api-idee-container textarea {
     margin: 4px;
     padding: 4px;
     height: 32px;
@@ -389,29 +402,40 @@ textarea {
     transition: all 0.3s ease;
 }
 
-input[type="color"] {
+html:has(>body>.m-api-idee-test-form-frame) input[type="color"],
+.m-api-idee-container input[type="color"] {
     cursor: pointer;
 }
 
-input[type="text"]:hover,
-input[type="number"]:hover,
-input[type="email"]:hover,
-input[type="color"]:hover,
-textarea:hover {
+html:has(>body>.m-api-idee-test-form-frame) input[type="text"]:hover,
+.m-api-idee-container input[type="text"]:hover,
+html:has(>body>.m-api-idee-test-form-frame) input[type="number"]:hover,
+.m-api-idee-container input[type="number"]:hover,
+html:has(>body>.m-api-idee-test-form-frame) input[type="email"]:hover,
+.m-api-idee-container input[type="email"]:hover,
+html:has(>body>.m-api-idee-test-form-frame) input[type="color"]:hover,
+.m-api-idee-container input[type="color"]:hover,
+html:has(>body>.m-api-idee-test-form-frame) textarea:hover,
+.m-api-idee-container textarea:hover {
     border: 1px solid var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
-input[type="text"]:focus,
-input[type="number"]:focus,
-input[type="email"]:focus,
-input[type="color"]:focus,
-textarea:focus {
+html:has(>body>.m-api-idee-test-form-frame) input[type="text"]:focus,
+.m-api-idee-container input[type="text"]:focus,
+html:has(>body>.m-api-idee-test-form-frame) input[type="number"]:focus,
+.m-api-idee-container input[type="number"]:focus,
+html:has(>body>.m-api-idee-test-form-frame) input[type="email"]:focus,
+.m-api-idee-container input[type="email"]:focus,
+html:has(>body>.m-api-idee-test-form-frame) input[type="color"]:focus,
+.m-api-idee-container input[type="color"]:focus,
+html:has(>body>.m-api-idee-test-form-frame) textarea:focus .m-api-idee-container textarea:focus {
     outline: none;
     border: 1px solid var(--idee-color-primary-dark);
 }
 
-input[type="checkbox"] {
+html:has(>body>.m-api-idee-test-form-frame) input[type="checkbox"],
+.m-api-idee-container input[type="checkbox"] {
     cursor: pointer;
     accent-color: var(--idee-color-links);
     border-color: var(--idee-color-neutral-50);
@@ -419,13 +443,15 @@ input[type="checkbox"] {
     transition: all 0.3s ease;
 }
 
-input[type="checkbox"]:hover {
+html:has(>body>.m-api-idee-test-form-frame) input[type="checkbox"]:hover,
+.m-api-idee-container input[type="checkbox"]:hover {
     border-color: var(--idee-color-white);
     accent-color: var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
-input[type="radio"] {
+html:has(>body>.m-api-idee-test-form-frame) input[type="radio"],
+.m-api-idee-container input[type="radio"] {
     appearance: none;
     -webkit-appearance: none;
     content: "";
@@ -442,7 +468,8 @@ input[type="radio"] {
     transition: all 0.3s ease;
 }
 
-input[type="radio"]::after {
+html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]::after,
+.m-api-idee-container input[type="radio"]::after {
     content: "";
     width: 8px;
     height: 8px;
@@ -456,41 +483,49 @@ input[type="radio"]::after {
     transition: transform 0.3s ease;
 }
 
-input[type="radio"]:checked {
+html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]:checked,
+.m-api-idee-container input[type="radio"]:checked {
     border-color: var(--idee-color-links);
 }
 
-input[type="radio"]:checked::after {
+html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]:checked::after,
+.m-api-idee-container input[type="radio"]:checked::after {
     transform: scale(1) translate(-50%, -50%);
 }
 
-input[type="radio"]:hover {
+html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]:hover,
+.m-api-idee-container input[type="radio"]:hover {
     border-color: var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
-input[type="radio"]:hover+label {
+html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]:hover+label,
+.m-api-idee-container input[type="radio"]:hover+label {
     color: var(--idee-color-links);
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
-input[type="range"] {
+html:has(>body>.m-api-idee-test-form-frame) input[type="range"],
+.m-api-idee-container input[type="range"] {
     cursor: pointer;
     accent-color: var(--idee-color-primary);
     transition: all 0.3s ease;
 }
 
-input[type="range"]:hover {
+html:has(>body>.m-api-idee-test-form-frame) input[type="range"]:hover,
+.m-api-idee-container input[type="range"]:hover {
     accent-color: var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
-input[type="range"]:focus {
+html:has(>body>.m-api-idee-test-form-frame) input[type="range"]:focus,
+.m-api-idee-container input[type="range"]:focus {
     outline: none;
 }
 
-select {
+html:has(>body>.m-api-idee-test-form-frame) select,
+.m-api-idee-container select {
     cursor: pointer;
     color: #6c6c6c;
     border-radius: 4px;
@@ -502,38 +537,45 @@ select {
     transition: all 0.3s ease;
 }
 
-select:hover {
+html:has(>body>.m-api-idee-test-form-frame) select:hover,
+.m-api-idee-container select:hover {
     border: 1px solid var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
-select:focus {
+html:has(>body>.m-api-idee-test-form-frame) select:focus,
+.m-api-idee-container select:focus {
     outline: none;
     border: 1px solid var(--idee-color-primary-dark);
 }
 
-option {
+html:has(>body>.m-api-idee-test-form-frame) option,
+.m-api-idee-container option {
     font-family: var(--control-font-family);
     font-size: 16px;
     cursor: pointer;
 }
 
-a {
+html:has(>body>.m-api-idee-test-form-frame) a,
+.m-api-idee-container a {
     color: var(--idee-color-primary);
     transition: all 0.3s ease;
 }
 
-a:hover {
+html:has(>body>.m-api-idee-test-form-frame) a:hover,
+.m-api-idee-container a:hover {
     color: var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
-a:visited {
+html:has(>body>.m-api-idee-test-form-frame) a:visited,
+.m-api-idee-container a:visited {
     color: var(--idee-color-primary);
     transition: all 0.3s ease;
 }
 
-a:visited:hover {
+html:has(>body>.m-api-idee-test-form-frame) a:visited:hover,
+.m-api-idee-container a:visited:hover {
     color: var(--idee-color-links);
     transition: all 0.3s ease;
 }
@@ -542,7 +584,7 @@ a:visited:hover {
      CONTROLES
 ************************/
 
-.m-control {
+.m-api-idee-container .m-control {
     margin: 0;
     padding: 0;
     z-index: 990;
@@ -552,12 +594,12 @@ a:visited:hover {
     padding: 2px;
 }
 
-.m-control>button {
+.m-api-idee-container .m-control>button {
     color: var(--font-color);
 }
 
-div.m-control button[class^="g-cartografia-"],
-div.m-control button[class*=" g-cartografia-"] {
+.m-api-idee-container div.m-control button[class^="g-cartografia-"],
+.m-api-idee-container div.m-control button[class*=" g-cartografia-"] {
     font-size: 28px;
     padding: 8px;
     font-size: 24px;
@@ -571,124 +613,75 @@ div.m-control button[class*=" g-cartografia-"] {
     opacity: 1;
 }
 
-.ol-overviewmap>button {
+.m-api-idee-container .ol-overviewmap>button {
     opacity: 0.75;
     -webkit-transition: opacity 0.25s ease 0s;
     transition: opacity 0.25s ease 0s;
 }
 
-.ol-overviewmap>button:hover {
+.m-api-idee-container .ol-overviewmap>button:hover {
     opacity: 1 !important;
 }
 
-div.m-control.activated button[class^="g-cartografia-"],
-div.m-control button[class^="g-cartografia-"]:hover,
-div.m-control button[class*=" g-cartografia-"]:hover {
+.m-api-idee-container div.m-control.activated button[class^="g-cartografia-"],
+.m-api-idee-container div.m-control button[class^="g-cartografia-"]:hover,
+.m-api-idee-container div.m-control button[class*=" g-cartografia-"]:hover {
     opacity: 1 !important;
     background-color: var(--idee-color-links);
 }
 
-div.m-control button[class^="g-cartografia-"]:focus,
-div.m-control button[class*=" g-cartografia-"]:focus,
-.m-panel>button.m-panel-btn:focus {
+.m-api-idee-container div.m-control button[class^="g-cartografia-"]:focus,
+.m-api-idee-container div.m-control button[class*=" g-cartografia-"]:focus,
+.m-api-idee-container .m-panel>button.m-panel-btn:focus {
     outline: none;
 }
 
-.m-help-btn,
-.m-clear-btn {
+.m-api-idee-container .m-help-btn,
+.m-api-idee-container .m-clear-btn {
     opacity: 0.4 !important;
     font-size: 18px !important;
 }
 
-.m-search-btn {
+.m-api-idee-container .m-search-btn {
     order: 3;
     padding-right: 8px;
 }
 
-.m-help-btn {
+.m-api-idee-container .m-help-btn {
     order: 2;
 }
 
-.m-clear-btn {
+.m-api-idee-container .m-clear-btn {
     order: 1;
 }
 
-.m-results-btn {
+.m-api-idee-container .m-results-btn {
     display: none;
 }
-
 
 /***********************
      LABEL
 ************************/
 
-.m-label-content {
+.m-api-idee-container .m-label-content {
     white-space: nowrap;
 }
 
-/* TEXT */
-
-
-@media only screen and (max-width: 768px) {
-    .m-wordbreak {
-        word-break: break-all;
-        white-space: none;
-    }
-}
-
-
-/***********************
-     LOADING ANIMATION
-************************/
-
-@-moz-keyframes mloading {
-    100% {
-        -moz-transform: rotate(360deg);
-    }
-}
-
-@-webkit-keyframes mloading {
-    100% {
-        -webkit-transform: rotate(360deg);
-    }
-}
-
-@keyframes mloading {
-    100% {
-        -webkit-transform: rotate(360deg);
-        transform: rotate(360deg);
-    }
-}
-
-
-/********************************/
-
-
-/* correcciones tamaño relativo */
-
-
-/*#map {
-	width: 600px !important;
-	height: 500px !important;
-}*/
-
-.ol-viewport,
-.ol-overlaycontainer-stopevent,
-.m-areas,
-.m-area.m-top.m-right {
+.m-api-idee-container .ol-viewport,
+.m-api-idee-container .ol-overlaycontainer-stopevent {
     height: inherit !important;
 }
 
-.m-panel.m-layerswitcher.opened {
+.m-api-idee-container .m-panel.m-layerswitcher.opened {
     height: calc(100% - 30px);
 }
 
-.m-panel.m-layerswitcher>div.m-panel-controls {
+.m-api-idee-container .m-panel.m-layerswitcher>div.m-panel-controls {
     height: 100% !important;
     max-height: 100%;
 }
 
-.m-attribution {
+.m-api-idee-container .m-attribution {
     left: 3px !important;
     right: inherit !important;
     z-index: 999999;
@@ -716,11 +709,11 @@ div.m-control button[class*=" g-cartografia-"]:focus,
 .m-panel.m-layerswitcher>button.m-panel-btn,
 .m-panel.collapsed>button.m-panel-btn, */
 /* .ol-zoom>button, */
-.m-panel,
-.ol-zoomslider>button.ol-zoomslider-thumb,
-.ol-overviewmap.ol-collapsed,
-.m-scale-container,
-.m-wmcselector-container {
+.m-api-idee-container .m-panel,
+.m-api-idee-container .ol-zoomslider>button.ol-zoomslider-thumb,
+.m-api-idee-container .ol-overviewmap.ol-collapsed,
+.m-api-idee-container .m-scale-container,
+.m-api-idee-container .m-wmcselector-container {
     background-color: var(--idee-color-primary) !important;
     opacity: 1;
 }
@@ -735,27 +728,29 @@ div.m-control button[class*=" g-cartografia-"]:focus,
 .m-panel.m-edition.collapsed>button.m-panel-btn,
 .m-panel.m-printer.collapsed>button.m-panel-btn,
 .m-panel.m-layerswitcher.collapsed>button.m-panel-btn, */
-.m-control.m-location-container>button,
-.m-geosearch.collapsed>button.m-panel-btn,
-.m-searchstreet.collapsed>button.m-panel-btn,
-.m-searchstreetgeosearch.collapsed>button.m-panel-btn,
-.m-attributetable.collapsed>button.m-panel-btn,
-.m-tools.collapsed>button.m-panel-btn,
-.m-edition.collapsed>button.m-panel-btn,
-.m-printer.collapsed>button.m-panel-btn,
-.m-layerswitcher.collapsed>button.m-panel-btn,
+.m-api-idee-container .m-control.m-location-container>button,
+.m-api-idee-container .m-geosearch.collapsed>button.m-panel-btn,
+.m-api-idee-container .m-searchstreet.collapsed>button.m-panel-btn,
+.m-api-idee-container .m-searchstreetgeosearch.collapsed>button.m-panel-btn,
+.m-api-idee-container .m-attributetable.collapsed>button.m-panel-btn,
+.m-api-idee-container .m-tools.collapsed>button.m-panel-btn,
+.m-api-idee-container .m-edition.collapsed>button.m-panel-btn,
+.m-api-idee-container .m-printer.collapsed>button.m-panel-btn,
+.m-api-idee-container .m-layerswitcher.collapsed>button.m-panel-btn,
+.m-api-idee-container
+
 /* .ol-zoom>button, */
-div.m-control button[class*=" g-cartografia-"],
-div.m-control button[class^=g-cartografia-],
-.ol-overviewmap.ol-collapsed>button,
-.ol-overviewmap>button,
-.m-wmcselector-select,
-.m-wmcselector-container:before,
-.m-mouse-position:before,
-.m-mouse-position,
-.m-scale-container>.m-unit:before,
-.ol-zoomslider>button.ol-zoomslider-thumb,
-.m-scale-container {
+.m-api-idee-container div.m-control button[class*=" g-cartografia-"],
+.m-api-idee-container div.m-control button[class^=g-cartografia-],
+.m-api-idee-container .ol-overviewmap.ol-collapsed>button,
+.m-api-idee-container .ol-overviewmap>button,
+.m-api-idee-container .m-wmcselector-select,
+.m-api-idee-container .m-wmcselector-container:before,
+.m-api-idee-container .m-mouse-position:before,
+.m-api-idee-container .m-mouse-position,
+.m-api-idee-container .m-scale-container>.m-unit:before,
+.m-api-idee-container .ol-zoomslider>button.ol-zoomslider-thumb,
+.m-api-idee-container .m-scale-container {
     font-family: var(--control-font-family);
     color: var(--font-color);
     background-color: var(--idee-color-primary);
@@ -766,93 +761,121 @@ div.m-control button[class^=g-cartografia-],
     padding: 0;
 }
 
-div.m-control.active button[class*="g-cartografia-"] {
+.m-api-idee-container div.m-control.active button[class*="g-cartografia-"] {
     background-color: var(--idee-color-primary-dark) !important;
 }
 
-div.m-control.active button[class*="g-cartografia-"]:hover {
+.m-api-idee-container div.m-control.active button[class*="g-cartografia-"]:hover {
     background-color: var(--idee-color-links) !important;
 }
 
-.m-control.m-location-container>button:hover,
-.m-geosearch.collapsed>button.m-panel-btn:hover,
-.m-searchstreet.collapsed>button.m-panel-btn:hover,
-.m-searchstreetgeosearch.collapsed>button.m-panel-btn:hover,
-.m-attributetable.collapsed>button.m-panel-btn:hover,
-.m-tools.collapsed>button.m-panel-btn:hover,
-.m-edition.collapsed>button.m-panel-btn:hover,
-.m-printer.collapsed>button.m-panel-btn:hover,
-.m-layerswitcher.collapsed>button.m-panel-btn:hover,
-.ol-zoom>button:hover,
-.ol-zoom>button:focus,
-div.m-control button[class*=" g-cartografia-"]:hover,
-div.m-control button[class^=g-cartografia-]:hover,
-.ol-overviewmap.ol-collapsed>button:hover,
-.ol-overviewmap>button:hover,
-.m-wmcselector-select:hover,
-.m-wmcselector-container:before:hover,
-.m-mouse-position:before:hover,
-.m-mouse-position:hover,
-.ol-zoomslider>button.ol-zoomslider-thumb,
-.m-scale-container>.m-unit:before:hover,
-.m-scale-container {
+.m-api-idee-container .m-control.m-location-container>button:hover,
+.m-api-idee-container .m-geosearch.collapsed>button.m-panel-btn:hover,
+.m-api-idee-container .m-searchstreet.collapsed>button.m-panel-btn:hover,
+.m-api-idee-container .m-searchstreetgeosearch.collapsed>button.m-panel-btn:hover,
+.m-api-idee-container .m-attributetable.collapsed>button.m-panel-btn:hover,
+.m-api-idee-container .m-tools.collapsed>button.m-panel-btn:hover,
+.m-api-idee-container .m-edition.collapsed>button.m-panel-btn:hover,
+.m-api-idee-container .m-printer.collapsed>button.m-panel-btn:hover,
+.m-api-idee-container .m-layerswitcher.collapsed>button.m-panel-btn:hover,
+.m-api-idee-container .ol-zoom>button:hover,
+.m-api-idee-container .ol-zoom>button:focus,
+.m-api-idee-container div.m-control button[class*=" g-cartografia-"]:hover,
+.m-api-idee-container div.m-control button[class^=g-cartografia-]:hover,
+.m-api-idee-container .ol-overviewmap.ol-collapsed>button:hover,
+.m-api-idee-container .ol-overviewmap>button:hover,
+.m-api-idee-container .m-wmcselector-select:hover,
+.m-api-idee-container .m-wmcselector-container:before:hover,
+.m-api-idee-container .m-mouse-position:before:hover,
+.m-api-idee-container .m-mouse-position:hover,
+.m-api-idee-container .ol-zoomslider>button.ol-zoomslider-thumb,
+.m-api-idee-container .m-scale-container>.m-unit:before:hover,
+.m-api-idee-container .m-scale-container {
     background-color: var(--idee-color-links) !important;
 }
 
 /* secondary color */
 
-.m-printer-container>div.button {
+.m-api-idee-container .m-printer-container>div.button {
     background-color: var(--idee-color-primary-dark) !important;
 }
 
 /* aditional colors */
 
-.m-panel .title {
+.m-api-idee-container .m-panel .title {
     color: #f1832e !important;
 }
 
-.m-panel.opened {
+.m-api-idee-container .m-panel.opened {
     background-color: #fff !important;
 }
 
-.m-wmcselector-select {
+.m-api-idee-container .m-wmcselector-select {
     background-color: transparent !important;
 }
 
 /* corrections */
 
-.m-panel>div.m-panel-controls {
+.m-api-idee-container .m-panel>div.m-panel-controls {
     border-radius: 0;
 }
 
-.layer .m-title {
+.m-api-idee-container .layer .m-title {
     color: #6c6c6c !important;
 }
 
-.m-popup table {
+.m-api-idee-container .m-popup table {
     color: #6c6c6c !important;
 }
 
-.m-popup .m-content {
+.m-api-idee-container .m-popup .m-content {
     min-width: 250px;
 }
 
-.ol-overviewmap:not(.ol-collapsed) button {
-    background-color: #71A7D3 !important;
-}
-
-
-
-.m-panel.m-tools {
+.m-api-idee-container .m-panel.m-tools {
     order: -65;
 }
 
-.m-panel.m-layerswitcher.opened {
+.m-api-idee-container .m-panel.m-layerswitcher.opened {
     height: calc(100% - 70px);
 }
 
-.m-panel.m-layerswitcher>div.m-panel-controls {
+.m-api-idee-container .m-panel.m-layerswitcher>div.m-panel-controls {
     max-width: 33vw;
+}
+
+/***********************
+     TEXT
+************************/
+
+@media only screen and (max-width: 768px) {
+    .m-wordbreak {
+        word-break: break-all;
+        white-space: none;
+    }
+}
+
+/***********************
+     LOADING ANIMATION
+************************/
+
+@-moz-keyframes mloading {
+    100% {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes mloading {
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes mloading {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }
 
 @media only screen and (max-width: 768px) {
@@ -914,30 +937,30 @@ body>.m-api-idee-test-form-frame>.m-test-form>div>select {
 }
 
 @media (max-width: calc(280px * 2 + 0.35rem * 2 + 1rem)) {
-    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(2)) {
+    body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(2)) {
         flex-direction: row;
     }
 
-    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(2)) > div {
+    body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(2))>div {
         width: 100%;
     }
 
-    body > .m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(2)) > .m-test-buttons {
+    body>.m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(2))>.m-test-buttons {
         justify-content: center;
         min-width: 180px;
     }
 }
 
 @media (max-width: calc(280px * 4 + 0.35rem * 4 + 1rem)) {
-    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(5)) {
+    body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(5)) {
         flex-direction: row;
     }
 
-    body > .m-api-idee-test-form-frame > .m-test-form:has(> div:nth-child(5)) > div {
+    body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(5))>div {
         width: 100%;
     }
 
-    body > .m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(5)) > .m-test-buttons {
+    body>.m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(5))>.m-test-buttons {
         justify-content: center;
         min-width: 180px;
     }

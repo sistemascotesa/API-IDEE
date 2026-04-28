@@ -184,13 +184,6 @@ export default class IncicartoControl extends IDEE.Control {
 
     this.documentRead_ = document.createElement('img');
     this.canvas_ = document.createElement('canvas');
-
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable_ = options.isDraggable;
   }
 
   /**

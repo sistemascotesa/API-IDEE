@@ -74,7 +74,6 @@ const stepValue = 5;
 const formatValue = 'logarithmic';
 const sizeWidthDinamic = 'sizeWidthDinamic_medium';
 const formatMove = 'continuous';
-const collapsible = selectCollapsible.value === 'true';
 
 // Type
 const typeTimeLine = document.getElementById('typeTimeLine');
@@ -88,14 +87,12 @@ if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
     formatMove,
     formatValue,
     sizeWidthDinamic,
-    collapsible,
   });
 } else {
   create({
     timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
     position,
     intervals,
-    collapsible,
   });
 }
 
