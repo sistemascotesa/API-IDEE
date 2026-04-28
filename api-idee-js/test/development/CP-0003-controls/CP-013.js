@@ -44,24 +44,32 @@ const controlsDown = [
   panzoom,
 ];
 
-const githubPLugin = new Plugin('github-left', {
-  tooltip: 'Githuh Left',
+const githubPlugin = new Plugin('github-1', {
+  tooltip: 'Githuh 1',
   position: Position.LEFT,
   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
   order: 2,
 });
 
-const githubPLugin2 = new Plugin('github-right', {
-  tooltip: 'Github Right',
+const githubPlugin2 = new Plugin('github-2', {
+  tooltip: 'Github 2',
   position: Position.RIGHT,
   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
   order: 3,
 });
 
+const githubPlugin3 = new Plugin('github-3', {
+  tooltip: 'Github 3',
+  position: Position.RIGHT,
+  svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
+  order: 4,
+});
+
 const tools = [
   ...controlsDown,
-  githubPLugin,
-  githubPLugin2,
+  githubPlugin,
+  githubPlugin2,
+  githubPlugin3,
 ];
 
 const log = tools.reduce((acc, ctrl) => {
