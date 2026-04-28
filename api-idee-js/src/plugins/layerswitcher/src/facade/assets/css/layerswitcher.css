@@ -8,6 +8,8 @@
 .g-cartografia-btn-layerswitcher-ver,
 .g-cartografia-btn-layerswitcher-ocultar,
 .g-cartografia-btn-layerswitcher-delete,
+.g-cartografia-flecha-izquierda,
+.g-cartografia-flecha-derecha,
 .m-layerswitcher-input-container-buttons > * {
     border: none !important;
     background-color: transparent !important;
@@ -29,6 +31,8 @@
 .layerswitcher-hide-show-all-layers:hover,
 .m-layerswitcher-groupDisplay:hover,
 .g-cartografia-btn-layerswitcher-delete:hover,
+.g-cartografia-flecha-izquierda:hover,
+.g-cartografia-flecha-derecha:hover,
 .m-layerswitcher-input-container-buttons > *:hover {
     border: none;
     color: var(--idee-color-links) !important;
@@ -677,6 +681,54 @@ input[type=range].layerswitcher-transparency {
 .m-layerswitcher-ogc-form-input input[type="number"] {
     width: 100%;
     box-sizing: border-box;
+}
+
+
+/**************************
+    INFORMATIONOTHERS.HTML
+    INFORMATIONOGC.HTML
+**************************/
+.m-layerswitcher-pagecontrolscontainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.m-layerswitcher-tablepagination-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.m-layerswitcher-tablepagination {
+    width: 100%;
+    min-width: 320px;
+    font-size: 0.85rem;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.m-layerswitcher-tablepagination thead {
+    background-color: var(--idee-color-primary);
+    color: var(--idee-color-white);
+}
+
+.m-layerswitcher-tablepagination thead tr td {
+    padding: 8px 16px;
+    border: 2px solid var(--idee-color-white);
+}
+
+
+.m-layerswitcher-tablepagination tbody tr:nth-child(even) {
+    background-color: var(--idee-color-neutral-10)
+}
+
+.m-layerswitcher-tablepagination tbody td {
+    padding: 9px 16px;
 }
 
 
