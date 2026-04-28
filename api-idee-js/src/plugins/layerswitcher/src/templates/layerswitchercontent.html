@@ -4,24 +4,14 @@
     data-layer-type="{{type}}" data-layer-url="{{url}}" data-order="{{dataOrder}}" data-layer-id="{{idLayer}}">
     <div class="m-layerswitcher-title-layer">
         <div class="m-layerswitcher-visible-typeContent">
-            <table>
-                <tbody>
-                    <tr>
-                        <td>
-                            <span {{#if ../displayLabel}}style="display: none" {{/if}}
-                                aria-label="Tipo de servicio {{type}}" tabindex="0"
-                                class="layerswitcher-type">{{type}}
-                            </span>
-                        </td>
-                        <td>
-                            <span data-layer-id="{{idLayer}}" title="{{../translations.changeName}}" tabindex="0"
-                                class="m-layerswitcher-title-box">
-                                {{title}}
-                            </span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <span {{#if ../displayLabel}}style="display: none" {{/if}}
+                aria-label="Tipo de servicio {{type}}" tabindex="0"
+                class="layerswitcher-type">{{type}}
+            </span>
+            <span data-layer-id="{{idLayer}}" title="{{../translations.changeName}}" tabindex="0"
+                class="m-layerswitcher-title-box">
+                {{title}}
+            </span>
         </div>
     </div>
     <div class="m-layerswitcher-tools">
@@ -30,14 +20,16 @@
             <button title="{{#if visible}}{{../translations.hide_service}}{{^}}{{../translations.show_service}}{{/if}}"
                 aria-label="{{#if visible}}{{../translations.hide_service}}{{^}}{{../translations.show_service}}{{/if}}"
                 tabindex="0" data-select-type="eye" data-layer-id="{{idLayer}}"
-                class="m-layerswitcher-check {{#if visible}}m-layerswitcher-icons-ver{{^}}m-layerswitcher-icons-ocultar{{/if}} {{#if outOfRange}}m-layerswitcher-outOfRange{{/if}}">
+                class="m-layerswitcher-check secondary {{#if visible}}g-cartografia-btn-layerswitcher-ver{{^}}g-cartografia-btn-layerswitcher-ocultar{{/if}} {{#if outOfRange}}m-layerswitcher-outOfRange{{/if}}">
             </button>
             {{/if}}
             {{#if ../isRadio}}
-            <input aria-label="{{#if visible}}{{../translations.hide_service}}{{^}}{{../translations.show_service}}{{/if}}"
+            <div>
+                <input aria-label="{{#if visible}}{{../translations.hide_service}}{{^}}{{../translations.show_service}}{{/if}}"
                 tabindex="0" {{#eq checkedLayer "true" }}checked{{/eq}} type="radio" data-layer-id="{{idLayer}}"
                 data-select-type="radio" class="m-layerswitcher-check {{#if outOfRange}}m-layerswitcher-outOfRange-input{{/if}}"
                 name="m-layerswitcher-radioLayers" value="{{type}}-{{id}}">
+            </div>
             {{/if}}
         </div>
         {{#if ../isTransparency}}
@@ -51,29 +43,29 @@
         <div class="m-layerswitcher-actions">
             {{#if ../isLegend}}
             <button tabindex="0" title="{{../translations.show_hide}}" data-layer-id="{{idLayer}}"
-                class="m-layerswitcher-icons-image" {{#unless visible}} disabled {{/unless}}>
+                class="secondary m-layerswitcher-icons-image g-cartografia-btn-layerswitcher-image" {{#unless visible}} disabled {{/unless}}>
             </button>
             {{/if}}
             {{#if ../isZoom}}
             <button tabindex="0" title="{{../translations.zoom}}" data-layer-id="{{idLayer}}"
-                class="m-layerswitcher-icons-target" {{#unless visible}} disabled {{/unless}}>
+                class="secondary m-layerswitcher-icons-target g-cartografia-btn-layerswitcher-target" {{#unless visible}} disabled {{/unless}}>
             </button>
             {{/if}}
             {{#if ../isInformation}}
             <button tabindex="0" title="{{../translations.info_metadata}}" data-layer-id="{{idLayer}}"
-                class="m-layerswitcher-icons-info" {{#unless visible}} disabled {{/unless}}>
+                class="secondary m-layerswitcher-icons-info g-cartografia-btn-layerswitcher-info" {{#unless visible}} disabled {{/unless}}>
             </button>
             {{/if}}
             {{#if ../isStyle}}
                 {{#if hasStyles}}
                 <button tabindex="0" title="{{../translations.change_style}}" data-layer-id="{{idLayer}}"
-                    class="m-layerswitcher-icons-style" {{#unless visible}} disabled {{/unless}}>
+                    class="secondary m-layerswitcher-icons-style g-cartografia-btn-layerswitcher-style" {{#unless visible}} disabled {{/unless}}>
                 </button>
                 {{/if}}
             {{/if}}
             {{#if ../isDelete}}
             <button title="{{../translations.remove_layer}}" data-layer-id="{{idLayer}}" tabindex="0"
-                aria-label="{{translations.remove_layer}}" class="m-layerswitcher-icons-delete">
+                aria-label="{{translations.remove_layer}}" class="secondary g-cartografia-btn-layerswitcher-delete">
             </button>
             {{/if}}
         </div>
@@ -84,13 +76,13 @@
 </li>
 {{/each}}
 {{/inline}}
-<div class="nested-sortable m-layerswitcher-containerLayers">
+<div class="{{#if isMoveLayers}}nested-sortable {{/if}}m-layerswitcher-containerLayers">
     {{#if isEyes}}
     <button {{#if isStatusLayers}}style="display: none" {{/if}}
         title="{{#if allVisible}}{{translations.show_all_services}}{{^}}{{translations.hide_all_services}}{{/if}}"
         aria-label="{{#if allVisible}}{{translations.show_all_services}}{{^}}{{translations.hide_all_services}}{{/if}}"
         tabindex="0" id="layerswitcher-hide-show-all-layers"
-        class="layerswitcher-hide-show-all-layers {{#if allVisible}}m-layerswitcher-icons-ver{{^}}m-layerswitcher-icons-ocultar{{/if}}"></button>
+        class="layerswitcher-hide-show-all-layers secondary {{#if allVisible}}g-cartografia-btn-layerswitcher-ocultar{{^}}g-cartografia-btn-layerswitcher-ver{{/if}}"></button>
     {{/if}}
     <ul class="layerswitcher-ul-layers nested-sortable" id="ul-layerswitcher-layers">
         {{> layerswitcherLayer layers=overlayLayers}}

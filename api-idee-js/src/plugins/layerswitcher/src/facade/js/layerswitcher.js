@@ -15,131 +15,128 @@ import en from './i18n/en';
 // Estas capas hacen referencia a la estructura de iberpix
 const PRECHARGED = {
   groups: [{
-    'Cartografía': {
-      'Mapas': {
-        'type': 'WMTS',
-        'url': 'https://www.ign.es/wmts/mapa-raster?',
-      },
-      'Callejero': {
-        'type': 'WMTS',
-        'url': 'https://www.ign.es/wmts/ign-base?',
-      },
-      'Primera edición MTN y Minutas de 1910-1970': {
-        'type': 'WMTS',
-        'url': 'https://www.ign.es/wmts/primera-edicion-mtn?',
-      },
-      'Planimetrías (1870 y 1950)': {
-        'type': 'WMS',
-        'url': 'https://www.ign.es/wms/minutas-cartograficas?',
-      },
-      'Planos de Madrid (1622 - 1960)': {
-        'type': 'WMTS',
-        'url': 'https://www.ign.es/wmts/planos?',
-      },
-      'Hojas kilométricas (Madrid - 1860)': {
-        'type': 'WMS',
-        'url': 'https://www.ign.es/wms/hojas-kilometricas?',
-      },
-      'Cuadrículas Mapa Topográfico Nacional': {
-        'type': 'WMS',
-        'url': 'https://www.ign.es/wms-inspire/cuadriculas?',
-      },
-    },
-    'Imagenes': {
-      'Ortofotos': {
-        'Máxima actualidad PNOA': {
-          'type': 'WMTS',
-          'url': 'https://www.ign.es/wmts/pnoa-ma?',
-        },
-        'Históricas y PNOA anual': {
-          'type': 'WMS',
-          'url': 'https://www.ign.es/wms/pnoa-historico?',
-        },
-        'PNOA Provisionales': {
-          'type': 'WMS',
-          'url': 'https://wms-pnoa.idee.es/pnoa-provisionales?',
-        },
-      },
-      'Mosaicos de satélite': {
-        'type': 'WMS',
-        'url': 'https://wms-satelites-historicos.idee.es/satelites-historicos?',
-      },
-      'Fototeca (Consulta de fotogramas históricos y PNOA)': {
-        'type': 'WMS',
-        'url': 'https://wms-fototeca.idee.es/fototeca?',
-      },
-    },
-    'Información geográfica de referencia y temática': {
-      'Catastro': {
-        'type': 'WMS',
-        'url': 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
-      },
-      'Unidades administrativas': {
-        'type': 'WMS',
-        'url': ' https://www.ign.es/wms-inspire/unidades-administrativas?',
-      },
-      'Nombres geográficos (Nomenclátor Geográfico Básico NGBE)': {
-        'type': 'WMS',
-        'url': 'https://www.ign.es/wms-inspire/ngbe?',
-      },
-      'Redes de transporte': {
-        'type': 'WMS',
-        'url': 'https://servicios.idee.es/wms-inspire/transportes?',
-      },
-      'Hidrografía': {
-        'type': 'WMS',
-        'url': 'https://servicios.idee.es/wms-inspire/hidrografia?',
-      },
-      'Direcciones y códigos postales': {
-        'type': 'WMS',
-        'url': 'https://www.cartociudad.es/wms-inspire/direcciones-ccpp?',
-      },
-      'Ocupación del suelo': {
-        'Actual (Corine y SIOSE)': {
-          'type': 'WMTS',
-          'url': 'https://servicios.idee.es/wmts/ocupacion-suelo?',
-        },
-        'Histórico (Corine y SIOSE)': {
-          'type': 'WMS',
-          'url': 'https://servicios.idee.es/wms-inspire/ocupacion-suelo-historico?',
-        },
-        'Copernicus Land Monitoring Service': {
-          'type': 'WMS',
-          'url': 'https://servicios.idee.es/wms/copernicus-landservice-spain?',
-        },
-      },
-      'Información sísmica (terremotos)': {
-        'type': 'WMS',
-        'url': 'https://www.ign.es/wms-inspire/geofisica?',
-      },
-      'Red de vigilancia volcánica': {
-        'type': 'WMS',
-        'url': 'https://wms-volcanologia.ign.es/volcanologia?',
-      },
-      'Redes geodésicas': {
-        'type': 'WMS',
-        'url': 'https://www.ign.es/wms-inspire/redes-geodesicas?',
-      },
-    },
-    'Modelos digitales de elevaciones': {
-      'Modelo Digital de Superficies (Sombreado superficies y consulta de elevaciones edificios y vegetación)': {
-        'type': 'WMTS',
-        'url': 'https://wmts-mapa-lidar.idee.es/lidar?',
-      },
-      'Modelo Digital del Terreno (Sombreado terreno y consulta de altitudes)': {
-        'type': 'WMTS',
-        'url': 'https://servicios.idee.es/wmts/mdt?',
-        'white_list': ['EL.ElevationGridCoverage'],
-      },
-      'Curvas de nivel y puntos acotados': {
-        'type': 'WMS',
-        'url': 'https://servicios.idee.es/wms-inspire/mdt?',
-        'white_list': ['EL.Contourline', 'EL.SpotElevation'],
-      },
-    },
-  },
-
-  ],
+    name: 'Cartografía',
+    services: [{
+      type: 'WMTS',
+      name: 'Mapas',
+      url: 'https://www.ign.es/wmts/mapa-raster?',
+    }, {
+      type: 'WMTS',
+      name: 'Callejero',
+      url: 'https://www.ign.es/wmts/ign-base?',
+    }, {
+      type: 'WMTS',
+      name: 'Primera edición MTN y Minutas de 1910-1970',
+      url: 'https://www.ign.es/wmts/primera-edicion-mtn?',
+    }, {
+      type: 'WMS',
+      name: 'Planimetrías (1870 y 1950)',
+      url: 'https://www.ign.es/wms/minutas-cartograficas?',
+    }, {
+      type: 'WMTS',
+      name: 'Planos de Madrid (1622 - 1960)',
+      url: 'https://www.ign.es/wmts/planos?',
+    }, {
+      type: 'WMS',
+      name: 'Hojas kilométricas (Madrid - 1860)',
+      url: 'https://www.ign.es/wms/hojas-kilometricas?',
+    }, {
+      type: 'WMS',
+      name: 'Cuadrículas Mapa Topográfico Nacional',
+      url: 'https://www.ign.es/wms-inspire/cuadriculas?',
+    }],
+  }, {
+    name: 'Imágenes',
+    services: [{
+      type: 'WMTS',
+      name: 'Ortofotos máxima actualidad PNOA',
+      url: 'https://www.ign.es/wmts/pnoa-ma?',
+    }, {
+      type: 'WMS',
+      name: 'Ortofotos históricas y PNOA anual',
+      url: 'https://www.ign.es/wms/pnoa-historico?',
+    }, {
+      type: 'WMS',
+      name: 'Ortofotos provisionales PNOA',
+      url: 'https://wms-pnoa.idee.es/pnoa-provisionales?',
+    }, {
+      type: 'WMS',
+      name: 'Mosaicos de satélite',
+      url: 'https://wms-satelites-historicos.idee.es/satelites-historicos?',
+    }, {
+      type: 'WMS',
+      name: 'Fototeca (Consulta de fotogramas históricos y PNOA)',
+      url: 'https://wms-fototeca.idee.es/fototeca?',
+    }],
+  }, {
+    name: 'Información geográfica de referencia y temática',
+    services: [{
+      type: 'WMS',
+      name: 'Catastro',
+      url: 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
+    }, {
+      type: 'WMS',
+      name: 'Unidades administrativas',
+      url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+    }, {
+      type: 'WMS',
+      name: 'Nombres geográficos (Nomenclátor Geográfico Básico NGBE)',
+      url: 'https://www.ign.es/wms-inspire/ngbe?',
+    }, {
+      type: 'WMS',
+      name: 'Redes de transporte',
+      url: 'https://servicios.idee.es/wms-inspire/transportes?',
+    }, {
+      type: 'WMS',
+      name: 'Hidrografía',
+      url: 'https://servicios.idee.es/wms-inspire/hidrografia?',
+    }, {
+      type: 'WMS',
+      name: 'Direcciones y códigos postales',
+      url: 'https://www.cartociudad.es/wms-inspire/direcciones-ccpp?',
+    }, {
+      type: 'WMTS',
+      name: 'Ocupación del suelo (Corine y SIOSE)',
+      url: 'https://servicios.idee.es/wmts/ocupacion-suelo?',
+    }, {
+      type: 'WMS',
+      name: 'Ocupación del suelo Histórico (Corine y SIOSE)',
+      url: 'https://servicios.idee.es/wms-inspire/ocupacion-suelo-historico?',
+    }, {
+      type: 'WMS',
+      name: 'Copernicus Land Monitoring Service',
+      url: 'https://servicios.idee.es/wms/copernicus-landservice-spain?',
+    }, {
+      type: 'WMS',
+      name: 'Información sísmica (terremotos)',
+      url: 'https://www.ign.es/wms-inspire/geofisica?',
+    }, {
+      type: 'WMS',
+      name: 'Red de vigilancia volcánica',
+      url: 'https://wms-volcanologia.ign.es/volcanologia?',
+    }, {
+      type: 'WMS',
+      name: 'Redes geodésicas',
+      url: 'https://www.ign.es/wms-inspire/redes-geodesicas?',
+    }],
+  }, {
+    name: 'Modelos digitales de elevaciones',
+    services: [{
+      type: 'WMTS',
+      name: 'Modelo Digital de Superficies (Sombreado superficies y consulta de elevaciones edificios y vegetación)',
+      url: 'https://wmts-mapa-lidar.idee.es/lidar?',
+    }, {
+      type: 'WMTS',
+      name: 'Modelo Digital del Terreno (Sombreado terreno y consulta de altitudes)',
+      url: 'https://servicios.idee.es/wmts/mdt?',
+      white_list: ['EL.ElevationGridCoverage'],
+    }, {
+      type: 'WMS',
+      name: 'Curvas de nivel y puntos acotados',
+      url: 'https://servicios.idee.es/wms-inspire/mdt?',
+      white_list: ['EL.ContourLine', 'EL.SpotElevation'],
+    }],
+  }],
 };
 export default class Layerswitcher extends IDEE.Plugin {
   constructor(options = {}) {
@@ -156,64 +153,125 @@ export default class Layerswitcher extends IDEE.Plugin {
      */
     this.options = options;
 
+    /**
+     * Min panel width
+     * @private
+     * @type {number}
+     */
     this.minPanelWidth = 360;
 
-    // Permite saber si el plugin está colapsado o no
+    /**
+     * Option to allow the plugin to be collapsed or not
+     * @public
+     * @type {Boolean}
+     */
     this.collapsed_ = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
 
-    // Permite que el plugin sea colapsado o no
-    this.collapsible_ = !IDEE.utils.isUndefined(options.collapsible) ? options.collapsible : true;
+    /**
+     * Option to allow the plugin to drag and drop layers
+     * @public
+     * @type {Boolean}
+     */
+    this.isMoveLayers = options.isMoveLayers ?? true;
 
-    // Determina si el plugin es draggable o no
-    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
-
-    // Permite saber si se permite movimiento de capas
-    this.isMoveLayers = options.isMoveLayers || true;
-
-    // Determina el modo de selección de las capas
+    /**
+     * Option to allow the plugin to select layers with eyes or checkboxes
+     * @public
+     * @type {string}
+     */
     this.modeSelectLayers = IDEE.utils.isUndefined(options.modeSelectLayers) ? 'eyes' : options.modeSelectLayers;
 
-    // Herramientas para mostrar en las capas
+    /**
+     * Tools to show in the plugin for each layer
+     * @public
+     * @type {Array}
+     */
     this.tools = IDEE.utils.isUndefined(options.tools) ? ['transparency', 'legend', 'zoom', 'information', 'style', 'delete'] : options.tools;
 
-    // Funcionalidad añadir capas
+    /**
+     * Option to allow the ability add layers from the catalog of the plugin
+     * @public
+     * @type {Boolean}
+     */
     this.addLayers = options.addLayers;
 
-    // Funcionalidad ocultar/añadir capas
+    /**
+     * Option to allow the ability to show/hide all layers
+     * @public
+     * @type {Boolean}
+     */
     this.statusLayers = options.statusLayers;
 
-    // Servicios precargados
-    this.precharged = options.precharged || PRECHARGED;
+    /**
+     * Object with precharged layers to show in the plugin
+     * @public
+     * @type {Object}
+     */
+    this.precharged = options.precharged && Object.keys(options.precharged).length > 0
+      ? options.precharged
+      : PRECHARGED;
 
-    // Mostrar tipo de capa
+    /**
+     * Option to show or not the label of the layers in the plugin
+     * @public
+     * @type {Boolean}
+     */
     this.displayLabel = !IDEE.utils.isUndefined(options.displayLabel)
       ? options.displayLabel : false;
 
-    //  Metadatos
+    /**
+     * Metadata from api.json
+     * @private
+     * @type {Object}
+     */
     this.metadata_ = api.metadata;
 
-    //  Determina si permite o no servicios http
+    /**
+     * Option to allow the load of http services
+     * @public
+     * @type {Boolean}
+     */
     this.http = true;
     if (options.http !== undefined && (options.http === false || options.http === 'false')) {
       this.http = false;
     }
 
-    // Determina si permite o no servicios https
+    /**
+     * Option to allow the load of https services. If null all services are allowed
+     * @public
+     * @type {Boolean}
+     */
     this.https = true;
     if (options.https !== undefined && (options.https === false || options.https === 'false')) {
       this.https = false;
     }
 
-    // showCatalog
+    /**
+     * Option to allow the load of layers from the catalog of the plugin
+     * @public
+     * @type {Boolean}
+     */
     this.showCatalog = options.showCatalog || false;
 
-    // use proxy
+    /**
+     * Option to allow the use of proxy in the plugin
+     * @public
+     * @type {Boolean}
+     */
     this.useProxy = IDEE.utils.isUndefined(options.useProxy) ? IDEE.useproxy : options.useProxy;
 
-    // Estado inicial del proxy
+    /**
+     * Initial status of the proxy
+     * @private
+     * @type {Boolean}
+     */
     this.statusProxy = IDEE.useproxy;
 
-    // Añadir attributions
+    /**
+     * Option to allow the use of attributions in the plugin
+     * @public
+     * @type {Boolean}
+     */
     this.useAttributions = options.useAttributions || false;
   }
 
@@ -232,7 +290,7 @@ export default class Layerswitcher extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_capas.svg',
       order: this.order,
     });
     map.addButtons(this.button);
@@ -243,15 +301,12 @@ export default class Layerswitcher extends IDEE.Plugin {
       minWidth: this.minPanelWidth,
       maxWidth: this.maxPanelWidth,
       className: 'm-plugin-layerswitcher',
-      collapsible: this.collapsible_,
       collapsed: this.collapsed_,
       collapsedButtonClass: 'm-layerswitcher-icons-layers',
       order: this.order,
     });
-    map.addPanels(this.panel);
 
     this.controls.push(new LayerswitcherControl({
-      isDraggable: this.isDraggable,
       modeSelectLayers: this.modeSelectLayers,
       tools: this.tools,
       addLayers: this.addLayers,
@@ -278,12 +333,13 @@ export default class Layerswitcher extends IDEE.Plugin {
     this.button.panel = this.panel;
     this.panel.button = this.button;
 
-    // control.addEventPanel(panel);
+    map.addPanels(this.panel);
+    this.controls[0].addEventPanel(this.panel);
   }
 
   // Devuelve la cadena API-REST del plugin
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip}*${this.isDraggable}*${this.isMoveLayers}*${this.modeSelectLayers}*${this.tools}*${this.http}*${this.https}*${this.showCatalog}*${this.useProxy}*${this.displayLabel}*${this.addLayers}*${this.statusLayers}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${this.isMoveLayers}*${this.modeSelectLayers}*${this.tools}*${this.http}*${this.https}*${this.showCatalog}*${this.useProxy}*${this.addLayers}*${this.statusLayers}*${this.displayLabel}*${this.useAttributions}*${JSON.stringify(this.precharged)}`;
   }
 
   // Devuelve la cadena API-REST del plugin en base64

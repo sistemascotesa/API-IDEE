@@ -16,7 +16,7 @@ export const removeLayerGroup = (layer) => {
 };
 
 export const removeLayersInLayerSwitcher = (evt, layer, map) => {
-  if (evt.target.className.indexOf('m-layerswitcher-icons-delete') > -1) {
+  if (evt.target.className.indexOf('g-cartografia-btn-layerswitcher-delete') > -1) {
     if (layer.getImpl().rootGroup) {
       removeLayerGroup(layer);
     } else {

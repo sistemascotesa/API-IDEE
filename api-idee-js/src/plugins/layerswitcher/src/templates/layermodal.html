@@ -76,21 +76,21 @@
     </div>
     <div class="m-layerswitcher-layer-fields">
         <label tabindex="0" class="m-layerswitcher-layer-label" for="m-layerswitcher-layer-legend">{{translations.legend}}</label>
-        <input tabindex="0" type="text" id="m-layerswitcher-layer-legend" placeholder="{{translations.placeHolderLegend}}"/>
+        <input tabindex="0" type="text" id="m-layerswitcher-layer-legend" class="m-layerswitcher-layergroup-legend" placeholder="{{translations.placeHolderLegend}}"/>
     </div>
     {{#eq type 'osm'}}
         <div class="m-layerswitcher-layer-fields">
             <label tabindex="0" class="m-layerswitcher-layer-label" for="m-layerswitcher-layer-matrixset">MatrixSet</label>
-            <input tabindex="0" type="text" id="m-layerswitcher-layer-matrixset" />
+            <input tabindex="0" type="text" id="m-layerswitcher-layer-matrixset" class="m-layerswitcher-layergroup-matrixset" />
         </div>
     {{/eq}}
     {{#eq type 'mvt'}}
         <!--<div class="m-layerswitcher-layer-fields">
             <label tabindex="0" class="m-layerswitcher-layer-label" for="m-layerswitcher-layer-matrixset">MatrixSet</label>
-            <input tabindex="0" type="text" id="m-layerswitcher-layer-matrixset" />
+            <input tabindex="0" type="text" id="m-layerswitcher-layer-matrixset" class="m-layerswitcher-layergroup-matrixset" />
         </div>-->
     {{/eq}}
     <div class="button">
-        <button tabindex="0" id="m-layerswitcher-layer-button"> {{translations.add_btn}}</button>
+        <button tabindex="0" class="m-layerswitcher-btn-add-group" id="m-layerswitcher-layer-button"> {{translations.add_btn}}</button>
     </div>
 </div>
