@@ -1,7 +1,6 @@
 /****************************
      GENERAL
 ****************************/
-
 @media only screen and (max-width: 768px) {
     .m-top.top-extra {
         top: 65px;
@@ -286,11 +285,11 @@
     visibility: hidden;
 }
 
-.m-api-idee-container .m-control-panel {
+.m-control-panel {
     visibility: visible;
 }
 
-.m-api-idee-container .m-control-panel.m-map-info>div.m-controls-panel>div {
+.m-control-panel.m-map-info>div.m-controls-panel>div {
     visibility: visible !important;
 }
 
@@ -308,7 +307,7 @@
      CONTROLS
 ****************************/
 
-.m-api-idee-container .m-control-panel>div.m-controls-panel>div {
+.m-control-panel>div.m-controls-panel>div {
     position: inherit !important;
     overflow: hidden;
     padding: 0px;
@@ -318,21 +317,21 @@
 /****************************
      CONTROLS WITHOUTH SHADOW
 ****************************/
-.m-api-idee-container .m-control-panel.m-scaleline.opened {
+.m-control-panel.m-scaleline.opened {
     box-shadow: none !important;
 }
 
-.m-api-idee-container .m-control-panel>div.m-controls-panel>div.m-control.m-container.m-background {
+.m-control-panel>div.m-controls-panel>div.m-control.m-container.m-background {
     display: flex !important;
     flex-wrap: wrap;
     gap: 10px;
 }
 
-.m-api-idee-container .m-control-panel.m-tools>div.m-controls-panel>div.m-control.activated>button {
+.m-control-panel.m-tools>div.m-controls-panel>div.m-control.activated>button {
     color: var(--idee-color-links);
 }
 
-.m-api-idee-container .m-control-panel.m-edition>div.m-controls-panel>div.m-control.activated>button {
+.m-control-panel.m-edition>div.m-controls-panel>div.m-control.activated>button {
     color: #67af13
 }
 
@@ -350,12 +349,12 @@
     display: none !important;
 }
 
-.m-api-idee-container .m-map-info>div.m-controls-panel {
+.m-map-info>div.m-controls-panel {
     flex-direction: row-reverse;
     align-items: flex-end;
 }
 
-.m-api-idee-container .m-map-info {
+.m-map-info {
     background: transparent !important;
     border-radius: 0 !important;
     box-shadow: none !important;
@@ -364,30 +363,30 @@
 }
 
 /*  Localizacion  */
-.m-api-idee-container .m-location {
+:where(.m-api-idee-container) .m-location {
     order: 1;
 }
 
 /*  Info mapa  */
 
-.m-api-idee-container .m-control-panel.m-map-info>div.m-controls-panel>div.m-control.m-wmcselector-container {
+.m-control-panel.m-map-info>div.m-controls-panel>div.m-control.m-wmcselector-container {
     order: 2;
 }
 
-.m-api-idee-container .m-control-panel.m-map-info.m-with-mouse>div.m-controls-panel>div.m-control.m-wmcselector-container,
-.m-api-idee-container .m-control-panel.m-map-info.m-with-scale>div.m-controls-panel>div.m-control.m-wmcselector-container {
+.m-control-panel.m-map-info.m-with-mouse>div.m-controls-panel>div.m-control.m-wmcselector-container,
+.m-control-panel.m-map-info.m-with-scale>div.m-controls-panel>div.m-control.m-wmcselector-container {
     border-top-left-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
 }
 
 @media only screen and (max-width: 768px) {
-    .m-api-idee-container .m-control-panel.m-map-info.m-with-mouse:not(.m-with-scale)>div.m-controls-panel>div.m-control.m-wmcselector-container {
+    .m-control-panel.m-map-info.m-with-mouse:not(.m-with-scale)>div.m-controls-panel>div.m-control.m-wmcselector-container {
         border-top-left-radius: 20px !important;
         border-bottom-left-radius: 20px !important;
     }
 }
 
-.m-api-idee-container .m-control-panel>div.m-controls-panel .m-mouse-position {
+.m-control-panel>div.m-controls-panel .m-mouse-position {
     background-color: white !important;
     padding: 6px 12px 3px 12px !important;
     font-family: 'Muli', 'sans-serif' !important;
@@ -397,53 +396,53 @@
     height: 15px !important;
 }
 
-.m-api-idee-container .m-control-panel.m-map-info.m-with-mouse>div.m-controls-panel>div.m-control.m-scale-container {
+.m-control-panel.m-map-info.m-with-mouse>div.m-controls-panel>div.m-control.m-scale-container {
     border-top-left-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
 }
 
 @media only screen and (max-width: 768px) {
-    .m-api-idee-container .m-control-panel.m-map-info.m-with-mouse>div.m-controls-panel>div.m-control.m-scale-container {
+    .m-control-panel.m-map-info.m-with-mouse>div.m-controls-panel>div.m-control.m-scale-container {
         border-top-left-radius: 20px !important;
         border-bottom-left-radius: 20px !important;
     }
 }
 
-.m-api-idee-container .m-control-panel.m-map-info.m-with-wmcselector>div.m-controls-panel>div.m-control.m-scale-container {
+.m-control-panel.m-map-info.m-with-wmcselector>div.m-controls-panel>div.m-control.m-scale-container {
     border-top-right-radius: 0px !important;
     border-bottom-right-radius: 0px !important;
 }
 
 @media only screen and (min-width: 769px) {
 
-    .m-api-idee-container .m-geosearch.collapsed div.search-panel,
-    .m-api-idee-container .m-geosearch.collapsed div.results-panel {
+    .m-geosearch.collapsed div.search-panel,
+    .m-geosearch.collapsed div.results-panel {
         display: none !important;
     }
 }
 
-.m-api-idee-container .m-kml-desc>table {
+:where(.m-api-idee-container) .m-kml-desc>table {
     width: 100%;
 }
 
-.m-api-idee-container .focusStyle {
+:where(.m-api-idee-container) .focusStyle {
     border: 3px solid black !important;
 }
 
 /* ANIMACIÓN SUAVE DEL BOTÓN Y DEL PANEL */
 
-.m-api-idee-container .m-control-panel>button.m-control-panel-btn {
+.m-control-panel>button.m-control-panel-btn {
     transition: 0.5s ease;
 }
 
-.m-api-idee-container .m-control-panel>.m-controls-panel {
+.m-control-panel>.m-controls-panel {
     max-width: max-content;
     transition: 0.5s ease;
 }
 
 /* ESTADO ABIERTO */
 
-.m-api-idee-container .m-control-panel.opened>.m-controls-panel {
+.m-control-panel.opened>.m-controls-panel {
     opacity: 1;
     display: flex;
 }

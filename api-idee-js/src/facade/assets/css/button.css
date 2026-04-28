@@ -1,6 +1,5 @@
-
-
-.m-plugin-button, .m-control-button {
+.m-plugin-button,
+.m-control-button {
     z-index: 2;
     cursor: pointer;
     width: 40px;
@@ -16,20 +15,23 @@
     transition: all 0.3s ease;
 }
 
-.m-plugin-button:hover, .m-control-button:hover {
+.m-plugin-button:hover,
+.m-control-button:hover {
     background-color: var(--idee-color-links);
     border: 2px solid #fff;
     transition: all 0.3s ease;
 }
 
-.m-plugin-button.active, .m-control-button.active {
+.m-plugin-button.active,
+.m-control-button.active {
     color: #fff;
     background-color: var(--idee-color-primary-dark);
     border: 2px solid #fff;
     transition: all 0.3s ease;
 }
 
-.m-plugin-button svg, .m-control-button svg {
+.m-plugin-button svg,
+.m-control-button svg {
     width: 24px;
     height: 24px;
     transition: transform 0.3s ease;
