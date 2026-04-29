@@ -6,68 +6,89 @@
   "constructor": "IDEE.plugin.Layerswitcher",
   "parameters": [{
     "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": ["left", "right"]
-    }, {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    }, {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 2
-    }, {
-      "type": "number",
-      "name": "order",
-      "position": 3
-    }, {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 4
-    }, {
-      "type": "boolean",
-      "name": "isDraggable",
-      "position": 5
-    }, {
-      "type": "boolean",
-      "name": "isMoveLayers",
-      "position": 6
-    }, {
-      "type": "simple",
-      "name": "modeSelectLayers",
-      "position": 7
-    }, {
-      "type": "simple",
-      "name": "tools",
-      "position": 8
-    }, {
-      "type": "boolean",
-      "name": "http",
-      "position": 9
-    }, {
-      "type": "boolean",
-      "name": "https",
-      "position": 10
-    }, {
-      "type": "boolean",
-      "name": "showCatalog",
-      "position": 11
-    }, {
-      "type": "boolean",
-      "name": "useProxy",
-      "position": 12
-    }, {
-      "type": "boolean",
-      "name": "addLayers",
-      "position": 13
-    }, {
-      "type": "boolean",
-      "name": "statusLayers",
-      "position": 14
-    }]
+    "properties": [
+      {
+        "type": "simple",
+        "name": "position",
+        "position": 0,
+        "possibleValues": ["left", "right"]
+      },
+      {
+        "type": "boolean",
+        "name": "collapsed",
+        "position": 1
+      },
+      {
+        "type": "number",
+        "name": "order",
+        "position": 2
+      },
+      {
+        "type": "simple",
+        "name": "tooltip",
+        "position": 3
+      },
+      {
+        "type": "boolean",
+        "name": "isMoveLayers",
+        "position": 4
+      },
+      {
+        "type": "simple",
+        "name": "modeSelectLayers",
+        "position": 5
+      },
+      {
+        "type": "simple",
+        "name": "tools",
+        "position": 6
+      },
+      {
+        "type": "boolean",
+        "name": "http",
+        "position": 7
+      },
+      {
+        "type": "boolean",
+        "name": "https",
+        "position": 8
+      },
+      {
+        "type": "boolean",
+        "name": "showCatalog",
+        "position": 9
+      },
+      {
+        "type": "boolean",
+        "name": "useProxy",
+        "position": 10
+      },
+      {
+        "type": "boolean",
+        "name": "addLayers",
+        "position": 11
+      },
+      {
+        "type": "boolean",
+        "name": "statusLayers",
+        "position": 12
+      },
+      {
+        "type": "boolean",
+        "name": "displayLabel",
+        "position": 13
+      },
+      {
+        "type": "boolean",
+        "name": "useAttributions",
+        "position": 14
+      },
+      {
+        "type": "object",
+        "name": "precharged",
+        "position": 15
+      }
+    ]
   }],
   "files": {
     "ol": {
