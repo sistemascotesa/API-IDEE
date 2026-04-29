@@ -392,7 +392,7 @@
                 'Curvas de nivel y puntos acotados': {
                     'type': 'WMS',
                     'url': 'https://servicios.idee.es/wms-inspire/mdt?',
-                    'white_list': ['EL.Contourline', 'EL.SpotElevation'],
+                    'white_list': ['EL.ContourLine', 'EL.SpotElevation'],
                 },
                 },
             },

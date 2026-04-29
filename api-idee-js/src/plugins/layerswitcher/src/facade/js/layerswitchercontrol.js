@@ -1310,7 +1310,12 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Permite añadir servicios
   openAddServices() {
-    const precharged = this.precharged;
+    let precharged = this.precharged;
+
+    if (precharged && precharged.groups && !Array.isArray(precharged.groups[0].services)) {
+      precharged = this.normalizePrecharged(precharged);
+    }
+
     const hasPrecharged = (precharged.groups !== undefined && precharged.groups.length > 0)
       || (precharged.services !== undefined && precharged.services.length > 0);
     const codsiActive = this.codsiActive;
@@ -1361,6 +1366,42 @@ export default class LayerswitcherControl extends IDEE.Control {
     }, 10);
 
     focusModal('#m-layerswitcher-addservices-search-input');
+  }
+
+  normalizePrecharged(obj) {
+    const finalGroups = [];
+    const rawGroups = (Array.isArray(obj.groups) && obj.groups.length > 0)
+      ? obj.groups[0] : obj.groups;
+    Object.keys(rawGroups).forEach((categoryName) => {
+      const categoryContent = rawGroups[categoryName];
+      const servicesList = [];
+
+      const processNode = (node) => {
+        Object.keys(node).forEach((key) => {
+          const item = node[key];
+          if (item && typeof item === 'object' && item.url) {
+            servicesList.push({
+              name: key,
+              type: item.type,
+              url: item.url,
+              white_list: item.white_list,
+            });
+          } else if (item && typeof item === 'object') {
+            processNode(item);
+          }
+        });
+      };
+
+      processNode(categoryContent);
+      if (servicesList.length > 0) {
+        finalGroups.push({ name: categoryName, services: servicesList });
+      }
+    });
+
+    return {
+      services: obj.services || [],
+      groups: finalGroups,
+    };
   }
 
   changeClodeButtonModal() {
