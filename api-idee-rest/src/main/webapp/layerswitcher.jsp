@@ -38,79 +38,137 @@
 
 <body>
 
-    <div>
-        <label for="selectPosition">Selector de posición del plugin</label>
-        <select name="position" id="selectPosition">
-            <option value="left">Izquierda</option>
-            <option value="right" selected="selected">Derecha</option>
-        </select>
-        <label for="selectCollapsed">Selector collapsed</label>
-        <select name="collapsedValue" id="selectCollapsed">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <label for="selectStatusLayers">Funcionalidad estado capas</label>
-        <select name="statusValue" id="selectStatusLayers">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <label for="selectAddLayers">Funcionalidad estado capas</label>
-        <select name="addValue" id="selectAddLayers">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <label for="selectCollapsible">Selector collapsible</label>
-        <select name="collapsibleValue" id="selectCollapsible">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <label for="inputTooltip">Tooltip</label>
-        <input type="text" name="tooltip" id="inputTooltip">
-        <label for="inputTools">Herramientas</label>
-        <input type="text" name="tools" id="inputTools" value="transparency, zoom, legend, information, style, delete">
-        <label for="isDraggable">isDraggable</label>
-        <select name="draggableValue" id="isDraggable">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <label for="isMoveLayers">isMoveLayers</label>
-        <select name="moveLayerValue" id="isMoveLayers">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <label for="modeSelectLayers">modeSelectLayers</label>
-        <select name="modeSelectLayersValue" id="modeSelectLayers">
-            <option value=eyes>eyes</option>
-            <option value=radio>radio</option>
-        </select>
-        <label for="inputPrecharged">Precharged</label>
-        <input type="text" name="precharged" id="inputPrecharged">
-        <label for="isHttp">isHttp</label>
-        <select name="isHttpValue" id="isHttp">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <label for="isHttps">isHttps</label>
-        <select name="isHttpsValue" id="isHttps">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <label for="isShowCatalog">isShowCatalog</label>
-        <select name="isShowCatalogValue" id="isShowCatalog">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <label for="selectProxy">Proxy</label>
-        <select name="proxyValue" id="selectProxy">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <label for="selectDisplay">displayLabel</label>
-        <select name="displayValue" id="selectDisplay">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <button name="eliminar" id="botonEliminar">Eliminar Plugin</button>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosition" title="Posición del plugin sobre el mapa. Por defecto: right">Posición "position"</label>
+                <select name="position" id="selectPosition">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsed" title="Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true">Colapsado "collapsed"</label>
+                <select name="collapsedValue" id="selectCollapsed">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder"
+                    title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                    entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Gestor de capas">Título de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug">
+                <datalist id="tooltipSug">
+                    <option value="Gestor de capas"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="selectStatusLayers" title="Permite añadir la funcionalidad de mostrar/ocultar todas las capas. Solo aplica cuando modeSelectLayers es 'eyes'. Por defecto: true">Estado de capas "statusLayers"</label>
+                <select name="statusValue" id="selectStatusLayers">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectAddLayers" title="Permite insertar la funcionalidad de añadir capas. Por defecto: true">Añadir capas "addLayers"</label>
+                <select name="addValue" id="selectAddLayers">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputTools" title="Lista de herramientas disponibles para cada capa separadas por coma. Valores: transparency, zoom, legend, information, style, delete">Herramientas "tools"</label>
+                <input type="text" name="tools" id="inputTools" list="toolsSug" value="transparency, zoom, legend, information, style, delete">
+                <datalist id="toolsSug">
+                    <option value="transparency, zoom, legend, information, style, delete"></option>
+                    <option value="transparency, zoom, legend, information"></option>
+                    <option value="transparency, zoom"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="isMoveLayers" title="Permite reordenar las capas arrastrándolas en el panel. Por defecto: false">Mover capas "isMoveLayers"</label>
+                <select name="moveLayerValue" id="isMoveLayers">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="modeSelectLayers" title="Modo de selección de capas: eyes (visibilidad múltiple) o radio (selección única). Por defecto: eyes">Modo de selección "modeSelectLayers"</label>
+                <select name="modeSelectLayersValue" id="modeSelectLayers">
+                    <option value="" selected="selected"></option>
+                    <option value="eyes">eyes</option>
+                    <option value="radio">radio</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputPrecharged" title="Objeto JSON con servicios y grupos precargados en el catálogo de capas. Si se deja vacío se usan los servicios por defecto">Servicios precargados "precharged"</label>
+                <input type="text" name="precharged" id="inputPrecharged" list="prechargedSug">
+                <datalist id="prechargedSug">
+                    <option value='{"services": [{"type":"WMS","name":"Camino de Santiago","url":"https://www.ign.es/wms-inspire/camino-santiago"}],"groups":[{"name":"Cartografía","services":{"type":"WMTS","name": "Mapas","url":"https://www.ign.es/wmts/mapa-raster?"}}]}'></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="isHttp" title="Permite añadir capas con URL HTTP en el catálogo. Por defecto: true">HTTP "http"</label>
+                <select name="isHttpValue" id="isHttp">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="isHttps" title="Permite añadir capas con URL HTTPS en el catálogo. Por defecto: true">HTTPS "https"</label>
+                <select name="isHttpsValue" id="isHttps">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="isShowCatalog" title="Muestra el botón de catálogo para buscar y añadir servicios externos. Por defecto: false">Mostrar catálogo "showCatalog"</label>
+                <select name="isShowCatalogValue" id="isShowCatalog">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectProxy" title="Utiliza proxy para las peticiones de capas. Por defecto: true">Proxy "useProxy"</label>
+                <select name="proxyValue" id="selectProxy">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectDisplay" title="Muestra la etiqueta con el tipo de capa (WMS, TMS, GeoJSON...). Por defecto: false">Etiqueta de tipo "displayLabel"</label>
+                <select name="displayValue" id="selectDisplay">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectUseAttributions" title="Muestra las atribuciones de las nuevas capas añadidas desde el catálogo o desde los servicios precargados. Es necesario haber instanciado e insertado el control 'attributions' en el mapa. Por defecto: false">Atribuciones "useAttributions"</label>
+                <select name="attributionsValue" id="selectUseAttributions">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+        </div>
     </div>
 
     <div id="mapjs" class="m-container"></div>
@@ -138,266 +196,120 @@
             maxZoom: 20,
             minZoom: 2,
             center: [-467062.8225, 4783459.6216],
+            controls: ['attributions']
         });
-
-        let mp = null;
-
-        const PRECHARGED = {
-            groups: [{
-                'Cartografía': {
-                'Mapas': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/mapa-raster?',
-                },
-                'Callejero': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/ign-base?',
-                },
-                'Primera edición MTN y Minutas de 1910-1970': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/primera-edicion-mtn?',
-                },
-                'Planimetrías (1870 y 1950)': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms/minutas-cartograficas?',
-                },
-                'Planos de Madrid (1622 - 1960)': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/planos?',
-                },
-                'Hojas kilométricas (Madrid - 1860)': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms/hojas-kilometricas?',
-                },
-                'Cuadrículas Mapa Topográfico Nacional': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms-inspire/cuadriculas?',
-                },
-                },
-                'Imagenes': {
-                'Ortofotos': {
-                    'Máxima actualidad PNOA': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/pnoa-ma?',
-                    },
-                    'Históricas y PNOA anual': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms/pnoa-historico?',
-                    },
-                    'PNOA Provisionales': {
-                    'type': 'WMS',
-                    'url': 'https://wms-pnoa.idee.es/pnoa-provisionales?',
-                    },
-                },
-                'Mosaicos de satélite': {
-                    'type': 'WMS',
-                    'url': 'https://wms-satelites-historicos.idee.es/satelites-historicos?',
-                },
-                'Fototeca (Consulta de fotogramas históricos y PNOA)': {
-                    'type': 'WMS',
-                    'url': 'https://wms-fototeca.idee.es/fototeca?',
-                },
-                },
-                'Información geográfica de referencia y temática': {
-                'Catastro': {
-                    'type': 'WMS',
-                    'url': 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
-                },
-                'Unidades administrativas': {
-                    'type': 'WMS',
-                    'url': ' https://www.ign.es/wms-inspire/unidades-administrativas?',
-                },
-                'Nombres geográficos (Nomenclátor Geográfico Básico NGBE)': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms-inspire/ngbe?',
-                },
-                'Redes de transporte': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms-inspire/transportes?',
-                },
-                'Hidrografía': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms-inspire/hidrografia?',
-                },
-                'Direcciones y códigos postales': {
-                    'type': 'WMS',
-                    'url': 'https://www.cartociudad.es/wms-inspire/direcciones-ccpp?',
-                },
-                'Ocupación del suelo': {
-                    'Actual (Corine y SIOSE)': {
-                    'type': 'WMTS',
-                    'url': 'https://servicios.idee.es/wmts/ocupacion-suelo?',
-                    },
-                    'Histórico (Corine y SIOSE)': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms-inspire/ocupacion-suelo-historico?',
-                    },
-                    'Copernicus Land Monitoring Service': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms/copernicus-landservice-spain?',
-                    },
-                },
-                'Información sísmica (terremotos)': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms-inspire/geofisica?',
-                },
-                'Red de vigilancia volcánica': {
-                    'type': 'WMS',
-                    'url': 'https://wms-volcanologia.ign.es/volcanologia?',
-                },
-                'Redes geodésicas': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms-inspire/redes-geodesicas?',
-                },
-                },
-                'Modelos digitales de elevaciones': {
-                'Modelo Digital de Superficies (Sombreado superficies y consulta de elevaciones edificios y vegetación)': {
-                    'type': 'WMTS',
-                    'url': 'https://wmts-mapa-lidar.idee.es/lidar?',
-                },
-                'Modelo Digital del Terreno (Sombreado terreno y consulta de altitudes)': {
-                    'type': 'WMTS',
-                    'url': 'https://servicios.idee.es/wmts/mdt?',
-                    'white_list': ['EL.ElevationGridCoverage'],
-                },
-                'Curvas de nivel y puntos acotados': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms-inspire/mdt?',
-                    'white_list': ['EL.Contourline', 'EL.SpotElevation'],
-                },
-                },
-            },
-
-            ],
-            };
+        window.map = map;
 
         const PRECHARGED = {
+            services: [{
+                type: 'WMS', name: 'Camino de Santiago',
+                url: 'https://www.ign.es/wms-inspire/camino-santiago',
+            }, {
+                type: 'WMS', name: 'Redes Geodésicas',
+                url: 'https://www.ign.es/wms-inspire/redes-geodesicas',
+            }, {
+                type: 'WMS', name: 'Planimetrías',
+                url: 'https://www.ign.es/wms/minutas-cartograficas',
+            }, {
+                type: 'MapLibre', name: 'Mapa Libre', legend: 'Mapa Libre',
+                url: 'https://vt-mapabase.idee.es/files/styles/mapaBase_scn_color1_CNIG.json',
+            }],
             groups: [{
-                'Cartografía': {
-                'Mapas': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/mapa-raster?',
-                },
-                'Callejero': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/ign-base?',
-                },
-                'Primera edición MTN y Minutas de 1910-1970': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/primera-edicion-mtn?',
-                },
-                'Planimetrías (1870 y 1950)': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms/minutas-cartograficas?',
-                },
-                'Planos de Madrid (1622 - 1960)': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/planos?',
-                },
-                'Hojas kilométricas (Madrid - 1860)': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms/hojas-kilometricas?',
-                },
-                'Cuadrículas Mapa Topográfico Nacional': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms-inspire/cuadriculas?',
-                },
-                },
-                'Imagenes': {
-                'Ortofotos': {
-                    'Máxima actualidad PNOA': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/pnoa-ma?',
-                    },
-                    'Históricas y PNOA anual': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms/pnoa-historico?',
-                    },
-                    'PNOA Provisionales': {
-                    'type': 'WMS',
-                    'url': 'https://wms-pnoa.idee.es/pnoa-provisionales?',
-                    },
-                },
-                'Mosaicos de satélite': {
-                    'type': 'WMS',
-                    'url': 'https://wms-satelites-historicos.idee.es/satelites-historicos?',
-                },
-                'Fototeca (Consulta de fotogramas históricos y PNOA)': {
-                    'type': 'WMS',
-                    'url': 'https://wms-fototeca.idee.es/fototeca?',
-                },
-                },
-                'Información geográfica de referencia y temática': {
-                'Catastro': {
-                    'type': 'WMS',
-                    'url': 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
-                },
-                'Unidades administrativas': {
-                    'type': 'WMS',
-                    'url': ' https://www.ign.es/wms-inspire/unidades-administrativas?',
-                },
-                'Nombres geográficos (Nomenclátor Geográfico Básico NGBE)': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms-inspire/ngbe?',
-                },
-                'Redes de transporte': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms-inspire/transportes?',
-                },
-                'Hidrografía': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms-inspire/hidrografia?',
-                },
-                'Direcciones y códigos postales': {
-                    'type': 'WMS',
-                    'url': 'https://www.cartociudad.es/wms-inspire/direcciones-ccpp?',
-                },
-                'Ocupación del suelo': {
-                    'Actual (Corine y SIOSE)': {
-                    'type': 'WMTS',
-                    'url': 'https://servicios.idee.es/wmts/ocupacion-suelo?',
-                    },
-                    'Histórico (Corine y SIOSE)': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms-inspire/ocupacion-suelo-historico?',
-                    },
-                    'Copernicus Land Monitoring Service': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms/copernicus-landservice-spain?',
-                    },
-                },
-                'Información sísmica (terremotos)': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms-inspire/geofisica?',
-                },
-                'Red de vigilancia volcánica': {
-                    'type': 'WMS',
-                    'url': 'https://wms-volcanologia.ign.es/volcanologia?',
-                },
-                'Redes geodésicas': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms-inspire/redes-geodesicas?',
-                },
-                },
-                'Modelos digitales de elevaciones': {
-                'Modelo Digital de Superficies (Sombreado superficies y consulta de elevaciones edificios y vegetación)': {
-                    'type': 'WMTS',
-                    'url': 'https://wmts-mapa-lidar.idee.es/lidar?',
-                },
-                'Modelo Digital del Terreno (Sombreado terreno y consulta de altitudes)': {
-                    'type': 'WMTS',
-                    'url': 'https://servicios.idee.es/wmts/mdt?',
-                    'white_list': ['EL.ElevationGridCoverage'],
-                },
-                'Curvas de nivel y puntos acotados': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms-inspire/mdt?',
-                    'white_list': ['EL.ContourLine', 'EL.SpotElevation'],
-                },
-                },
-            },
-
-            ],
+                name: 'Cartografía',
+                services: [{
+                    type: 'WMTS', name: 'Mapas',
+                    url: 'https://www.ign.es/wmts/mapa-raster?',
+                }, {
+                    type: 'WMTS', name: 'Callejero',
+                    url: 'https://www.ign.es/wmts/ign-base?',
+                }, {
+                    type: 'WMTS', name: 'Primera edición MTN y Minutas de 1910-1970',
+                    url: 'https://www.ign.es/wmts/primera-edicion-mtn?',
+                }, {
+                    type: 'WMS', name: 'Planimetrías (1870 y 1950)',
+                    url: 'https://www.ign.es/wms/minutas-cartograficas?',
+                }, {
+                    type: 'WMTS', name: 'Planos de Madrid (1622 - 1960)',
+                    url: 'https://www.ign.es/wmts/planos?',
+                }, {
+                    type: 'WMS', name: 'Hojas kilométricas (Madrid - 1860)',
+                    url: 'https://www.ign.es/wms/hojas-kilometricas?',
+                }, {
+                    type: 'WMS', name: 'Cuadrículas Mapa Topográfico Nacional',
+                    url: 'https://www.ign.es/wms-inspire/cuadriculas?',
+                }],
+            }, {
+                name: 'Imágenes',
+                services: [{
+                    type: 'WMTS', name: 'Ortofotos máxima actualidad PNOA',
+                    url: 'https://www.ign.es/wmts/pnoa-ma?',
+                }, {
+                    type: 'WMS', name: 'Ortofotos históricas y PNOA anual',
+                    url: 'https://www.ign.es/wms/pnoa-historico?',
+                }, {
+                    type: 'WMS', name: 'Ortofotos provisionales PNOA',
+                    url: 'https://wms-pnoa.idee.es/pnoa-provisionales?',
+                }, {
+                    type: 'WMS', name: 'Mosaicos de satélite',
+                    url: 'https://wms-satelites-historicos.idee.es/satelites-historicos?',
+                }, {
+                    type: 'WMS', name: 'Fototeca (Consulta de fotogramas históricos y PNOA)',
+                    url: 'https://wms-fototeca.idee.es/fototeca?',
+                }],
+            }, {
+                name: 'Información geográfica de referencia y temática',
+                services: [{
+                    type: 'WMS', name: 'Catastro',
+                    url: 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
+                }, {
+                    type: 'WMS', name: 'Unidades administrativas',
+                    url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+                }, {
+                    type: 'WMS', name: 'Nombres geográficos (Nomenclátor Geográfico Básico NGBE)',
+                    url: 'https://www.ign.es/wms-inspire/ngbe?',
+                }, {
+                    type: 'WMS', name: 'Redes de transporte',
+                    url: 'https://servicios.idee.es/wms-inspire/transportes?',
+                }, {
+                    type: 'WMS', name: 'Hidrografía',
+                    url: 'https://servicios.idee.es/wms-inspire/hidrografia?',
+                }, {
+                    type: 'WMS', name: 'Direcciones y códigos postales',
+                    url: 'https://www.cartociudad.es/wms-inspire/direcciones-ccpp?',
+                }, {
+                    type: 'WMTS', name: 'Ocupación del suelo (Corine y SIOSE)',
+                    url: 'https://servicios.idee.es/wmts/ocupacion-suelo?',
+                }, {
+                    type: 'WMS', name: 'Ocupación del suelo Histórico (Corine y SIOSE)',
+                    url: 'https://servicios.idee.es/wms-inspire/ocupacion-suelo-historico?',
+                }, {
+                    type: 'WMS', name: 'Copernicus Land Monitoring Service',
+                    url: 'https://servicios.idee.es/wms/copernicus-landservice-spain?',
+                }, {
+                    type: 'WMS', name: 'Información sísmica (terremotos)',
+                    url: 'https://www.ign.es/wms-inspire/geofisica?',
+                }, {
+                    type: 'WMS', name: 'Red de vigilancia volcánica',
+                    url: 'https://wms-volcanologia.ign.es/volcanologia?',
+                }, {
+                    type: 'WMS', name: 'Redes geodésicas',
+                    url: 'https://www.ign.es/wms-inspire/redes-geodesicas?',
+                }],
+            }, {
+                name: 'Modelos digitales de elevaciones',
+                services: [{
+                    type: 'WMTS', name: 'Modelo Digital de Superficies (Sombreado superficies y consulta de elevaciones edificios y vegetación)',
+                    url: 'https://wmts-mapa-lidar.idee.es/lidar?',
+                }, {
+                    type: 'WMTS', name: 'Modelo Digital del Terreno (Sombreado terreno y consulta de altitudes)',
+                    url: 'https://servicios.idee.es/wmts/mdt?',
+                    white_list: ['EL.ElevationGridCoverage'],
+                }, {
+                    type: 'WMS', name: 'Curvas de nivel y puntos acotados',
+                    url: 'https://servicios.idee.es/wms-inspire/mdt?',
+                    white_list: ['EL.ContourLine', 'EL.SpotElevation'],
+                }],
+            }],
         };
 
         const capaGeoJSON = new IDEE.layer.GeoJSON({
@@ -406,140 +318,103 @@
             extract: false,
         });
 
+        map.addLayers(capaGeoJSON);
+
         const capaWMS = new IDEE.layer.WMS({
             url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeUnit',
             legend: 'Capa WMS',
         });
-        map.addLayers(capaGeoJSON);
+
         map.addLayers(capaWMS);
 
-        const selectPosition = document.getElementById("selectPosition");
-        const selectCollapsed = document.getElementById("selectCollapsed");
-        const selectAdd = document.getElementById("selectAddLayers");
-        const selectStatus = document.getElementById("selectStatusLayers");
-        const selectCollapsible = document.getElementById("selectCollapsible");
-        const inputTooltip = document.getElementById("inputTooltip");
-        const inputTools = document.getElementById("inputTools");
-        const selectDraggable = document.getElementById("isDraggable");
-        const selectMoveLayer = document.getElementById("isMoveLayers");
-        const selectModeSelectLayers = document.getElementById("modeSelectLayers");
-        const inputPrecharged = document.getElementById("inputPrecharged");
-        const selectHttp = document.getElementById("isHttp");
-        const selectHttps = document.getElementById("isHttps");
-        const selectShowCatalog = document.getElementById("isShowCatalog");
-        const selectProxy = document.getElementById("selectProxy");
-        const selectDisplay = document.getElementById("selectDisplay");
+        let mp = null;
 
-        const botonEliminar = document.getElementById("botonEliminar");
+        const createPlugin = (options) => {
+            mp = new IDEE.plugin.Layerswitcher(options);
+            window.mp = mp;
+            map.addPlugin(mp);
+        };
 
-        selectPosition.addEventListener('change', cambiarTest);
-        selectCollapsed.addEventListener('change', cambiarTest);
-        selectAdd.addEventListener('change', cambiarTest);
-        selectStatus.addEventListener('change', cambiarTest);
-        selectCollapsible.addEventListener('change', cambiarTest);
-        inputTooltip.addEventListener('change', cambiarTest);
-        inputTools.addEventListener('change', cambiarTest);
-        selectDraggable.addEventListener('change', cambiarTest);
-        selectMoveLayer.addEventListener('change', cambiarTest);
-        selectModeSelectLayers.addEventListener('change', cambiarTest);
-        inputPrecharged.addEventListener('change', cambiarTest);
-        selectHttp.addEventListener('change', cambiarTest);
-        selectHttps.addEventListener('change', cambiarTest);
-        selectShowCatalog.addEventListener('change', cambiarTest);
-        selectProxy.addEventListener('change', cambiarTest);
-        selectDisplay.addEventListener('change', cambiarTest);
-        botonEliminar.addEventListener("click", function() {
-            map.removePlugins(mp);
+        const removePlugin = () => {
+            if (mp) map.removePlugins(mp);
+        };
+
+        const removeButton = document.getElementById('removeButton');
+        removeButton.addEventListener('click', () => { removePlugin(); });
+
+        const selectPosition = document.getElementById('selectPosition');
+        const selectCollapsed = document.getElementById('selectCollapsed');
+        const inputTooltip = document.getElementById('inputTooltip');
+        const inputOrder = document.getElementById('inputOrder');
+        const selectAdd = document.getElementById('selectAddLayers');
+        const selectStatus = document.getElementById('selectStatusLayers');
+        const inputTools = document.getElementById('inputTools');
+        const selectMoveLayer = document.getElementById('isMoveLayers');
+        const selectModeSelectLayers = document.getElementById('modeSelectLayers');
+        const inputPrecharged = document.getElementById('inputPrecharged');
+        const selectHttp = document.getElementById('isHttp');
+        const selectHttps = document.getElementById('isHttps');
+        const selectShowCatalog = document.getElementById('isShowCatalog');
+        const selectProxy = document.getElementById('selectProxy');
+        const selectDisplay = document.getElementById('selectDisplay');
+        const selectUseAttributions = document.getElementById('selectUseAttributions');
+
+        const boolVal = (select, defaultVal = true) => {
+            const v = select.options[select.selectedIndex].value;
+            if (v === '') return defaultVal;
+            return v === 'true';
+        };
+
+        const updatePlugin = () => {
+            const options = {};
+            options.position = selectPosition.options[selectPosition.selectedIndex].value;
+            options.collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value === '' || selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true';
+            options.order = Number(inputOrder.value);
+            options.addLayers = boolVal(selectAdd, true);
+            options.statusLayers = boolVal(selectStatus, true);
+            options.tooltip = inputTooltip.value || '';
+            options.tools = inputTools.value !== '' ? inputTools.value.split(', ') : [];
+            options.isMoveLayers = boolVal(selectMoveLayer, false);
+            options.modeSelectLayers = selectModeSelectLayers.options[selectModeSelectLayers.selectedIndex].value || 'eyes';
+            if (inputPrecharged.value.trim() !== '') {
+                try { options.precharged = JSON.parse(inputPrecharged.value); } catch (e) { options.precharged = inputPrecharged.value; }
+            } else {
+                options.precharged = PRECHARGED;
+            }
+            options.http = boolVal(selectHttp, true);
+            options.https = boolVal(selectHttps, true);
+            options.showCatalog = boolVal(selectShowCatalog, false);
+            options.useProxy = boolVal(selectProxy, true);
+            options.displayLabel = boolVal(selectDisplay, false);
+            options.useAttributions = boolVal(selectUseAttributions, false);
+
+            removePlugin();
+            createPlugin(options);
+        };
+
+        [
+            selectPosition,
+            selectCollapsed,
+            inputOrder,
+            inputTooltip,
+            selectAdd,
+            selectStatus,
+            inputTools,
+            selectMoveLayer,
+            selectModeSelectLayers,
+            inputPrecharged,
+            selectHttp,
+            selectHttps,
+            selectShowCatalog,
+            selectProxy,
+            selectDisplay,
+            selectUseAttributions,
+        ].forEach((ctrl) => {
+            ctrl.addEventListener('change', updatePlugin);
         });
 
-        /**
-         * Convierte el nuevo formato de objetos anidados al formato antiguo de arrays
-         * para mantener compatibilidad con la plantilla addservices.html
-         */
-        function transformPrecharged(obj) {
-            if (!obj) return obj;
-
-            const finalGroups = [];
-            const rawGroups = (Array.isArray(obj.groups) && obj.groups.length > 0) ? obj.groups[0] : {};
-
-            Object.keys(rawGroups).forEach(categoryName => {
-                const categoryContent = rawGroups[categoryName];
-                const servicesList = [];
-
-                const processNode = (node) => {
-                    Object.keys(node).forEach(key => {
-                        const item = node[key];
-                        
-                        if (item && typeof item === 'object' && item.url) {
-                            servicesList.push({
-                                name: key,
-                                type: item.type,
-                                url: item.url,
-                                white_list: item.white_list
-                            });
-                        } 
-                        else if (item && typeof item === 'object') {
-                            processNode(item);
-                        }
-                    });
-                };
-
-                processNode(categoryContent);
-
-                if (servicesList.length > 0) {
-                    finalGroups.push({
-                        name: categoryName,
-                        services: servicesList
-                    });
-                }
-            });
-
-            return {
-                services: obj.services || [],
-                groups: finalGroups
-            };
-        }
-
-        function cambiarTest() {
-            let objeto = {};
-            objeto.position = selectPosition.options[selectPosition.selectedIndex].value;
-            objeto.collapsed = (selectCollapsed.options[selectCollapsed.selectedIndex].value == 'true');
-            objeto.addLayers = (selectAdd.options[selectAdd.selectedIndex].value == 'true');
-            objeto.statusLayers = (selectStatus.options[selectStatus.selectedIndex].value == 'true');
-            objeto.collapsible = (selectCollapsible.options[selectCollapsible.selectedIndex].value == 'true');
-            inputTooltip.value !== "" ? objeto.tooltip = inputTooltip.value : objeto.tooltip = "";
-            inputTools.value !== "" ? objeto.tools = inputTools.value.split(', ') : objeto.tools = [];
-            objeto.isDraggable = (selectDraggable.options[selectDraggable.selectedIndex].value == 'true');
-            objeto.isMoveLayers = (selectMoveLayer.options[selectMoveLayer.selectedIndex].value == 'true');
-            objeto.modeSelectLayers = selectModeSelectLayers.options[selectModeSelectLayers.selectedIndex].value;
-            // inputPrecharged.value !== "" ? objeto.precharged = inputPrecharged.value : objeto.precharged = "";
-            if (inputPrecharged.value.trim() !== "") {
-                try {
-                    objeto.precharged = JSON.parse(inputPrecharged.value);
-                } catch (e) {
-                    objeto.precharged = inputPrecharged.value;
-                }
-            } else {
-                objeto.precharged = transformPrecharged(PRECHARGED); 
-            }
-            objeto.http = (selectHttp.options[selectHttp.selectedIndex].value == 'true');
-            objeto.https = (selectHttps.options[selectHttps.selectedIndex].value == 'true');
-            objeto.showCatalog = (selectShowCatalog.options[selectShowCatalog.selectedIndex].value == 'true');
-            objeto.useProxy = (selectProxy.options[selectProxy.selectedIndex].value == 'true');
-            objeto.displayLabel = (selectDisplay.options[selectDisplay.selectedIndex].value == 'true');
-            if (mp !== null) {
-                map.removePlugins(mp);
-            }
-            crearPlugin(objeto);
-        }
-
-        function crearPlugin(propiedades) {
-            mp = new IDEE.plugin.Layerswitcher(propiedades);
-            map.addPlugin(mp);
-        }
-
-        cambiarTest();
+        updatePlugin();
     </script>
 </body>
 

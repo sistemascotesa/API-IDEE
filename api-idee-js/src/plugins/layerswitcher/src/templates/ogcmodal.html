@@ -1,7 +1,7 @@
-<div id="m-layerswitcher-ogcCContainer">
+<div id="m-layerswitcher-ogcCContainer" class="m-layerswitcher-ogc-container">
     <section id="m-layerswitcher-groups-fields" class="m-layerswitcher-groups-fields-container"></section>
     <div>
-        <select tabindex="0" id="m-layerswitcher-ogc-vectors-select">
+        <select tabindex="0" id="m-layerswitcher-ogc-vectors-select" class="m-layerswitcher-select-service">
             <option disabled="disabled" value="">{{translations.select_service}}</option>
             {{#each layers}}
                 {{#if ../selectedLayer}}
@@ -20,64 +20,62 @@
             {{/each}}
         </select>
     </div>
-    <div class="btn-container"><br>
+    <div class="m-layerswitcher-ogc-filter-container">
         <fieldset tabindex="0" class="m-layerswitcher-ogc-fieldset-customquery">
             <legend>{{translations.filters}}</legend>
-            <label class="m-layerswitcher-ogc-label-customquery">
-                <input tabindex="0" type="radio" name="m-layerswitcher-ogc-filter" value="id" class="m-layerswitcher-ogc-input-customquery" id="m-layerswitcher-ogc-filter-id-input" {{#unless filterByOtherFilters}}checked{{/unless}}>
-                &nbsp;{{translations.id_filter}}
-            </label>
-            <br><br>
-            <label class="m-layerswitcher-ogc-label-customquery">
-                <input tabindex="0" type="radio" name="m-layerswitcher-ogc-filter" value="others" class="m-layerswitcher-ogc-input-customquery" {{#if filterByOtherFilters}}checked{{/if}}>
-                &nbsp;{{translations.other_filters}}
-            </label>
-            <br><br>
+            <div class="m-layerswitcher-ogc-filter-inputs">
+                <div>
+                    <label class="m-layerswitcher-ogc-label-customquery" for="m-layerswitcher-ogc-filter-id-input">{{translations.id_filter}}</label>
+                    <input tabindex="0" type="radio" name="m-layerswitcher-ogc-filter" value="id" class="m-layerswitcher-ogc-input-customquery" id="m-layerswitcher-ogc-filter-id-input" {{#unless filterByOtherFilters}}checked{{/unless}} />
+                </div>
+                <div>
+                    <label class="m-layerswitcher-ogc-label-customquery" for="m-layerswitcher-ogc-filter-others-input">{{translations.other_filters}}</label>
+                    <input tabindex="0" type="radio" name="m-layerswitcher-ogc-filter" value="others" class="m-layerswitcher-ogc-input-customquery" {{#if filterByOtherFilters}}checked{{/if}}>
+                </div>
+            </div>
             {{#unless filterByOtherFilters}}
-                <fieldset tabindex="0" id="m-layerswitcher-ogc-filter-id" style="display:block;" class="m-layerswitcher-ogc-filter-custom-query">
+                <fieldset tabindex="0" id="m-layerswitcher-ogc-filter-id" style="display:flex;" class="m-layerswitcher-ogc-filter-custom-query">
             {{else}}
                 <fieldset tabindex="0" id="m-layerswitcher-ogc-filter-id" style="display:none;" class="m-layerswitcher-ogc-filter-custom-query">
             {{/unless}}
             <div id="m-layerswitcher-ogc-search-form-id">
-                <div id="m-layerswitcher-ogc-form-input"><label tabindex="0" for="m-layerswitcher-ogc-search-form-ID" class="m-layerswitcher-ogc-search-form-id">ID</label><input type="text" class="m-layerswitcher-ogc-search-form-ID" id="m-layerswitcher-ogc-search-form-ID" value="{{this.prevID}}"><br /></div>
+                <div id="m-layerswitcher-ogc-form-input" class="m-layerswitcher-ogc-input-id"><label tabindex="0" for="m-layerswitcher-ogc-search-form-ID" class="m-layerswitcher-ogc-search-form-id">ID</label><input type="text" class="m-layerswitcher-ogc-search-form-ID" id="m-layerswitcher-ogc-search-form-ID" value="{{this.prevID}}"></div>
             </div>
         </fieldset>
 
 
         {{#if filterByOtherFilters}}
-            <fieldset tabindex="0" id="m-layerswitcher-ogc-other-filters" style="display:block;" class="m-layerswitcher-ogc-filter-custom-query">
+        <fieldset tabindex="0" id="m-layerswitcher-ogc-other-filters" style="display:flex;" class="m-layerswitcher-ogc-filter-custom-query">
         {{else}}
-            <fieldset tabindex="0" id="m-layerswitcher-ogc-other-filters" style="display:none;" class="m-layerswitcher-ogc-filter-custom-query">
+        <fieldset tabindex="0" id="m-layerswitcher-ogc-other-filters" style="display:none;" class="m-layerswitcher-ogc-filter-custom-query">
         {{/if}}
-        <div id="m-layerswitcher-ogc-search-formothers">
-            <div tabindex="0"><label>{{translations.amount_results}} </label><input tabindex="0" type="text" id="m-layerswitcher-ogc-limit-items" value="{{#if limit}}{{limit}}{{else}}10{{/if}}" step="1" class="fieldset-limit"><label>{{translations.amount_results_2}} </label></div><br>
-            <div><label class="fieldset-bbox" tabindex="0">{{translations.bbox_select}}<input tabindex="0" type="checkbox" id="m-layerswitcher-ogc-search-bbox" {{#if bbox}}checked{{/if}}></label>
-            </div><br>
-            {{#if summary}}
-                <div id="m-layerswitcher-ogc-summary">
-                    {{#if filterByOtherFilters}}
-                        <div>{{translations.other_filters}}
-                    {{/if}}
-                    <ul>
-                        {{#each summary}}
-                            <li>{{@key}} = {{this}}</li>
-                        {{/each}}
-                    </ul>
+            <div id="m-layerswitcher-ogc-search-formothers" class="m-layerswitcher-ogc-default-search-formothers">
+                <div tabindex="0"><label for="m-layerswitcher-ogc-limit-items">{{translations.amount_results}} </label><input tabindex="0" type="text" id="m-layerswitcher-ogc-limit-items" value="{{#if limit}}{{limit}}{{else}}10{{/if}}" step="1" class="fieldset-limit"><label for="m-layerswitcher-ogc-limit-items">{{translations.amount_results_2}} </label></div>
+                <div class="m-layerswitcher-ogc-default-search-formothers-extension-input"><label class="fieldset-bbox" tabindex="0" for="m-layerswitcher-ogc-search-bbox">{{translations.bbox_select}}</label><input tabindex="0" type="checkbox" id="m-layerswitcher-ogc-search-bbox" {{#if bbox}}checked{{/if}}>
                 </div>
-                <br>
+                {{#if summary}}
+                    <div id="m-layerswitcher-ogc-summary">
+                        {{#if filterByOtherFilters}}
+                            <div>{{translations.other_filters}}
+                        {{/if}}
+                        <ul>
+                            {{#each summary}}
+                                <li>{{@key}} = {{this}}</li>
+                            {{/each}}
+                        </ul>
+                    </div>
+            </div>
+
+            {{/if}}
+
+            <div tabindex="0" class="m-layerswitcher-ogc-warning-msg">{{translations.warning}}</div>
+            <button id="m-layerswitcher-ogc-custom-query-button"> {{translations.custom_query_btn}}</button>
+        </fieldset>
+        </fieldset>
+        <p tabindex="0" id="m-layerswitcher-ogc-check-results" class="m-layerswitcher-ogc-results-msg" style="display: none;"></p>
+        <div class="m-layerswitcher-ogc-buttons">
+            <button tabindex="0" id="m-layerswitcher-ogc-select-button"> {{translations.add_btn}}</button>
+            <button tabindex="0" id="m-layerswitcher-ogc-check-button"> {{translations.check_results}}</button>
         </div>
-
-        {{/if}}
-
-        <div tabindex="0" class="m-layerswitcher-ogc-warning-msg">{{translations.warning}}</div></br>
-        <button id="m-layerswitcher-ogc-custom-query-button"> {{translations.custom_query_btn}}</button>
     </div>
-    </fieldset>
-    </fieldset>
-    <p tabindex="0" id="m-layerswitcher-ogc-check-results" style="display: none;"></p>
-    <div class="m-layerswithcer-ogc-buttons">
-        <button tabindex="0" id="m-layerswitcher-ogc-select-button"> {{translations.add_btn}}</button>
-        <button tabindex="0" id="m-layerswitcher-ogc-check-button" style="margin-right: 0;"> {{translations.check_results}}</button>
-    </div>
-</div>
 </div>

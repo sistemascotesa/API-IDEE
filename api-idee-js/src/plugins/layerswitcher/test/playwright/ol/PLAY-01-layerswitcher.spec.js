@@ -7,9 +7,8 @@ test('Test Layerswitcher', async ({ page }) => {
       container: 'mapjs',
     });
     window.mp = new IDEE.plugin.Layerswitcher({
-      position: 'TR', // TL | TR | BL | BR
+      position: 'right',
       collapsed: true,
-      collapsible: true,
     });
     window.mapjs.addPlugin(window.mp);
   });
