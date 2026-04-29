@@ -7,68 +7,64 @@ import { getValue } from '../../../facade/js/i18n/language';
 
 export default class MouseSRSControl extends IDEE.impl.Control {
   // eslint-disable-next-line max-len
-  constructor(srs, label, precision, geoDecimalDigits, utmDecimalDigits, tooltip, activeZ, helpUrl, mode, coveragePrecissions, order, draggableDialog, epsgFormat) {
-    super();
+  constructor(options = {}) {
+    super(options);
 
     /**
      * Coordinates spatial reference system
-     *
      * @type { ProjectionLike } https://openlayers.org/en/latest/apidoc/module-ol_proj.html#~ProjectionLike
      * @private
      */
-    this.srs_ = srs;
+    this.srs = options.srs;
 
     /**
      * Label to show
-     *
      * @type {string}
      * @private
      */
-    this.label_ = label;
+    this.label = options.label;
 
     /**
      * Precision of coordinates
-     *
      * @private
      * @type {number}
      */
-    this.precision_ = precision;
+    this.precision = options.precision;
 
     /**
      * Number of decimal digits for geographic coordinates.
      * @private
      * @type {number}
      */
-    this.geoDecimalDigits = geoDecimalDigits;
+    this.geoDecimalDigits = options.geoDecimalDigits;
 
     /**
      * Number of decimal digits for UTM coordinates.
      * @private
      * @type {number}
      */
-    this.utmDecimalDigits = utmDecimalDigits;
+    this.utmDecimalDigits = options.utmDecimalDigits;
 
     /**
      * Tooltip
-     *
      * @private
      * @type {string}
      */
-    this.tooltip = tooltip;
+    this.tooltip = options.tooltip;
 
     /**
      * Activate viewing z value
      * @private
      * @type {boolean}
      */
-    this.activeZ = activeZ;
+    this.activeZ = options.activeZ;
 
     /**
      * URL to the help for the icon
      * @private
      * @type {string}
      */
-    this.helpUrl = helpUrl;
+    this.helpUrl = options.helpUrl;
 
     /**
      * Service to use for Z value
@@ -76,16 +72,42 @@ export default class MouseSRSControl extends IDEE.impl.Control {
      * @private
      * @type {string}
      */
-    this.mode_ = mode;
+    this.mode = options.mode;
 
-    this.coveragePrecissions_ = coveragePrecissions;
+    /**
+     * Object of coverage services with their min and max zooms
+     * @private
+     * @type {Object}
+     */
+    this.coveragePrecissions = options.coveragePrecissions;
 
-    this.order = order;
+    /**
+     * Order of the plugin
+     * @private
+     * @type {Number}
+     */
+    this.order = options.order;
 
-    this.epsgFormat = epsgFormat;
+    /**
+     * Option to show the SRS of the selected EPSG
+     * @private
+     * @type {Boolean}
+     */
+    this.epsgFormat = options.epsgFormat;
 
-    this.draggableDialog = draggableDialog;
+    /**
+     * Option that allows the EPSG selector modal to be draggable
+     * @private
+     * @type {boolean}
+     */
+    this.draggableDialog = options.draggableDialog;
 
+    /**
+     * Array of projections
+     * @private
+     * @type {Array<ProjectionLike>}
+     * @default null
+     */
     this.projections = null;
   }
 
@@ -118,8 +140,8 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     this.facadeMap_ = map;
     this.mousePositionControl = new ExtendedMouse({
       coordinateFormat: ol.coordinate.createStringXY(await this.getDecimalUnits()),
-      projection: this.srs_,
-      label: (this.epsgFormat) ? this.formatEPSG(this.label_) : this.label_,
+      projection: this.srs,
+      label: (this.epsgFormat) ? this.formatEPSG(this.label) : this.label,
       placeholder: '',
       undefinedHTML: '',
       className: 'm-mouse-srs',
@@ -129,8 +151,8 @@ export default class MouseSRSControl extends IDEE.impl.Control {
       utmDecimalDigits: this.utmDecimalDigits,
       activeZ: this.activeZ,
       order: this.order,
-      mode: this.mode_,
-      coveragePrecissions: this.coveragePrecissions_,
+      mode: this.mode,
+      coveragePrecissions: this.coveragePrecissions,
     });
 
     map.getMapImpl().addControl(this.mousePositionControl);
@@ -152,7 +174,7 @@ export default class MouseSRSControl extends IDEE.impl.Control {
       jsonp: true,
       parseToHtml: true,
       vars: {
-        selected: this.srs_,
+        selected: this.srs,
         hasHelp: this.helpUrl !== undefined && IDEE.utils.isUrl(this.helpUrl),
         helpUrl: this.helpUrl,
         select_srs: getValue('select_srs'),
@@ -167,7 +189,6 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     }
     IDEE.dialog.info(content.outerHTML, getValue('select_srs'), this.order);
     setTimeout(() => {
-      document.querySelector('.m-dialog>div.m-modal>div.m-content').style.minWidth = '260px';
       const input = document.querySelector('#m-mousesrs-epsg-selected');
       const listElem = document.getElementById('m-mousesrs-srs-selector');
       let isEditable = false;
@@ -206,7 +227,7 @@ export default class MouseSRSControl extends IDEE.impl.Control {
           isEditable = false;
           if (!input.hasAttribute('readonly')) {
             input.setAttribute('readonly', 'readonly');
-            input.value = this.srs_;
+            input.value = this.srs;
           }
         }, 150);
       });
@@ -218,11 +239,8 @@ export default class MouseSRSControl extends IDEE.impl.Control {
           this.changeSRS(map, html);
         }
       });
-      document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
       const button = document.querySelector('div.m-dialog.info div.m-button > button');
       button.innerHTML = getValue('close');
-      button.style.width = '75px';
-      button.style.backgroundColor = '#71a7d3';
 
       button.addEventListener('click', () => {
         isEditable = false;
@@ -271,8 +289,8 @@ export default class MouseSRSControl extends IDEE.impl.Control {
 
   changeSRS(map, html) {
     const select = document.querySelector('#m-mousesrs-epsg-selected');
-    this.srs_ = select.value.startsWith('EPSG:') ? select.value : `EPSG:${select.value}`;
-    this.label_ = select.value.startsWith('EPSG:') ? select.value : `EPSG:${select.value}`;
+    this.srs = select.value.startsWith('EPSG:') ? select.value : `EPSG:${select.value}`;
+    this.label = select.value.startsWith('EPSG:') ? select.value : `EPSG:${select.value}`;
     this.facadeMap_.getMapImpl().removeControl(this.mousePositionControl);
     document.querySelector('div.m-api-idee-container div.m-dialog').remove();
     this.renderPlugin(map, html);
@@ -288,28 +306,28 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     let srsUnits;
     try {
       // eslint-disable-next-line no-underscore-dangle
-      srsUnits = ol.proj.get(this.srs_).units_;
+      srsUnits = ol.proj.get(this.srs).units_;
     } catch (e) {
       try {
-        await IDEE.impl.ol.js.projections.setNewProjection(this.srs_);
-        const newProj = ol.proj.get(this.srs_);
+        await IDEE.impl.ol.js.projections.setNewProjection(this.srs);
+        const newProj = ol.proj.get(this.srs);
         // eslint-disable-next-line no-underscore-dangle
         srsUnits = newProj.units_;
       } catch (err) {
-        this.srs_ = 'EPSG:4326';
-        this.label_ = this.formatEPSG(this.srs_);
-        IDEE.dialog.error(`${getValue('exception.srs')} ${this.srs_}`);
+        this.srs = 'EPSG:4326';
+        this.label = this.formatEPSG(this.srs);
+        IDEE.dialog.error(`${getValue('exception.srs')} ${this.srs}`);
         // eslint-disable-next-line no-underscore-dangle
         srsUnits = ol.proj.get('EPSG:4326').units_;
       }
     }
 
     if (srsUnits === 'd' && this.geoDecimalDigits !== undefined) {
-      decimalDigits = this.geoDecimalDigits;
+      decimalDigits = this.precision;
     } else if (srsUnits === 'm' && this.utmDecimalDigits !== undefined) {
-      decimalDigits = this.utmDecimalDigits;
+      decimalDigits = this.precision;
     } else {
-      decimalDigits = this.precision_;
+      decimalDigits = this.precision;
     }
     return decimalDigits;
   }
