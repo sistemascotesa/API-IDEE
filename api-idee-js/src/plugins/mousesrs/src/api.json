@@ -54,7 +54,15 @@
     }, {
       "type": "boolean",
       "name": "epsgFormat",
-      "position": 10
+      "position": 11
+    }, {
+      "type": "simple",
+      "name": "mode",
+      "position": 12
+    }, {
+      "type": "object",
+      "name": "coveragePrecissions ",
+      "position": 13
     }]
   }],
   "files": {

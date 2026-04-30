@@ -7,23 +7,124 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="idee" content="yes">
     <title>MouseSRS TEST</title>
-    <link href="https://api-ideedes.grupotecopy.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-    </style>
+    <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
 
 </head>
 
 <body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosition" title="Posición del plugin sobre el mapa. Por defecto: down">Posición "position"</label>
+                <select name="position" id="selectPosition">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                    <option value="down">Abajo</option>
+                    <option value="center-top-left">Esquina superior izquierda</option>
+                    <option value="center-top-right">Esquina superior derecha</option>
+                    <option value="center-bottom-left">Esquina inferior izquierda</option>
+                    <option value="center-bottom-right">Esquina inferior derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder" title="Define en qué posición del panel debe aparecer en el conjunto de controles o plugins">Orden entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="1">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Coordenadas">Título de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug">
+                <datalist id="tooltipSug">
+                    <option value="Coordenadas"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputSrs" title="Código EPSG del SRS sobre el que se mostrarán las coordenadas del ratón. Por defecto: EPSG:4326">SRS "srs"</label>
+                <input type="text" name="srs" id="inputSrs" list="srsSug">
+                <datalist id="srsSug">
+                    <option value="EPSG:4326"></option>
+                    <option value="EPSG:4083"></option>
+                    <option value="EPSG:25829"></option>
+                    <option value="EPSG:25830"></option>
+                    <option value="EPSG:25831"></option>
+                    <option value="EPSG:4258"></option>
+                    <option value="EPSG:3857"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputLabel" title="Etiqueta descriptiva del SRS que se muestra junto a las coordenadas. Por defecto: WGS84">Etiqueta "label"</label>
+                <input type="text" name="label" id="inputLabel" list="labelSug">
+                <datalist id="labelSug">
+                    <option value="WGS84"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputPrecision" title="Número de decimales por defecto cuando no se especifica geoDecimalDigits ni utmDecimalDigits. Por defecto: 4">Precisión decimal "precision"</label>
+                <input type="number" name="precision" id="inputPrecision" list="precisionSug" value="4">
+            </div>
+            <div>
+                <label for="inputGeoDecimalDigits" title="Número de decimales para coordenadas geográficas (p. ej. EPSG:4326, EPSG:4083, EPSG:4258). No tiene valor por defecto">Decimales geográficos "geoDecimalDigits"</label>
+                <input type="number" name="geoDecimalDigits" id="inputGeoDecimalDigits" list="geoDecimalDigitsSug">
+            </div>
+            <div>
+                <label for="inputUtmDecimalDigits" title="Número de decimales para coordenadas UTM (p. ej. EPSG:25829, EPSG:25830, EPSG:25831). No tiene valor por defecto">Decimales UTM "utmDecimalDigits"</label>
+                <input type="number" name="utmDecimalDigits" id="inputUtmDecimalDigits" list="utmDecimalDigitsSug">
+            </div>
+            <div>
+                <label for="selectActiveZ" title="Añade la altitud (eje Z) a las coordenadas mostradas. Por defecto: false">Altitud activa "activeZ"</label>
+                <select name="activeZ" id="selectActiveZ">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectEpsgFormat" title="Muestra el nombre descriptivo del sistema de referencia en lugar del código SRS del EPSG. Por defecto: false">Formato EPSG "epsgFormat"</label>
+                <select name="epsgFormat" id="selectEpsgFormat">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectMode" title="Modo de obtención de la altitud: wcs (servicio WCS) u ogcapicoverage (OGC API Coverages). Por defecto: wcs">Modo de altitud "mode"</label>
+                <select name="mode" id="selectMode">
+                    <option value="" selected="selected"></option>
+                    <option value="wcs">wcs</option>
+                    <option value="ogcapicoverage">ogcapicoverage</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputCoveragePrecissions" title="Array JSON con objetos que definen la URL del servicio de cobertura y los rangos de zoom (minzoom, maxzoom) para cada nivel de precisión. Propiedades: url (string), minzoom (number), maxzoom(number)">Precisión cobertura "coveragePrecissions"</label>
+                <input type="text" name="coveragePrecissions" id="inputCoveragePrecissions" list="coveragePrecissionsSug" value='[{"url":"https://api-coverages.idee.es/collections/EL.ElevationGridCoverage_4326_1000/coverage","minzoom":0,"maxzoom":11},{"url":"https://api-coverages.idee.es/collections/EL.ElevationGridCoverage_4326_500/coverage","minzoom":12,"maxzoom":28}]'>
+                <datalist id="coveragePrecissionsSug">
+                    <option value='[{"url":"https://api-coverages.idee.es/collections/EL.ElevationGridCoverage_4326_1000/coverage","minzoom":0,"maxzoom":11},{"url":"https://api-coverages.idee.es/collections/EL.ElevationGridCoverage_4326_500/coverage","minzoom":12,"maxzoom":28}]'></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="selectDraggableDialog" title="Permite mover el diálogo de selección de EPSG arrastrándolo por el mapa. Por defecto: false">Diálogo arrastrable "draggableDialog"</label>
+                <select name="draggableDialog" id="selectDraggableDialog">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputHelpUrl" title="URL de la página de ayuda. Si no se indica, no se muestra el botón de ayuda">URL de ayuda "helpUrl"</label>
+                <input type="text" name="helpUrl" id="inputHelpUrl" list="helpUrlSug">
+                <datalist id="helpUrlSug">
+                    <option value="https://www.ign.es/"></option>
+                </datalist>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+        </div>
+    </div>
+
     <div id="mapjs" class="container"></div>
-    <script type="text/javascript" src="https://api-ideedes.grupotecopy.es/api-idee/js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="https://api-ideedes.grupotecopy.es/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
+    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>
     <script type="text/javascript" src="/main.js"></script>
 </body>
 
