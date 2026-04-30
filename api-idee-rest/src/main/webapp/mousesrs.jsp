@@ -90,11 +90,11 @@
             </div>
             <div>
                 <label for="inputGeoDecimalDigits" title="Número de decimales para coordenadas geográficas (p. ej. EPSG:4326, EPSG:4083, EPSG:4258). No tiene valor por defecto">Decimales geográficos "geoDecimalDigits"</label>
-                <input type="number" name="geoDecimalDigits" id="inputGeoDecimalDigits" list="geoDecimalDigitsSug" value="6">
+                <input type="number" name="geoDecimalDigits" id="inputGeoDecimalDigits" list="geoDecimalDigitsSug">
             </div>
             <div>
                 <label for="inputUtmDecimalDigits" title="Número de decimales para coordenadas UTM (p. ej. EPSG:25829, EPSG:25830, EPSG:25831). No tiene valor por defecto">Decimales UTM "utmDecimalDigits"</label>
-                <input type="number" name="utmDecimalDigits" id="inputUtmDecimalDigits" list="utmDecimalDigitsSug" value="2">
+                <input type="number" name="utmDecimalDigits" id="inputUtmDecimalDigits" list="utmDecimalDigitsSug">
             </div>
             <div>
                 <label for="selectActiveZ" title="Añade la altitud (eje Z) a las coordenadas mostradas. Por defecto: false">Altitud activa "activeZ"</label>
@@ -220,8 +220,8 @@
             options.srs = inputSrs.value;
             options.label = inputLabel.value;
             options.precision = Number(inputPrecision.value);
-            options.geoDecimalDigits = Number(inputGeoDecimalDigits.value);
-            options.utmDecimalDigits = Number(inputUtmDecimalDigits.value);
+            options.geoDecimalDigits = inputGeoDecimalDigits.value !== '' ? Number(inputGeoDecimalDigits.value) : undefined;
+            options.utmDecimalDigits = inputUtmDecimalDigits.value !== '' ? Number(inputUtmDecimalDigits.value) : undefined;
             options.activeZ = boolVal(selectActiveZ, false);
             options.epsgFormat = boolVal(selectEpsgFormat, false);
             options.mode = selectMode.options[selectMode.selectedIndex].value;

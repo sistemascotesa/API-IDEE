@@ -323,9 +323,9 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     }
 
     if (srsUnits === 'd' && this.geoDecimalDigits !== undefined) {
-      decimalDigits = this.precision;
+      decimalDigits = this.geoDecimalDigits;
     } else if (srsUnits === 'm' && this.utmDecimalDigits !== undefined) {
-      decimalDigits = this.precision;
+      decimalDigits = this.utmDecimalDigits;
     } else {
       decimalDigits = this.precision;
     }
