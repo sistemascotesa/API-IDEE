@@ -172,7 +172,7 @@ export default class Layerswitcher extends IDEE.Plugin {
      * @public
      * @type {Boolean}
      */
-    this.isMoveLayers = options.isMoveLayers ?? true;
+    this.isMoveLayers = options.isMoveLayers ?? false;
 
     /**
      * Option to allow the plugin to select layers with eyes or checkboxes
