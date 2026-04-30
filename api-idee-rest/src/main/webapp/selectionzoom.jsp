@@ -15,17 +15,6 @@
     <link href="plugins/selectionzoom/selectionzoom.ol.min.css" rel="stylesheet" />
     <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
     </link>
-    <style type="text/css">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-    </style>
     <%
       Map<String, String[]> parameterMap = request.getParameterMap();
       PluginsManager.init (getServletContext());
@@ -40,24 +29,47 @@
 </head>
 
 <body>
-    <div>
-        <label for="selectPosicion">Selector de posición del plugin</label> 
-        <select name="position" id="selectPosicion">
-			<option value="left" selected="selected">Izquierda (left)</option>
-            <option value="right">Derecha (right)</option>
-		</select> 
-        <label for="selectCollapsed">Selector collapsed</label>
-        <select name="collapsedValue" id="selectCollapsed">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <label for="selectCollapsible">Selector collapsible</label>
-        <select name="collapsibleValue" id="selectCollapsible">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-
-        <button id="botonEliminar">Eliminar Plugin</button>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosition" title="Posición del plugin sobre el mapa. Por defecto: izquierda">Posición "position"</label>
+                <select name="position" id="selectPosition">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsed" title="Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true">Colapsado "collapsed"</label>
+                <select name="collapsed" id="selectCollapsed">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder" title="Define en qué posición del panel debe aparecer en el conjunto de controles o plugins">Orden entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Vistas predefinidas">Título de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Vistas predefinidas">
+                <datalist id="tooltipSug">
+                    <option value="Vistas predefinidas"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputOptions" title="Array JSON de zonas predefinidas. Cada zona puede tener: id, title, preview, bbox o (zoom + center)">Zonas predefinidas "options"</label>
+                <input type="text" name="options" id="inputOptions" list="optionsSug" value='[{"id":"peninsula","title":"Peninsula","preview":"plugins/selectionzoom/images/espana.png","bbox":"-1200091.444315327, 4348955.797933925, 365338.89496508264, 5441088.058207252"},{"id":"canarias","title":"Canarias","preview":"plugins/selectionzoom/images/canarias.png","center":"-1844272.618465, 3228700.074766","zoom":8},{"id":"baleares","title":"Baleares","preview":"plugins/selectionzoom/images/baleares.png","bbox":"115720.89020469127,4658411.436032817,507078.4750247937,4931444.501067467"},{"id":"ceuta","title":"Ceuta","preview":"plugins/selectionzoom/images/ceuta.png","bbox":"-599755.2558583047, 4281734.817081453, -587525.3313326766, 4290267.100363785"},{"id":"melilla","title":"Melilla","preview":"plugins/selectionzoom/images/melilla.png","center":"-327838.4143151213, 4203788.135342773","zoom":14}]'>
+                <datalist id="optionsSug">
+                    <option value='[{"id":"peninsula","title":"Peninsula","preview":"plugins/selectionzoom/images/espana.png","bbox":"-1200091.444315327, 4348955.797933925, 365338.89496508264, 5441088.058207252"},{"id":"canarias","title":"Canarias","preview":"plugins/selectionzoom/images/canarias.png","center":"-1844272.618465, 3228700.074766","zoom":8},{"id":"baleares","title":"Baleares","preview":"plugins/selectionzoom/images/baleares.png","bbox":"115720.89020469127,4658411.436032817,507078.4750247937,4931444.501067467"},{"id":"ceuta","title":"Ceuta","preview":"plugins/selectionzoom/images/ceuta.png","bbox":"-599755.2558583047, 4281734.817081453, -587525.3313326766, 4290267.100363785"},{"id":"melilla","title":"Melilla","preview":"plugins/selectionzoom/images/melilla.png","center":"-327838.4143151213, 4203788.135342773","zoom":14}]'></option>
+                    <option value='[{"id":"peninsula","title":"Peninsula","preview":"plugins/selectionzoom/images/espana.png","center":"-417376.27467512223, 4895021.928070588", "zoom": "6"}]'></option>
+                </datalist>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+        </div>
     </div>
     <div id="mapjs" class="m-container"></div>
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
@@ -79,14 +91,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = IDEE.map({
-            container: 'mapjs',
-            zoom: 5,
-            maxZoom: 20,
-            minZoom: 4,
-            center: [-467062.8225, 4683459.6216],
-        });
-
         const layerinicial = new IDEE.layer.WMS({
             url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeBoundary',
@@ -100,53 +104,111 @@
             legend: 'Unidad administrativa',
             tiled: false
         }, {});
-
+        
+        const map = IDEE.map({
+            container: 'mapjs',
+            zoom: 5,
+            maxZoom: 20,
+            minZoom: 2,
+            center: [-467062.8225, 4783459.6216],
+        });
+        window.map = map;
         map.addLayers([layerinicial, layerUA]);
 
-        let mp;
-        let posicion, collapsible, collapsed, layerOpts;
+        const DEFAULT_OPTIONS = [
+            {
+                id: 'peninsula',
+                title: 'Peninsula',
+                preview: 'plugins/selectionzoom/images/espana.png',
+                bbox: '-1200091.444315327, 4348955.797933925, 365338.89496508264, 5441088.058207252',
+            },
+            {
+                id: 'canarias',
+                title: 'Canarias',
+                preview: 'plugins/selectionzoom/images/canarias.png',
+                center: '-1844272.618465, 3228700.074766',
+                zoom: 8,
+            },
+            {
+                id: 'baleares',
+                title: 'Baleares',
+                preview: 'plugins/selectionzoom/images/baleares.png',
+                bbox: '115720.89020469127,4658411.436032817,507078.4750247937,4931444.501067467',
+            },
+            {
+                id: 'ceuta',
+                title: 'Ceuta',
+                preview: 'plugins/selectionzoom/images/ceuta.png',
+                bbox: '-599755.2558583047, 4281734.817081453, -587525.3313326766, 4290267.100363785',
+            },
+            {
+                id: 'melilla',
+                title: 'Melilla',
+                preview: 'plugins/selectionzoom/images/melilla.png',
+                center: '-327838.4143151213, 4203788.135342773',
+                zoom: 14,
+            },
+        ];
 
-        crearPlugin(posicion, collapsible, collapsed, layerOpts);
+        let mp = null;
+        let mp2 = null;
 
-        const selectPosicion = document.getElementById("selectPosicion");
-        const selectCollapsed = document.getElementById("selectCollapsed");
-        const selectCollapsible = document.getElementById("selectCollapsible");
-
-        selectPosicion.addEventListener('change', cambiarTest);
-        selectCollapsed.addEventListener('change', cambiarTest);
-        selectCollapsible.addEventListener('change', cambiarTest);
-
-        function cambiarTest() {
-            posicion = selectPosicion.options[selectPosicion.selectedIndex].value;
-            collapsed = (selectCollapsed.options[selectCollapsed.selectedIndex].value == 'true');
-            collapsible = (selectCollapsible.options[selectCollapsible.selectedIndex].value == 'true');
-            map.removePlugins(mp);
-            crearPlugin(posicion, collapsible, collapsed, layerOpts);
-        }
-
-        function crearPlugin(position, collapsible, collapsed, layerOpts) {
-            mp = new IDEE.plugin.SelectionZoom({
-                position: position,
-                collapsible: collapsible,
-                collapsed: collapsed,
-                ids: 'peninsula,canarias,baleares,ceuta,melilla',
-                titles: 'Peninsula,Islas Canarias,Illes Balears,Ceuta,Melilla',
-                previews: 'plugins/selectionzoom/images/espana.png,plugins/selectionzoom/images/canarias.png,plugins/selectionzoom/images/baleares.png,plugins/selectionzoom/images/ceuta.png,plugins/selectionzoom/images/melilla.png',
-                bboxs: '-1200091.444315327, 365338.89496508264, 4348955.797933925, 5441088.058207252, -2170190.6639824593, -1387475.4943422542, 3091778.038884449, 3637844.1689537475 , 115720.89020469127, 507078.4750247937, 4658411.436032817, 4931444.501067467,-599755.2558583047, -587525.3313326766, 4281734.817081453, 4290267.100363785, -334717.4178261766, -322487.4933005484, 4199504.016876071, 4208036.300158403',
-                zooms: '7,8,9,14,14',
-            });
+        const createPlugin = (options) => {
+            mp = new IDEE.plugin.SelectionZoom(options);
+            window.mp = mp;
             map.addPlugin(mp);
+        };
 
-        }
-        mp2 = new IDEE.plugin.ShareMap({
+        const removePlugin = () => {
+            if (mp) map.removePlugins(mp);
+        };
+
+        const removeButton = document.getElementById('removeButton');
+        removeButton.addEventListener('click', () => { removePlugin(); });
+
+        const selectPosition = document.getElementById('selectPosition');
+        const selectCollapsed = document.getElementById('selectCollapsed');
+        const inputOrder = document.getElementById('inputOrder');
+        const inputTooltip = document.getElementById('inputTooltip');
+        const inputOptions = document.getElementById('inputOptions');
+
+        const boolVal = (select, defaultVal = true) => {
+            const v = select.options[select.selectedIndex].value;
+            if (v === '') return defaultVal;
+            return v === 'true';
+        };
+
+        const updatePlugin = () => {
+            removePlugin();
+            const options = {};
+            options.position = selectPosition.options[selectPosition.selectedIndex].value;
+            options.collapsed = boolVal(selectCollapsed, true);
+            options.order = Number(inputOrder.value);
+            options.tooltip = inputTooltip.value || '';
+            if (inputOptions.value.trim() !== '') {
+                try { options.options = JSON.parse(inputOptions.value); } catch (e) { options.options = DEFAULT_OPTIONS; }
+            } else {
+                options.options = DEFAULT_OPTIONS;
+            }
+            createPlugin(options);
+        };
+
+        [
+            selectPosition,
+            selectCollapsed,
+            inputOrder,
+            inputTooltip,
+            inputOptions,
+        ].forEach((ctrl) => {
+            ctrl.addEventListener('change', updatePlugin);
+        });
+
+        updatePlugin();
+        /* mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "left",
         });
-        map.addPlugin(mp2);
-        const botonEliminar = document.getElementById("botonEliminar");
-        botonEliminar.addEventListener("click", function() {
-            map.removePlugins(mp);
-        });
+        map.addPlugin(mp2); */
     </script>
 </body>
 

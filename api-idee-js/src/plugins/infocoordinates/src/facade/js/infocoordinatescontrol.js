@@ -217,7 +217,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
   activate() {
     this.invokeEscKey();
     this.map.on(IDEE.evt.CLICK, this.addPoint, this);
-    document.body.style.cursor = "url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_infoPointer.svg'), auto";
+    document.body.style.cursor = 'crosshair';
     this.map.getFeatureHandler().deactivate();
     document.addEventListener('keyup', this.checkEscKey.bind(this));
   }

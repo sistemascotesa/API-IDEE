@@ -16,35 +16,20 @@ class MouseSRSControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api
    */
-  constructor(
-    srs,
-    label,
-    precision,
-    geoDD,
-    utmDD,
-    tooltip,
-    activeZ,
-    helpUrl,
-    mode,
-    coveragePrecisions,
-    order = 32766,
-    draggableDialog = true,
-    epsgFormat = false,
-    position = 'down',
-  ) {
+
+  constructor(options = {}) {
     if (IDEE.utils.isUndefined(MouseSRSImplControl)
       || (IDEE.utils.isObject(MouseSRSImplControl)
       && IDEE.utils.isNullOrEmpty(Object.keys(MouseSRSImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
-    // eslint-disable-next-line max-len
-    const impl = new MouseSRSImplControl(srs, label, precision, geoDD, utmDD, tooltip, activeZ, helpUrl, mode, coveragePrecisions, order, draggableDialog, epsgFormat);
+
+    const impl = new MouseSRSImplControl(options);
     super('MouseSRS', impl, {
-      tooltip,
-      position,
-      order,
+      tooltip: options.tooltip,
+      position: options.position,
+      order: options.order,
     });
-    this.order = order;
   }
 
   /**
@@ -65,6 +50,7 @@ class MouseSRSControl extends IDEE.Control {
           order: this.order,
         },
       });
+      html.style.setProperty('order', this.order, 'important');
       success(html);
     });
   }

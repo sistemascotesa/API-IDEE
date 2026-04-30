@@ -1,148 +1,103 @@
-.m-control.m-container.m-mousesrs-container {
-    height: 24px;
+/**************************
+    MOUSESRS.HTML
+**************************/
+.m-mousesrs-container {
     display: flex;
     align-items: center;
-    padding: 0 .75rem;
-    color: white;
-    border-radius: 20px;
-    white-space: nowrap;
-    order: 4;
-    background-color: var(--idee-color-primary);
-    border: 2px solid white;
-    gap: 2px;
-    position: relative;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
-}
-
-.m-control.m-container.m-mousesrs-container .m-mouse-srs {
+    gap: 8px;
+    padding: 5px 9px;
     font-size: 12px;
+    border: 2px solid var(--idee-color-white);
+    border-radius: 16px;
+    background: var(--idee-color-primary);
+    color: var(--idee-color-white);
 }
 
-.m-control.m-container.m-mousesrs-container .g-cartografia-flecha {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px !important;
-    width: 19px;
+.m-mousesrs-pointer {
+    cursor: pointer;
 }
 
-.m-control.m-container.m-mousesrs-container .g-cartografia-flecha::before {
-    margin-right: 5px;
-    vertical-align: middle;
+.g-cartografia-mousesrs-flecha::before {
+    width: 16px;
 }
 
+
+/**************************
+    SRS.HTML
+**************************/
 .m-mousesrs-srs-container {
     position: relative;
     display: flex;
+    align-items: center;
     flex-direction: row;
     justify-content: center;
     text-align: center;
+    gap: 8px;
     width: 100%;
-    margin: 1rem 0 1rem 0;
 }
 
 .m-mousesrs-select-editable {
+    position: relative;
     display: flex;
     flex-direction: column;
 }
 
-.m-mousesrs-srs-container .m-mousesrs-input-select {
-    box-sizing: border-box;
-    color: black !important;
-    background-color: #fff;
+.g-cartografia-btn-mousesrs-help {
     cursor: pointer;
-    padding: 7px 10px !important;
-    max-width: 120px;
+    color: var(--idee-color-neutral-70);
+    transition: all 0.3s ease;
+}
+
+.g-cartografia-btn-mousesrs-help:hover {
+    color: var(--idee-color-links);
+}
+
+.m-mousesrs-select-editable .m-mousesrs-input-select {
+    cursor: pointer;
 }
 
 .m-mousesrs-srs-container .m-mousesrs-srs-selector {
     display: none;
     position: absolute;
-    margin: 5px;
-    top: 90%;
-    padding: 1px 0;
-    margin-top: 0;
-    max-height: 200px;
-    max-width: 120px;
-    overflow-y: auto !important;
+    overflow-y: auto;
     list-style: none;
-    z-index: 1000;
-    color: #000;
-    background-color: white;
-    font-size: 13px;
-    text-align: left;
-    border: 1px solid #ddd;
+    cursor: pointer;
+    width: 100%;
+    max-height: 140px;
+    margin: 0;
+    padding: 0;
+    top: 100%;
+    left: 0;
+    background: var(--idee-color-white);
+    border: 1px solid var(--idee-color-neutral-40);
+    border-top: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
+    font-size: .8rem;
+    z-index: 1001;
 }
 
 .m-mousesrs-srs-container .m-mousesrs-srs-selector li {
-    border-bottom: 1px solid #ddd;
+    text-align: left;
 }
 
 .m-mousesrs-srs-container .m-mousesrs-srs-selector li a {
+    color: var(--idee-color-neutral-60);
     display: block;
-    margin-top: -1px;
-    padding: 4px 12px;
+    font-size: .8rem;
+    line-height: 1.8;
+    padding: 4px 8px;
     text-decoration: none;
-    color: #6c6c6c;
+    white-space: nowrap;
 }
 
-.m-mousesrs-srs-container .m-mousesrs-srs-selector li:hover {
-    color: #000;
-    border: 1px solid #000;
+.m-mousesrs-srs-container .m-mousesrs-srs-selector li a:hover {
+    background: var(--idee-color-neutral-20);
 }
 
-.m-mousesrs-srs-container .m-mousesrs-help-button {
-    margin-left: 0.4rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.m-mousesrs-srs-container .m-mousesrs-help-button a {
-    font-size: 25px;
-    color: #71a7d3 !important;
-    text-decoration: none;
-}
-
-.m-mousesrs-pointer {
-    cursor: pointer !important;
-}
-
-@media (max-width: 768px) {
-    .m-control.m-container.m-mousesrs-container {
-        display: none;
-    }
-}
-
-/* Título del modal */
-.m-dialog.info .m-title span[role="heading"] {
-    color: #ffffff !important;
-    font-weight: bold;
-}
-
-.m-dialog div.m-message {
-    border-bottom: 1px solid rgba(0, 0, 0, .2);
-    font-size: 15px;
-    padding: 10px 5px;
-}
-
-.m-dialog.info div.m-title {
-    font-size: 13px;
-}
-
-#m-mousesrs-srs-selector {
-    font-size: 13px;
-}
-
-#m-mousesrs-epsg-selected {
-    font-size: 13px;
-}
-
-/*Permitir que el selector sobresalga*/
-.m-dialog .m-content .m-message {
+.m-dialog .m-content .m-message:has(> .m-mousesrs-srs-container) {
     overflow: visible !important;
 }
 
-.m-dialog .m-content {
+.m-dialog .m-content:has(.m-message > .m-mousesrs-srs-container) {
     overflow: visible !important;
 }
