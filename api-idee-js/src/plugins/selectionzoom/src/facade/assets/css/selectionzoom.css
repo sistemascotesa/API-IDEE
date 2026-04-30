@@ -1,6 +1,6 @@
 /* Images container */
 
-.m-plugin-panel .m-control.m-container.m-selectionzoom>div#m-selectionzoom-previews {
+.m-plugin-panel .m-selectionzoom>div#m-selectionzoom-previews {
     height: fit-content;
     /* flex-grow: 1; */
     display: flex;
@@ -12,7 +12,7 @@
     padding: .5rem;
 }
 
-.m-plugin-panel .m-control.m-container.m-selectionzoom>div#m-selectionzoom-previews>div[id^="m-selectionzoom-lyr-"] {
+.m-plugin-panel .m-selectionzoom>div#m-selectionzoom-previews>div[id^="m-selectionzoom-lyr-"] {
     position: relative;
     display: flex;
     flex-direction: column;
