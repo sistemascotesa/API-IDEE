@@ -56,8 +56,8 @@ const updatePlugin = () => {
   options.srs = inputSrs.value;
   options.label = inputLabel.value;
   options.precision = Number(inputPrecision.value);
-  options.geoDecimalDigits = Number(inputGeoDecimalDigits.value);
-  options.utmDecimalDigits = Number(inputUtmDecimalDigits.value);
+  options.geoDecimalDigits = inputGeoDecimalDigits.value !== '' ? Number(inputGeoDecimalDigits.value) : undefined;
+  options.utmDecimalDigits = inputUtmDecimalDigits.value !== '' ? Number(inputUtmDecimalDigits.value) : undefined;
   options.activeZ = boolVal(selectActiveZ, false);
   options.epsgFormat = boolVal(selectEpsgFormat, false);
   options.mode = selectMode.options[selectMode.selectedIndex].value;
