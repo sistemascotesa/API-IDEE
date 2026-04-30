@@ -3,6 +3,7 @@
  */
 
 import '../assets/css/locator';
+import '../assets/css/fonts';
 import LocatorControl from './locatorcontrol';
 import { getValue } from './i18n/language';
 import myhelp from '../../templates/myhelp';
@@ -23,9 +24,10 @@ export default class Locator extends IDEE.Plugin {
    */
   constructor(options = {}) {
     super('locator', {
-      position: options.position || 'right',
-      tooltip: options.tooltip || getValue('tooltip'),
+      position: options.position ?? 'right',
+      tooltip: options.tooltip ?? getValue('tooltip'),
       order: options.order,
+      svgPath: options.svgPath ?? 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_locator.svg',
     });
 
     /**
@@ -43,13 +45,6 @@ export default class Locator extends IDEE.Plugin {
     this.collapsed = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
 
     /**
-     * Option to allow the plugin to be collapsible or not
-     * @private
-     * @type {Boolean}
-     */
-    this.collapsible = !IDEE.utils.isUndefined(options.collapsible) ? options.collapsible : true;
-
-    /**
      * Option to allow the plugin to be draggable or not
      * @private
      * @type {Boolean}
@@ -61,14 +56,14 @@ export default class Locator extends IDEE.Plugin {
      * @private
      * @type {Number}
      */
-    this.zoom = options.zoom || 16;
+    this.zoom = IDEE.utils.isNumber(options.zoom) ? options.zoom : 16;
 
     /**
      * Type of icon to display when a punctual type result is found
      * @private
      * @type {string}
      */
-    this.pointStyle = options.pointStyle || 'pinAzul';
+    this.pointStyle = IDEE.utils.isString(options.pointStyle) ? options.pointStyle : 'pinAzul';
 
     /**
      * Indicates if the control infocatastro is added to the plugin
@@ -76,7 +71,7 @@ export default class Locator extends IDEE.Plugin {
      * @type {Boolean|Object}
      */
     this.byParcelCadastre = IDEE.utils.isUndefined(options.byParcelCadastre)
-      || options.byParcelCadastre === true
+      ?? options.byParcelCadastre === true
       ? this.getInfoCatastro()
       : options.byParcelCadastre;
 
@@ -86,7 +81,7 @@ export default class Locator extends IDEE.Plugin {
      * @type {Boolean|Object}
      */
     this.byCoordinates = IDEE.utils.isUndefined(options.byCoordinates)
-      || options.byCoordinates === true ? this.getXYLocator() : options.byCoordinates;
+      ?? options.byCoordinates === true ? this.getXYLocator() : options.byCoordinates;
 
     /**
      * Indicates if the control ignsearchlocator is added to the plugin
@@ -94,7 +89,7 @@ export default class Locator extends IDEE.Plugin {
      * @type {Boolean|Object}
      */
     this.byPlaceAddressPostal = IDEE.utils.isUndefined(options.byPlaceAddressPostal)
-      || options.byPlaceAddressPostal === true
+      ?? options.byPlaceAddressPostal === true
       ? this.getIGNSearchLocator()
       : options.byPlaceAddressPostal;
 
@@ -142,7 +137,7 @@ export default class Locator extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: this.svgPath,
       order: this.order,
     });
     map.addButtons(this.button);
@@ -153,18 +148,20 @@ export default class Locator extends IDEE.Plugin {
       minWidth: this.minPanelWidth,
       maxWidth: this.maxPanelWidth,
       className: 'm-plugin-locator',
-      collapsible: this.collapsible,
       collapsed: this.collapsed,
       collapsedButtonClass: 'locator-icon-localizacion2',
       order: this.order,
     });
-    map.addPanels(this.panel);
+
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
 
     if (this.byCoordinates === false && this.byParcelCadastre === false
       && this.byPlaceAddressPostal === false) {
       IDEE.dialog.error(getValue('exception.no_controls'));
     }
-    this.controls.push(new LocatorControl(
+
+    this.locatorControl = new LocatorControl(
       this.isDraggable,
       this.zoom,
       this.pointStyle,
@@ -176,20 +173,17 @@ export default class Locator extends IDEE.Plugin {
       this.statusProxy,
       this.position,
       this.name,
-    ));
+    );
 
-    if (this.position === 'TC') {
-      this.collapsible = false;
-    }
+    this.locatorControl.setPanel(this.panel);
 
-    this.controls[0].on(IDEE.evt.ADDED_TO_MAP, () => {
+    this.locatorControl.on(IDEE.evt.ADDED_TO_MAP, () => {
       this.fire(IDEE.evt.ADDED_TO_MAP);
     });
 
-    this.panel.addControls(this.controls);
-    // map.addPanels(this.panel_);
+    this.controls.push(this.locatorControl);
 
-    this.locatorControl = this.controls.find((obj) => obj.name === 'Locator');
+    this.panel.addControls(this.controls);
 
     this.locatorControl.on('xylocator:locationCentered', (data) => {
       this.fire('xylocator:locationCentered', data);
@@ -203,8 +197,7 @@ export default class Locator extends IDEE.Plugin {
       this.fire('infocatastro:locationCentered', data);
     });
 
-    this.button.panel = this.panel;
-    this.panel.button = this.button;
+    map.addPanels(this.panel);
   }
 
   /**
@@ -262,10 +255,10 @@ export default class Locator extends IDEE.Plugin {
    */
   getIGNSearchLocator() {
     return {
+      reverse: true,
       maxResults: 99,
       noProcess: '',
       countryCode: '',
-      reverse: true,
       resultVisibility: true,
       urlCandidates: '',
       urlFind: '',
@@ -281,7 +274,7 @@ export default class Locator extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip}*${this.zoom}*${this.pointStyle}*${this.isDraggable}*${!!this.byParcelCadastre}*${!!this.byCoordinates}*${!!this.byPlaceAddressPostal}*${this.useProxy}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.tooltip}*${this.zoom}*${this.pointStyle}*${this.isDraggable}*${!!this.byParcelCadastre}*${!!this.byCoordinates}*${!!this.byPlaceAddressPostal}*${this.useProxy}`;
   }
 
   /**
@@ -333,6 +326,7 @@ export default class Locator extends IDEE.Plugin {
         const html = IDEE.template.compileSync(myhelp, {
           vars: {
             urlImages: `${IDEE.config.API_IDEE_URL}plugins/locator/images/`,
+            urlIcon: this.svgPath,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),
