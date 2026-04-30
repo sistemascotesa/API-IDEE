@@ -151,7 +151,6 @@ export default class LocatorControl extends IDEE.Control {
       this.html = html;
 
       if (this.byParcelCadastre_) {
-        // infocatastro
         this.infocatastroControl = new InfoCatastroControl(
           this.map_,
           this.zoom_,
@@ -203,7 +202,6 @@ export default class LocatorControl extends IDEE.Control {
         });
       }
       if (this.byPlaceAddressPostal_) {
-        // ignsearchlocator
         this.ignsearchControl = new IGNSearchLocatorControl(
           this.map_,
           this.zoom_,
@@ -239,26 +237,8 @@ export default class LocatorControl extends IDEE.Control {
         IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-locator-title');
       }
       this.accessibilityTab(html);
-      this.addSvgs();
       success(html);
     });
-  }
-
-  /**
-   * This function adds the svgs to the control
-   *
-   * @public
-   * @function
-   * @api
-   */
-  addSvgs() {
-    const ignSearchTab = this.html.querySelector(ID_LOCATOR_IGNSEARCH);
-    const xyLocatorTab = this.html.querySelector(ID_LOCATOR_XYLOCATOR);
-    const infoCatastroTab = this.html.querySelector(ID_LOCATOR_INFO_CATASTRO);
-
-    IDEE.utils.loadSvgByUrl('locator', 'ignsearchicon', ignSearchTab);
-    IDEE.utils.loadSvgByUrl('locator', 'xylocatoricon', xyLocatorTab);
-    IDEE.utils.loadSvgByUrl('locator', 'infocatastroicon', infoCatastroTab);
   }
 
   /**

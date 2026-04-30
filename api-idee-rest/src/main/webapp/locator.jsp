@@ -13,15 +13,6 @@
     <title>Visor base</title>
     <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
     <link href="plugins/locator/locator.ol.min.css" rel="stylesheet" />
-    <style type="text/css">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: auto;
-        }
-    </style>
     <%
         Map<String, String[]> parameterMap = request.getParameterMap();
         PluginsManager.init (getServletContext());
@@ -138,8 +129,8 @@
         const selectPosicion = document.getElementById("selectPosicion");
         const selectCollapsed = document.getElementById("selectCollapsed");
         const selectCollapsible = document.getElementById("selectCollapsible");
-        const selectProxy = document.getElementById("selectProxy");
         const inputTooltip = document.getElementById("inputTooltip");
+        const selectProxy = document.getElementById("selectProxy");
         const inputZoom = document.getElementById("inputZoom");
         const selectPointStyle = document.getElementById("selectPointStyle");
         const selectDraggable = document.getElementById("selectIsdraggable");
@@ -149,8 +140,8 @@
         selectPosicion.addEventListener('change', cambiarTest);
         selectCollapsed.addEventListener('change', cambiarTest);
         selectCollapsible.addEventListener('change', cambiarTest);
-        selectProxy.addEventListener('change', cambiarTest);
         inputTooltip.addEventListener('change', cambiarTest);
+        selectProxy.addEventListener('change', cambiarTest);
         inputZoom.addEventListener('change', cambiarTest);
         selectPointStyle.addEventListener('change', cambiarTest);
         selectDraggable.addEventListener('change', cambiarTest);

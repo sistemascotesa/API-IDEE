@@ -14,6 +14,24 @@ import en from './i18n/en';
 
 // Estas capas hacen referencia a la estructura de iberpix
 const PRECHARGED = {
+  services: [{
+    type: 'WMS',
+    name: 'Camino de Santiago',
+    url: 'https://www.ign.es/wms-inspire/camino-santiago',
+  }, {
+    type: 'WMS',
+    name: 'Redes Geodésicas',
+    url: 'https://www.ign.es/wms-inspire/redes-geodesicas',
+  }, {
+    type: 'WMS',
+    name: 'Planimetrías',
+    url: 'https://www.ign.es/wms/minutas-cartograficas',
+  }, {
+    type: 'MapLibre',
+    name: 'Mapa Libre',
+    legend: 'Mapa Libre',
+    url: 'https://vt-mapabase.idee.es/files/styles/mapaBase_scn_color1_CNIG.json',
+  }],
   groups: [{
     name: 'Cartografía',
     services: [{
