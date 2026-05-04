@@ -271,7 +271,7 @@
 }
 
 .m-api-idee-right-handle {
-    left: -8px;
+    left: -10px;
 }
 
 .m-api-idee-down-panel {
@@ -311,7 +311,7 @@
     flex-grow: 1;
     margin: 0 .5rem .5rem;
     overflow-y: auto;
-    padding: 0 .5rem;
+    padding: 0 .25rem;
 }
 
 @layer base {
