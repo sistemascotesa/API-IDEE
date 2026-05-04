@@ -1,0 +1,10 @@
+
+#plugin-panel-locator .g-cartografia-busca-casa:before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_buscaCasa.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_buscaCasa.svg');
+}
+
+#plugin-panel-locator .g-cartografia-busca-coordenada:before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_buscaCoord.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_buscaCoord.svg');
+}

@@ -1,8 +1,10 @@
 <div id="m-ignsearch-panel" class="m-api-idee-tab-content m-ignsearch-container">
+    <div class="m-ignsearch-panel-buttons">
+        {{#if reverse}}
+        <button type="button" tabindex="0" id="m-ignsearchlocator-locate-button" class="m-ign-search-locate-button g-cartografia-zoom" title="{{translations.get_direction}}"></button>
+        {{/if}}
+    </div>
     <input type="text" tabindex="0" id="m-ignsearchlocator-search-input" class="m-input-search" autocomplete="off" title="{{placeholder}}" placeholder="{{placeholder}}" />
-    {{#if reverse}}
-    <button type="button" tabindex="0" id="m-ignsearchlocator-locate-button" class="m-ign-search-locate-button" title="{{translations.get_direction}}"></button>
-    {{/if}}
     <div id="m-ignsearchlocator-results" class="m-ignsearch-results">
         <!-- Here goes the list of search results -->
     </div>

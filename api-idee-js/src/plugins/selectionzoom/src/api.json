@@ -15,41 +15,23 @@
     },
     {
       "type": "boolean",
-      "name": "collapsible",
-      "position": 1
-    },
-    {
-      "type": "boolean",
       "name": "collapsed",
-      "position": 2
+      "position": 1
     },
     {
       "type": "number",
       "name": "order",
+      "position": 2
+    },
+    {
+      "type": "simple",
+      "name": "tooltip",
       "position": 3
     },
     {
       "type": "simple",
-      "name": "ids",
+      "name": "options",
       "position": 4
-    },
-    {
-      "type": "simple",
-      "name": "titles",
-      "position": 5
-    }, {
-      "type": "simple",
-      "name": "previews",
-      "position": 6
-    },
-    {
-      "type": "simple",
-      "name": "bboxs",
-      "position": 7
-    }, {
-      "type": "simple",
-      "name": "zooms",
-      "position": 8
     }
   ]
   }],

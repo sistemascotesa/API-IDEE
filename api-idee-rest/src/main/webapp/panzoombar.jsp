@@ -25,6 +25,41 @@
             </head>
 
             <body>
+                <div class="m-api-idee-test-form-frame">
+                    <div class="m-test-form">
+                        <div>
+                            <label for="selectPosicion" title="Posición del Control">Posición del panel
+                                "position"</label>
+                            <select name="position" id="selectPosicion">
+                                <option value="" selected></option>
+                                <option value="left">Izquierda (left)</option>
+                                <option value="right">Derecha (right)</option>
+                                <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
+                                <option value="center-top-right">Centro superior derecho (center-top-right)</option>
+                                <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)
+                                </option>
+                                <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)
+                                </option>
+                                <option value="down">Abajo (down)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="inputOrder"
+                                title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                                entre controles / plugins "order"</label>
+                            <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+                        </div>
+                        <div>
+                            <label for="inputTooltip" title="Título ilustrativo que aporta información adicional">Título
+                                "tooltip"</label>
+                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
+                        </div>
+                    </div>
+                    <div class="m-test-buttons">
+                        <button name="eliminar control" class="m-test-button" id="removeButton">Eliminar
+                            Control</button>
+                    </div>
+                </div>
                 <div id="mapjs" class="m-container"></div>
                 <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
                 <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
@@ -40,7 +75,7 @@
                             IDEE.language.setLang(urlParams.get('language') || 'es');
                             const map = IDEE.map({
                                 container: 'mapjs',
-                                controls: ['panzoombar'],
+                                controls: ['rotate'],
                                 zoom: 5,
                                 maxZoom: 20,
                                 minZoom: 4,
@@ -62,12 +97,6 @@
                             }, {});
 
                             map.addLayers([layerinicial, layerUA]);
-                            let mp = new IDEE.plugin.ShareMap({
-                                baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
-                                position: "TR",
-                            });
-
-                            map.addPlugin(mp);
 
                             const Panzoombar = IDEE.control.Panzoombar;
 
@@ -83,14 +112,14 @@
                             };
 
                             const selectPosition = document.getElementById('selectPosicion');
-                            const inputTooltip = document.getElementById('inputTooltip');
                             const inputOrder = document.getElementById('inputOrder');
+                            const inputTooltip = document.getElementById('inputTooltip');
 
                             const recreate = () => {
                                 remove();
                                 const options = {};
-
-                                options.position = selectPosition.options[selectPosition.selectedIndex].value;
+                                const positionVal = selectPosition.options[selectPosition.selectedIndex].value;
+                                if (positionVal !== '') options.position = positionVal;
 
                                 if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
 
@@ -100,8 +129,8 @@
 
                             [
                                 selectPosition,
-                                inputTooltip,
                                 inputOrder,
+                                inputTooltip,
                             ].forEach((ctrl) => {
                                 ctrl.addEventListener('change', recreate);
                             });
