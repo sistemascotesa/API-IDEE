@@ -86,7 +86,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 # API-REST
 
 ```javascript
-URL_API?mousesrs=tooltip*srs*label*precision*geoDecimalDigits*utmDecimalDigits*activeZ*helpUrl*draggableDialog*epsgFormat
+URL_API?mousesrs=position*order*tooltip*srs*label*precision*geoDecimalDigits*utmDecimalDigits*activeZ*helpUrl*draggableDialog*epsgFormat*mode*coveragePrecissions
 ```
 
 <table>
@@ -97,7 +97,7 @@ URL_API?mousesrs=tooltip*srs*label*precision*geoDecimalDigits*utmDecimalDigits*a
   <tr>
   <tr>
     <td>position</td>
-    <td>DOWN</td>
+    <td>left, right, down, center-top-left, center-top-right, center-bottom-left, center-bottom-right</td>
     <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
@@ -156,7 +156,7 @@ URL_API?mousesrs=tooltip*srs*label*precision*geoDecimalDigits*utmDecimalDigits*a
 ### Ejemplo de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee?mousesrs=Muestra%20coordenadas*EPSG:4326*WGS84*4
+https://api-ideedes.grupotecopy.es/api-idee/?mousesrs=down*1*Muestra%20coordenadas*EPSG:4326*WGS84*4
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -178,7 +178,7 @@ Ejemplo del constructor:
 ```
 
 ```
-https://componentes.idee.es/api-idee?mousesrs=base64=eyJsYWJlbCI6IkVQU0c6NDMyNiIsImhlbHBVcmwiOiJodHRwczovL3d3dy5pZ24uZXMvIiwidG9vbHRpcCI6IkNvb3JkZW5hZGFzIn0=
+https://api-ideedes.grupotecopy.es/api-idee/?mousesrs=base64=eyJsYWJlbCI6IkVQU0c6NDMyNiIsImhlbHBVcmwiOiJodHRwczovL3d3dy5pZ24uZXMvIiwidG9vbHRpcCI6IkNvb3JkZW5hZGFzIn0=
 ```
 
 # Ejemplo de uso
