@@ -20,54 +20,49 @@
           "position": 1
         },
         {
-          "type": "boolean",
-          "name": "collapsible",
-          "position": 2
-        },
-        {
           "type": "number",
           "name": "order",
-          "position": 3
+          "position": 2
         },
         {
           "type": "simple",
           "name": "tooltip",
-          "position": 4
+          "position": 3
         },
         {
           "type": "number",
           "name": "zoom",
-          "position": 5
+          "position": 4
         },
         {
           "type": "simple",
           "name": "pointStyle",
-          "position": 6
+          "position": 5
         },
         {
           "type": "boolean",
           "name": "isDraggable",
-          "position": 7
+          "position": 6
         },
         {
           "type": "boolean",
           "name": "byParcelCadastre",
-          "position": 8
+          "position": 7
         },
         {
           "type": "boolean",
           "name": "byCoordinates",
-          "position": 9
+          "position": 8
         },
         {
           "type": "boolean",
           "name": "byPlaceAddressPostal",
-          "position": 10
+          "position": 9
         },
         {
           "type": "boolean",
           "name": "useProxy",
-          "position": 11
+          "position": 10
         }
       ]
     }

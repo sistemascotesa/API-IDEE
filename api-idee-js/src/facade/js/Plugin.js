@@ -65,10 +65,10 @@ class Plugin extends Base {
     this.order = isNumber(options.order) ? options.order : 0;
 
     /**
-     * Url of relative svg
+     * Url of plugin svg icon, usually load this library {@link https://github.com/Desarrollos-IDEE/icons_cota?tab=readme-ov-file | ICONS_COTA}
      * @type {string}
      */
-    this.svgPath = options.svgPath || null;
+    this.svgPath = IDEE.utils.isString(options.svgPath) ? options.svgPath : null;
     this.minPanelWidth = 256;
     this.maxPanelWidth = 360;
 
