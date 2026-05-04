@@ -184,6 +184,11 @@
     text-align: left;
 }
 
+.m-ignsearchlocator-search-frame {
+    display: flex;
+    flex-direction: column;
+}
+
 #plugin-panel-locator .m-ignsearch-container>.m-input-search {
     max-height: 2rem;
     min-height: 2rem;
@@ -210,6 +215,7 @@
 }
 
 .m-ignsearch-container>.m-ignsearch-results {
+    width: 100%;
     flex-grow: 1;
     display: flex;
     align-items: start;
