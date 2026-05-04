@@ -647,7 +647,8 @@ export default class PrinterMapControl extends IDEE.Control {
     this.uploadedTemplates.forEach((template) => {
       const option = document.createElement('option');
       option.value = template.name;
-      option.textContent = template.name;
+      const label = template.name.replace(/([A-Z])/g, ' $1').toLowerCase();
+      option.textContent = label.charAt(0).toUpperCase() + label.slice(1);
       selectElement.appendChild(option);
     });
 
