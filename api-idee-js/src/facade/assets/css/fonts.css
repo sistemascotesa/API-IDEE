@@ -1,20 +1,20 @@
-[class^="g-cartografia"]::before,
-[class*=" g-cartografia-"]::before {
-    content: '' !important;
-    display: block;
-    margin: auto;
-    width: 24px;
-    aspect-ratio: 1;
-    background-color: currentColor;
-    -webkit-mask-position: center;
-    mask-position: center;
-    -webkit-mask-size: contain;
-    mask-size: contain;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-}
 
 @layer base {
+    [class^="g-cartografia"]::before,
+    [class*=" g-cartografia-"]::before {
+        content: '' !important;
+        display: block;
+        margin: auto;
+        width: 24px;
+        aspect-ratio: 1;
+        background-color: currentColor;
+        -webkit-mask-position: center;
+        mask-position: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+    }
 
     .g-cartografia-check::before {
         -webkit-mask-image: url('../images/icon_ue801.svg');
@@ -91,6 +91,7 @@
         mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_posicion.svg');
     }
     
+    .g-cartografia-notification::before,
     .g-cartografia-info::before {
         -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_attention.svg');
         mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_attention.svg');
@@ -136,24 +137,24 @@
         mask-image: url('../images/icon_ue910.svg');
     }
     
-    .g-cartografia-notification::before {
-        -webkit-mask-image: url('../images/icon_ue911.svg');
-        mask-image: url('../images/icon_ue911.svg');
-    }
-    
     .g-cartografia-cancelar::before {
-        -webkit-mask-image: url('../images/icon_ue912.svg');
-        mask-image: url('../images/icon_ue912.svg');
-    }
-    
-    .g-cartografia-implementacion::before {
-        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_implementationswitcher.svg');
-        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_implementationswitcher.svg');
+        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_cruz.svg');
+        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_cruz.svg');
     }
     
     .g-cartografia-cancelar2::before {
         -webkit-mask-image: url('../images/icon_ue914.svg');
         mask-image: url('../images/icon_ue914.svg');
+    }
+    
+    .g-cartografia-cancelar3::before {
+        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_cruzPeq.svg');
+        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_cruzPeq.svg');
+    }
+    
+    .g-cartografia-implementacion::before {
+        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_implementationswitcher.svg');
+        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_implementationswitcher.svg');
     }
     
     .g-cartografia-check2::before {
