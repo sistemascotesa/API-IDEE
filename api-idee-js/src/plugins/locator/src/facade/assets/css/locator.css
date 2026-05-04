@@ -12,7 +12,7 @@
 #plugin-panel-content-locator {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: .5rem;
 }
 
 #plugin-panel-content-locator #m-locator-previews {
@@ -185,11 +185,17 @@
 }
 
 .m-ignsearchlocator-search-frame {
+    flex-grow: 1;
+    overflow: auto;
+    width: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    gap: .2rem;
 }
 
-#plugin-panel-locator .m-ignsearch-container>.m-input-search {
+.m-ignsearchlocator-search-frame>.m-input-search {
     max-height: 2rem;
     min-height: 2rem;
     height: 2rem;
@@ -214,7 +220,7 @@
     aspect-ratio: 1;
 }
 
-.m-ignsearch-container>.m-ignsearch-results {
+.m-ignsearchlocator-search-frame>.m-ignsearch-results {
     width: 100%;
     flex-grow: 1;
     display: flex;
@@ -224,14 +230,14 @@
     border-radius: 2px;
 }
 
-.m-ignsearch-container>.m-ignsearch-results.locator-icon-spinner::before {
+.m-ignsearchlocator-search-frame>.m-ignsearch-results.locator-icon-spinner::before {
     font-size: 24px;
     text-align: center;
     width: 100%;
     margin-top: 16px;
 }
 
-.m-ignsearch-container>.m-ignsearch-results>.m-ignsearch-results-list {
+.m-ignsearchlocator-search-frame>.m-ignsearch-results>.m-ignsearch-results-list {
     overflow-y: auto;
     flex-grow: 1;
     display: flex;
