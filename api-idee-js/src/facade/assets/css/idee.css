@@ -239,7 +239,7 @@
 
 .m-api-idee-up-handle {
     cursor: n-resize;
-    bottom: -8px;
+    bottom: -10px;
     left: 50%;
     transform: translateX(-50%);
     width: 3rem;
@@ -267,7 +267,7 @@
 }
 
 .m-api-idee-left-handle {
-    right: -8px;
+    right: -10px;
 }
 
 .m-api-idee-right-handle {
