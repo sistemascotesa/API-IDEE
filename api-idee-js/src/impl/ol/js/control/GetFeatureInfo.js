@@ -230,8 +230,6 @@ class GetFeatureInfo extends Control {
           const coord = this.evt.coordinate;
 
           const regexBuffer = /buffer/i;
-          // eslint-disable-next-line no-console
-          console.log(this.buffer);
           if (!regexBuffer.test(layer.url)) {
             getFeatureInfoParams.BUFFER = this.buffer;
           }
