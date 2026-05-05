@@ -49,7 +49,16 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
   - **preview**: Ruta a la imagen de previsualización que se muestra.
   - **bbox**: Bbox de la zona geografica a la que se hace zoom. El bbox debe recoger los datos en la misma proyección en la que se encuentra el mapa.
   - **zoom**: Zoom que toma la capa en la zona geográfica elegida. Para poder usar el zoom también debe tener valor el parámetro center. Se obviará si el parámetro bbox tiene valor.
-  - **center**: Punto central que toma la capa en la zona geográfica elegida. Para poder usar el punto central también debe tener valor el parámetro zoom. Se obviará si el parámetro bbox tiene valor.
+
+  # Personalización (Tokens):
+
+Este plugin es compatible con el sistema global de Tokens de diseño. Utiliza principalmente el token primary para los bordes de selección y neutral para los fondos. Para más información sobre cómo cambiar estos colores, consulta la sección de [Tokens de diseño](2.9.-Tokens-de-diseño).
+
+### Ejemplos de uso API-REST
+
+```
+https://api-ideedes.grupotecopy.es/api-idee/?selectionzoom=left*true*1*Vistas%20predefinidas
+```
 
 # Ejemplo de uso
 
@@ -60,7 +69,6 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
 
    const mp = new IDEE.plugin.SelectionZoom({
     position: 'left',
-    collapsible: true,
     collapsed: true,
     order: 1,
     options: [
@@ -81,6 +89,18 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
     });
 
    map.addPlugin(mp);
+```
+
+### Ejemplo de uso API-REST en base64
+
+Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
+Ejemplo:
+```javascript
+IDEE.utils.encodeBase64(obj_params);
+```
+
+```
+https://api-ideedes.grupotecopy.es/api-idee/?selectionzoom=base64=eydwb3NpdGlvbic6J2xlZnQnLCdjb2xsYXBzZWQnOnRydWUsJ29yZGVyJzotMSwndG9vbHRpcCc6J1Zpc3RhcyBwcmVkZWZpbmlkYXMnLCdvcHRpb25zJzpbeydpZCc6J3Blbmluc3VsYScsJ3RpdGxlJzonUGVuaW5zdWxhJywncHJldmlldyc6J3BsdWdpbnMvc2VsZWN0aW9uem9vbS9pbWFnZXMvZXNwYW5hLnBuZycsJ2Jib3gnOictMTIwMDA5MS40NDQzMTUzMjcsIDQzNDg5NTUuNzk3OTMzOTI1LCAzNjUzMzguODk0OTY1MDgyNjQsIDU0NDEwODguMDU4MjA3MjUyJ30seydpZCc6J2NhbmFyaWFzJywndGl0bGUnOidDYW5hcmlhcycsJ3ByZXZpZXcnOidwbHVnaW5zL3NlbGVjdGlvbnpvb20vaW1hZ2VzL2NhbmFyaWFzLnBuZycsJ2NlbnRlcic6Jy0xODQ0MjcyLjYxODQ2NSwgMzIyODcwMC4wNzQ3NjYnLCd6b29tJzo4fV19
 ```
 
 ## Tabla de compatibilidad de versiones   
