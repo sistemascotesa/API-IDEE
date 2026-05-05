@@ -7,8 +7,7 @@ test('Test StyleManager', async ({ page }) => {
       container: 'mapjs',
     });
     window.mp = new IDEE.plugin.StyleManager({
-      position: 'TL',
-      collapsible: true,
+      position: 'left',
       collapsed: true,
     });
     window.mapjs.addPlugin(window.mp);
