@@ -1,5 +1,6 @@
 import { map as Mmap } from 'IDEE/api-idee';
 import MeasureBar from 'IDEE/control/MeasureBar';
+import { setLang } from '../../../src/facade/js/i18n/language';
 
 const map = Mmap({
   container: 'map',
@@ -8,6 +9,9 @@ const map = Mmap({
   center: [-467062.8225, 4683459.6216],
   zoom: 6,
 });
+
+const urlParams = new URLSearchParams(window.location.search);
+setLang(urlParams.get('language') ?? 'es');
 
 const selectPosition = document.getElementById('selectPosicion');
 const inputTooltip = document.getElementById('inputTooltip');
