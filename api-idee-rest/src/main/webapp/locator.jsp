@@ -117,7 +117,7 @@
                         </div>
                     </div>
                     <div class="m-test-buttons">
-                        <button id="removeButton">Eliminar Control</button>
+                        <button id="removeButton">Eliminar</button>
                     </div>
                 </div>
                 <div id="mapjs" class="m-container"></div>

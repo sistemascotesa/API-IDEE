@@ -1,6 +1,9 @@
 import { map as Mmap } from 'IDEE/api-idee';
 import Panzoom from 'IDEE/control/Panzoom';
+import { setLang } from '../../../src/facade/js/i18n/language';
 
+const urlParams = new URLSearchParams(window.location.search);
+setLang(urlParams.get('language') ?? 'es');
 const map = Mmap({
   container: 'map',
   controls: ['rotate'],
@@ -21,7 +24,8 @@ const remove = () => {
 };
 
 const selectPosition = document.getElementById('selectPosicion');
-const inputTooltip = document.getElementById('inputTooltip');
+const inputTooltipIn = document.getElementById('inputTooltipIn');
+const inputTooltipOut = document.getElementById('inputTooltipOut');
 const inputOrder = document.getElementById('inputOrder');
 
 const recreate = () => {
@@ -30,7 +34,8 @@ const recreate = () => {
 
   options.position = selectPosition.options[selectPosition.selectedIndex].value;
 
-  if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
+  if (inputTooltipIn.value !== '') options.tooltipZoomIn = inputTooltipIn.value;
+  if (inputTooltipOut.value !== '') options.tooltipZoomOut = inputTooltipOut.value;
 
   if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
   create(options);
@@ -38,7 +43,8 @@ const recreate = () => {
 
 [
   selectPosition,
-  inputTooltip,
+  inputTooltipIn,
+  inputTooltipOut,
   inputOrder,
 ].forEach((ctrl) => {
   ctrl.addEventListener('change', recreate);
