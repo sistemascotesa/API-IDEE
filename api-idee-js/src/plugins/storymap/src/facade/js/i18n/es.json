@@ -16,7 +16,12 @@
     "help9": "La información relevante a la extensión y su posible parametrización está documentada en",
     "help10": "El ejemplo de uso de sus parámetros puede comprobarse en"
   },
-  "tooltip": "Story Map",
+  "tooltip": "Storymap",
   "warning": "AVISO",
-  "instructions": "Navega pulsando o con el ratón por los capítulos y las secciones de la izquierda para descubrir todo el contenido."
+  "instructions": "Navega pulsando o con el ratón por los capítulos y las secciones de la izquierda para descubrir todo el contenido.",
+  "play": "Reproducir",
+  "pause": "Pausar",
+  "delay": "Velocidad de reproducción",
+  "chapter": "Capítulo",
+  "step": "Paso"
 }
