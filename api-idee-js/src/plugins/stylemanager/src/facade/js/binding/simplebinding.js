@@ -122,8 +122,10 @@ export class SimpleBinding extends Binding {
     iconSelect.replaceWith(iconSelect.cloneNode(true));
     iconSelect = this.querySelector('#select-icon');
     iconSelect.addEventListener('click', this.eventOpenIconSelector);
-    const iconDialog = document.querySelector('.style-grid-container');
-    iconDialog.addEventListener('click', this.eventSelectIcon);
+    const iconDialog = this.querySelector('.style-grid-container');
+    if (iconDialog) {
+      iconDialog.addEventListener('click', this.eventSelectIcon);
+    }
     const familySelect = this.querySelector("[data-style-options='point.form.class']");
     familySelect.addEventListener('change', this.changeFamilyFont);
     const famSelector = this.querySelector(".style-col-2 > select[data-style-options = 'point.form.class']");
@@ -134,8 +136,10 @@ export class SimpleBinding extends Binding {
       const fam = fmSIconArray[0] == 'g' ? 'g-cartografia' : (fmSIconArray[0] == 'fa' ? 'fa' : '');
       famSelector.querySelector(`option[value="${fam}"]`).selected = true;
       famSelector.dispatchEvent(new window.Event('change'));
-      document.querySelector('#select-icon').classList = (fam === 'fa' ? 'fa ' : '') + fmSIcon;
-      document.querySelector(`.style-grid-item${fam === 'fa' ? '.fa' : ''}.${fmSIcon}`).classList.add('selected');
+      const iconSelectEl = this.querySelector('#select-icon');
+      if (iconSelectEl) iconSelectEl.classList = (fam === 'fa' ? 'fa ' : '') + fmSIcon;
+      const gridItem = this.querySelector(`.style-grid-item${fam === 'fa' ? '.fa' : ''}.${fmSIcon}`);
+      if (gridItem) gridItem.classList.add('selected');
     }
 
     if (style != null && !(style instanceof IDEE.style.FlowLine)) {
