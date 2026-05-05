@@ -2,6 +2,7 @@
  * @module IDEE/plugin/StoryMap
  */
 import '../assets/css/storymap';
+import '../assets/css/fonts';
 import api from '../../api';
 import StoryMapControl from './storymapcontrol';
 import myhelp from '../../templates/myhelp';
@@ -31,7 +32,7 @@ export default class StoryMap extends IDEE.Plugin {
      * @private
      * @type {boolean}
      */
-    this.collapsed_ = options.collapsed === true;
+    this.collapsed = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
 
     /**
      * Metadata from api.json
@@ -41,49 +42,39 @@ export default class StoryMap extends IDEE.Plugin {
     this.metadata_ = api.metadata;
 
     /**
-    * JSON HTML
-    *
-    * @private
-    * @type {string}
-    */
-    this.content_ = options.content || { es: StoryMapJSON2, en: StoryMapJSON1 };
+     * JSON HTML with StoryMap content
+     * @private
+     * @type {string}
+     * @default {es: StoryMapJSON2, en: StoryMapJSON1}
+     */
+    this.content = options.content && Object.keys(options.content).length > 0
+      ? options.content
+      : { es: StoryMapJSON2, en: StoryMapJSON1 };
 
     /**
-       * Delay auto move scroll
-       *
-       * @private
-       * @type {string}
-       */
+     * Delay auto move scroll
+     * @private
+     * @type {Number}
+     * @default 2000
+     */
     this.delay = options.delay || 2000;
 
     /**
-      * collapsible panel
-      *
-      * @private
-      * @type {string}
-      */
-    this.collapsible = options.collapsible || false;
-
-    /**
-     * Content of index
+     * Content of StoryMap index
      * @private
-     * @type {Object}
+     * @type {Object|boolean}
+     * @default false
      */
-    this.indexInContent = options.indexInContent || false;
+    this.indexInContent = options.indexInContent && Object.keys(options.indexInContent).length > 0
+      ? options.indexInContent
+      : false;
 
     /**
      * Options of the plugin
      * @private
      * @type {Object}
      */
-    this.options_ = options;
-
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
+    this.options = options;
   }
 
   /**
@@ -111,37 +102,39 @@ export default class StoryMap extends IDEE.Plugin {
    */
   addTo(map) {
     this.map = map;
+
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_storymap.svg',
       order: this.order,
     });
+
     window.map = map;
     window.mapjs = map;
     map.addButtons(this.button);
+
     this.panel = new IDEE.ui.Panel(this.name, {
       tooltip: this.tooltip,
-      position: IDEE.ui.position[this.position],
+      position: this.position,
       minWidth: this.minPanelWidth,
       maxWidth: this.maxPanelWidth,
       className: 'm-plugin-storymap',
-      collapsible: this.collapsible,
-      collapsed: this.collapsed_,
+      collapsed: this.collapsed,
       collapsedButtonClass: 'icon-capas2',
       order: this.order,
     });
-    map.addPanels(this.panel);
+
     this.controls.push(new StoryMapControl(
-      this.content_[IDEE.language.getLang()],
+      this.content[IDEE.language.getLang()],
       this.delay,
       this.indexInContent,
-      this.isDraggable,
     ));
-    this.panel.addControls(this.controls);
 
+    this.panel.addControls(this.controls);
     this.button.panel = this.panel;
     this.panel.button = this.button;
+    map.addPanels(this.panel);
   }
 
   /**
@@ -152,7 +145,7 @@ export default class StoryMap extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.tooltip}*${this.delay}*${this.isDraggable}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${this.delay}*${this.indexInContent}*${this.content}`;
   }
 
   /**
@@ -163,7 +156,7 @@ export default class StoryMap extends IDEE.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options_)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**

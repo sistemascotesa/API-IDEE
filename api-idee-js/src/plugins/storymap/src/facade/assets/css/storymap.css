@@ -1,29 +1,29 @@
 /*******************
 * CLASES GENERALES *
 ********************/
-.d-flex-center {
+.m-storymap-panel .d-flex-center {
   display: flex;
   justify-content: center;
 }
 
-.d-flex-column {
+.m-storymap-panel .d-flex-column {
   display: flex;
   flex-direction: column;
 }
 
-.d-flex-column-center {
+.m-storymap-panel .d-flex-column-center {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-#plugin-panel-content-storymap {
+.m-plugin-storymap {
   flex-grow: 1;
   display: block;
   overflow: auto;
 }
 
-#contentStoryMap {
+.contentStoryMap {
   height: inherit;
   display: flex;
   flex-direction: column;
@@ -39,7 +39,7 @@
   gap: .5rem;
   padding-bottom: 1rem;
   color: #364b5f;
-  border-bottom: 2px solid #71a7d3;
+  border-bottom: 2px solid var(--idee-color-primary);
 }
 
 .m-storymap-title {
@@ -81,27 +81,13 @@
   gap: 8px;
 }
 
-.navPointer .buttonDelay {
-  max-width: 32px;
-}
-
-.navPointer .buttonDelay[speed="3"] {
-  padding: 0;
-}
-
-.navPointer .buttonPlay svg,
-.navPointer .buttonPause svg {
-  width: 100%;
-  height: 100%;
-}
-
 .m-storymap-instructions {
   position: absolute;
   bottom: 0;
   z-index: 100;
   margin: 1.5rem 1rem;
   padding: 8px;
-  background: #49d793;
+  background: color-mix(in srgb, var(--idee-color-success) 50%, transparent);
   border-radius: 4px;
   line-height: 1.2;
 }
@@ -109,6 +95,25 @@
 /*******************
 * CONTENT STORYMAP *
 ********************/
+.m-storymap-panel .g-cartografia-storymap-btn-play,
+.m-storymap-panel .g-cartografia-storymap-btn-pause,
+.m-storymap-panel .m-storymap-btn-delay {
+  border: 2px solid var(--idee-color-primary) !important;
+  background-color: transparent !important;
+  color: var(--idee-color-primary) !important;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.m-storymap-panel .g-cartografia-storymap-btn-play:hover,
+.m-storymap-panel .g-cartografia-storymap-btn-pause:hover,
+.m-storymap-panel .m-storymap-btn-delay:hover {
+  background-color: var(--idee-color-primary-dark) !important;
+  border-color: var(--idee-color-primary-dark) !important;
+  color: var(--idee-color-white) !important;
+}
 
 .navContent {
   height: inherit;
@@ -117,7 +122,7 @@
 .chapters {
   display: flex;
   height: inherit;
-  max-height: 550px;
+  max-height: 85%;
   flex-grow: 1;
 }
 
@@ -152,7 +157,7 @@
 }
 
 .pointerEffect {
-  fill: #FFFFFF;
+  fill: var(--idee-color-white);
   stroke: var(--idee-color-primary-dark);
   stroke-width: 1px;
   cursor: pointer;
@@ -167,4 +172,10 @@
 .pointerEffect:hover {
   fill: var(--idee-color-links);
   stroke: var(--idee-color-links);
+}
+
+@media (max-width: 600px) {
+  .m-storymap-instructions {
+    display: none;
+  }
 }
