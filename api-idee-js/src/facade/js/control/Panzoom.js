@@ -5,7 +5,9 @@ import panzoomTemplate from 'templates/panzoom';
 import myhelp from 'templates/panzoomhelp';
 import PanzoomImpl from 'impl/control/Panzoom';
 import ControlBase from './Control';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isString,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import { compileSync as compileTemplate } from '../util/Template';
 import { getValue } from '../i18n/language';
@@ -15,8 +17,9 @@ import * as Position from '../ui/position';
  * @typedef {Object} module:IDEE/control/Panzoom~Options
  * @api
  * @property {String} [position] Posición del control en el mapa.
- * @property {String} [tooltip] Texto del tooltip.
  * @property {Number} [order] Accesibilidad, z-index.
+ * @property {String} [tooltipZoomIn] Título opcional del control que aumenta el zoom.
+ * @property {String} [tooltipZoomOut] Título opcional del control que disminuye el zoom.
  * @property {Object} [vendorOptions] Opciones específicas para la implementación.
  */
 
@@ -24,8 +27,9 @@ import * as Position from '../ui/position';
  * @classdesc
  * Control que muestra los botones '+' y '-' para acercar y alejar el mapa.
  * @property {String} [position='down'] Posición del control.
- * @property {String} [tooltip_] Texto del tooltip. por defecto la tradcución
  * @property {Number} [order=0] Accesibilidad, z-index.
+ * @property {String} [tooltipZoomIn] Título opcional del control que aumenta el zoom.
+ * @property {String} [tooltipZoomOut] Título opcional del control que disminuye el zoom.
  * @api
  * @extends {IDEE.Control}
  *
@@ -40,11 +44,9 @@ class Panzoom extends ControlBase {
    * @example
    * const control = new IDEE.control.Panzoom({
    *   position: 'left',
-   *   tooltip: 'Zoom',
    *   order: 2,
+   *   tooltipZoomIn: 'Más zoom',
    *   vendorOptions: {
-   *     zoomInLabel: '+',
-   *     zoomOutLabel: '-',
    *   },
    * });
    * @api
@@ -55,14 +57,27 @@ class Panzoom extends ControlBase {
       Exception(getValue('exception').panzoombar_method);
     }
 
-    // implementation of this control
-    const impl = new PanzoomImpl(options.vendorOptions);
+    const tooltipZoomIn = isString(options.tooltipZoomIn) ? options.tooltipZoomIn
+      : getValue(Panzoom.NAME).zoomIn;
 
-    // calls the super constructor
+    const tooltipZoomOut = isString(options.tooltipZoomOut) ? options.tooltipZoomOut
+      : getValue(Panzoom.NAME).zoomOut;
+
+    const vendorOptions = {
+      ...(isObject(options.vendorOptions) ? options.vendorOptions : {}),
+      tooltipZoomIn,
+      tooltipZoomOut,
+    };
+
+    const impl = new PanzoomImpl(vendorOptions);
+
     super(Panzoom.NAME, impl, options);
 
-    // Asignar la posición
     this.position = options.position ?? Position.DOWN;
+
+    this.tooltipZoomIn = tooltipZoomIn;
+
+    this.tooltipZoomOut = tooltipZoomOut;
   }
 
   /**
