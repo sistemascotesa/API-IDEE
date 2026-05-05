@@ -231,8 +231,7 @@
 
         let mp14 = new IDEE.plugin.StoryMap({
             collapsed: true,
-            collapsible: true,
-            position: 'TR',
+            position: 'right',
             tooltip: 'Tooltip Storymap',
             content: {
                 es: {
