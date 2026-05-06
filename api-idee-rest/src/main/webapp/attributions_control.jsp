@@ -26,7 +26,7 @@
 
             <body>
                 <div class="m-api-idee-test-form-frame">
-                    <div class="m-test-form" style="max-height: 8rem;">
+                    <div class="m-test-form">
                         <div>
                             <label for="selectPosicion" title="Posición del Control">Posición del panel
                                 "position"</label>
@@ -44,7 +44,8 @@
                         </div>
                         <div>
                             <label for="order"
-                                title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden entre controles / plugins "order"</label>
+                                title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Posición
+                                en el panel "order"</label>
                             <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
                         </div>
                         <div>
@@ -64,16 +65,20 @@
                             </select>
                         </div>
                         <div>
-                            <label for="inputTooltip">Título panel y control "tooltip"</label>
-                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug"
-                                value="Esto es un tooltip">
+                            <label for="inputTooltip">Título informativo del panel y control "tooltip"</label>
+                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
+                        </div>
+                        <div>
+                            <label for="inputTitle"
+                                title="Reemplaza el valor del tooltip por defecto para el título del panel">
+                                Título del panel del control "title"</label>
+                            <input type="text" name="tooltip" id="inputTitle" list="tooltipSug" value="">
                         </div>
                     </div>
                     <div class="m-test-buttons">
-                        <button name="eliminar control" class="m-test-button" id="removeButton">Eliminar
-                            Control</button>
-                        <button name="eliminar osm" class="m-test-button" id="removeLayerOSM">Eliminar Capa OSM</button>
-                        <button name="eliminar capa OSM" class="m-test-button" id="addLayerOSM">Añadir Capa OSM</button>
+                        <button name="remove control" class="m-test-button" id="removeButton">Eliminar Control</button>
+                        <button name="remove osm" class="m-test-button" id="removeLayerOSM">Eliminar Capa OSM</button>
+                        <button name="add OSM" class="m-test-button" id="addLayerOSM">Añadir Capa OSM</button>
                     </div>
                 </div>
                 <div id="mapjs" class="m-container"></div>
@@ -99,21 +104,21 @@
                                 center: [-467062.8225, 4683459.6216],
                             });
 
-                            const layerBaseAdministrative = new IDEE.layer.WMS({
-                                url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
-                                name: 'AU.AdministrativeBoundary',
-                                legend: 'Limite administrativo',
-                                tiled: false,
-                                attribution: {
-                                    name: 'Capa WMS',
-                                    description: 'Descripción WMS',
-                                    url: 'https://www.ign.es',
-                                    // eslint-disable-next-line max-len
-                                    // contentAttributions: '${api-idee.static_resources.url}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
-                                    contentAttributions: '',
-                                    contentType: 'kml',
-                                },
-                            }, {});
+                            // const layerBaseAdministrative = new IDEE.layer.WMS({
+                            //     url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+                            //     name: 'AU.AdministrativeBoundary',
+                            //     legend: 'Limite administrativo',
+                            //     tiled: false,
+                            //     attribution: {
+                            //         name: 'Capa WMS',
+                            //         description: 'Descripción WMS',
+                            //         url: 'https://www.ign.es',
+                            //         // eslint-disable-next-line max-len
+                            //         // contentAttributions: '${api-idee.static_resources.url}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+                            //         contentAttributions: '',
+                            //         contentType: 'kml',
+                            //     },
+                            // }, {});
 
                             const layerOpenStreetMap = new IDEE.layer.OSM({
                                 name: 'OSM',
@@ -125,7 +130,7 @@
                             });
 
                             const layersAttributions = [
-                                layerBaseAdministrative,
+                                // layerBaseAdministrative,
                                 layerOpenStreetMap,
                             ];
 
@@ -134,6 +139,7 @@
                             const selectCollapsible = document.getElementById('selectCollapsible');
                             const inputTooltip = document.getElementById('inputTooltip');
                             const inputOrder = document.getElementById('inputOrder');
+                            const inputTitle = document.getElementById('inputTitle');
 
                             const create = (options) => {
                                 if (!map.hasControl(IDEE.control.Attributions.NAME))
@@ -162,6 +168,8 @@
 
                                 if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
 
+                                if (inputTitle.value !== '') options.title = inputTitle.value;
+
                                 create(options);
                             };
 
@@ -169,8 +177,9 @@
                                 selectPosition,
                                 selectCollapsed,
                                 selectCollapsible,
-                                inputTooltip,
                                 inputOrder,
+                                inputTooltip,
+                                inputTitle,
                             ].forEach((ctrl) => {
                                 ctrl.addEventListener('change', recreate);
                             });

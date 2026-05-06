@@ -1,35 +1,36 @@
 import { map as Mmap } from 'IDEE/api-idee';
 import Attributions from 'IDEE/control/Attributions';
-import WMS from 'IDEE/layer/WMS';
+// import WMS from 'IDEE/layer/WMS';
 import OSM from 'IDEE/layer/OSM';
+import { setLang } from '../../../src/facade/js/i18n/language';
 
+const urlParams = new URLSearchParams(window.location.search);
+setLang(urlParams.get('language') || 'es');
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
-  // controls: ['attributions*<p>Contenido del control</p>'],
-  // eslint-disable-next-line max-len
-  // controls: ['location', 'attributions*<p>Contenido del control</p>', 'rotate', 'ImplementationSwitcher'],
-  controls: ['scale', 'rotate'],
+  controls: ['rotate'],
   center: [-443273.10081370454, 4757481.749296248],
   // layers: ['OSM'],
   zoom: 6,
 });
 
-const layerBaseAdministrative = new WMS({
-  url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
-  name: 'AU.AdministrativeBoundary',
-  legend: 'Limite administrativo',
-  tiled: false,
-  attribution: {
-    name: 'Capa WMS',
-    description: 'Descripción WMS',
-    url: 'https://www.ign.es',
-    // eslint-disable-next-line max-len
-    // contentAttributions: '${api-idee.static_resources.url}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
-    contentAttributions: '',
-    contentType: 'kml',
-  },
-}, {});
+// const layerBaseAdministrative = new WMS({
+//   is: 'ign_adm_uds',
+//   url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+//   name: 'AU.AdministrativeBoundary',
+//   legend: 'Limite administrativo',
+//   tiled: false,
+//   attribution: {
+//     name: 'Capa WMS',
+//     description: 'Descripción WMS',
+//     url: 'https://www.ign.es',
+//     // eslint-disable-next-line max-len
+//     // contentAttributions: '${api-idee.static_resources.url}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+//     contentAttributions: '',
+//     contentType: 'kml',
+//   },
+// }, {});
 
 const layerOpenStreetMap = new OSM({
   name: 'OSM',
@@ -41,15 +42,16 @@ const layerOpenStreetMap = new OSM({
 });
 
 const layers = [
-  layerBaseAdministrative,
+  // layerBaseAdministrative,
   layerOpenStreetMap,
 ];
 
 const selectPosition = document.getElementById('selectPosicion');
 const selectCollapsed = document.getElementById('selectCollapsed');
 const selectCollapsible = document.getElementById('selectCollapsible');
-const inputTooltip = document.getElementById('inputTooltip');
 const inputOrder = document.getElementById('inputOrder');
+const inputTooltip = document.getElementById('inputTooltip');
+const inputTitle = document.getElementById('inputTitle');
 
 const create = (options) => {
   if (!map.hasControl(Attributions.NAME)) map.addControls(new Attributions(options));
@@ -77,6 +79,8 @@ const recreate = () => {
 
   if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
 
+  if (inputTitle.value !== '') options.title = inputTitle.value;
+
   create(options);
 };
 
@@ -84,8 +88,9 @@ const recreate = () => {
   selectPosition,
   selectCollapsed,
   selectCollapsible,
-  inputTooltip,
   inputOrder,
+  inputTooltip,
+  inputTitle,
 ].forEach((ctrl) => {
   ctrl.addEventListener('change', recreate);
 });

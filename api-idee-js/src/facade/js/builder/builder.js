@@ -201,7 +201,7 @@ export const getPanzoombarPanel = (control, map, params = {}) => {
  * @api stable
  */
 export const getPanzoomPanel = (control, map, params = {}) => {
-  return new ControlPanel('panzoom', {
+  return new ControlPanel(Panzoom.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
   });
@@ -265,7 +265,7 @@ export const getLocationPanel = (control, map, params = {}) => {
  * @api stable
  */
 export const getRotatePanel = (control, map, params = {}) => {
-  return new ControlPanel('rotate', {
+  return new ControlPanel(Rotate.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
     className: 'm-rotate',
@@ -287,7 +287,7 @@ export const getRotatePanel = (control, map, params = {}) => {
  * @api stable
  */
 export const getBackgroundLayersPanel = (control, map, params = {}) => {
-  return new ControlPanel('backgroundlayers', {
+  return new ControlPanel(BackgroundLayers.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
     className: 'm-control-baselayer',

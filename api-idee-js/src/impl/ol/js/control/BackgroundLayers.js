@@ -71,11 +71,17 @@ class BackgroundLayers extends Control {
     map.getMapImpl().addControl(this);
   }
 
+  /**
+   * Setea las capas de la configuración global.
+   *
+   * @private
+   */
   setLayers() {
     this.layers = IDEE.config.backgroundlayers.slice(0, MAXIMUM_LAYERS).map((layer) => {
       return {
         id: layer.id,
         title: layer.title,
+        tooltip: layer.tooltip,
         layers: layer.layers.map((subLayer) => {
           let l = subLayer;
           if (typeof subLayer === 'string') {
