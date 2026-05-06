@@ -13,7 +13,7 @@ import ControlBase from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
 import { LOAD, ADDED_TO_MAP } from '../event/eventtype';
 import { getValue } from '../i18n/language';
-import { isBoolean, isNumber } from '../util/Utils';
+import { isBoolean, isNumber, isString } from '../util/Utils';
 import * as Position from '../ui/position';
 
 /**
@@ -41,12 +41,12 @@ const MAXIMUM_LAYERS = 5;
  * Selector de capas de fondo API-CING.
  * Añade un selector de capas base al mapa.
  *
- * @property {Array<Layer>} layer Proviene de "IDEE.config.backgroundlayers".
+ * @property {Array<Layer>} layers Proviene de "IDEE.config.backgroundlayers".
  * @property {Array<Layer>} flattedLayers Concadena las capas generadas.
  * @property {Number} activeLayer Esta propiedad indica la capa que se activa.
  * @property {Number} layerIndex Indice de una de las capas de
  * "layers" que se preactivará si se define.
- * @property {Boolean} visible Indica si sera visible o no.
+ * @property {Boolean} visible Indica si sera visible o no inicialmente.
  *
  * @extends {IDEE.Control}
  * @api
@@ -59,6 +59,38 @@ class BackgroundLayers extends ControlBase {
    * @constructor
    * @param {module:IDEE/control/BackgroundLayers~Options} options Opciones del control.
    * @example
+   *
+   * // Ejemplo de como configurar las capas base del mapa usando el control
+   * // los "tooltip" de las capas suplen al tooltip general del control en caso de definirse
+   * // La configuración debe definirse antes de la creación del mapa
+   *
+   * IDEE.config.backgroundlayers = [
+   *  {
+   *      "id": "baseign",
+   *      "title": "Base IGN",
+   *      "tooltip": "Seleccionar Base IGN",
+   *      "layers": [
+   *          "QUICK*Base_IGNBaseTodo_TMS"
+   *      ]
+   *  },
+   *  {
+   *      "id": "imagen",
+   *      "title": "Imagen",
+   *      "tooltip": "Seleccionar Imagen",
+   *      "layers": [
+   *          "QUICK*BASE_PNOA_MA_TMS"
+   *      ]
+   *  },
+   *  {
+   *      "id": "hibrido",
+   *      "title": "Hibrido",
+   *      "tooltip": "Seleccionar Hibrido",
+   *      "layers": [
+   *          "QUICK*BASE_HIBRIDO_LayerGroup"
+   *      ]
+   *  }
+   * ]
+   *
    * const control = new IDEE.control.BackgroundLayers({
    *   position: 'left',
    *   order: 2,
@@ -66,6 +98,7 @@ class BackgroundLayers extends ControlBase {
    *   visible: true,
    *   tooltip: 'Selector de capas base',
    * });
+   *
    * @api
    */
   constructor(options = {}) {
@@ -79,7 +112,8 @@ class BackgroundLayers extends ControlBase {
       return {
         id: layer.id,
         title: layer.title,
-        layers: layer.layers.map((subLayer) => {
+        tooltip: layer.tooltip ?? this.tooltip ?? this.translation.title,
+        layers: (layer.layers ?? []).map((subLayer) => {
           let l = subLayer;
           if (typeof subLayer === 'string') {
             if (/QUICK.*/.test(subLayer)) {
@@ -106,14 +140,14 @@ class BackgroundLayers extends ControlBase {
     this.flattedLayers = this.layers.reduce((current, next) => current.concat(next.layers), []);
 
     /**
-     * activeLayer: default -1.
+     * activeLayer: capa activa por defecto default -1.
      */
     this.activeLayer = -1;
 
     /**
      * layerIndex: Índice de la capa que se preactivará
      */
-    this.layerIndex = isNumber(options.layerIndex) && options.layerIndex < this.layers.length
+    this.layerIndex = (isNumber(options.layerIndex) && options.layerIndex < this.layers.length)
       ? options.layerIndex : 0;
 
     /**
@@ -121,7 +155,15 @@ class BackgroundLayers extends ControlBase {
      */
     this.visible = isBoolean(options.visible) ? options.visible : true;
 
+    /**
+     * position: Posición del control en el mapa.
+     */
     this.position = options.position ?? Position.DOWN;
+
+    /**
+    * tooltip: Título del control
+    * */
+    this.tooltip = isString(options.tooltip) ? options.tooltip : null;
   }
 
   /**
@@ -160,7 +202,7 @@ class BackgroundLayers extends ControlBase {
         }
 
         if (visible === false) {
-          this.map_.removeLayers(this.map_.getBaseLayers());
+          this.map.removeLayers(this.map.getBaseLayers());
         }
       });
       success(html);
