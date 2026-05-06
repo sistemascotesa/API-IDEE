@@ -126,6 +126,8 @@ export default class Incicarto extends IDEE.Plugin {
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
       position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
       collapsedButtonClass: 'icon-incicarto',
       tooltip: this.tooltip,
       order: this.order,

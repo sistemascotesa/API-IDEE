@@ -122,6 +122,8 @@ export default class Infocoordinates extends IDEE.Plugin {
     this.panel = new IDEE.ui.Panel(this.name, {
       collapsed: this.collapsed_,
       position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
       className: 'm-plugin-infocoordinates',
       collapsedButtonClass: 'icon-target',
       tooltip: this.tooltip,

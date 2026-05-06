@@ -7,7 +7,7 @@ test('Test viewmanagement', async ({ page }) => {
       container: 'mapjs',
     });
     window.mp = new IDEE.plugin.ViewManagement({
-      position: 'TL',
+      position: 'left',
     });
     window.mapjs.addPlugin(window.mp);
   });

@@ -6,64 +6,74 @@ IDEE.language.setLang('es');
 
 const map = IDEE.map({
   container: 'mapjs',
+  zoom: 5,
+  maxZoom: 20,
+  minZoom: 4,
+  center: [-467062.8225, 4783459.6216],
 });
 window.map = map;
 
-let plugin;
+let mp = null;
 
-const createControl = (options) => {
-  plugin = new ViewManagement({
-    position: 'left',
-    // collapsible: true,
-    collapsed: true,
-    isDraggable: true,
-    // tooltip: 'TEST TOOLTIP',
-    // predefinedZoom: false, // Prueba de excluir
-    // predefinedZoom: true, // Prueba default
-    // Prueba de predefinedZoom predefinido por usuario
-    predefinedZoom: [{
-      name: 'Zoom con CENTER',
-      center: [-428106.86611520057, 4334472.25393817],
-      zoom: 4,
-    },
-    {
-      name: 'Zoom con BBOX',
-      bbox: [-2392173.2372, 3033021.2824, 1966571.8637, 6806768.1648],
-    }], // */
-    zoomExtent: true,
-    viewhistory: true,
-    zoompanel: true,
-    order: 1,
-    ...options,
-  });
-  map.addPlugin(plugin);
-};
-
-const removePlugin = () => {
-  if (plugin) {
-    map.removePlugin(plugin);
-    plugin = null;
-  }
-};
-
-const selectPosition = document.getElementById('selectPosicion');
+const selectPosicion = document.getElementById('selectPosicion');
+const inputOrder = document.getElementById('inputOrder');
+const inputTooltip = document.getElementById('inputTooltip');
 const selectCollapsed = document.getElementById('selectCollapsed');
+const inputPredefinedZoom = document.getElementById('inputPredefinedZoom');
+const selectZoomExtent = document.getElementById('selectZoomExtent');
+const selectViewhistory = document.getElementById('selectViewhistory');
+const selectZoompanel = document.getElementById('selectZoompanel');
 
-const recreatePlugin = () => {
-  removePlugin();
+function create(propiedades) {
+  mp = new ViewManagement(propiedades);
+  map.addPlugin(mp);
+}
+
+function remove() {
+  if (mp) map.removePlugin(mp);
+  mp = null;
+}
+
+function changeTest() {
+  remove();
   const options = {};
-  options.position = selectPosition.options[selectPosition.selectedIndex].value;
+
+  const selectPosition = selectPosicion.options[selectPosicion.selectedIndex].value;
+  if (selectPosition !== '') options.position = selectPosition;
+
+  if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
+
   const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
   if (collapsed !== '') options.collapsed = (collapsed === 'true');
-  createControl(options);
-};
 
-selectPosition.addEventListener('change', recreatePlugin);
-selectCollapsed.addEventListener('change', recreatePlugin);
+  if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
+
+  if (inputPredefinedZoom.value !== '') options.predefinedZoom = JSON.parse(inputPredefinedZoom.value);
+
+  const zoomExtent = selectZoomExtent.options[selectZoomExtent.selectedIndex].value;
+  if (zoomExtent !== '') options.zoomExtent = (zoomExtent === 'true');
+
+  const viewhistory = selectViewhistory.options[selectViewhistory.selectedIndex].value;
+  if (viewhistory !== '') options.viewhistory = (viewhistory === 'true');
+
+  const zoompanel = selectZoompanel.options[selectZoompanel.selectedIndex].value;
+  if (zoompanel !== '') options.zoompanel = (zoompanel === 'true');
+
+  create(options);
+}
+
+[
+  selectPosicion,
+  inputTooltip,
+  selectCollapsed,
+  inputOrder,
+  inputPredefinedZoom,
+  selectZoomExtent,
+  selectViewhistory,
+  selectZoompanel,
+].forEach((elm) => { elm.addEventListener('change', changeTest); });
 
 const removeButton = document.getElementById('removeButton');
-removeButton.addEventListener('click', () => {
-  removePlugin();
-});
+removeButton.addEventListener('click', () => { remove(); });
 
-recreatePlugin();
+changeTest();
