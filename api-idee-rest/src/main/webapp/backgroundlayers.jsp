@@ -133,6 +133,7 @@
                                 inputTooltip,
                                 inputOrder,
                                 inputLayerIndex,
+                                selectVisible,
                             ].forEach((ctrl) => {
                                 ctrl.addEventListener('change', recreate);
                             });
