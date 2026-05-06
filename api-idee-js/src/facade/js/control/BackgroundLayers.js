@@ -367,7 +367,7 @@ class BackgroundLayers extends ControlBase {
    * @api
   */
   getHelp() {
-    const textHelp = getValue('backgroundlayers').textHelp;
+    const textHelp = getValue(BackgroundLayers.NAME).textHelp;
     return {
       title: BackgroundLayers.NAME,
       content: new Promise((success) => {
