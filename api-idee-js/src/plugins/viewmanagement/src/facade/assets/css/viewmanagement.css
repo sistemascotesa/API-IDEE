@@ -1,25 +1,3 @@
-/* Title and images container */
-
-.m-control.m-container.m-viewmanagement {
-    width: auto;
-    padding: 1rem;
-}
-
-/* Título */
-
-div#m-viewmanagement-title {
-    /** Not necessary but not removed */
-    display: none;
-    background-color: transparent;
-    color: var(--idee-color-primary-dark);
-    font-size: 15px;
-    height: 40px;
-    line-height: 40px;
-    padding: 0 5px;
-    text-align: center;
-    width: 100%;
-}
-
 #div-contenedor-viewmanagement #m-viewmanagement-previews {
     display: flex;
     justify-content: center;
@@ -28,7 +6,7 @@ div#m-viewmanagement-title {
 }
 
 #div-contenedor-viewmanagement #m-viewmanagement-previews:has(.activated) {
-    border-bottom: 1px solid rgba(206, 212, 218, 1);
+    border-bottom: 1px solid var(--idee-color-neutral-40);
 }
 
 #div-contenedor-viewmanagement #m-viewhistory-panel,
@@ -54,7 +32,7 @@ div#m-viewmanagement-title {
     align-items: center;
     column-gap: .5rem;
     border-radius: 4px;
-    background-color: rgba(241, 243, 245, .45);
+    background-color: var(--idee-color-neutral-10);
     padding: .5rem;
 }
 
@@ -67,94 +45,4 @@ div#m-viewmanagement-title {
 
 #m-predefinedzoom-panel>.m-predefinedzoom-button-container>span:hover {
     color: var(--idee-color-links);
-}
-
-
-/* Images container */
-
-.m-viewmanagement .activeviewmanagementDiv {
-    border: 5px solid var(--idee-color-primary) !important;
-}
-
-div.m-panel.opened.m-plugin-viewmanagement {
-    background-color: transparent !important;
-    /* box-shadow: none !important; */
-    order: 0;
-}
-
-#div-contenedor-viewmanagement [class^="g-cartografia-viewmanagement-icon-"] {
-    cursor: pointer;
-    width: 2rem;
-    height: 2rem;
-    color: rgb(134, 142, 150);
-    background-color: rgb(241, 243, 245);
-    border-radius: 4px;
-    border: none;
-}
-
-#div-contenedor-viewmanagement [class^="g-cartografia-viewmanagement-icon-"]::before {
-    width: 1.1rem;
-    aspect-ratio: 1;
-    margin: .45rem;
-    box-shadow: 1px -1px 4px 0px rgba(0,0,0,0.1);
-}
-
-#div-contenedor-viewmanagement [class^="g-cartografia-viewmanagement-icon-"]:hover::before,
-#div-contenedor-viewmanagement [class^="g-cartografia-viewmanagement-icon-"].activated,
-#div-contenedor-viewmanagement [class^="g-cartografia-viewmanagement-icon-"].activated::before {
-    color: var(--idee-color-links);
-}
-
-.g-cartografia-viewmanagement-icon-zoom-in:before {
-    -webkit-mask-image: url('../images/icon_ue802.svg');
-    mask-image: url('../images/icon_ue802.svg');
-}
-
-.g-cartografia-viewmanagement-icon-zoom-out:before {
-    -webkit-mask-image: url('../images/icon_ue803.svg');
-    mask-image: url('../images/icon_ue803.svg');
-
-}
-
-.g-cartografia-viewmanagement-icon-zoompanel:before {
-    -webkit-mask-image: url('../images/icon_ue805.svg');
-    mask-image: url('../images/icon_ue805.svg');
-}
-
-.g-cartografia-viewmanagement-icon-home:before {
-    -webkit-mask-image: url('../images/icon_ue900.svg');
-    mask-image: url('../images/icon_ue900.svg');
-}
-
-.g-cartografia-viewmanagement-icon-expand:before {
-    -webkit-mask-image: url('../images/icon_ue921.svg');
-    mask-image: url('../images/icon_ue921.svg');
-    color: #646464;
-}
-
-.g-cartografia-viewmanagement-icon-flecha-derecha3:before {
-    -webkit-mask-image: url('../images/icon_ue1900.svg');
-    mask-image: url('../images/icon_ue1900.svg');
-    color: #646464;
-}
-
-.g-cartografia-viewmanagement-icon-flecha-izquierda3:before {
-    -webkit-mask-image: url('../images/icon_ue1901.svg');
-    mask-image: url('../images/icon_ue1901.svg');
-    color: #646464;
-}
-
-.g-cartografia-viewmanagement-icon-zoom-extension:before {
-    -webkit-mask-image: url('../images/icon_ue1903.svg');
-    mask-image: url('../images/icon_ue1903.svg');
-}
-
-.g-cartografia-viewmanagement-icon-zoom-mapa:before {
-    -webkit-mask-image: url('../images/icon_ue83b.svg');
-    mask-image: url('../images/icon_ue83b.svg');
-}
-
-.g-cartografia-viewmanagement-icon-flecha-historial:before {
-    -webkit-mask-image: url('../images/icon_ue89f.svg');
-    mask-image: url('../images/icon_ue89f.svg');
 }

@@ -33,62 +33,68 @@
             </head>
 
             <body>
-                <div>
-                    <label for="selectPosicion">Selector de posición</label>
-                    <select name="position" id="selectPosicion">
-                        <option value="left">Izquierda (left)</option>
-                        <option value="right" selected="selected">Derecha (right)</option>
-                        <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
-                        <option value="center-top-right">Centro superior derecho (center-top-right)</option>
-                        <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
-                        <option value="center-bottom-right">Centro inferior derecho (center-bottom-right)</option>
-                        <option value="down">Abajo (down)</option>
-                    </select>
-                    <label for="selectCollapsed">Selector de collapsed</label>
-                    <select name="collapsed" id="selectCollapsed">
-                        <option value=""></option>
-                        <option value="true" selected="selected">true</option>
-                        <option value="false">false</option>
-                    </select>
-                    <!-- <label for="selectCollapsible">Selector de collapsible</label>
-                    <select name="collapsible" id="selectCollapsible">
-                        <option value=""></option>
-                        <option value="true" selected="selected">true</option>
-                        <option value="false">false</option>
-                    </select> -->
-                    <label for="tooltipInput">Tooltip</label>
-                    <input type="text" value="Gestión de la vista" id="tooltipInput" />
-                    <label for="selectIsdraggable">Parámetro isDraggable</label>
-                    <select name="isdraggable" id="selectIsdraggable" style="display: hidden;">
-                        <option value=""></option>
-                        <option value="true">true</option>
-                        <option value="false" selected="selected">false</option>
-                    </select>
-                    <label for="selectPredefinedZoom">Parámetro predefinedZoom</label>
-                    <select name="predefinedZoom" id="selectPredefinedZoom">
-                        <option value=""></option>
-                        <option value="true" selected="selected">true</option>
-                        <option value="false">false</option>
-                    </select>
-                    <label for="selectZoomExtent">Parámetro zoomExtent</label>
-                    <select name="zoomExtent" id="selectZoomExtent">
-                        <option value=""></option>
-                        <option value="true" selected="selected">true</option>
-                        <option value="false">false</option>
-                    </select>
-                    <label for="selectViewHistory">Parámetro viewhistory</label>
-                    <select name="viewhistory" id="selectViewHistory">
-                        <option value=""></option>
-                        <option value="true" selected="selected">true</option>
-                        <option value="false">false</option>
-                    </select>
-                    <label for="selectZoomPanel">Parámetro zoompanel</label>
-                    <select name="zoompanel" id="selectZoomPanel">
-                        <option value=""></option>
-                        <option value="true" selected="selected">true</option>
-                        <option value="false">false</option>
-                    </select>
-                    <button id="botonEliminar">Eliminar Plugin</button>
+                <div class="m-api-idee-test-form-frame">
+                    <div class="m-test-form" style="max-height: 14.2rem;">
+                        <div>
+                            <label for="selectPosicion" title="Posición del plugin sobre el mapa. Por defecto: left">Posición del panel "position"</label>
+                            <select name="position" id="selectPosicion">
+                                <option value="" selected="selected"></option>
+                                <option value="left">Izquierda (left)</option>
+                                <option value="right">Derecha (right)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="inputOrder" title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden en la posición asignada "order"</label>
+                            <input type="number" name="order" id="inputOrder" value="-1">
+                        </div>
+                        <div>
+                            <label for="inputTooltip"  title="Texto que se muestra al dejar el ratón encima del plugin">Información de la herramienta "tooltip"</label>
+                            <input type="text" name="tooltip" id="inputTooltip" value="">
+                        </div>
+                        <div>
+                            <label for="selectCollapsed" title="Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true">Panel colapsado "collapsed"</label>
+                            <select name="collapsed" id="selectCollapsed">
+                                <option value='' selected="selected"></option>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="inputPredefinedZoom" title="Habilita el control que define los niveles de zoom predefinidos (true | false | JSON array)">Zoom predefinido "predefinedZoom"</label>
+                            <input type="text" name="predefinedZoom" id="inputPredefinedZoom" value='[{"name": "Zoom con CENTER", "center": [-428106.866, 4334472.253], "zoom": 4},{"name": "Zoom con BBOX", "bbox": [-2392173.2372, 3033021.2824, 1966571.8637, 6806768.1648]}]'>
+                            <datalist id="tooltipSug">
+                                <option value=""></option>
+                                <option value='[{"name": "Zoom con CENTER", "center": [-428106.866, 4334472.253], "zoom": 4},{"name": "Zoom con BBOX", "bbox": [-2392173.2372, 3033021.2824, 1966571.8637, 6806768.1648]}]'></option>
+                            </datalist>
+                        </div>
+                        <div>
+                            <label for="selectZoomExtent" title="Habilita el control que muestra las opciones de centrar la vista del mapa en un recuadro dibujado. Por defecto: true">Zoom a extensión total "zoomExtent"</label>
+                            <select name="zoomExtent" id="selectZoomExtent">
+                                <option value='' selected="selected"></option>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="selectViewhistory" title="Habilita el control que muestra las opciones de visualizar el historial de zooms. Por defecto: true">Historial de vistas "viewhistory"</label>
+                            <select name="viewhistory" id="selectViewhistory">
+                                <option value='' selected="selected"></option>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="selectZoompanel" title="Habilita el control que muestra las opciones de modificar el zoom a través del panel. Por defecto: true">Panel de zoom "zoompanel"</label>
+                            <select name="zoompanel" id="selectZoompanel">
+                                <option value='' selected="selected"></option>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="m-test-buttons">
+                        <button id="removeButton">Eliminar plugin</button>
+                    </div>
                 </div>
                 <div id="mapjs" class="m-container"></div>
                 <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
@@ -106,58 +112,75 @@
 
                             const map = IDEE.map({
                                 container: 'mapjs',
+                                zoom: 5,
+                                maxZoom: 20,
+                                minZoom: 4,
+                                center: [-467062.8225, 4783459.6216],
                             });
-                            let mp, collapsed, collapsible, isdraggable, zoomextent, viewhistory, zoompanel, predefinedzoom;
-                            crearPlugin({});
-                            const selectPosicion = document.getElementById("selectPosicion");
-                            const selectCollapsed = document.getElementById("selectCollapsed");
-                            // const selectCollapsible = document.getElementById("selectCollapsible");
-                            const tooltipInput = document.getElementById("tooltipInput");
-                            const selectIsdraggable = document.getElementById("selectIsdraggable");
-                            const selectPredefinedZoom = document.getElementById("selectPredefinedZoom");
-                            const selectZoomExtent = document.getElementById("selectZoomExtent");
-                            const selectViewHistory = document.getElementById("selectViewHistory");
-                            const selectZoomPanel = document.getElementById("selectZoomPanel");
-                            selectPosicion.addEventListener('change', cambiarTest);
-                            selectCollapsed.addEventListener('change', cambiarTest);
-                            // selectCollapsible.addEventListener('change', cambiarTest);
-                            tooltipInput.addEventListener('change', cambiarTest);
-                            selectIsdraggable.addEventListener('change', cambiarTest);
-                            selectPredefinedZoom.addEventListener('change', cambiarTest);
-                            selectZoomExtent.addEventListener('change', cambiarTest);
-                            selectViewHistory.addEventListener('change', cambiarTest);
-                            selectZoomPanel.addEventListener('change', cambiarTest);
+                            let mp = null;
 
-                            function cambiarTest() {
-                                let objeto = {}
-                                objeto.position = selectPosicion.options[selectPosicion.selectedIndex].value;
-                                let collapsedValor = selectCollapsed.options[selectCollapsed.selectedIndex].value;
-                                collapsed = collapsedValor != "" ? objeto.collapsed = (collapsedValor == "true" || collapsedValor == true) : "true";
-                                // let collapsibleValor = selectCollapsible.options[selectCollapsible.selectedIndex].value;
-                                // collapsible = collapsibleValor != "" ? objeto.collapsible = (collapsibleValor == "true" || collapsibleValor == true) : "true";
-                                objeto.tooltip = tooltipInput.value;
-                                let isDraggableValor = selectIsdraggable.options[selectIsdraggable.selectedIndex].value;
-                                isdraggable = isDraggableValor != "" ? objeto.isDraggable = (isDraggableValor == "true" || isDraggableValor == true) : "true";
-                                let zoomExtentValor = selectZoomExtent.options[selectZoomExtent.selectedIndex].value;
-                                zoomextent = zoomExtentValor != "" ? objeto.zoomExtent = (zoomExtentValor == "true" || zoomExtentValor == true) : "true";
-                                let viewHistoryValor = selectViewHistory.options[selectViewHistory.selectedIndex].value;
-                                viewhistory = viewHistoryValor != "" ? objeto.viewhistory = (viewHistoryValor == "true" || viewHistoryValor == true) : "true";
-                                let zoomPanelValor = selectZoomPanel.options[selectZoomPanel.selectedIndex].value;
-                                zoompanel = zoomPanelValor != "" ? objeto.zoompanel = (zoomPanelValor == "true" || zoomPanelValor == true) : "true";
-                                let predefinedZoomValor = selectPredefinedZoom.options[selectPredefinedZoom.selectedIndex].value;
-                                predefinedzoom = predefinedZoomValor != "" ? objeto.predefinedZoom = (predefinedZoomValor == "true" || predefinedZoomValor == true) : "true";
-                                map.removePlugins(mp);
-                                crearPlugin(objeto);
-                            }
+                            const selectPosicion = document.getElementById('selectPosicion');
+                            const inputOrder = document.getElementById('inputOrder');
+                            const inputTooltip = document.getElementById('inputTooltip');
+                            const selectCollapsed = document.getElementById('selectCollapsed');
+                            const inputPredefinedZoom = document.getElementById('inputPredefinedZoom');
+                            const selectZoomExtent = document.getElementById('selectZoomExtent');
+                            const selectViewhistory = document.getElementById('selectViewhistory');
+                            const selectZoompanel = document.getElementById('selectZoompanel');
 
-                            function crearPlugin(propiedades) {
+                            function create(propiedades) {
                                 mp = new IDEE.plugin.ViewManagement(propiedades);
                                 map.addPlugin(mp);
                             }
-                            const botonEliminar = document.getElementById("botonEliminar");
-                            botonEliminar.addEventListener("click", function () {
-                                map.removePlugins(mp);
-                            });
+
+                            function remove() {
+                                if (mp) map.removePlugin(mp);
+                                mp = null;
+                            }
+
+                            function changeTest() {
+                                remove();
+                                const options = {};
+
+                                const selectPosition = selectPosicion.options[selectPosicion.selectedIndex].value;
+                                if (selectPosition !== '') options.position = selectPosition;
+
+                                if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
+
+                                const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
+                                if (collapsed !== '') options.collapsed = (collapsed === 'true');
+
+                                if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
+
+                                if (inputPredefinedZoom.value !== '') options.predefinedZoom = JSON.parse(inputPredefinedZoom.value);
+
+                                const zoomExtent = selectZoomExtent.options[selectZoomExtent.selectedIndex].value;
+                                if (zoomExtent !== '') options.zoomExtent = (zoomExtent === 'true');
+
+                                const viewhistory = selectViewhistory.options[selectViewhistory.selectedIndex].value;
+                                if (viewhistory !== '') options.viewhistory = (viewhistory === 'true');
+
+                                const zoompanel = selectZoompanel.options[selectZoompanel.selectedIndex].value;
+                                if (zoompanel !== '') options.zoompanel = (zoompanel === 'true');
+
+                                create(options);
+                            }
+
+                            [
+                                selectPosicion,
+                                inputTooltip,
+                                selectCollapsed,
+                                inputOrder,
+                                inputPredefinedZoom,
+                                selectZoomExtent,
+                                selectViewhistory,
+                                selectZoompanel,
+                            ].forEach((elm) => { elm.addEventListener('change', changeTest); });
+
+                            const removeButton = document.getElementById('removeButton');
+                            removeButton.addEventListener('click', () => { remove(); });
+
+                            changeTest();
                         </script>
             </body>
 

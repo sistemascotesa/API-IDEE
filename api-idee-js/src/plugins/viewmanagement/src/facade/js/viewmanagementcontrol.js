@@ -18,7 +18,7 @@ class ViewManagementControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api
    */
-  constructor(isDraggable, predefinedzoom, zoomextent, viewhistory, zoompanel, order) {
+  constructor(predefinedzoom, zoomextent, viewhistory, zoompanel, order) {
     if (IDEE.utils.isUndefined(ViewManagementImpl) || (IDEE.utils.isObject(ViewManagementImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(ViewManagementImpl)))) {
       IDEE.exception(getValue('exception.impl'));
@@ -54,13 +54,6 @@ class ViewManagementControl extends IDEE.Control {
      * @type {Boolean}
      */
     this.zoompanel_ = zoompanel;
-
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable_ = isDraggable;
 
     /**
      * Order of plugin
@@ -152,9 +145,6 @@ class ViewManagementControl extends IDEE.Control {
           }
         });
       }
-      if (this.isDraggable_) {
-        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-viewmanagement-title');
-      }
       this.accessibilityTab(html);
       success(html);
     });
@@ -190,8 +180,8 @@ class ViewManagementControl extends IDEE.Control {
       }
       active.classList.remove('activated');
       const container = document.querySelector('#div-contenedor-viewmanagement');
-      if (container && container.children.length > 2) {
-        container.removeChild(container.children[2]);
+      if (container && container.children.length > 1) {
+        container.removeChild(container.children[1]);
       }
     }
   }

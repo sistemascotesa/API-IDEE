@@ -2,13 +2,12 @@
  * @module IDEE/plugin/ViewManagement
  */
 import '../assets/css/viewmanagement';
+import '../assets/css/fonts';
 import ViewManagementControl from './viewmanagementcontrol';
 import es from './i18n/es';
 import en from './i18n/en';
 import { getValue } from './i18n/language';
 import myhelp from '../../templates/myhelp';
-// eslint-disable-next-line import/no-relative-packages
-import { LEFT } from '../../../../../facade/js/ui/position';
 
 export default class ViewManagement extends IDEE.Plugin {
   /**
@@ -23,24 +22,10 @@ export default class ViewManagement extends IDEE.Plugin {
    */
   constructor(options = {}) {
     super('viewmanagement', {
-      position: options.position ?? LEFT,
-      tooltip: options.tooltip ?? getValue('tooltip'),
+      position: options.position || 'left',
+      tooltip: options.tooltip || getValue('tooltip'),
       order: options.order,
     });
-
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map = null;
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls_ = [];
 
     /**
      * Plugin parameters
@@ -55,20 +40,6 @@ export default class ViewManagement extends IDEE.Plugin {
      * @type {Boolean}
      */
     this.collapsed = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
-
-    /**
-     * Tooltip of plugin
-     * @private
-     * @type {String}
-     */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
-
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
 
     /**
      * Indicates if the control PredefinedZoom is added to the plugin
@@ -136,43 +107,41 @@ export default class ViewManagement extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vista.svg',
       order: this.order,
     });
     map.addButtons(this.button);
 
     this.panel = new IDEE.ui.Panel(this.name, {
-      collapsible: this.collapsible,
-      collapsed: this.collapsed,
-      position: this.position,
-      className: 'm-plugin-viewmanagement',
       tooltip: this.tooltip,
+      position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
+      className: 'm-plugin-viewmanagement',
+      collapsed: this.collapsed,
       collapsedButtonClass: 'g-cartografia-viewmanagement-icon-zoom-mapa',
       order: this.order,
     });
-    map.addPanels(this.panel);
 
     const control = new ViewManagementControl(
-      this.isDraggable,
       this.predefinedzoom,
       this.zoomextent,
       this.viewhistory,
       this.zoompanel,
       this.order,
     );
-
-    control.setPanel(this.panel);
+    this.controls.push(control);
 
     control.on(IDEE.evt.ADDED_TO_MAP, () => {
       this.fire(IDEE.evt.ADDED_TO_MAP);
     });
 
-    this.controls_.push(control);
-
-    this.panel.addControls(this.controls_);
+    this.panel.addControls(this.controls);
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
+
+    map.addPanels(this.panel);
   }
 
   /**
@@ -201,7 +170,7 @@ export default class ViewManagement extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.isDraggable}*${!!this.predefinedzoom}*${this.zoomextent}*${this.viewhistory}*${this.zoompanel}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${!!this.predefinedzoom}*${this.zoomextent}*${this.viewhistory}*${this.zoompanel}`;
   }
 
   /**
@@ -225,11 +194,6 @@ export default class ViewManagement extends IDEE.Plugin {
   destroy() {
     this.map.removeButton(this.button);
     this.map.removePanel(this.panel);
-    this.map.removeControls(this.controls_);
-    this.map = null;
-    this.controls_ = null;
-    this.panel = null;
-    this.name = null;
   }
 
   /**
