@@ -92,9 +92,6 @@ export default class LayerswitcherControl extends IDEE.Control {
     // Plantilla del control
     this.template_ = undefined;
 
-    // Determina si el plugin es draggable o no
-    this.isDraggable_ = options.isDraggable;
-
     // Determina el modo de selección de las capas
     this.modeSelectLayers = options.modeSelectLayers;
 
@@ -247,17 +244,13 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   addEventPanel(panel) {
-    if (panel.getButtonPanel().parentElement.classList.contains('collapsed')) {
+    if (panel.getButtonPanel().element.classList.contains('active')) {
       setTimeout(() => {
         this.getImpl().removeRenderComplete();
       }, 501);
     }
 
-    panel.getButtonPanel().addEventListener('click', this.collapsedPlugin.bind(this), false);
-
-    if (this.isDraggable_) {
-      IDEE.utils.draggabillyPlugin(panel, '#m-layerswitcher-title');
-    }
+    panel.getButtonPanel().element.addEventListener('click', this.collapsedPlugin.bind(this), false);
   }
 
   // Esta función devuelve las variables para la plantilla
@@ -268,7 +261,8 @@ export default class LayerswitcherControl extends IDEE.Control {
           const isTransparent = (layer.transparent === true);
           const displayInLayerSwitcher = (layer.displayInLayerSwitcher === true);
           const isLayerGroup = (layer instanceof IDEE.layer.LayerGroup);
-          return isTransparent && displayInLayerSwitcher && !isLayerGroup;
+          const isNotWMC = (layer.type !== IDEE.layer.type.WMC);
+          return isTransparent && displayInLayerSwitcher && !isLayerGroup && isNotWMC;
         });
 
         const overlayLayersPromise = Promise
@@ -443,7 +437,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
       const layerList = this.template_.querySelector('.layerswitcher-ul-layers');
 
-      if (layerList !== null && this.isMoveLayers) { // ??¿?¿ isMoveLayers
+      if (layerList !== null && this.isMoveLayers) {
         generateSortable(this.map_, this.overlayLayers);
       }
 
@@ -484,6 +478,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   collapsedPlugin(e) {
     if (!e.target.parentElement.classList.contains('collapsed')) {
       this.render();
+      this.getImpl().removeRenderComplete();
       this.getImpl().registerEvent(this.map_);
     } else {
       this.getImpl().removeRenderComplete();
@@ -514,7 +509,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         styleLayers(layer, this.order, evt);
 
         // ? Información de la capa
-        if (evt.target.className.indexOf('m-layerswitcher-icons-info') > -1) {
+        if (evt.target.className.indexOf('g-cartografia-btn-layerswitcher-info') > -1) {
           if (layer.type === 'OGCAPIFeatures') {
             const metadataURL = `${layer.url}${layer.name}?f=json`;
             const htmlURL = `${layer.url}${layer.name}?f=html`;
@@ -996,7 +991,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     // Crear un nuevo elemento
     const newElement = document.createElement('p');
     newElement.id = 'm-layerswitcher-loading';
-    newElement.innerHTML = '<span class="m-layerswitcher-icons-spinner"></span>';
+    newElement.innerHTML = '<span class="g-cartografia-btn-layerswitcher-spinner"></span>';
 
     // Obtener el elemento padre
     const parentElement = document.querySelector(SPINER_FATHER);
@@ -1309,7 +1304,12 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Permite añadir servicios
   openAddServices() {
-    const precharged = this.precharged;
+    let precharged = this.precharged;
+
+    if (precharged && precharged.groups && !Array.isArray(precharged.groups[0].services)) {
+      precharged = this.normalizePrecharged(precharged);
+    }
+
     const hasPrecharged = (precharged.groups !== undefined && precharged.groups.length > 0)
       || (precharged.services !== undefined && precharged.services.length > 0);
     const codsiActive = this.codsiActive;
@@ -1360,6 +1360,42 @@ export default class LayerswitcherControl extends IDEE.Control {
     }, 10);
 
     focusModal('#m-layerswitcher-addservices-search-input');
+  }
+
+  normalizePrecharged(obj) {
+    const finalGroups = [];
+    const rawGroups = (Array.isArray(obj.groups) && obj.groups.length > 0)
+      ? obj.groups[0] : obj.groups;
+    Object.keys(rawGroups).forEach((categoryName) => {
+      const categoryContent = rawGroups[categoryName];
+      const servicesList = [];
+
+      const processNode = (node) => {
+        Object.keys(node).forEach((key) => {
+          const item = node[key];
+          if (item && typeof item === 'object' && item.url) {
+            servicesList.push({
+              name: key,
+              type: item.type,
+              url: item.url,
+              white_list: item.white_list,
+            });
+          } else if (item && typeof item === 'object') {
+            processNode(item);
+          }
+        });
+      };
+
+      processNode(categoryContent);
+      if (servicesList.length > 0) {
+        finalGroups.push({ name: categoryName, services: servicesList });
+      }
+    });
+
+    return {
+      services: obj.services || [],
+      groups: finalGroups,
+    };
   }
 
   changeClodeButtonModal() {
@@ -1479,7 +1515,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     document.querySelectorAll('.m-layerswitcher-suggestion-caret').forEach((elem) => {
       elem.addEventListener('click', () => {
         elem.parentElement.querySelector('.m-layerswitcher-suggestion-group').classList.toggle('active');
-        elem.classList.toggle('m-layerswitcher-suggestion-caret-close');
+        elem.classList.toggle('g-cartografia-btn-layerswitcher-caret-close');
       });
     });
 
@@ -1838,10 +1874,10 @@ export default class LayerswitcherControl extends IDEE.Control {
           const block = container.querySelector('.m-layerswitcher-capabilities-container');
           if (block.style.display !== 'block') {
             block.style.display = 'block';
-            elem.innerHTML = `<span class="m-layerswitcher-icons-colapsar"></span>&nbsp;${getValue('hide_service_info')}`;
+            elem.innerHTML = `<span class="m-layerswitcher-icons-colapsar g-cartografia-btn-layerswitcher-colapsar"></span>&nbsp;${getValue('hide_service_info')}`;
           } else {
             block.style.display = 'none';
-            elem.innerHTML = `<span class="m-layerswitcher-icons-desplegar"></span>&nbsp;${getValue('show_service_info')}`;
+            elem.innerHTML = `<span class="m-layerswitcher-icons-desplegar g-cartografia-btn-layerswitcher-desplegar"></span>&nbsp;${getValue('show_service_info')}`;
           }
         });
       }
@@ -1851,10 +1887,10 @@ export default class LayerswitcherControl extends IDEE.Control {
           const block = container.querySelector('.m-layerswitcher-capabilities-container-wfs');
           if (block.style.display !== 'block') {
             block.style.display = 'block';
-            elem2.innerHTML = `<span class="m-layerswitcher-icons-colapsar"></span>&nbsp;${getValue('hide_service_info')}`;
+            elem2.innerHTML = `<span class="m-layerswitcher-icons-colapsar g-cartografia-btn-layerswitcher-colapsar"></span>&nbsp;${getValue('hide_service_info')}`;
           } else {
             block.style.display = 'none';
-            elem2.innerHTML = `<span class="m-layerswitcher-icons-desplegar"></span>&nbsp;${getValue('show_service_info')}`;
+            elem2.innerHTML = `<span class="m-layerswitcher-icons-desplegar g-cartografia-btn-layerswitcher-desplegar"></span>&nbsp;${getValue('show_service_info')}`;
           }
         });
       }
@@ -2388,7 +2424,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       document.querySelector('#m-layerswitcher-ogc-check-results').innerHTML = '';
     });
     radioBtnFilterByOther.addEventListener('click', () => {
-      document.querySelector('#m-layerswitcher-ogc-other-filters').style.display = 'block';
+      document.querySelector('#m-layerswitcher-ogc-other-filters').style.display = 'flex';
       document.querySelector('#m-layerswitcher-ogc-filter-id').style.display = 'none';
       document.querySelector('#m-layerswitcher-ogc-check-results').innerHTML = '';
     });

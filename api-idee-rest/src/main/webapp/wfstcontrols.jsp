@@ -156,7 +156,7 @@
 
         buttonApi.addEventListener('click', function() {
             const posicion = selectPosicion.options[selectPosicion.selectedIndex].value;
-            window.location.href = 'https://componentes-desarrollo.idee.es/api-idee//api-idee/?wfstcontrols=' + posicion;
+            window.location.href = 'https://api-ideedes.grupotecopy.es/api-idee//api-idee/?wfstcontrols=' + posicion;
         });
     </script>
 </body>

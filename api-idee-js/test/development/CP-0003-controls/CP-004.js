@@ -1,44 +1,78 @@
 import { map as Mmap } from 'IDEE/api-idee';
 import WMS from 'IDEE/layer/WMS';
 import GetFeatureInfo from 'IDEE/control/GetFeatureInfo';
+import { setLang } from '../../../src/facade/js/i18n/language';
 // import { wms_001, wms_002, wms_003 } from '../layers/wms/wms';
+
+const urlParams = new URLSearchParams(window.location.search);
+setLang(urlParams.get('language') ?? 'es');
 
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
   // controls: ['getfeatureinfo'],
+  controls: ["rotate*position='right'"],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
 });
 
-let ctrl;
-const selectPosicion = document.getElementById('selectPosicion');
+const selectPosition = document.getElementById('selectPosicion');
+const inputTooltip = document.getElementById('inputTooltip');
+const inputOrder = document.getElementById('inputOrder');
+const featureCountInput = document.getElementById('featureCountInput');
+const bufferInput = document.getElementById('bufferInput');
+const activatedSelect = document.getElementById('activatedSelect');
 
-const createControl = (propiedades) => {
-  ctrl = new GetFeatureInfo(propiedades);
-  map.addControls(ctrl);
+const create = (options) => {
+  if (!map.hasControl(GetFeatureInfo.NAME)) {
+    map.addControls(new GetFeatureInfo(options));
+  }
 };
 
-const removeControl = () => {
-  map.removeControls(ctrl);
-  ctrl = null;
+const remove = () => {
+  const ctrls = map.getControls(GetFeatureInfo.NAME);
+  if (ctrls.length === 1) map.removeControls(ctrls);
 };
 
-createControl();
+const recreate = () => {
+  remove();
 
-const updateControl = () => {
-  if (ctrl != null) removeControl();
-  createControl({
-    position: selectPosicion.options[selectPosicion.selectedIndex].value,
-  });
+  const options = {};
+
+  const position = selectPosition.options[selectPosition.selectedIndex].value;
+  if (position !== '') options.position = position;
+
+  if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
+
+  if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
+
+  if (featureCountInput.value !== undefined) options.featureCount = Number(featureCountInput.value);
+
+  if (bufferInput.value !== undefined) options.buffer = Number(bufferInput.value);
+
+  const activated = activatedSelect.options[activatedSelect.selectedIndex].value;
+  if (activated !== '') options.activated = (activated === 'true');
+
+  create(options);
 };
 
-selectPosicion.addEventListener('change', updateControl);
+[
+  selectPosition,
+  inputTooltip,
+  inputOrder,
+  featureCountInput,
+  bufferInput,
+  activatedSelect,
+].forEach((ctrl) => {
+  ctrl.addEventListener('change', recreate);
+});
 
 const removeButton = document.getElementById('removeButton');
 removeButton.addEventListener('click', () => {
-  removeControl();
+  remove();
 });
+
+recreate();
 
 // const layers = [wms_001, wms_002, wms_003];
 

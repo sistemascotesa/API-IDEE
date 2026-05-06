@@ -2,7 +2,7 @@
  * @module IDEE/control/GeorefImageEpsgControl
  */
 import Georefimage2ControlImpl from 'impl/georefimageepsgcontrol';
-import { adjustExtentForSquarePixels, reproject } from 'impl/utils';
+import { adjustExtentForSquarePixels } from 'impl/utils';
 import georefimage2HTML from '../../templates/georefimageepsg';
 import { getValue } from './i18n/language';
 import {
@@ -11,7 +11,7 @@ import {
 import { DPI_OPTIONS, GEOREFIMAGEEPSG_FORMAT } from '../../constants';
 
 // DEFAULTS PARAMS
-const FILE_EXTENSION_GEO = '.wld'; // .jgw
+const FILE_EXTENSION_GEO = '.wld';
 const FILE_EXTENSION_IMG = '.'.concat(GEOREFIMAGEEPSG_FORMAT);
 const TYPE_SAVE = '.zip';
 
@@ -97,8 +97,12 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
   }
 
   /**
-   * Función que activa el control
-   * @param {*} html
+   * Activa el control
+   * @param {HTMLElement} html HTML del contenedor del control
+   *
+   * @private
+   * @function
+   * @api stable
    */
   active(html) {
     this.html_ = html;
@@ -133,38 +137,38 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
   }
 
   /**
-    * Imprimer la imagen georreferenciada con EPSG seleccionado.
-    *
-    * @private
-    * @function
-    */
-  printClick(evt) { // Se llama desde printviewmanagementcontrol
+   * Función que se ejecuta al hacer click en el botón de imprimir
+   * @param {Event} evt Evento del click
+   *
+   * @public
+   * @function
+   * @api stable
+   */
+  printClick(evt) {
     evt.preventDefault();
 
-    // La del mapa, hacer un getProjection si se cambia
     const DEFAULT_EPSG = this.map_.getProjection().code;
     const ID_IMG_EPSG = '#m-georefimageepsg-select';
-
-    // get value select option id m-georefimageepsg-select
     const value = this.template_.querySelector(ID_IMG_EPSG).selectedIndex;
-
     const {
       url, name, format, EPSG: epsg, version, legend,
     } = this.layers_[value];
-
-    let title = legend || name;
     const dateNow = new Date();
     const date = dateNow.toLocaleDateString().replaceAll('/', '');
     const hour = dateNow.toLocaleTimeString().replaceAll(':', '');
+    let title = legend || name;
 
     title = `${title}_${date}_${hour}`;
 
-    // Bbox Mapa
     const mapBbox = this.map_.getBbox();
-    // Size
     const size = this.map_.getMapImpl().getSize();
+    const dpi = Number(this.template_.querySelector('#m-georefimageepsg-dpi').value);
+    const scaleFactor = dpi / 72;
+    const scaledSize = [
+      Math.round(size[0] * scaleFactor),
+      Math.round(size[1] * scaleFactor),
+    ];
 
-    // Ext WLD
     let extWLD = [];
 
     if (epsg) {
@@ -190,15 +194,15 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
       const urlLayer = this.generateURLLayer_(
         url,
         projection,
-        size,
+        scaledSize,
         extString,
         format,
         name,
         version,
       );
-      this.downloadPrint(urlLayer, extWLD, true, title);
+      this.downloadPrint(urlLayer, extWLD, true, scaledSize, title);
     } else {
-      const projection = this.getUTMZoneProjection();
+      const projection = this.map_.getProjection().code;
 
       const v = this.map_.getMapImpl().getView();
       let ext = v.calculateExtent(size);
@@ -206,16 +210,28 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
       ext = ol.proj.transformExtent(ext, DEFAULT_EPSG, projection);
       ext = adjustExtentForSquarePixels(ext, size);
 
-      const urlLayer = this.generateURLLayer_(url, projection, size, ext, format, name, version);
-      this.downloadPrint(urlLayer, ext, false, title);
+      const urlLayer = this.generateURLLayer_(
+        url,
+        projection,
+        scaledSize,
+        ext,
+        format,
+        name,
+        version,
+      );
+      this.downloadPrint(urlLayer, ext, false, scaledSize, title);
     }
   }
 
   /**
-   * Transforma la extensión de coordenadas de OpenLayers
-   * @param {*} extent Extensión de coordenadas a transformar
-   * @param {*} projection Proyección a la que se quiere transformar
-   * @returns Extensión transformada
+   * Transforma la extensión de coordenadas a formato EPSG:4326 si el servicio WMS lo requiere
+   * @param {ol.Extent} extent Extensión a transformar
+   * @param {ol.proj.Projection} projection Proyección del servicio WMS
+   * @returns {ol.Extent} Extensión transformada
+   *
+   * @private
+   * @function
+   * @api stable
    */
   transformExtentOL(extent, projection) {
     const { def } = IDEE.impl.ol.js.projections.getSupportedProjs()
@@ -230,15 +246,19 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
   }
 
   /**
-   * Genera la URL de la capa WMS para descargar la imagen georreferenciada.
-   * @param {*} url URL del servicio WMS
-   * @param {*} projection Proyección a utilizar
-   * @param {*} size Alto y ancho de la imagen
-   * @param {*} bbox Extensión de la imagen en coordenadas
-   * @param {*} format Formato de la imagen
-   * @param {*} name Nombre de la capa
-   * @param {*} version versión del servicio WMS
-   * @returns
+   * Genera la URL de la capa WMS a descargar
+   * @param {string} url URL del servicio WMS
+   * @param {ol.proj.Projection} projection Proyección a utilizar
+   * @param {Array<number>} size Alto y ancho de la imagen
+   * @param {Array<number>} bbox Extensión de la imagen en coordenadas
+   * @param {string} format Formato de la imagen
+   * @param {string} name Nombre de la capa
+   * @param {string} version Versión del servicio WMS. Por defecto '1.3.0'
+   * @returns {string} URL de la capa WMS
+   *
+   * @private
+   * @function
+   * @api stable
    */
   generateURLLayer_(url, projection, size, bbox, format, name, version = '1.3.0') {
     let urlLayer = url;
@@ -250,121 +270,81 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
   }
 
   /**
-   * Determina la proyección UTM en función de la ubicación del centro del mapa.
-   * @returns {string} Código de la proyección UTM correspondiente.
+   * Descarga la imagen georreferenciada con el formato EPSG seleccionado
+   * @param {String} url URL de la imagen a descargar
+   * @param {Array<number>} bbox Extensión de la imagen en coordenadas
+   * @param {Boolean} epsgUser Indica si se utiliza EPSG del usuario
+   * @param {Array<number>} scaledSize Tamaño de la imagen escalada
+   * @param {String} title Título de la imagen a descargar
+   *
+   * @private
+   * @function
+   * @api stable
    */
-  getUTMZoneProjection() {
-    let res = this.map_.getProjection().code;
-    const mapCenter = [this.map_.getCenter().x, this.map_.getCenter().y];
-    const center = reproject(this.map_.getProjection().code, mapCenter);
-    if (center[0] < -12 && center[0] >= -20) {
-      res = 'EPSG:25828';
-    } else if (center[0] < -6 && center[0] >= -12) {
-      res = 'EPSG:25829';
-    } else if (center[0] < 0 && center[0] >= -6) {
-      res = 'EPSG:25830';
-    } else if (center[0] <= 6 && center[0] >= 0) {
-      res = 'EPSG:25831';
-    }
-
-    return res;
-  }
-
-  /**
-    * Descarga la imagen georreferenciada con DPI seleccionado.
-    *
-    * @param {string} url URL de la imagen a descargar.
-    * @param {Array} bbox Extensión de la imagen en coordenadas.
-    * @param {boolean} epsgUser Indica si se utiliza EPSG del usuario.
-    * @param {string} title Título de la imagen a descargar.
-    * @public
-    * @function
-    * @api stable
-    */
-  downloadPrint(url, bbox, epsgUser, title = '') {
+  downloadPrint(url, bbox, epsgUser, scaledSize, title = '') {
     const imageUrl = url !== null ? url : this.documentRead_.src;
     const dpi = Number(this.template_.querySelector('#m-georefimageepsg-dpi').value);
     const format = this.format_;
+    const originalSize = this.map_.getMapImpl().getSize();
+    const sizeForWLD = epsgUser ? scaledSize : originalSize;
     this.loadingOverlay_ = createLoadingSpinner();
-    const map = this.map_.getMapImpl();
-    const originalSize = map.getSize();
-    const originalResolution = map.getView().getResolution();
-    const scaleFactor = dpi / 72;
-    const newWidth = Math.round(originalSize[0] * scaleFactor);
-    const newHeight = Math.round(originalSize[1] * scaleFactor);
 
-    map.once('rendercomplete', () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = newWidth;
-      canvas.height = newHeight;
-      const context = canvas.getContext('2d');
-      map.setSize(originalSize);
-      map.getView().setResolution(originalResolution);
+    const canvas = document.createElement('canvas');
+    canvas.width = scaledSize[0];
+    canvas.height = scaledSize[1];
+    const context = canvas.getContext('2d');
+    const titulo = generateTitle(title);
 
-      const layerImage = new Image();
-      layerImage.crossOrigin = 'anonymous';
-      layerImage.onload = () => {
-        context.setTransform(1, 0, 0, 1, 0, 0);
-        context.globalAlpha = 1;
-        context.drawImage(layerImage, 0, 0, newWidth, newHeight);
+    const layerImage = new Image();
+    layerImage.crossOrigin = 'anonymous';
+    layerImage.onload = () => {
+      context.setTransform(1, 0, 0, 1, 0, 0);
+      context.globalAlpha = 1;
+      context.drawImage(layerImage, 0, 0, scaledSize[0], scaledSize[1]);
 
-        canvas.toBlob((blob) => {
-          const titulo = generateTitle(title);
-          const reader = new window.FileReader();
-
-          reader.onloadend = () => {
-            const files = [{
-              name: titulo.concat(FILE_EXTENSION_GEO),
-              data: createWLD(bbox, dpi, [newWidth, newHeight], epsgUser),
-              base64: false,
-            }, {
-              name: titulo.concat(FILE_EXTENSION_IMG),
-              data: reader.result,
-              base64: false,
-              binary: true,
-            }];
-
-            createZipFile(files, TYPE_SAVE, titulo);
-            if (this.loadingOverlay_) {
-              this.loadingOverlay_.remove();
-              this.loadingOverlay_ = null;
-            }
-          };
-          reader.readAsArrayBuffer(blob);
-        }, `image/${format}`);
-      };
-      layerImage.src = imageUrl;
-    });
-    map.setSize([newWidth, newHeight]);
-    const scaling = Math.min(newWidth / originalSize[0], newHeight / originalSize[1]);
-    map.getView().setResolution(originalResolution / scaling);
-  }
-
-  /**
-    * Comprueba si el objeto es igual a este control.
-    *
-    * @function
-    * @api stable
-    */
-  equals(obj) {
-    let equals = false;
-    if (obj instanceof GeorefImageEpsgControl) {
-      equals = (this.name === obj.name);
-    }
-
-    return equals;
+      canvas.toBlob((blob) => {
+        const reader = new window.FileReader();
+        reader.onloadend = () => {
+          const files = [{
+            name: titulo.concat(FILE_EXTENSION_GEO),
+            data: createWLD(bbox, dpi, sizeForWLD, epsgUser),
+            base64: false,
+          }, {
+            name: titulo.concat(FILE_EXTENSION_IMG),
+            data: reader.result,
+            base64: false,
+            binary: true,
+          }];
+          createZipFile(files, TYPE_SAVE, titulo);
+          if (this.loadingOverlay_) {
+            this.loadingOverlay_.remove();
+            this.loadingOverlay_ = null;
+          }
+        };
+        reader.readAsArrayBuffer(blob);
+      }, `image/${format}`);
+    };
+    layerImage.src = imageUrl;
   }
 
   /**
    * Inicializa la accesibilidad del control.
-   * @param {*} html
+   * @param {HTMLElement} html HTML del contenedor del control
+   *
+   * @private
+   * @function
+   * @api stable
    */
   accessibilityTab(html) {
     html.querySelectorAll('[tabindex="0"]').forEach((el) => el.setAttribute('tabindex', this.order));
   }
 
   /**
-   * Desactiva el control y elimina su plantilla.
+   * Desactiva el control
+   *
+   * @public
+   * @function
+   * @api
    */
   deactive() {
     this.template_.remove();

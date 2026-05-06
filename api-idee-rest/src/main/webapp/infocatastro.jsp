@@ -96,7 +96,7 @@
         buttonApi.addEventListener('click', function() {
             posicion = selectPosicion.options[selectPosicion.selectedIndex].value;
 
-            window.location.href = 'https://componentes-desarrollo.idee.es/api-idee//api-idee/?infocatastro=' + posicion;
+            window.location.href = 'https://api-ideedes.grupotecopy.es/api-idee//api-idee/?infocatastro=' + posicion;
         })
 
         function crearPlugin(posicion) {

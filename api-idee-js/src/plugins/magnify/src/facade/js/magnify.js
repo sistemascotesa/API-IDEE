@@ -5,6 +5,9 @@
 import 'assets/css/magnify';
 import MagnifyControl from './magnifycontrol';
 import api from '../../api';
+import { getValue } from './i18n/language';
+import en from './i18n/en';
+import es from './i18n/es';
 
 export default class Magnify extends IDEE.Plugin {
   /**
@@ -115,13 +118,13 @@ export default class Magnify extends IDEE.Plugin {
       position: IDEE.ui.position[this.position],
       className: this.className,
       collapsedButtonClass: 'g-cartografia-zoom-extension',
-      tooltip: 'Lupa',
+      tooltip: getValue('tooltip'),
     });
     this.panel_.addControls(this.controls_);
     this.panel_.on(IDEE.evt.SHOW, (evt) => {
       if (map.getWFS().length === 0 && map.getKML().length === 0 && map.getGeoJSON() === 0) {
         this.panel_.collapse();
-        IDEE.dialog.info('No existen capas disponibles para aplicar el efecto transparencia');
+        IDEE.dialog.info(getValue('exception.nolayersavai'));
       }
     });
     map.addPanels(this.panel_);
@@ -190,5 +193,20 @@ export default class Magnify extends IDEE.Plugin {
    */
   getMetadata() {
     return this.metadata_;
+  }
+
+  /**
+   * Return plugin language
+   *
+   * @public
+   * @function
+   * @param {string} lang type language
+   * @api stable
+   */
+  static getJSONTranslations(lang) {
+    if (lang === 'en' || lang === 'es') {
+      return (lang === 'en') ? en : es;
+    }
+    return IDEE.language.getTranslation(lang).magnify;
   }
 }

@@ -1,5 +1,7 @@
 {
   "panzoom": {
+    "zoomIn": "Más zoom",
+    "zoomOut": "Menos zoom",
     "textHelp": {
       "text1": "Esta herramienta permite cambiar el zoom del visualizador a partir de un panel con un desplazador. El mapa del visualizador cambia acercándose o alejándose según se cambie el desplazador hacia arriba o hacia abajo."
     }
@@ -29,14 +31,14 @@
     "title": "Selector de capas"
   },
   "overviewmap": {
+    "title": "Mapa de situación",
     "textHelp": {
       "help1": "Muestra una vista general con un recuadro que corresponde a la zona donde nos encontramos en la vista principal.",
       "help2": "El recuadro del mapa de situación está sincronizado con la vista principal. Permite desplazar la vista principal, moviendo el recuadro desde el mapa de situación.",
       "help3": "Para ocultar de nuevo el mapa de situación haga clic en el botón 'Minimizar'.",
       "help4": "La información relevante a la extensión y su posible parametrización está documentada en",
       "help5": "El ejemplo de uso de sus parámetros puede comprobarse en"
-    },
-    "tooltip": "Mapa de situación"
+    }
   },
   "scale": {
     "title": "Escala",
@@ -256,6 +258,10 @@
     "invalid_control": "El control especificado es inválido",
     "remove_control": "No ha especificado ningún control a eliminar.",
     "control_already_added": "El control ya ha sido añadido al mapa previamente",
+    "parseParamError": "Error al parsear el parámetro '{param}' de '{name}': {error}",
+    "paramNotAllowed": "El parámetro '{param}' no está permitido para el control '{control}' y ha sido omitido.",
+    "invalidBase64Encoding": "Codificación base64 inválida",
+    "invalidJsonFormat": "Formato JSON inválido",
     "removecontrol_method": "La implementación usada no posee el método removeControls.",
     "setmaxextent_method": "La implementación usada no posee el método setMaxExtent.",
     "getbbox_method": "La implementación usada no posee el método getBbox.",

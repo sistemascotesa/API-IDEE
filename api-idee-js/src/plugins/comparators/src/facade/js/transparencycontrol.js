@@ -236,7 +236,6 @@ export default class TransparencyControl extends IDEE.Control {
             this.effectSelectedImpl_();
           });
       }
-      this.addSvgIcons(this.template);
       success(this.template);
     });
 
@@ -303,7 +302,7 @@ export default class TransparencyControl extends IDEE.Control {
 
     // filtrar pot this.fatherControl.saveLayers
     removeLayer.forEach((l) => {
-      if (!this.fatherControl.saveLayers.includes(l.name)) {
+      if (this.fatherControl.saveLayers.includes(l.name)) {
         this.map_.removeLayers(l);
       }
     });
@@ -360,6 +359,7 @@ export default class TransparencyControl extends IDEE.Control {
   }
 
   destroy() {
+    this.removeLayers_();
     this.removeEffects();
 
     this.name_ = null;
@@ -450,10 +450,5 @@ export default class TransparencyControl extends IDEE.Control {
     setTimeout(() => {
       this.getImpl().effectSelected(this.layerSelected, this.radius, this.freeze);
     }, 1000);
-  }
-
-  addSvgIcons(html) {
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_candado_cerrado', html.querySelector('#m-transparency-lock'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_candado', html.querySelector('#m-transparency-unlock'));
   }
 }

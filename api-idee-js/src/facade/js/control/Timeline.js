@@ -9,8 +9,11 @@ import timelineDinamicTemplate from 'templates/timelineDinamic';
 import TimelineImpl from 'impl/control/Timeline';
 import WMS from 'IDEE/layer/WMS';
 import WMTS from 'IDEE/layer/WMTS';
+import Vector from 'IDEE/layer/Vector';
+import FilterFunction from 'IDEE/filter/Function';
+import * as EventType from 'IDEE/event/eventtype';
 import {
-  isArray, isNullOrEmpty, isObject, isString, isUndefined,
+  isArray, isBoolean, isNullOrEmpty, isObject, isString, isUndefined,
 } from '../util/Utils';
 import Control from './Control';
 import { getValue } from '../i18n/language';
@@ -20,6 +23,83 @@ import { compileSync } from '../util/Template';
 
 const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
 
+/**
+ * @typedef {Object} module:IDEE/control/Timeline~Options
+ * @api
+ * @property {Array|String} intervals Intervalos de tiempo. (obligatorio)
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {String} [tooltip] Texto del tooltip para el control.
+ * @property {String} [title] Texto del título para el panel de este control.
+ * Por defecto se asignará {@link tooltip}.
+ * @property {Number} [order] Accesibilidad, z-index del control.
+ * @property {Boolean} [collapsible] Indica si el control puede colapsarse.
+ * @property {Boolean} [collapsed] Indica si el control está colapsado.
+ * Puede ser un array de objetos con atributos [name, tag, service] o una cadena JSON.
+ * Por defecto se utilizan intervalos de ejemplo con capas WMS del IGN.
+ * @property {Boolean} [animation] Indica si la línea de tiempo se anima automáticamente.
+ * @property {Number} [speed] Velocidad de la animación en segundos (rango: 1-100).
+ * @property {Number} [speedDate] Velocidad de la animación para timelines dinámicos.
+ * @property {String} [paramsDate] Unidad de tiempo para los pasos (posibles valores:
+ * 'sec', 'min', 'hrs', 'day', 'mos', 'yr').
+ * @property {Number} [stepValue] Valor del paso para la navegación temporal.
+ * @property {String} [sizeWidthDinamic] Ancho dinámico para el control.
+ * Posibles valores: '', 'sizeWidthDinamic_medium' or 'sizeWidthDinamic_big'.
+ * @property {String} [formatMove] Formato de movimiento: 'discrete' o 'continuous'.
+ * @property {String} [formatValue] Formato de valores:
+ * 'linear', 'logarithmic', 'exponential'.
+ * @property {String} [timelineType] Tipo de timeline:
+ * 'absoluteSimple', 'absolute', 'relative'.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
+ */
+
+/**
+ * @classdesc
+ * Hereda de {@link module:IDEE/control/Control|Control}.
+ * Control de línea de tiempo que permite visualizar y controlar datos temporales en el mapa.
+ * Proporciona una interfaz para reproducir animaciones y navegar por diferentes
+ * momentos en el tiempo.
+ * Soporta diferentes tipos de timeline: absoluteSimple, absolute y relative.
+ *
+ * @property {Array|String} intervals Intervalos de tiempo. Puede ser un array de objetos
+ * con atributos [name, tag, service] o una cadena JSON parseada.
+ * @property {String} [position='left'] Posición del control en el mapa.
+ * @property {Boolean} [collapsible=true] Indica si el control puede colapsarse.
+ * @property {Boolean} [collapsed=true] Indica si el control está colapsado.
+ * Depende de collapsible, solo se aplica si collapsible es true.
+ * @property {String} [tooltip] Texto de información sobre la herramienta para el control.
+ * Por defecto la traducción al idioma.
+ * @property {String} [title] Texto del título para el panel de este control.
+ * Por defecto se asignará {@link tooltip}.
+ * @property {Number} [order=0] Accesibilidad, z-index del control.
+ * @property {Boolean} [animation=true] Indica si la animación de la línea de tiempo está
+ * activada (true) o desactivada (false).
+ * @property {Number} [speed=1] Velocidad de reproducción de la animación en segundos,
+ * con rango de 1 a 100.
+ * @property {Number} [speedDate=2] Velocidad de la animación específica para timelines dinámicos.
+ * @property {String} [paramsDate='yr'] Unidad de tiempo para los pasos de navegación
+ * (posibles valores: 'sec', 'min', 'hrs', 'day', 'mos', 'yr').
+ * @property {Number} [stepValue=1] Valor del paso para la navegación temporal,
+ * determina el incremento en cada paso.
+ * @property {String} [sizeWidthDinamic=''] Ancho dinámico para el control,
+ * permite ajustar el tamaño basado en el contenido.
+ * @property {String} [formatMove='continuous'] Formato de movimiento de la animación:
+ * 'discrete' para movimientos discretos o 'continuous' para continuos.
+ * @property {String} [formatValue='linear'] Formato de valores para la escala:
+ * 'linear', 'logarithmic', 'exponential'.
+ * @property {String} [timelineType=false] Tipo de timeline a utilizar:
+ * 'absoluteSimple', 'absolute', 'relative'. Debe ser uno de los tipos soportados.
+ * @property {Boolean} [running=false] Indica si la animación está actualmente ejecutándose.
+ * @property {Object} [date] Objeto que contiene las fechas inicial y final para el timeline.
+ * @property {Number} [date.init=0] Fecha inicial en formato timestamp.
+ * @property {Number} [date.end=0] Fecha final en formato timestamp.
+ * @property {Object} [allLayersDinamic] Configuración de capas dinámicas para timelines avanzados.
+ * @property {Array} [allLayersDinamic.groupLayer=[]] Capas agrupadas para el timeline dinámico.
+ * @property {Array} [allLayersDinamic.noGroupLayer=[]] Capas no agrupadas para el timeline
+ * dinámico.
+ *
+ * @api
+ * @extends {module:IDEE/control/Control}
+ */
 class Timeline extends Control {
   get translation() {
     return getValue('timeline');
@@ -30,6 +110,48 @@ class Timeline extends Control {
    * object which has an implementation Object
    *
    * @constructor
+   * @param {module:IDEE/control/Timeline~Options} options Opciones del control.
+   * @example
+   * const control = new IDEE.control.Timeline({
+   *  "timelineType": "absoluteSimple",
+   *   "intervals": [
+   *        [
+   *            "NACIONAL 1981-1986",
+   *            "1986",
+   *            "WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986"
+   *        ],
+   *        [
+   *            "OLISTAT",
+   *            "1998",
+   *            "WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT"
+   *        ],
+   *        [
+   *            "SIGPAC",
+   *            "2003",
+   *            "WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC"
+   *        ],
+   *        [
+   *            "PNOA 2004",
+   *            "2004",
+   *            "WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004"
+   *        ],
+   *        [
+   *            "PNOA 2005",
+   *            "2005",
+   *            "WMS*pnoa2005*https://www.ign.es/wms/pnoa-historico*pnoa2005"
+   *        ],
+   *        [
+   *            "PNOA 2006",
+   *            "2006",
+   *            "WMS*pnoa2006*https://www.ign.es/wms/pnoa-historico*pnoa2006"
+   *        ],
+   *        [
+   *            "PNOA 2010",
+   *            "2010",
+   *            "WMS*pnoa2010*https://www.ign.es/wms/pnoa-historico*pnoa2010"
+   *        ]
+   *    ]
+   * });
    * @api
    */
   constructor(options = {}) {
@@ -43,22 +165,6 @@ class Timeline extends Control {
 
     // calls the super constructor
     super(Timeline.NAME, impl, options);
-
-    /**
-     * Intervals
-     * Value: Array with each interval attributes [name, tag, service]
-     * @property {String} intervals
-     */
-    if (options !== undefined) {
-      if (isString(options.intervals)) {
-        this.intervals = JSON.parse(options.intervals.replace(/!!/g, '[').replace(/¡¡/g, ']'));
-      } else if (isArray(options.intervals)) {
-        this.intervals = options.intervals;
-      } else {
-        // IDEE.dialog.error(getValue('intervals_error'));
-        this.intervals = [];
-      }
-    }
 
     /**
      * Animation of the timeline
@@ -108,31 +214,40 @@ class Timeline extends Control {
     /**
      *@type { String }
      */
-    this.timelineType = options.timelineType || false;
+    this.timelineType = options.timelineType ?? false;
 
-    /** --- Comprobaciones necesarias antes de poder añadir el control --- */
-
-    // Dinamic TimeLine
-    if (options.intervals) {
-      if (!['absolute', 'relative'].includes(this.timelineType)) {
-        this.intervals = options.intervals;
+    /**
+     * Intervals
+     * Value: Array with each interval attributes [name, tag, service]
+     * @property {String} intervals
+     */
+    this.intervals = [];
+    if (isString(options.intervals)) {
+      this.intervals = JSON.parse(options.intervals.replace(/!!/g, '[').replace(/¡¡/g, ']'));
+    } else if (isArray(options.intervals)) {
+      // Dinamic TimeLine
+      if (['absolute', 'relative'].includes(this.timelineType)) {
+        this.intervals = Object.entries(options.intervals).map(([key, values]) => {
+          const valuesNew = values;
+          const [init, end] = this.transformTime_NumbToDate(valuesNew.init, valuesNew.end);
+          valuesNew.init = init;
+          valuesNew.end = end;
+          return valuesNew;
+        });
       } else {
-        this.intervals = Object.entries(options.intervals)
-          .map(([key, values]) => {
-            const valuesNew = values;
-            const [init, end] = this.transformTime_NumbToDate(valuesNew.init, valuesNew.end);
-            valuesNew.init = init;
-            valuesNew.end = end;
-            return valuesNew;
-          });
+        this.intervals = options.intervals;
       }
     }
 
-    /**
-     * position
-     * @type {Position}
-     */
     this.position = Position.isValid(options.position) ? options.position : Position.LEFT;
+
+    this.tooltip = isString(options.tooltip) ? options.tooltip : this.translation.tooltip ?? '';
+
+    this.title = isString(options.title) ? options.title : this.tooltip;
+
+    this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
+
+    this.collapsed = (isBoolean(options.collapsed) && this.collapsible) ? options.collapsed : true;
 
     this.running = false;
 
@@ -162,7 +277,7 @@ class Timeline extends Control {
       const template = compileSync((isType) ? timelineDinamicTemplate : timelineTemplate, {
         vars: {
           translations: {
-            title: this.translation.title,
+            title: this.title ?? this.translation.title,
             play: this.translation.play,
             initValue: this.translation.initValue,
             endValue: this.translation.endValue,
@@ -321,7 +436,7 @@ class Timeline extends Control {
    */
   changeSlider(elem) {
     document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '0');
-    const left = (((elem.value - elem.min) / (elem.max - elem.min)) * ((256 - 5) - 5)) + 5;
+    const left = (((elem.value - elem.min) / (elem.max - elem.min)) * ((256 - 20) - 5));
     document.querySelector('.div-m-timeline-slider').style.setProperty('--left', `${left}px`);
     if (this.animation || this.intervals[0].name !== '') {
       document.querySelector('.m-timeline-names').style.display = 'block';
@@ -399,8 +514,10 @@ class Timeline extends Control {
     const slider = document.querySelector('#input-slider');
     let step = parseInt(slider.value, 10);
     if (this.running) {
-      this.getPlayTimeButton().classList.add('g-cartografia-control-siguiente');
-      this.getPlayTimeButton().classList.remove('g-cartografia-control-pausa');
+      this.getPlayTimeButton().classList.replace(
+        'g-cartografia-control-pausa',
+        'g-cartografia-control-siguiente',
+      );
       clearTimeout(this.running);
     }
     if (!next) {
@@ -589,7 +706,7 @@ class Timeline extends Control {
     const layerAux = layer;
     if (!(layerAux instanceof Object)) {
       const [type, legend, url, name] = layerAux.split('*');
-      const layerWMS = new IDEE.layer.WMS(
+      const layerWMS = new WMS(
         {
           type, legend, url, name,
         },
@@ -607,7 +724,7 @@ class Timeline extends Control {
       layerWMS.equalsTimeLine = equalsTimeLine;
       return layerWMS;
     }
-    if ((layerAux instanceof IDEE.layer.Vector)) {
+    if ((layerAux instanceof Vector)) {
       layerAux.layerTimeLine = true;
       layerAux.id = id;
       layerAux.attributeParam = attributeParam;
@@ -826,13 +943,13 @@ class Timeline extends Control {
     this.removeLayers();
 
     layersTimeLine.forEach((l) => {
-      if (l instanceof IDEE.layer.Vector) {
-        l.on(IDEE.evt.LOAD, () => {
+      if (l instanceof Vector) {
+        l.on(EventType.LOAD, () => {
           const searhDinamic = this.searchLayerDinamic(l);
           const [vectorInitValue, vectorEndValue] = this
             .getGroupLimit(initValue, endValue, searhDinamic);
 
-          const filter = new IDEE.filter.Function((f) => {
+          const filter = new FilterFunction((f) => {
             const dateTime = f.getAttributes()[l.attributeParam];
             if (l.equalsTimeLine) {
               if (
@@ -872,13 +989,13 @@ class Timeline extends Control {
    * @function
   */
   changeVectorLayer(init, end, layers) {
-    const vectorLayers = layers.filter((l) => l instanceof IDEE.layer.Vector);
+    const vectorLayers = layers.filter((l) => l instanceof Vector);
     vectorLayers.forEach((l) => {
-      l.on(IDEE.evt.LOAD, () => {
+      l.on(EventType.LOAD, () => {
         const searhDinamic = this.searchLayerDinamic(l);
         const [vectorInitValue, vectorEndValue] = this.getGroupLimit(init, end, searhDinamic);
 
-        const filter = new IDEE.filter.Function((f) => {
+        const filter = new FilterFunction((f) => {
           const dateTime = f.getAttributes()[l.attributeParam];
           if (l.equalsTimeLine) {
             if (

@@ -2,6 +2,7 @@
  * @module IDEE/plugin/Comparators
  */
 import '../assets/css/comparators';
+import 'assets/css/fonts';
 import ComparatorsControl from './comparatorscontrol';
 import es from './i18n/es';
 import en from './i18n/en';
@@ -38,13 +39,6 @@ export default class Comparators extends IDEE.Plugin {
      * @type {Boolean}
      */
     this.collapsed = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
-
-    /**
-     * Option to allow the plugin to be collapsible or not
-     * @private
-     * @type {Boolean}
-     */
-    this.collapsible = !IDEE.utils.isUndefined(options.collapsible) ? options.collapsible : true;
 
     /**
      * Indicates order to the plugin
@@ -92,7 +86,8 @@ export default class Comparators extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_comparator.svg',
+      order: this.order,
     });
     map.addButtons(this.button);
 
@@ -102,12 +97,10 @@ export default class Comparators extends IDEE.Plugin {
       minWidth: this.minPanelWidth,
       maxWidth: this.maxPanelWidth,
       className: 'm-plugin-comparators',
-      collapsible: this.collapsible,
       collapsed: this.collapsed,
       collapsedButtonClass: 'comparators-icon-zoom-mapa',
       order: this.order,
     });
-    map.addPanels(this.panel);
 
     this.controls.push(new ComparatorsControl({
       map: this.map,
@@ -119,6 +112,8 @@ export default class Comparators extends IDEE.Plugin {
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
+
+    map.addPanels(this.panel);
   }
 
   /**
@@ -129,7 +124,7 @@ export default class Comparators extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.controls}*${this.collapsed}*${this.collapsible}*${this.tooltip}*${this.options.listLayers}*${this.options.defaultCompareMode}*${this.options.enabledKeyFunctions}*${!!this.options.transparencyParams}*${!!this.options.lyrcompareParams}*${!!this.options.mirrorpanelParams}*${!!this.options.windowsyncParams}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${this.options.listLayers}*${this.options.defaultCompareMode}*${this.options.enabledKeyFunctions}*${!!this.options.transparencyParams}*${!!this.options.lyrcompareParams}*${!!this.options.mirrorpanelParams}*${!!this.options.windowsyncParams}`;
   }
 
   /**

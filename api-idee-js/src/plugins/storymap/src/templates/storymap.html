@@ -1,14 +1,12 @@
-<div id="plugin-panel-content-storymap" class="m-plugin-panel-content" aria-label="Plugin storymap" role="menuitem">
+<div id="plugin-panel-content-storymap" class="m-plugin-panel-content m-plugin-storymap" aria-label="Plugin storymap" role="menuitem">
     <div class="m-storymap-panel" id="m-storymap-panel">
         <main class="mainStoryMap d-flex-center">
             <div class="navPointer d-flex-column-center" id="navPointer">
 
-                <button speed="{{speed}}" id="buttonDelay" class="secondary buttonDelay">
-                    x1
-                </button>
+                <button speed="{{speed}}" id="buttonDelay" class="secondary m-storymap-btn-delay g-cartografia-storymap-btn-x1" title="{{translations.delay}}"></button>
 
-                <button class="secondary buttonPlay" id="play"></button>
-                <button class="secondary buttonPause" id="pause" style="display: none;"></button>
+                <button class="secondary g-cartografia-storymap-btn-play" id="play" title="{{translations.play}}"></button>
+                <button class="secondary g-cartografia-storymap-btn-pause" id="pause" style="display: none;" title="{{translations.pause}}"></button>
 
             </div>
             <div class="navStep d-flex-column-center" id="navStep">

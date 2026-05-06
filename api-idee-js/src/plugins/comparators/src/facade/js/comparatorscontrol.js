@@ -237,7 +237,6 @@ export default class ComparatorsControl extends IDEE.Control {
       setTimeout(() => {
         this.defaultCompareMode_();
       }, 500);
-      this.addSvgIcons(this.html);
       success(this.html);
     });
   }
@@ -611,12 +610,5 @@ export default class ComparatorsControl extends IDEE.Control {
     });
 
     this.eventActive_();
-  }
-
-  addSvgIcons(html) {
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_zoom_recuad', html.querySelector('#mirrorpanel-btn'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_sincro', html.querySelector('#windowsync-btn'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_vent', html.querySelector('#lyrcompare-btn'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_posicion', html.querySelector('#transparency-btn'));
   }
 }

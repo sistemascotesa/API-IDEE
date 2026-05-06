@@ -15,15 +15,6 @@
                 <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
                 <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
                 </link>
-                <style type="text/css">
-                    html,
-                    body {
-                        margin: 0;
-                        padding: 0;
-                        height: 100%;
-                        overflow: auto;
-                    }
-                </style>
                 <% Map<String, String[]> parameterMap = request.getParameterMap();
                     PluginsManager.init (getServletContext());
                     String[] cssfiles = PluginsManager.getCSSFiles(parameterMap);
@@ -33,69 +24,80 @@
                         <% } %>
             </head>
 
-<body>
-    <div class="m-api-idee-test-form-frame">
-        <div class="m-test-form">
-            <div>
-                <label for="selectPosicion" title="Posición del Control">Posición del panel "position"</label>
-                <select name="position" id="selectPosicion">
-                    <option value="left" selected="selected">Izquierda (left)</option>
-                    <option value="right">Derecha (right)</option>
-                    <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
-                    <option value="center-top-right">Centro superior derecho (center-top-right)</option>
-                    <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
-                    <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)</option>
-                    <option value="down">Abajo (down)</option>
-                </select>
-            </div>
-            <div>
-                <label for="order" title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Posición en el panel "order"</label>
-                <input type="number" order="tooltip" id="inputOrder" list="orderSug" value="-1">
-            </div>
-            <div>
-                <label for="inputTooltip">Título "tooltip"</label>
-                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Título de control">
-            </div>
-            <div>
-                <label for="inputBuffer" title="Área de influencia sobre el click">Área de influencia "buffer"</label>
-                <input type="number" order="inputBuffer" id="inputBuffer" list="bufferSug" value="5" min="0">
-            </div>
-            <div>
-                <label for="inputFeatureCount" title="Features que colisionarán como máximo">Contador de features "featureCount"</label>
-                <input type="number" order="inputFeatureCount" id="inputFeatureCount" list="featureCountSug" value="5" min="0">
-            </div>
-            <div>
-                <label for="selectActivated">Preactivado "activated"</label>
-                <select name="activated" id="selectActivated">
-                    <option value="true">true</option>
-                    <option value="false" selected="selected">false</option>
-                </select>
-            </div>
-        </div>
-        <div class="m-test-buttons">
-            <button name="eliminar control" class="m-test-button" id="removeButton">Eliminar Control</button>
-        </div>
-    </div>
-    <div id="mapjs" class="m-container"></div>
-    <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
-    <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="js/configuration.js"></script>
-    <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
-    <%
-      String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
-      for (int i = 0; i < jsfiles.length; i++) {
-         String jsfile = jsfiles[i];
-   %>
-    <script type="text/javascript" src="plugins/<%=jsfile%>"></script>
+            <body>
+                <div class="m-api-idee-test-form-frame">
+                    <div class="m-test-form">
+                        <div>
+                            <label for="selectPosicion" title="Posición del Control">Posición del panel
+                                "position"</label>
+                            <select name="position" id="selectPosicion">
+                                <option value="" selected="selected"></option>
+                                <option value="left">Izquierda (left)</option>
+                                <option value="right">Derecha (right)</option>
+                                <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
+                                <option value="center-top-right">Centro superior derecho (center-top-right)</option>
+                                <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)
+                                </option>
+                                <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)
+                                </option>
+                                <option value="down">Abajo (down)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="inputTooltip" title="Título ilustrativo que aporta información adicional">Título
+                                "tooltip"</label>
+                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
+                        </div>
+                        <div>
+                            <label for="inputOrder"
+                                title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                                entre controles / plugins "order"</label>
+                            <input type="number" name="order" id="inputOrder" list="orderSug" value="1">
+                        </div>
+                        <div>
+                            <label for="featureCountInput" title="Número de features">Conteo de features
+                                "featureCount"</label>
+                            <input type="number" name="featureCount" id="featureCountInput" list="featureCountSug"
+                                value="1" step="1" min="1">
+                        </div>
+                        <div>
+                            <label for="bufferInput" title="ratio en píxeles">Área de influencia en afectada
+                                "buffer"</label>
+                            <input type="number" name="buffer" id="bufferInput" list="bufferInputSug" value="5" step="1"
+                                min="1">
+                        </div>
+                        <div>
+                            <label for="activatedSelect">Activado por defecto "activated"</label>
+                            <select name="exactScale" id="activatedSelect">
+                                <option value=''>default (no value)</option>
+                                <option value="true" selected="selected">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="m-test-buttons">
+                        <button name="eliminar control" class="m-test-button" id="removeButton">Eliminar
+                            Control</button>
+                    </div>
+                </div>
+                <div id="mapjs" class="m-container"></div>
+                <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
+                <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
+                <script type="text/javascript" src="js/configuration.js"></script>
+                <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
+                <% String[] jsfiles=PluginsManager.getJSFiles(parameterMap); for (int i=0; i < jsfiles.length; i++) {
+                    String jsfile=jsfiles[i]; %>
+                    <script type="text/javascript" src="plugins/<%=jsfile%>"></script>
 
                     <% } %>
                         <script type="text/javascript">
                             const urlParams = new URLSearchParams(window.location.search);
                             IDEE.language.setLang(urlParams.get('language') || 'es');
+                            const GetFeatureInfo = IDEE.control.GetFeatureInfo;
                             const map = IDEE.map({
                                 container: 'mapjs',
                                 // controls: ['getfeatureinfo'],
-                                controls: ['location'],
+                                controls: ["rotate*position='right'"],
                                 zoom: 5,
                                 maxZoom: 20,
                                 minZoom: 4,
@@ -105,53 +107,57 @@
                             const selectPosition = document.getElementById('selectPosicion');
                             const inputTooltip = document.getElementById('inputTooltip');
                             const inputOrder = document.getElementById('inputOrder');
-                            const inputBuffer = document.getElementById('inputBuffer');
-                            const inputFeatureCount = document.getElementById('inputFeatureCount');
-                            const selectActivated = document.getElementById('selectActivated');
+                            const featureCountInput = document.getElementById('featureCountInput');
+                            const bufferInput = document.getElementById('bufferInput');
+                            const activatedSelect = document.getElementById('activatedSelect');
 
                             const create = (options) => {
-                              if (!map.hasControl(IDEE.control.GetFeatureInfo.NAME)) map.addControls(new IDEE.control.GetFeatureInfo(options));
+                                if (!map.hasControl(GetFeatureInfo.NAME)) {
+                                    map.addControls(new GetFeatureInfo(options));
+                                }
                             };
 
                             const remove = () => {
-                              const ctrls = map.getControls(IDEE.control.GetFeatureInfo.NAME);
-                              if (ctrls.length === 1) map.removeControls(ctrls[0]);
+                                const ctrls = map.getControls(GetFeatureInfo.NAME);
+                                if (ctrls.length === 1) map.removeControls(ctrls);
                             };
 
                             const recreate = () => {
-                              remove();
-                            
-                              const options = {};
-                              options.position = selectPosition.options[selectPosition.selectedIndex].value;
-                            
-                              if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
-                            
-                              if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
-                            
-                              if (inputBuffer.value !== '') options.buffer = Number(inputBuffer.value);
-                            
-                              const featuresCount = Number(inputFeatureCount.value);
-                              if (featuresCount > 0) options.featureCount = featuresCount;
-                            
-                              options.activated = (selectActivated.options[selectActivated.selectedIndex].value === 'true');
-                            
-                              create(options);
+                                remove();
+
+                                const options = {};
+
+                                const position = selectPosition.options[selectPosition.selectedIndex].value;
+                                if (position !== '') options.position = position;
+
+                                if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
+
+                                if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
+
+                                if (featureCountInput.value !== undefined) options.featureCount = Number(featureCountInput.value);
+
+                                if (bufferInput.value !== undefined) options.buffer = Number(bufferInput.value);
+
+                                const activated = activatedSelect.options[activatedSelect.selectedIndex].value;
+                                if (activated !== '') options.activated = (activated === 'true');
+
+                                create(options);
                             };
 
                             [
-                              selectPosition,
-                              inputTooltip,
-                              inputOrder,
-                              inputBuffer,
-                              inputFeatureCount,
-                              selectActivated,
+                                selectPosition,
+                                inputTooltip,
+                                inputOrder,
+                                featureCountInput,
+                                bufferInput,
+                                activatedSelect,
                             ].forEach((ctrl) => {
-                              ctrl.addEventListener('change', recreate);
+                                ctrl.addEventListener('change', recreate);
                             });
 
                             const removeButton = document.getElementById('removeButton');
                             removeButton.addEventListener('click', () => {
-                              remove();
+                                remove();
                             });
 
                             recreate();
@@ -185,7 +191,7 @@
                                 baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
                                 position: "left",
                             });
-                            
+
                             map.addPlugin(mp);
                         </script>
             </body>

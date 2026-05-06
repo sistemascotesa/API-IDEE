@@ -3,7 +3,7 @@
  * @module IDEE/plugin/StyleManager
  */
 import 'css/stylemanager.css';
-import 'css/font-awesome.min.css';
+import 'css/fonts.css';
 import 'templates/categorystyles';
 import StyleManagerControl from './stylemanagerControl';
 import { ColorPickerPolyfill } from './utils/colorpicker';
@@ -33,18 +33,11 @@ export default class StyleManager extends IDEE.Plugin {
      * @private
      * @type {Boolean}
      */
-    this.collapsed_ = options.collapsed;
-    if (this.collapsed_ === undefined) this.collapsed_ = true;
+    this.collapsed = options.collapsed;
+    if (this.collapsed === undefined) this.collapsed = true;
 
     /**
-     * Option to allow the plugin to be collapsible or not
-     * @private
-     * @type {Boolean}
-     */
-    this.collapsible_ = options.collapsible;
-    if (this.collapsible_ === undefined) this.collapsible_ = true;
-
-    /**
+     * Sets the preselected layer in the plugin, if it is not defined, no layer will be preselected
      * @private
      * @type {IDEE.layer.Vector}
      */
@@ -57,7 +50,12 @@ export default class StyleManager extends IDEE.Plugin {
      */
     this.options = options;
 
-    this.minPanelWidth = 360;
+    /**
+     * Minimum width of the panel
+      * @private
+      * @type {number}
+     */
+    this.minPanelWidth = 608;
 
     ColorPickerPolyfill.apply(window);
 
@@ -78,29 +76,29 @@ export default class StyleManager extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_stylemanager.svg',
       order: this.order,
     });
     map.addButtons(this.button);
 
     this.panel = new IDEE.ui.Panel(this.name, {
       tooltip: this.tooltip,
-      position: IDEE.ui.position[this.position],
+      position: this.position,
       minWidth: this.minPanelWidth,
       maxWidth: this.maxPanelWidth,
       className: 'm-stylemanager',
-      collapsible: this.collapsible_,
-      collapsed: this.collapsed_,
+      collapsed: this.collapsed,
       collapsedButtonClass: 'stylemanager-palette',
       order: this.order,
     });
-    map.addPanels(this.panel);
 
     this.controls.push(new StyleManagerControl(this.layer_));
     this.panel.addControls(this.controls);
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
+
+    map.addPanels(this.panel);
   }
 
   /**
@@ -111,7 +109,7 @@ export default class StyleManager extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed_}*${this.collapsible_}*${this.tooltip}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}`;
   }
 
   /**

@@ -7,9 +7,11 @@ import template from 'templates/rotate';
 import templateCesium from 'templates/rotateCesium';
 import myhelp from 'templates/rotatehelp';
 import myhelpCesium from 'templates/rotatehelpCesium';
-import ControlBase from './Control';
+import Control from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isBoolean,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
 import * as Position from '../ui/position';
@@ -145,22 +147,53 @@ export const onMouseMove = (instance, html, map) => {
 };
 
 /**
+ * @typedef {Object} module:IDEE/control/Rotate~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Boolean} [help] Indica si se muestra la ayuda al crear el control. Solo para Cesium.
+ * @property {Number} [order] Accesibilidad, z-index.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
+ */
+
+/**
  * @classdesc
  * Agrega la funcionalidad para rotar el mapa.
- *
+ * @property {String} [position='left'] Posición del control.
+ * @property {String} [tooltip] Texto del tooltip. por defecto la tradcución
+ * @property {Boolean} [help=true] Indica si se muestra la ayuda al crear el control.
+ * Solo para Cesium.
+ * @property {Number} [order=0] Accesibilidad, z-index.
+ * @property {Boolean} [active_=false] Estado activo del control.
+ * @property {Boolean} [isMouseDown_=false] Estado de pulsación del ratón.
  * @api
  * @extends {IDEE.Control}
+ *
+ * @note Para más opciones heredadas, ver {@link module:IDEE/control/Control~Options}.
  */
-class Rotate extends ControlBase {
+class Rotate extends Control {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {String} options Opciones del control.
-   * - viewInitial: Vista inicial. Solo disponible para Cesium.
-   * - help: Indica si se muestra la ayuda al crear el control.
-   * Por defecto, verdadero. Solo disponible para Cesium.
    * @api
+   * @param {module:IDEE/control/Rotate~Options} options Opciones del control.
+   *
+   *  @example
+   * const map = IDEE.map({
+   *   container: 'map',
+   *   zoom: 6,
+   * };
+   *
+   * const control = new IDEE.control.Rotate({
+   *   position: 'left',
+   *   tooltip: 'Control de rotación',
+   *   order: 2,
+   *   collapsible: false,
+   *   vendorOptions: {}
+   * });
+   *
+   * map.addControls(control);
    */
   constructor(options = {}) {
     if (isUndefined(RotateImpl) || (isObject(RotateImpl)
@@ -169,8 +202,8 @@ class Rotate extends ControlBase {
     }
 
     const opts = {
-      help: isNullOrEmpty(options.help) || isUndefined(options.help) ? true : options.help,
       ...options,
+      help: isBoolean(options.help) ? options.help : true,
     };
 
     // implementation of this control
@@ -200,7 +233,7 @@ class Rotate extends ControlBase {
       const textHelp = getValue('rotate').help;
       compTemplate = compileTemplate(templateCesium, {
         vars: {
-          title: getValue('rotate').titleCesium,
+          title: this.tooltip ?? getValue('rotate').titleCesium,
           title_help: getValue('rotate').title_help,
           title_help_container: textHelp.title,
           title1: textHelp.title1,
@@ -220,7 +253,7 @@ class Rotate extends ControlBase {
     } else {
       compTemplate = compileTemplate(template, {
         vars: {
-          title: getValue('rotate').title,
+          title: this.tooltip ?? getValue('rotate').title,
           order: this.order,
         },
       });

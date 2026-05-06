@@ -9,13 +9,17 @@ import Measure from './Measure';
 
 /**
  * @classdesc
- * Main constructor of the class. Creates a MeasureArea
- * control
+ * Hereda de {@link module:IDEE/impl/control/Measure|Measure}.
+ * Control especializado para medir áreas en el mapa. Permite al usuario
+ * dibujar polígonos y calcula automáticamente el área en different unidades.
  *
- * @constructor
- * @extends {Measure}
+ * @property {string} [helpMsg_] Mensaje de ayuda para comenzar a medir área.
+ * @property {string} [helpMsgContinue_] Mensaje de ayuda para continuar dibujando.
+ * @property {number} [area_] Área calculada de la última medida.
+ *
  * @api stable
- */
+ * @extends {module:IDEE/impl/control/Measure}
+* */
 class MeasureArea extends Measure {
   constructor() {
     super('Polygon');

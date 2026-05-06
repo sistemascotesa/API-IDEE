@@ -38,57 +38,114 @@
 </head>
 
 <body>
-    <div>
-        <label for="inputTooltip">Parámetro tooltip</label>
-        <input type="text" name="tooltip" id="inputTooltip" value="Coordenadas" />
-        <label for="inputSrs">Parámetro srs</label>
-        <input type="text" name="srs" id="inputSrs" value="EPSG:4326" />
-        <label for="inputLabel">Parámetro label</label>
-        <input type="text" name="Label" id="inputLabel" value="WGS84" />
-        <label for="inputPrecision">Parámetro precision</label>
-        <input type="number" name="precision" id="inputPrecision" value="4" />
-        <label for="inputGeoDecimalDigits">Parámetro geoDecimalDigits</label>
-        <input type="number" name="geoDecimalDigits" id="inputGeoDecimalDigits" value="3" />
-        <label for="inputUtmDecimalDigits">Parámetro utmDecimalDigits</label>
-        <input type="number" name="utmDecimalDigits" id="inputUtmDecimalDigits" value="2" />
-        <label for="selectActiveZ">Selector de activeZ</label>
-        <select name="activeZ" id="selectActiveZ">
-            <option value="false" selected="selected">false</option>
-            <option value="true">true</option>
-        </select>
-        <label for="epsgFormat">Selector de epsgFormat</label>
-        <select name="epsgFormat" id="epsgFormat">
-            <option value="false" selected="selected">false</option>
-            <option value="true">true</option>
-        </select>
-        <label for="mode">Selector de mode</label>
-        <select name="mode" id="mode">
-            <option value="wcs" selected="selected">wcs</option>
-            <option value="ogcapicoverage">ogcapicoverage</option>
-        </select><label for="coveragePrecissions">coveragePrecissions</label>
-        <textarea name="coveragePrecission" id="coveragePrecissions" rows="4">[
-            {
-              "url": "https://api-coverages.idee.es/collections/EL.ElevationGridCoverage_4326_1000/coverage",
-              "minzoom": 0,
-              "maxzoom": 11
-            },
-            {
-              "url": "https://api-coverages.idee.es/collections/EL.ElevationGridCoverage_4326_500/coverage",
-              "minzoom": 12,
-              "maxzoom": 28
-            }
-          ]</textarea>
-        <label for="draggableDialog">Mover dialog</label>
-        <select name="draggableDialog" id="draggableDialog">
-            <option value="false" selected="selected">false</option>
-            <option value="true">true</option>
-        </select>
-        <label for="helpUrl">Parámetro helpUrl</label>
-        <input type="text" name="helpUrl" id="inputHelpUrl" list="helpUrl">
-        <datalist id="helpUrl">
-            <option value="https://www.ign.es/">Ayuda</option>
-        </datalist>
-        <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar" />
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosition" title="Posición del plugin sobre el mapa. Por defecto: down">Posición "position"</label>
+                <select name="position" id="selectPosition">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                    <option value="down">Abajo</option>
+                    <option value="center-top-left">Esquina superior izquierda</option>
+                    <option value="center-top-right">Esquina superior derecha</option>
+                    <option value="center-bottom-left">Esquina inferior izquierda</option>
+                    <option value="center-bottom-right">Esquina inferior derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder" title="Define en qué posición del panel debe aparecer en el conjunto de controles o plugins">Orden entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="1">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Coordenadas">Título de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug">
+                <datalist id="tooltipSug">
+                    <option value="Coordenadas"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputSrs" title="Código EPSG del SRS sobre el que se mostrarán las coordenadas del ratón. Por defecto: EPSG:4326">SRS "srs"</label>
+                <input type="text" name="srs" id="inputSrs" list="srsSug">
+                <datalist id="srsSug">
+                    <option value="EPSG:4326"></option>
+                    <option value="EPSG:4083"></option>
+                    <option value="EPSG:25829"></option>
+                    <option value="EPSG:25830"></option>
+                    <option value="EPSG:25831"></option>
+                    <option value="EPSG:4258"></option>
+                    <option value="EPSG:3857"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputLabel" title="Etiqueta descriptiva del SRS que se muestra junto a las coordenadas. Por defecto: WGS84">Etiqueta "label"</label>
+                <input type="text" name="label" id="inputLabel" list="labelSug">
+                <datalist id="labelSug">
+                    <option value="WGS84"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputPrecision" title="Número de decimales por defecto cuando no se especifica geoDecimalDigits ni utmDecimalDigits. Por defecto: 4">Precisión decimal "precision"</label>
+                <input type="number" name="precision" id="inputPrecision" list="precisionSug" value="4">
+            </div>
+            <div>
+                <label for="inputGeoDecimalDigits" title="Número de decimales para coordenadas geográficas (p. ej. EPSG:4326, EPSG:4083, EPSG:4258). No tiene valor por defecto">Decimales geográficos "geoDecimalDigits"</label>
+                <input type="number" name="geoDecimalDigits" id="inputGeoDecimalDigits" list="geoDecimalDigitsSug">
+            </div>
+            <div>
+                <label for="inputUtmDecimalDigits" title="Número de decimales para coordenadas UTM (p. ej. EPSG:25829, EPSG:25830, EPSG:25831). No tiene valor por defecto">Decimales UTM "utmDecimalDigits"</label>
+                <input type="number" name="utmDecimalDigits" id="inputUtmDecimalDigits" list="utmDecimalDigitsSug">
+            </div>
+            <div>
+                <label for="selectActiveZ" title="Añade la altitud (eje Z) a las coordenadas mostradas. Por defecto: false">Altitud activa "activeZ"</label>
+                <select name="activeZ" id="selectActiveZ">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectEpsgFormat" title="Muestra el nombre descriptivo del sistema de referencia en lugar del código SRS del EPSG. Por defecto: false">Formato EPSG "epsgFormat"</label>
+                <select name="epsgFormat" id="selectEpsgFormat">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectMode" title="Modo de obtención de la altitud: wcs (servicio WCS) u ogcapicoverage (OGC API Coverages). Por defecto: wcs">Modo de altitud "mode"</label>
+                <select name="mode" id="selectMode">
+                    <option value="" selected="selected"></option>
+                    <option value="wcs">wcs</option>
+                    <option value="ogcapicoverage">ogcapicoverage</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputCoveragePrecissions" title="Array JSON con objetos que definen la URL del servicio de cobertura y los rangos de zoom (minzoom, maxzoom) para cada nivel de precisión. Propiedades: url (string), minzoom (number), maxzoom(number)">Precisión cobertura "coveragePrecissions"</label>
+                <input type="text" name="coveragePrecissions" id="inputCoveragePrecissions" list="coveragePrecissionsSug" value='[{"url":"https://api-coverages.idee.es/collections/EL.ElevationGridCoverage_4326_1000/coverage","minzoom":0,"maxzoom":11},{"url":"https://api-coverages.idee.es/collections/EL.ElevationGridCoverage_4326_500/coverage","minzoom":12,"maxzoom":28}]'>
+                <datalist id="coveragePrecissionsSug">
+                    <option value='[{"url":"https://api-coverages.idee.es/collections/EL.ElevationGridCoverage_4326_1000/coverage","minzoom":0,"maxzoom":11},{"url":"https://api-coverages.idee.es/collections/EL.ElevationGridCoverage_4326_500/coverage","minzoom":12,"maxzoom":28}]'></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="selectDraggableDialog" title="Permite mover el diálogo de selección de EPSG arrastrándolo por el mapa. Por defecto: false">Diálogo arrastrable "draggableDialog"</label>
+                <select name="draggableDialog" id="selectDraggableDialog">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputHelpUrl" title="URL de la página de ayuda. Si no se indica, no se muestra el botón de ayuda">URL de ayuda "helpUrl"</label>
+                <input type="text" name="helpUrl" id="inputHelpUrl" list="helpUrlSug">
+                <datalist id="helpUrlSug">
+                    <option value="https://www.ign.es/"></option>
+                </datalist>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+        </div>
     </div>
     <div id="mapjs" class="m-container"></div>
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
@@ -116,84 +173,95 @@
             maxZoom: 20,
             minZoom: 4,
             center: [-467062.8225, 4783459.6216],
+            controls: ['scale', 'rotate'],
         });
-        let mp;
-        let tooltip, psrs, label, precision, geoDecimalDigits, utmDecimalDigits, activeZ, helpUrl, epsgFormat, draggableDialog;
-        crearPlugin({
-            tooltip: "Muestra coordenadas",
-            srs: "EPSG:4326",
-            label: "WGS84",
-            precision: 4,
-            geoDecimalDigits: 3,
-            utmDecimalDigits: 2,
-            activeZ: false,
-            helpUrl: helpUrl,
-            epsgFormat: false,
-            draggableDialog: false
-        });
+        window.map = map;
 
-        const inputTooltip = document.getElementById("inputTooltip");
-        const inputSrs = document.getElementById("inputSrs");
-        const inputLabel = document.getElementById("inputLabel");
-        const inputPrecision = document.getElementById("inputPrecision");
-        const inputGeoDecimalDigits = document.getElementById("inputGeoDecimalDigits");
-        const inputUtmDecimalDigits = document.getElementById("inputUtmDecimalDigits");
-        const selectActiveZ = document.getElementById("selectActiveZ");
-        const selectMode = document.getElementById("mode");
-        const inputCoveragePrecissions = document.getElementById("coveragePrecissions");
-        const epsgFormatElement = document.getElementById("epsgFormat");
-        const draggableDialogElement = document.getElementById("draggableDialog");
-        const inputHelpUrl = document.getElementById("inputHelpUrl");
+        let mp = null;
 
-        inputTooltip.addEventListener('change', cambiarTest);
-        inputSrs.addEventListener('change', cambiarTest);
-        inputLabel.addEventListener('change', cambiarTest);
-        inputPrecision.addEventListener('change', cambiarTest);
-        inputGeoDecimalDigits.addEventListener('change', cambiarTest);
-        inputUtmDecimalDigits.addEventListener('change', cambiarTest);
-        selectActiveZ.addEventListener('change', cambiarTest);
-        selectMode.addEventListener('change', cambiarTest);
-        inputCoveragePrecissions.addEventListener('change', cambiarTest);
-        epsgFormatElement.addEventListener('change', cambiarTest);
-        draggableDialogElement.addEventListener('change', cambiarTest);
-        inputHelpUrl.addEventListener('change', cambiarTest);
-
-        function cambiarTest() {
-            let objeto = {}
-            tooltip = inputTooltip.value != "" ? objeto.tooltip = inputTooltip.value : "";
-            psrs = inputSrs.value != "" ? objeto.srs = inputSrs.value : "";
-            label = inputLabel.value != "" ? objeto.label = inputLabel.value : "";
-            precision = inputPrecision.value != "" ? objeto.precision = inputPrecision.value : "";
-            geoDecimalDigits = inputGeoDecimalDigits.value != "" ? objeto.geoDecimalDigits = inputGeoDecimalDigits.value : "";
-            utmDecimalDigits = inputUtmDecimalDigits.value != "" ? objeto.utmDecimalDigits = inputUtmDecimalDigits.value : "";
-            activeZ = selectActiveZ.value != "" && (selectActiveZ.value == "true" || selectActiveZ.value == true) ? objeto.activeZ = true : objeto.activeZ = false;
-            epsgFormat = epsgFormatElement.value != "" && (epsgFormatElement.value == "true" || epsgFormatElement.value == true) ? objeto.epsgFormat = true : objeto.epsgFormat = false;
-            objeto.mode = selectMode.value;
-            objeto.coveragePrecissions = JSON.parse(inputCoveragePrecissions.value);
-            helpUrl = inputHelpUrl.value != "" ? objeto.helpUrl = inputHelpUrl.value : "";
-            draggableDialog = draggableDialogElement.value != "" && (draggableDialogElement.value == "true" || draggableDialogElement.value == true) ? objeto.draggableDialog = true : objeto.draggableDialog = false;
-            
-            if (mp) {
-                map.removePlugins(mp);
-                if (typeof mp.destroy === 'function') mp.destroy();
-            }
-
-            crearPlugin(objeto);
-        }
-
-        function crearPlugin(propiedades) {
-            mp = new IDEE.plugin.MouseSRS(propiedades);
+        const createPlugin = (options) => {
+            mp = new IDEE.plugin.MouseSRS(options);
+            window.mp = mp;
             map.addPlugin(mp);
-        }
-        let mp2 = new IDEE.plugin.ShareMap({
+        };
+
+        const removePlugin = () => {
+            if (mp) map.removePlugins(mp);
+        };
+
+        const removeButton = document.getElementById('removeButton');
+        removeButton.addEventListener('click', () => { removePlugin(); });
+
+        const selectPosition = document.getElementById('selectPosition');
+        const inputTooltip = document.getElementById('inputTooltip');
+        const inputSrs = document.getElementById('inputSrs');
+        const inputLabel = document.getElementById('inputLabel');
+        const inputPrecision = document.getElementById('inputPrecision');
+        const inputGeoDecimalDigits = document.getElementById('inputGeoDecimalDigits');
+        const inputUtmDecimalDigits = document.getElementById('inputUtmDecimalDigits');
+        const selectActiveZ = document.getElementById('selectActiveZ');
+        const selectEpsgFormat = document.getElementById('selectEpsgFormat');
+        const selectMode = document.getElementById('selectMode');
+        const inputCoveragePrecissions = document.getElementById('inputCoveragePrecissions');
+        const selectDraggableDialog = document.getElementById('selectDraggableDialog');
+        const inputHelpUrl = document.getElementById('inputHelpUrl');
+        const inputOrder = document.getElementById('inputOrder');
+
+        const boolVal = (select, defaultVal = true) => {
+            const v = select.options[select.selectedIndex].value;
+            if (v === '') return defaultVal;
+            return v === 'true';
+        };
+
+        const updatePlugin = () => {
+            const options = {};
+            options.position = selectPosition.options[selectPosition.selectedIndex].value;
+            options.tooltip = inputTooltip.value;
+            options.srs = inputSrs.value;
+            options.label = inputLabel.value;
+            options.precision = Number(inputPrecision.value);
+            options.geoDecimalDigits = inputGeoDecimalDigits.value !== '' ? Number(inputGeoDecimalDigits.value) : undefined;
+            options.utmDecimalDigits = inputUtmDecimalDigits.value !== '' ? Number(inputUtmDecimalDigits.value) : undefined;
+            options.activeZ = boolVal(selectActiveZ, false);
+            options.epsgFormat = boolVal(selectEpsgFormat, false);
+            options.mode = selectMode.options[selectMode.selectedIndex].value;
+            if (inputCoveragePrecissions.value.trim()) {
+                try { options.coveragePrecissions = JSON.parse(inputCoveragePrecissions.value); } catch (e) { options.coveragePrecissions = inputCoveragePrecissions.value; }
+            }
+            options.draggableDialog = boolVal(selectDraggableDialog, false);
+            options.helpUrl = inputHelpUrl.value;
+            options.order = Number(inputOrder.value);
+
+            removePlugin();
+            createPlugin(options);
+        };
+
+        [
+            selectPosition,
+            inputTooltip,
+            inputSrs,
+            inputLabel,
+            inputPrecision,
+            inputGeoDecimalDigits,
+            inputUtmDecimalDigits,
+            selectActiveZ,
+            selectEpsgFormat,
+            selectMode,
+            inputCoveragePrecissions,
+            selectDraggableDialog,
+            inputHelpUrl,
+            inputOrder,
+        ].forEach((ctrl) => {
+            ctrl.addEventListener('change', updatePlugin);
+        });
+
+        updatePlugin();
+
+        /* let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });
-        map.addPlugin(mp2);
-        const botonEliminar = document.getElementById("botonEliminar");
-        botonEliminar.addEventListener("click", function() {
-            map.removePlugins(mp);
-        });
+        map.addPlugin(mp2); */
     </script>
 </body>
 

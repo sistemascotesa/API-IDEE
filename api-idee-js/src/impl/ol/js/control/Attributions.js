@@ -6,8 +6,17 @@ import Control from './Control';
 
 /**
  * @classdesc
- * Panel de atribuciones API-CING.
+ * Hereda de {@link module:IDEE/impl/control/Control|Control}.
+ * Panel de atribuciones del mapa. Muestra las atribuciones y referencias de las capas
+ * visibles en el mapa. Permite al usuario acceder a información adicional sobre
+ * las fuentes de datos cartográficos.
+ *
+ * @property {IDEE.Map} [map_] Referencia al mapa de fachada.
+ * @property {ol.interaction.DoubleClickZoom} [dblClickInteraction_] Referencia a la interacción
+ * de doble clic para zoom.
+ *
  * @api
+ * @extends {module:IDEE/impl/control/Control}
  */
 class Attributions extends Control {
   /**

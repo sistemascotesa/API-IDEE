@@ -499,7 +499,7 @@ class Map extends Base {
    */
   createAttribution(options = {}, control = null) {
     // Comprobar si existe el control
-    if (this.getControls().some(({ name }) => name === 'attributions')) {
+    if (this.getControls().some(({ name }) => name === Attributions.NAME)) {
       return;
     }
     const {
@@ -528,7 +528,7 @@ class Map extends Base {
         position: Position[position] || Position.LEFT,
         className: 'm-attributions',
         collapsedButtonClass: 'g-cartografia-comentarios',
-        tooltip: tooltip || getValue('attributions').title,
+        tooltip: tooltip || getValue(Attributions.NAME).title,
         order,
       });
       this.addPanels(panel);
@@ -2960,8 +2960,10 @@ class Map extends Base {
    *
    * @public
    * @function
-   * @param {string|Object|Array<String>|Array<Object>} controlTypeObj
+   * @param {string|Object|Array<String>|Array<Object>} controlsParamVar
    * Colección o nombre de los controles.
+   * @param {Boolean} skipCheckDuplicate Indica si se debe omitir la
+   * comprobación de controles duplicados.
    * @returns {Map} Devuelve el estado del mapa.
    * @api
    */
@@ -3996,6 +3998,10 @@ class Map extends Base {
     return this;
   }
 
+  /**
+   * @param {IDEE.Pugin | string} plugin a plugin or one plugin name
+   * @returns {IDEE.Map}
+   */
   removePlugin(plugin) {
     // checks if the param is null or empty
     if (isNullOrEmpty(plugin)) {
@@ -4675,23 +4681,29 @@ class Map extends Base {
    */
   openSidePanel(panel) {
     if (this.isCompactMode()) {
+      [
+        [this.leftPanel, this.leftHandle, '--left-width'],
+        [this.rightPanel, this.rightHandle, '--right-width'],
+      ].forEach(([lateralPanel, handle, cssVar]) => {
+        this.closeLateralPanel_(lateralPanel, handle, cssVar);
+      });
       this.openPanelCompactMode(panel);
     } else {
       const { minWidth, maxWidth, position } = panel;
       let sidePanel; let handle;
-      let panelAttribute;
+      let panelWidth;
       if (position === Position.LEFT) {
         sidePanel = this.leftPanel;
         handle = this.leftHandle;
-        panelAttribute = '--left-width';
-      } else if (position === 'right') {
+        panelWidth = '--left-width';
+      } else if (position === Position.RIGHT) {
         sidePanel = this.rightPanel;
         handle = this.rightHandle;
-        panelAttribute = '--right-width';
+        panelWidth = '--right-width';
       }
 
       this.minPanelWidth = 256;
-      this.maxPanelWidth = 360;
+      this.maxPanelWidth = 608;
 
       if (minWidth >= this.minPanelWidth && minWidth <= this.maxPanelWidth) {
         this.minPanelWidth = minWidth;
@@ -4711,7 +4723,27 @@ class Map extends Base {
 
       this.addPanelToPanelContainer(sidePanel, panel);
       handle.style.visibility = 'visible';
-      this.toolPanelsContainer.style.setProperty(panelAttribute, `${this.openPanelWidth}px`);
+      this.toolPanelsContainer.style.setProperty(panelWidth, `${this.openPanelWidth}px`);
+    }
+  }
+
+  /**
+   * Closes a side panel if it is open, hiding its handle and clearing its content.
+   * - ⚠️ Warning: This method should not be called by the user.
+   * @private
+   * @function
+   * @param {HTMLElement} panel Side panel element.
+   * @param {HTMLElement} handle Associated handle element.
+   * @param {string} cssVar CSS variable that controls the panel's width.
+   */
+  closeLateralPanel_(panel, handle, cssVar) {
+    const currentWidth = this.toolPanelsContainer.style.getPropertyValue(cssVar);
+    if (currentWidth && currentWidth !== '0px') {
+      this.toolPanelsContainer.style.setProperty(cssVar, '0px');
+      handle.style.visibility = 'hidden'; // eslint-disable-line no-param-reassign
+      Array.from(panel.children).forEach((child) => {
+        if (child !== handle) panel.removeChild(child);
+      });
     }
   }
 
@@ -4736,14 +4768,7 @@ class Map extends Base {
       panelElementsList.push(rightPanelElements);
     }
     panelElementsList.forEach(([panel, handle, gridSizeVar]) => {
-      this.toolPanelsContainer.style.setProperty(gridSizeVar, '0px');
-      // eslint-disable-next-line no-param-reassign
-      handle.style.visibility = 'hidden';
-      Array.from(panel.children).forEach((child) => {
-        if (child !== handle) {
-          panel.removeChild(child);
-        }
-      });
+      this.closeLateralPanel_(panel, handle, gridSizeVar);
     });
   }
 
@@ -4757,22 +4782,20 @@ class Map extends Base {
     const isCompact = this.isCompactMode();
     /** @type {IDEE.ui.Button[]} */
     let buttons = this.buttons ?? [];
-    /** La pantalla ha cambiado de relación tamaño aspecto cambiando a modo PC,
-      pero el panel superior sigue abierto o algún botón sigue presionado sin panel abieto,
-      por lo que se considera que está en modo compacto
-      y se cierran todos aquellos que no sean el botón que se va a abrir,
-      independientemente de su posición.
-    */
-    if (isCompact
-      || this.toolPanelsContainer.style.getPropertyValue('--up-height') !== '0px'
-      || (this.toolPanelsContainer.style.getPropertyValue('--left-width') === '0px' && buttons.filter((btn) => btn.position === Position.LEFT).some((btn) => btn.pressed))
-      || (this.toolPanelsContainer.style.getPropertyValue('--right-width') === '0px' && buttons.filter((btn) => btn.position === Position.RIGHT).some((btn) => btn.pressed))
-    ) {
+
+    const isUpPanelOpened = (() => {
+      const v = this.toolPanelsContainer.style.getPropertyValue('--up-height');
+      return v !== '' && v !== '0px';
+    })();
+
+    if (isCompact || isUpPanelOpened) {
       buttons = buttons.filter((mapButton) => !mapButton.equals(button));
     } else {
-      buttons = buttons.filter((mapButton) => !mapButton.equals(button)
-      && ((mapButton.position === button.position)));
+      buttons = buttons.filter(
+        (mapButton) => !mapButton.equals(button) && mapButton.position === button.position,
+      );
     }
+
     buttons.forEach((mapButton) => {
       mapButton.deactivate();
     });

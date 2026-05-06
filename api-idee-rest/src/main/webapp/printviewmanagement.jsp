@@ -1,219 +1,215 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="es.api_idee.plugins.PluginsManager"%>
-<%@ page import="java.util.Map"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+    <%@ page import="es.api_idee.plugins.PluginsManager" %>
+        <%@ page import="java.util.Map" %>
 
-<!DOCTYPE html>
-<html lang="en">
+            <!DOCTYPE html>
+            <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="idee" content="yes">
-    <title>Visor base</title>
-    <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css" />
-    <link href="plugins/printviewmanagement/printviewmanagement.ol.min.css" rel="stylesheet" />
-    <style type="text/css">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: auto;
-        }
-    </style>
-    <%
-      Map<String, String[]> parameterMap = request.getParameterMap();
-      PluginsManager.init (getServletContext());
-      String[] cssfiles = PluginsManager.getCSSFiles(parameterMap);
-      for (int i = 0; i < cssfiles.length; i++) {
-         String cssfile = cssfiles[i];
-   %>
-    <link type="text/css" rel="stylesheet" href="plugins/<%=cssfile%>">
-    </link>
-    <%
-      } %>
-</head>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport"
+                    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                <meta name="idee" content="yes">
+                <title>Visor base</title>
+                <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
+                <link href="plugins/printviewmanagement/printviewmanagement.ol.min.css" rel="stylesheet" />
+                <% Map<String, String[]> parameterMap = request.getParameterMap();
+                    PluginsManager.init (getServletContext());
+                    String[] cssfiles = PluginsManager.getCSSFiles(parameterMap);
+                    for (int i = 0; i < cssfiles.length; i++) { String cssfile=cssfiles[i]; %>
+                        <link type="text/css" rel="stylesheet" href="plugins/<%=cssfile%>">
+                        </link>
+                        <% } %>
+                <style rel="stylesheet">
+                    html,
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        height: 100%;
+                        overflow: hidden;
+                    }
+                </style>
+            </head>
 
-<body>
-    <div>
-        <label for="selectPosition">Selector de posición del plugin</label>
-        <select name="position" id="selectPosition">
-            <option value="left">Izquierda</option>
-            <option value="right" selected="selected">Derecha</option>
-        </select>
-        <label for="selectCollapsed">Selector collapsed</label>
-        <select name="collapsedValue" id="selectCollapsed">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <label for="selectCollapsible">Selector collapsible</label>
-        <select name="collapsibleValue" id="selectCollapsible">
-            <option value=true>true</option>
-            <option value=false>false</option>
-        </select>
-        <label for="tooltipInput">Parámetro Tooltip</label>
-        <input type="text" value="Impresión del mapa" id="tooltipInput"/>
-        <label for="selectIsdraggable">Parámetro isDraggable</label>
-        <select name="isdraggable" id="selectIsdraggable">
-            <option value=""></option>
-            <option value="true">true</option>
-            <option value="false" selected="selected">false</option>
-        </select>
+            <body>
+                <div class="m-api-idee-test-form-frame">
+                    <div class="m-test-form">
+                        <div>
+                            <label for="selectPosition" title="Posición del plugin sobre el mapa">Posición "position"</label>
+                            <select name="position" id="selectPosition">
+                                <option value="" selected="selected"></option>
+                                <option value="left">Izquierda</option>
+                                <option value="right">Derecha</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="selectCollapsed"
+                                title="Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true">Colapsado
+                                "collapsed"</label>
+                            <select name="collapsed" id="selectCollapsed">
+                                <option value="" selected="selected"></option>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="inputOrder"
+                                title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                                entre controles / plugins "order"</label>
+                            <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+                        </div>
+                        <div>
+                            <label for="inputTooltip"
+                                title="Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Impresión del mapa">Título
+                                de la herramienta "tooltip"</label>
+                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Impresión del mapa">
+                            <datalist id="tooltipSug">
+                                <option value="Impresión del mapa"></option>
+                            </datalist>
+                        </div>
+                        <div>
+                            <label for="inputDefaultOpenControl"
+                                title="Índice del modo de impresión que aparecerá abierto al inicio: 0=ninguno, 1=printermap, 2=georefImage, 3=georefImageEpsg. Por defecto: 0">Modo por defecto "defaultOpenControl"</label>
+                            <input type="number" id="inputDefaultOpenControl" value="0" min="0" max="3" step="1">
+                        </div>
+                        <div>
+                            <label for="inputGeorefImageEpsg"
+                                title="Objeto de configuración del control de georreferenciación por EPSG. Campos: tooltip (string), layers (array de {url, name, format, legend, EPSG?}), defaultDpiOptions (array de números). Escribe false para desactivar este modo de impresión">Configuración
+                                "georefImageEpsg"</label>
+                            <input type="text" id="inputGeorefImageEpsg" list="georefImageEpsgSug">
+                            <datalist id="georefImageEpsgSug">
+                                <option value='{"tooltip":"Georeferenciar imagen predefinida","layers":[{"url":"http://www.ign.es/wms-inspire/mapa-raster?","name":"mtn_rasterizado","format":"image/jpeg","legend":"Mapa ETRS89 UTM"},{"url":"http://www.ign.es/wms-inspire/pnoa-ma?","name":"OI.OrthoimageCoverage","format":"image/jpeg","legend":"Imagen (PNOA) ETRS89 UTM"}],"defaultDpiOptions":[96,150,300]}'></option>
+                            </datalist>
+                        </div>
+                        <div>
+                            <label for="inputGeorefImage"
+                                title="Objeto de configuración del control de georreferenciación de imagen. Campos: tooltip (string), defaultDpiOptions (array de números). Escribe false para desactivar este modo de impresión">Configuración
+                                "georefImage"</label>
+                            <input type="text" id="inputGeorefImage" list="georefImageSug">
+                            <datalist id="georefImageSug">
+                                <option value='{"tooltip":"Georeferenciar imagen","defaultDpiOptions":[96,150,300]}'></option>
+                            </datalist>
+                        </div>
+                        <div>
+                            <label for="inputPrintermap"
+                                title="Objeto de configuración del control de impresión con plantilla. Campos: tooltip (string), filterTemplates (array de rutas HTML), showDefaultTemplate (boolean), defaultDpiOptions (array de números), layoutsRestraintFromDpi (array de strings). Escribe false para desactivar este modo de impresión">Configuración
+                                "printermap"</label>
+                            <input type="text" id="inputPrintermap" list="printermapSug">
+                            <datalist id="printermapSug">
+                                <option value='{"tooltip":"Impresión del mapa","filterTemplates":["${api-idee.static_resources.url}/plantillas/html/templateConBorde.html","${api-idee.static_resources.url}/plantillas/html/templateConCabezeraYBorde.html","${api-idee.static_resources.url}/plantillas/html/templateConFooterYBorde.html"],"showDefaultTemplate":true,"defaultDpiOptions":[96,150,300],"layoutsRestraintFromDpi":["screensize","A0","A1","A2"]}'></option>
+                            </datalist>
+                        </div>
+                    </div>
+                    <div class="m-test-buttons">
+                        <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+                    </div>
+                </div>
+                <div id="mapjs" class="m-container"></div>
+                <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
+                <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
+                <script type="text/javascript" src="js/configuration.js"></script>
+                <script type="text/javascript" src="plugins/printviewmanagement/printviewmanagement.ol.min.js"></script>
+                <% String[] jsfiles=PluginsManager.getJSFiles(parameterMap); for (int i=0; i < jsfiles.length; i++) {
+                    String jsfile=jsfiles[i]; %>
+                    <script type="text/javascript" src="plugins/<%=jsfile%>"></script>
+                    <% } %>
+                        <script type="text/javascript">
+                            const urlParams = new URLSearchParams(window.location.search);
+                            IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        <label for="defaultOpenControl">Parámetro defaultOpenControl</label>
-        <input type="number" value="0" id="defaultOpenControl" min="0" max="3" step="1">
-        
-        <label for="selectUseProxy">Parámetro useProxy</label>
-        <select name="useProxy" id="selectUseProxy">
-            <option value=""></option>
-            <option value="true" selected="selected">true</option>
-            <option value="false">false</option>
-        </select>
-        
-        
-        <label for="inputOrder">Parámetro order</label>
-        <input type="text" name="orderValue" id="inputOrder" list="orderValueSug">
+                            const map = IDEE.map({
+                                container: 'mapjs',
+                                zoom: 5,
+                                maxZoom: 20,
+                                minZoom: 4,
+                                center: [-467062.8225, 4683459.6216],
+                            });
 
-    	<label for="georefImageEpsgInput">Parámetro georefImageEpsg</label>
-        <input type="text" id="georefImageEpsgInput"/>
-        <label for="georefImageInput">Parámetro georefImage</label>
-        <input type="text" id="georefImageInput"/>
-        <label for="printermapInput">Parámetro printermap</label>
-        <input type="text" id="printermapInput"/>
-        
-        <button name="eliminar" id="botonEliminar">Eliminar Plugin</button>     
-    </div>
-    <div id="mapjs" class="m-container"></div>
-    <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
-    <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="js/configuration.js"></script>
-    <script type="text/javascript" src="plugins/printviewmanagement/printviewmanagement.ol.min.js"></script>
-    <%
-      String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
-      for (int i = 0; i < jsfiles.length; i++) {
-         String jsfile = jsfiles[i];
-   %>
-    <script type="text/javascript" src="plugins/<%=jsfile%>"></script>
+                            const layerinicial = new IDEE.layer.WMS({
+                                url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
+                                name: 'AU.AdministrativeBoundary',
+                                legend: 'Limite administrativo',
+                                tiled: false,
+                            }, {});
 
-    <%
-      }
-   %>
-    <script type="text/javascript">
-        const urlParams = new URLSearchParams(window.location.search);
-        IDEE.language.setLang(urlParams.get('language') || 'es');
+                            map.addLayers([layerinicial]);
 
-        const DEFAULT_georefImageEpsg = '{"tooltip": "Georeferenciar imagen","layers": [{"url": "http://www.ign.es/wms-inspire/mapa-raster?","name": "mtn_rasterizado","format": "image/jpeg","legend": "Mapa ETRS89 UTM"},{"url": "http://www.ign.es/wms-inspire/pnoa-ma?","name": "OI.OrthoimageCoverage","format": "image/jpeg","legend": "Imagen (PNOA) ETRS89 UTM"}], "defaultDpiOptions": [72, 150, 300]}';
-        const DEFAULT_georefImage = '{"tooltip": "Georeferenciar imagen","printSelector": true, "defaultDpiOptions": [72, 150, 300]}';
-        const DEFAULT_printermap = '{"filterTemplates": ["${api-idee.static_resources.url}/plantillas/html/templateConBorde.html", "${api-idee.static_resources.url}/plantillas/html/templateConCabezeraYBorde.html", "${api-idee.static_resources.url}/plantillas/html/templateConFooterYBorde.html"],"showDefaultTemplate": false, "defaultDpiOptions": [72, 150, 300], "layoutsRestraintFromDpi": ["screensize", "A0", "A1", "A2"]}';
+                            let mp;
 
-        const map = IDEE.map({
-            container: 'mapjs',
-            zoom: 5,
-            maxZoom: 20,
-            minZoom: 4,
-            center: [-467062.8225, 4683459.6216],
-        });
+                            const createPlugin = (options) => {
+                                mp = new IDEE.plugin.PrintViewManagement(options);
+                                window.mp = mp;
+                                map.addPlugin(mp);
+                            };
 
-        const layerinicial = new IDEE.layer.WMS({
-            url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
-            name: 'AU.AdministrativeBoundary',
-            legend: 'Limite administrativo',
-            tiled: false,
-        }, {});
+                            const removePlugin = () => {
+                                if (mp) map.removePlugins(mp);
+                            };
 
-        const campamentos = new IDEE.layer.GeoJSON({
-            name: 'Campamentos',
-            url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=sepim:campamentos&outputFormat=application/json&',
-            extract: true,
-        });
-        map.addLayers([layerinicial, campamentos]);
+                            const removeButton = document.getElementById('removeButton');
+                            removeButton.addEventListener('click', () => { removePlugin(); });
 
-        let mp;
-        let position, collapsed, collapsible, tooltip, isDraggable, order, useProxy,
-        	georefImageEpsg = JSON.parse(DEFAULT_georefImageEpsg),
-        	georefImage = JSON.parse(DEFAULT_georefImage),
-        	printermap = JSON.parse(DEFAULT_printermap);
-        crearPlugin({
-        	position,
-        	collapsed,
-        	collapsible,
-        	tooltip,
-        	isDraggable,
-            useProxy,
-			order,
-			georefImageEpsg,
-			georefImage,
-			printermap,
-        });
+                            const selectPosition = document.getElementById('selectPosition');
+                            const selectCollapsed = document.getElementById('selectCollapsed');
+                            const inputOrder = document.getElementById('inputOrder');
+                            const inputTooltip = document.getElementById('inputTooltip');
+                            const inputDefaultOpenControl = document.getElementById('inputDefaultOpenControl');
+                            const inputGeorefImageEpsg = document.getElementById('inputGeorefImageEpsg');
+                            const inputGeorefImage = document.getElementById('inputGeorefImage');
+                            const inputPrintermap = document.getElementById('inputPrintermap');
 
-        const selectPosition = document.getElementById("selectPosition");
-        const selectCollapsed = document.getElementById("selectCollapsed");
-        const selectCollapsible = document.getElementById("selectCollapsible");
-        const tooltipInput = document.getElementById("tooltipInput");
-        const defaultOpenControlInput = document.getElementById("defaultOpenControl");
-        const selectIsdraggable = document.getElementById("selectIsdraggable");
-        const selectUseProxy = document.getElementById("selectUseProxy");
-        const inputOrder = document.getElementById("inputOrder");
-        const georefImageEpsgInput = document.getElementById("georefImageEpsgInput");
-        const georefImageInput = document.getElementById("georefImageInput");
-        const printermapInput = document.getElementById("printermapInput");
+                            const DEFAULT_GEOREF_EPSG = '{"tooltip":"Georeferenciar imagen predefinida","layers":[{"url":"http://www.ign.es/wms-inspire/mapa-raster?","name":"mtn_rasterizado","format":"image/jpeg","legend":"Mapa ETRS89 UTM"},{"url":"http://www.ign.es/wms-inspire/pnoa-ma?","name":"OI.OrthoimageCoverage","format":"image/jpeg","legend":"Imagen (PNOA) ETRS89 UTM"}],"defaultDpiOptions":[96,150,300]}';
+                            const DEFAULT_GEOREF_IMAGE = '{"tooltip":"Georeferenciar imagen","defaultDpiOptions":[96,150,300]}';
+                            const DEFAULT_PRINTERMAP = '{"tooltip":"Impresión del mapa","filterTemplates":["${api-idee.static_resources.url}/plantillas/html/templateConBorde.html","${api-idee.static_resources.url}/plantillas/html/templateConCabezeraYBorde.html","${api-idee.static_resources.url}/plantillas/html/templateConFooterYBorde.html"],"showDefaultTemplate":true,"defaultDpiOptions":[96,150,300],"layoutsRestraintFromDpi":["screensize","A0","A1","A2"]}';
 
-        georefImageEpsgInput.value = DEFAULT_georefImageEpsg;
-       	georefImageInput.value = DEFAULT_georefImage;
-   		printermapInput.value = DEFAULT_printermap;
-        
-        selectPosition.addEventListener('change', cambiarTest);
-        selectCollapsed.addEventListener('change', cambiarTest);
-        selectCollapsible.addEventListener('change', cambiarTest);
-        tooltipInput.addEventListener('change',cambiarTest);
-        defaultOpenControlInput.addEventListener('change',cambiarTest);
-        selectIsdraggable.addEventListener('change',cambiarTest);
-        selectUseProxy.addEventListener('change',cambiarTest);
-        inputOrder.addEventListener('change', cambiarTest);
-        georefImageEpsgInput.addEventListener('change',cambiarTest);
-        georefImageInput.addEventListener('change',cambiarTest);
-        printermapInput.addEventListener('change',cambiarTest);
-        
+                            inputGeorefImageEpsg.value = DEFAULT_GEOREF_EPSG;
+                            inputGeorefImage.value = DEFAULT_GEOREF_IMAGE;
+                            inputPrintermap.value = DEFAULT_PRINTERMAP;
 
-        function cambiarTest() {
-            let objeto = {};
-            objeto.position = selectPosition.options[selectPosition.selectedIndex].value;
-            objeto.collapsed = (selectCollapsed.options[selectCollapsed.selectedIndex].value == 'true');
-            objeto.collapsible = (selectCollapsible.options[selectCollapsible.selectedIndex].value == 'true');
-            objeto.tooltip = tooltipInput.value != "" ? tooltipInput.value : "";
-            objeto.defaultOpenControl = Number(defaultOpenControlInput.value);
-            let isDraggableValor = selectIsdraggable.options[selectIsdraggable.selectedIndex].value;
-            isdraggable = isDraggableValor != "" ? objeto.isDraggable = (isDraggableValor == "true" || isDraggableValor == true) : "true";
-            let useProxyValor = selectUseProxy.options[selectUseProxy.selectedIndex].value;
-            useProxy = useProxyValor != "" ? objeto.useProxy = (useProxyValor == "true" || useProxyValor == true) : "true";
-            objeto.order = inputOrder.value != "" ? inputOrder.value : "";
-            objeto.georefImageEpsg = georefImageEpsgInput.value != "" ? JSON.parse(georefImageEpsgInput.value) : "";
-            objeto.georefImage = georefImageInput.value != "" ? JSON.parse(georefImageInput.value) : "";
-            objeto.printermap = printermapInput.value != "" ? JSON.parse(printermapInput.value) : "";
+                            const safeParseJSON = (val, fallback) => {
+                                try { return val ? JSON.parse(val) : fallback; } catch (e) { return fallback; }
+                            };
 
-            map.removePlugins(mp);
-            crearPlugin(objeto);
-        }
+                            const updatePlugin = () => {
+                                const options = {};
+                                options.position = selectPosition.options[selectPosition.selectedIndex].value;
+                                options.collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value === '' || selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true';
+                                options.order = Number(inputOrder.value);
+                                options.tooltip = inputTooltip.value !== '' ? options.tooltip = inputTooltip.value : '';
+                                options.defaultOpenControl = Number(inputDefaultOpenControl.value) || 0;
 
-        function crearPlugin(propiedades) {
-            mp = new IDEE.plugin.PrintViewManagement(propiedades);
-            map.addPlugin(mp);
-        }
-        const botonEliminar = document.getElementById("botonEliminar");
-        botonEliminar.addEventListener("click", function() {
-            map.removePlugins(mp);
-        });
-    </script>
-</body>
+                                options.georefImageEpsg = safeParseJSON(inputGeorefImageEpsg.value, true);
+                                options.georefImage = safeParseJSON(inputGeorefImage.value, true);
+                                options.printermap = safeParseJSON(inputPrintermap.value, true);
 
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-19NTRSBP21"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-19NTRSBP21');
-</script>
+                                removePlugin();
+                                createPlugin(options);
+                            };
 
-</html>
+                            [
+                                selectPosition,
+                                selectCollapsed,
+                                inputOrder,
+                                inputTooltip,
+                                inputDefaultOpenControl,
+                                inputGeorefImageEpsg,
+                                inputGeorefImage,
+                                inputPrintermap,
+                            ].forEach((ctrl) => {
+                                ctrl.addEventListener('change', updatePlugin);
+                            });
+
+                            updatePlugin();
+                        </script>
+            </body>
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=G-19NTRSBP21"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag() { dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-19NTRSBP21');
+            </script>
+
+            </html>

@@ -19,11 +19,24 @@ import { getValue } from 'IDEE/i18n/language';
 import Control from './Control';
 
 /**
+ * @typedef {Object} module:IDEE/impl/control/GetFeatureInfo~Options
+ * @api
+ * @property {Boolean} [activated] Indica si el control inicia activado.
+ * @property {Number} [featureCount] Número máximo de resultados a devolver.
+ * @property {Number} [buffer] Radio de influencia en píxeles alrededor del punto de consulta.
+ */
+
+/**
  * @classdesc
+ * Hereda de {@link module:IDEE/impl/control/Control|Control}.
  * Agrega la herramienta de consulta de información de capas WMS y WMTS.
- * @property {Array} userFormats Formato de respuesta.
- * @property {Number} buffer  Área de influencia, valor por defecto 5.
- * @property {Boolean} activated  Preactiva el control.
+ * Permite consultar los datos de las capas haciendo clic en el mapa.
+ *
+ * @property {Array} [userFormats] Formatos de respuesta soportados.
+ * @property {Number} [buffer=5] Área de influencia, radio en píxeles (valor por defecto 5).
+ * @property {Boolean} [activated=false] Preactiva el control al añadirlo al mapa.
+ * @property {String} [info] Información obtenida de la consulta.
+ *
  * @api
  */
 class GetFeatureInfo extends Control {
@@ -31,10 +44,13 @@ class GetFeatureInfo extends Control {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} options Opciones del control.
-   * - activated. Booleano que activa o no el control.
-   * - featureCount. Número de objetos geográficos, por defecto 10.
-   * - buffer. Configuración del área de influencia, por defecto 5.
+   * @param {module:IDEE/impl/control/GetFeatureInfo~Options} options Opciones del control.
+   * @example
+   * const control = new IDEE.impl.ol.control.GetFeatureInfo({
+   *   activated: true,
+   *   featureCount: 20,
+   *   buffer: 10,
+   * });
    * @extends {IDEE.impl.Control}
    * @api stable
    */
@@ -51,10 +67,7 @@ class GetFeatureInfo extends Control {
     /**
      * featureCount: Número de objetos geográficos, por defecto 10.
      */
-    this.featureCount = options.featureCount;
-    if (isNullOrEmpty(this.featureCount)) {
-      this.featureCount = 10;
-    }
+    this.featureCount = isNumber(options.featureCount) ? options.featureCount : 10;
 
     /**
      * buffer: Área de influencia afectada.

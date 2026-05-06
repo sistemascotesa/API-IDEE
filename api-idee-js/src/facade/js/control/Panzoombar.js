@@ -1,10 +1,9 @@
 /**
  * @module IDEE/control/Panzoombar
  */
-// import panzoombarTemplate from 'templates/panzoombar';
 import myhelp from 'templates/panzoombarhelp';
 import PanzoombarImpl from 'impl/control/Panzoombar';
-import ControlBase from './Control';
+import FacadeControl from './Control';
 import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { compileSync as compileTemplate } from '../util/Template';
@@ -12,18 +11,35 @@ import { getValue } from '../i18n/language';
 import * as Position from '../ui/position';
 
 /**
+ * @typedef {Object} module:IDEE/control/Panzoombar~Options
+ * @api
+ * @property {string} [position] Posición del control en el mapa.
+ * @property {Object} [vendorOptions] Opciones de proveedor para la biblioteca base.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Number} [order] Accesibilidad, z-index.
+ */
+
+/**
  * @classdesc
  * Añade una barra de desplazamiento para acercar/alejar el mapa.
  *
  * @api
- * @extends {IDEE.Control}
+ * @extends {FacadeControl}
  */
-class Panzoombar extends ControlBase {
+class Panzoombar extends FacadeControl {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} options recibe las opciones de configuración por defecto
+   * @param {module:IDEE/control/Panzoombar~Options} options recibe las opciones de
+   * configuración por defecto
+   * @example
+   * const control = new IDEE.control.Panzoombar({
+   *   position: 'down',
+   *   tooltip: 'Barra de zoom',
+   *   order: 1,
+   *   vendorOptions: { className: 'm-panzoombar' },
+   * });
    * @api
    */
   constructor(options = {}) {
@@ -33,7 +49,7 @@ class Panzoombar extends ControlBase {
     }
 
     // implementation of this control
-    const impl = new PanzoombarImpl(options);
+    const impl = new PanzoombarImpl(options.vendorOptions);
 
     // calls the super constructor
     super(Panzoombar.NAME, impl, options);

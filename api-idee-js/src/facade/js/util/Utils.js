@@ -11,6 +11,7 @@ import getImplWMTSCapabilities from 'impl/util/GetCapabilities';
 import { getValue } from '../i18n/language';
 import { DOTS_PER_INCH, INCHES_PER_UNIT } from '../units';
 import * as WKT from '../geom/WKT';
+import * as dialog from '../dialog';
 
 /**
  * Este método obtiene las extensiones de los objetos geográficos especificados
@@ -2070,22 +2071,138 @@ export const filterList = (inputId, listId) => {
  * Esta función carga un SVG desde la URL de un plugin
  *
  * @public
- * @param {String} pluginName Nombre del plugin
  * @param {String} iconName Nombre del icono
  * @param {HTMLElement} domElement Elemento DOM donde se cargará el SVG
  * @function
  * @api
  */
-export const loadSvgByUrl = (pluginName, iconName, domElement) => {
+export const loadSvgByUrl = (iconName, domElement) => {
   const existingSvgs = domElement.querySelectorAll('svg');
   existingSvgs.forEach((svg) => svg.remove());
-  const url = `plugins/${pluginName}/images/${iconName}.svg`;
+  const url = `https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/${iconName}.svg`;
   fetch(url)
     .then((response) => response.text())
     .then((svgContent) => {
       // eslint-disable-next-line no-param-reassign
       domElement.innerHTML += svgContent;
     });
+};
+
+/**
+ * Convierte una cadena base64 a un Uint8Array.
+ * @param {*} base64 cadena base64 a convertir.
+ * @returns {Uint8Array} El Uint8Array resultante de la conversión.
+ * @function
+ * @api
+ */
+export function decodeBase64Utf8(base64) {
+  try {
+    const binary = atob(base64);
+    const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+    const decoded = new TextDecoder('utf-8').decode(bytes);
+    return decoded;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error al decodificar base64:', error);
+    throw error;
+  }
+}
+
+/**
+ * Intelligently parses a value based on its content.
+ * Supports: boolean, number, JSON (object/array), base64-encoded values, and strings.
+ * If a value starts with 'base64~', it will be decoded and recursively parsed.
+ * @private
+ * @function
+ * @param {string} rawValue The raw value to parse.
+ * @param {string} paramKey The parameter key for error messages.
+ * @param {string} objectName The name of the object that contains de param for error messages.
+ * @returns {*} Parsed value with detected type.
+ */
+const parseValueByType = (rawValue, paramKey, objectName) => {
+  if (!rawValue) return rawValue;
+  const value = rawValue.trim();
+  if (value.startsWith('base64~')) {
+    try {
+      const encoded = value.substring(7);
+      const decoded = decodeBase64Utf8(encoded);
+      return parseValueByType(decoded, paramKey, objectName);
+    } catch (e) {
+      dialog.error(getValue('exception').parseParamError
+        .replace('{param}', paramKey)
+        .replace('{name}', objectName)
+        .replace('{error}', getValue('exception').invalidBase64Encoding));
+      return null;
+    }
+  }
+
+  const trimmed = value.trim();
+  if (trimmed.startsWith("'") && trimmed.endsWith("'")) {
+    return value.substring(1, value.length - 1);
+  }
+
+  if (value === 'true') {
+    return true;
+  }
+
+  if (value === 'false') {
+    return false;
+  }
+
+  if (value !== '') {
+    const numValue = Number(value);
+    if (!Number.isNaN(numValue)) {
+      return numValue;
+    }
+  }
+
+  if ((trimmed.startsWith('[') && trimmed.endsWith(']')) || (trimmed.startsWith('{') && trimmed.endsWith('}'))) {
+    try {
+      return JSON.parse(trimmed);
+    } catch (e) {
+      dialog.error(getValue('exception').parseParamError
+        .replace('{param}', paramKey)
+        .replace('{name}', objectName)
+        .replace('{error}', getValue('exception').invalidJsonFormat));
+      return value;
+    }
+  }
+
+  return value;
+};
+
+/**
+ * Parses parameters from a string with automatic type detection.
+ * No longer requires allowedAttributes - intelligently detects types from values.
+ * Supports: boolean (true/false), numbers, JSON (objects/arrays),
+ * base64-encoded values, and strings.
+ * Base64 encoding is indicated by 'base64~' prefix.
+ *
+ * Default separators: semicolon (;) for fields, equals (=) for key-value pairs.
+ * These separators are chosen to minimize conflicts with JSON syntax.
+ *
+ * @function
+ * @param {string} stringToParse The string to parse (e.g., "collapsed=false;position=right").
+ * @param {string} objectName The name of the object for error messages.
+ * @param {string} fieldSeparator Separator for fields (default ';').
+ * @param {string} keyValueSeparator Separator for key-value pairs (default '=').
+ * @returns {Object} Parsed options object.
+ */
+export const parseUrlParams = (stringToParse, objectName, fieldSeparator = ';', keyValueSeparator = '=') => {
+  const result = {};
+  if (!stringToParse) return result;
+
+  const fields = stringToParse.split(fieldSeparator);
+  fields.forEach((field) => {
+    const parts = field.split(keyValueSeparator, 2);
+    if (parts.length === 2) {
+      const [key, rawValue] = parts;
+      if (key && rawValue) {
+        result[key] = parseValueByType(rawValue, key, objectName);
+      }
+    }
+  });
+  return result;
 };
 
 /**

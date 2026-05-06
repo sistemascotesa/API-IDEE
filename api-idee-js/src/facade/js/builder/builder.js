@@ -1,9 +1,10 @@
+/* eslint-disable max-len */
 /* eslint-disable no-nested-ternary */
 /**
  * @module IDEE/facade/builder
  */
 import {
-  isUndefined, isNullOrEmpty, isFunction, isString, concatUrlPaths, normalize,
+  isNullOrEmpty, isFunction, isString, concatUrlPaths, normalize,
 } from 'IDEE/util/Utils';
 import ControlPanel from '../ui/ControlPanel';
 import { getValue } from '../i18n/language';
@@ -22,24 +23,49 @@ import WMCSelector from '../control/WMCSelector';
 import Timeline from '../control/Timeline';
 import * as dialog from '../dialog';
 import Exception from '../exception/exception';
-import { isBoolean, isNumber } from '../util/Utils';
+import { isBoolean, isNumber, parseUrlParams } from '../util/Utils';
 import MeasureBar from '../control/MeasureBar';
 import OverviewMap from '../control/OverviewMap';
 
 /**
- * This method getDefaultPanelOptions from one control and additional params if necessary
+ * Get default panel options for a control.
+ *
+ * @public
+ * @function
  * @param {IDEE.Control} control Control instance.
  * @param {Object} params Additional parameters for panel creation.
  * @returns {Object}
  */
 export const getDefaultPanelOptions = (control, params) => ({
-  order: isNumber(params.order) ? params.order : control.order,
-  position: params.position ?? control.position,
-  collapsible: isBoolean(params.collapsible) ? params.collapsible : control.collapsible,
-  collapsed: isBoolean(params.collapsed) ? params.collapsed : control.collapsed,
-  tooltip: params.tooltip ?? (control.translation ? control.translation.title : null),
+  order: isNumber(control.order) ? control.order : params.order,
+  position: control.position ?? params.position,
+  collapsible: isBoolean(control.collapsible) ? control.collapsible : params.collapsible,
+  collapsed: isBoolean(control.collapsed) ? control.collapsed : params.collapsed,
+  tooltip: isString(control.tooltip) ? control.tooltip
+    : (control.translation ? control.translation.title : (params.tooltip ?? null)),
   className: `m-${control.name}`,
 });
+
+/**
+ * Esta función devuelve el panel para el control Attributions.
+ *
+ * @public
+ * @function
+ *
+ * @param {IDEE.Control} control Control.
+ * @param {IDEE.Map} map Mapa.
+ * @param {Object} params Parámetros del control.
+ * @param {Object} defaultOptions Parámetros por defecto para el panel
+ *
+ * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @api stable
+ */
+export const getAttributionsPanel = (control, map, params = {}) => {
+  return new ControlPanel(Attributions.NAME, {
+    ...getDefaultPanelOptions(control, params),
+    collapsedButtonClass: 'g-cartografia-comments-simple',
+  });
+};
 
 /**
  * Esta función devuelve el panel para el control Scale.
@@ -87,7 +113,7 @@ export const getScaleLinePanel = (control, map, params = {}) => {
   const panel = new ControlPanel(ScaleLine.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
-    order: 0,
+    tooltip: params.tooltip ?? control.title ?? getValue('scaleline').title,
   });
   map.addUpClass_(panel); // eslint-disable-line no-underscore-dangle
   return panel;
@@ -204,28 +230,6 @@ export const getGetFeatureInfo = (control, map, params = {}) => {
 };
 
 /**
- * Esta función devuelve el panel para el control Attributions.
- *
- * @public
- * @function
- *
- * @param {IDEE.Control} control Control.
- * @param {IDEE.Map} map Mapa.
- * @param {Object} params Parámetros del control.
- * @param {Object} defaultOptions Parámetros por defecto para el panel
- *
- * @return {ControlPanel} Devuelve un panel de control compatible.
- * @api stable
- */
-export const getAttributionsPanel = (control, map, params = {}) => {
-  return new ControlPanel(Attributions.NAME, {
-    ...getDefaultPanelOptions(control, params),
-    collapsible: isBoolean(params.collapsible) ? params.collapsible : true,
-    collapsedButtonClass: 'g-cartografia-comments-simple',
-  });
-};
-
-/**
  * Esta función devuelve el panel para el control Location.
  *
  * @public
@@ -305,13 +309,10 @@ export const getBackgroundLayersPanel = (control, map, params = {}) => {
  * @api stable
  */
 export const getImpSwitcherPanel = (control, map, params = {}) => {
-  return new ControlPanel('implementationswitcher', {
+  return new ControlPanel(ImplementationSwitcher.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsedButtonClass: 'g-cartografia-implementacion',
-    tooltip: getValue('implementationswitcher').title,
     className: 'm-implementationswitcher',
-    collapsible: isBoolean(params.collapsible) ? params.collapsible
-      : isBoolean(control.collapsible) ? control.collapsible : true,
   });
 };
 
@@ -359,12 +360,10 @@ export const getWMCSelectorPanel = (control, map, params = {}) => {
  */
 export const getTimelinePanel = (control, map, params = {}) => {
   const defaultOptions = getDefaultPanelOptions(control, params);
-  return new ControlPanel('timeline', {
+  return new ControlPanel(Timeline.NAME, {
     ...defaultOptions,
-    collapsible: isBoolean(defaultOptions.collapsible) ? defaultOptions.collapsible : true,
     className: 'm-control-timeline',
     collapsedButtonClass: 'g-cartografia-gestion-reloj2',
-    tooltip: params.tooltip ?? getValue('timeline').tooltip,
   });
 };
 
@@ -378,6 +377,7 @@ export const getTimelinePanel = (control, map, params = {}) => {
  */
 export const getPanelForControl = (control, map, params = {}) => {
   const panels = {
+    [Attributions.NAME]: () => getAttributionsPanel(control, map, params),
     [Scale.NAME]: () => getScalePanel(control, map, params),
     [`${Scale.NAME}*true`]: () => getScalePanel(control, map, params),
     [ScaleLine.NAME]: () => getScaleLinePanel(control, map, params),
@@ -387,7 +387,6 @@ export const getPanelForControl = (control, map, params = {}) => {
     [Panzoom.NAME]: () => getPanzoomPanel(control, map, params),
     [GetFeatureInfo.NAME]: () => getGetFeatureInfo(control, map, params),
     [Location.NAME]: () => getLocationPanel(control, map, params),
-    [Attributions.NAME]: () => getAttributionsPanel(control, map, params),
     [Rotate.NAME]: () => getRotatePanel(control, map, params),
     [BackgroundLayers.NAME]: () => getBackgroundLayersPanel(control, map, params),
     [ImplementationSwitcher.NAME]: () => getImpSwitcherPanel(control, map, params),
@@ -456,28 +455,6 @@ export const parseKeyValueLayer = (layerStr) => {
 };
 
 /**
- * Parses an OpenAPI key=value control string like 'scale.exactScale=true'
- * into { name: 'scale', exactScale: true }.
- * Returns null if the string is not in key=value format.
- * @private
- */
-const parseKeyValueControl = (controlStr) => {
-  const dotIndex = controlStr.indexOf('.');
-  if (dotIndex <= 0 || controlStr.indexOf('*') !== -1) return null;
-  const name = controlStr.substring(0, dotIndex);
-  const rest = controlStr.substring(dotIndex + 1); // e.g. 'exactScale=true'
-  const params = { name };
-  rest.split('&').forEach((pair) => {
-    const eqIndex = pair.indexOf('=');
-    if (eqIndex > 0) {
-      const key = pair.substring(0, eqIndex);
-      params[key] = inferValue(pair.substring(eqIndex + 1));
-    }
-  });
-  return params;
-};
-
-/**
  * This method create the mapea control from its name string.
  * @function
  * @param {string|Object} controlParam Control name or control instance.
@@ -485,139 +462,67 @@ const parseKeyValueControl = (controlStr) => {
  * @returns {Object} Built control instance.
  */
 export const buildControl = (controlParam, map) => {
-  let builtControl = null;
-  const params = {};
+  let control = null;
+  const controlNameSeparator = '*';
+  const normalizedControlParams = normalize(controlParam).split(controlNameSeparator);
+  const controlName = normalizedControlParams[0];
 
   if (isString(controlParam)) {
-    // New OpenAPI key=value format: 'scale.exactScale=true'
-    const keyValueParsed = parseKeyValueControl(controlParam);
+    const controls = {
+      [Attributions.NAME]: (options) => {
+        const collectionsAttributions = options.collectionsAttributions ?? [];
+        // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+        map._attributionsMap = [...map._attributionsMap, ...collectionsAttributions];
+        return new Attributions({
+          ...options,
+          collectionsAttributions: collectionsAttributions.map((l) => {
+            if (typeof l !== 'string') {
+              const attr = l;
+              attr.id = l.idLayer;
+              return attr;
+            }
+            return l;
+          }),
+        });
+      },
+      [Scale.NAME]: (options) => new Scale(options),
+      [ScaleLine.NAME]: (options) => new ScaleLine(options),
+      [MeasureBar.NAME]: (options) => new MeasureBar(options),
+      [OverviewMap.NAME]: (options) => new OverviewMap(options),
+      [Panzoombar.NAME]: (options) => new Panzoombar(options),
+      [Panzoom.NAME]: (options) => new Panzoom(options),
+      [Location.NAME]: (options) => new Location(options),
+      [GetFeatureInfo.NAME]: (options) => new GetFeatureInfo(options),
+      [Rotate.NAME]: (options) => new Rotate(options),
+      [BackgroundLayers.NAME]: (options) => new BackgroundLayers(options),
+      [ImplementationSwitcher.NAME]: (options) => new ImplementationSwitcher(options),
+      [WMCSelector.NAME]: (options) => new WMCSelector(options),
+      [Timeline.NAME]: (options) => new Timeline({
+        timelineType: 'absoluteSimple',
+        ...options,
+      }),
+    };
 
-    if (keyValueParsed !== null) {
-      // Build directly from parsed key=value params without recursion
-      const { name: kvName, ...kvParams } = keyValueParsed;
-      const controlName = normalize(kvName);
-      const kvControls = {
-        [Attributions.NAME]: () => { map.createAttribution(kvParams); return null; },
-        [Scale.NAME]: () => new Scale(kvParams),
-        [ScaleLine.NAME]: () => new ScaleLine(kvParams),
-        [MeasureBar.NAME]: () => new MeasureBar(kvParams),
-        [OverviewMap.NAME]: () => new OverviewMap(kvParams),
-        [Panzoombar.NAME]: () => new Panzoombar(kvParams),
-        [Panzoom.NAME]: () => new Panzoom(kvParams),
-        [Location.NAME]: () => new Location(kvParams),
-        [GetFeatureInfo.NAME]: () => new GetFeatureInfo(kvParams),
-        [Rotate.NAME]: () => new Rotate(kvParams),
-        [BackgroundLayers.NAME]: () => new BackgroundLayers(map, kvParams),
-        [ImplementationSwitcher.NAME]: () => new ImplementationSwitcher(kvParams),
-        [WMCSelector.NAME]: () => new WMCSelector(kvParams),
-        [Timeline.NAME]: () => new Timeline(kvParams),
-      };
-      const kvBuilderFn = kvControls[controlName];
-      if (isFunction(kvBuilderFn)) {
-        builtControl = kvBuilderFn();
-        if (builtControl) builtControl.builderParams = kvParams;
-      } else {
-        const getControlsAvailable = concatUrlPaths([window.IDEE.config.MAPEA_URL, '/api/actions/controls']);
-        dialog.error(`El control ${kvName} no está definido. Consulte los controles disponibles <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
+    const builderFunction = controls[controlName];
+    if (isFunction(builderFunction)) {
+      const controlParams = controlParam.split(controlNameSeparator).slice(1).join(controlNameSeparator);
+      const controlOptions = parseUrlParams(controlParams, controlName);
+      control = builderFunction(controlOptions);
+      if (control) {
+        control.builderParams = controlOptions;
       }
     } else {
-      const normalizedControlParams = normalize(controlParam).split('*');
-      const controlName = normalizedControlParams[0];
-
-      const controls = {
-        [Attributions.NAME]: () => {
-          // eslint-disable-next-line no-underscore-dangle, no-param-reassign
-          map._attributionsMap = [...map._attributionsMap, ...normalizedControlParams];
-          return new Attributions({
-            map,
-            collectionsAttributions: normalizedControlParams.length === 2
-              ? [normalizedControlParams[1]].map((l) => {
-                if (typeof l !== 'string') {
-                  const attr = l;
-                  attr.id = l.idLayer;
-                  return attr;
-                }
-                return l;
-              }) : [],
-          });
-        },
-        [Scale.NAME]: () => {
-          normalizedControlParams.forEach((p) => {
-            if (p === 'true') params.exactScale = true;
-            // eslint-disable-next-line no-restricted-globals
-            if (!isNaN(p)) params.order = Number(p);
-          });
-          return new Scale(params);
-        },
-        [ScaleLine.NAME]: () => new ScaleLine(),
-        [MeasureBar.NAME]: () => new MeasureBar(),
-        [OverviewMap.NAME]: () => new OverviewMap(),
-        [Panzoombar.NAME]: () => new Panzoombar(),
-        [Panzoom.NAME]: () => new Panzoom(),
-        [Location.NAME]: () => new Location(),
-        // [GetFeatureInfo.NAME]: () => new GetFeatureInfo(true),
-        [GetFeatureInfo.NAME]: () => {
-          let activated = true;
-          // Si el usuario define false...
-          if (normalizedControlParams.includes('false')) {
-            activated = false;
-          }
-          return new GetFeatureInfo({
-            activated,
-          });
-        },
-        [Rotate.NAME]: () => {
-          normalizedControlParams.forEach((p) => {
-            if (!isUndefined(p)) {
-              const bbox = p.split(',');
-              if (bbox.length === 4) {
-                params.viewInitial = bbox;
-              }
-              if (p === 'false') params.help = false;
-              // eslint-disable-next-line no-restricted-globals
-              if (!isNaN(p)) params.order = Number(p);
-            }
-          });
-          return new Rotate(params);
-        },
-        [BackgroundLayers.NAME]: () => {
-          // Check for special pattern: backgroundlayers*[0-9]*true|false
-          if (/backgroundlayers\*([0-9])+\*(true|false)/.test(controlParam)) {
-            const idLayer = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[1];
-            const visible = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[2] === 'true';
-            return new BackgroundLayers({
-              visible,
-              idLayer: Number.parseInt(idLayer, 10),
-            });
-          }
-          return new BackgroundLayers();
-        },
-        [ImplementationSwitcher.NAME]: () => new ImplementationSwitcher(),
-        [WMCSelector.NAME]: () => new WMCSelector(),
-        [Timeline.NAME]: () => new Timeline({
-          timelineType: 'absoluteSimple',
-        }),
-      };
-
-      const builderFunction = controls[controlName];
-      if (isFunction(builderFunction)) {
-        builtControl = builderFunction();
-        if (builtControl) {
-          builtControl.builderParams = params; // Store params for panel creation
-        }
-      } else {
-        const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);
-        const exceptionMessage = getValue('exception').undefined_control;
-        dialog.error(`( "${controlParam}" ) ${exceptionMessage} <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
-      }
+      const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);
+      const exceptionMessage = getValue('exception').undefined_control;
+      dialog.error(`( "${controlParam}" ) ${exceptionMessage} <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
     }
   } else if (controlParam instanceof Control) {
-    builtControl = controlParam;
+    control = controlParam;
   } else {
     Exception(`${getValue('exception').invalid_control} ( ${controlParam} )`);
   }
 
-  return builtControl;
+  return control;
 };
 
 /**

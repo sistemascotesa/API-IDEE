@@ -5,6 +5,7 @@
 
 import MapfooterImplControl from 'impl/mapfootercontrol';
 import template from 'templates/mapfooter';
+import { getValue } from './i18n/language';
 
 export default class MapfooterControl extends IDEE.Control {
   /**
@@ -19,7 +20,7 @@ export default class MapfooterControl extends IDEE.Control {
   constructor(config) {
     // 1. checks if the implementation can create PluginControl
     if (IDEE.utils.isUndefined(MapfooterImplControl)) {
-      IDEE.exception('La implementación usada no puede crear controles MapfooterControl');
+      IDEE.exception(getValue('exception.impl'));
     }
     // 2. implementation of this control
     const impl = new MapfooterImplControl();
@@ -65,15 +66,15 @@ export default class MapfooterControl extends IDEE.Control {
       const btnMapFooter = panelMapfooter ? panelMapfooter.querySelector('button.m-panel-btn') : null;
 
       if (btnMapFooter) {
-        btnMapFooter.title = this.opened ? 'Ocultar pie de página' : 'Mostrar pie de página';
+        btnMapFooter.title = this.opened ? getValue('hidefooter') : getValue('showfooter');
         btnMapFooter.addEventListener('click', () => {
           if (this.opened) {
-            btnMapFooter.title = 'Mostrar pie de página';
+            btnMapFooter.title = getValue('showfooter');
             this.opened = false;
             this.checkFooterheight(html);
             this.setBottomMargin(this.opened);
           } else {
-            btnMapFooter.title = 'Ocultar pie de página';
+            btnMapFooter.title = getValue('hidefooter');
             this.opened = true;
             this.checkFooterheight(html);
             this.setBottomMargin(this.opened);

@@ -25,6 +25,7 @@ div[id^="backimglayer-layer-"]>img {
     height: 100%;
     padding: 2px;
     box-sizing: border-box;
+    object-fit: cover;
 }
 
 div[id^="backimglayer-layer-"]>span {

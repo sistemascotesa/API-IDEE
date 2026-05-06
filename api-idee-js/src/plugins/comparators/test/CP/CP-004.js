@@ -39,7 +39,7 @@ window.map = map;
 map.addPlugin(mp2);
 
 const mp3 = new IDEE.plugin.Layerswitcher({
-  position: 'TL',
+  position: 'left',
 });
 
 map.addPlugin(mp3);

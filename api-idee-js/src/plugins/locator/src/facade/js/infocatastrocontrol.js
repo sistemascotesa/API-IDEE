@@ -190,7 +190,6 @@ export default class InfoCatastroControl extends IDEE.Control {
       this.html_.appendChild(panel);
 
       this.initParams();
-      IDEE.utils.loadSvgByUrl(this.pluginName, 'consultReference', this.html_.querySelector(ID_CONSULTAR_REF));
 
       this.radioInputs.forEach((radio) => {
         radio.addEventListener('change', (e) => {

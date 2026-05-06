@@ -1,46 +1,94 @@
 import MouseSRS from 'facade/mousesrs';
 
-// IDEE.language.setLang('en');
+window.IDEE.plugin.MouseSRS = MouseSRS;
+
+IDEE.language.setLang('es');
 
 const map = IDEE.map({
   container: 'mapjs',
   projection: 'EPSG:3857',
-  // controls: ['backgroundlayers', 'scale'],
-  // controls: ['rotate', 'panzoombar', 'scale', 'scaleline'],
   center: [-443729, 4860856],
+  controls: ['scale', 'rotate'],
   zoom: 8,
 });
 window.map = map;
 
-const mp = new MouseSRS({
-  activeZ: true, // Añade altitud a las coordenadas
-  geoDecimalDigits: 6, // Decimales de 'EPSG:4326', 'EPSG:4083', 'EPSG:4258' y 'EPSG:3857'
-  utmDecimalDigits: 2, // Decimales de 'EPSG:25829', 'EPSG:25830' y 'EPSG:25831'
-  label: 'EPSG:4326', // Solo se visualiza inicialmente, tras modificar se asigna label apropiado de la selección.
-  srs: 'EPSG:4326', // 'EPSG:4326' | 'EPSG:4083' | 'EPSG:25829' | 'EPSG:25830' | 'EPSG:25831' | 'EPSG:4258' | 'EPSG:3857'
-  // label: 'EPSG:31370', srs: 'EPSG:31370', // Prueba con SRS no existente en las opciones, termina con default
-  precision: 3, // Default si en caso no hay geoDecimalDigits o utmDecimalDigits indicado.
-  // tooltip: 'Prueba Observación Punto con Plugin',
-  helpUrl: 'https://www.ign.es/', // si no se incluye no se añade tampoco.
-  epsgFormat: false, // Utilizar otra forma de descripción de label
-  draggableDialog: true, // Activa dragging sobre el popup que aparece para escoger EPSG
-  order: 1,
-  mode: 'ogcapicoverage',
-  coveragePrecissions: [
-    {
-      url: 'https://api-coverages.idee.es/collections/EL.ElevationGridCoverage_4326_1000/coverage',
-      minzoom: 10,
-      maxzoom: 12,
-    },
-    {
-      url: 'https://api-coverages.idee.es/collections/EL.ElevationGridCoverage_4326_500/coverage',
-      minzoom: 13,
-    },
-  ],
-});
-map.addPlugin(mp); window.mp = mp;
+let mp = null;
 
-// setTimeout(() => {
-//   mp.destroy();
-// }, 2000);
-// mp.destroy();
+const createPlugin = (options) => {
+  mp = new MouseSRS(options);
+  window.mp = mp;
+  map.addPlugin(mp);
+};
+
+const removePlugin = () => {
+  if (mp) map.removePlugins(mp);
+};
+
+const removeButton = document.getElementById('removeButton');
+removeButton.addEventListener('click', () => { removePlugin(); });
+
+const selectPosition = document.getElementById('selectPosition');
+const inputTooltip = document.getElementById('inputTooltip');
+const inputSrs = document.getElementById('inputSrs');
+const inputLabel = document.getElementById('inputLabel');
+const inputPrecision = document.getElementById('inputPrecision');
+const inputGeoDecimalDigits = document.getElementById('inputGeoDecimalDigits');
+const inputUtmDecimalDigits = document.getElementById('inputUtmDecimalDigits');
+const selectActiveZ = document.getElementById('selectActiveZ');
+const selectEpsgFormat = document.getElementById('selectEpsgFormat');
+const selectMode = document.getElementById('selectMode');
+const inputCoveragePrecissions = document.getElementById('inputCoveragePrecissions');
+const selectDraggableDialog = document.getElementById('selectDraggableDialog');
+const inputHelpUrl = document.getElementById('inputHelpUrl');
+const inputOrder = document.getElementById('inputOrder');
+
+const boolVal = (select, defaultVal = true) => {
+  const v = select.options[select.selectedIndex].value;
+  if (v === '') return defaultVal;
+  return v === 'true';
+};
+
+const updatePlugin = () => {
+  const options = {};
+  options.position = selectPosition.options[selectPosition.selectedIndex].value;
+  options.tooltip = inputTooltip.value;
+  options.srs = inputSrs.value;
+  options.label = inputLabel.value;
+  options.precision = Number(inputPrecision.value);
+  options.geoDecimalDigits = inputGeoDecimalDigits.value !== '' ? Number(inputGeoDecimalDigits.value) : undefined;
+  options.utmDecimalDigits = inputUtmDecimalDigits.value !== '' ? Number(inputUtmDecimalDigits.value) : undefined;
+  options.activeZ = boolVal(selectActiveZ, false);
+  options.epsgFormat = boolVal(selectEpsgFormat, false);
+  options.mode = selectMode.options[selectMode.selectedIndex].value;
+  if (inputCoveragePrecissions.value.trim()) {
+    try { options.coveragePrecissions = JSON.parse(inputCoveragePrecissions.value); } catch (e) { options.coveragePrecissions = inputCoveragePrecissions.value; }
+  }
+  options.draggableDialog = boolVal(selectDraggableDialog, false);
+  options.helpUrl = inputHelpUrl.value;
+  options.order = Number(inputOrder.value);
+
+  removePlugin();
+  createPlugin(options);
+};
+
+[
+  selectPosition,
+  inputTooltip,
+  inputSrs,
+  inputLabel,
+  inputPrecision,
+  inputGeoDecimalDigits,
+  inputUtmDecimalDigits,
+  selectActiveZ,
+  selectEpsgFormat,
+  selectMode,
+  inputCoveragePrecissions,
+  selectDraggableDialog,
+  inputHelpUrl,
+  inputOrder,
+].forEach((ctrl) => {
+  ctrl.addEventListener('change', updatePlugin);
+});
+
+updatePlugin();

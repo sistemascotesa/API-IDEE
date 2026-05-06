@@ -1,7 +1,6 @@
 /****************************
      GENERAL
 ****************************/
-
 @media only screen and (max-width: 768px) {
     .m-top.top-extra {
         top: 65px;
@@ -137,7 +136,7 @@
 
 .m-control-panel.opened>button.m-control-panel-btn:hover {
     color: white;
-    background-color: rgb(221, 21, 37);
+    background-color: var(--idee-color-links);
 }
 
 .m-control-panel.m-tools>button.m-control-panel-btn {
@@ -364,7 +363,7 @@
 }
 
 /*  Localizacion  */
-.m-location {
+:where(.m-api-idee-container) .m-location {
     order: 1;
 }
 
@@ -397,22 +396,6 @@
     height: 15px !important;
 }
 
-/* .m-wmcselector-container {
-    background-color: white !important;
-    padding: 4px 10px 3px 12px !important;
-    font-family: 'Muli', 'sans-serif' !important;
-    font-size: 12px !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02) !important;
-    display: flex !important;
-    height: 17px;
-}
-
-.m-wmcselector-container:before {
-    color: #a35d38;
-    margin-right: 5px;
-    margin-top: 3px;
-} */
-
 .m-control-panel.m-map-info.m-with-mouse>div.m-controls-panel>div.m-control.m-scale-container {
     border-top-left-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
@@ -438,11 +421,11 @@
     }
 }
 
-.m-kml-desc>table {
+:where(.m-api-idee-container) .m-kml-desc>table {
     width: 100%;
 }
 
-.focusStyle {
+:where(.m-api-idee-container) .focusStyle {
     border: 3px solid black !important;
 }
 

@@ -2,6 +2,7 @@
  * @module IDEE/plugin/PrintViewManagement
  */
 import '../assets/css/printviewmanagement';
+import 'assets/css/fonts';
 import PrintViewManagementControl from './printviewmanagementcontrol';
 import es from './i18n/es';
 import en from './i18n/en';
@@ -39,20 +40,6 @@ export default class PrintViewManagement extends IDEE.Plugin {
      * @type {Boolean}
      */
     this.collapsed = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
-
-    /**
-     * Option to allow the plugin to be collapsible or not
-     * @private
-     * @type {Boolean}
-     */
-    this.collapsible = !IDEE.utils.isUndefined(options.collapsible) ? options.collapsible : true;
-
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable = options.isDraggable === true || options.isDraggable === 'true';
 
     const { georefImageEpsg = true } = options;
 
@@ -95,7 +82,6 @@ export default class PrintViewManagement extends IDEE.Plugin {
     if (georefImage === true) {
       this.georefImage = {
         tooltip: 'Georeferenciar imagen',
-        printSelector: true,
         defaultDpiOptions: [72, 150, 300],
       };
     } else if (options.georefImage) {
@@ -115,11 +101,11 @@ export default class PrintViewManagement extends IDEE.Plugin {
       this.printermap = {
         filterTemplates: [
           `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConBorde.html`,
-          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConCabeceraYBorde.html`,
+          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConCabezeraYBorde.html`,
           `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConFooterYBorde.html`,
         ],
         showDefaultTemplate: true,
-        defaultDpiOptions: [72, 150, 300],
+        defaultDpiOptions: [96, 150, 300],
         layoutsRestraintFromDpi: ['screensize', 'A0', 'A1', 'A2'],
       };
     } else if (options.printermap) {
@@ -129,20 +115,6 @@ export default class PrintViewManagement extends IDEE.Plugin {
     }
 
     this.defaultOpenControl = options.defaultOpenControl || 0;
-
-    /**
-     * Indicates if you want to use proxy in requests
-     * @private
-     * @type {Boolean|String}
-     */
-    this.useProxy = IDEE.utils.isUndefined(options.useProxy) ? IDEE.useproxy : options.useProxy;
-
-    /**
-     * Stores the proxy state at plugin load time
-     * @private
-     * @type {Boolean}
-     */
-    this.statusProxy = IDEE.useproxy;
   }
 
   /**
@@ -178,39 +150,36 @@ export default class PrintViewManagement extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_impresora.svg',
       order: this.order,
     });
     map.addButtons(this.button);
 
     this.panel = new IDEE.ui.Panel(this.name, {
       tooltip: this.tooltip,
-      position: IDEE.ui.position[this.position],
+      position: this.position,
       minWidth: this.minPanelWidth,
       maxWidth: this.maxPanelWidth,
       className: 'm-plugin-printviewmanagement',
-      collapsible: this.collapsible,
       collapsed: this.collapsed,
       collapsedButtonClass: 'printviewmanagement-icon-flecha-historial',
       order: this.order,
     });
-    map.addPanels(this.panel);
 
     this.controls.push(new PrintViewManagementControl({
-      isDraggable: this.isDraggable,
       georefImageEpsg: this.georefImageEpsg,
       georefImage: this.georefImage,
       printermap: this.printermap,
       order: this.order,
       map: this.map,
       defaultOpenControl: this.defaultOpenControl,
-      useProxy: this.useProxy,
-      statusProxy: this.statusProxy,
     }));
     this.panel.addControls(this.controls);
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
+
+    map.addPanels(this.panel);
   }
 
   /**
@@ -242,8 +211,8 @@ export default class PrintViewManagement extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip}*${this.isDraggable}`
-      + `*${!!this.georefImageEpsg}*${!!this.georefImage}*${!!this.printermap}*${this.defaultOpenControl}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}`
+      + `*${this.defaultOpenControl}*${!!this.georefImageEpsg}*${!!this.georefImage}*${!!this.printermap}`;
   }
 
   /**

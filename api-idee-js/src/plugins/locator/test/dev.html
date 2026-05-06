@@ -7,30 +7,112 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="idee" content="yes">
     <title>Locator TEST</title>
-    <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes-desarrollo.idee.es/api-idee/plugins/vectors/vectors.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes-desarrollo.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
-
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-    </style>
-
+    <link href="http://localhost:8080/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <link href="http://localhost:8080/api-idee/plugins/vectors/vectors.ol.min.css" rel="stylesheet" />
+    <link href="http://localhost:8080/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
 </head>
 
 <body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form" style="max-height: 14.2rem;">
+            <div>
+                <label for="selectPosicion">Posición del panel "position"</label>
+                <select name="position" id="selectPosicion">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda (left)</option>
+                    <option value="right">Derecha (right)</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder"
+                    title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden en la posición asignada "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Título ilustrativo que aporta información adicional">Información de la herramienta
+                    "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
+            </div>
+            <div>
+                <label for="selectCollapsed">Panel colapsado "collapsed"</label>
+                <select name="collapsed" id="selectCollapsed">
+                    <option value=''></option>
+                    <option value="true">true</option>
+                    <option value="false" selected="selected">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputZoom">Zoom "zoom"</label>
+                <input type="number" name="zoom" id="inputZoom" value="16" max="28" min="0" step="1">
+            </div>
+            <div>
+                <label for="selectPointStyle">Estilo del pin de búsqueda "pointStyle"</label>
+                <select name="pointStyle" id="selectPointStyle">
+                    <option></option>
+                    <option value="pinAzul">Azul</option>
+                    <option value="pinRojo">Rojo</option>
+                    <option value="pinMorado">Morado</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectProxy">Proxy "useProxy"</label>
+                <select name="proxyValue" id="selectProxy">
+                    <option value=true>true</option>
+                    <option value=false>false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputByParcelCadastre">Por parcela catastral "byParcelCadastre"</label>
+                <textarea name="byParcelCadastre" id="inputByParcelCadastre" rows="4">{
+                "cadastreWMS": "https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_RCCOOR",
+                "CMC_url": "https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/ConsultaMunicipioCodigos",
+                "DNPPP_url": "https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/Consulta_DNPPP_Codigos",
+                "CPMRC_url": "https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_CPMRC"
+                }</textarea>
+            </div>
+            <div>
+                <label for="inputByCoordinates">Buscar por coordenadas "byCoordinates"</label>
+                <textarea name="byCoordinates" id="inputByCoordinates" rows="4">{
+                "projections": [
+                    {
+                        "title": "ETRS89 geographic (4258) dd",
+                        "code": "EPSG:4258",
+                        "units": "d"
+                    },
+                    {
+                        "title": "ETRS89 geographic (4258) dms",
+                        "code": "EPSG:4258",
+                        "units": "dms"
+                    }
+                    ],
+                    "help": "https://www.google.com/"
+                }</textarea>
+            </div>
+            <div>
+                <label for="inputByPlaceAddressPostal">Buscador por lugar "byPlaceAddressPostal"</label>
+                <textarea name="byPlaceAddressPostal" id="inputByPlaceAddressPostal" rows="4">{
+                 "maxResults": 20,
+                 "noProcess": "poblacion",
+                 "countryCode": "es",
+                 "resultVisibility": true,
+                 "urlCandidates": "https://www.cartociudad.es/geocoder/api/geocoder/candidatesJsonp",
+                 "urlFind": "https://www.cartociudad.es/geocoder/api/geocoder/findJsonp",
+                 "urlReverse": "https://www.cartociudad.es/geocoder/api/geocoder/reverseGeocode",
+                 "requestStreet": "https://www.cartociudad.es/geocoder/api/geocoder/findJsonp?q=Sevilla&type=provincia&tip_via=null&id=41&portal=null&extension=null"
+                }</textarea>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button id="removeButton">Eliminar</button>
+        </div>
+    </div>
     <div id="mapjs" class="container"></div>
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/plugins/vectors/vectors.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/api-idee/js/apiidee.ol.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/api-idee/plugins/vectors/vectors.ol.min.js"></script>
+    <script type="text/javascript"
+        src="http://localhost:8080/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js"></script>
     <script type="text/javascript" src="/main.js"></script>
-
 </body>
 
 </html>

@@ -2,7 +2,8 @@
  * @module IDEE/impl/control/Location
  */
 
-import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import { isNullOrEmpty, extend, setEquals } from 'IDEE/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
 // import * as Dialog from 'IDEE/dialog';
 // import { getValue } from 'IDEE/i18n/language';
 import { get as getProj } from 'ol/proj';
@@ -18,8 +19,20 @@ import Feature from '../feature/Feature';
 
 /**
  *  @classdesc
- *  Localiza la posición del usuario en el mapa.
- *  @api
+ *  Hereda de {@link module:IDEE/impl/control/Control|Control}.
+ *  Control de localización geográfica. Localiza la posición actual del usuario en el mapa
+ *  usando la API de Geolocalización del navegador. Dibuja el punto de ubicación y el área
+ *  de precisión del posicionamiento.
+ *
+ *  @property {Boolean} [tracking=true] Seguimiento continuo de la localización.
+ *  @property {Boolean} [highAccuracy=false] Alta precisión del seguimiento.
+ *  @property {Number} [maximumAge=60000] Antigüedad máxima en milisegundos de una
+ * posición en caché.
+ *  @property {ol.Geolocation} [locationAPI_] API de geolocalización de OpenLayers.
+ *  @property {ol.Feature} [locationFeature_] Feature que representa la ubicación del usuario.
+ *
+ *  @api stable
+ *  @extends {module:IDEE/impl/control/Control}
  */
 class Location extends Control {
   /**
@@ -35,6 +48,10 @@ class Location extends Control {
    * Valor por defecto 60000.
    * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base,
    * por defecto objeto vacío. Estos valores no son configurables.
+   * @example
+   * const control = new IDEE.impl.ol.control.Location(true, false, 60000, {
+   *   enableHighAccuracy: true,
+   * });
    * @extends {IDEE.impl.Control}
    * @api stable
    */
@@ -94,6 +111,20 @@ class Location extends Control {
     this.activated_ = false;
 
     /**
+     * Referencia a la fachada del control (IDEE.control.Location).
+     * @private
+     * @type {Object|null}
+     */
+    this.facadeObj_ = null;
+
+    /**
+     * Última coordenada emitida.
+     * @private
+     * @type {Object|null}
+     */
+    this.lastCoord_ = [];
+
+    /**
      * Objeto geográfico de la posición.
      * @private
      * @type {OLFeature}
@@ -102,6 +133,18 @@ class Location extends Control {
     olPositionFeature.setStyle(Location.POSITION_STYLE);
     olPositionFeature.set('isUtilityFeature', true); // No interactivo
     this.positionFeature_ = Feature.feature2Facade(olPositionFeature);
+  }
+
+  /**
+   * Asocia la fachada del control para poder emitir eventos.
+   *
+   * @public
+   * @function
+   * @param {IDEE.control.Location} obj Fachada del control.
+   * @api stable
+   */
+  setFacadeObj(obj) {
+    this.facadeObj_ = obj;
   }
 
   /**
@@ -142,6 +185,13 @@ class Location extends Control {
         this.element.classList.add('m-located');
 
         this.geolocation_.setTracking(this.tracking_);
+
+        if (!isNullOrEmpty(this.facadeObj_)) {
+          if (!setEquals(newCoord, this.lastCoord_)) {
+            this.facadeObj_.fire(EventType.CHANGE, [newCoord]);
+            this.lastCoord_ = newCoord;
+          }
+        }
       });
       // this.geolocation_.on('error', (evt) => {
       //   this.element.classList.remove('m-locating');

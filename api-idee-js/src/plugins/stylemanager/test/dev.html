@@ -7,25 +7,60 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="cnig" content="yes">
     <title>StyleManager TEST</title>
-    <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-    </style>
-
+    <link href="https://api-ideedes.grupotecopy.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <link href="https://api-ideedes.grupotecopy.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
 </head>
 
 <body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form" style="max-height: 8rem;">
+            <div>
+                <label for="selectPosicion" title="Posición del plugin en el mapa">Posición del panel "position"</label>
+                <select name="position" id="selectPosicion">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsed" title="Indica si el panel del plugin aparece colapsado al cargarse">Panel colapsado "collapsed"</label>
+                <select name="collapsed" id="selectCollapsed">
+                    <option value=''></option>
+                    <option value="true" selected="selected">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder" title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden en la posición asignada "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Título ilustrativo que aporta información adicional">Información de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
+                <datalist id="tooltipSug">
+                    <option value="Gestor de estilos"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="selectLayer" title="Capa pre seleccionada que se cargará en el plugin. Debe de estar definida en el mapa. Por defecto ninguna">Capa pre seleccionada "layer"</label>
+                <select name="layer" id="selectLayer">
+                    <option value="" selected="selected"></option>
+                    <option value="points">points</option>
+                    <option value="lines">lines</option>
+                    <option value="polygons">polygons</option>
+                    <option value="generic">generic</option>
+                </select>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button id="removeButton">Eliminar Plugin</button>
+        </div>
+    </div>
     <div id="mapjs" class="container"></div>
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="https://api-ideedes.grupotecopy.es/api-idee/js/apiidee.ol.min.js"></script>
+    <script type="text/javascript" src="https://api-ideedes.grupotecopy.es/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="https://api-ideedes.grupotecopy.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js"></script>
     <script type="text/javascript" src="/main.js"></script>
-
 </body>
 
 </html>

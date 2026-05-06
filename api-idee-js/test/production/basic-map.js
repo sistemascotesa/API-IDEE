@@ -19,7 +19,7 @@ const mp2 = new IDEE.plugin.Attributions({
   scale: 10000,
 });
 const mp3 = new IDEE.plugin.ShareMap({
-  baseUrl: 'https://componentes-desarrollo.idee.es/api-idee/',
+  baseUrl: 'https://api-ideedes.grupotecopy.es/api-idee/',
   position: 'BR',
 });
 const mp4 = new IDEE.plugin.XYLocator({

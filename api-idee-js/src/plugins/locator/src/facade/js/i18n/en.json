@@ -63,6 +63,7 @@
   "selectmuni": "Select a municipality",
   "estate": "Polygon",
   "search": "Search",
+  "remove": "Remove",
   "refCastatro": "Cadastral reference",
   "insertCadastre": "Insert cadastre",
   "notaRef": "Parcel code (first 14 digits). Ex.9977715VK3797F (IGN building)",
@@ -76,5 +77,6 @@
   "ignsearch": "Search places",
   "search_direction": "Place name, address or postal code",
   "get_direction": "Search",
-  "toponimo": "Place name"
+  "toponimo": "Place name",
+  "map_point_direction": "Get directions to a point on"
 }

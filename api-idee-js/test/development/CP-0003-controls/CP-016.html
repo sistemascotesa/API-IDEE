@@ -8,73 +8,78 @@
     <meta name="idee" content="yes">
 
     <title>PRUEBA DESARROLLO</title>
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
-    </style>
-
 </head>
 
-<body style="display: flex; flex-direction: column;">
-    <div>
-        <label for="selectPosicion">Selector de posición del plugin</label>
-        <select name="position" id="selectPosicion">
-            <option value="left">Izquierda (left)</option>
-            <option value="right" selected="selected">Derecha (right)</option>
-            <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
-            <option value="center-top-right">Centro superior derecho (center-top-right)</option>
-            <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
-            <option value="center-bottom-right">Centro inferior derecho (center-bottom-right)</option>
-            <option value="down">Abajo (down)</option>
-        </select>
+<body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosicion" title="Posición del Control">Posición del panel "position"</label>
+                <select name="position" id="selectPosicion">
+                    <option value="left" selected="selected">Izquierda (left)</option>
+                    <option value="right">Derecha (right)</option>
+                    <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
+                    <option value="center-top-right">Centro superior derecho (center-top-right)</option>
+                    <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
+                    <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)</option>
+                    <option value="down">Abajo (down)</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder"
+                    title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                    entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Título ilustrativo que aporta información adicional">Título
+                    "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
+            </div>
+            <div>
+                <label for="selectCollapsed">Panel colapsado "collapsed"</label>
+                <select name="collapsed" id="selectCollapsed">
+                    <option value='' selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsible">Panel colapsable "collapsible"</label>
+                <select name="collapsible" id="selectCollapsible">
+                    <option value='' selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
 
-        <label for="inputZoom">Parámetro Zoom</label>
-        <input 
-            type="number" 
-            name="ratio" 
-            id="inputZoom" 
-            list="tooltipSug"
-            min="0"
-            max="22"
-            step="1"
-            value="3"
-        >
+            <div>
+                <label for="inputZoom">Zoom "zoom"</label>
+                <input type="number" name="ratio" id="inputZoom" list="tooltipSug" min="0" max="22" step="1" value="3">
+            </div>
 
-        <label for="selectFixed">Selector Fixed</label>
-        <select name="fixedValue" id="selectFixed">
-            <option value=true selected="selected">true</option>
-            <option value=false>false</option>
-        </select>
+            <div>
+                <label for="selectFixed">Zoom fijo "fixed"</label>
+                <select name="fixedValue" id="selectFixed">
+                    <option value='' selected="selected"></option>
+                    <option value=true>true</option>
+                    <option value=false>false</option>
+                </select>
+            </div>
 
-        <label for="inputBaseLayer">Parámetro baseLayer</label>
-        <input type="text" name="baseLayer" id="inputBaseLayer" list="baseLayerSug">
-        <datalist id="baseLayerSug">
-            <option value="WMTS*http://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*false*true"></option>
-        </datalist>
-
-        <label for="selectCollapsed">Parámetro de collapsed</label>
-        <select name="collapsed" id="selectCollapsed">
-            <option value=''></option>
-            <option value="true">true</option>
-            <option value="false" selected="selected">false</option>
-        </select>
-
-        <label for="selectCollapsible">Selector de collapsible</label>
-        <select name="collapsible" id="selectCollapsible">
-            <option value=''></option>
-            <option value="true" selected="selected">true</option>
-            <option value="false">false</option>
-        </select>
-
-        <label for="inputTooltip">Parámetro tooltip</label>
-        <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Herramientas de medición">
-    </div>
-    <div>
-        <button id="removeButton">Eliminar Control</button>
+            <div>
+                <label for="inputBaseLayer">Capas base "baseLayer"</label>
+                <input type="text" name="baseLayer" id="inputBaseLayer" list="baseLayerSug">
+                <datalist id="baseLayerSug">
+                    <option
+                        value="WMTS*http://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*false*true">
+                    </option>
+                </datalist>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar control" class="m-test-button" id="removeButton">Eliminar Control</button>
+        </div>
     </div>
     <div id="map" class="map"></div>
     <script src="/config.js" charset="utf-8"></script>

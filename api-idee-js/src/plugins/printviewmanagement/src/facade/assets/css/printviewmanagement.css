@@ -12,14 +12,12 @@
     justify-content: center;
 }
 
-
 /**********************
 * PRINTVIEWMANAGEMENT *
 ***********************/
 .m-georefimage-download-button button {
     width: 100%;
 }
-
 
 /*************
 * PRINTERMAP *
@@ -49,11 +47,14 @@
 }
 
 .m-printermap-customizeTemplate-container {
-    border-bottom: 1px solid #71A7D3;
+    border-bottom: 1px solid var(--idee-color-neutral-40);
     padding-bottom: 16px;
 }
 
 .m-printermap-title-container input {
+    background-color: var(--idee-color-neutral-05);
+    border-color: var(--idee-color-neutral-50);
+    color: var(--idee-color-neutral-50);
     margin: 0;
 }
 
@@ -63,6 +64,8 @@
 
 .m-printermap-format-container select,
 .m-printermap-loadTemplate-container select {
+    background-color: var(--idee-color-neutral-20);
+    color: var(--idee-color-black);
     height: 40px;
 }
 
@@ -74,7 +77,7 @@
 * GEOREFIMAGE *
 ***************/
 .m-georefimage-container {
-    border-bottom: 1px solid #71A7D3;
+    border-bottom: 1px solid var(--idee-color-neutral-40);
     margin-bottom: 16px;
 }
 
@@ -89,12 +92,17 @@
     justify-content: space-between;
 }
 
-.m-georefimage-title-container input {
+.m-georefimage-title-container input[type="text"] {
+    background-color: var(--idee-color-neutral-05);
+    border-color: var(--idee-color-neutral-50);
+    color: var(--idee-color-neutral-50);
     margin: 0;
 }
 
 .m-georefimage-format-container select,
 .m-georefimage-dpi-container select {
+    background-color: var(--idee-color-neutral-20);
+    color: var(--idee-color-black);
     height: 40px;
 }
 
@@ -108,7 +116,7 @@
 * GEOREFIMAGEEPSG *
 *******************/
 .m-georefimageepsg-container {
-    border-bottom: 1px solid #71A7D3;
+    border-bottom: 1px solid var(--idee-color-neutral-40);
     margin-bottom: 16px;
 }
 
@@ -119,6 +127,8 @@
 
 .m-georefimageepsg-layer-container select,
 .m-georefimageepsg-dpi-container select {
+    background-color: var(--idee-color-neutral-20);
+    color: var(--idee-color-black);
     height: 40px;
 }
 
@@ -141,7 +151,7 @@
 .m-templateCustomizer-left-wrapper .m-customize-template-form {
     justify-content: start;
     overflow-y: auto;
-    border-right: 1px solid #71A7D3;
+    border-right: 1px solid var(--idee-color-neutral-40);
     padding-right: 16px;
     gap: 16px;
 }
@@ -161,14 +171,10 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--idee-color-neutral-40);
     border-radius: 5px;
     margin-bottom: 20px;
     padding: 15px;
-}
-
-.m-templateCustomizer-option legend {
-    font-size: 15px;
 }
 
 .template-option label,
@@ -183,17 +189,26 @@
 
 .template-layout select,
 .template-dpi select {
+    background-color: var(--idee-color-neutral-20);
+    color: var(--idee-color-black);
     height: 40px;
     width: 100%;
 }
 
-.template-scale input[type="text"],
+.template-scale input[type="text"] {
+    background-color: var(--idee-color-neutral-05);
+    border-color: var(--idee-color-neutral-50);
+    margin: 0;
+}
+
 .m-customize-template-select-editable input[type="text"] {
     margin: 0;
 }
 
 .m-customize-template-select-editable {
     position: relative;
+    background-color: var(--idee-color-neutral-20);
+    color: var(--idee-color-black);
 }
 
 .m-customize-template-select-editable .m-templateCustomizer-input-srs {
@@ -210,9 +225,8 @@
     width: 95%;
     overflow-y: auto;
     list-style: none;
-    background-color: white;
+    background-color: var(--idee-color-neutral-20);
     font-size: 12px;
-    border: 1px solid #ddd;
 }
 
 .m-templateCustomizer-srs-list li a {
@@ -221,12 +235,12 @@
     padding: 4px 12px;
     border-radius: 4px;
     text-decoration: none;
-    color: #6c6c6c;
+    color: var(--idee-color-neutral-70)
 }
 
 .m-templateCustomizer-srs-list li a:hover {
-    color: #fff;
-    background-color: #1470db;
+    color: var(--idee-color-white);
+    background-color: var(--idee-color-links);
     transition: all .3s ease;
 }
 
@@ -245,7 +259,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background: color-mix(in srgb, var(--idee-color-neutral-60) 70%, transparent);
   display: flex;
   justify-content: center;
   align-items: center;

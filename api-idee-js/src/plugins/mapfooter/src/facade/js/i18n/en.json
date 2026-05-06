@@ -1,0 +1,7 @@
+{
+  "exception": {
+    "impl": "The implementation used cannot create MapfooterControl controls"
+  },
+  "hidefooter": "Hide footer",
+  "showfooter": "Show footer"
+}

@@ -141,7 +141,7 @@ const map = M.map({
 });
 
 let backImgLayerParams = {
-  position: 'TR',
+  position: 'right',
   collapsible: true,
   collapsed: true,
   layerId: 0,

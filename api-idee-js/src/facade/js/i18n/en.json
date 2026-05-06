@@ -1,5 +1,7 @@
 {
   "panzoom": {
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
     "textHelp": {
       "text1": "This tool allows you to change the zoom of the viewer from a panel with a slider. The display map changes zoom in or out as you move the slider up or down."
     }
@@ -28,14 +30,14 @@
     "title": "Layer selector"
   },
   "overviewmap": {
+    "title": "Overview Map",
     "textHelp": {
       "help1": "Shows a general view with a box that corresponds to the area where we are in the main view.",
       "help2": "The situation map box is synchronized with the main view. Allows you to scroll the main view, moving the box from the situation map.",
       "help3": "To hide the location map again, click the 'Minimize' button.",
       "help4": "The information relevant to the extension and its possible parameterization is documented in",
       "help5": "The example of use of its parameters can be checked in"
-    },
-    "tooltip": "Overview Map"
+    }
   },
   "scale": {
     "title": "Scale",
@@ -255,6 +257,10 @@
     "invalid_control": "The specified control is invalid.",
     "remove_control": "You have not specified any control to delete.",
     "control_already_added": "The control is already added to the map.",
+    "parseParamError": "Error parsing parameter '{param}' of '{name}': {error}",
+    "paramNotAllowed": "Parameter '{param}' is not allowed for control '{control}' and has been omitted.",
+    "invalidBase64Encoding": "Invalid base64 encoding",
+    "invalidJsonFormat": "Invalid JSON format",
     "removecontrol_method": "The used implementation does not have the removeControls method.",
     "setmaxextent_method": "The used implementation does not have the setMaxExtent method.",
     "getbbox_method": "The used implementation does not have the getBbox method.",

@@ -4,8 +4,17 @@
  */
 import OLSourceImageWMS from 'ol/source/ImageWMS';
 import {
-  isNull, isArray, isNullOrEmpty, addParameters, getWMSGetCapabilitiesUrl, getZDirectionFunction,
-  fillResolutions, getResolutionFromScale, generateResolutionsFromExtent, extend,
+  isNull,
+  isArray,
+  isObject,
+  isNullOrEmpty,
+  addParameters,
+  getWMSGetCapabilitiesUrl,
+  getZDirectionFunction,
+  fillResolutions,
+  getResolutionFromScale,
+  generateResolutionsFromExtent,
+  extend,
 } from 'IDEE/util/Utils';
 import FacadeLayerBase from 'IDEE/layer/Layer';
 import * as LayerType from 'IDEE/layer/Type';
@@ -284,7 +293,7 @@ class WMS extends LayerBase {
   setVisible(visibility) {
     this.visibility = visibility;
     // if this layer is base then it hides all base layers
-    if ((visibility === true) && (this.isBase !== false)) {
+    if ((visibility === true) && (this.isBase !== false) && !this.isVisible()) {
       // hides all base layers
       this.map.getBaseLayers()
         .filter((layer) => !layer.equals(this.facadeLayer_) && layer.isVisible())
@@ -296,9 +305,10 @@ class WMS extends LayerBase {
       }
 
       // updates resolutions and keep the zoom
-      const oldBbox = this.map.getBbox();
-      if (!isNullOrEmpty(oldBbox)) {
-        this.map.setBbox(oldBbox);
+      const oldZoom = this.map.getZoom();
+      this.map.getImpl().updateResolutionsFromBaseLayer();
+      if (!isNullOrEmpty(oldZoom)) {
+        this.map.setZoom(oldZoom);
       }
     } else if (!isNullOrEmpty(this.olLayer)) {
       this.olLayer.setVisible(visibility);
@@ -488,6 +498,30 @@ class WMS extends LayerBase {
       if (isNullOrEmpty(extent)) {
         extent = this.facadeLayer_.calculateMaxExtentWithCapabilities(capabilities);
         this.facadeLayer_.maxExtent_ = extent;
+      }
+    }
+
+    if (isNullOrEmpty(extent)) {
+      if (!isNullOrEmpty(this.map.userMaxExtent)) {
+        extent = this.map.userMaxExtent;
+      } else {
+        const userBbox = this.map.getImpl().userBbox_;
+        if (!isNullOrEmpty(userBbox)) {
+          if (isArray(userBbox)) {
+            extent = userBbox;
+          } else if (isObject(userBbox)) {
+            extent = [
+              userBbox.x.min,
+              userBbox.y.min,
+              userBbox.x.max,
+              userBbox.y.max,
+            ];
+          }
+        }
+      }
+      if (!isNullOrEmpty(extent)) {
+        this.maxExtent_ = extent;
+        this.setMaxExtent(extent);
       }
     }
 

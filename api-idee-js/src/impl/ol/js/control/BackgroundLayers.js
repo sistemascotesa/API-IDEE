@@ -10,6 +10,11 @@ import Control from './Control';
 import { getQuickLayers } from '../../../../facade/js/api-idee';
 
 /**
+ * @typedef {Object} module:IDEE/impl/control/BackgroundLayers~Options
+ * @api
+ */
+
+/**
  * Esta constante indica el número máximo de capas base que tendrá el control.
  *
  * @type {number}
@@ -19,25 +24,29 @@ import { getQuickLayers } from '../../../../facade/js/api-idee';
 const MAXIMUM_LAYERS = 5;
 
 /**
- *  @classdesc
- *  Localiza la posición del usuario en el mapa.
- *  @api
+ * @classdesc
+ * Control selector de capas base. Hereda de {@link module:IDEE/impl/control/Control|Control}.
+ * Permite al usuario cambiar entre diferentes capas base disponibles en el mapa.
+ * @property {Array<Layer>} layers Proviene de "IDEE.config.backgroundlayers".
+ * @extends {module:IDEE/impl/control/Control}
+ * @api
  */
 class BackgroundLayers extends Control {
   /**
    * Constructor principal de la clase.
-   * Crea las interacciones con el mapa para cambiar las capas base seleccinadas
+   * Crea las interacciones con el mapa para cambiar las capas base seleccionadas.
    *
    * @constructor
-   * @property {Object} options.vendorOptions Opciones de proveedor para la biblioteca base,
-   * por defecto objeto vacío. Estos valores no son configurables.
+   * @param {module:IDEE/impl/control/BackgroundLayers~Options} options Opciones del control.
+   * @example
+   * const control = new IDEE.impl.ol.control.BackgroundLayers();
    * @property {Array<Layer>} layers Proviene de "IDEE.config.backgroundlayers".
    * @extends {IDEE.impl.Control}
    * @api stable
    */
 
   constructor(options = {}) {
-    super(options.vendorOptions);
+    super(options);
 
     /**
      * Control layers, proviene de "IDEE.config.backgroundlayers".

@@ -22,6 +22,20 @@ import Measure from './Measure';
  * @api stable
  */
 export default class MeasureClear extends Control {
+  /**
+   * Constructor principal de la clase.
+   *
+   * @constructor
+   * @param {IDEE.control.MeasureLength} measureLengthControl Control de medición de longitudes.
+   * @param {IDEE.control.MeasureArea} measureAreaControl Control de medición de áreas.
+   * @param {Object} [options] Opciones de configuración.
+   * @example
+   * const control = new IDEE.control.MeasureClear(measureLengthControl, measureAreaControl, {
+   *   tooltip: 'Borrar medidas',
+   * });
+   * @extends {Control}
+   * @api stable
+   */
   constructor(measureLengthControl, measureAreaControl, options) {
     // checks if the implementation can create MeasureClear
     if (isUndefined(MeasureClearImpl) || (isObject(MeasureClearImpl)
@@ -93,7 +107,7 @@ export default class MeasureClear extends Control {
  * @public
  * @api stable
  */
-MeasureClear.NAME = 'measurebar';
+MeasureClear.NAME = 'measureclear';
 
 /**
  * Template for this controls

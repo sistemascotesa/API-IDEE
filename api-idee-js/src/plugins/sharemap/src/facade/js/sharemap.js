@@ -41,7 +41,7 @@ import en from './i18n/en';
  * @example
  *
  * {
- * 'baseUrl': 'https://componentes-desarrollo.idee.es/api-idee/'
+ * 'baseUrl': 'https://api-ideedes.grupotecopy.es/api-idee/'
  * 'position': 'BL',
  * 'title': 'Compartir Mapa',
  * 'btn': 'Aceptar',
@@ -60,7 +60,7 @@ import en from './i18n/en';
  * @example
  *
  * {
- * 'baseUrl': 'https://componentes-desarrollo.idee.es/api-idee/'
+ * 'baseUrl': 'https://api-ideedes.grupotecopy.es/api-idee/'
  * }
  */
 

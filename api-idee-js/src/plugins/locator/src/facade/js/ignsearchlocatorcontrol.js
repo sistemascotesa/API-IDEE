@@ -9,9 +9,12 @@ import { getValue } from './i18n/language';
 const ID_CONTENEDOR_LOCATOR = '#plugin-panel-content-locator';
 const ID_IGN_SEARCH = '#m-locator-ignsearch';
 const ID_IGNSEARCH_PANEL = '#m-ignsearch-panel';
-const ID_IGNSEARCH_RESULTS = '#m-ignsearchlocator-results';
-const ID_IGNSEARCH_INPUT = '#m-ignsearchlocator-search-input';
 const ID_LOCATE_BUTTON = '#m-ignsearchlocator-locate-button';
+const ID_IGNSEARCH_BAR = '#m-ignsearchlocator-search-bar';
+const ID_IGNSEARCH_INPUT = '#m-ignsearchlocator-search-input';
+const ID_IGNSEARCH_SEARCH_BUTTON = '#m-ignsearchlocator-searh-button';
+const ID_IGNSEARCH_REMOVE_BUTTON = '#m-ignsearchlocator-remove-searh-button';
+const ID_IGNSEARCH_RESULTS = '#m-ignsearchlocator-results';
 const ID_RESULTS_LIST = '#m-ignsearchlocator-results-list';
 
 let typingTimer;
@@ -55,7 +58,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
      * @private
      * @type {number}
      */
-    this.maxResults = options.maxResults || 99;
+    this.maxResults = options.maxResults ?? 99;
 
     /**
      * This variable indicate which entities shouldn't be searched
@@ -70,7 +73,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
      * @private
      * @type {string} - 'es'
      */
-    this.countryCode = options.countryCode || 'es';
+    this.countryCode = options.countryCode ?? 'es';
 
     /**
      * This variable indicates whether the option to obtain the address
@@ -94,21 +97,21 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
      * @private
      * @type {string}
      */
-    this.urlCandidates = options.urlCandidates || 'https://www.cartociudad.es/geocoder/api/geocoder/candidatesJsonp';
+    this.urlCandidates = options.urlCandidates ?? 'https://www.cartociudad.es/geocoder/api/geocoder/candidatesJsonp';
 
     /**
      * This variable indicates Geocoder Find service url
      * @private
      * @type {string}
      */
-    this.urlFind = options.urlFind || 'https://www.cartociudad.es/geocoder/api/geocoder/findJsonp';
+    this.urlFind = options.urlFind ?? 'https://www.cartociudad.es/geocoder/api/geocoder/findJsonp';
 
     /**
      * This variable indicates Geocoder Reverse service url
      * @private
      * @type {string}
      */
-    this.urlReverse = options.urlReverse || 'https://www.cartociudad.es/geocoder/api/geocoder/reverseGeocode';
+    this.urlReverse = options.urlReverse ?? 'https://www.cartociudad.es/geocoder/api/geocoder/reverseGeocode';
 
     /**
      * Type of icon to display when a punctual type result is found
@@ -127,9 +130,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
     let geocoderCoords = options.geocoderCoords;
     if (IDEE.utils.isString(geocoderCoords)) {
       geocoderCoords = geocoderCoords.split(',');
-      geocoderCoords = [Number.parseFloat(geocoderCoords[0]),
-        Number.parseFloat(geocoderCoords[1]),
-      ];
+      geocoderCoords = [Number.parseFloat(geocoderCoords[0]), Number.parseFloat(geocoderCoords[1])];
     }
 
     /**
@@ -171,9 +172,9 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
     /**
      * Name of the plugin
      * @private
-     * @type {string}
+     * @type {String}
      */
-    this.pluginName = pluginName || 'locator';
+    this.pluginName = pluginName ?? 'locator';
 
     /**
      * Map
@@ -232,6 +233,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
           translations: {
             search_direction: getValue('search_direction'),
             get_direction: getValue('get_direction'),
+            locate: getValue('locate'),
             clean: getValue('clean'),
           },
         },
@@ -240,9 +242,6 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       this.resultsBox = this.html_.querySelector(ID_IGNSEARCH_RESULTS);
       this.searchInput = this.html_.querySelector(ID_IGNSEARCH_INPUT);
       this.addEvents();
-      if (this.reverse) {
-        IDEE.utils.loadSvgByUrl(this.pluginName, 'ignsearchicon', panel.querySelector(ID_LOCATE_BUTTON));
-      }
     }
   }
 
@@ -276,16 +275,36 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       if (searchInput) {
         searchInput.addEventListener('keyup', (e) => this.createTimeout(e));
         searchInput.addEventListener('click', () => this.openRecentsResults());
+
         if (this.reverse) {
-          this.html_.querySelector(ID_LOCATE_BUTTON).addEventListener('click', () => {
-            const inputEvent = {
-              target: searchInput,
-            };
-            this.searchInputValue(inputEvent);
-          });
+          searchInput.addEventListener('click', () => this.openRecentsResults());
+          this.html_.querySelector(ID_LOCATE_BUTTON)
+            .addEventListener('click', this.activateDeactivateReverse.bind(this));
           this.clickReverseEvent = this.map.on(IDEE.evt.CLICK, (e) => this.showReversePopUp(e));
         }
       }
+    }
+  }
+
+  /**
+   * This function toggles reverse geocoder button activation.
+   *
+   * @public
+   * @function
+   * @api
+   */
+  activateDeactivateReverse() {
+    if (!this.reverseActivated) {
+      this.invokeEscKey();
+      this.reverseActivated = true;
+      this.html_.querySelector(ID_LOCATE_BUTTON).classList.add('activated');
+      document.addEventListener('keyup', this.checkEscKey.bind(this));
+      document.getElementsByTagName('body')[0].style.cursor = 'url(https://componentes.idee.es/estaticos/Simbologia/svg/marcadores/pushpin.svg) 0 20, auto';
+    } else {
+      this.reverseActivated = false;
+      this.html_.querySelector(ID_LOCATE_BUTTON).classList.remove('activated');
+      document.removeEventListener('keyup', this.checkEscKey);
+      document.getElementsByTagName('body')[0].style.cursor = 'auto';
     }
   }
 
@@ -403,7 +422,10 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
    */
   createTimeout(e) {
     clearTimeout(typingTimer);
-    typingTimer = setTimeout(() => this.searchInputValue(e), 500);
+    typingTimer = setTimeout(() => {
+      this.togleSearchBarButtons(e);
+      this.searchInputValue(e);
+    }, 500);
   }
 
   /**
@@ -431,10 +453,113 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
         elementList.forEach((listElement) => {
           listElement.addEventListener('click', () => {
             this.goToLocation(listElement, true);
+            this.createSearchBarButtons();
           });
         });
         this.resultsBox.appendChild(compiledResult);
       }
+    }
+  }
+
+  /**
+   * Create a HTMLButtonElement
+   * @param {Object} options
+   * @param {string} options.id - id of button
+   * @param {string} options.className - a css class
+   * @param {string} options.titleKey - tradcution key
+   * @returns {HTMLButtonElement}
+   */
+  createButton({
+    id,
+    className,
+    titleKey,
+  }) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.tabIndex = 0;
+    button.id = id;
+    button.className = className;
+    const translatedTitle = getValue(titleKey);
+    button.title = translatedTitle;
+    return button;
+  }
+
+  createSearchBarButton(searchBar) {
+    const button = this.createButton({
+      id: ID_IGNSEARCH_SEARCH_BUTTON.substring(1),
+      className: 'm-ign-search-searh-button g-cartografia-zoom',
+      titleKey: 'search',
+    });
+    button.addEventListener('click', () => {
+      const inputEvent = {
+        target: searchBar.querySelector(ID_IGNSEARCH_INPUT),
+      };
+      this.searchInputValue(inputEvent);
+    });
+    return button;
+  }
+
+  /**
+   * @param {HTMLInputElement} searchBar
+   * @returns
+   */
+  createSearchBarRemoveButton(searchBar) {
+    const button = this.createButton({
+      id: ID_IGNSEARCH_REMOVE_BUTTON.substring(1),
+      className: 'm-ign-search-remove-searh-button g-cartografia-cancelar',
+      titleKey: 'remove',
+    });
+    button.addEventListener('click', () => {
+      const searchInputElm = searchBar.querySelector(ID_IGNSEARCH_INPUT);
+      searchInputElm.value = '';
+      if (this.reverseActivated) this.activateDeactivateReverse();
+      this.clearResults();
+      searchInputElm.dispatchEvent(new Event('keyup'));
+      searchInputElm.focus();
+    });
+    return button;
+  }
+
+  /**
+   * Creates the dinamic bar button elements
+   * @param {HTMLDivElement} searchBar a container of searh elements
+   */
+  createSearchBarButtons(
+    searchBar = this.html_.querySelector(ID_IGNSEARCH_BAR),
+    searchBarButton = searchBar.querySelector(ID_IGNSEARCH_SEARCH_BUTTON),
+    searchBarRemoveButton = searchBar.querySelector(ID_IGNSEARCH_REMOVE_BUTTON),
+  ) {
+    const searchbarInput = searchBar.querySelector(ID_IGNSEARCH_INPUT);
+    if (IDEE.utils.isNullOrEmpty(searchBarButton)
+      && IDEE.utils.isNullOrEmpty(searchBarRemoveButton)) {
+      [
+        // this.createSearchBarButton(searchBar),
+        this.createSearchBarRemoveButton(searchBar),
+      ]
+        .forEach((btn) => searchbarInput.after(btn));
+    }
+  }
+
+  /**
+   * Toggle buttons on input search
+   *
+   * @private
+   * @param {KeyboardEvent} e
+   */
+  togleSearchBarButtons(e) {
+    const searchValue = e.target.value;
+    const searchBar = this.html_.querySelector(ID_IGNSEARCH_BAR);
+    const searchBarButton = searchBar.querySelector(ID_IGNSEARCH_SEARCH_BUTTON);
+    const searchBarRemoveButton = searchBar.querySelector(ID_IGNSEARCH_REMOVE_BUTTON);
+    if (searchValue.length > 0) {
+      this.createSearchBarButtons(
+        searchBar,
+        searchBarButton,
+        searchBarRemoveButton,
+      );
+    } else {
+      // searchBarButton.remove();
+      searchBarRemoveButton.remove();
     }
   }
 

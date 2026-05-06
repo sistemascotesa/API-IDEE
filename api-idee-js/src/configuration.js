@@ -274,7 +274,7 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  IDEE.config('implementationswitcher', implementationSwitcherOpts);
+  IDEE.config(IDEE.control.ImplementationSwitcher.NAME, implementationSwitcherOpts);
 
   /**
    * URL of sql wasm file
@@ -301,7 +301,7 @@ params.forEach((param) => {
 
   /**
    * MAP Viewer - Zoom Constrains
-   * 
+   *
    * @private
    * @type {Object}
    */
@@ -309,7 +309,7 @@ params.forEach((param) => {
 
   /**
    * Map Viewer - Extent constrains
-   * 
+   *
    * @private
    * @type {Object}
    */
@@ -333,7 +333,7 @@ params.forEach((param) => {
 
   /**
    * MAP Viewer - DPI (Dots per inch)
-   * 
+   *
    * @private
    * @type {Number}
    */
@@ -341,7 +341,7 @@ params.forEach((param) => {
 
   /**
    * MAP Viewer - DPI OGC (Dots per inch for OGC services)
-   * 
+   *
    * @private
    * @type {Number}
    */
@@ -379,6 +379,14 @@ params.forEach((param) => {
    * @type {Number | String}
    */
   IDEE.config('DEFAULT_ZOOM', '${defaultZoom}');
+
+  /**
+   * Activar las resoluciones.
+   *
+   * @public
+   * @type {Boolean}
+   */
+  IDEE.config('ACTIVATE_RESOLUTIONS', '${activateResolutions}');
 
   /**
    * Hace el popup y dialog inteligente
@@ -419,6 +427,7 @@ params.forEach((param) => {
    */
   IDEE.config('ZOOM_LOCATION', '${zoomLocation}');
 
+  // eslint-disable-next-line no-param-reassign
   IDEE.config.token = {
     "cnig": {
       "color": {
@@ -466,8 +475,9 @@ params.forEach((param) => {
         "boxShadow": "",
       },
     },
-  }
+  };
 
+  // eslint-disable-next-line no-param-reassign
   IDEE.config.activeTOKEN = 'cnig';
 
   window.M = IDEE;

@@ -86,6 +86,7 @@ const selectPosicion = document.getElementById('selectPosicion');
 const inputTooltip = document.getElementById('inputTooltip');
 const ncolumn = document.getElementById('ncolumn');
 const selectCollapsed = document.getElementById('selectCollapsed');
+const inputOrder = document.getElementById('inputOrder');
 const selectVisibility = document.getElementById('selectVisibility');
 const selectEmpty = document.getElementById('selectEmpty');
 const selectEnableLayerOpts = document.getElementById('selectEnableLayerOpts');
@@ -101,6 +102,7 @@ const updatePlugin = () => {
   options.columnsNumber = ncolumn.value ?? 2;
 
   options.collapsed = (selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true');
+  if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
   options.layerVisibility = (selectVisibility.options[selectVisibility.selectedIndex].value === 'true');
   options.empty = (selectEmpty.options[selectEmpty.selectedIndex].value === 'true');
 
@@ -302,6 +304,7 @@ const updatePlugin = () => {
   inputTooltip,
   ncolumn,
   selectCollapsed,
+  inputOrder,
   selectVisibility,
   selectEmpty,
   selectEnableLayerOpts,

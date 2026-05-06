@@ -2,7 +2,8 @@
  * @module IDEE/impl/control/OverviewMap
  */
 import LayerGroup from 'IDEE/layer/LayerGroup';
-import OlControlOverviewMap from 'ol/control/OverviewMap';
+// eslint-disable-next-line no-unused-vars
+import OlControlOverviewMap, { Options as OverviewMapOptions } from 'ol/control/OverviewMap';
 import { get } from 'ol/proj';
 import TileLayer from 'ol/layer/Tile';
 import TileWMS from 'ol/source/TileWMS';
@@ -13,20 +14,55 @@ import { fromExtent } from 'ol/geom/Polygon';
 import { extend, isNullOrEmpty, isNumber } from '../../../../facade/js/util/Utils';
 
 /**
+  * @typedef {Object} VendorOptions Opciones para la biblioteca de OpenLayers
+  * @extends OverviewMapOptions
+  * @param {boolean} [collapsible] Si el control es colapsable o no.
+  * (deprecated) se usa en la clase de fachada.
+  * @param {boolean} [collapsed] Si el control está colapsado o no.
+  * (deprecated) se usa en la clase de fachada.
+*/
+
+/**
+  * @typedef {Object} Options Opciones de configuración del control de implementación
+  * @param {String} [tipLabel] Etiqueta del botón de la vista general.
+  * @param {Number} [zoom] Zoom del minimapa.
+  * @param {Number} [maxZoom] Zoom máximo del minimapa.
+  * @param {Number} [minZoom] Zoom mínimo del minimapa.
+  * @param {Number} [ratio] Ratio del minimapa respecto al mapa principal.
+  * @param {String} [baseLayer] Capa base del minimapa,
+  * en formato tipo*url*layer*matrixSet*format.
+  * @param {VendorOptions} [vendorOptions]
+*/
+
+/**
  * @classdesc
- * Esta clase se encarga de general el panel de los controles.
- * @property {String} name Nombre del panel.
- * @property {String} position Posición del panel.
+ * Implementación del control de vista general (OverviewMap) que extiende
+ * {@link https://openlayers.org/en/latest/apidoc/module-ol_control_OverviewMap-OverviewMap.html|ol.control.OverviewMap}.
+ * Muestra un mapa en miniatura del área visible en el mapa principal.
+ *
+ * @property {Number} [toggleDelay_=1000] Retardo en milisegundos para el toggle del control.
+ * @property {Number} [zoom_=15] Nivel de zoom del minimapa.
+ * @property {Number} [maxZoom_=22] Zoom máximo del minimapa.
+ * @property {Number} [minZoom_=0] Zoom mínimo del minimapa.
+ * @property {Number} [ratio_=0.25] Ratio del minimapa respecto al mapa principal.
  *
  * @api
+ * @extends {ol.control.OverviewMap}
  */
 class OverviewMap extends OlControlOverviewMap {
   /**
    * @constructor
    * @extends {ol.control.OverviewMap}
+   * @param {Options} options
+   * @example
+   * const control = new IDEE.impl.ol.control.OverviewMap({
+   *   tipLabel: 'Mapa general',
+   *   zoom: 6,
+   *   ratio: 0.25,
+   * });
    * @api stable
    */
-  constructor(options) {
+  constructor(options = {}) {
     super(extend({
       layers: [],
       tipLabel: options.tipLabel ?? '',

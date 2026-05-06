@@ -9,20 +9,36 @@ const backgroundlayersOpts = backgroundlayersIds.map((id, index) => {
   };
 });
 
-const implementationSwitcherOpts = [{
-  id: 'OL',
-  type: 'ol',
-  title: 'Open Layers',
-  js: '../../../dist/js/apiidee.ol.min.js',
-  css: '../../../dist/assets/css/apiidee.ol.min.css',
-},
-{
-  id: 'CS',
-  type: 'cesium',
-  title: 'Cesium',
-  js: '../../../dist/js/apiidee.cesium.min.js',
-  css: '../../../dist/assets/css/apiidee.cesium.min.css',
-}];
+const implementationSwitcherOpts = [
+  {
+    id: 'OL',
+    type: 'ol',
+    title: 'Open Layers',
+    js: '../../../api-idee/js/apiidee.ol.min.js',
+    css: '../../../api-idee/assets/css/apiidee.ol.min.css',
+  },
+  {
+    id: 'CS',
+    type: 'cesium',
+    title: 'Cesium',
+    js: '../../../api-idee/js/apiidee.cesium.min.js',
+    css: '../../../api-idee/assets/css/apiidee.cesium.min.css',
+  },
+  // {
+  //   id: 'OL',
+  //   type: 'ol',
+  //   title: 'Open Layers',
+  //   js: 'js/apiidee.ol.min.js',
+  //   css: 'assets/css/apiidee.ol.min.css',
+  // },
+  // {
+  //   id: 'CS',
+  //   type: 'cesium',
+  //   title: 'Cesium',
+  //   js: 'js/apiidee.cesium.min.js',
+  //   css: 'assets/css/apiidee.cesium.min.css',
+  // },
+];
 
 const config = (configKey, configValue) => {
   config[configKey] = configValue;
@@ -51,7 +67,7 @@ function fun(IDEE_) {
    * @public
    * @api stable
    */
-  IDEE_.config('API_IDEE_URL', 'https://componentes-desarrollo.idee.es/api-idee/');
+  IDEE_.config('API_IDEE_URL', 'https://api-ideedes.grupotecopy.es/api-idee/');
 
   /**
    * The path to the API-IDEE proxy to send
@@ -310,6 +326,14 @@ function fun(IDEE_) {
    * @type {Number | String}
    */
   IDEE_.config('DEFAULT_ZOOM', '3');
+
+  /**
+   * Activar las resoluciones.
+   *
+   * @public
+   * @type {Boolean}
+   */
+  IDEE.config('ACTIVATE_RESOLUTIONS', '${activateResolutions}');
 
   /**
    * Hace el popup inteligente

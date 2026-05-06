@@ -4,7 +4,9 @@
 import 'assets/css/controls/overviewmap';
 import myhelp from 'templates/overviewmaphelp';
 import OverviewMapImpl from 'impl/control/OverviewMap';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isBoolean,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import * as Position from '../ui/position';
 // eslint-disable-next-line import/no-relative-packages
@@ -13,26 +15,88 @@ import { getValue } from '../i18n/language';
 import { compileSync } from '../util/Template';
 import apiIdee from '../api-idee';
 
+/**
+ * @typedef {Object} Options
+ * @param {string} [position] posición del control en el mapa.
+ * @param {string} [tooltip] información sobre herramientas del control.
+ * @param {boolean} [collapsible] indica si el control es plegable o no.
+ * @param {boolean} [collapsed] indica si el control está plegado o no por defecto.
+ * @param {boolean} [fixed] indica si el control muestra un mapa fijo.
+ * @param {Number} [zoom] Zoom del minimapa.
+ * @param {Number} [maxZoom] Zoom máximo del minimapa.
+ * @param {Number} [minZoom] Zoom mínimo del minimapa.
+ * @param {Number} [ratio] Relación del minimapa con respecto al mapa principal.
+ * @param {string} [baseLayer] Capa base que se mostrará en el mapa general.
+*/
+
+/**
+ * @classdesc
+ * OverviewMap control class.
+ * Esta clase implementa el control de vista general,
+ * que muestra un mapa pequeño con la ubicación del mapa principal. El control se puede
+ * configurar para mostrar un mapa fijo o para mostrar el mismo mapa que el mapa principal.
+ * El control se puede configurar para ser colapsable o no colapsable,
+ * y para estar colapsado o no colapsado por defecto.
+ *
+ * @typedef {Object} Options
+ * @param {string} [position='left'] posición del control en el mapa.
+ * @param {string} [tooltip] información sobre herramientas del control.
+ * Por defecto es 'Mapa general'.
+ * @param {boolean} [collapsible=true] indica si el control es plegable o no.
+ * Por defecto es true.
+ * @param {boolean} [collapsed=true] indica si el control está plegado o no por defecto.
+ * Por defecto es true.
+ * @param {boolean} [fixed] indica si el control muestra un mapa fijo.
+ * Por defecto es false.
+ * @param {Number} [zoom] Zoom del minimapa.
+ * @param {Number} [maxZoom] Zoom máximo del minimapa.
+ * @param {Number} [minZoom] Zoom mínimo del minimapa.
+ * @param {Number} [ratio] Relación del minimapa con respecto al mapa principal.
+ * @param {string} [baseLayer] Capa base que se mostrará en el mapa general.
+ * El valor predeterminado es:
+ * 'WMTS*http://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*'
+ *
+ * @api
+ * @extends {IDEE.Control}
+ */
 class OverviewMap extends Control {
   /**
   * @classdesc
-  * Main facade control object. This class creates a control
-  * object which has an implementation Object
+  * Objeto de control de la fachada principal. Esta clase crea un control
+  * objeto que tiene una implementación Object
   *
   * @constructor
   * @extends {IDEE.Control}
-  * @param {Object} impl implementation object
+  * @param {Options} [options={}] opciones de configuración del control.
+  *
+  * @example
+  * // Crear un mapa y añadir el control de vista general
+  *
+  * const map = IDEE.map({
+  *   container: 'map',
+  *   zoom: 6,
+  * };
+  *
+  * const control = new IDEE.control.OverviewMap({
+  *   position: 'left',
+  *   order: 2,
+  *   tooltip: 'Mapa general',
+  *   collapsible: false,
+  *   zoom: 6,
+  * });
+  *
+  * map.addControls(control);
+  *
   * @api stable
   */
   constructor(options = {}) {
     if (isUndefined(OverviewMapImpl) || (isObject(OverviewMapImpl)
-        && isNullOrEmpty(Object.keys(OverviewMapImpl)))) {
+      && isNullOrEmpty(Object.keys(OverviewMapImpl)))) {
       Exception(getValue('exception').impl_overviewmap);
     }
-
     const impl = new OverviewMapImpl(
       {
-        tipLabel: OverviewMap.translation.tooltip,
+        tipLabel: OverviewMap.translation.title,
         ...options,
       },
     );
@@ -109,6 +173,20 @@ class OverviewMap extends Control {
     }
 
     /**
+    * Vendor options
+    * @public
+    * @type {Object}
+    */
+    this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
+
+    /**
+    * Vendor options
+    * @public
+    * @type {Object}
+    */
+    this.collapsed = isBoolean(options.collapsed) ? options.collapsed : this.collapsible;
+
+    /**
     * Metadata from api.json
     * @private
     * @type {Object}
@@ -127,7 +205,6 @@ class OverviewMap extends Control {
   * Este método es el que busca Map.js para insertar el control en el DOM
   */
   getView() {
-    // Elemento real de OpenLayers
     return this.getImpl().getView();
   }
 

@@ -18,8 +18,8 @@ export default class PrintViewManagementControl extends IDEE.Control {
    * @api
    */
   constructor({
-    isDraggable, georefImageEpsg, georefImage, printermap, order,
-    defaultOpenControl, useProxy, statusProxy,
+    georefImageEpsg, georefImage, printermap, order,
+    defaultOpenControl,
   }) {
     if (IDEE.utils.isUndefined(PrintViewManagementImpl)
       || (IDEE.utils.isObject(PrintViewManagementImpl)
@@ -29,12 +29,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
 
     const impl = new PrintViewManagementImpl();
     super('PrintViewManagement', impl);
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable_ = isDraggable;
 
     /**
      * Order of plugin
@@ -76,10 +70,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
     this.tooltipPrintermap_ = printermap.tooltip || getValue('map_printing');
 
     this.defaultOpenControl = defaultOpenControl;
-
-    this.statusProxy = statusProxy;
-
-    this.useProxy = useProxy;
   }
 
   /**
@@ -121,7 +111,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
       this.selectElementHTML();
       this.addEvent();
       this.defaultOpenControl_(html);
-      this.addSvgIcons(html);
       success(html);
     });
   }
@@ -184,12 +173,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
     }
   }
 
-  addSvgIcons(html) {
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'printermap', html.querySelector('#m-printviewmanagement-printermap'));
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'georefimage', html.querySelector('#m-printviewmanagement-georefImage'));
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'georefimageepsg', html.querySelector('#m-printviewmanagement-georefImageEpsg'));
-  }
-
   /**
    * This function compares controls
    *
@@ -218,8 +201,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
     this.printerMapControl = new PrinterMapControl(
       this.printermap_,
       this.map_,
-      this.statusProxy,
-      this.useProxy,
     );
     html.querySelector('#m-printviewmanagement-printermap').addEventListener('click', () => {
       this.showDownloadButton('printermap');
@@ -232,8 +213,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
     this.georefImageControl = new GeorefimageControl(
       this.georefImage_,
       this.map_,
-      this.statusProxy,
-      this.useProxy,
     );
     html.querySelector('#m-printviewmanagement-georefImage').addEventListener('click', () => {
       this.showDownloadButton('georefImage');

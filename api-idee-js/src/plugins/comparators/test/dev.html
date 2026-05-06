@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="idee" content="yes">
     <title>Comparators TEST</title>
-    <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <link href="https://api-ideedes.grupotecopy.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
     <link href="https://componentes.idee.es/api-idee/plugins/timeline/timeline.ol.min.css" rel="stylesheet" />
     <link href="https://componentes.idee.es/api-idee/plugins/stylemanager/stylemanager.ol.min.css" rel="stylesheet" />
     <link href="https://componentes.idee.es/api-idee/plugins/queryattributes/queryattributes.ol.min.css" rel="stylesheet" />
@@ -21,26 +21,106 @@
     <link href="https://componentes.idee.es/api-idee/plugins/incicarto/incicarto.ol.min.css" rel="stylesheet" />
     <link href="https://componentes.idee.es/api-idee/plugins/contactlink/contactlink.ol.min.css" rel="stylesheet" />
 
-    <link href="https://componentes-desarrollo.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes-desarrollo.idee.es/api-idee/plugins/backimglayer/backimglayer.ol.min.css" rel="stylesheet" />
+    <link href="https://api-ideedes.grupotecopy.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
+    <link href="https://api-ideedes.grupotecopy.es/api-idee/plugins/backimglayer/backimglayer.ol.min.css" rel="stylesheet" />
     <link href="https://componentes.idee.es/api-idee/plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-    </style>
 
 </head>
 
 
 <body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosicion" title="Posición del plugin en el mapa">Posición "position"</label>
+                <select name="position" id="selectPosicion">
+                    <option value="left">Izquierda</option>
+                    <option value="right" selected="selected">Derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsed" title="Indica si el panel del plugin aparece colapsado al cargarse">Colapsado "collapsed"</label>
+                <select name="collapsed" id="selectCollapsed">
+                    <option value=""></option>
+                    <option value="true" selected="selected">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder"
+                    title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                    entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+            </div>
+            <div>
+                <label for="enabledKeyFunctions" title="Activa o desactiva los atajos de teclado del comparador espejo y zonal">Atajos de teclado "enabledKeyFunctions"</label>
+                <select name="enabledKeyFunctions" id="enabledKeyFunctions">
+                    <option value=""></option>
+                    <option value="true" selected="selected">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="defaultCompareMode" title="Comparador que se activa por defecto al cargar el plugin: mirrorpanelParams, lyrcompareParams, transparecyParams, windowsyncParams o none">Modo default "defaultCompareMode"</label>
+                <select name="defaultCompareMode" id="defaultCompareMode">
+                    <option value="none" selected="selected">none</option>
+                    <option value="mirrorpanelParams">mirrorpanelParams</option>
+                    <option value="lyrcompareParams">lyrcompareParams</option>
+                    <option value="transparecyParams">transparecyParams</option>
+                    <option value="windowsyncParams">windowsyncParams</option>
+                </select>
+            </div>
+            <div>
+                <label for="listLayers" title="Lista de capas disponibles para la comparación, en formato cadena de texto">Capas disponibles "listLayers"</label>
+                <input type="text" id="listLayers" list="listLayersSug" value="['WMS*Huellas Sentinel2*https://wms-satelites-historicos.idee.es/satelites-historicos*teselas_sentinel2_espanna*true', 'WMS*Invierno 2022 falso color natural*https://wms-satelites-historicos.idee.es/satelites-historicos*SENTINEL.2022invierno_432-1184*true', 'WMS*Invierno 2022 falso color infrarrojo*https://wms-satelites-historicos.idee.es/satelites-historicos*SENTINEL.2022invierno_843*true', 'WMS*Filomena*https://wms-satelites-historicos.idee.es/satelites-historicos*Filomena*true']">
+                <datalist id="listLayersSug">
+                    <option value="['WMS*Huellas Sentinel2*https://wms-satelites-historicos.idee.es/satelites-historicos*teselas_sentinel2_espanna*true', 'WMS*Invierno 2022 falso color natural*https://wms-satelites-historicos.idee.es/satelites-historicos*SENTINEL.2022invierno_432-1184*true', 'WMS*Invierno 2022 falso color infrarrojo*https://wms-satelites-historicos.idee.es/satelites-historicos*SENTINEL.2022invierno_843*true', 'WMS*Filomena*https://wms-satelites-historicos.idee.es/satelites-historicos*Filomena*true']"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="tooltipComparator" title="Texto del tooltip que aparece al pasar el ratón sobre el botón principal del plugin">Título de la herramienta "tooltip"</label>
+                <input type="text" id="tooltipComparator" list="tooltipComparatorSug" value="Comparador de mapas">
+                <datalist id="tooltipComparatorSug">
+                    <option value="Comparador de mapas"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="transparencyParams" title="Objeto de configuración del comparador zonal. Propiedades: radius (30-200, def. 100), maxRadius (def. 200), minRadius (def. 30), tooltip. Escribe false para deshabilitar este comparador">Comparador zonal "transparencyParams"</label>
+                <input type="text" id="transparencyParams" list="transparencyParamsSug" value='{"radius": 50, "maxRadius": 100, "minRadius": 10, "tooltip": "Comparador zonal"}'>
+                <datalist id="transparencyParamsSug">
+                    <option value='{"radius": 50, "maxRadius": 100, "minRadius": 10, "tooltip": "Comparador zonal"}'></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="lyrcompareParams" title="Objeto de configuración del comparador de cortina. Propiedades: staticDivision (0=ratón,1=punto medio,2=líneas arrastrables), defaultLyrA/B/C/D, opacityVal (0-100), tooltip, defaultCompareViz (0-3). Escribe false para deshabilitar este comparador">Comparador cortina "lyrcompareParams"</label>
+                <input type="text" id="lyrcompareParams" list="lyrcompareParamsSug" value='{"staticDivision": 2, "defaultLyrA": 3, "defaultLyrB": 2, "defaultLyrC": 1, "defaultLyrD": 0, "opacityVal": 100, "tooltip": "Comparador de cortina", "defaultCompareViz": 2}'>
+                <datalist id="lyrcompareParamsSug">
+                    <option value='{"staticDivision": 2, "defaultLyrA": 3, "defaultLyrB": 2, "defaultLyrC": 1, "defaultLyrD": 0, "opacityVal": 100, "tooltip": "Comparador de cortina", "defaultCompareViz": 2}'></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="mirrorpanelParams" title="Objeto de configuración del comparador de espejo. Propiedades: showCursors, principalMap (false=izquierda,true=derecha), enabledControlsPlugins, enabledDisplayInLayerSwitcher, defaultCompareViz (0-5), modeVizTypes, tooltip. Escribe false para deshabilitar este comparador">Comparador espejo "mirrorpanelParams"</label>
+                <input type="text" id="mirrorpanelParams" list="mirrorpanelParamsSug" value='{"showCursors": true, "principalMap": true, "enabledControlsPlugins": {"map2":{"BackImgLayer":{}},"map3":{"controls":["scale"]}}, "enabledDisplayInLayerSwitcher": true, "defaultCompareViz": 2, "modeVizTypes": [0, 1, 2, 3, 4, 5], "tooltip": "Comparador espejo"}'>
+                <datalist id="mirrorpanelParamsSug">
+                    <option value='{"showCursors": true, "principalMap": true, "enabledControlsPlugins": {"map2":{"BackImgLayer":{}},"map3":{"controls":["scale"]}}, "enabledDisplayInLayerSwitcher": true, "defaultCompareViz": 2, "modeVizTypes": [0, 1, 2, 3, 4, 5], "tooltip": "Comparador espejo"}'></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="windowsyncParams" title="Objeto de configuración del comparador en ventana. Propiedades: controls (array de strings), plugins (array de objetos con name y params). Escribe false para deshabilitar este comparador">Comparador ventana "windowsyncParams"</label>
+                <input type="text" id="windowsyncParams" list="windowsyncParamsSug" value='{"controls": ["scale","rotate"], "plugins": [{"name": "Layerswitcher","params": {"position": "right"}}], "tooltip": "Comparador ventana"}'>
+                <datalist id="windowsyncParamsSug">
+                    <option value='{"controls": ["scale","rotate"], "plugins": [{"name": "Layerswitcher","params": {"position": "right"}}], "tooltip": "Comparador ventana"}'></option>
+                </datalist>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+        </div>
+    </div>
+
     <div id="mapjs" class="container"></div>
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="https://api-ideedes.grupotecopy.es/api-idee/js/apiidee.ol.min.js"></script>
+    <script type="text/javascript" src="https://api-ideedes.grupotecopy.es/api-idee/js/configuration.js"></script>
     <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/timeline/timeline.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/stylemanager/stylemanager.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/queryattributes/queryattributes.ol.min.js"></script>
@@ -54,8 +134,8 @@
     <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/incicarto/incicarto.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/contactlink/contactlink.ol.min.js"></script>
 
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/plugins/backimglayer/backimglayer.ol.min.js"></script>
+    <script type="text/javascript" src="https://api-ideedes.grupotecopy.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js"></script>
+    <script type="text/javascript" src="https://api-ideedes.grupotecopy.es/api-idee/plugins/backimglayer/backimglayer.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/sharemap/sharemap.ol.min.js"></script>
     <script type="text/javascript" src="/main.js"></script>
 

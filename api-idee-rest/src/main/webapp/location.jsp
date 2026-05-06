@@ -42,8 +42,8 @@
                 </select>
             </div>
             <div>
-                <label for="order" title="Define en que posición del panel en la que debe aparecer en el conjunto de controles o plugins">Posición en el panel "order"</label>
-                <input type="number" order="tooltip" id="inputOrder" list="orderSug" value="-1">
+                <label for="order" title="Define en que posición del panel en la que debe aparecer en el conjunto de controles o plugins">Orden entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
             </div>
             <div>
                 <label for="inputTooltip">Título "tooltip"</label>

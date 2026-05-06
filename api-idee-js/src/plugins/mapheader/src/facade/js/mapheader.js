@@ -4,6 +4,8 @@
 import 'assets/css/mapheader';
 import MapheaderControl from './mapheadercontrol';
 import api from '../../api';
+import en from './i18n/en';
+import es from './i18n/es';
 
 export default class Mapheader extends IDEE.Plugin {
   /**
@@ -88,5 +90,20 @@ export default class Mapheader extends IDEE.Plugin {
   destroy() {
     this.map_.removeControls(this.controls_);
     [this.controls_, this.panel_, this.map_] = [null, null, null];
+  }
+
+  /**
+   * Return plugin language
+   *
+   * @public
+   * @function
+   * @param {string} lang type language
+   * @api stable
+   */
+  static getJSONTranslations(lang) {
+    if (lang === 'en' || lang === 'es') {
+      return (lang === 'en') ? en : es;
+    }
+    return IDEE.language.getTranslation(lang).mapheader;
   }
 }

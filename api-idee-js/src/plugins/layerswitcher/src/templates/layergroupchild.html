@@ -27,7 +27,7 @@
             <button title="{{#if visible}}{{translations.hide_service}}{{^}}{{translations.show_service}}{{/if}}" 
                 aria-label="{{#if visible}}{{translations.hide_service}}{{^}}{{translations.show_service}}{{/if}}" 
                 tabindex="0" data-select-type="eye" data-layer-id="{{idLayer}}"
-                class="m-layerswitcher-check {{#if visible}}m-layerswitcher-icons-ver{{^}}m-layerswitcher-icons-ocultar{{/if}} {{#if outOfRange}}m-layerswitcher-outOfRange{{/if}}">
+                class="m-layerswitcher-check secondary {{#if visible}}g-cartografia-btn-layerswitcher-ver{{^}}g-cartografia-btn-layerswitcher-ocultar{{/if}} {{#if outOfRange}}m-layerswitcher-outOfRange{{/if}}">
             </button>
             {{/if}}
             {{#if isRadio}}
@@ -45,29 +45,29 @@
         <div class="m-layerswitcher-actions">
         {{#if isLegend}}
             <button tabindex="0" title="{{translations.show_hide}}" data-layer-id="{{idLayer}}"
-                class="m-layerswitcher-icons-image" {{#unless visible}} disabled {{/unless}}>
+                class="secondary m-layerswitcher-icons-image g-cartografia-btn-layerswitcher-image" {{#unless visible}} disabled {{/unless}}>
             </button>
         {{/if}}
         {{#if isZoom}}
             <button tabindex="0" title="{{translations.zoom}}" data-layer-id="{{idLayer}}" 
-                class="m-layerswitcher-icons-target" {{#unless visible}} disabled {{/unless}}>
+                class="secondary m-layerswitcher-icons-target g-cartografia-btn-layerswitcher-target" {{#unless visible}} disabled {{/unless}}>
             </button>
         {{/if}}
         {{#if isInformation}}
             <button tabindex="0" title="{{translations.info_metadata}}" data-layer-id="{{idLayer}}" 
-                class="m-layerswitcher-icons-info" {{#unless visible}} disabled {{/unless}}>
+                class="secondary g-cartografia-btn-layerswitcher-info" {{#unless visible}} disabled {{/unless}}>
             </button>
         {{/if}}
         {{#if isStyle}}
             {{#if hasStyles}}
                 <button tabindex="0" title="{{translations.change_style}}" data-layer-id="{{idLayer}}" 
-                    class="m-layerswitcher-icons-style" {{#unless visible}} disabled {{/unless}}>
+                    class="secondary m-layerswitcher-icons-style g-cartografia-btn-layerswitcher-style" {{#unless visible}} disabled {{/unless}}>
                 </button>
             {{/if}}
         {{/if}}
         {{#if isDelete}}
             <button tabindex="0" title="{{translations.remove_layer}}" data-layer-id="{{idLayer}}"
-               aria-label="{{translations.remove_layer}}" class="m-layerswitcher-icons-delete">
+               aria-label="{{translations.remove_layer}}" class="secondary g-cartografia-btn-layerswitcher-delete">
             </button>
         {{/if}}
         </div>

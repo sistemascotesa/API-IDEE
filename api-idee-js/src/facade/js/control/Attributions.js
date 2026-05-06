@@ -6,11 +6,13 @@ import attributionsTemplate from 'templates/attributions';
 import myhelp from 'templates/attributionshelp';
 import * as EventType from 'IDEE/event/eventtype';
 import AttributionsImpl from 'impl/control/Attributions';
-import ControlBase from './Control';
+import Control from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
 import { getValue } from '../i18n/language';
 import { INTERSECT } from '../filter/Module';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isBoolean,
+} from '../util/Utils';
 import Feature from '../feature/Feature';
 import GeoJSON from '../layer/GeoJSON';
 import KML from '../layer/KML';
@@ -19,68 +21,113 @@ import Exception from '../exception/exception';
 import * as Position from '../ui/position';
 
 /**
+ * @typedef {Object} module:IDEE/control/Attributions~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {String} [title] Título del control.
+ * @property {Boolean} [collapsible] Indica si el control es colapsable.
+ * (usada por ControlPanel)
+ * @property {Boolean} [collapsed] Indica si el control está colapsado.
+ * (usada por ControlPanel)
+ * @property {Number} [order] Accesibilidad, tabIndex.
+ * @property {String} [urlAttribute] Texto de la url.
+ * @property {String} [url] URL del fichero de atribuciones.
+ * @property {String} [type] Tipo de fichero de atribuciones, geojson o kml.
+ * @property {String} [layerName] Nombre de la capa de atribuciones.
+ * @property {Object} [layer] Capa de atribuciones.
+ * @property {Number} [scale] Escala de visualización de la capa de atribuciones.
+ * @property {String} [attributionParam] Parámetro de las features que contiene la
+ * atribución.
+ * @property {String} [urlParam] Parámetro de las features que contiene la url.
+ * @property {String} [defaultAttribution] Atribución por defecto.
+ * @property {String} [defaultURL] URL por defecto.
+ * @property {Array.<String>} [collectionsAttributions] Colección de atribuciones.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
+ */
+
+/**
  * @classdesc
  * Panel de atribuciones API-CING.
- * @property {Number} scale_ Escala de visualización de la capa de atribuciones.
- * @property {String} tooltip_ Texto del tooltip.
- * @property {String} position Posición del control.
- * @property {Number} order Accesibilidad, tabIndex.
- * @property {String} url_ URL del fichero de atribuciones.
- * @property {Object} collectionsAttributions Colección de atribuciones.
- * @property {Boolean} closePanel Panel cerrado o abierto.
- * @property {String} urlAttribute Texto de la url.
- * @property {String} type geojson o kml, dependiendo de la url.
- * @property {Number} scale Define cuando cambiara la atribución.
- * @property {String} defaultAttribution Atribución por defecto.
- * @property {String} defaultURL URL por defecto.
- * @property {Number} order Accesibilidad, z-index.
+ * @property {String} [position='left'] Posición del control.
+ * @property {String} [tooltip] Texto del tooltip. por defecto la traducción.
+ * @property {String} [title] Texto del título.
+ * @property {Boolean} [collapsible=true] Indica si el control es colapsable.
+ * @property {Boolean} [collapsed=false] Indica si el control está colapsado.
+ * @property {Number} [order=0] Accesibilidad, z-index.
+ * @property {String} [urlAttribute='url'] Texto de la url.
+ * @property {String} [url_] URL del fichero de atribuciones.
+ * @property {String} [type_='kml'] geojson o kml, dependiendo de la url.
+ * @property {String} [layerName_='attributions'] Nombre de la capa de atribuciones.
+ * @property {Object} [layer_] Capa de atribuciones.
+ * @property {Number} [scale_=10000] Define cuando cambiara la atribución.
+ * @property {String} [urlParam_] Parámetro de las features que contiene la url.
+ * @property {String} [attributionParam_] Parámetro de las features que contiene la
+ * atribución.
+ * @property {String} [defaultAttribution_='Instituto Geográfico Nacional'] Atribución por defecto.
+ * @property {String} [defaultURL_='https://www.ign.es/'] URL por defecto.
+ * @property {Array.<String>} [collectionsAttributions_=[]] Colección de atribuciones,
+ * se especificarán como una colección de textos.
+ *
+ * @extends {IDEE.Control}
  * @api
  */
-class Attributions extends ControlBase {
+class Attributions extends Control {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Number} scale_ Escala de visualización de la capa de atribuciones.
-   * @param {String} tooltip Texto del tooltip.
-   * @param {String} position Posición del control.
-   * @param {Number} order Selección de la posición sobre el panel
-   * @param {String} url URL del fichero de atribuciones.
-   * @param {Object} collectionsAttributions Colección de atribuciones.
-   * @param {Boolean} closePanel Panel cerrado o abierto.
-   * @param {String} urlAttribute Texto de la url.
-   * @param {String} type geojson o kml, dependiendo de la url.
-   * @param {Number} scale Define cuando cambiara la atribución.
-   * @param {String} defaultAttribution Atribución por defecto.
-   * @param {String} defaultURL URL por defecto.
+   * @param {module:IDEE/control/Attributions~Options} options Opciones de configuración
+   * del control.
    * @api
+   *
+   * @example
+   * const control = new IDEE.control.Attributions({
+   *   position: 'left',
+   *   tooltip: 'Reconocimientos de la capa',
+   *   order: 2,
+   *   collapsible: false,
+   * });
    */
   constructor(options = {}) {
     if (isUndefined(AttributionsImpl) || (isObject(AttributionsImpl)
       && isNullOrEmpty(Object.keys(AttributionsImpl)))) {
       Exception(getValue('exception').attributions_method);
     }
-    const impl = new AttributionsImpl();
+    const impl = new AttributionsImpl(options.vendorOptions ?? {});
     super(Attributions.NAME, impl, options);
 
-    this.position = options.position || Position.LEFT;
-    this.closePanel = options.closePanel;
-    this.urlAttribute = options.urlAttribute || 'Gobierno de España';
-    this.options = options;
+    this.position = options.position ?? Position.LEFT;
 
-    this.url_ = options.url || `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`;
-    this.type_ = options.type || 'kml';
-    this.layerName_ = options.layerName || 'attributions';
+    this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
+
+    this.collapsed = isBoolean(options.collapsed) ? options.collapsed : this.collapsible;
+
+    this.urlAttribute = options.urlAttribute ?? 'Gobierno de España';
+
+    this.url_ = options.url ?? `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`;
+
+    this.type_ = options.type ?? 'kml';
+
+    this.layerName_ = options.layerName ?? 'attributions';
+
     this.layer_ = options.layer;
-    this.scale_ = Number.parseInt(options.scale, 10) || 10000;
-    this.attributionParam_ = options.attributionParam || 'atribucion';
-    this.urlParam_ = options.urlParam || 'url';
-    this.defaultAttribution_ = options.defaultAttribution || 'Instituto Geogr&aacute;fico Nacional';
-    this.defaultURL_ = options.defaultURL || 'https://www.ign.es/';
-    this.tooltip_ = options.tooltip ?? this.translation.title;
-    this.collectionsAttributions_ = options.collectionsAttributions || [];
 
-    this.collectionsAttributions_ = this.collectionsAttributions_.map((attr) => {
+    this.scale_ = Number.parseInt(options.scale, 10) ?? 10000;
+
+    this.attributionParam_ = options.attributionParam ?? 'atribucion';
+
+    this.urlParam_ = options.urlParam ?? 'url';
+
+    this.defaultAttribution_ = options.defaultAttribution ?? 'Instituto Geogr&aacute;fico Nacional';
+
+    this.defaultURL_ = options.defaultURL ?? 'https://www.ign.es/';
+
+    this.tooltip = options.tooltip ?? this.translation.title;
+
+    this.title = options.title ?? this.tooltip;
+
+    this.collectionsAttributions_ = (options.collectionsAttributions ?? []).map((attr) => {
       if (typeof attr === 'string') {
         return this.transformString(attr);
       }
@@ -129,7 +176,8 @@ class Attributions extends ControlBase {
         vars: {
           collapsible: window.innerWidth < 769,
           order: this.order,
-          tooltip: this.tooltip_,
+          title: this.title,
+          tooltip: this.tooltip,
         },
       });
 
@@ -138,7 +186,7 @@ class Attributions extends ControlBase {
       setTimeout(() => {
         const panel = this.getPanel();
         if (panel && panel.getButtonPanel()) {
-          panel.getButtonPanel().setAttribute('title', this.tooltip_);
+          panel.getButtonPanel().setAttribute('title', this.tooltip);
         }
       }, 0);
 
@@ -458,15 +506,6 @@ class Attributions extends ControlBase {
   }
 
   /**
-   * Este método elimina el panel.
-   * @function
-   * @public
-   */
-  closePanel() {
-    this.getPanel().collapse();
-  }
-
-  /**
    * Este método actualiza el bbox con sus features.
    * @function
    * @public
@@ -489,24 +528,6 @@ class Attributions extends ControlBase {
         ],
       },
     });
-  }
-
-  /**
-   * Este método cierra el panel si la pantalla es pequeña.
-   * @function
-   * @public
-   * @param {Event} e Evento.
-   */
-  setCollapsiblePanel(e) {
-    if (this.getPanel() && this.getPanel().getTemplatePanel()) {
-      if (e.target.innerWidth < 769) {
-        this.getPanel().getTemplatePanel().classList.remove('no-collapsible');
-        this.closePanel();
-      } else {
-        this.getPanel().getTemplatePanel().classList.add('no-collapsible');
-        this.getPanel().getTemplatePanel().classList.remove('collapsed');
-      }
-    }
   }
 
   /**

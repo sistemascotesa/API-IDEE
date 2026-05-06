@@ -204,11 +204,10 @@ export default class MirrorpanelControl extends IDEE.Control {
       const button = this.template.querySelector(`#set-mirror-${modeViz}`);
       button.style.display = 'initial';
 
-      button.addEventListener('click', ({ target }) => {
+      button.addEventListener('click', () => {
         this.createSelectorLayer(this.addValueButton(modeViz));
         this.manageVisionPanelByCSSGrid(modeViz);
-        const elementId = target.parentElement?.id || target.id;
-        this.changeSpanText(elementId);
+        this.changeSpanText(`set-mirror-${modeViz}`);
       });
     });
 
@@ -219,7 +218,6 @@ export default class MirrorpanelControl extends IDEE.Control {
     if (this.showCursors) {
       this.addLayerCursor('A');
     }
-    this.addSvgIcons(this.template);
     if (this.enabledKeyFunctions) this.addEventKey_();
   }
 
@@ -261,14 +259,13 @@ export default class MirrorpanelControl extends IDEE.Control {
    * @api stable
    */
   destroy() {
-    document.removeEventListener('keydown', (zEvent) => { });
+    document.removeEventListener('keydown', this.keyHandler_);
     this.removeMaps();
     this.destroyMapsContainer();
     [
       this.control_,
       this.panel_,
       this.map_,
-      this.collapsible,
       this.collapsed,
       this.modeViz,
       this.enabledPlugins,
@@ -277,7 +274,7 @@ export default class MirrorpanelControl extends IDEE.Control {
       this.mirrorLayers,
       this.defaultBaseLyrs,
       this.backImgLayersParams,
-      this.interface] = [null, null, null, null, null,
+      this.interface] = [null, null, null, null,
       null, null, null, null, null, null, null, null];
   }
 
@@ -313,7 +310,7 @@ export default class MirrorpanelControl extends IDEE.Control {
     this.manageVisionPanelByCSSGrid(0);
 
     this.removeAllLayers();
-    document.removeEventListener('keydown', (zEvent) => { });
+    document.removeEventListener('keydown', this.keyHandler_);
     this.removeMaps();
 
     if (
@@ -440,11 +437,11 @@ export default class MirrorpanelControl extends IDEE.Control {
    */
   createSelectorLayer(modeViz) {
     this.lyrSelectorIds.forEach((id, i) => {
-      if (i !== 0)document.getElementById(id).parentElement.style.display = 'none';
+      if (i !== 0) this.template.querySelector(`#${id}`).parentElement.style.display = 'none';
     });
 
     modeViz.forEach((map) => {
-      document.querySelector(`#mapL${map}Select`).parentElement.style.display = 'flex';
+      this.template.querySelector(`#mapL${map}Select`).parentElement.style.display = 'flex';
     });
   }
 
@@ -455,7 +452,7 @@ export default class MirrorpanelControl extends IDEE.Control {
   changeSpanText(idButton) {
     const mapsPositions = (this.principalMap) ? 'principalMap' : 'secondaryMap';
     this.dicAccesibilityButton[idButton].forEach(({ id, text }) => {
-      document.getElementById(id).innerHTML = text[mapsPositions];
+      this.template.querySelector(`#${id}`).innerHTML = text[mapsPositions];
     });
   }
 
@@ -717,7 +714,7 @@ export default class MirrorpanelControl extends IDEE.Control {
 
   addEventKey_() {
     // Keybindings for Ctrl + Shift + (F1-F8) / ESC
-    document.addEventListener('keydown', (zEvent) => {
+    this.keyHandler_ = (zEvent) => {
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < 10; i++) {
         if (zEvent.ctrlKey && zEvent.shiftKey && zEvent.key === `F${i + 1}`) {
@@ -733,15 +730,7 @@ export default class MirrorpanelControl extends IDEE.Control {
       if (combinedKeys === 'Escape') {
         this.manageVisionPanelByCSSGrid(0);
       }
-    });
-  }
-
-  addSvgIcons(html) {
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_mapStan', html.querySelector('#set-mirror-0'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_dosMapVertical', html.querySelector('#set-mirror-1'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_dosMap', html.querySelector('#set-mirror-2'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_mosaico', html.querySelector('#set-mirror-3'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_tres_mapas_derecha', html.querySelector('#set-mirror-4'));
-    IDEE.utils.loadSvgByUrl('comparators', 'icn_tres_mapas_izquierda', html.querySelector('#set-mirror-5'));
+    };
+    document.addEventListener('keydown', this.keyHandler_);
   }
 }

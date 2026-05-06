@@ -14,14 +14,33 @@ import isControlImpl from '../../../impl/util/control/isControlImpl';
 import getControlImpl from '../../../impl/util/control/getControlImpl';
 
 /**
+ * @public
+ * @typedef {Object} Options opciones de configuración para el control de fachada.
+ * @property {String} [tooltip] Representa el valor del título del control.
+ * @property {String} [svgPath] Representa el vínculo para la imagen del botón si es usado.
+ * @property {String} [position] Posición que tendrá
+ * en el marco del mapa, un contenedor disponible.
+ * @property {Number} [order] Orden en el que se colocará dentro del contenedor,
+ * para que este parámetro funcione adecuadamente deberemos contener el control dentro de un
+ * {@link module:IDEE/ui/ControlPanel|ControlPanel}, de lo contrario se colocará en el orden que
+ * se añada al mapa.
+*/
+
+/**
  * @classdesc
- * Es la clase de la que heredan todos los controles.
+ * Clase control de fachada.
+ * @extends {IDEE.Base}
  *
- * @property {Boolean} activated Define si el control esta activado, por defecto falso.
+ * @property {IDEE.Map} map Es el mapa de fachada que se asigna al control.
+ * @property {Boolean} [activated=false] Define si el control esta activado, por defecto falso.
  * @property {String} name Nombre del control.
+ * @property {String} [tooltip] título ilustrativo sobre la acción principal del control.
+ * @property {String} [position='left'] Posición del control en el mapa, por defecto.
+ * @property {Number} [order=0] Determina la posición de la herramienta cuando se encuentra
+ * dentro de un contenedor de herramientas del mapa.
+ * @property {String} [svgPath=null] contiene la ruta a la imagen del control.
  *
  * @api
- * @extends {IDEE.Base}
  */
 class Control extends Base {
   /**
@@ -30,46 +49,65 @@ class Control extends Base {
    * @constructor
    * @api
    * @param {String} name Nombre del control.
-   * @param {Object} impl Control de implementación
-   * @param {Object} options Opciones para el control de fachada
-   * - tooltip: Representa el valor del título del control
-   * - svgPath: Representa el vínculo para la imagen del botón
-   * - position: Posición que tendrá en el marco del mapa, un contenedor disponible
-   * - order: Orden en el que se colocará dentro del contenedor
-   * * @example
-   * {
+   * @param {Object} [impl] Control de implementación.
+   * @param {Options} [options] Opciones para el control de fachada.
+   *
+   * @example
+   * const map = IDEE.map({
+   *   container: 'map',
+   *   zoom: 6,
+   * };
+   *
+   * // Creación de un control personalizado, para la implementación podremos extender de
+   * // un control de implementación IDEE/impl/Control
+   *
+   * const control = new IDEE.Control('MiControl', null, {
    *   tooltip: 'Mi control',
    *   svgPath: '/assets/icons/control.svg',
    *   position: 'left',
    *   order: 2
-   * }
+   * });
+   *
+   * map.addControls(control);
    */
   constructor(name, impl, options = {}) {
     super(impl);
+
+    /**
+     * @private
+     * @property {IDEE.Map} map Es el mapa de fachada que se asigna al control.
+     */
     this.map = null;
 
     /**
-     * @param {Plugin | null} parentPlugin existe quiere decir que está contenido en un Plugin
+     * @property {Plugin | null} parentPlugin existe quiere decir que está contenido en un Plugin
      */
     this.parentPlugin = null;
 
     /**
-     * @param {HTMLElement} parentContainer define el contenedor que envuelve el control
+     * @property {HTMLElement} parentContainer define el contenedor que envuelve el control
      */
     this.parentContainer = null;
 
+    /**
+     * @public
+     * @property {String} name nombre del control, se usará para la traducción de los textos
+     * del control y su creación en la plantilla, por lo que es importante que el nombre sea
+     * único y descriptivo.
+     */
     this.name = null;
     if (isString(name)) this.name = name;
     else Exception(getValue('exception').control_name_method);
 
     /**
-     * @param {tooltip} tooltip título ilustrativo sobre la acción principal del control
+     * @public
+     * @property {tooltip} tooltip título ilustrativo sobre la acción principal del control
      */
     this.tooltip = isString(options.tooltip) ? options.tooltip : null;
 
     /**
-     * @param {tooltip} svgPath contiene la ruta a la imagen del control,
-     * generalmente lanzado desde un botón
+     * @public
+     * @property {String} svgPath contiene la ruta a la imagen del control.
      */
     this.svgPath = isString(options.svgPath) ? options.svgPath : null;
 
@@ -86,9 +124,26 @@ class Control extends Base {
     this.order = isNumber(options.order) ? options.order : 0;
 
     this.controls = null;
+
+    /**
+     * @private
+     * @property {IDEE.ui.ControlPanel} panel_ Panel asociado al control, si el control
+     * se encuentra dentro de un ControlPanel, este atributo se asignará automáticamente
+     * al panel que lo contiene.
+     */
     this.panel_ = null;
+
+    /**
+     * @private
+     * @property {HTMLElement} element Elemento HTML del control.
+     */
     this.element = null;
     this.activationBtn = null;
+
+    /**
+     * @public
+     * @property {Boolean} activated Define si el control esta activado, por defecto falso.
+     */
     this.activated = false;
 
     this.options = {
@@ -195,7 +250,7 @@ class Control extends Base {
       template.then((templateReady) => {
         buildImpl(templateReady);
       });
-    } else { // view is an HTML or text
+    } else {
       buildImpl(template);
     }
   }

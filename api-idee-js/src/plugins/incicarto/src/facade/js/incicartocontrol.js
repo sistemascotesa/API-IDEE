@@ -56,7 +56,7 @@ export default class IncicartoControl extends IDEE.Control {
   constructor(options) {
     if (IDEE.utils.isUndefined(IncicartoImplControl)
       || (IDEE.utils.isObject(IncicartoImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(IncicartoImplControl)))) {
+        && IDEE.utils.isNullOrEmpty(Object.keys(IncicartoImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
 
@@ -165,8 +165,6 @@ export default class IncicartoControl extends IDEE.Control {
 
     this.pluginOpened = false;
 
-    this.wfszoom = options.wfszoom;
-
     this.interfazmode = options.interfazmode;
 
     this.prefixSubject = options.prefixSubject;
@@ -186,13 +184,6 @@ export default class IncicartoControl extends IDEE.Control {
 
     this.documentRead_ = document.createElement('img');
     this.canvas_ = document.createElement('canvas');
-
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable_ = options.isDraggable;
   }
 
   /**
@@ -239,7 +230,6 @@ export default class IncicartoControl extends IDEE.Control {
       this.addEvents(html);
       this.createDrawingTemplate();
       this.createUploadingTemplate();
-      this.addSvgs();
       this.map.addLayers(this.selectionLayer);
     });
   }
@@ -489,25 +479,6 @@ export default class IncicartoControl extends IDEE.Control {
     html.querySelector('#incicarto-upload').addEventListener('click', () => this.openUploadOptions());
     html.querySelector('#incicarto-hide').addEventListener('click', () => this.hideMethods());
     this.addDragDropEvents();
-  }
-
-  /**
-   * Adds SVG icons to the plugin HTML.
-   * @public
-   * @function
-   * @api
-   */
-  addSvgs() {
-    const hideMethodsElem = this.html.querySelector('#incicarto-hide');
-    const buttonPointInciElem = this.html.querySelector('#incicarto-add-point');
-    const buttonLineInciElem = this.html.querySelector('#incicarto-add-line');
-    const buttonPolyInciElem = this.html.querySelector('#incicarto-add-poly');
-    const buttonUploadInciElem = this.html.querySelector('#incicarto-upload');
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'hidemethods', hideMethodsElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'puntualincident', buttonPointInciElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'linealincident', buttonLineInciElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'superficialincident', buttonPolyInciElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'fileincident', buttonUploadInciElem);
   }
 
   /**
@@ -1280,9 +1251,14 @@ export default class IncicartoControl extends IDEE.Control {
     layer.geometry = geom;
     layer.setZIndex(this.getMaxZIndex() + 1);
     this.map.addLayers(layer);
-    const name = this.name.toLowerCase();
     const collapsorElem = this.drawingTools.querySelector('#collapsorButton');
-    IDEE.utils.loadSvgByUrl(name, 'hidemethods', collapsorElem);
+    collapsorElem.addEventListener('click', () => {
+      if (collapsorElem.classList.contains('g-cartografia-flecha-arriba2')) {
+        collapsorElem.classList.replace('g-cartografia-flecha-arriba2', 'g-cartografia-flecha-abajo2');
+      } else if (collapsorElem.classList.contains('g-cartografia-flecha-abajo2')) {
+        collapsorElem.classList.replace('g-cartografia-flecha-abajo2', 'g-cartografia-flecha-arriba2');
+      }
+    });
     setTimeout(() => {
       document.querySelector(`li[name="${layerName}"] span.m-incicarto-layer-add`).click();
     }, 100);
@@ -1492,17 +1468,15 @@ export default class IncicartoControl extends IDEE.Control {
    * @api
    */
   hideMethods() {
-    const iconHide = this.html.querySelector('#incicarto-hide svg');
+    const iconHide = this.html.querySelector('#incicarto-hide');
     const elem = this.html.querySelector('#incicarto-methods-container');
     if (elem) {
       elem.style.display = elem.style.display === 'none' ? 'block' : 'none';
     }
-    if (iconHide) {
-      if (!iconHide.style.transform || iconHide.style.transform === '') {
-        iconHide.style.transform = 'rotate(180deg)';
-      } else {
-        iconHide.style.transform = '';
-      }
+    if (iconHide.classList.contains('g-cartografia-flecha-arriba2')) {
+      iconHide.classList.replace('g-cartografia-flecha-arriba2', 'g-cartografia-flecha-abajo2');
+    } else if (iconHide.classList.contains('g-cartografia-flecha-abajo2')) {
+      iconHide.classList.replace('g-cartografia-flecha-abajo2', 'g-cartografia-flecha-arriba2');
     }
   }
 

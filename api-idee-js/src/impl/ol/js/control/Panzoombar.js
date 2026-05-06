@@ -3,29 +3,37 @@
  */
 import { extend } from 'IDEE/util/Utils';
 
-import OLControlZoomSlider from 'ol/control/ZoomSlider';
+// eslint-disable-next-line no-unused-vars
+import OLControlZoomSlider, { Options } from 'ol/control/ZoomSlider';
 
 /**
  * @classdesc
- * Añade una barra de desplazamiento para acercar/alejar el mapa.
+ * Barra deslizante de zoom que extiende
+ * {@link https://openlayers.org/en/latest/apidoc/module-ol_control_ZoomSlider-ZoomSlider.html|ol.control.ZoomSlider}.
+ * Proporciona una barra de desplazamiento para acercar/alejar el mapa.
+ *
+ * @property {String} [className='ol-zoomslider'] Nombre de la clase CSS.
+ * @property {Number} [duration=200] Duración de la animación de zoom en milisegundos.
+ * @property {Boolean} [minWidth=10] Ancho mínimo de la barra en píxeles.
+ *
  * @api
+ * @extends {ol.control.ZoomSlider}
  */
 class Panzoombar extends OLControlZoomSlider {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base, estas opciones
-   * se pasarán en formato objeto. Opciones disponibles:
-   * - className: Nombre de la clase CSS.
-   * - duration: Duración de la animación en milisegundos.
-   * - render: Función llamada cuando se debe volver
-   * a representar el control.
+   * @param {Options} [vendorOptions] Opciones de proveedor para la biblioteca base.
+   * @example
+   * const control = new IDEE.impl.ol.control.Panzoombar({
+   *   className: 'm-panzoombar',
+   * });
    * Esto se llama en una devolución de llamada de "requestAnimationFrame".
    * @extends {ol.control.Control}
    * @api stable
    */
-  constructor(vendorOptions) {
+  constructor(vendorOptions = {}) {
     super(extend({}, vendorOptions, true));
     this.facadeMap_ = null;
   }

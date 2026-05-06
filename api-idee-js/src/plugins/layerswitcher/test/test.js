@@ -1,13 +1,16 @@
-/* eslint-disable max-len,object-property-newline */
 import Layerswitcher from 'facade/layerswitcher';
 
-// IDEE.language.setLang('en');
+window.IDEE.plugin.Layerswitcher = Layerswitcher;
+
+IDEE.language.setLang('es');
 
 const map = IDEE.map({
   container: 'mapjs',
-  // controls: ['scale', 'attributions'],
-  center: { x: -528863.345515127, y: 4514194.232367303 },
-  zoom: 9,
+  zoom: 5,
+  maxZoom: 20,
+  minZoom: 2,
+  center: [-467062.8225, 4783459.6216],
+  controls: ['attributions']
 });
 window.map = map;
 
@@ -31,7 +34,7 @@ const PRECHARGED = {
       type: 'WMTS', name: 'Mapas',
       url: 'https://www.ign.es/wmts/mapa-raster?',
     }, {
-      type: 'WMTS', name: 'Callejero ',
+      type: 'WMTS', name: 'Callejero',
       url: 'https://www.ign.es/wmts/ign-base?',
     }, {
       type: 'WMTS', name: 'Primera edición MTN y Minutas de 1910-1970',
@@ -49,8 +52,7 @@ const PRECHARGED = {
       type: 'WMS', name: 'Cuadrículas Mapa Topográfico Nacional',
       url: 'https://www.ign.es/wms-inspire/cuadriculas?',
     }],
-  },
-  {
+  }, {
     name: 'Imágenes',
     services: [{
       type: 'WMTS', name: 'Ortofotos máxima actualidad PNOA',
@@ -68,15 +70,14 @@ const PRECHARGED = {
       type: 'WMS', name: 'Fototeca (Consulta de fotogramas históricos y PNOA)',
       url: 'https://wms-fototeca.idee.es/fototeca?',
     }],
-  },
-  {
+  }, {
     name: 'Información geográfica de referencia y temática',
     services: [{
-      type: 'WMS', name: 'Catastro ',
+      type: 'WMS', name: 'Catastro',
       url: 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
     }, {
       type: 'WMS', name: 'Unidades administrativas',
-      url: ' https://www.ign.es/wms-inspire/unidades-administrativas?',
+      url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
     }, {
       type: 'WMS', name: 'Nombres geográficos (Nomenclátor Geográfico Básico NGBE)',
       url: 'https://www.ign.es/wms-inspire/ngbe?',
@@ -84,7 +85,7 @@ const PRECHARGED = {
       type: 'WMS', name: 'Redes de transporte',
       url: 'https://servicios.idee.es/wms-inspire/transportes?',
     }, {
-      type: 'WMS', name: 'Hidrografía ',
+      type: 'WMS', name: 'Hidrografía',
       url: 'https://servicios.idee.es/wms-inspire/hidrografia?',
     }, {
       type: 'WMS', name: 'Direcciones y códigos postales',
@@ -108,8 +109,7 @@ const PRECHARGED = {
       type: 'WMS', name: 'Redes geodésicas',
       url: 'https://www.ign.es/wms-inspire/redes-geodesicas?',
     }],
-  },
-  {
+  }, {
     name: 'Modelos digitales de elevaciones',
     services: [{
       type: 'WMTS', name: 'Modelo Digital de Superficies (Sombreado superficies y consulta de elevaciones edificios y vegetación)',
@@ -126,28 +126,106 @@ const PRECHARGED = {
   }],
 };
 
-const mp1 = new Layerswitcher({
-  collapsed: false,
-  collapsible: true,
-  isDraggable: true,
-  position: 'right',
-  tooltip: 'Gestor de Capas',
-  modeSelectLayers: 'eyes', // eyes | radio
-  // tools: [],
-  tools: ['transparency', 'zoom', 'legend', 'information', 'style', 'delete'],
-  isMoveLayers: true,
-  precharged: PRECHARGED,
-  https: true, // solo afectan al añadido de layerSwitcher
-  http: true, // solo afectan al añadido de layerSwitcher
-  showCatalog: true, // Añade pequeño boton de Binoculares al lado de buscar de capas a añadir.
-  useProxy: true,
-  displayLabel: true, // Muestra tipo de capa como WSF, TMS, GeoJSON ...
-  addLayers: true,
-  statusLayers: true, // Solo se muestra si modeSelectLayers es 'eyes'
-  order: 1,
-  useAttributions: true,
+const capaGeoJSON = new IDEE.layer.GeoJSON({
+  name: 'Capa GeoJSON',
+  url: 'https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
+  extract: false,
 });
-map.addPlugin(mp1);
-window.mp1 = mp1;
 
-// Para pruebas locales, lanzar Tomcat del proyecto y usar "http://localhost:8080" en vez de "https://componentes-desarrollo.idee.es"
+map.addLayers(capaGeoJSON);
+
+const capaWMS = new IDEE.layer.WMS({
+  url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+  name: 'AU.AdministrativeUnit',
+  legend: 'Capa WMS',
+});
+
+map.addLayers(capaWMS);
+
+let mp = null;
+
+const createPlugin = (options) => {
+  mp = new IDEE.plugin.Layerswitcher(options);
+  window.mp = mp;
+  map.addPlugin(mp);
+};
+
+const removePlugin = () => {
+  if (mp) map.removePlugins(mp);
+};
+
+const removeButton = document.getElementById('removeButton');
+removeButton.addEventListener('click', () => { removePlugin(); });
+
+const selectPosition = document.getElementById('selectPosition');
+const selectCollapsed = document.getElementById('selectCollapsed');
+const inputTooltip = document.getElementById('inputTooltip');
+const inputOrder = document.getElementById('inputOrder');
+const selectAdd = document.getElementById('selectAddLayers');
+const selectStatus = document.getElementById('selectStatusLayers');
+const inputTools = document.getElementById('inputTools');
+const selectMoveLayer = document.getElementById('isMoveLayers');
+const selectModeSelectLayers = document.getElementById('modeSelectLayers');
+const inputPrecharged = document.getElementById('inputPrecharged');
+const selectHttp = document.getElementById('isHttp');
+const selectHttps = document.getElementById('isHttps');
+const selectShowCatalog = document.getElementById('isShowCatalog');
+const selectProxy = document.getElementById('selectProxy');
+const selectDisplay = document.getElementById('selectDisplay');
+const selectUseAttributions = document.getElementById('selectUseAttributions');
+
+const boolVal = (select, defaultVal = true) => {
+  const v = select.options[select.selectedIndex].value;
+  if (v === '') return defaultVal;
+  return v === 'true';
+};
+
+const updatePlugin = () => {
+  const options = {};
+  options.position = selectPosition.options[selectPosition.selectedIndex].value;
+  options.collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value === '' || selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true';
+  options.order = Number(inputOrder.value);
+  options.addLayers = boolVal(selectAdd, true);
+  options.statusLayers = boolVal(selectStatus, true);
+  options.tooltip = inputTooltip.value || '';
+  options.tools = inputTools.value !== '' ? inputTools.value.split(', ') : [];
+  options.isMoveLayers = boolVal(selectMoveLayer, false);
+  options.modeSelectLayers = selectModeSelectLayers.options[selectModeSelectLayers.selectedIndex].value || 'eyes';
+  if (inputPrecharged.value.trim() !== '') {
+    try { options.precharged = JSON.parse(inputPrecharged.value); } catch (e) { options.precharged = inputPrecharged.value; }
+  } else {
+    options.precharged = PRECHARGED;
+  }
+  options.http = boolVal(selectHttp, true);
+  options.https = boolVal(selectHttps, true);
+  options.showCatalog = boolVal(selectShowCatalog, false);
+  options.useProxy = boolVal(selectProxy, true);
+  options.displayLabel = boolVal(selectDisplay, false);
+  options.useAttributions = boolVal(selectUseAttributions, false);
+
+  removePlugin();
+  createPlugin(options);
+};
+
+[
+  selectPosition,
+  selectCollapsed,
+  inputOrder,
+  inputTooltip,
+  selectAdd,
+  selectStatus,
+  inputTools,
+  selectMoveLayer,
+  selectModeSelectLayers,
+  inputPrecharged,
+  selectHttp,
+  selectHttps,
+  selectShowCatalog,
+  selectProxy,
+  selectDisplay,
+  selectUseAttributions,
+].forEach((ctrl) => {
+  ctrl.addEventListener('change', updatePlugin);
+});
+
+updatePlugin();

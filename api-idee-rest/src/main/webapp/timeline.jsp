@@ -101,11 +101,11 @@
         <label for="stepValue">Valor del step: </label>
         <input type="number" min="1" name="stepValue" id="stepValue">
 
-        <label for="sizeWidthDinamic">Tamaño plugin: </label>
+        <label for="sizeWidthDinamic">Tamaño plugin "sizeWidthDinamic"</label>
         <select name="sizeWidthDinamic" id="sizeWidthDinamic">
-            <option value="sizeWidthDinamic_medium">Mediano</option>
-            <option value="">Pequeño</option>
-            <option value="sizeWidthDinamic_big">Grande</option>
+            <option value="sizeWidthDinamic_medium">Mediano ("sizeWidthDinamic_medium")</option>
+            <option value="">Pequeño ("")</option>
+            <option value="sizeWidthDinamic_big">Grande ("sizeWidthDinamic_big")</option>
         </select>
 
         <label for="formatValueDinamic">Representación de los datos: </label>

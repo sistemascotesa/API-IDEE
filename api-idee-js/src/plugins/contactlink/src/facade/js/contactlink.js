@@ -5,8 +5,6 @@ import 'assets/css/contactlink';
 import 'assets/css/fonts';
 import ContactLinkControl from './contactlinkcontrol';
 import api from '../../api';
-// eslint-disable-next-line import/no-relative-packages
-import { LEFT } from '../../../../../facade/js/ui/position';
 import { getValue } from './i18n/language';
 import myhelp from '../../templates/myhelp';
 
@@ -26,8 +24,8 @@ export default class ContactLink extends IDEE.Plugin {
    */
   constructor(options = {}) {
     super('contactlink', {
-      position: options.position ?? LEFT,
-      tooltip: options.tooltip ?? getValue('tooltip'),
+      position: options.position || 'left',
+      tooltip: options.tooltip || getValue('tooltip'),
       order: options.order,
     });
 
@@ -173,7 +171,7 @@ export default class ContactLink extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_link.svg',
       order: this.order,
     });
     map.addButtons(this.button);
@@ -181,12 +179,13 @@ export default class ContactLink extends IDEE.Plugin {
     this.panel = new IDEE.ui.Panel(this.name, {
       collapsed: this.collapsed,
       position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
       className: this.className,
       collapsedButtonClass: 'g-contactlink-link',
       tooltip: this.tooltip,
       order: this.order,
     });
-    map.addPanels(this.panel);
 
     this.control_ = new ContactLinkControl({
       descargascnig: this.linksDescargasCnig,
@@ -209,6 +208,8 @@ export default class ContactLink extends IDEE.Plugin {
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
+
+    map.addPanels(this.panel);
   }
 
   /**
@@ -233,7 +234,7 @@ export default class ContactLink extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*false*${this.tooltip}*${this.linksDescargasCnig}*${this.linksPnoa}*${this.linksVisualizador3d}*${this.linksFototeca}*${this.linksTwitter}*${this.linksInstagram}*${this.linksFacebook}*${this.linksPinterest}*${this.linksYoutube}*${this.linksMail}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${this.linksDescargasCnig}*${this.linksPnoa}*${this.linksVisualizador3d}*${this.linksFototeca}*${this.linksTwitter}*${this.linksInstagram}*${this.linksFacebook}*${this.linksPinterest}*${this.linksYoutube}*${this.linksMail}`;
   }
 
   /**

@@ -106,7 +106,7 @@ const wfs = new WFS({
 
 const kml = new KML({
   url: 'https://www.ign.es/web/resources/delegaciones/DelegacionesIGN-APICNIG.kml',
-  // url: 'https://componentes-desarrollo.idee.es/files/kml/arbda_sing_se.kml',
+  // url: 'https://api-ideedes.grupotecopy.es/files/kml/arbda_sing_se.kml',
   name: 'Capa KML',
 }, {
   minScale: 1000000,

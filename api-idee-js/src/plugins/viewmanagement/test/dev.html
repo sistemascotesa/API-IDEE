@@ -7,45 +7,76 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="idee" content="yes">
     <title>ViewManagement TEST</title>
-    <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-    </style>
+    <link href="https://api-ideedes.grupotecopy.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
 </head>
 
 <body>
-    <div>
-        <label for="selectPosicion">Selector de posición del plugin</label>
-        <select name="position" id="selectPosicion">
-            <option value="left" selected="selected">Izquierda (left)</option>
-            <option value="right">Derecha (right)</option>
-            <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
-            <option value="center-top-right">Centro superior derecho (center-top-right)</option>
-            <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
-            <option value="center-bottom-right">Centro inferior derecho (center-bottom-right)</option>
-            <option value="down">Abajo (down)</option>
-        </select>
-        <label for="selectCollapsed">Parámetro de collapsed</label>
-        <select name="collapsed" id="selectCollapsed">
-            <option value=''></option>
-            <option value="true" selected="selected">true</option>
-            <option value="false">false</option>
-        </select>
-    </div>
-    <div>
-        <button value="Eliminar Control" name="eliminar" id="removeButton">Eliminar Pugin</button>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form" style="max-height: 14.2rem;">
+            <div>
+                <label for="selectPosicion" title="Posición del plugin sobre el mapa. Por defecto: left">Posición del panel "position"</label>
+                <select name="position" id="selectPosicion">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda (left)</option>
+                    <option value="right">Derecha (right)</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder" title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden en la posición asignada "order"</label>
+                <input type="number" name="order" id="inputOrder" value="-1">
+            </div>
+            <div>
+                <label for="inputTooltip"  title="Texto que se muestra al dejar el ratón encima del plugin">Información de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" value="">
+            </div>
+            <div>
+                <label for="selectCollapsed" title="Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true">Panel colapsado "collapsed"</label>
+                <select name="collapsed" id="selectCollapsed">
+                    <option value='' selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputPredefinedZoom" title="Habilita el control que define los niveles de zoom predefinidos (true | false | JSON array)">Zoom predefinido "predefinedZoom"</label>
+                <input type="text" name="predefinedZoom" id="inputPredefinedZoom" value='[{"name": "Zoom con CENTER", "center": [-428106.866, 4334472.253], "zoom": 4},{"name": "Zoom con BBOX", "bbox": [-2392173.2372, 3033021.2824, 1966571.8637, 6806768.1648]}]'>
+                <datalist id="tooltipSug">
+                    <option value=""></option>
+                    <option value='[{"name": "Zoom con CENTER", "center": [-428106.866, 4334472.253], "zoom": 4},{"name": "Zoom con BBOX", "bbox": [-2392173.2372, 3033021.2824, 1966571.8637, 6806768.1648]}]'></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="selectZoomExtent" title="Habilita el control que muestra las opciones de centrar la vista del mapa en un recuadro dibujado. Por defecto: true">Zoom a extensión total "zoomExtent"</label>
+                <select name="zoomExtent" id="selectZoomExtent">
+                    <option value='' selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectViewhistory" title="Habilita el control que muestra las opciones de visualizar el historial de zooms. Por defecto: true">Historial de vistas "viewhistory"</label>
+                <select name="viewhistory" id="selectViewhistory">
+                    <option value='' selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectZoompanel" title="Habilita el control que muestra las opciones de modificar el zoom a través del panel. Por defecto: true">Panel de zoom "zoompanel"</label>
+                <select name="zoompanel" id="selectZoompanel">
+                    <option value='' selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button id="removeButton">Eliminar plugin</button>
+        </div>
     </div>
     <div id="mapjs" class="container"></div>
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="https://api-ideedes.grupotecopy.es/api-idee/js/apiidee.ol.min.js"></script>
+    <script type="text/javascript" src="https://api-ideedes.grupotecopy.es/api-idee/js/configuration.js"></script>
     <script type="text/javascript" src="/main.js"></script>
 </body>
 

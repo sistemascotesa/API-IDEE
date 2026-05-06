@@ -3,6 +3,7 @@
  */
 import ModifyFeatureImpl from '../../impl/ol/js/modifyfeature';
 import modifyfeatureHTML from '../../templates/modifyfeature';
+import { getValue } from './i18n/language';
 
 export default class ModifyFeature extends IDEE.Control {
   /**
@@ -31,7 +32,7 @@ export default class ModifyFeature extends IDEE.Control {
     this.modify = null;
 
     if (IDEE.utils.isUndefined(ModifyFeatureImpl)) {
-      IDEE.exception('La implementación usada no puede crear controles ModifyFeature');
+      IDEE.exception(getValue('exception.impl_modify'));
     }
   }
 
@@ -47,6 +48,11 @@ export default class ModifyFeature extends IDEE.Control {
   createView(map) {
     return IDEE.template.compileSync(modifyfeatureHTML, {
       jsonp: true,
+      vars: {
+        translations: {
+          modify: getValue('modify'),
+        },
+      },
     });
   }
 
