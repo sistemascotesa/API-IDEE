@@ -46,14 +46,19 @@
                 </select>
             </div>
             <div>
-                <label for="inputTooltip">Título panel y control "tooltip"</label>
+                <label for="inputTooltip">Título informativo del panel y control "tooltip"</label>
                 <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
             </div>
+            <div>
+                <label for="inputTitle" title="Reemplaza el valor del tooltip por defecto para el título del panel">
+                    Título del panel del control "title"</label>
+                <input type="text" name="tooltip" id="inputTitle" list="tooltipSug" value="">
+            </div>
         </div>
-        <div class="m-test-buttons">
-            <button name="eliminar control" class="m-test-button" id="removeButton">Eliminar Control</button>
-            <button name="eliminar osm" class="m-test-button" id="removeLayerOSM">Eliminar Capa OSM</button>
-            <button name="eliminar capa OSM" class="m-test-button" id="addLayerOSM">Añadir Capa OSM</button>
+        <div class="m-test-buttons" style="background-color: rgb(89, 114, 104);">
+            <button name="remove control" class="m-test-button" id="removeButton">Eliminar Control</button>
+            <button name="remove osm" class="m-test-button" id="removeLayerOSM">Eliminar Capa OSM</button>
+            <button name="add OSM" class="m-test-button" id="addLayerOSM">Añadir Capa OSM</button>
         </div>
     </div>
     <div id="map" class="map"></div>
