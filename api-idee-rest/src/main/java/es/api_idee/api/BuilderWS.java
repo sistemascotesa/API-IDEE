@@ -1,10 +1,7 @@
 package es.api_idee.api;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
@@ -47,16 +44,22 @@ public class BuilderWS {
       MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 
       Parameters parameters = ParametersParser.parse(queryParams);
-      
+
       // plugins
       PluginsManager.init(context);
       List<String> plugins = PluginsManager.getPlugins(queryParams);
 
-      // New OpenAPI key=value style controls: controls.{controlName}.{paramName}=value
       List<String> controls = detectKeyValueControls(queryParams);
-
-      // New OpenAPI key=value style layers: layers.{index}.type=WMTS&layers.{index}.url=...
       List<String> layers = detectKeyValueLayers(queryParams);
+
+      // When detect functions handle controls/layers (any format), remove them from
+      // parameters to avoid client-side duplication with IDEE.map({controls/layers:[...]})
+      if (!controls.isEmpty()) {
+         parameters.clearControls();
+      }
+      if (!layers.isEmpty()) {
+         parameters.clearLayers();
+      }
 
       String codeJS = JSBuilder.build(parameters, plugins,
             controls.isEmpty() ? null : controls,
@@ -139,87 +142,43 @@ public class BuilderWS {
    }
 
    /**
-    * Detects new OpenAPI key=value style layer parameters and returns a list of
-    * layer instantiation strings.
+    * Reads the star-format layers param and returns each entry as a quoted JS string
+    * for client-side processing via buildLayer.
     *
-    * Format: layers.{index}.{paramName}=value
-    * The "type" param is mandatory and defines the layer class.
-    *
-    * Example:
-    *   layers.0.type=WMTS&layers.0.url=http://...&layers.0.name=MTN&layers.0.matrixSet=GoogleMapsCompatible
-    *   -> new IDEE.layer.WMTS({"url":"http://...","name":"MTN","matrixSet":"GoogleMapsCompatible"})
-    *
-    * Layers are ordered by index (alphabetical/numeric sort of the index token).
-    * The existing ?layers=WMTS*... format still works independently.
+    * Format: layers=TYPE*key=val;key=val,...
+    * Example: layers=WMTS*url=http://...;name=MTN,WMS*url=http://...;name=capas
     */
    private List<String> detectKeyValueLayers(MultivaluedMap<String, String> queryParams) {
-      // TreeMap keeps indices in sorted order (0, 1, 2, ...; or "a", "b", ...)
-      Map<String, Map<String, String>> layerParams = new TreeMap<>();
-      for (String paramName : queryParams.keySet()) {
-         if (!paramName.startsWith("layers.")) continue;
-         String rest = paramName.substring("layers.".length()); // e.g. "0.type" or "0.url"
-         int dotIndex = rest.indexOf('.');
-         if (dotIndex <= 0) continue; // bare layers.something with no param — skip
-         String layerIndex = rest.substring(0, dotIndex);
-         String param = rest.substring(dotIndex + 1);
-         if (!layerParams.containsKey(layerIndex)) {
-            layerParams.put(layerIndex, new LinkedHashMap<String, String>());
-         }
-         String value = queryParams.getFirst(paramName);
-         if (value != null) {
-            layerParams.get(layerIndex).put(param, value);
-         }
-      }
       List<String> layers = new ArrayList<>();
-      for (Map.Entry<String, Map<String, String>> entry : layerParams.entrySet()) {
-         Map<String, String> params = new LinkedHashMap<>(entry.getValue());
-         String layerType = params.remove("type");
-         if (layerType != null && !layerType.isEmpty()) {
-            layers.add(JSBuilder.createLayerWithParams(layerType, params));
+      String layersParam = queryParams.getFirst("layers");
+      if (layersParam != null) {
+         for (String entry : layersParam.split(",")) {
+            entry = entry.trim();
+            if (!entry.isEmpty()) {
+               layers.add(JSBuilder.createLayerWithParams(entry));
+            }
          }
       }
       return layers;
    }
 
    /**
-    * Detects new OpenAPI key=value style control parameters and returns a list of
-    * control instantiation strings.
+    * Reads the star-format controls param and returns each entry as a quoted JS string
+    * for client-side processing via buildControl.
     *
-    * Supported formats:
-    *   controls.scale                    -> new IDEE.control.Scale()
-    *   controls.scale.exactScale=false   -> new IDEE.control.Scale({"exactScale":false})
-    *
-    * Multiple params for the same control are merged:
-    *   controls.scale.exactScale=false&controls.scale.units=m
-    *   -> new IDEE.control.Scale({"exactScale":false,"units":"m"})
+    * Format: controls=name*key=val;key=val,...
+    * Example: controls=scale,timeline*order=2,attributions*position=down
     */
    private List<String> detectKeyValueControls(MultivaluedMap<String, String> queryParams) {
-      Map<String, Map<String, String>> controlParams = new LinkedHashMap<>();
-      for (String paramName : queryParams.keySet()) {
-         if (!paramName.startsWith("controls.")) continue;
-         String rest = paramName.substring("controls.".length()); // e.g. "scale" or "scale.exactScale"
-         int dotIndex = rest.indexOf('.');
-         if (dotIndex <= 0) {
-            // Format: controls.{controlName}  — no sub-params, just register the control
-            if (!controlParams.containsKey(rest)) {
-               controlParams.put(rest, new LinkedHashMap<String, String>());
-            }
-         } else {
-            // Format: controls.{controlName}.{paramName}=value
-            String controlName = rest.substring(0, dotIndex);
-            String param = rest.substring(dotIndex + 1);
-            if (!controlParams.containsKey(controlName)) {
-               controlParams.put(controlName, new LinkedHashMap<String, String>());
-            }
-            String value = queryParams.getFirst(paramName);
-            if (value != null) {
-               controlParams.get(controlName).put(param, value);
+      List<String> controls = new ArrayList<>();
+      String controlsParam = queryParams.getFirst("controls");
+      if (controlsParam != null) {
+         for (String entry : controlsParam.split(",")) {
+            entry = entry.trim();
+            if (!entry.isEmpty()) {
+               controls.add(JSBuilder.createControlWithParams(entry));
             }
          }
-      }
-      List<String> controls = new ArrayList<>();
-      for (Map.Entry<String, Map<String, String>> entry : controlParams.entrySet()) {
-         controls.add(JSBuilder.createControlWithParams(entry.getKey(), entry.getValue()));
       }
       return controls;
    }

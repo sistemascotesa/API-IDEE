@@ -179,6 +179,18 @@ public class JSBuilder {
 	}
 
 	public static String createPlugin(PluginAPI plugin, String paramValue) {
+		// New star format: value is "key=val;key=val" — delegate to Map-based approach
+		if (!StringUtils.isEmpty(paramValue) && paramValue.matches("\\w+=.*")) {
+			Map<String, String> params = new java.util.LinkedHashMap<>();
+			for (String pair : paramValue.split(";")) {
+				int eqIdx = pair.indexOf('=');
+				if (eqIdx > 0) {
+					params.put(pair.substring(0, eqIdx).trim(), pair.substring(eqIdx + 1).trim());
+				}
+			}
+			return createPlugin(plugin, params);
+		}
+
 		StringBuilder pluginBuilder = new StringBuilder();
 
 		String[] paramValues = null;
@@ -339,51 +351,29 @@ public class JSBuilder {
 	}
 
 	/**
-	 * Creates a layer using OpenAPI key=value style parameters.
-	 * The "type" entry in params is used as the layer class name (e.g. "WMTS", "WMS").
-	 * Example URL: ?layers.0.type=WMTS&layers.0.url=http://...&layers.0.name=MTN
+	 * Wraps a star-format layer string as a quoted JS literal for client-side processing via buildLayer.
 	 *
-	 * @param layerType the layer type/class name (e.g. "WMTS", "WMS", "WFS")
-	 * @param params    map of paramName->value (must NOT contain "type")
-	 * @return layer instantiation code
+	 * Format: "TYPE*key=val;key=val"
+	 * Example URL: ?layers=WMTS*url=http://...;name=MTN
+	 *
+	 * @param layerEntry raw star-format string (e.g. "WMTS*url=http://...;name=MTN")
+	 * @return quoted JS string consumed by Map.addLayers → buildLayer on the client
 	 */
-	public static String createLayerWithParams(String layerType, Map<String, String> params) {
-		StringBuilder layerBuilder = new StringBuilder();
-		layerBuilder.append("new IDEE.layer.").append(layerType).append("(");
-		if (params != null && !params.isEmpty()) {
-			JSONObject paramsObj = new JSONObject();
-			for (Map.Entry<String, String> entry : params.entrySet()) {
-				inferAndPutValue(paramsObj, entry.getKey(), entry.getValue());
-			}
-			layerBuilder.append(paramsObj.toString());
-		}
-		layerBuilder.append(")");
-		return layerBuilder.toString();
+	public static String createLayerWithParams(String layerEntry) {
+		return "\"" + layerEntry.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
 	}
 
 	/**
-	 * Creates a control with parameters using OpenAPI key=value style.
-	 * Example URL: ?controls.scale.exactScale=false
+	 * Wraps a star-format control string as a quoted JS literal for client-side processing via buildControl.
 	 *
-	 * @param controlName the control name (e.g. "scale")
-	 * @param params      map of paramName->value
-	 * @return control instantiation code
+	 * Format: "controlName*key=val;key=val"
+	 * Example URL: ?controls=scale*exactScale=false;units=m
+	 *
+	 * @param controlEntry raw star-format string (e.g. "scale*exactScale=false;units=m" or just "scale")
+	 * @return quoted JS string consumed by Map.addControls → buildControl on the client
 	 */
-	public static String createControlWithParams(String controlName, Map<String, String> params) {
-		StringBuilder controlBuilder = new StringBuilder();
-		String controlClass = controlName.substring(0, 1).toUpperCase() + controlName.substring(1);
-		controlBuilder.append("new IDEE.control.").append(controlClass).append("(");
-
-		if (params != null && !params.isEmpty()) {
-			JSONObject paramsObj = new JSONObject();
-			for (Map.Entry<String, String> entry : params.entrySet()) {
-				inferAndPutValue(paramsObj, entry.getKey(), entry.getValue());
-			}
-			controlBuilder.append(paramsObj.toString());
-		}
-
-		controlBuilder.append(")");
-		return controlBuilder.toString();
+	public static String createControlWithParams(String controlEntry) {
+		return "\"" + controlEntry.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
 	}
 
 	/**

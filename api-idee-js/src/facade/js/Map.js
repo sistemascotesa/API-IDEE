@@ -60,7 +60,7 @@ import Tiles3D from './layer/Tiles3D';
 import Terrain from './layer/Terrain';
 import WMC from './layer/WMC';
 import Attributions from './control/Attributions';
-import { buildControl, getPanelForControl, parseKeyValueLayer } from './builder/builder';
+import { buildControl, buildLayer, getPanelForControl } from './builder/builder';
 import applyDesignTokenCssVariables from './theme/tokens';
 // eslint-disable-next-line no-unused-vars
 import Plugin from './Plugin';
@@ -719,10 +719,10 @@ class Map extends Base {
         let layer;
 
         if (isString(layerParam)) {
-          // New OpenAPI key=value format: 'layers.0.type=WMTS&layers.0.url=...'
-          if (/layers\.\w+\.\w+=/.test(layerParam)) {
+          // Named-param format: 'WMTS*url=http://...;name=MTN;matrixSet=GM'
+          if (isString(layerParam)) {
             // eslint-disable-next-line
-            layerParam = parseKeyValueLayer(layerParam);
+            layerParam = buildLayer(layerParam);
           }
           if (isString(layerParam)) {
             const splt = layerParam.split('*');

@@ -400,61 +400,6 @@ export const getPanelForControl = (control, map, params = {}) => {
 };
 
 /**
- * Infers the JS type of a raw string value coming from a URL query parameter.
- * Handles: boolean, number, JSON array ([a,b,c] or [1,2,3]), JSON object ({...}), string.
- * @private
- */
-const inferValue = (rawVal) => {
-  const v = rawVal.trim();
-  if (v === 'true') return true;
-  if (v === 'false') return false;
-  // eslint-disable-next-line no-restricted-globals
-  if (!isNaN(v) && v !== '') return Number(v);
-  if (v.startsWith('{') && v.endsWith('}')) {
-    try { return JSON.parse(v); } catch (e) { return v; }
-  }
-  if (v.startsWith('[') && v.endsWith(']')) {
-    const inner = v.slice(1, -1);
-    return inner.split(',').map((el) => {
-      const e = el.trim().replace(/^['"]|['"]$/g, ''); // strip quotes
-      if (e === 'true') return true;
-      if (e === 'false') return false;
-      // eslint-disable-next-line no-restricted-globals
-      if (!isNaN(e) && e !== '') return Number(e);
-      return e;
-    });
-  }
-  return rawVal;
-};
-
-/**
- * Parses an OpenAPI key=value layer string like:
- *   'layers.0.type=WMTS&layers.0.url=http://...&layers.0.name=MTN'
- * into an object like:
- *   { type: 'WMTS', url: 'http://...', name: 'MTN' }
- * which Map.getLayerByString() can use via its switch(type) block.
- *
- * Multiple layers in a single string are not supported here — each
- * array element must correspond to one layer.
- * @private
- */
-export const parseKeyValueLayer = (layerStr) => {
-  const params = {};
-  layerStr.split('&').forEach((pair) => {
-    const eqIndex = pair.indexOf('=');
-    if (eqIndex <= 0) return;
-    const key = pair.substring(0, eqIndex);
-    const value = pair.substring(eqIndex + 1);
-    // extract the param name after the second dot: layers.0.type → type
-    const parts = key.split('.');
-    if (parts.length >= 3) {
-      params[parts.slice(2).join('.')] = inferValue(value);
-    }
-  });
-  return params;
-};
-
-/**
  * This method create the mapea control from its name string.
  * @function
  * @param {string|Object} controlParam Control name or control instance.
@@ -523,6 +468,35 @@ export const buildControl = (controlParam, map) => {
   }
 
   return control;
+};
+
+/**
+ * Converts a layer URL parameter string in the named-param format
+ * ('WMTS*url=http://...;name=MTN;matrixSet=GM') into a plain object
+ * that parameter.layer() can consume directly.
+ *
+ * The old positional format ('WMTS*http://....*name') is returned unchanged
+ * so existing callers are unaffected.
+ *
+ * @public
+ * @function
+ * @param {string|*} layerParam Raw layer parameter.
+ * @returns {Object|string} Parsed object for named-param format, original value otherwise.
+ */
+export const buildLayer = (layerParam) => {
+  if (!isString(layerParam)) return layerParam;
+  const starIdx = layerParam.indexOf('*');
+  if (starIdx <= 0) return layerParam;
+
+  const type = layerParam.substring(0, starIdx);
+  const paramsStr = layerParam.substring(starIdx + 1);
+
+  // Named-param format: params start with 'key=value' (word chars then '=')
+  if (/^\w+=/.test(paramsStr)) {
+    return { type, ...parseUrlParams(paramsStr, type) };
+  }
+
+  return layerParam;
 };
 
 /**
