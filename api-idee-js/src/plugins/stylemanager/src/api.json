@@ -21,12 +21,12 @@
     {
       "type": "number",
       "name": "order",
-      "position": 3
+      "position": 2
     },
     {
       "type": "simple",
       "name": "tooltip",
-      "position": 4
+      "position": 3
     }]
   }],
   "files": {
