@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Modal</small></h1>
 
@@ -7,12 +7,22 @@
 
 Plugin que muestra información sobre la página y manual de uso.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Modal abierto](./src/facade/assets/images/modal-abierto.png)|![Modal cerrado](./src/facade/assets/images/modal-cerrado.png)|
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
+Para uso de implementación OpenLayers:
 - **modal.ol.min.js**
 - **modal.ol.min.css**
+
+Para uso de implementación Cesium:
+- **modal.cesium.min.js**
+- **modal.cesium.min.css**
+
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/modal/modal.ol.min.css" rel="stylesheet" />
@@ -33,14 +43,13 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**:  Ubicación del plugin sobre el mapa.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **helpLink**: Enlace al manual de uso. Objeto formado por los atributos en y es. Por defecto: template_en y template_es.
   - Este parámetro se puede definir también con url_en y url_es directamente. Por defecto: template_en y template_es.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**. Tooltip que se muestra sobre el plugin. Por defecto: Más información.
 
 # Plantilla HMTL a mostrar en la ventana modal
@@ -101,7 +110,7 @@ URL_API?modal=position*collapse*collapsible*tooltip*url_es*url_en
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
@@ -112,6 +121,11 @@ URL_API?modal=position*collapse*collapsible*tooltip*url_es*url_en
   <tr>
     <td>collapsible</td>
     <td>true/false</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
     <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
@@ -135,7 +149,7 @@ URL_API?modal=position*collapse*collapsible*tooltip*url_es*url_en
 ### Ejemplo de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee?modal=TR*true*true*Ayuda*https%3A%2F%2Fcomponentes.cnig.es%2FayudaIberpix%2Fes.html*https%3A%2F%2Fcomponentes.cnig.es%2FayudaIberpix%2Fen.html
+https://componentes.idee.es/api-idee?modal=TR*true*true*Ayuda*https://www.ign.es/iberpix/ayuda/es.html*https://www.ign.es/iberpix/ayuda/en.html
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -149,9 +163,10 @@ IDEE.utils.encodeBase64(obj_params);
 Ejemplo de constructor:
 ```javascript
 {
-  position:'TR',
+  position:'left',
   collapsed: true,
   collapsible: true,
+  order: 1,
   url_es: 'https://componentes.cnig.es/ayudaIberpix/es.html',
   url_en: 'https://componentes.cnig.es/ayudaIberpix/en.html',
   tooltip: 'Ayuda',
@@ -172,7 +187,11 @@ const map = IDEE.map({
 
 
 const mp = new IDEE.plugin.Modal({
-  position: 'TR',
+  position: 'right',
+  collapsed: true,
+  collapsible: true,
+  order: 1,
+  tooltip: 'Ayuda',
   url_es: 'https://componentes.cnig.es/ayudaIberpix/es.html',
   url_en: 'https://componentes.cnig.es/ayudaIberpix/en.html',
 });

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.StoryMap</small></h1>
 
@@ -7,12 +7,20 @@
 
 Plugin que muestra una historia en forma de carrusel. Esta compuesta por diferentes steps en los cuales se ejecurán animaciones preconfiguradas.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Storymap abierto](./src/facade/assets/images/storymap-abierto.png)|![Storymap cerrado](./src/facade/assets/images/storymap-cerrado.png)|
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **storymap.ol.min.js**
 - **storymap.ol.min.css**
+
+Para uso de implementación Cesium:
+- **storymap.cesium.min.js**
+- **storymap.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/storymap/storymap.ol.min.css" rel="stylesheet" />
@@ -33,12 +41,12 @@ Ejemplo:
 El constructor se inicializa con un JSON de options con los siguientes atributos:
 
 - **position**.  Ubicación del plugin sobre el mapa.
-  - 'TL':top left (default)
-  - 'TR':top right
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**. Indica si el plugin aparece por defecto colapsado o no.
-
+- **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Gestión de la vista.
-
 - **indexInContent**. Si este parámetro se incluye se genera un "capítulo 0" que contiene el índice. Este parámetro recibe un objeto donde se determina el título del índice, subtitulo y js.
 ```javascript
       indexInContent: {
@@ -109,7 +117,7 @@ URL_API?storymap=position*collapsed*collapsible*tooltip*delay*isDraggable
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -121,6 +129,11 @@ URL_API?storymap=position*collapsed*collapsible*tooltip*delay*isDraggable
     <td>collapsed</td>
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
     <td>tooltip</td>
@@ -153,7 +166,7 @@ URL_API?storymap=position*collapsed*collapsible*tooltip*delay*isDraggable
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee/?storymap=TL*true*true*tooltip*delay*isDraggable
+https://componentes.idee.es/api-idee/?storymap=RIGHT*true*true*tooltip*delay*isDraggable
 ```
 
 ### Ejemplos de uso API-REST en base64
@@ -169,7 +182,7 @@ Ejemplo de constructor del plugin:
 {
   collapsed: false,
   collapsible: true,
-  position: 'TR',
+  position: 'right',
   tooltip: 'Tooltip Storymap',
   content: {
     es: StoryMapJSON2,
@@ -202,7 +215,7 @@ const map = IDEE.map({
 const mp = IDEE.plugin.new StoryMap({
   collapsed: false,
   collapsible: true,
-  position: 'TR',
+  position: 'right',
   tooltip: 'Tooltip Storymap',
   content: {
     es: StoryMapJSON2,

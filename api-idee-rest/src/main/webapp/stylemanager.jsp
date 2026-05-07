@@ -13,8 +13,8 @@
     <title>Visor base</title>
     <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
     <link href="plugins/stylemanager/stylemanager.ol.min.css" rel="stylesheet" />
-    <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
     <link href="plugins/vectors/vectors.ol.min.css" rel="stylesheet" />
+    <link href="plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
     <style type="text/css">
         html,
         body {
@@ -38,44 +38,56 @@
 </head>
 
 <body>
-    <div>
-        <label for="selectPosicion">Selector de posición del plugin</label>
-        <select name="position" id="selectPosicion">
-            <option value="TL" selected="selected">Arriba Izquierda (TL)</option>
-            <option value="TR">Arriba Derecha (TR)</option>
-            <option value="BR">Abajo Derecha (BR)</option>
-            <option value="BL">Abajo Izquierda (BL)</option>
-        </select>
-        <label for="selectCollapsed">Selector de collapsed</label>
-        <select name="collapsed" id="selectCollapsed">
-            <option value=""></option>
-            <option value="true" selected="selected">true</option>
-            <option value="false">false</option>
-        </select>
-        <label for="selectCollapsible">Selector de collapsible</label>
-        <select name="collapsible" id="selectCollapsible">
-            <option value=""></option>
-            <option value="true" selected="selected">true</option>
-            <option value="false">false</option>
-        </select>
-        <label for="inputTooltip">Parámetro tooltip</label>
-        <input type="text" id="inputTooltip" value="Gestor de estilos" />
-        <label for="selectLayer">Selector de capa</label>
-        <select name="layer" id="selectLayer">
-            <option value="" selected="selected"></option>
-            <option value="points">points</option>
-            <option value="polygons">polygons</option>
-            <option value="allgeoms">allgeoms</option>
-        </select>
-        <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar" />
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form" style="max-height: 8rem;">
+            <div>
+                <label for="selectPosicion" title="Posición del plugin en el mapa">Posición del panel "position"</label>
+                <select name="position" id="selectPosicion">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsed" title="Indica si el panel del plugin aparece colapsado al cargarse">Panel colapsado "collapsed"</label>
+                <select name="collapsed" id="selectCollapsed">
+                    <option value=''></option>
+                    <option value="true" selected="selected">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder" title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden en la posición asignada "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Título ilustrativo que aporta información adicional">Información de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
+                <datalist id="tooltipSug">
+                    <option value="Gestor de estilos"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="selectLayer" title="Capa pre seleccionada que se cargará en el plugin. Debe de estar definida en el mapa. Por defecto ninguna">Capa pre seleccionada "layer"</label>
+                <select name="layer" id="selectLayer">
+                    <option value="" selected="selected"></option>
+                    <option value="points">points</option>
+                    <option value="polygons">polygons</option>
+                    <option value="allgeoms">allgeoms</option>
+                </select>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button id="removeButton">Eliminar Plugin</button>
+        </div>
     </div>
     <div id="mapjs" class="m-container"></div>
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
     <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="js/configuration.js"></script>
     <script type="text/javascript" src="plugins/stylemanager/stylemanager.ol.min.js"></script>
-    <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
     <script type="text/javascript" src="plugins/vectors/vectors.ol.min.js"></script>
+    <script type="text/javascript" src="plugins/layerswitcher/layerswitcher.ol.min.js"></script>
     <%
             String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
             for (int i = 0; i < jsfiles.length; i++) {
@@ -94,26 +106,26 @@
             container: 'mapjs',
         });
         const points = new IDEE.layer.WFS({
-            url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows?',
-            namespace: 'sepim',
-            name: 'campamentos',
-            legend: 'Campamentos',
-            geometry: 'POINT',
+            url: 'https://www.ign.es/wfs/redes-geodesicas',
+            name: 'RED_REGENTE',
+            legend: 'RED_REGENTE',
+            geometry: 'MPOINT',
         });
         map.addLayers(points);
 
 
         const polygons = new IDEE.layer.WFS({
-            url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?',
-            namespace: 'tematicos',
-            name: 'Provincias',
-            legend: 'Provincias',
+            url: "https://hcsigc.juntadeandalucia.es/geoserver/wfs?",
+            namespace: "IECA",
+            name: "sigc_provincias_1724753768757",
+            legend: "Provincias",
             geometry: 'MPOLYGON',
         });
         map.addLayers(polygons);
 
         const allgeoms = new IDEE.layer.GeoJSON({
             name: "allgeoms",
+            legend: 'geometrias',
             source: {
                 "type": "FeatureCollection",
                 "features": [{
@@ -210,37 +222,29 @@
         });
         map.addLayers(allgeoms);
 
-        let mp, collapsed, collapsible;
-        crearPlugin();
-        const selectPosicion = document.getElementById("selectPosicion");
-        const selectCollapsed = document.getElementById("selectCollapsed");
-        const selectCollapsible = document.getElementById("selectCollapsible");
-        const inputTooltip = document.getElementById("inputTooltip");
-        const selectLayer = document.getElementById("selectLayer");
-        selectPosicion.addEventListener('change', cambiarTest);
-        selectCollapsed.addEventListener('change', cambiarTest);
-        selectCollapsible.addEventListener('change', cambiarTest);
-        selectLayer.addEventListener('change', cambiarTest);
-        inputTooltip.addEventListener('change', cambiarTest);
+        map.addPlugin(new IDEE.plugin.Layerswitcher({}));
 
-        function cambiarTest() {
-            let objeto = {}
-            objeto.position = selectPosicion.options[selectPosicion.selectedIndex].value;
-            let collapsedValor = selectCollapsed.options[selectCollapsed.selectedIndex].value;
-            collapsed = collapsedValor != "" ? objeto.collapsed = (collapsedValor == "true" || collapsedValor == true) : "true";
-            let collapsibleValor = selectCollapsible.options[selectCollapsible.selectedIndex].value;
-            collapsible = collapsibleValor != "" ? objeto.collapsible = (collapsibleValor == "true" || collapsibleValor == true) : "true";
-            tooltip = inputTooltip.value != "" ? objeto.tooltip = inputTooltip.value : "";
-            objeto.layer = getLayer(selectLayer.options[selectLayer.selectedIndex].value);
-            map.removePlugins(mp);
-            crearPlugin(objeto);
+        let mp = null;
+
+        const selectPosicion = document.getElementById('selectPosicion');
+        const inputOrder = document.getElementById('inputOrder');
+        const inputTooltip = document.getElementById('inputTooltip');
+        const selectCollapsed = document.getElementById('selectCollapsed');
+        const selectLayer = document.getElementById("selectLayer");
+
+        function create(propiedades) {
+            mp = new IDEE.plugin.StyleManager(propiedades);
+            map.addPlugin(mp);
+        }
+
+        function remove() {
+            if (mp) map.removePlugin(mp);
+            mp = null;
         }
 
         function getLayer(name) {
             if (name === 'points') {
                 return points;
-            } else if (name === 'lines') {
-                return lines;
             } else if (name === 'polygons') {
                 return polygons;
             } else if (name === 'allgeoms') {
@@ -250,18 +254,37 @@
             }
         }
 
-        function crearPlugin(propiedades) {
+        function changeTest() {
+            remove();
+            const options = {};
 
-            mp = new IDEE.plugin.StyleManager(propiedades);
-            map.addPlugin(mp);
+            const selectPosition = selectPosicion.options[selectPosicion.selectedIndex].value;
+            if (selectPosition !== '') options.position = selectPosition;
+
+            if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
+
+            if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
+
+            const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
+            if (collapsed !== '') options.collapsed = (collapsed === 'true');
+
+            options.layer = getLayer(selectLayer.options[selectLayer.selectedIndex].value);
+
+            create(options);
         }
-        const botonEliminar = document.getElementById("botonEliminar");
-        botonEliminar.addEventListener("click", function() {
-            map.removePlugins(mp);
-        });
 
-        const vectors = new IDEE.plugin.Vectors({});
-        map.addPlugin(vectors);
+        [
+            selectPosicion,
+            inputOrder,
+            inputTooltip,
+            selectCollapsed,
+            selectLayer,
+        ].forEach((elm) => { elm.addEventListener('change', changeTest); });
+
+        const removeButton = document.getElementById('removeButton');
+        removeButton.addEventListener('click', () => { remove(); });
+
+        changeTest();
     </script>
 </body>
 

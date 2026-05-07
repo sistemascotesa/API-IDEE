@@ -4,35 +4,58 @@
 import OLControlZoom from 'ol/control/Zoom';
 
 /**
+ * @typedef {Object} Options
+ * @property {number} [duration=250] Animation duration in milliseconds.
+ * @property {string} [className='ol-zoom'] CSS class name.
+ * @property {string} [zoomInClassName=className + '-in'] CSS class name for the zoom-in button.
+ * @property {string} [zoomOutClassName=className + '-out'] CSS class name for the zoom-out button.
+ * @property {string|HTMLElement} [zoomInLabel='+'] Text label to use for the zoom-in
+ * button. Instead of text, also an element (e.g. a `span` element) can be used.
+ * @property {string|HTMLElement} [zoomOutLabel='–'] Text label to use for the zoom-out button.
+ * Instead of text, also an element (e.g. a `span` element) can be used.
+ * @property {string} [zoomInTipLabel='Zoom in'] Text label to use for the button tip.
+ * @property {string} [zoomOutTipLabel='Zoom out'] Text label to use for the button tip.
+ * @property {number} [delta=1] The zoom delta applied on each click.
+ * @property {HTMLElement|string} [target] Specify a target if you want the control to be
+ * rendered outside of the map's viewport.
+ */
+
+/**
  * @classdesc
- * Agregue los botones '+' y '-' para acercar y alejar el mapa.
+ * Control de Zoom (Panzoom) que extiende
+ * {@link https://openlayers.org/en/latest/apidoc/module-ol_control_Zoom-Zoom.html|ol.control.Zoom}.
+ * Proporciona botones para acercar y alejar el mapa.
+ * @example
+ * const control = new IDEE.impl.ol.control.Panzoom({
+ *   className: 'ol-zoom',
+ *   zoomInLabel: 'más zoom'
+ * });
+ *
  * @api
+ * @extends {ol.control.Zoom}
  */
 class Panzoom extends OLControlZoom {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @extends {ol.control.Control}
-   * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base, estas opciones
-   * se pasarán en formato objeto. Opciones disponibles:
-   * - duration: Duración de la animación en milisegundos.
-   * - className: Nombre de la clase CSS.
-   * - zoomInClassName: Nombre de clase de CSS para el botón de acercamiento.
-   * - zoomOutClassName: Nombre de clase de CSS para el botón de alejamiento.
-   * - zoomInLabel: Etiqueta de texto que se usará para el botón de acercamiento.
-   * - zoomOutLabel: Etiqueta de texto que se usará para el botón de alejamiento.
-   * - zoomInTipLabel: Etiqueta de texto que se usará para la sugerencia del botón,
-   * cuando se hace zoom.
-   * - zoomOutTipLabel: Etiqueta de texto que se usará para la sugerencia del botón,
-   * cuando se deshace el zoom.
-   * - delta: El delta de zoom aplicado en cada clic.
-   * - target: Especifique un objetivo si desea que el control se represente
-   * fuera de la ventana gráfica del mapa.
+   * @param {Options} options
    * @api stable
    */
-  constructor(vendorOptions) {
+  constructor(options = {}) {
+    const vendorOptions = { ...options };
+    // eslint-disable-next-line no-prototype-builtins
+    if (vendorOptions.hasOwnProperty('tooltipZoomIn')) {
+      vendorOptions.zoomInTipLabel = vendorOptions.tooltipZoomIn;
+      delete vendorOptions.tooltipZoomIn;
+    }
+    // eslint-disable-next-line no-prototype-builtins
+    if (vendorOptions.hasOwnProperty('tooltipZoomOut')) {
+      vendorOptions.zoomOutTipLabel = vendorOptions.tooltipZoomOut;
+      delete vendorOptions.tooltipZoomIn;
+    }
     super(vendorOptions);
+
     this.facadeMap_ = null;
   }
 
@@ -47,7 +70,21 @@ class Panzoom extends OLControlZoom {
    */
   addTo(map, element) {
     this.facadeMap_ = map;
-    map.getMapImpl().addControl(this);
+    const olMap = map.getMapImpl();
+    super.setMap(olMap); // OL añade el control a su sistema interno.
+    olMap.addControl(this); // OL añade el elemento al DOM en la posición OL por defecto
+  }
+
+  /**
+   * Devuelve la vista de implementación
+   *
+   * @public
+   * @function
+   * @return {HTMLElement} vista de implementación
+   * @api stable
+   */
+  getView() {
+    return this.element;
   }
 
   /**

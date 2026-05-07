@@ -16,6 +16,12 @@
     "help9": "The information relevant to the extension and its possible parameterization is documented in",
     "help10": "The example of use of its parameters can be checked in"
   },
-  "tooltip": "Story Map",
-  "warning": "WARNING"
+  "tooltip": "Storymap",
+  "warning": "WARNING",
+  "instructions": "Navigate by clicking or using your mouse through the chapters and sections on the left to discover all the content.",
+  "play": "Play",
+  "pause": "Pause",
+  "delay": "Playback speed",
+  "chapter": "Chapter",
+  "step": "Step"
 }

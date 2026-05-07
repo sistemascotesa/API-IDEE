@@ -2,6 +2,7 @@
  * @module IDEE/plugin/Comparators
  */
 import '../assets/css/comparators';
+import 'assets/css/fonts';
 import ComparatorsControl from './comparatorscontrol';
 import es from './i18n/es';
 import en from './i18n/en';
@@ -20,27 +21,10 @@ export default class Comparators extends IDEE.Plugin {
    * @api
    */
   constructor(options = {}) {
-    super();
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map_ = null;
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls_ = [];
-
-    /**
-     * Plugin name
-     * @public
-     * @type {String}
-     */
-    this.name = 'comparators';
+    super('comparators', {
+      position: options.position || 'right',
+      tooltip: options.tooltip || getValue('tooltip'),
+    });
 
     /**
      * Plugin parameters
@@ -50,40 +34,11 @@ export default class Comparators extends IDEE.Plugin {
     this.options = options;
 
     /**
-     * Position of the plugin
-     *
-     * @private
-     * @type {String} TL | TR | BL | BR
-     */
-    this.position_ = options.position || 'TL';
-
-    /**
      * Option to allow the plugin to be collapsed or not
      * @private
      * @type {Boolean}
      */
     this.collapsed = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
-
-    /**
-     * Option to allow the plugin to be collapsible or not
-     * @private
-     * @type {Boolean}
-     */
-    this.collapsible = !IDEE.utils.isUndefined(options.collapsible) ? options.collapsible : true;
-
-    /**
-     * Tooltip of plugin
-     * @private
-     * @type {String}
-     */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
-
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
 
     /**
      * Indicates order to the plugin
@@ -117,6 +72,7 @@ export default class Comparators extends IDEE.Plugin {
    * @api
    */
   addTo(map) {
+    this.map = map;
     this.options.listLayers = this.options.listLayers || [];
 
     // Prevent Generic
@@ -127,20 +83,37 @@ export default class Comparators extends IDEE.Plugin {
       return layer.type !== 'GenericRaster' || layer.type !== 'GenericVector';
     });
 
-    this.controls_.push(new ComparatorsControl(this.isDraggable, this.order, this.options, map));
-    this.map_ = map;
-    this.panel_ = new IDEE.ui.Panel('panelComparators', {
-      collapsible: this.collapsible,
-      collapsed: this.collapsed,
-      position: IDEE.ui.position[this.position_],
+    this.button = new IDEE.ui.Button(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_comparator.svg',
+      order: this.order,
+    });
+    map.addButtons(this.button);
+
+    this.panel = new IDEE.ui.Panel(this.name, {
+      tooltip: this.tooltip,
+      position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
       className: 'm-plugin-comparators',
-      tooltip: this.tooltip_,
+      collapsed: this.collapsed,
       collapsedButtonClass: 'comparators-icon-zoom-mapa',
       order: this.order,
     });
 
-    this.panel_.addControls(this.controls_);
-    map.addPanels(this.panel_);
+    this.controls.push(new ComparatorsControl({
+      map: this.map,
+      order: this.order,
+      options: this.options,
+    }));
+
+    this.panel.addControls(this.controls);
+
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
+
+    map.addPanels(this.panel);
   }
 
   /**
@@ -151,7 +124,7 @@ export default class Comparators extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position_}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.isDraggable}*${this.options.listLayers}*${this.options.defaultCompareMode}*${this.options.enabledKeyFunctions}*${!!this.options.transparencyParams}*${!!this.options.lyrcompareParams}*${!!this.options.mirrorpanelParams}*${!!this.options.windowsyncParams}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${this.options.listLayers}*${this.options.defaultCompareMode}*${this.options.enabledKeyFunctions}*${!!this.options.transparencyParams}*${!!this.options.lyrcompareParams}*${!!this.options.mirrorpanelParams}*${!!this.options.windowsyncParams}`;
   }
 
   /**
@@ -173,19 +146,20 @@ export default class Comparators extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.controls_[0].deactivate();
-    this.controls_[0].controls = [];
-    this.map_.removeControls(this.controls_);
+    this.controls[0].deactivate();
+    this.controls[0].controls = [];
+    this.map.removeControls(this.controls);
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
 
-    this.map_ = null;
+    this.map = null;
     this.panel_ = null;
     this.name = null;
     this.options = null;
-    this.position_ = null;
+    this.controls = null;
     this.collapsed = null;
     this.collapsible = null;
-    this.tooltip_ = null;
-    this.isDraggable = null;
+    this.tooltip = null;
     this.order = null;
   }
 

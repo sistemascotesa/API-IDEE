@@ -4,94 +4,141 @@
 import 'assets/css/controls/attributions';
 import attributionsTemplate from 'templates/attributions';
 import myhelp from 'templates/attributionshelp';
+import * as EventType from 'IDEE/event/eventtype';
 import AttributionsImpl from 'impl/control/Attributions';
-import ControlBase from './Control';
+import Control from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
 import { getValue } from '../i18n/language';
 import { INTERSECT } from '../filter/Module';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isBoolean,
+} from '../util/Utils';
 import Feature from '../feature/Feature';
 import GeoJSON from '../layer/GeoJSON';
 import KML from '../layer/KML';
 import { LAYER_VISIBILITY_CHANGE, ADDED_LAYER } from '../event/eventtype';
 import Exception from '../exception/exception';
+import * as Position from '../ui/position';
+
+/**
+ * @typedef {Object} module:IDEE/control/Attributions~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {String} [title] Título del control.
+ * @property {Boolean} [collapsible] Indica si el control es colapsable.
+ * (usada por ControlPanel)
+ * @property {Boolean} [collapsed] Indica si el control está colapsado.
+ * (usada por ControlPanel)
+ * @property {Number} [order] Accesibilidad, tabIndex.
+ * @property {String} [urlAttribute] Texto de la url.
+ * @property {String} [url] URL del fichero de atribuciones.
+ * @property {String} [type] Tipo de fichero de atribuciones, geojson o kml.
+ * @property {String} [layerName] Nombre de la capa de atribuciones.
+ * @property {Object} [layer] Capa de atribuciones.
+ * @property {Number} [scale] Escala de visualización de la capa de atribuciones.
+ * @property {String} [attributionParam] Parámetro de las features que contiene la
+ * atribución.
+ * @property {String} [urlParam] Parámetro de las features que contiene la url.
+ * @property {String} [defaultAttribution] Atribución por defecto.
+ * @property {String} [defaultURL] URL por defecto.
+ * @property {Array.<String>} [collectionsAttributions] Colección de atribuciones.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
+ */
 
 /**
  * @classdesc
  * Panel de atribuciones API-CING.
- * @property {Number} scale_ Escala de visualización de la capa de atribuciones.
- * @property {String} tooltip_ Texto del tooltip.
- * @property {String} position Posición del control.
- * @property {Number} order Accesibilidad, tabIndex.
- * @property {String} url_ URL del fichero de atribuciones.
- * @property {Object} collectionsAttributions Colección de atribuciones.
- * @property {Boolean} closePanel Panel cerrado o abierto.
- * @property {String} urlAttribute Texto de la url.
- * @property {String} type geojson o kml, dependiendo de la url.
- * @property {Number} scale Define cuando cambiara la atribución.
- * @property {String} defaultAttribution Atribución por defecto.
- * @property {String} defaultURL URL por defecto.
- * @property {Number} order Accesibilidad, z-index.
+ * @property {String} [position='left'] Posición del control.
+ * @property {String} [tooltip] Texto del tooltip. por defecto la traducción.
+ * @property {String} [title] Texto del título.
+ * @property {Boolean} [collapsible=true] Indica si el control es colapsable.
+ * @property {Boolean} [collapsed=false] Indica si el control está colapsado.
+ * @property {Number} [order=0] Accesibilidad, z-index.
+ * @property {String} [urlAttribute='url'] Texto de la url.
+ * @property {String} [url_] URL del fichero de atribuciones.
+ * @property {String} [type_='kml'] geojson o kml, dependiendo de la url.
+ * @property {String} [layerName_='attributions'] Nombre de la capa de atribuciones.
+ * @property {Object} [layer_] Capa de atribuciones.
+ * @property {Number} [scale_=10000] Define cuando cambiara la atribución.
+ * @property {String} [urlParam_] Parámetro de las features que contiene la url.
+ * @property {String} [attributionParam_] Parámetro de las features que contiene la
+ * atribución.
+ * @property {String} [defaultAttribution_='Instituto Geográfico Nacional'] Atribución por defecto.
+ * @property {String} [defaultURL_='https://www.ign.es/'] URL por defecto.
+ * @property {Array.<String>} [collectionsAttributions_=[]] Colección de atribuciones,
+ * se especificarán como una colección de textos.
+ *
+ * @extends {IDEE.Control}
  * @api
  */
-class Attributions extends ControlBase {
+class Attributions extends Control {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Number} scale_ Escala de visualización de la capa de atribuciones.
-   * @param {String} tooltip Texto del tooltip.
-   * @param {String} position Posición del control.
-   * @param {Number} order Accesibilidad, tabIndex.
-   * @param {String} url URL del fichero de atribuciones.
-   * @param {Object} collectionsAttributions Colección de atribuciones.
-   * @param {Boolean} closePanel Panel cerrado o abierto.
-   * @param {String} urlAttribute Texto de la url.
-   * @param {String} type geojson o kml, dependiendo de la url.
-   * @param {Number} scale Define cuando cambiara la atribución.
-   * @param {String} defaultAttribution Atribución por defecto.
-   * @param {String} defaultURL URL por defecto.
-   * @param {Number} order Accesibilidad, z-index.
+   * @param {module:IDEE/control/Attributions~Options} options Opciones de configuración
+   * del control.
    * @api
+   *
+   * @example
+   * const control = new IDEE.control.Attributions({
+   *   position: 'left',
+   *   tooltip: 'Reconocimientos de la capa',
+   *   order: 2,
+   *   collapsible: false,
+   * });
    */
   constructor(options = {}) {
     if (isUndefined(AttributionsImpl) || (isObject(AttributionsImpl)
       && isNullOrEmpty(Object.keys(AttributionsImpl)))) {
       Exception(getValue('exception').attributions_method);
     }
+    const impl = new AttributionsImpl(options.vendorOptions ?? {});
+    super(Attributions.NAME, impl, options);
 
-    const impl = new AttributionsImpl();
-    super(Attributions.NAME, impl);
+    this.position = options.position ?? Position.LEFT;
 
-    this.position = options.position;
-    this.closePanel = options.closePanel;
-    this.urlAttribute = options.urlAttribute || 'Gobierno de España';
-    this.options = options;
+    this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
 
-    this.url_ = options.url || `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`;
-    this.type_ = options.type || 'kml';
-    this.layerName_ = options.layerName || 'attributions';
+    this.collapsed = isBoolean(options.collapsed) ? options.collapsed : this.collapsible;
+
+    this.urlAttribute = options.urlAttribute ?? 'Gobierno de España';
+
+    this.url_ = options.url ?? `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`;
+
+    this.type_ = options.type ?? 'kml';
+
+    this.layerName_ = options.layerName ?? 'attributions';
+
     this.layer_ = options.layer;
-    this.scale_ = Number.parseInt(options.scale, 10) || 10000;
-    this.attributionParam_ = options.attributionParam || 'atribucion';
-    this.urlParam_ = options.urlParam || 'url';
-    this.defaultAttribution_ = options.defaultAttribution || 'Instituto Geogr&aacute;fico Nacional';
-    this.defaultURL_ = options.defaultURL || 'https://www.ign.es/';
-    this.tooltip_ = options.tooltip || getValue('attributionsControl').tooltip;
-    this.collectionsAttributions_ = options.collectionsAttributions || [];
 
-    this.collectionsAttributions_ = this.collectionsAttributions_.map((attr) => {
+    this.scale_ = Number.parseInt(options.scale, 10) ?? 10000;
+
+    this.attributionParam_ = options.attributionParam ?? 'atribucion';
+
+    this.urlParam_ = options.urlParam ?? 'url';
+
+    this.defaultAttribution_ = options.defaultAttribution ?? 'Instituto Geogr&aacute;fico Nacional';
+
+    this.defaultURL_ = options.defaultURL ?? 'https://www.ign.es/';
+
+    this.tooltip = options.tooltip ?? this.translation.title;
+
+    this.title = options.title ?? this.tooltip;
+
+    this.collectionsAttributions_ = (options.collectionsAttributions ?? []).map((attr) => {
       if (typeof attr === 'string') {
         return this.transformString(attr);
       }
       return attr;
     });
 
-    /**
-     * Order: Orden que tendrá con respecto al
-     * resto de plugins y controles por pantalla.
-     */
-    this.order = options.order;
+    this.on(EventType.ADDED_TO_MAP, this.onAddedToMap.bind(this));
+  }
+
+  onAddedToMap() {
+    this.map.controlAttributions = this;
   }
 
   transformString(attrString) {
@@ -129,11 +176,19 @@ class Attributions extends ControlBase {
         vars: {
           collapsible: window.innerWidth < 769,
           order: this.order,
+          title: this.title,
+          tooltip: this.tooltip,
         },
       });
 
-      html.querySelector('#close-button').addEventListener('click', () => this.closePanel());
       this.html_ = html;
+
+      setTimeout(() => {
+        const panel = this.getPanel();
+        if (panel && panel.getButtonPanel()) {
+          panel.getButtonPanel().setAttribute('title', this.tooltip);
+        }
+      }, 0);
 
       this.initMode();
 
@@ -142,15 +197,27 @@ class Attributions extends ControlBase {
       });
 
       this.accessibilityTab(html);
+      // this.map_.getLayers().forEach((layer) => {
+      //   if (layer.attribution) {
+      //     if (typeof layer.attribution === 'string') {
+      //       this.addHTMLContent(layer.attribution, layer.id);
+      //     } else {
+      //       this.addAttributions(layer.attribution);
+      //     }
+
+      //     this.changeVisibility(layer.id, layer.isVisible());
+      //   }
+      // });
+
       this.map_.getLayers().forEach((layer) => {
         if (layer.attribution) {
-          if (typeof layer.attribution === 'string') {
-            this.addHTMLContent(layer.attribution, layer.id);
-          } else {
-            this.addAttributions(layer.attribution);
-          }
+          const attribution = layer.attribution;
+          const attrObj = typeof attribution === 'string'
+            ? { attribuccion: attribution, id: layer.idLayer ?? layer.id }
+            : attribution;
 
-          this.changeVisibility(layer.id, layer.isVisible());
+          this.addAttributions(attrObj);
+          this.changeVisibility(layer.idLayer ?? layer.id, layer.isVisible());
         }
       });
       success(html);
@@ -158,8 +225,12 @@ class Attributions extends ControlBase {
   }
 
   changeVisibility(idLayer, isVisible) {
-    this.html_.querySelector(`#${idLayer}`)
-      .style.display = isVisible ? 'block' : 'none';
+    if (idLayer) {
+      const layerElm = this.html_.querySelector(`#${idLayer}`);
+      if (layerElm && layerElm.style) {
+        this.html_.querySelector(`#${idLayer}`).style.display = isVisible ? 'block' : 'none';
+      }
+    }
   }
 
   /**
@@ -231,6 +302,11 @@ class Attributions extends ControlBase {
 
       if (/<[a-z][\s\S]*>/i.test(layer.attribuccion)) {
         this.addHTMLContent(layer.attribuccion, layer.id);
+        this.map_.getLayers().forEach((mapLayer) => {
+          if (mapLayer.idLayer === layer.id) {
+            this.changeVisibility(mapLayer.idLayer, mapLayer.isVisible());
+          }
+        });
         return;
       }
 
@@ -241,7 +317,7 @@ class Attributions extends ControlBase {
       let mapAttributions = [];
       let defaultMapAttributions = false;
 
-      if (this.checkDefaultAttribution(layer) && isNullOrEmpty(layer.name)) {
+      if (this.checkDefaultAttribution(layer)) {
         defaultMapAttributions = this.defaultAttribution(layer, zoom, mapAttributions);
       }
 
@@ -426,7 +502,8 @@ class Attributions extends ControlBase {
    * @api
    */
   addAttributions(attribuccionParams) {
-    if (this.collectionsAttributions_.some(({ id }) => attribuccionParams === id)) {
+    if (this.collectionsAttributions_.some(({ id }) => attribuccionParams === id
+      || id === attribuccionParams.id)) {
       return;
     }
 
@@ -444,15 +521,6 @@ class Attributions extends ControlBase {
       const { id, contentType, contentAttributions } = attribuccionParams;
       this.createVectorLayer(id, contentAttributions, contentType);
     }
-  }
-
-  /**
-   * Este método elimina el panel.
-   * @function
-   * @public
-   */
-  closePanel() {
-    this.getPanel().collapse();
   }
 
   /**
@@ -481,24 +549,6 @@ class Attributions extends ControlBase {
   }
 
   /**
-   * Este método cierra el panel si la pantalla es pequeña.
-   * @function
-   * @public
-   * @param {Event} e Evento.
-   */
-  setCollapsiblePanel(e) {
-    if (this.getPanel() && this.getPanel().getTemplatePanel()) {
-      if (e.target.innerWidth < 769) {
-        this.getPanel().getTemplatePanel().classList.remove('no-collapsible');
-        this.closePanel();
-      } else {
-        this.getPanel().getTemplatePanel().classList.add('no-collapsible');
-        this.getPanel().getTemplatePanel().classList.remove('collapsed');
-      }
-    }
-  }
-
-  /**
    * Optione las attribuciones de las capas cargadas
    * @function
    * @public
@@ -518,6 +568,11 @@ class Attributions extends ControlBase {
    */
   onMoveEnd(callback) {
     this.impl_.registerEvent('moveend', this.map_, (e) => callback(e));
+    // if (this.impl_ && typeof this.impl_.registerEvent === 'function') {
+    //   this.impl_.registerEvent('moveend', this.map_, (e) => callback(e));
+    // } else {
+    //   console.log('FALLÓ onMoveEnd');
+    // }
   }
 
   /**
@@ -528,13 +583,13 @@ class Attributions extends ControlBase {
    * @api
   */
   getHelp() {
-    const textHelp = getValue('attributionsControl').textHelp;
+    const textHelp = this.translation.textHelp;
     return {
       title: Attributions.NAME,
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/controles`,
+            urlImages: `${IDEE.config.STATIC_RESOURCES_URL}facade/assets/images/help/${Attributions.NAME}`,
             translations: {
               help1: textHelp.text1,
               help2: textHelp.text2,
@@ -591,7 +646,9 @@ class Attributions extends ControlBase {
    * @api
    */
   destroy() {
-    this.getImpl().destroy();
+    super.destroy();
+    this.un(EventType.ADDED_TO_MAP, this.onAddedToMap.bind(this));
+    if (this.map_) this.map_.un(ADDED_LAYER);
   }
 
   /**

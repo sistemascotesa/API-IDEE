@@ -1,18 +1,29 @@
 /***********************
      CONTAINER
 ************************/
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+:root {
+    --font-color: #fff;
+    --button-border-color: #fff;
+    --control-font-family: 'Roboto', 'sans-serif';
+    --control-font-style: normal;
+    --control-font-weight: 400;
+    --control-font-stretch: 100%;
+}
+
 .m-api-idee-container {
     position: relative;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    font-family: 'Roboto', 'sans-serif';
+    font-family: var(--control-font-family);
     font-size: 13px;
-    background-image: 
-        linear-gradient(45deg, #D6E8F5 25%, transparent 25%), 
-        linear-gradient(-45deg, #D6E8F5 25%, transparent 25%), 
-        linear-gradient(45deg, transparent 75%, #D6E8F5 75%), 
-        linear-gradient(-45deg, transparent 75%, #D6E8F5 75%);
+    background-image:
+        linear-gradient(45deg, color-mix(in srgb, var(--idee-color-primary) 25%, transparent) 25%, transparent 25%),
+        linear-gradient(-45deg, color-mix(in srgb, var(--idee-color-primary) 25%, transparent) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, color-mix(in srgb, var(--idee-color-primary) 25%, transparent) 75%),
+        linear-gradient(-45deg, transparent 75%, color-mix(in srgb, var(--idee-color-primary) 25%, transparent) 75%);
     background-size: 16px 16px;
     background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
 }
@@ -26,254 +37,560 @@
     z-index: 1;
 }
 
-.m-api-idee-left-panel,
-.m-api-idee-right-panel {
+.m-api-idee-tool-panels-container {
     position: absolute;
-    top: 0;
-    height: 100%;
-    background-color: #fff;
+    inset: 0;
+    display: grid;
+
+    --left-width: 0px;
+    --right-width: 0px;
+    --buttons-width: minmax(3.5rem, max-content);
+    --up-height: 0px;
+    --down-height: minmax(72px, max-content);
+
+    grid-template-columns:
+        var(--left-width) var(--buttons-width) auto var(--buttons-width) var(--right-width);
+
+    grid-template-rows:
+        var(--up-height) minmax(0, 1fr) var(--down-height);
+
+    grid-template-areas:
+        "up               up           up      up           up"
+        "leftPluginPanel  leftBtns     center  rightBtns    rightPluginPanel"
+        "leftPluginPanel  down         down    down         rightPluginPanel";
+
+    transition:
+        grid-template-columns .4s ease,
+        grid-template-rows .4s ease;
+}
+
+.m-api-idee-tool-panels-container.is-resizing {
+    transition: none !important;
+}
+
+.m-api-idee-left-panel,
+.m-api-idee-right-panel,
+.m-api-idee-up-panel {
+    position: relative;
     z-index: 3;
+    background-color: #fff;
+    display: flex;
+}
+
+.m-api-idee-up-panel {
+    grid-area: up;
 }
 
 .m-api-idee-left-panel {
-    left: 0;
-    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.3);
+    grid-area: leftPluginPanel;
 }
 
 .m-api-idee-right-panel {
+    grid-area: rightPluginPanel;
+}
+
+/*** CONTENEDORES LATERALES DEL MAPA DE FACHADA ***/
+.m-api-idee-left-buttons,
+.m-api-idee-right-buttons {
+    position: relative;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: .5em;
+    gap: .5em;
+    flex-wrap: wrap;
+}
+
+.m-api-idee-center-panel {
+    grid-area: center;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: .5em;
+    transition: all 0.3s ease;
+    padding: .5em 0;
+}
+
+/*** CONTENEDOR DERECHO ***/
+.m-api-idee-right-buttons {
+    grid-area: rightBtns;
+    align-items: flex-end;
+}
+
+.m-api-idee-right-buttons .m-panel.opened {
+    flex-direction: row;
+    justify-content: flex-end;
+    position: relative;
+}
+
+.m-api-idee-right-buttons .m-panel.opened>button.m-panel-btn {
+    position: absolute;
     right: 0;
-    box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3);
+    left: auto;
+    float: none;
+}
+
+.m-api-idee-right-buttons .m-panel {
+    flex-direction: row-reverse !important;
+}
+
+/*** CONTENEDOR IZQUIERDO ***/
+.m-api-idee-left-buttons {
+    grid-area: leftBtns;
+    align-items: flex-start;
+}
+
+.m-api-idee-left-buttons .m-panel.opened {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    position: relative;
+}
+
+.m-api-idee-left-buttons .m-panel.opened>button.m-panel-btn {
+    float: none;
+}
+
+.m-api-idee-center-panel-top-left {
+    grid-column: 1;
+    grid-row: 1;
+    position: relative;
+}
+
+.m-api-idee-center-panel-top-right {
+    grid-column: 2;
+    grid-row: 1;
+    position: relative;
+}
+
+.m-api-idee-center-panel-bottom-left {
+    grid-column: 1;
+    grid-row: 2;
+    position: relative;
+}
+
+.m-api-idee-center-panel-bottom-right {
+    grid-column: 2;
+    grid-row: 2;
+    position: relative;
+}
+
+.m-api-idee-center-panel-top-left,
+.m-api-idee-center-panel-bottom-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 0.5em;
+}
+
+.m-api-idee-center-panel-top-right,
+.m-api-idee-center-panel-bottom-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 0.5em;
+}
+
+.m-api-idee-center-panel-bottom-left,
+.m-api-idee-center-panel-bottom-right {
+    justify-content: flex-end;
+}
+
+/* Permitir que los controles no se encojan si hay muchos */
+.m-api-idee-center-panel>div>* {
+    flex-shrink: 0;
+}
+
+.m-api-idee-left-handle,
+.m-api-idee-right-handle,
+.m-api-idee-up-handle {
+    position: absolute;
+    background-color: white;
+    border: 1px solid var(--idee-color-primary);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    z-index: 4;
+    box-shadow: 5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
+}
+
+.m-api-idee-left-handle::before,
+.m-api-idee-right-handle::before,
+.m-api-idee-up-handle::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: calc(50% - .5rem);
+    left: calc(50% - .5rem);
+    width: 1rem;
+    aspect-ratio: 1;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_flexChevron.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_flexChevron.svg');
+}
+
+.m-api-idee-up-handle {
+    cursor: n-resize;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3rem;
+    height: 1rem;
+}
+
+.m-api-idee-up-handle::before {
+    transform: rotate(90deg);
 }
 
 .m-api-idee-left-handle,
 .m-api-idee-right-handle {
-    position: absolute;
-    top: 50%;
-    width: 16px;
-    height: 48px;
     cursor: ew-resize;
-    background-color: white;
-    border: 1px solid #71A7D3;
-    border-radius: 4px;
+    top: 50%;
+    width: 1rem;
+    height: 3rem;
     transform: translateY(-50%);
+}
+
+.m-api-idee-up-handle:hover,
+.m-api-idee-left-handle:hover,
+.m-api-idee-right-handle:hover {
+    background-color: var(--idee-color-links);
     transition: all 0.3s ease;
-    z-index: 4;
 }
 
 .m-api-idee-left-handle {
-    right: -8px;
-    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.3);
+    right: -10px;
 }
 
 .m-api-idee-right-handle {
-    left: -8px;
-    box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3);
+    left: -10px;
 }
 
-.m-api-idee-left-handle:hover,
-.m-api-idee-right-handle:hover {
-    background-color: #1470db;
-    transition: all 0.3s ease;
+.m-api-idee-down-panel {
+    position: relative;
+    grid-area: down;
+    padding: .5em;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 0.5em;
 }
 
 .m-plugin-panel {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
     height: 100%;
+    width: 100%;
+    z-index: 0;
 }
 
 .m-plugin-panel-title {
     padding: 16px;
     font-size: 18px;
-    font-weight: bold;
-    color: #1d5a9e;
-    white-space: nowrap;
+    font-family: 'Roboto';
+    font-weight: 500;
+    color: var(--idee-color-primary-dark);
+    white-space: normal;
     word-break: break-word;
     text-overflow: ellipsis;
+    height: 1.5rem;
+    width: fit-content;
 }
 
 .m-plugin-panel-content {
-    height: 100%;
-    padding: 0 16px;
+    flex-grow: 1;
+    margin: 0 .5rem .5rem;
     overflow-y: auto;
+    padding: 0 .25rem;
 }
 
-button {
-    height: 32px;
-    color: white;
-    background-color: #71a7d3;
-    border: 2px solid #71a7d3;
-    border-radius: 4px;   
-    cursor: pointer;
-    font-family: 'Roboto', 'sans-serif';
-    font-size: 14px;
-    transition: all 0.3s ease;
-}
+@layer base {
 
-button:hover {
-    color: #fff;
-    background-color: #1470db;
-    border: 2px solid #1470db;
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button,
+    .m-api-idee-container button {
+        height: 32px;
+        color: var(--font-color);
+        background-color: var(--idee-color-primary);
+        border: 2px solid var(--idee-color-primary);
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: var(--control-font-family);
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
 
-button:disabled {
-    color: #c5c5c5;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button::-moz-focus-inner,
+    .m-api-idee-container button::-moz-focus-inner {
+        border: 0;
+    }
 
-button:disabled:hover {
-    color: #c5c5c5;
-    cursor: default;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button.activated:not(:disabled),
+    .m-api-idee-container button.activated:not(:disabled),
+    html:has(>body>.m-api-idee-test-form-frame) button:not(:disabled):hover,
+    .m-api-idee-container button:not(:disabled):hover {
+        color: var(--font-color);
+        background-color: var(--idee-color-links);
+        border: 2px solid var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
 
-button.secondary {
-    height: 32px;
-    color: #71a7d3;
-    background-color: #FFFFFF;
-    border: 1px solid #71a7d3;
-    border-radius: 4px;   
-    cursor: pointer;
-    font-family: 'Roboto', 'sans-serif';
-    font-size: 14px;
-    transition: all 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button:disabled,
+    .m-api-idee-container button:disabled {
+        cursor: default;
+        background-color: var(--idee-color-neutral-10);
+        border-color: var(--idee-color-neutral-40);
+        color: var(--idee-color-neutral-40);
+    }
 
-button.secondary:hover {
-    color: #1470db;
-    background-color: #f1f3f5;
-    border: 1px solid #1470db;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button.secondary,
+    .m-api-idee-container button.secondary {
+        height: 32px;
+        color: var(--idee-color-primary-dark);
+        background-color: var(--idee-color-neutral-20);
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
 
-button.secondary:disabled {
-    color: #c5c5c5;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button.secondary:hover,
+    .m-api-idee-container button.secondary:hover {
+        color: var(--idee-color-white);
+        background-color: var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
 
-button.secondary:disabled:hover {
-    color: #c5c5c5;
-    cursor: default;
-}
+    html:has(>body>.m-api-idee-test-form-frame) button.secondary:disabled,
+    .m-api-idee-container button.secondary:disabled {
+        color: var(--idee-color-neutral-40);
+    }
 
-input[type="text"],
-input[type="number"],
-input[type="email"],
-input[type="color"],
-textarea {
-    margin: 4px;
-    padding: 4px;
-    height: 40px;
-    background-color: transparent;
-    cursor: auto;
-    border-radius: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    box-sizing: border-box;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    color: #6C6C6C;
-    font-family: 'Roboto', 'sans-serif';
-    font-size: 16px;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="text"],
+    .m-api-idee-container input[type="text"],
+    html:has(>body>.m-api-idee-test-form-frame) input[type="number"],
+    .m-api-idee-container input[type="number"],
+    html:has(>body>.m-api-idee-test-form-frame) input[type="email"],
+    .m-api-idee-container input[type="email"],
+    html:has(>body>.m-api-idee-test-form-frame) input[type="color"],
+    .m-api-idee-container input[type="color"],
+    html:has(>body>.m-api-idee-test-form-frame) textarea,
+    .m-api-idee-container textarea {
+        margin: 4px;
+        padding: 4px;
+        height: 32px;
+        background-color: transparent;
+        cursor: auto;
+        border-radius: 4px;
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        box-sizing: border-box;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        color: #6C6C6C;
+        font-family: var(--control-font-family);
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
 
-input[type="text"]:hover,
-input[type="number"]:hover,
-input[type="email"]:hover,
-input[type="color"]:hover,
-textarea:hover {
-    border: 1px solid #1470db;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="color"],
+    .m-api-idee-container input[type="color"] {
+        cursor: pointer;
+    }
 
-input[type="text"]:focus,
-input[type="number"]:focus,
-input[type="email"]:focus,
-input[type="color"]:focus,
-textarea:focus {
-    outline: none;
-    border: 1px solid #1d5a9e;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="text"]:hover,
+    .m-api-idee-container input[type="text"]:hover,
+    html:has(>body>.m-api-idee-test-form-frame) input[type="number"]:hover,
+    .m-api-idee-container input[type="number"]:hover,
+    html:has(>body>.m-api-idee-test-form-frame) input[type="email"]:hover,
+    .m-api-idee-container input[type="email"]:hover,
+    html:has(>body>.m-api-idee-test-form-frame) input[type="color"]:hover,
+    .m-api-idee-container input[type="color"]:hover,
+    html:has(>body>.m-api-idee-test-form-frame) textarea:hover,
+    .m-api-idee-container textarea:hover {
+        border: 1px solid var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
 
-input[type="checkbox"] {
-    cursor: pointer;
-    color: #6c6c6c;
-    transform: scale(1.5);
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="text"]:focus,
+    .m-api-idee-container input[type="text"]:focus,
+    html:has(>body>.m-api-idee-test-form-frame) input[type="number"]:focus,
+    .m-api-idee-container input[type="number"]:focus,
+    html:has(>body>.m-api-idee-test-form-frame) input[type="email"]:focus,
+    .m-api-idee-container input[type="email"]:focus,
+    html:has(>body>.m-api-idee-test-form-frame) input[type="color"]:focus,
+    .m-api-idee-container input[type="color"]:focus,
+    html:has(>body>.m-api-idee-test-form-frame) textarea:focus,
+    .m-api-idee-container textarea:focus {
+        outline: none;
+        border: 1px solid var(--idee-color-primary-dark);
+    }
 
-input[type="checkbox"]:hover {
-    color: #1470db
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="checkbox"],
+    .m-api-idee-container input[type="checkbox"] {
+        cursor: pointer;
+        accent-color: var(--idee-color-links);
+        border-color: var(--idee-color-neutral-50);
+        transform: scale(1.5);
+        transition: all 0.3s ease;
+    }
 
-input[type="checkbox"]:focus {
-    color: #1d5a9e;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="checkbox"]:hover,
+    .m-api-idee-container input[type="checkbox"]:hover {
+        border-color: var(--idee-color-white);
+        accent-color: var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
 
-input[type="radio"] {
-    border-color: #6c6c6c;
-    appearance: none;
-    -webkit-appearance: none;
-    content: "";
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    transform: scale(1);
-    background-color: white;
-    vertical-align: middle;
-    margin: 0px;
-    border: 1px solid #6c6c6c;
-    cursor: pointer;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="radio"],
+    .m-api-idee-container input[type="radio"] {
+        appearance: none;
+        -webkit-appearance: none;
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        transform: scale(1);
+        background-color: var(--idee-color-white);
+        vertical-align: middle;
+        margin: 0px;
+        border: 1px solid var(--idee-color-neutral-50);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
 
-input[type="radio"]::after {
-  content: "";
-  width: 8px;
-  height: 8px;
-  background-color: #1d5a9eFF;
-  border-radius: 50%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: scale(0) translate(-50%, -50%);
-  transform-origin: 0px 0px;
-  transition: transform 0.3s ease;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]::after,
+    .m-api-idee-container input[type="radio"]::after {
+        content: "";
+        width: 8px;
+        height: 8px;
+        background-color: var(--idee-color-links);
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: scale(0) translate(-50%, -50%);
+        transform-origin: 0px 0px;
+        transition: transform 0.3s ease;
+    }
 
-input[type="radio"]:checked {
-  border-color: #1d5a9eFF;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]:checked,
+    .m-api-idee-container input[type="radio"]:checked {
+        border-color: var(--idee-color-links);
+    }
 
-input[type="radio"]:checked::after {
-  transform: scale(1) translate(-50%, -50%);
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]:checked::after,
+    .m-api-idee-container input[type="radio"]:checked::after {
+        transform: scale(1) translate(-50%, -50%);
+    }
 
-input[type="radio"]:hover {
-    border-color: #1470db;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]:hover,
+    .m-api-idee-container input[type="radio"]:hover {
+        border-color: var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
 
-input[type="radio"]:hover + label {
-    color: #1470db;
-    cursor: pointer;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="radio"]:hover+label,
+    .m-api-idee-container input[type="radio"]:hover+label {
+        color: var(--idee-color-links);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
 
-select {
-    cursor: pointer;
-    border-radius: 4px;
-    background: #e9ecef;
-    border: 1px solid #e9ecef;
-    font-family: 'Roboto', 'sans-serif';
-    font-size: 16px;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="range"],
+    .m-api-idee-container input[type="range"] {
+        cursor: pointer;
+        accent-color: var(--idee-color-primary);
+        transition: all 0.3s ease;
+    }
 
-select:hover {
-    border: 1px solid #1470db;
-}
+    html:has(>body>.m-api-idee-test-form-frame) input[type="range"]:hover,
+    .m-api-idee-container input[type="range"]:hover {
+        accent-color: var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
 
+    html:has(>body>.m-api-idee-test-form-frame) input[type="range"]:focus,
+    .m-api-idee-container input[type="range"]:focus {
+        outline: none;
+    }
 
-select:focus {
-    outline: none;
-    border: 1px solid #1d5a9e;
-}
+    html:has(>body>.m-api-idee-test-form-frame) select,
+    .m-api-idee-container select {
+        cursor: pointer;
+        color: #6c6c6c;
+        border-radius: 4px;
+        background: none;
+        border: 1px solid #e9ecef;
+        font-family: var(--control-font-family);
+        font-size: 16px;
+        height: 32px;
+        transition: all 0.3s ease;
+    }
 
-option {
-    font-family: 'Roboto', 'sans-serif';
-    font-size: 16px;
+    html:has(>body>.m-api-idee-test-form-frame) select:hover,
+    .m-api-idee-container select:hover {
+        border: 1px solid var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
+
+    html:has(>body>.m-api-idee-test-form-frame) select:focus,
+    .m-api-idee-container select:focus {
+        outline: none;
+        border: 1px solid var(--idee-color-primary-dark);
+    }
+
+    html:has(>body>.m-api-idee-test-form-frame) option,
+    .m-api-idee-container option {
+        font-family: var(--control-font-family);
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    html:has(>body>.m-api-idee-test-form-frame) a,
+    .m-api-idee-container a {
+        color: var(--idee-color-primary);
+        transition: all 0.3s ease;
+    }
+
+    html:has(>body>.m-api-idee-test-form-frame) a:hover,
+    .m-api-idee-container a:hover {
+        color: var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
+
+    html:has(>body>.m-api-idee-test-form-frame) a:visited,
+    .m-api-idee-container a:visited {
+        color: var(--idee-color-primary);
+        transition: all 0.3s ease;
+    }
+
+    html:has(>body>.m-api-idee-test-form-frame) a:visited:hover,
+    .m-api-idee-container a:visited:hover {
+        color: var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
+
+    .m-api-idee-container .ol-overviewmap>button {
+        opacity: 0.75;
+        -webkit-transition: opacity 0.25s ease 0s;
+        transition: opacity 0.25s ease 0s;
+    }
+
+    .m-api-idee-container .ol-overviewmap>button:hover {
+        opacity: 1 !important;
+    }
 }
 
 /***********************
@@ -281,18 +598,17 @@ option {
 ************************/
 
 .m-control {
-    position: absolute;
     margin: 0;
     padding: 0;
     z-index: 990;
     overflow-y: hidden;
-    background-color: rgba(255, 255, 255, .4);
+    background-color: transparent;
     border-radius: 4px;
     padding: 2px;
 }
 
 .m-control>button {
-    color: #404040;
+    color: var(--font-color);
 }
 
 div.m-control button[class^="g-cartografia-"],
@@ -306,27 +622,22 @@ div.m-control button[class*=" g-cartografia-"] {
     opacity: 0.75;
     -webkit-transition: opacity 0.25s ease 0s;
     transition: opacity 0.25s ease 0s;
-    color: #404040;
     margin: 0;
+    opacity: 1;
 }
 
-.ol-overviewmap>button {
-    opacity: 0.75;
-    -webkit-transition: opacity 0.25s ease 0s;
-    transition: opacity 0.25s ease 0s;
-}
+
 
 div.m-control.activated button[class^="g-cartografia-"],
 div.m-control button[class^="g-cartografia-"]:hover,
-div.m-control button[class*=" g-cartografia-"]:hover,
-.m-areas>div.m-area>div.m-panel>button.m-panel-btn:hover,
-.ol-overviewmap>button:hover {
+div.m-control button[class*=" g-cartografia-"]:hover {
     opacity: 1 !important;
+    background-color: var(--idee-color-links);
 }
 
 div.m-control button[class^="g-cartografia-"]:focus,
 div.m-control button[class*=" g-cartografia-"]:focus,
-.m-areas>div.m-area>div.m-panel>button.m-panel-btn:focus {
+.m-panel>button.m-panel-btn:focus {
     outline: none;
 }
 
@@ -353,7 +664,6 @@ div.m-control button[class*=" g-cartografia-"]:focus,
     display: none;
 }
 
-
 /***********************
      LABEL
 ************************/
@@ -362,14 +672,184 @@ div.m-control button[class*=" g-cartografia-"]:focus,
     white-space: nowrap;
 }
 
+.m-api-idee-container .ol-viewport,
+.m-api-idee-container .ol-overlaycontainer-stopevent {
+    height: inherit !important;
+}
+
+.m-panel.m-layerswitcher.opened {
+    height: calc(100% - 30px);
+}
+
+.m-panel.m-layerswitcher>div.m-panel-controls {
+    height: 100% !important;
+    max-height: 100%;
+}
+
+.m-attribution {
+    left: 3px !important;
+    right: inherit !important;
+    z-index: 999999;
+}
+
+/* IDEE_CONFIG */
+/* INCLUSIÓN TEMA IDEE */
+
+/*** CUSTOM THEME COLORS ***/
+/*** LIGHT BLUE from Navbar: #71A7D3 ***/
+/*** DARK BLUE from Header: #364b5f ***/
+/*** BACKGROUND COLOR : --idee-color-primary ***/
+/*** BACKGROUND COLOR DARK : --idee-color-links ***/
+/*** BACKGROUND COLOR ACTIVE : --idee-color-primary-dark ***/
+
+/* Controls */
+
+/* .m-panel>div.m-panel-controls .m-mouse-position,
+.m-panel.m-geosearch>button.m-panel-btn,
+.m-panel.m-searchstreet>button.m-panel-btn,
+.m-panel.m-searchstreetgeosearch>button.m-panel-btn,
+.m-panel.m-tools>button.m-panel-btn,
+.m-panel.m-edition>button.m-panel-btn,
+.m-panel.m-printer>button.m-panel-btn,
+.m-panel.m-layerswitcher>button.m-panel-btn,
+.m-panel.collapsed>button.m-panel-btn, */
+/* .ol-zoom>button, */
+.m-panel,
+.ol-zoomslider>button.ol-zoomslider-thumb,
+.ol-overviewmap.ol-collapsed,
+.m-scale-container,
+.m-wmcselector-container {
+    background-color: var(--idee-color-primary) !important;
+    opacity: 1;
+}
+
+/* white icons */
+
+/* .m-panel.m-geosearch.collapsed>button.m-panel-btn,
+.m-panel.m-searchstreet.collapsed>button.m-panel-btn,
+.m-panel.m-searchstreetgeosearch.collapsed>button.m-panel-btn,
+.m-panel.m-attributetable.collapsed>button.m-panel-btn,
+.m-panel.m-tools.collapsed>button.m-panel-btn,
+.m-panel.m-edition.collapsed>button.m-panel-btn,
+.m-panel.m-printer.collapsed>button.m-panel-btn,
+.m-panel.m-layerswitcher.collapsed>button.m-panel-btn, */
+.m-control.m-location-container>button,
+.m-geosearch.collapsed>button.m-panel-btn,
+.m-searchstreet.collapsed>button.m-panel-btn,
+.m-searchstreetgeosearch.collapsed>button.m-panel-btn,
+.m-attributetable.collapsed>button.m-panel-btn,
+.m-tools.collapsed>button.m-panel-btn,
+.m-edition.collapsed>button.m-panel-btn,
+.m-printer.collapsed>button.m-panel-btn,
+.m-layerswitcher.collapsed>button.m-panel-btn,
+/* .ol-zoom>button, */
+div.m-control button[class*=" g-cartografia-"],
+div.m-control button[class^=g-cartografia-],
+.ol-overviewmap.ol-collapsed>button,
+.ol-overviewmap>button,
+.m-wmcselector-select,
+.m-wmcselector-container:before,
+.m-mouse-position:before,
+.m-mouse-position,
+.m-scale-container>.m-unit:before,
+.ol-zoomslider>button.ol-zoomslider-thumb,
+.m-scale-container {
+    font-family: var(--control-font-family);
+    color: var(--font-color);
+    background-color: var(--idee-color-primary);
+    border: 2px solid var(--button-border-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    padding: 0;
+}
+
+div.m-control.active button[class*="g-cartografia-"] {
+    background-color: var(--idee-color-primary-dark) !important;
+}
+
+div.m-control.active button[class*="g-cartografia-"]:hover {
+    background-color: var(--idee-color-links) !important;
+}
+
+.m-control.m-location-container>button:hover,
+.m-geosearch.collapsed>button.m-panel-btn:hover,
+.m-searchstreet.collapsed>button.m-panel-btn:hover,
+.m-searchstreetgeosearch.collapsed>button.m-panel-btn:hover,
+.m-attributetable.collapsed>button.m-panel-btn:hover,
+.m-tools.collapsed>button.m-panel-btn:hover,
+.m-edition.collapsed>button.m-panel-btn:hover,
+.m-printer.collapsed>button.m-panel-btn:hover,
+.m-layerswitcher.collapsed>button.m-panel-btn:hover,
+.ol-zoom>button:hover,
+.ol-zoom>button:focus,
+div.m-control button[class*=" g-cartografia-"]:hover,
+div.m-control button[class^=g-cartografia-]:hover,
+.ol-overviewmap.ol-collapsed>button:hover,
+.ol-overviewmap>button:hover,
+.m-wmcselector-select:hover,
+.m-wmcselector-container:before:hover,
+.m-mouse-position:before:hover,
+.m-mouse-position:hover,
+.ol-zoomslider>button.ol-zoomslider-thumb,
+.m-scale-container>.m-unit:before:hover,
+.m-scale-container {
+    background-color: var(--idee-color-links) !important;
+}
+
+/* secondary color */
+
+.m-printer-container>div.button {
+    background-color: var(--idee-color-primary-dark) !important;
+}
+
+/* aditional colors */
+
+.m-panel .title {
+    color: #f1832e !important;
+}
+
+.m-panel.opened {
+    background-color: #fff !important;
+}
+
+.m-wmcselector-select {
+    background-color: transparent !important;
+}
+
+/* corrections */
+
+.m-panel>div.m-panel-controls {
+    border-radius: 0;
+}
+
+.layer .m-title {
+    color: #6c6c6c !important;
+}
+
+.m-popup table {
+    color: #6c6c6c !important;
+}
+
+.m-popup .m-content {
+    min-width: 250px;
+}
+
+.m-panel.m-tools {
+    order: -65;
+}
+
+.m-panel.m-layerswitcher.opened {
+    height: calc(100% - 70px);
+}
+
+.m-panel.m-layerswitcher>div.m-panel-controls {
+    max-width: 33vw;
+}
 
 /***********************
-     INPUTS
+     TEXT
 ************************/
-
-
-/* TEXT */
-
 
 @media only screen and (max-width: 768px) {
     .m-wordbreak {
@@ -377,14 +857,6 @@ div.m-control button[class*=" g-cartografia-"]:focus,
         white-space: none;
     }
 }
-
-
-/* BUTTON */
-
-button::-moz-focus-inner {
-    border: 0;
-}
-
 
 /***********************
      LOADING ANIMATION
@@ -409,187 +881,106 @@ button::-moz-focus-inner {
     }
 }
 
-
-/********************************/
-
-
-/* correcciones tamaño relativo */
-
-
-/*#map {
-	width: 600px !important;
-	height: 500px !important;
-}*/
-
-.ol-viewport,
-.ol-overlaycontainer-stopevent,
-.m-areas,
-.m-area.m-top.m-right {
-    height: inherit !important;
-}
-
-.m-panel.m-layerswitcher.opened {
-    height: calc(100% - 30px);
-}
-
-.m-areas>div.m-area>div.m-panel.m-layerswitcher>div.m-panel-controls {
-    height: 100% !important;
-    max-height: 100%;
-}
-
-.m-attribution {
-    left: 3px !important;
-    right: inherit !important;
-    z-index: 999999;
-}
-
-/* IDEE_CONFIG */
-/* INCLUSIÓN TEMA IDEE */
-
-/*** CUSTOM THEME COLORS ***/
-/*** LIGHT BLUE from Navbar: #71A7D3 ***/
-/*** DARK BLUE from Header: #364b5f ***/
-/*** ORANGE from Links & h2: #f1832e ***/
-
-/* buttons */
-
-.m-areas>div.m-area>div.m-panel.collapsed>button.m-panel-btn,
-.ol-zoom>button,
-.m-areas>div.m-area>div.m-panel,
-.ol-zoomslider>button.ol-zoomslider-thumb,
-.ol-overviewmap.ol-collapsed,
-.m-scale-container,
-.m-wmcselector-container,
-.m-areas>div.m-area>div.m-panel>div.m-panel-controls .m-mouse-position,
-.m-areas>div.m-area>div.m-panel.m-geosearch>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-searchstreet>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-searchstreetgeosearch>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-tools>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-edition>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-printer>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-layerswitcher>button.m-panel-btn {
-    background-color: #71A7D3 !important;
-    opacity: 1;
-}
-
-/* white icons */
-
-.m-areas>div.m-area>div.m-panel.m-geosearch.collapsed>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-searchstreet.collapsed>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-searchstreetgeosearch.collapsed>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-attributetable.collapsed>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-tools.collapsed>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-edition.collapsed>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-printer.collapsed>button.m-panel-btn,
-.m-areas>div.m-area>div.m-panel.m-layerswitcher.collapsed>button.m-panel-btn,
-.ol-zoom>button,
-div.m-control button[class*=" g-cartografia-"],
-div.m-control button[class^=g-cartografia-],
-.ol-overviewmap.ol-collapsed>button,
-.ol-overviewmap>button,
-.m-wmcselector-select,
-.m-wmcselector-container:before,
-.m-mouse-position:before,
-.m-mouse-position,
-.m-scale-container>.m-unit:before,
-.m-scale-container {
-    color: #fff !important;
-}
-
-.m-left .m-panel.opened div.m-control button[class^=g-cartografia-] {
-    color: #364b5f !important;
-    background-color: white !important;
-    opacity: 1;
-}
-
-/* secondary color */
-
-.m-printer-container>div.button {
-    background-color: #364b5f !important;
-}
-
-/* aditional colors */
-
-.m-panel .title {
-    color: #f1832e !important;
-}
-
-.ol-zoomslider>button.ol-zoomslider-thumb {
-    border: 2px solid white;
-}
-
-.m-areas>div.m-area>div.m-panel.opened {
-    background-color: #fff !important;
-}
-
-.m-wmcselector-select,
-.m-areas>div.m-area>div.m-panel.m-scaleline {
-    background-color: transparent !important;
-}
-
-/* corrections */
-
-.m-areas>div.m-area>div.m-panel>div.m-panel-controls {
-    border-radius: 0;
-}
-
-.m-areas>div.m-area>div.m-panel.opened.m-location,
-.m-areas>div.m-area>div.m-panel.opened.m-rotate,
-.m-areas>div.m-area>div.m-panel.opened.m-geosearchbylocation {
-    background-color: #71A7D3 !important;
-}
-
-.layer .m-title {
-    color: #6c6c6c !important;
-}
-
-.m-popup table {
-    color: #6c6c6c !important;
-}
-
-.m-popup .m-content {
-    min-width: 250px;
-}
-
-div.m-control button[class^="g-cartografia-"] {
-    opacity: 1;
-}
-
-.ol-overviewmap:not(.ol-collapsed) button {
-    background-color: #71A7D3 !important;
-}
-
-.m-control.m-getfeatureinfo-container.activated>button#m-getfeatureinfo-button {
-    color: #71A7D3 !important;
-}
-
-.m-control.m-getfeatureinfo-container:not(.activated)>button#m-getfeatureinfo-button {
-    color: #888888 !important;
-}
-
-.m-areas>div.m-area>div.m-panel.m-tools {
-    order: -65;
-}
-
-.m-panel.m-layerswitcher.opened {
-    height: calc(100% - 70px);
-}
-
-.m-areas>div.m-area>div.m-panel.m-layerswitcher>div.m-panel-controls {
-    max-width: 33vw;
-}
-
 @media only screen and (max-width: 768px) {
     .m-popup .m-content {
         width: 100%;
     }
 
-    .m-areas>div.m-area>div.m-panel.m-layerswitcher>div.m-panel-controls {
+    .m-panel.m-layerswitcher>div.m-panel-controls {
         max-width: 100vw;
     }
+}
 
-    .m-areas>div.m-area>div.m-panel.m-layerswitcher button.m-panel-btn.g-cartografia-flecha-derecha {
-        color: #fff;
+/**********************************
+    TEST STYLES /test/dev.html
+***********************************/
+
+html:has(>body>.m-api-idee-test-form-frame),
+body:has(>.m-api-idee-test-form-frame) {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+body>.m-api-idee-test-form-frame {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding: 0.5rem;
+}
+
+body>.m-api-idee-test-form-frame>.m-test-form {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    max-height: 8rem;
+    overflow: auto;
+}
+
+body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(7)) {
+    max-height: 12rem;
+}
+
+body>.m-api-idee-test-form-frame>.m-test-form>div {
+    width: 280px;
+    min-height: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+body>.m-api-idee-test-form-frame>.m-test-form>div>input,
+body>.m-api-idee-test-form-frame>.m-test-form>div>select {
+    border: 1px solid rgb(168, 168, 168);
+    margin: 0;
+    margin-left: .15rem;
+}
+
+@media (max-width: calc(280px * 2 + 0.35rem * 2 + 1rem)) {
+    body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(2)) {
+        flex-direction: row;
     }
 
+    body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(2))>div {
+        width: 100%;
+    }
+
+    body>.m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(2))>.m-test-buttons {
+        justify-content: center;
+        min-width: 180px;
+    }
+}
+
+@media (max-width: calc(280px * 4 + 0.35rem * 4 + 1rem)) {
+    body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(5)) {
+        flex-direction: row;
+    }
+
+    body>.m-api-idee-test-form-frame>.m-test-form:has(> div:nth-child(5))>div {
+        width: 100%;
+    }
+
+    body>.m-api-idee-test-form-frame:has(.m-test-form > div:nth-child(5))>.m-test-buttons {
+        justify-content: center;
+        min-width: 180px;
+    }
+}
+
+body>.m-api-idee-test-form-frame>.m-test-buttons {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+body>.m-api-idee-test-form-frame>.m-test-buttons>.m-test-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 180px;
 }

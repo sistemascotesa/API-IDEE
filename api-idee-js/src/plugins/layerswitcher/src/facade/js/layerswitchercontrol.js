@@ -68,7 +68,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   constructor(options = {}) {
     if (IDEE.utils.isUndefined(LayerswitcherImplControl)
       || (IDEE.utils.isObject(LayerswitcherImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(LayerswitcherImplControl)))) {
+        && IDEE.utils.isNullOrEmpty(Object.keys(LayerswitcherImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
 
@@ -91,9 +91,6 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     // Plantilla del control
     this.template_ = undefined;
-
-    // Determina si el plugin es draggable o no
-    this.isDraggable_ = options.isDraggable;
 
     // Determina el modo de selección de las capas
     this.modeSelectLayers = options.modeSelectLayers;
@@ -203,7 +200,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     map.on(IDEE.evt.ADDED_LAYER, (layers) => {
       if (this.modeSelectLayers === 'radio'
-      && this.isCheckedLayerRadio === true) {
+        && this.isCheckedLayerRadio === true) {
         layers.forEach((layer) => {
           if (layer.isBase === false && layer.displayInLayerSwitcher) {
             if (layer instanceof IDEE.layer.LayerGroup) {
@@ -247,17 +244,13 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   addEventPanel(panel) {
-    if (panel.getButtonPanel().parentElement.classList.contains('collapsed')) {
+    if (panel.getButtonPanel().element.classList.contains('active')) {
       setTimeout(() => {
         this.getImpl().removeRenderComplete();
       }, 501);
     }
 
-    panel.getButtonPanel().addEventListener('click', this.collapsedPlugin.bind(this), false);
-
-    if (this.isDraggable_) {
-      IDEE.utils.draggabillyPlugin(panel, '#m-layerswitcher-title');
-    }
+    panel.getButtonPanel().element.addEventListener('click', this.collapsedPlugin.bind(this), false);
   }
 
   // Esta función devuelve las variables para la plantilla
@@ -268,7 +261,8 @@ export default class LayerswitcherControl extends IDEE.Control {
           const isTransparent = (layer.transparent === true);
           const displayInLayerSwitcher = (layer.displayInLayerSwitcher === true);
           const isLayerGroup = (layer instanceof IDEE.layer.LayerGroup);
-          return isTransparent && displayInLayerSwitcher && !isLayerGroup;
+          const isNotWMC = (layer.type !== IDEE.layer.type.WMC);
+          return isTransparent && displayInLayerSwitcher && !isLayerGroup && isNotWMC;
         });
 
         const overlayLayersPromise = Promise
@@ -443,7 +437,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
       const layerList = this.template_.querySelector('.layerswitcher-ul-layers');
 
-      if (layerList !== null && this.isMoveLayers) { // ??¿?¿ isMoveLayers
+      if (layerList !== null && this.isMoveLayers) {
         generateSortable(this.map_, this.overlayLayers);
       }
 
@@ -484,6 +478,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   collapsedPlugin(e) {
     if (!e.target.parentElement.classList.contains('collapsed')) {
       this.render();
+      this.getImpl().removeRenderComplete();
       this.getImpl().registerEvent(this.map_);
     } else {
       this.getImpl().removeRenderComplete();
@@ -514,7 +509,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         styleLayers(layer, this.order, evt);
 
         // ? Información de la capa
-        if (evt.target.className.indexOf('m-layerswitcher-icons-info') > -1) {
+        if (evt.target.className.indexOf('g-cartografia-btn-layerswitcher-info') > -1) {
           if (layer.type === 'OGCAPIFeatures') {
             const metadataURL = `${layer.url}${layer.name}?f=json`;
             const htmlURL = `${layer.url}${layer.name}?f=html`;
@@ -996,7 +991,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     // Crear un nuevo elemento
     const newElement = document.createElement('p');
     newElement.id = 'm-layerswitcher-loading';
-    newElement.innerHTML = '<span class="m-layerswitcher-icons-spinner"></span>';
+    newElement.innerHTML = '<span class="g-cartografia-btn-layerswitcher-spinner"></span>';
 
     // Obtener el elemento padre
     const parentElement = document.querySelector(SPINER_FATHER);
@@ -1166,30 +1161,27 @@ export default class LayerswitcherControl extends IDEE.Control {
                 this.capabilities = this.filterResults(layers);
                 this.showResults();
               } else {
-                const promise2 = new Promise((success, reject) => {
+                const urlLower = url.toLowerCase();
+                const isWFSPath = urlLower.endsWith('/wfs') || urlLower.includes('service=wfs');
+                const isWMSPath = urlLower.endsWith('/wms') || urlLower.includes('service=wms');
+
+                const promise2 = (isWFSPath) ? Promise.resolve({ text: '' }) : new Promise((success, reject) => {
                   const id = setTimeout(() => reject(), 15000);
-                  // IDEE.proxy(this.useProxy);
                   IDEE.remote.get(IDEE.utils.getWMSGetCapabilitiesUrl(url, '1.3.0')).then((response2) => {
                     clearTimeout(id);
                     success(response2);
                   });
-                  // IDEE.proxy(this.statusProxy);
                 });
-                const promisewfs = new Promise((success, reject) => {
+                const promisewfs = (isWMSPath) ? Promise.resolve({ text: '' }) : new Promise((success, reject) => {
                   const id = setTimeout(() => reject(), 15000);
                   let urlAux = url;
                   urlAux = IDEE.utils.addParameters(url, 'request=GetCapabilities');
                   urlAux = IDEE.utils.addParameters(urlAux, 'service=WFS');
-
-                  urlAux = IDEE.utils.addParameters(urlAux, {
-                    version: '1.3.0',
-                  });
-                  // IDEE.proxy(this.useProxy);
+                  urlAux = IDEE.utils.addParameters(urlAux, { versión: '1.3.0' });
                   IDEE.remote.get(urlAux).then((responsewfs) => {
                     clearTimeout(id);
                     success(responsewfs);
                   });
-                  // IDEE.proxy(this.statusProxy);
                 });
                 Promise.all([promise2, promisewfs]).then((response2) => {
                   let wms = false;
@@ -1312,11 +1304,16 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Permite añadir servicios
   openAddServices() {
-    const precharged = this.precharged;
+    let precharged = this.precharged;
+
+    if (precharged && precharged.groups && !Array.isArray(precharged.groups[0].services)) {
+      precharged = this.normalizePrecharged(precharged);
+    }
+
     const hasPrecharged = (precharged.groups !== undefined && precharged.groups.length > 0)
       || (precharged.services !== undefined && precharged.services.length > 0);
     const codsiActive = this.codsiActive;
-    const accept = '.kml, .zip, .gpx, .geojson, .gml, .json';
+    const accept = ['.kml', '.zip', '.gpx', '.geojson', '.gml', '.json', '.gpkg', '.tif', '.tiff'];
     const addServices = IDEE.template.compileSync(addServicesTemplate, {
       jsonp: true,
       parseToHtml: false,
@@ -1365,6 +1362,42 @@ export default class LayerswitcherControl extends IDEE.Control {
     focusModal('#m-layerswitcher-addservices-search-input');
   }
 
+  normalizePrecharged(obj) {
+    const finalGroups = [];
+    const rawGroups = (Array.isArray(obj.groups) && obj.groups.length > 0)
+      ? obj.groups[0] : obj.groups;
+    Object.keys(rawGroups).forEach((categoryName) => {
+      const categoryContent = rawGroups[categoryName];
+      const servicesList = [];
+
+      const processNode = (node) => {
+        Object.keys(node).forEach((key) => {
+          const item = node[key];
+          if (item && typeof item === 'object' && item.url) {
+            servicesList.push({
+              name: key,
+              type: item.type,
+              url: item.url,
+              white_list: item.white_list,
+            });
+          } else if (item && typeof item === 'object') {
+            processNode(item);
+          }
+        });
+      };
+
+      processNode(categoryContent);
+      if (servicesList.length > 0) {
+        finalGroups.push({ name: categoryName, services: servicesList });
+      }
+    });
+
+    return {
+      services: obj.services || [],
+      groups: finalGroups,
+    };
+  }
+
   changeClodeButtonModal() {
     // Elements
     const button = document.querySelector(BT_CLOSE_MODAL);
@@ -1411,7 +1444,9 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   changeFile(inputFile) {
-    IDEE.loadFiles.addFileToMap(this.map_, inputFile.files[0]);
+    /** @type {File} */
+    const file = inputFile.files[0];
+    IDEE.loadFiles.addFileToMap(this.map_, file);
     inputFile.value = '';
     const buttonClose = document.querySelector('div.m-dialog.info div.m-button > button');
     buttonClose.click();
@@ -1420,7 +1455,13 @@ export default class LayerswitcherControl extends IDEE.Control {
   openFileFromUrl(url, extension) {
     if (IDEE.utils.isUrl(url)) {
       const fileName = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
-      if (['zip', 'kml', 'gpx', 'geojson', 'gml', 'json'].includes(extension) > -1) {
+      if (['tif', 'tiff'].includes(extension)) {
+        IDEE.loadFiles.loadGeotiffLayer(
+          this.map_,
+          url,
+          fileName,
+        );
+      } else if (['zip', 'kml', 'gpx', 'geojson', 'gml', 'json', 'gpkg'].includes(extension)) {
         if (extension === 'zip') {
           this.downloadShp(url, fileName);
         } else {
@@ -1474,7 +1515,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     document.querySelectorAll('.m-layerswitcher-suggestion-caret').forEach((elem) => {
       elem.addEventListener('click', () => {
         elem.parentElement.querySelector('.m-layerswitcher-suggestion-group').classList.toggle('active');
-        elem.classList.toggle('m-layerswitcher-suggestion-caret-close');
+        elem.classList.toggle('g-cartografia-btn-layerswitcher-caret-close');
       });
     });
 
@@ -1643,8 +1684,8 @@ export default class LayerswitcherControl extends IDEE.Control {
         allServices.forEach((service) => {
           if (service.type === layer.type && this.checkUrls(service.url, layer.url)) {
             if (service.white_list !== undefined && service.white_list.length > 0
-                && service.white_list.indexOf(layer.name) > -1
-                && layerNames.indexOf(layer.name) === -1) {
+              && service.white_list.indexOf(layer.name) > -1
+              && layerNames.indexOf(layer.name) === -1) {
               layers.push(layer);
               layerNames.push(layer.name);
             } else if (service.white_list === undefined && layerNames.indexOf(layer.name) === -1) {
@@ -1664,18 +1705,18 @@ export default class LayerswitcherControl extends IDEE.Control {
     } else if (this.precharged.groups !== undefined && this.precharged.groups.length > 0) {
       this.precharged.groups.forEach((group) => {
         if (group.services !== undefined && group.services.length > 0
-            && group.name === this.filterName) {
+          && group.name === this.filterName) {
           allLayers.forEach((layer) => {
             let insideService = false;
             group.services.forEach((service) => {
               if (service.type === layer.type && this.checkUrls(service.url, layer.url)) {
                 if (service.white_list !== undefined && service.white_list.length > 0
-                    && service.white_list.indexOf(layer.name) > -1
-                    && layerNames.indexOf(layer.name) === -1) {
+                  && service.white_list.indexOf(layer.name) > -1
+                  && layerNames.indexOf(layer.name) === -1) {
                   layers.push(layer);
                   layerNames.push(layer.name);
                 } else if (service.white_list === undefined
-                    && layerNames.indexOf(layer.name) === -1) {
+                  && layerNames.indexOf(layer.name) === -1) {
                   layers.push(layer);
                   layerNames.push(layer.name);
                 }
@@ -1833,10 +1874,10 @@ export default class LayerswitcherControl extends IDEE.Control {
           const block = container.querySelector('.m-layerswitcher-capabilities-container');
           if (block.style.display !== 'block') {
             block.style.display = 'block';
-            elem.innerHTML = `<span class="m-layerswitcher-icons-colapsar"></span>&nbsp;${getValue('hide_service_info')}`;
+            elem.innerHTML = `<span class="m-layerswitcher-icons-colapsar g-cartografia-btn-layerswitcher-colapsar"></span>&nbsp;${getValue('hide_service_info')}`;
           } else {
             block.style.display = 'none';
-            elem.innerHTML = `<span class="m-layerswitcher-icons-desplegar"></span>&nbsp;${getValue('show_service_info')}`;
+            elem.innerHTML = `<span class="m-layerswitcher-icons-desplegar g-cartografia-btn-layerswitcher-desplegar"></span>&nbsp;${getValue('show_service_info')}`;
           }
         });
       }
@@ -1846,10 +1887,10 @@ export default class LayerswitcherControl extends IDEE.Control {
           const block = container.querySelector('.m-layerswitcher-capabilities-container-wfs');
           if (block.style.display !== 'block') {
             block.style.display = 'block';
-            elem2.innerHTML = `<span class="m-layerswitcher-icons-colapsar"></span>&nbsp;${getValue('hide_service_info')}`;
+            elem2.innerHTML = `<span class="m-layerswitcher-icons-colapsar g-cartografia-btn-layerswitcher-colapsar"></span>&nbsp;${getValue('hide_service_info')}`;
           } else {
             block.style.display = 'none';
-            elem2.innerHTML = `<span class="m-layerswitcher-icons-desplegar"></span>&nbsp;${getValue('show_service_info')}`;
+            elem2.innerHTML = `<span class="m-layerswitcher-icons-desplegar g-cartografia-btn-layerswitcher-desplegar"></span>&nbsp;${getValue('show_service_info')}`;
           }
         });
       }
@@ -2383,7 +2424,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       document.querySelector('#m-layerswitcher-ogc-check-results').innerHTML = '';
     });
     radioBtnFilterByOther.addEventListener('click', () => {
-      document.querySelector('#m-layerswitcher-ogc-other-filters').style.display = 'block';
+      document.querySelector('#m-layerswitcher-ogc-other-filters').style.display = 'flex';
       document.querySelector('#m-layerswitcher-ogc-filter-id').style.display = 'none';
       document.querySelector('#m-layerswitcher-ogc-check-results').innerHTML = '';
     });

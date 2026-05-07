@@ -9,7 +9,8 @@
     "properties": [{
       "type": "simple",
       "name": "position",
-      "position": 0
+      "position": 0,
+      "possibleValues": ["center-top-left", "center-top-right", "center-bottom-left", "center-bottom-right", "left", "right", "down"]
     }, {
       "type": "boolean",
       "name": "collapsed",
@@ -19,21 +20,25 @@
       "name": "collapsible",
       "position": 2
     }, {
+      "type": "number",
+      "name": "order",
+      "position": 3
+    }, {
       "type": "simple",
       "name": "tooltip",
-      "position": 3
+      "position": 4
     }, {
       "type": "boolean",
       "name": "fixed",
-      "position": 4
-    }, {
-      "type": "simple",
-      "name": "zoom",
       "position": 5
     }, {
       "type": "simple",
-      "name": "baseLayer",
+      "name": "zoom",
       "position": 6
+    }, {
+      "type": "simple",
+      "name": "baseLayer",
+      "position": 7
     }]
   }],
   "files": {
@@ -50,7 +55,7 @@
     "name": "overviewmap",
     "description": "Shows preview of area where map is zoomed.",
     "text": "Shows preview of area where map is zoomed.",
-    "version": "2.0.2",
+    "version": "1.1.0",
     "date": "",
     "author": "",
     "org": "",

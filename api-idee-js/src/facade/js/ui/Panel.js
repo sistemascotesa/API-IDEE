@@ -6,6 +6,8 @@ import panelTemplate from 'templates/panel';
 import * as Position from './position';
 import {
   isArray, isNullOrEmpty, isString, includes,
+  isNumber,
+  isBoolean,
 } from '../util/Utils';
 import MObject from '../Object';
 import * as EventType from '../event/eventtype';
@@ -28,10 +30,8 @@ class Panel extends MObject {
    * @param {Mx.parameters.Panel} options Opciones del panel.
    * - collapsible: Indica si el panel se puede colapsar.
    * - position: Posición del panel.
-   *   - BL: ".m-bottom.m-left".
-   *   - BR: ".m-bottom.m-right".
-   *   - TL: ".m-top.m-left".
-   *   - TR: ".m-top.m-right".
+   *   - L: "left".
+   *   - R: "right".
    * - collapsed: Indica si el panel aparece por defecto colapsado o no.
    * - multiActivation: Si el panel puede estar activado o no.
    * - className: Clase CSS del panel.
@@ -60,10 +60,10 @@ class Panel extends MObject {
 
     /**
      * @private
-     * @type {HTMLElement}
+     * @type {IDEE.ui.Button}
      * @expose
      */
-    this.buttonPanel = null;
+    this.button = null;
 
     /**
      * @private
@@ -78,16 +78,14 @@ class Panel extends MObject {
      * @expose
      */
     this.position = Position.RIGHT;
-    if (!isNullOrEmpty(options.position)) {
-      this.position = options.position;
-    }
+    if (Position.isRightOrLeft(options.position)) this.position = options.position;
 
     /**
      * @type {Number}
      * @api
      * @expose
      */
-    if (!isNullOrEmpty(options.minWidth)) {
+    if (isNumber(options.minWidth)) {
       this.minWidth = options.minWidth;
     }
 
@@ -96,17 +94,41 @@ class Panel extends MObject {
      * @api
      * @expose
      */
-    if (!isNullOrEmpty(options.maxWidth)) {
+    if (isNumber(options.maxWidth)) {
       this.maxWidth = options.maxWidth;
     }
 
     /**
+     * Defines minimun height of this panel if is in compact mode
+     *
+     * @type {Number}
+     * @api
+     * @expose
+     */
+    if (isNumber(options.minHeightCompact)) {
+      this.minHeightCompact = options.minHeightCompact;
+    }
+
+    /**
+     * Defines maximun height of this panel if is in compact mode
+     *
+     * @type {Number}
+     * @api
+     * @expose
+     */
+    if (isNumber(options.maxHeightCompact)) {
+      this.maxHeightCompact = options.maxHeightCompact;
+    }
+
+    /**
+     * By default panels are collapsible and start collapsed.
+     *
      * @private
      * @type {boolean}
      * @expose
      */
-    this._collapsible = false;
-    if (!isNullOrEmpty(options.collapsible)) {
+    this._collapsible = true;
+    if (isBoolean(options.collapsible)) {
       this._collapsible = options.collapsible;
     }
 
@@ -115,9 +137,12 @@ class Panel extends MObject {
      * @type {boolean}
      * @expose
      */
-    this._collapsed = this._collapsible;
-    if (!isNullOrEmpty(options.collapsed)) {
-      this._collapsed = (options.collapsed && (this._collapsible === true));
+    this._collapsed = true;
+
+    if (!this._collapsible) {
+      this._collapsed = false;
+    } else if (isBoolean(options.collapsed)) {
+      this._collapsed = options.collapsed;
     }
 
     /**
@@ -148,9 +173,9 @@ class Panel extends MObject {
     this._collapsedButtonClass = null;
     if (!isNullOrEmpty(options.collapsedButtonClass)) {
       this._collapsedButtonClass = options.collapsedButtonClass;
-    } else if ((this.position === Position.TL) || (this.position === Position.BL)) {
+    } else if ((this.position === Position.CTL) || (this.position === Position.CBL)) {
       this._collapsedButtonClass = 'g-cartografia-flecha-derecha';
-    } else if ((this.position === Position.TR) || (this.position === Position.BR)) {
+    } else if ((this.position === Position.CTR) || (this.position === Position.CBR)) {
       this._collapsedButtonClass = 'g-cartografia-flecha-izquierda';
     }
 
@@ -162,9 +187,9 @@ class Panel extends MObject {
     this._openedButtonClass = null;
     if (!isNullOrEmpty(options.openedButtonClass)) {
       this._openedButtonClass = options.openedButtonClass;
-    } else if ((this.position === Position.TL) || (this.position === Position.BL)) {
+    } else if ((this.position === Position.CTL) || (this.position === Position.CBL)) {
       this._openedButtonClass = 'g-cartografia-flecha-izquierda';
-    } else if ((this.position === Position.TR) || (this.position === Position.BR)) {
+    } else if ((this.position === Position.CTR) || (this.position === Position.CBR)) {
       this._openedButtonClass = 'g-cartografia-flecha-derecha';
     }
 
@@ -184,13 +209,6 @@ class Panel extends MObject {
 
     /**
      * @private
-     * @type {HTMLElement}
-     * @expose
-     */
-    // this._controlsContainer = null;
-
-    /**
-     * @private
      * @type {String}
      * @expose
      */
@@ -207,6 +225,12 @@ class Panel extends MObject {
     if (!isNullOrEmpty(options.order)) {
       this._order = options.order;
     }
+
+    this.once(EventType.ADDED_TO_MAP, () => {
+      if (!this._collapsed) {
+        this.button.activate();
+      }
+    });
   }
 
   /**
@@ -246,6 +270,7 @@ class Panel extends MObject {
     }
 
     this.addControls(this.controls);
+
     this.fire(EventType.ADDED_TO_MAP, this.element);
   }
 
@@ -302,9 +327,9 @@ class Panel extends MObject {
    */
   _collapse(html) {
     /* html.classList.remove('opened');
-    this.buttonPanel.classList.remove(this._openedButtonClass);
+    this.button.classList.remove(this._openedButtonClass);
     html.classList.add('collapsed');
-    this.buttonPanel.classList.add(this._collapsedButtonClass); */
+    this.button.classList.add(this._collapsedButtonClass); */
     this._collapsed = true;
     this.fire(EventType.HIDE);
   }
@@ -318,9 +343,9 @@ class Panel extends MObject {
    */
   _open(html) {
     /* html.classList.remove('collapsed');
-    this.buttonPanel.classList.remove(this._collapsedButtonClass);
+    this.button.classList.remove(this._collapsedButtonClass);
     html.classList.add('opened');
-    this.buttonPanel.classList.add(this._openedButtonClass); */
+    this.button.classList.add(this._openedButtonClass); */
     this._collapsed = false;
     this.fire(EventType.SHOW);
   }
@@ -398,12 +423,12 @@ class Panel extends MObject {
         if (control instanceof ControlBase) {
           if (!this.hasControl(control)) {
             this.controls.push(control);
-            control.setPanel(this);
+            control.setParentContainer(this);
             control.on(EventType.DESTROY, this._removeControl.bind(this), this);
           }
           if (!isNullOrEmpty(this.element)) {
             control.on(EventType.ADDED_TO_MAP, this._moveControlView.bind(this), this);
-            this.map.addControls(control);
+            this.map.addControls(control, true);
           }
           control.on(EventType.ACTIVATED, this._manageActivation.bind(this), this);
         }
@@ -415,7 +440,6 @@ class Panel extends MObject {
           // control.element_.setAttribute('tabIndex', 0);
 
           // eslint-disable-next-line no-underscore-dangle
-          // console.log(control.element_);
         });
       });
     }
@@ -534,7 +558,7 @@ class Panel extends MObject {
     if (!isNullOrEmpty(this.element)) {
       this.element.appendChild(controlElem);
     }
-    control.fire(EventType.ADDED_TO_PANEL);
+    control.fire(EventType.PANEL_VIEW_CHANGE);
   }
 
   /**
@@ -589,7 +613,7 @@ class Panel extends MObject {
    * @returns {HTMLElement} Elemento botón.
    */
   getButtonPanel() {
-    return this.buttonPanel;
+    return this.button;
   }
 
   /**
@@ -604,6 +628,18 @@ class Panel extends MObject {
    */
   isCollapsed() {
     return this._collapsed;
+  }
+
+  /**
+   * Este método establece el estado del panel.
+   *
+   * @public
+   * @function
+   * @param {Boolean} flag Estado del panel.
+   * @api
+   */
+  setCollapsed(flag) {
+    this._collapsed = flag;
   }
 
   /**

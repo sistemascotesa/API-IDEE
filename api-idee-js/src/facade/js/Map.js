@@ -6,8 +6,18 @@ import MapImpl from 'impl/Map';
 import Base from './Base';
 import { getQuickLayers } from './api-idee';
 import {
-  isUndefined, isNull, isArray, isNullOrEmpty, isFunction, isObject, isString, normalize,
-  concatUrlPaths, escapeJSCode, getEnvolvedExtent, getImageMap,
+  isUndefined,
+  isNull,
+  isArray,
+  isNullOrEmpty,
+  isFunction,
+  isObject,
+  isString,
+  escapeJSCode,
+  getEnvolvedExtent,
+  getResolutionFromScale,
+  getImageMap,
+  generateResolutionsFromExtent,
 } from './util/Utils';
 import { addFileToMap } from './util/LoadFiles';
 import { getValue } from './i18n/language';
@@ -20,14 +30,6 @@ import FeaturesHandler from './handler/Feature';
 import Feature from './feature/Feature';
 import * as Dialog from './dialog';
 import Control from './control/Control';
-import GetFeatureInfo from './control/GetFeatureInfo';
-import Location from './control/Location';
-import Scale from './control/Scale';
-import Rotate from './control/Rotate';
-import ScaleLine from './control/ScaleLine';
-import Panzoom from './control/Panzoom';
-import Panzoombar from './control/Panzoombar';
-import BackgroundLayers from './control/BackgroundLayers';
 import WMCSelector from './control/WMCSelector';
 import Layer from './layer/Layer';
 import * as LayerType from './layer/Type';
@@ -42,6 +44,7 @@ import GenericRaster from './layer/GenericRaster';
 import GenericVector from './layer/GenericVector';
 import Button from './ui/Button';
 import Panel from './ui/Panel';
+import ControlPanel from './ui/ControlPanel';
 import * as Position from './ui/position';
 import GeoJSON from './layer/GeoJSON';
 import GeoTIFF from './layer/GeoTIFF';
@@ -57,7 +60,10 @@ import Tiles3D from './layer/Tiles3D';
 import Terrain from './layer/Terrain';
 import WMC from './layer/WMC';
 import Attributions from './control/Attributions';
-import ImplementationSwitcher from './control/ImplementationSwitcher';
+import { buildControl, getPanelForControl } from './builder/builder';
+import applyDesignTokenCssVariables from './theme/tokens';
+// eslint-disable-next-line no-unused-vars
+import Plugin from './Plugin';
 
 /**
  * @classdesc
@@ -92,6 +98,8 @@ class Map extends Base {
    * - viewExtent: Extensión de la vista.
    * - zoom: Zoom del mapa.
    * - zoomConstrains: Restricciones de zoom.
+   * - rotation: Rotación del mapa.
+   * - ticket: Ticket de autenticación.
    * @param { Mx.parameters.MapOptions } options Opciones personalizadas para la implementación
    * proporcionado por el usuario.
    * - verticalExaggeration: Exageración vertical de la escena. Si se establece a 1 no se aplica
@@ -109,11 +117,21 @@ class Map extends Base {
 
     const opts = { viewExtent: params.viewExtent, ...options };
 
+    // Ensure CSS variables reflect current active token
+    applyDesignTokenCssVariables();
+
     // calls the super constructor
     super();
 
     this.createPanels(params.container);
-    const impl = new MapImpl(this.mapPanel, this, dpi, opts, viewVendorOptions);
+
+    let mapContainerElement = this.mapPanel;
+    /* global HTMLElement */
+    if (userParameters.containerTemplate instanceof HTMLElement) {
+      mapContainerElement = userParameters.containerTemplate;
+    }
+
+    const impl = new MapImpl(mapContainerElement, this, dpi, opts, viewVendorOptions);
     this.setImpl(impl);
 
     // checks if the param is null or empty
@@ -175,6 +193,11 @@ class Map extends Base {
      * Map: Plugins incorporados al mapa.
      */
     this.plugins = [];
+
+    /**
+     * Map: Ticket de autenticación.
+     */
+    this.ticket_ = null;
 
     /**
      * Map: "Popup".
@@ -239,6 +262,11 @@ class Map extends Base {
      * Map: Extensión máxima proporcionada por el usuario.
      */
     this.userMaxExtent = null;
+
+    /**
+     * Map: Restricciones de extensión proporcionadas por el usuario
+     */
+    this.userExtentConstrains = params.extentConstrains || null;
 
     /**
      * Map: Colección de "capabilities".
@@ -354,9 +382,9 @@ class Map extends Base {
         if (zoom.length > 1) { inmeters = true; }
         zoom = zoom[0];
       }
-      this.setZoom(zoom, inmeters);
+      this.setZoom(zoom, inmeters, true);
     } else if (isNullOrEmpty(params.bbox)) {
-      this.setZoom(3);
+      this.setZoom(IDEE.config.DEFAULT_ZOOM, false, false);
     }
 
     // zoomConstrains
@@ -366,6 +394,15 @@ class Map extends Base {
       this.setZoomConstrains(IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS);
     } else {
       this.setZoomConstrains(false);
+    }
+
+    // extentConstrains
+    if (!isNullOrEmpty(params.extentConstrains)) {
+      this.setExtentConstrains(params.extentConstrains);
+    } else if (IDEE.config.MAP_VIEWER_EXTENT_CONSTRAINS !== '' && IDEE.config.MAP_VIEWER_EXTENT_CONSTRAINS !== undefined) {
+      this.setExtentConstrains(IDEE.config.MAP_VIEWER_EXTENT_CONSTRAINS);
+    } else {
+      this.setExtentConstrains(false);
     }
 
     // minZoom
@@ -382,6 +419,13 @@ class Map extends Base {
     } else if (IDEE.config.MAX_ZOOM !== '') {
       const maxZoom = Number(IDEE.config.MAX_ZOOM);
       this.setMaxZoom(maxZoom);
+    }
+
+    // rotation
+    if (!isNullOrEmpty(params.rotation)) {
+      this.once(EventType.COMPLETED, () => {
+        this.setRotation(params.rotation);
+      });
     }
 
     // label
@@ -453,9 +497,9 @@ class Map extends Base {
    * @param {Object} options Parámetros del control.
    * @api
    */
-  createAttribution(options = {}) {
+  createAttribution(options = {}, control = null) {
     // Comprobar si existe el control
-    if (this.getControls().some(({ name }) => name === 'attributions')) {
+    if (this.getControls().some(({ name }) => name === Attributions.NAME)) {
       return;
     }
     const {
@@ -466,7 +510,7 @@ class Map extends Base {
       order,
     } = options;
     try {
-      const atribucionControl = new Attributions({
+      const atribucionControl = !isNullOrEmpty(control) ? control : new Attributions({
         map: this,
         scale,
         collectionsAttributions: collectionsAttributions.map((l) => {
@@ -479,12 +523,12 @@ class Map extends Base {
         }),
         order,
       });
-      const panel = new Panel(Attributions.NAME, {
+      const panel = new ControlPanel(Attributions.NAME, {
         collapsible: true,
-        position: Position[position] || Position.BR,
+        position: Position[position] || Position.LEFT,
         className: 'm-attributions',
         collapsedButtonClass: 'g-cartografia-comentarios',
-        tooltip: tooltip || getValue('attributionsControl').tooltip,
+        tooltip: tooltip || getValue(Attributions.NAME).title,
         order,
       });
       this.addPanels(panel);
@@ -519,7 +563,7 @@ class Map extends Base {
       return;
     }
 
-    const controlAttributions = this.getControls().find(({ name }) => name === 'attributions');
+    const controlAttributions = this.getControls().find(({ name }) => name === Attributions.NAME);
     if (!controlAttributions) { return; }
     let addAttribution = null;
 
@@ -552,7 +596,7 @@ class Map extends Base {
    * @api
    */
   removeAttribution(id) {
-    if (id) {
+    if (id && this.controlAttributions) {
       const attributions = this.controlAttributions.getAttributions();
       let filterAttributions = attributions.filter((attribution) => attribution.id !== id);
       filterAttributions = filterAttributions.filter((attribution) => attribution.name !== id);
@@ -1189,7 +1233,6 @@ class Map extends Base {
       // gets the layers
       const wmcLayers = this.getWMC(layersParam);
       if (wmcLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [wmcLayers]);
         // removes the layers
         this.getImpl().removeWMC(wmcLayers);
       }
@@ -1297,7 +1340,6 @@ class Map extends Base {
       // gets the layers
       const kmlLayers = this.getKML(layersParam);
       if (kmlLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [kmlLayers]);
         kmlLayers.forEach((layer) => {
           this.featuresHandler_.removeLayer(layer);
         });
@@ -1406,7 +1448,6 @@ class Map extends Base {
       // gets the layers
       const wmsLayers = this.getWMS(layersParam);
       if (wmsLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [wmsLayers]);
         // removes the layers
         this.getImpl().removeWMS(wmsLayers);
       }
@@ -1528,10 +1569,11 @@ class Map extends Base {
   }
 
   /**
-   * Este método agrega las capas de GeoJSON al mapa.
+   * Este método agrega las capas de tipo desconocido al mapa.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
-   * @param {Array<string>|Array<Mx.parameters.Layer>} layersParam Colección u objeto de capa.
+   * @param {Array<string>|Array<Mx.parameters.Layer>} layersParamVar Colección u objeto de capa.
+   * @api
    */
   addUnknowLayers_(layersParamVar) {
     let layersParam = layersParamVar;
@@ -1571,7 +1613,6 @@ class Map extends Base {
       // gets the layers
       const wfsLayers = this.getWFS(layersParam);
       if (wfsLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [wfsLayers]);
         wfsLayers.forEach((layer) => {
           this.featuresHandler_.removeLayer(layer);
         });
@@ -1684,7 +1725,6 @@ class Map extends Base {
       // gets the layers
       const geotiffLayers = this.getGeoTIFF(layersParam);
       if (geotiffLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [geotiffLayers]);
         geotiffLayers.forEach((layer) => {
           this.featuresHandler_.removeLayer(layer);
         });
@@ -1798,7 +1838,6 @@ class Map extends Base {
       // gets the layers
       const mapLibreLayers = this.getMapLibre(layersParam);
       if (mapLibreLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [mapLibreLayers]);
         mapLibreLayers.forEach((layer) => {
           this.featuresHandler_.removeLayer(layer);
         });
@@ -1913,7 +1952,6 @@ class Map extends Base {
       // gets the layers
       const ogcapifLayers = this.getOGCAPIFeatures(layersParam);
       if (ogcapifLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [ogcapifLayers]);
         ogcapifLayers.forEach((layer) => {
           this.featuresHandler_.removeLayer(layer);
         });
@@ -2024,7 +2062,6 @@ class Map extends Base {
       // gets the layers
       const wmtsLayers = this.getWMTS(layersParam);
       if (wmtsLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [wmtsLayers]);
         // removes the layers
         this.getImpl().removeWMTS(wmtsLayers);
       }
@@ -2083,7 +2120,6 @@ class Map extends Base {
       }
       const mvtLayers = this.getMVT(layersParam);
       if (mvtLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [mvtLayers]);
         mvtLayers.forEach((layer) => {
           this.featuresHandler_.removeLayer(layer);
         });
@@ -2215,7 +2251,6 @@ class Map extends Base {
     if (!isNullOrEmpty(layersParam)) {
       const mbtilesLayers = this.getMBTiles(layersParam);
       if (mbtilesLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [mbtilesLayers]);
         this.getImpl().removeMBTiles(mbtilesLayers);
       }
     }
@@ -2302,7 +2337,6 @@ class Map extends Base {
       }
       const mbtilesLayers = this.getMBTilesVector(layersParam);
       if (mbtilesLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [mbtilesLayers]);
         this.getImpl().removeMBTilesVector(mbtilesLayers);
       }
     }
@@ -2395,7 +2429,6 @@ class Map extends Base {
 
       const xyzLayers = this.getXYZs(layersParam);
       if (xyzLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [xyzLayers]);
         this.getImpl().removeXYZ(xyzLayers);
       }
     }
@@ -2488,7 +2521,6 @@ class Map extends Base {
 
       const tmsLayers = this.getTMS(layersParam);
       if (tmsLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [tmsLayers]);
         this.getImpl().removeTMS(tmsLayers);
       }
     }
@@ -2591,7 +2623,6 @@ class Map extends Base {
 
       const tiles3DLayers = this.getTiles3D(layersParam);
       if (tiles3DLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [tiles3DLayers]);
         this.getImpl().removeTiles3D(tiles3DLayers);
       }
     }
@@ -2691,7 +2722,6 @@ class Map extends Base {
 
       const terrainLayers = this.getTerrain(layersParam);
       if (terrainLayers.length > 0) {
-        this.fire(EventType.REMOVED_LAYER, [terrainLayers]);
         this.getImpl().removeTerrain(terrainLayers);
       }
     }
@@ -2830,7 +2860,6 @@ class Map extends Base {
         this.geopackages = this.geopackages
           .filter((geopackage) => !geopackage.equals(layer));
       });
-      this.fire(EventType.REMOVED_LAYER, [geopackageLayers]);
     }
     return this;
   }
@@ -2877,7 +2906,7 @@ class Map extends Base {
    * @public
    * @function
    * @param {string|Array<String>} controlsParam Controles de nombre de colección.
-   * @returns {Array<Control>} Matriz de retorno de controles.
+   * @returns {Array<ControlPanel> | Array<Control> | Array<Plugin>} Matriz de retorno de controles.
    * @api
    */
   getControls(controlsParamVar) {
@@ -2902,194 +2931,148 @@ class Map extends Base {
   }
 
   /**
+   * Este método añade un estilo al control scaleline para que
+   * no choque con los controles scale y wmcselector cuando la pantalla
+   * no es lo suficientemente ancha y los tres controles han sido añadidos.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @private
+   * @function
+   * @param {Object} panel panel del control.
+   * @api
+   */
+  addUpClass_(panel) {
+    panel.on(EventType.ADDED_TO_MAP, (html) => {
+      if (this.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
+        this.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
+      }
+    });
+  }
+
+  /**
    * Este método agrega controles especificados por el usuario.
    *
    * @public
    * @function
-   * @param {string|Object|Array<String>|Array<Object>} controlsParam
+   * @param {string|Object|Array<String>|Array<Object>} controlsParamVar
    * Colección o nombre de los controles.
+   * @param {Boolean} skipCheckDuplicate Indica si se debe omitir la
+   * comprobación de controles duplicados.
    * @returns {Map} Devuelve el estado del mapa.
    * @api
    */
-  addControls(controlsParamVar) {
+  addControls(controlsParamVar, skipCheckDuplicate = false) {
     let controlsParam = controlsParamVar;
     if (!isNullOrEmpty(controlsParam)) {
       // checks if the implementation can manage layers
-      if (isUndefined(MapImpl.prototype.addControls)) {
-        Exception(getValue('exception').addcontrols_method);
-      }
+      if (isUndefined(MapImpl.prototype.addControls)) Exception(getValue('exception').addcontrols_method);
 
       // parses parameters to Array
-      if (!isArray(controlsParam)) {
-        controlsParam = [controlsParam];
-      }
+      if (!isArray(controlsParam)) controlsParam = [controlsParam];
 
       // gets the parameters as Control to add them
       const controls = [];
-      // for (let i = 0, ilen = controlsParam.length; i < ilen; i++) {
       controlsParam.forEach((controlParamVar) => {
-        let controlParam = controlParamVar;
+        const controlParam = controlParamVar;
         let control;
-        let panel;
         if (isString(controlParam)) {
-          controlParam = normalize(controlParam).split('*');
-          try {
-            switch (controlParam[0]) {
-              case Scale.NAME:
-                const paramsScale = {};
-                controlParam.forEach((p) => {
-                  if (p === 'true') paramsScale.exactScale = Boolean(p);
-                  // eslint-disable-next-line no-restricted-globals
-                  if (!isNaN(p)) paramsScale.order = Number(p);
-                });
-                control = new Scale(paramsScale);
-                panel = this.getPanels('map-info')[0];
-                if (isNullOrEmpty(panel)) {
-                  panel = new Panel('map-info', {
-                    collapsible: false,
-                    className: 'm-map-info',
-                    position: Position.BR,
-                    order: (paramsScale.order) ? paramsScale.order : null,
-                  });
-                  panel.on(EventType.ADDED_TO_MAP, (html) => {
-                    if (this.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
-                      this.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
-                    }
-                  });
-                }
-                panel.addClassName('m-with-scale');
-                break;
-              case ScaleLine.NAME:
-                control = new ScaleLine();
-                panel = new Panel(ScaleLine.NAME, {
-                  collapsible: false,
-                  className: 'm-scaleline',
-                  position: Position.BL,
-                  tooltip: 'Línea de escala',
-                });
-                panel.on(EventType.ADDED_TO_MAP, (html) => {
-                  if (this.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
-                    this.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
-                  }
-                });
-                break;
-              case Panzoombar.NAME:
-                control = new Panzoombar();
-                panel = new Panel(Panzoombar.NAME, {
-                  collapsible: false,
-                  className: 'm-panzoombar',
-                  position: Position.TL,
-                  tooltip: 'Nivel de zoom',
-                });
-                break;
-              case Panzoom.NAME:
-                control = new Panzoom();
-                panel = new Panel(Panzoom.NAME, {
-                  collapsible: false,
-                  className: 'm-panzoom',
-                  position: Position.TL,
-                });
-                break;
-              case Location.NAME:
-                control = new Location();
-                panel = new Panel(Location.NAME, {
-                  collapsible: false,
-                  className: 'm-location',
-                  position: Position.BR,
-                });
-                break;
-              case GetFeatureInfo.NAME:
-                control = new GetFeatureInfo(true);
-                break;
-              case Attributions.NAME:
-                if (controlParam.length === 2) {
-                  this.createAttribution({ collectionsAttributions: [controlParam[1]] });
-                } else {
-                  this.createAttribution();
-                }
-
-                return;
-              case Rotate.NAME:
-                control = new Rotate();
-                panel = new Panel(Rotate.name, {
-                  collapsible: false,
-                  className: 'm-rotate',
-                  position: Position.TR,
-                });
-                break;
-              case BackgroundLayers.NAME:
-                control = new BackgroundLayers(this);
-                panel = new Panel(BackgroundLayers.NAME, {
-                  collapsible: false,
-                  position: Position.TR,
-                  className: 'm-plugin-baselayer',
-                });
-                break;
-              case ImplementationSwitcher.NAME:
-                control = new ImplementationSwitcher();
-                panel = new Panel(ImplementationSwitcher.NAME, {
-                  collapsible: true,
-                  position: Position.TR,
-                  className: 'm-implementationswitcher',
-                  collapsedButtonClass: 'g-cartografia-implementacion',
-                  tooltip: getValue('implementationswitcher').title,
-                });
-                break;
-              case WMCSelector.NAME:
-                control = new WMCSelector();
-                panel = this.getPanels('map-info')[0];
-                if (isNullOrEmpty(panel)) {
-                  panel = new Panel('map-info', {
-                    collapsible: false,
-                    position: Position.BR,
-                    className: 'm-map-info',
-                  });
-                  panel.on(EventType.ADDED_TO_MAP, () => {
-                    if (this.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
-                      this.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
-                    }
-                  });
-                }
-                panel.addClassName('m-with-wmcselector');
-                break;
-              default:
-                if (/backgroundlayers\*([0-9])+\*(true|false)/.test(controlParam)) {
-                  const idLayer = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[1];
-                  const visible = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[2] === 'true';
-                  control = new BackgroundLayers(this, Number.parseInt(idLayer, 10), visible);
-
-                  panel = new Panel(BackgroundLayers.NAME, {
-                    collapsible: false,
-                    position: Position.TR,
-                    className: 'm-plugin-baselayer',
-                  });
-                } else {
-                  const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);
-                  Dialog.error(`El control ${controlParam} no está definido. Consulte los controles disponibles <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
-                }
-            }
-          } catch (e) {
-            // eslint-disable-next-line no-console
-            console.warn(e);
-            control = null;
+          control = buildControl(controlParam, this);
+          // Skip if control is null (like Attributions which is handled separately)
+          if (isNullOrEmpty(control)) {
+            // TODO: crear alerta que indique que no se ha creado un control compatible,
+            // se debe indicar al usuario/desarrollador como hacerlo
+            return;
           }
-        } else if (controlParam instanceof Control) {
+        } else if (isObject(controlParam) && controlParam instanceof Control) {
           control = controlParam;
-        } else {
-          Exception('El control "'.concat(controlParam).concat('" no es un control válido.'));
+          control.builderParams = control.options;
         }
+        const panel = getPanelForControl(control, this, control.builderParams ?? {});
+        const isControlWithoutAdding = !this.hasControl(control);
 
-        if (!isNullOrEmpty(panel) && !panel.hasControl(control)) {
-          panel.addControls(control);
-          this.addPanels(panel);
-        } else if (!isNullOrEmpty(control)) {
-          control.addTo(this);
-          controls.push(control);
+        if (isControlWithoutAdding || skipCheckDuplicate) {
+          if (!isNullOrEmpty(panel) && isControlWithoutAdding) {
+            panel.addControls(control);
+            this.addControlPanels(panel);
+          } else if (!isNullOrEmpty(control)) {
+            control.addTo(this);
+            controls.push(control);
+          }
+        } else {
+          const message = `( "${control.name}" ): ${getValue('exception').control_already_added}`;
+          Dialog.error(message);
         }
       });
+
       this.getImpl().addControls(controls);
     }
     return this;
+  }
+
+  /**
+  * Este método consigue un contenedor habilitado para el uso de herramientas
+  *
+  * @public
+  * @function
+  * @param { Position } position implementación del control
+  * @api stable
+  * @return {HTML} el contenedor previamente declarado
+  */
+  getToolsContainer(position) {
+    let toolContainer = null;
+
+    try {
+      switch (position) {
+        case Position.LEFT:
+          toolContainer = this.leftButtons;
+          break;
+
+        case Position.RIGHT:
+          toolContainer = this.rightButtons;
+          break;
+
+        case Position.DOWN:
+          toolContainer = this.downPanel;
+          break;
+
+        case Position.CTL:
+          toolContainer = this.centerPanelTopLeft;
+          break;
+
+        case Position.CTR:
+          toolContainer = this.centerPanelTopRight;
+          break;
+
+        case Position.CBL:
+          toolContainer = this.centerPanelBottomLeft;
+          break;
+
+        case Position.CBR:
+          toolContainer = this.centerPanelBottomRight;
+          break;
+
+        default:
+          throw new Error(`${getValue('exception').no_tool_position}, '${position}'`);
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      Exception(err.message);
+    }
+    return toolContainer;
+  }
+
+  /**
+  * Este método recibe una herramienta le asigna un contenedor padre y coloca su vista
+  * de forma ordenada en su interior
+  *
+  * @public
+  * @function
+  * @param { HTMLElement } container contenedor de mapa asignado
+  * @param { Control | Plugin } toolImpl implementación del control o plugin que contiene la vista
+  * @api stable
+  */
+  addToolToContainer(container, toolImpl) {
+    container.appendChild(toolImpl.getView());
   }
 
   /**
@@ -3106,9 +3089,10 @@ class Map extends Base {
       controlName = control.name;
     }
     const controls = this.getControls();
-    const controlFiltered = controls.find((ctrl) => ctrl.name === controlName);
-    const hasControl = !isNullOrEmpty(controlFiltered);
-
+    let hasControl = false;
+    if (controls.some((ctrl) => ctrl.name === controlName)) {
+      hasControl = true;
+    }
     return hasControl;
   }
 
@@ -3132,17 +3116,24 @@ class Map extends Base {
       Exception(getValue('exception').removecontrol_method);
     }
 
-    // gets the contros to remove
+    // gets controls to remove
     let controls = this.getControls(controlsParam);
     controls = [].concat(controls);
     if (controls.length > 0) {
-      // removes controls from their panels
       controls.forEach((control) => {
-        if (!isNullOrEmpty(control.getPanel())) {
-          control.getPanel().removeControls(control);
+        const panel = control.getPanel();
+        // check if this control has panels and remove it if
+        if (panel instanceof ControlPanel) {
+          const panelControls = panel.getControls();
+          if (isArray(panelControls) && panelControls.legth === 1) {
+            this.removePanel(panel);
+          } else {
+            panel.removeControls(control);
+          }
         }
       });
-      // removes the controls
+
+      // Finally remove this control from de map and destroy
       this.getImpl().removeControls(controls);
     }
 
@@ -3406,10 +3397,11 @@ class Map extends Base {
    * @param {Boolean} inmeters Si es verdadero se indica que el zoom dado por parámetro
    * está en metros, en caso contrario como nivel de zoom. En el caso de
    * ser metros a mayor cantidad menor nivel de zoom. Por defecto, es falso.
+   * @param {Boolean} isUserZoom Indica si el zoom es establecido por el usuario.
    * @returns {Map} Devuelve el estado del mapa.
    * @api
    */
-  setZoom(zoomParam, inmeters = false) {
+  setZoom(zoomParam, inmeters = false, isUserZoom = true) {
     // checks if the param is null or empty
     if (isNullOrEmpty(zoomParam)) {
       Exception(getValue('exception').no_zoom);
@@ -3423,7 +3415,7 @@ class Map extends Base {
     try {
       // parses the parameter
       const zoom = parameter.zoom(zoomParam);
-      this._userZoom = zoom;
+      if (isUserZoom) this._userZoom = zoom;
       this.getImpl().setZoom(zoom, inmeters);
     } catch (err) {
       Dialog.error(err.toString());
@@ -3557,6 +3549,56 @@ class Map extends Base {
     const zoomConstrains = this.getImpl().getZoomConstrains();
 
     return zoomConstrains;
+  }
+
+  /**
+   * Este método establece el estado de multiWorld
+   * instancia del mapa.
+   *
+   * @public
+   * @function
+   * @param {Boolean} multiWorld Nuevo valor.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  setMultiWorld(multiWorld) {
+    // checks if the param is null or empty
+    if (isNullOrEmpty(multiWorld)) {
+      Exception(getValue('exception').no_multiWorld);
+    }
+
+    if (isUndefined(MapImpl.prototype.setMultiWorld)) {
+      Exception(getValue('exception').setMultiWorld_method);
+    }
+
+    try {
+      const multiWorldParam = parameter.multiWorld(multiWorld);
+      this.getImpl().setMultiWorld(multiWorldParam);
+    } catch (err) {
+      Dialog.error(err.toString());
+      throw err;
+    }
+
+    return this;
+  }
+
+  /**
+   * Este método obtiene el estado actual de
+   * multiWorld de la instancia del mapa.
+   *
+   * @public
+   * @function
+   * @returns {Boolean} Valor actual.
+   * @api
+   */
+  getMultiWorld() {
+    if (isUndefined(MapImpl.prototype.getMultiWorld)) {
+      Exception(getValue('exception').getMultiWorld_method);
+    }
+
+    const multiWorld = this.getImpl().getMultiWorld();
+
+    return multiWorld;
   }
 
   /**
@@ -3714,14 +3756,16 @@ class Map extends Base {
    * @public
    * @function
    * @param {String|Array<String>|Array<Number>} resolutionsParam Las resoluciones.
+   * @param {Boolean} optional Indica si las resoluciones son opcionales.
+   * @param {Boolean} propagateToWMS Indica si las resoluciones se deben propagar a las capas WMS.
    * @returns {Map} Devuelve el estado del mapa.
    * @api
    */
-  setResolutions(resolutionsParam) {
+  setResolutions(resolutionsParam, optional, propagateToWMS = true) {
     // checks if the param is null or empty
-    if (isNullOrEmpty(resolutionsParam)) {
-      Exception(getValue('exception').no_resolutions);
-    }
+    // if (isNullOrEmpty(resolutionsParam)) {
+    //   Exception(getValue('exception').no_resolutions);
+    // }
 
     // checks if the implementation can set the setResolutions
     if (isUndefined(MapImpl.prototype.setResolutions)) {
@@ -3731,7 +3775,7 @@ class Map extends Base {
     // parses the parameter
     const resolutions = parameter.resolutions(resolutionsParam);
 
-    this.getImpl().setResolutions(resolutions);
+    this.getImpl().setResolutions(resolutions, optional, propagateToWMS);
 
     return this;
   }
@@ -3802,7 +3846,7 @@ class Map extends Base {
    *
    * @public
    * @function
-   * @param {String|Mx.Projection} projection EL "bbox".
+   * @param {String|Mx.Projection} projectionParam Proyección a aplicar al mapa.
    * @param {Boolean} asDefault Utiliza la proyección por defecto.
    * @returns {Map} Devuelve el estado del mapa.
    * @api
@@ -3823,9 +3867,15 @@ class Map extends Base {
     try {
       const oldProj = this.getProjection();
       projection = parameter.projection(projection);
-      this.getImpl().setProjection(projection);
-      this._defaultProj = (this._defaultProj && (asDefault === true));
-      this.fire(EventType.CHANGE_PROJ, [oldProj, projection]);
+
+      if (oldProj.code !== projection.code || asDefault === true) {
+        if (oldProj.code !== projection.code) {
+          this.userCenter_ = null;
+        }
+        this.getImpl().setProjection(projection);
+        this._defaultProj = (this._defaultProj && (asDefault === true));
+        this.fire(EventType.CHANGE_PROJ, [oldProj, projection]);
+      }
     } catch (err) {
       Dialog.error(err.toString());
       if (String(err).indexOf('El formato del parámetro projection no es correcto') >= 0) {
@@ -3834,6 +3884,44 @@ class Map extends Base {
     }
 
     return this;
+  }
+
+  /**
+   * Este método establece las restricciones de extensión para esta
+   * instancia del mapa.
+   *
+   * @public
+   * @function
+   * @param {String|Object} extentConstrains Restricciones de extensión.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  setExtentConstrains(extentConstrains) {
+    if (isNullOrEmpty(extentConstrains)) {
+      Exception(getValue('exception').no_extentConstrains);
+    }
+
+    try {
+      const extentCons = parameter.extentConstrains(extentConstrains);
+      this.userExtentConstrains = extentCons;
+    } catch (err) {
+      Dialog.error(err.toString());
+      throw err;
+    }
+    return this;
+  }
+
+  /**
+   * Este método obtiene las restricciones de extensión para esta
+   * instancia del mapa.
+   *
+   * @public
+   * @function
+   * @returns {String|Object} Devuelve las restricciones de extensión.
+   * @api
+   */
+  getExtentConstrains() {
+    return this.userExtentConstrains;
   }
 
   /**
@@ -3906,6 +3994,10 @@ class Map extends Base {
     return this;
   }
 
+  /**
+   * @param {IDEE.Pugin | string} plugin a plugin or one plugin name
+   * @returns {IDEE.Map}
+   */
   removePlugin(plugin) {
     // checks if the param is null or empty
     if (isNullOrEmpty(plugin)) {
@@ -3923,12 +4015,38 @@ class Map extends Base {
 
       const plugins = this.plugins.filter((plugin2) => plugin2.position === plugin.position);
       if (plugins.length === 0) {
-        this.closePanel(plugin.position);
+        this.closeSidePanels(plugin.position);
       }
     } catch (e) {
       // eslint-disable-next-line no-console
       console.warn(e);
     }
+
+    return this;
+  }
+
+  /**
+   * Este método agrega plugins.
+   *
+   * @public
+   * @function
+   * @param {Array<Plugin>} plugins  Plugins para añadir al mapa.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  addPlugins(plugins) {
+    // checks if the param is null or empty
+    if (isNullOrEmpty(plugins)) {
+      Exception(getValue('exception').no_plugins);
+    }
+    let allPlugins = plugins;
+    if (!isArray(plugins)) {
+      allPlugins = [plugins];
+    }
+
+    allPlugins.forEach((plugin) => {
+      this.addPlugin(plugin);
+    });
 
     return this;
   }
@@ -4000,8 +4118,15 @@ class Map extends Base {
    */
   zoomToMaxExtent(keepUserZoom) {
     this.calculateMaxExtent().then((maxExtent) => {
-      if (keepUserZoom !== true || isNullOrEmpty(this._userZoom)) {
-        this.setBbox(maxExtent);
+      this.setBbox(maxExtent);
+      if (keepUserZoom === true) {
+        this.once(EventType.COMPLETED, () => {
+          if (!isNullOrEmpty(this._userZoom)) {
+            this.setZoom(this._userZoom);
+          } else {
+            this.setZoom(IDEE.config.DEFAULT_ZOOM);
+          }
+        });
       }
       this._finishedMaxExtent = true;
       this._checkCompleted();
@@ -4031,6 +4156,21 @@ class Map extends Base {
     // }
 
     return this;
+  }
+
+  /**
+   * Este método devuelve el ticket, si se ha establecido, para controlar capas seguras.
+   *
+   * @public
+   * @function
+   * @returns {String} Devuelve el ticket.
+   * @api
+   */
+  getTicket() {
+    if (!isNullOrEmpty(this.ticket_)) {
+      return this.ticket_;
+    }
+    return IDEE.config.TICKET;
   }
 
   /**
@@ -4315,6 +4455,27 @@ class Map extends Base {
   }
 
   /**
+   * Añade un panel que alberga un control en su interior
+   *
+   * @function
+   * @param {ControlPanel | ControlPanel[]} controlPanelsVar
+   * @api
+   * @returns {Map} Devuelve el estado del mapa.
+   */
+  addControlPanels(controlPanelsVar) {
+    if (!isNullOrEmpty(controlPanelsVar)) {
+      (isArray(controlPanelsVar) ? controlPanelsVar : [controlPanelsVar])
+        .filter((panel) => !this.panels.some((panel2) => panel2.equals(panel))
+          && panel instanceof ControlPanel)
+        .forEach((panel) => {
+          this.panels.push(panel);
+          panel.addTo(this);
+        });
+    }
+    return this;
+  }
+
+  /**
    * Elimina un panel del mapa.
    *
    * @function
@@ -4322,7 +4483,7 @@ class Map extends Base {
    * @returns {Map} Devuelve el estado del mapa.
    */
   removePanel(panel) {
-    if (panel instanceof Panel) {
+    if (panel instanceof Panel || panel instanceof ControlPanel) {
       panel.destroy();
       this.panels = this.panels.filter((panel2) => !panel2.equals(panel));
     }
@@ -4374,21 +4535,53 @@ class Map extends Base {
 
     container.classList.add('m-api-idee-container');
 
+    this.toolPanelsContainer = document.createElement('tool-panels-container');
+    this.toolPanelsContainer.classList.add('m-api-idee-tool-panels-container');
+    container.appendChild(this.toolPanelsContainer);
+
+    /** THIS PANEL IS USED ONLY IN MOBILE VERSION */
+    this.upPanel = document.createElement('m-api-idee-up-panel');
+    this.upPanel.classList.add('m-api-idee-up-panel');
+    this.toolPanelsContainer.appendChild(this.upPanel);
+
+    this.upHandle = document.createElement('up-handle');
+    this.upHandle.classList.add('m-api-idee-up-handle');
+    this.upHandle.style.visibility = 'hidden';
+    this.upPanel.appendChild(this.upHandle);
+
     this.leftPanel = document.createElement('left-panel');
-    this.leftPanel.id = 'leftPanel';
     this.leftPanel.classList.add('m-api-idee-left-panel');
-    container.appendChild(this.leftPanel);
+    this.toolPanelsContainer.appendChild(this.leftPanel);
 
     this.leftHandle = document.createElement('left-handle');
-    this.leftHandle.id = 'leftHandle';
     this.leftHandle.classList.add('m-api-idee-left-handle');
     this.leftHandle.style.visibility = 'hidden';
     this.leftPanel.appendChild(this.leftHandle);
 
     this.leftButtons = document.createElement('left-buttons');
-    this.leftButtons.id = 'leftButtons';
     this.leftButtons.classList.add('m-api-idee-left-buttons');
-    container.appendChild(this.leftButtons);
+    this.toolPanelsContainer.appendChild(this.leftButtons);
+
+    this.centerPanel = document.createElement('center-panel');
+    this.centerPanel.classList.add('m-api-idee-center-panel');
+
+    this.centerPanelTopLeft = document.createElement('center-panel-top-left');
+    this.centerPanelTopLeft.classList.add('m-api-idee-center-panel-top-left');
+    this.centerPanel.appendChild(this.centerPanelTopLeft);
+
+    this.centerPanelTopRight = document.createElement('center-panel-top-right');
+    this.centerPanelTopRight.classList.add('m-api-idee-center-panel-top-right');
+    this.centerPanel.appendChild(this.centerPanelTopRight);
+
+    this.centerPanelBottomLeft = document.createElement('center-panel-bottom-left');
+    this.centerPanelBottomLeft.classList.add('m-api-idee-center-panel-bottom-left');
+    this.centerPanel.appendChild(this.centerPanelBottomLeft);
+
+    this.centerPanelBottomRight = document.createElement('center-panel-bottom-right');
+    this.centerPanelBottomRight.classList.add('m-api-idee-center-panel-bottom-right');
+    this.centerPanel.appendChild(this.centerPanelBottomRight);
+
+    this.toolPanelsContainer.appendChild(this.centerPanel);
 
     this.mapPanel = document.createElement('map-panel');
     this.mapPanel.id = 'mapPanel';
@@ -4396,148 +4589,257 @@ class Map extends Base {
     container.appendChild(this.mapPanel);
 
     this.rightButtons = document.createElement('right-buttons');
-    this.rightButtons.id = 'rightButtons';
     this.rightButtons.classList.add('m-api-idee-right-buttons');
-    container.appendChild(this.rightButtons);
+    this.toolPanelsContainer.appendChild(this.rightButtons);
 
     this.rightPanel = document.createElement('right-panel');
-    this.rightPanel.id = 'rightPanel';
     this.rightPanel.classList.add('m-api-idee-right-panel');
-    container.appendChild(this.rightPanel);
+    this.toolPanelsContainer.appendChild(this.rightPanel);
 
     this.rightHandle = document.createElement('right-handle');
-    this.rightHandle.id = 'rightHandle';
     this.rightHandle.classList.add('m-api-idee-right-handle');
     this.rightHandle.style.visibility = 'hidden';
     this.rightPanel.appendChild(this.rightHandle);
 
+    this.downPanel = document.createElement('down-panel');
+    this.downPanel.classList.add('m-api-idee-down-panel');
+    this.toolPanelsContainer.appendChild(this.downPanel);
+
+    this.isResizingUp = false;
     this.isResizingLeft = false;
     this.isResizingRight = false;
 
     this.leftHandle.addEventListener('mousedown', (event) => {
       event.preventDefault();
-
+      this.toolPanelsContainer.classList.add('is-resizing');
       this.isResizingLeft = true;
       document.body.style.userSelect = 'none';
     });
 
     this.rightHandle.addEventListener('mousedown', (event) => {
       event.preventDefault();
-
+      this.toolPanelsContainer.classList.add('is-resizing');
       this.isResizingRight = true;
       document.body.style.userSelect = 'none';
     });
 
+    this.upHandle.addEventListener('mousedown', (event) => {
+      event.preventDefault();
+      this.toolPanelsContainer.classList.add('is-resizing');
+      this.isResizingUp = true;
+      document.body.style.userSelect = 'none';
+    });
+
     document.addEventListener('mouseup', () => {
+      this.toolPanelsContainer.classList.remove('is-resizing');
       this.isResizingLeft = false;
       this.isResizingRight = false;
+      this.isResizingUp = false;
+
       document.body.style.userSelect = 'auto';
     });
 
     document.addEventListener('mousemove', (event) => {
-      if (!this.isResizingLeft && !this.isResizingRight) {
-        return;
-      }
+      const containerRect = container.getBoundingClientRect();
 
       if (this.isResizingLeft) {
-        const containerRect = container.getBoundingClientRect();
-        let newWidth = Math.max(event.clientX - containerRect.left, 0);
-        newWidth = Math.min(newWidth, this.maxPanelWidth);
-        newWidth = Math.max(newWidth, this.minPanelWidth);
-        this.leftPanel.style.width = `${newWidth}px`;
-        this.leftButtons.style.left = `${newWidth}px`;
-      } else {
-        const containerRect = container.getBoundingClientRect();
-        let newWidth = Math.max(containerRect.right - event.clientX, 0);
-        newWidth = Math.min(newWidth, this.maxPanelWidth);
-        newWidth = Math.max(newWidth, this.minPanelWidth);
-        this.rightPanel.style.width = `${newWidth}px`;
-        this.rightButtons.style.right = `${newWidth}px`;
+        let newWidth = event.clientX - containerRect.left;
+        newWidth = Math.min(Math.max(newWidth, this.minPanelWidth), this.maxPanelWidth);
+        this.toolPanelsContainer.style.setProperty('--left-width', `${newWidth}px`);
+      } else if (this.isResizingRight) {
+        let newWidth = containerRect.right - event.clientX;
+        newWidth = Math.min(Math.max(newWidth, this.minPanelWidth), this.maxPanelWidth);
+        this.toolPanelsContainer.style.setProperty('--right-width', `${newWidth}px`);
+      } else if (this.isResizingUp) {
+        let newHeight = event.clientY - containerRect.top;
+        newHeight = Math.min(
+          Math.max(newHeight, this.minUpPanelHeight),
+          this.maxUpPanelHeight,
+        );
+        this.toolPanelsContainer.style.setProperty('--up-height', `${newHeight}px`);
       }
     });
   }
 
-  /* eslint-disable no-param-reassign */
-  openPanel(side, minWidth, maxWidth) {
-    const panel = side === 'left' ? this.leftPanel : this.rightPanel;
-    const handle = panel === this.leftPanel ? this.leftHandle : this.rightHandle;
-    const buttons = panel === this.leftPanel ? this.leftButtons : this.rightButtons;
+  /**
+   * @param {HTMLElement} mapPanel represents one avaliable tool panel to add content
+   * @param {Panel} panel
+   */
+  addPanelToPanelContainer(mapPanel, panel) {
+    mapPanel.appendChild(panel.element);
+  }
 
-    if (panel.style.width === '') {
-      panel.style.width = '0px';
-    }
-
-    this.minPanelWidth = 256;
-    this.maxPanelWidth = 360;
-
-    if (minWidth >= this.minPanelWidth && minWidth <= this.maxPanelWidth) {
-      this.minPanelWidth = minWidth;
-    }
-
-    if (maxWidth >= this.minPanelWidth && maxWidth <= this.maxPanelWidth) {
-      this.maxPanelWidth = maxWidth;
-    }
-
-    this.openPanelWidth = panel.offsetWidth;
-    if (this.openPanelWidth < this.minPanelWidth) {
-      this.openPanelWidth = this.minPanelWidth;
-    }
-    if (this.openPanelWidth > this.maxPanelWidth) {
-      this.openPanelWidth = this.maxPanelWidth;
-    }
-
-    this.addTransition(panel, handle, buttons);
-
-    setTimeout(() => {
-      panel.style.width = `${this.openPanelWidth}px`;
-      if (panel === this.leftPanel) {
-        buttons.style.left = panel.style.width;
-      } else {
-        buttons.style.right = panel.style.width;
+  /**
+   * This method open one lateral panel, if is possible depending on the map view.
+   * In compact mode, it will open a top panel.
+   *
+   * @param {Panel} panel a panel used by plugins
+   */
+  openSidePanel(panel) {
+    if (this.isCompactMode()) {
+      [
+        [this.leftPanel, this.leftHandle, '--left-width'],
+        [this.rightPanel, this.rightHandle, '--right-width'],
+      ].forEach(([lateralPanel, handle, cssVar]) => {
+        this.closeLateralPanel_(lateralPanel, handle, cssVar);
+      });
+      this.openPanelCompactMode(panel);
+    } else {
+      const { minWidth, maxWidth, position } = panel;
+      let sidePanel; let handle;
+      let panelWidth;
+      if (position === Position.LEFT) {
+        sidePanel = this.leftPanel;
+        handle = this.leftHandle;
+        panelWidth = '--left-width';
+      } else if (position === Position.RIGHT) {
+        sidePanel = this.rightPanel;
+        handle = this.rightHandle;
+        panelWidth = '--right-width';
       }
 
+      this.minPanelWidth = 256;
+      this.maxPanelWidth = 608;
+
+      if (minWidth >= this.minPanelWidth && minWidth <= this.maxPanelWidth) {
+        this.minPanelWidth = minWidth;
+      }
+
+      if (maxWidth >= this.minPanelWidth && maxWidth <= this.maxPanelWidth) {
+        this.maxPanelWidth = maxWidth;
+      }
+
+      this.openPanelWidth = sidePanel.offsetWidth;
+      if (this.openPanelWidth < this.minPanelWidth) {
+        this.openPanelWidth = this.minPanelWidth;
+      }
+      if (this.openPanelWidth > this.maxPanelWidth) {
+        this.openPanelWidth = this.maxPanelWidth;
+      }
+
+      this.addPanelToPanelContainer(sidePanel, panel);
       handle.style.visibility = 'visible';
-
-      this.removeTransition(panel, handle, buttons);
-    }, 1);
+      this.toolPanelsContainer.style.setProperty(panelWidth, `${this.openPanelWidth}px`);
+    }
   }
 
-  /* eslint-disable no-param-reassign */
-  closePanel(side) {
-    const panel = side === 'left' ? this.leftPanel : this.rightPanel;
-    const handle = panel === this.leftPanel ? this.leftHandle : this.rightHandle;
-    const buttons = panel === this.leftPanel ? this.leftButtons : this.rightButtons;
-
-    this.addTransition(panel, handle, buttons);
-
-    setTimeout(() => {
-      panel.style.width = '0px';
-      if (panel === this.leftPanel) {
-        buttons.style.left = panel.style.width;
-      } else {
-        buttons.style.right = panel.style.width;
-      }
-
-      handle.style.visibility = 'hidden';
-
-      this.removeTransition(panel, handle, buttons);
-    }, 1);
+  /**
+   * Closes a side panel if it is open, hiding its handle and clearing its content.
+   * - ⚠️ Warning: This method should not be called by the user.
+   * @private
+   * @function
+   * @param {HTMLElement} panel Side panel element.
+   * @param {HTMLElement} handle Associated handle element.
+   * @param {string} cssVar CSS variable that controls the panel's width.
+   */
+  closeLateralPanel_(panel, handle, cssVar) {
+    const currentWidth = this.toolPanelsContainer.style.getPropertyValue(cssVar);
+    if (currentWidth && currentWidth !== '0px') {
+      this.toolPanelsContainer.style.setProperty(cssVar, '0px');
+      handle.style.visibility = 'hidden'; // eslint-disable-line no-param-reassign
+      Array.from(panel.children).forEach((child) => {
+        if (child !== handle) panel.removeChild(child);
+      });
+    }
   }
 
-  /* eslint-disable no-param-reassign */
-  addTransition(panel, handle, buttons) {
-    panel.style.transition = 'width 0.3s ease-in-out';
-    handle.style.transition = 'visibility 0.3s ease-in-out';
-    buttons.style.transition = panel === this.leftPanel ? 'left 0.3s ease-in-out' : 'right 0.3s ease-in-out';
+  /**
+   * Closes all side active panels.
+   *
+   * @param {string} position Map position (Position.LEFT/RIGHT/DOWN/etc.)
+   */
+  closeSidePanels(position) {
+    const panelElementsList = [];
+    const isCompact = this.isCompactMode();
+    const upPanelElements = [this.upPanel, this.upHandle, '--up-height'];
+    const leftPanelElements = [this.leftPanel, this.leftHandle, '--left-width'];
+    const rightPanelElements = [this.rightPanel, this.rightHandle, '--right-width'];
+    panelElementsList.push(upPanelElements);
+    if (isCompact) {
+      panelElementsList.push(leftPanelElements);
+      panelElementsList.push(rightPanelElements);
+    } else if (position === Position.LEFT) {
+      panelElementsList.push(leftPanelElements);
+    } else if (position === Position.RIGHT) {
+      panelElementsList.push(rightPanelElements);
+    }
+    panelElementsList.forEach(([panel, handle, gridSizeVar]) => {
+      this.closeLateralPanel_(panel, handle, gridSizeVar);
+    });
   }
 
-  /* eslint-disable no-param-reassign */
-  removeTransition(panel, handle, buttons) {
-    setTimeout(() => {
-      panel.style.transition = '';
-      handle.style.transition = '';
-      buttons.style.transition = '';
-    }, 300);
+  /**
+   * This method deactivate all side active panel buttons except the one that is going to be open,
+   * if is possible depending on the map view.
+   *
+   * @param {Button} button represents one avaliable button to open a side panel
+   */
+  deactivateSidePanelButtons(button) {
+    const isCompact = this.isCompactMode();
+    /** @type {IDEE.ui.Button[]} */
+    let buttons = this.buttons ?? [];
+
+    const isUpPanelOpened = (() => {
+      const v = this.toolPanelsContainer.style.getPropertyValue('--up-height');
+      return v !== '' && v !== '0px';
+    })();
+
+    if (isCompact || isUpPanelOpened) {
+      buttons = buttons.filter((mapButton) => !mapButton.equals(button));
+    } else {
+      buttons = buttons.filter(
+        (mapButton) => !mapButton.equals(button) && mapButton.position === button.position,
+      );
+    }
+
+    buttons.forEach((mapButton) => {
+      mapButton.deactivate();
+    });
+  }
+
+  /**
+   * @param {HTMLElement} container
+   * @returns {Boolean} indicates whether the parent map container
+   * has a movable view size, ("compact")
+   */
+  isCompactMode() {
+    return this.toolPanelsContainer.clientWidth <= 600;
+  }
+
+  /**
+   * Opens one Panel in compact "mobile view"
+   *
+   * @param {Panel} panel a panel used by plugins
+   */
+  openPanelCompactMode(panel) {
+    const {
+      minHeightCompact = 250,
+      maxHeightCompact = this.toolPanelsContainer.clientHeight * 0.6 < 450
+        ? 550 : this.toolPanelsContainer.clientHeight * 0.6,
+    } = panel;
+
+    this.minUpPanelHeight = this.toolPanelsContainer.clientHeight * 0.25;
+    this.maxUpPanelHeight = this.toolPanelsContainer.clientHeight * 0.6;
+
+    if (minHeightCompact >= this.minUpPanelHeight && minHeightCompact <= this.maxUpPanelHeight) {
+      this.minUpPanelHeight = minHeightCompact;
+    }
+
+    if (maxHeightCompact >= this.minUpPanelHeight && maxHeightCompact <= this.maxUpPanelHeight) {
+      this.maxUpPanelHeight = maxHeightCompact;
+    }
+
+    this.openUpPanelHeight = this.upPanel.offsetWidth;
+    if (this.openUpPanelHeight < this.minUpPanelHeight) {
+      this.openUpPanelHeight = this.minUpPanelHeight;
+    }
+    if (this.openUpPanelHeight > this.maxUpPanelHeight) {
+      this.openUpPanelHeight = this.maxUpPanelHeight;
+    }
+
+    this.addPanelToPanelContainer(this.upPanel, panel);
+    this.upHandle.style.visibility = 'visible';
+    this.toolPanelsContainer.style.setProperty('--up-height', `${this.openUpPanelHeight}px`);
   }
 
   /**
@@ -4708,7 +5010,25 @@ class Map extends Base {
    * @api
    */
   on(eventType, listener, optThis) {
-    super.on(eventType, listener, optThis);
+    const idEvent = super.on(eventType, listener, optThis);
+    if ((eventType === EventType.COMPLETED) && (this._finishedMap === true)) {
+      this.fire(EventType.COMPLETED);
+    }
+    return idEvent;
+  }
+
+  /**
+   * Establece la devolución de llamada cuando se carga la instancia.
+   *
+   * @public
+   * @function
+   * @param {IDEE.evt} eventType Tipo de evento.
+   * @param {Function} listener "Callback".
+   * @param {Object} optThis Opciones de la instancia del mapa.
+   * @api
+   */
+  once(eventType, listener, optThis) {
+    super.once(eventType, listener, optThis);
     if ((eventType === EventType.COMPLETED) && (this._finishedMap === true)) {
       this.fire(EventType.COMPLETED);
     }
@@ -4756,7 +5076,7 @@ class Map extends Base {
    */
   evtRemoveAttributions_() {
     this.on(EventType.REMOVED_LAYER, (layersEvt) => {
-      const controlAttributions = this.getControls().find(({ name }) => name === 'attributions');
+      const controlAttributions = this.getControls().find(({ name }) => name === Attributions.NAME);
 
       if (!layersEvt || !controlAttributions) {
         return;
@@ -4852,6 +5172,32 @@ class Map extends Base {
   }
 
   /**
+   * Establece los niveles de zoom del mapa aplicando las resoluciones correspondientes.
+   *
+   * @function
+   * @public
+   * @api
+   * @param {Number} zoomLevels Niveles de zoom.
+   */
+  setZoomLevels(zoomLevels) {
+    if (!isUndefined(zoomLevels) && !isNullOrEmpty(zoomLevels)) {
+      this.calculateMaxExtent().then((extent) => {
+        const zoom = this.getZoom();
+        const size = this.getMapImpl().getSize();
+        const units = this.getProjection().units;
+        const resolutions = generateResolutionsFromExtent(extent, size, zoomLevels, units);
+        this.setResolutions(resolutions, true);
+        IDEE.config.ZOOM_LEVELS = zoomLevels;
+        if (zoom < zoomLevels) {
+          this.setZoom(zoom);
+        }
+      }).catch((error) => {
+        throw error;
+      });
+    }
+  }
+
+  /**
    * Este método aplica un color al fondo del mapa
    *
    * @function
@@ -4913,6 +5259,32 @@ class Map extends Base {
       Exception(getValue('exception').no_set_rotation_method);
     }
     this.getImpl().setRotation(rotation * (Math.PI / 180));
+  }
+
+  /**
+   * Este método establece la escala más cercana para esta
+   * instancia del mapa.
+   *
+   * @public
+   * @function
+   * @param {Number} scale Escala.
+   * @api
+   */
+  setToClosestScale(scale) {
+    const resolution = getResolutionFromScale(scale, this.getProjection().units);
+    this.getImpl().setToClosestScale(resolution);
+  }
+
+  /**
+   * Función que obtiene el nombre de la implementación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @return {string} Devuelve el nombre de la implementación.
+   */
+  getImplementation() {
+    return this.getImpl().getImplementation();
   }
 
   /**

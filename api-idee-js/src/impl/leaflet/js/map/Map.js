@@ -8,6 +8,7 @@ import WMS from 'IDEE/layer/WMS';
 import Panzoombar from 'IDEE/control/Panzoombar';
 import Control from 'IDEE/control/Control';
 import { getValue } from 'IDEE/i18n/language';
+import * as MapImplType from '../../../common/mapImplType';
 
 export default class Map extends MObject {
   /**
@@ -49,6 +50,8 @@ export default class Map extends MObject {
      * @type {Mx.parameters.MapOptions}
      */
     this.options_ = options;
+
+    this.mapType = MapImplType.Leafet;
 
     /**
      * Implementation of this map
@@ -1285,5 +1288,17 @@ export default class Map extends MObject {
         },
       });
     });
+  }
+
+  /**
+     * Función que obtiene el nombre de la implementación del mapa.
+     *
+     * @function
+     * @public
+     * @api
+     * @return {MapImplType.Leafet} Devuelve el nombre de la implementación.
+     */
+  getImplementation() {
+    return MapImplType.Leafet;
   }
 }

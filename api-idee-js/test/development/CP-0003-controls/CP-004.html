@@ -6,21 +6,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="idee" content="yes">
-
     <title>PRUEBA DESARROLLO</title>
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: auto;
-        }
-    </style>
-
 </head>
 
 <body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosicion" title="Posición del Control">Posición del panel "position"</label>
+                <select name="position" id="selectPosicion">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda (left)</option>
+                    <option value="right">Derecha (right)</option>
+                    <option value="center-top-left">Centro superior izquierdo (center-top-left)</option>
+                    <option value="center-top-right">Centro superior derecho (center-top-right)</option>
+                    <option value="center-bottom-left">Centro inferior izquierdo (center-bottom-left)</option>
+                    <option value="center-bottom-right">Centro inferior derecho (center-bottom-left)</option>
+                    <option value="down">Abajo (down)</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputTooltip" title="Título ilustrativo que aporta información adicional">Título
+                    "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
+            </div>
+            <div>
+                <label for="inputOrder"
+                    title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                    entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="1">
+            </div>
+            <div>
+                <label for="featureCountInput" title="Número de features">Conteo de features "featureCount"</label>
+                <input type="number" name="featureCount" id="featureCountInput" list="featureCountSug" value="1"
+                    step="1" min="1">
+            </div>
+            <div>
+                <label for="bufferInput" title="ratio en píxeles">Área de influencia en afectada "buffer"</label>
+                <input type="number" name="buffer" id="bufferInput" list="bufferInputSug" value="5" step="1" min="1">
+            </div>
+            <div>
+                <label for="activatedSelect">Activado por defecto "activated"</label>
+                <select name="exactScale" id="activatedSelect">
+                    <option value=''>default (no value)</option>
+                    <option value="true" selected="selected">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar control" class="m-test-button" id="removeButton">Eliminar Control</button>
+        </div>
+    </div>
+    </div>
     <div id="map" class="map"></div>
     <script src="/config.js" charset="utf-8"></script>
     <script src="/CP-0003-controls/CP-004.js" charset="utf-8"></script>

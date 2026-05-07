@@ -9,11 +9,6 @@ import { getValue } from './i18n/language';
 /* global FileReader */
 /* global MouseEvent */
 const NO_DATA_VALUE = -9999;
-const helpIconUrlInfo = new URL('../assets/icons/info.svg', import.meta.url).href;
-const helpIconUrlPapelera = new URL('../assets/icons/papelera.svg', import.meta.url).href;
-const helpIconUrlCopiar = new URL('../assets/icons/copiar.svg', import.meta.url).href;
-const helpIconUrlImport = new URL('../assets/icons/import.svg', import.meta.url).href;
-const helpIconUrlAllPoints = new URL('../assets/icons/allPoints.svg', import.meta.url).href;
 
 export default class InfocoordinatesControl extends IDEE.Control {
   /**
@@ -25,7 +20,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api stable
    */
-  constructor(decimalGEOcoord, decimalUTMcoord, helpUrl, order, outputDownloadFormat) {
+  // constructor(decimalGEOcoord, decimalUTMcoord, helpUrl, order, outputDownloadFormat) {
+  constructor(options = {}) {
     // 1. checks if the implementation can create PluginControl
     if (IDEE.utils.isUndefined(InfocoordinatesImplControl)
       || (IDEE.utils.isObject(InfocoordinatesImplControl)
@@ -34,20 +30,22 @@ export default class InfocoordinatesControl extends IDEE.Control {
     }
     // 2. implementation of this control
     const impl = new InfocoordinatesImplControl();
-    super('Infocoordinates', impl);
+    super('Infocoordinates', impl, options);
     this.map = null;
     this.numTabs = 0;
     this.layerFeatures = new IDEE.layer.Vector();
     this.layerFeatures.name = 'infocoordinatesLayerFeatures';
     this.layerFeatures.displayInLayerSwitcher = false;
-    this.decimalGEOcoord = decimalGEOcoord;
-    this.decimalUTMcoord = decimalUTMcoord;
-    this.helpUrl = helpUrl;
+    this.decimalGEOcoord_ = options.decimalGEOcoord;
+    this.decimalUTMcoord_ = options.decimalUTMcoord;
+    this.helpUrl = options.helpUrl;
     this.clickedDeactivate = false;
-    this.order = order;
-    this.outputDownloadFormat = outputDownloadFormat;
+    this.order = options.order;
+    this.outputDownloadFormat = options.outputDownloadFormat;
     this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
     this.selectedProjection = null;
+
+    this.displayON = false;
   }
 
   /**
@@ -59,8 +57,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
    * @api stable
    */
   createView(map) {
-    this.map = map;
-    this.selectedProjection = this.map.getProjection().code;
+    this.map_ = map;
+    this.selectedProjection = this.map_.getProjection().code;
+    this.isProjGeographic = this.getImpl().isProjGeographic(this.selectedProjection);
     if (!IDEE.template.compileSync) { // JGL: retrocompatibilidad API IDEE
       IDEE.template.compileSync = (string, options) => {
         let templateCompiled;
@@ -88,11 +87,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
           hasHelp: this.helpUrl !== undefined && IDEE.utils.isUrl(this.helpUrl),
           helpUrl: this.helpUrl,
           projections: this.projections,
-          helpIconUrlInfo,
-          helpIconUrlPapelera,
-          helpIconUrlCopiar,
-          helpIconUrlImport,
-          helpIconUrlAllPoints,
+          datum: this.getImpl().datumCalc(this.selectedProjection),
+          geographicProj: this.isProjGeographic,
           translations: {
             title: getValue('title'),
             point: getValue('point'),
@@ -122,8 +118,6 @@ export default class InfocoordinatesControl extends IDEE.Control {
       this.accessibilityTab(html);
 
       this.map.addLayers(this.layerFeatures);
-      this.panel.on(IDEE.evt.SHOW, this.activate, this);
-      this.panel.on(IDEE.evt.HIDE, this.deactivate, this);
 
       success(html);
       html.querySelector('#m-infocoordinates-buttonRemoveAllPoints').addEventListener('click', this.removeAllPoints.bind(this));
@@ -134,6 +128,12 @@ export default class InfocoordinatesControl extends IDEE.Control {
       html.querySelector('#m-infocoordinates-buttonRemovePoint').addEventListener('click', this.removePoint.bind(this));
       html.querySelector('#m-infocoordinates-copylatlon').addEventListener('click', this.copylatlon.bind(this));
       html.querySelector('#m-infocoordinates-copyxy').addEventListener('click', this.copyxy.bind(this));
+      const helpBtn = html.querySelector('#m-infocoordinates-help-icon');
+      if (helpBtn) helpBtn.addEventListener('click', this.showHelp.bind(this));
+      (this.isProjGeographic
+        ? html.querySelector('#m-infocoordinates-geo-coords')
+        : html.querySelector('#m-infocoordinates-utm-coords')
+      ).classList.remove('noDisplay');
     });
   }
 
@@ -220,16 +220,20 @@ export default class InfocoordinatesControl extends IDEE.Control {
     document.body.style.cursor = 'crosshair';
     this.map.getFeatureHandler().deactivate();
     document.addEventListener('keyup', this.checkEscKey.bind(this));
-    /* if (this.clickedDeactivate) {
-      document.querySelector('div.m-panel.m-plugin-infocoordinates > button').click();
-    } */
   }
 
   checkEscKey(evt) {
-    const opened = document.querySelector('div.m-panel.m-plugin-infocoordinates').classList.contains('opened');
-    if (evt.key === 'Escape' && opened) {
-      document.querySelector('div.m-panel.m-plugin-infocoordinates.opened > button').click();
-      document.removeEventListener('keyup', this.checkEscKey);
+    const panelElement = document.querySelector('div.m-panel.m-plugin-infocoordinates');
+
+    if (panelElement) {
+      const opened = panelElement.classList.contains('opened');
+      if (evt.key === 'Escape' && opened) {
+        const buttonElement = panelElement.querySelector('button');
+        if (buttonElement) {
+          buttonElement.click();
+        }
+        document.removeEventListener('keyup', this.checkEscKey);
+      }
     }
   }
 
@@ -267,7 +271,16 @@ export default class InfocoordinatesControl extends IDEE.Control {
   addPoint(evt) {
     const numPoint = this.numTabs + 1;
     document.getElementById('m-infocoordinates-srs-selector').removeAttribute('disabled');
-    document.getElementById('m-infocoordinates-buttonConversorFormat').removeAttribute('disabled');
+
+    if (this.numTabs === 0) {
+      document.getElementById('m-infocoordinates-buttonRemovePoint').classList.remove('noDisplay');
+      document.getElementById('m-infocoordinates-copylatlon').classList.remove('noDisplay');
+
+      document.getElementsByClassName('m-infocoordinates-div-buttonRemoveAllPoints')[0].classList.remove('noDisplay');
+      document.getElementsByClassName('m-infocoordinates-div-buttonImportAllPoints')[0].classList.remove('noDisplay');
+      document.getElementsByClassName('m-infocoordinates-div-buttonCopyAllPoints')[0].classList.remove('noDisplay');
+      document.getElementsByClassName('m-infocoordinates-div-buttonDisplayAllPoints')[0].classList.remove('noDisplay');
+    }
 
     // Mostramos la barra de herramientas inferior
     const toolbar = document.querySelector('.infocoordinates-toolbar');
@@ -276,7 +289,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
     }
 
     // Eliminamos las etiquetas de los puntos
-    if (document.getElementsByClassName('icon-displayON').length === 0 && this.map.getMapImpl().getOverlays().getLength() > 0) {
+    if (this.displayON && this.map.getMapImpl().getOverlays().getLength() > 0) {
       this.removeAllDisplaysPoints();
     }
 
@@ -406,32 +419,21 @@ export default class InfocoordinatesControl extends IDEE.Control {
       },
     });
 
-    // Calculamos el número de elementos de numPoints que hay
     const countPoints = document.getElementsByClassName('contenedorPunto').length + document.getElementsByClassName('contenedorPuntoSelect').length;
-    // Si el numPoint que se pasa es mayor que la cantidad de numPoints
-    // que existe, quiere decir que es nuevo, se añade.
-    // En el caso de que no sea nuevo, se modifica el estilo del punto.
     if (numPoint > countPoints) {
       this.displayPoint(numPoint);
-    } else if (numPoint === countPoints) {
+    } else {
+      const currentSelected = document.querySelector('.contenedorPuntoSelect');
+      if (currentSelected) {
+        currentSelected.classList.replace('contenedorPuntoSelect', 'contenedorPunto');
+      }
       document.querySelectorAll('.contenedorPunto').forEach((elem) => {
-        if (parseInt(elem.textContent, 10) === numPoint) {
+        if (parseInt(elem.textContent.trim(), 10) === numPoint) {
           elem.classList.replace('contenedorPunto', 'contenedorPuntoSelect');
         }
       });
 
-      // Eliminamos las etiquetas de los puntos
-      if (document.getElementsByClassName('icon-displayON').length === 0 && this.map.getMapImpl().getOverlays().getLength() > 0) {
-        this.removeAllDisplaysPoints();
-      }
-    } else {
-      document.getElementsByClassName('contenedorPuntoSelect')[0].classList.replace('contenedorPuntoSelect', 'contenedorPunto');
-      try {
-        document.getElementsByClassName('contenedorPunto')[document.getElementsByClassName('contenedorPunto').length - numPoint].classList.replace('contenedorPunto', 'contenedorPuntoSelect');
-      } catch (err) { /* Continue */ }
-
-      // Eliminamos las etiquetas de los puntos
-      if (document.getElementsByClassName('icon-displayON').length === 0 && this.map.getMapImpl().getOverlays().getLength() > 0) {
+      if (this.displayON && this.map.getMapImpl().getOverlays().getLength() > 0) {
         this.removeAllDisplaysPoints();
       }
     }
@@ -456,7 +458,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
                 <table>
                     <tbody>
                       <tr>
-                        <td style="font-weight: bold; font-family: arial;">${numPoint}</td></b>
+                        <td style="font-weight: bold;">${numPoint}</td></b>
                       </tr>
                     </tbody>
                 </table>
@@ -508,8 +510,11 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const datumBox = document.getElementById('m-infocoordinates-datum');
     const coordX = document.getElementById('m-infocoordinates-coordX');
     const coordY = document.getElementById('m-infocoordinates-coordY');
-    const srsSelector = document.getElementById('m-infocoordinates-epsg-selected').value;
-    // const selectSRS = srsSelector.value;
+    const inputSRS = document.querySelector('.m-infocoordinates-input-select');
+    const selector = document.querySelector('#m-infocoordinates-srs-selector');
+
+    // Cojo el srs seleccionado en el select
+    const selectSRS = !inputSRS.value.startsWith('EPSG:') ? `EPSG:${inputSRS.value}` : inputSRS.value;
 
     // Cojo el formato de las coordenadas geográficas
     const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
@@ -519,48 +524,60 @@ export default class InfocoordinatesControl extends IDEE.Control {
     try {
       pointDataOutput = this.getImpl().getCoordinates(
         featureSelected,
-        srsSelector,
+        selectSRS,
         formatGMS,
-        this.decimalGEOcoord,
-        this.decimalUTMcoord,
+        this.decimalGEOcoord_,
+        this.decimalUTMcoord_,
       );
+      this.selectedProjection = selectSRS;
     } catch (error) {
       try {
-        await IDEE.impl.ol.js.projections.setNewProjection(srsSelector);
+        await IDEE.impl.ol.js.projections.setNewProjection(selectSRS);
         pointDataOutput = this.getImpl().getCoordinates(
           featureSelected,
-          srsSelector,
+          selectSRS,
           formatGMS,
-          this.decimalGEOcoord,
-          this.decimalUTMcoord,
+          this.decimalGEOcoord_,
+          this.decimalUTMcoord_,
         );
+        this.selectedProjection = selectSRS;
       } catch (err) {
         pointDataOutput = this.getImpl().getCoordinates(
           featureSelected,
           this.selectedProjection,
           formatGMS,
-          this.decimalGEOcoord,
-          this.decimalUTMcoord,
+          this.decimalGEOcoord_,
+          this.decimalUTMcoord_,
         );
-        srsSelector.value = this.selectedProjection;
         IDEE.dialog.error(`${getValue('exception.srs')} ${this.selectedProjection}`);
       }
     }
-
+    inputSRS.value = this.selectedProjection;
+    this.isProjGeographic = this.getImpl().isProjGeographic(this.selectedProjection);
+    const gmsButton = document.getElementById('m-infocoordinates-buttonConversorFormat');
+    if (this.isProjGeographic) {
+      document.getElementById('m-infocoordinates-geo-coords').classList.remove('noDisplay');
+      document.getElementById('m-infocoordinates-utm-coords').classList.add('noDisplay');
+      gmsButton.removeAttribute('disabled');
+    } else {
+      document.getElementById('m-infocoordinates-geo-coords').classList.add('noDisplay');
+      document.getElementById('m-infocoordinates-utm-coords').classList.remove('noDisplay');
+      gmsButton.checked = false;
+      gmsButton.setAttribute('disabled', 'disabled');
+    }
     this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
-    // selector.innerHTML = `
-    //   <li>
-    // <a class="m-infocoordinates-option-disabled" href="#" value="default" tabindex="-1" disabled>
-    //       ${getValue('choose_create_epsg')}
-    //   </a></li>
-    //   ${this.projections.map((proj) => `
-    //       <li>
-    //           <a href="#" value="${proj.codes[0]}">
-    //               ${proj.codes[0]}
-    //           </a>
-    //       </li>
-    //   `).join('')}
-    // `;
+    selector.innerHTML = `
+      <li><a class="m-infocoordinates-option-disabled" href="#" value="default" tabindex="-1" disabled>
+          ${getValue('choose_create_epsg')}
+      </a></li>
+      ${this.projections.map((proj) => `
+          <li>
+              <a href="#" value="${proj.codes[0]}">
+                  ${proj.codes[0]}
+              </a>
+          </li>
+      `).join('')}
+    `;
 
     // pinto
     pointBox.innerHTML = pointDataOutput.NumPoint;
@@ -663,7 +680,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
   }
 
   copyAllPoints() {
-    let printDocument = `${getValue('point').replace(':', '')},Long,Lat,Alt,EPSG,X,Y,Alt,EPSG\n`;
+    let printDocument = `${getValue('point').replace(':', '')},${this.isProjGeographic ? 'Long,Lat' : 'X,Y'},Alt,EPSG\n`;
     for (let i = 0; i < this.layerFeatures.getImpl().getFeatures(true).length; i += 1) {
       const featureSelected = this.layerFeatures.getImpl().getFeatures(true)[i];
       const alt = featureSelected.getAttributes().Altitude !== undefined ? parseFloat(featureSelected.getAttributes().Altitude) : '-';
@@ -679,29 +696,21 @@ export default class InfocoordinatesControl extends IDEE.Control {
         featureSelected,
         selectSRS,
         formatGMS,
-        this.decimalGEOcoord,
-        this.decimalUTMcoord,
+        this.decimalGEOcoord_,
+        this.decimalUTMcoord_,
       );
-      const proj = pointDataOutput.projectionUTM.code;
 
-      const coordinatesGEO = [
-        pointDataOutput.projectionGEO.coordinatesGEO.longitude,
-        pointDataOutput.projectionGEO.coordinatesGEO.latitude,
-      ];
+      const coordinates = this.isProjGeographic
+        ? [
+          pointDataOutput.projectionGEO.coordinatesGEO.longitude,
+          pointDataOutput.projectionGEO.coordinatesGEO.latitude,
+        ]
+        : [
+          pointDataOutput.projectionUTM.coordinatesUTM.coordX,
+          pointDataOutput.projectionUTM.coordinatesUTM.coordY,
+        ];
 
-      const coordinatesUTM = [
-        pointDataOutput.projectionUTM.coordinatesUTM.coordX,
-        pointDataOutput.projectionUTM.coordinatesUTM.coordY,
-      ];
-
-      let projection;
-      if (proj.indexOf('25829') > -1 || proj.indexOf('25830') > -1 || proj.indexOf('25831') > -1) {
-        projection = ',EPSG:4258';
-      } else {
-        projection = ',EPSG:4326';
-      }
-
-      const result = `${i + 1},${coordinatesGEO},${alt.toString()}${projection.trim()},${coordinatesUTM},${alt.toString()},${proj}\n`;
+      const result = `${i + 1},${coordinates},${alt.toString()},${this.selectedProjection}\n`;
 
       printDocument = printDocument.concat(result);
     }
@@ -713,14 +722,14 @@ export default class InfocoordinatesControl extends IDEE.Control {
   importAllPoints() {
     const printDocument = [];
     if (this.outputDownloadFormat === 'csv') {
-      printDocument.push(`${getValue('point').replace(':', '')},Long,Lat,Alt,EPSG,X,Y,Alt,EPSG\n`);
+      printDocument.push(`${getValue('point').replace(':', '')},${this.isProjGeographic ? 'Long,Lat' : 'X,Y'},Alt,EPSG\n`);
     }
     for (let i = 0; i < this.layerFeatures.getImpl().getFeatures(true).length; i += 1) {
       const featureSelected = this.layerFeatures.getImpl().getFeatures(true)[i];
       const alt = featureSelected.getAttributes().Altitude !== undefined ? parseFloat(featureSelected.getAttributes().Altitude) : '-';
 
       // Cojo el srs seleccionado en el select
-      const selectSRS = document.getElementById('m-infocoordinates-epsg.selected').value;
+      const selectSRS = document.getElementById('m-infocoordinates-epsg-selected').value;
 
       // Cojo el formato de las coordenadas geográficas
       const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
@@ -730,35 +739,27 @@ export default class InfocoordinatesControl extends IDEE.Control {
         featureSelected,
         selectSRS,
         formatGMS,
-        this.decimalGEOcoord,
-        this.decimalUTMcoord,
+        this.decimalGEOcoord_,
+        this.decimalUTMcoord_,
       );
-      const proj = pointDataOutput.projectionUTM.code;
 
-      const coordinatesGEO = [
-        pointDataOutput.projectionGEO.coordinatesGEO.longitude,
-        pointDataOutput.projectionGEO.coordinatesGEO.latitude,
-      ];
-
-      const coordinatesUTM = [
-        pointDataOutput.projectionUTM.coordinatesUTM.coordX,
-        pointDataOutput.projectionUTM.coordinatesUTM.coordY,
-      ];
-
-      let projection = 'EPSG:4326: ';
-      if (proj.indexOf('25829') > -1 || proj.indexOf('25830') > -1 || proj.indexOf('25831') > -1) {
-        projection = 'EPSG:4258: ';
-      }
+      const coordinates = this.isProjGeographic
+        ? [
+          pointDataOutput.projectionGEO.coordinatesGEO.longitude,
+          pointDataOutput.projectionGEO.coordinatesGEO.latitude,
+        ]
+        : [
+          pointDataOutput.projectionUTM.coordinatesUTM.coordX,
+          pointDataOutput.projectionUTM.coordinatesUTM.coordY,
+        ];
 
       if (this.outputDownloadFormat === 'csv') {
-        printDocument.push(`${i + 1},${coordinatesGEO},${alt.toString()},${projection.trim().slice(0, -1)},${coordinatesUTM},${alt.toString()},${proj}\n`);
+        printDocument.push(`${i + 1},${coordinates},${alt.toString()},${this.selectedProjection}\n`);
       } else {
         printDocument.push(`${getValue('point').replace(':', ' ')}${i + 1}: \n`);
-        printDocument.push(projection);
+        printDocument.push(`${this.selectedProjection}: `);
 
-        printDocument.push(`[${coordinatesGEO},${alt}]\n`);
-        printDocument.push(`${proj}: `);
-        printDocument.push(`[${coordinatesUTM},${alt}]\n`);
+        printDocument.push(`[${coordinates},${alt}]\n`);
       }
     }
 
@@ -772,12 +773,13 @@ export default class InfocoordinatesControl extends IDEE.Control {
   }
 
   displayAllPoints() {
-    if (document.getElementsByClassName('icon-displayON').length === 0 && this.map.getMapImpl().getOverlays().getLength() > 0) {
+    if (this.displayON && this.map.getMapImpl().getOverlays().getLength() > 0) {
       this.removeAllDisplaysPoints();
     } else {
       // Modificamos el icono
-      document.getElementsByClassName('icon-displayON')[0].classList.replace('icon-displayON', 'icon-displayOFF');
-      document.getElementsByClassName('icon-displayOFF')[0].title = getValue('displayOFFAllPoints');
+      const buttonDisplayAllPointsElem = document.querySelector('#m-infocoordinates-buttonDisplayAllPoints');
+      buttonDisplayAllPointsElem.classList.add('hidden');
+      buttonDisplayAllPointsElem.title = getValue('displayOFFAllPoints');
 
       // Eliminamos el num sobre el punto
       for (let i = 0; i < document.getElementsByClassName('contenedorPunto').length; i += 1) {
@@ -789,7 +791,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       for (let i = 0; i < this.layerFeatures.getImpl().getFeatures(true).length; i += 1) {
         const pos = this.layerFeatures.getImpl()
           .getFeatures(true)[i].getImpl().getFeature().getProperties().coordinates;
-        const varUTM = this.calculateUTMcoordinates(i + 1);
+        const varUTM = this.calculateCoordinates(i + 1);
         const altitude = `${parseFloat(this.layerFeatures.getImpl().getFeatures(true)[i].getImpl().getFeature().getProperties().Altitude).toFixed(2)}`.replace('.', ',');
         const textHTML = `<div class="m-popup m-collapsed" style="padding: 5px 5px 5px 5px !important;background-color: rgba(255, 255, 255, 0.7) !important;">
               <div class="contenedorCoordPunto">
@@ -829,10 +831,11 @@ export default class InfocoordinatesControl extends IDEE.Control {
         this.helpTooltip_.setPosition(pos);
         this.map.getMapImpl().addOverlay(this.helpTooltip_);
       }
+      this.displayON = true;
     }
   }
 
-  calculateUTMcoordinates(numPoint) {
+  calculateCoordinates(numPoint) {
     const featureSelected = this.layerFeatures.getFeatureById(numPoint);
     // Cojo el srs seleccionado en el select
     const selectSRS = document.getElementById('m-infocoordinates-epsg-selected').value;
@@ -845,24 +848,34 @@ export default class InfocoordinatesControl extends IDEE.Control {
       featureSelected,
       selectSRS,
       formatGMS,
-      this.decimalGEOcoord,
-      this.decimalUTMcoord,
+      this.decimalGEOcoord_,
+      this.decimalUTMcoord_,
     );
 
-    return [pointDataOutput.projectionUTM.coordinatesUTM.coordX,
-      pointDataOutput.projectionUTM.coordinatesUTM.coordY];
+    return this.isProjGeographic
+      ? [
+        pointDataOutput.projectionGEO.coordinatesGEO.longitude,
+        pointDataOutput.projectionGEO.coordinatesGEO.latitude,
+      ]
+      : [
+        pointDataOutput.projectionUTM.coordinatesUTM.coordX,
+        pointDataOutput.projectionUTM.coordinatesUTM.coordY,
+      ];
   }
 
   removeAllDisplaysPoints() {
     // Modificamos el icono
-    document.getElementsByClassName('icon-displayOFF')[0].classList.replace('icon-displayOFF', 'icon-displayON');
-    document.getElementsByClassName('icon-displayON')[0].title = getValue('displayONAllPoints');
+    const buttonDisplayAllPointsElem = document.querySelector('#m-infocoordinates-buttonDisplayAllPoints');
+    if (!buttonDisplayAllPointsElem) return;
+    buttonDisplayAllPointsElem.classList.remove('hidden');
+    buttonDisplayAllPointsElem.title = getValue('displayONAllPoints');
 
     // Mostramos el num sobre el punto
     for (let i = 0; i < document.getElementsByClassName('contenedorPunto').length; i += 1) {
       document.getElementsByClassName('contenedorPunto')[i].style = 'display: block';
     }
-    document.getElementsByClassName('contenedorPuntoSelect')[0].style = 'display: block';
+    const contenedorPuntoSelect = document.getElementsByClassName('contenedorPuntoSelect')[0];
+    if (contenedorPuntoSelect) contenedorPuntoSelect.style = 'display: block';
 
     // Eliminamos todas las etiquetas de los puntos
     const numOverlays = this.map.getMapImpl().getOverlays().getArray().length;
@@ -871,6 +884,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
         this.map.getMapImpl().removeOverlay(this.map.getMapImpl().getOverlays().getArray()[i]);
       }
     }
+    this.displayON = false;
   }
 
   descargarArchivo(contenidoEnBlob, nombreArchivo) {
@@ -893,6 +907,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
 
   removeAllPoints() {
     const divTabContainer = document.getElementsByClassName('m-infocoordinates-tabs')[0];
+    if (!divTabContainer) return;
     divTabContainer.innerHTML = '';
 
     document.getElementById('m-infocoordinates-point').innerHTML = '--';
@@ -948,5 +963,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
 
   accessibilityTab(html) {
     html.querySelectorAll('[tabindex="0"]').forEach((el) => el.setAttribute('tabindex', this.order));
+  }
+
+  showHelp() {
+    window.open(this.helpUrl, '_blank');
   }
 }

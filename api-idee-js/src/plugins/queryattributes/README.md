@@ -11,8 +11,13 @@ Plugin que permite aplicar filtros sobre las capas de un mapa y visualizar de fo
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
+Para uso de implementación OpenLayers:
 - **queryattributes.ol.min.js**
 - **queryattributes.ol.min.css**
+
+Para uso de implementación Cesium:
+- **queryattributes.cesium.min.js**
+- **queryattributes.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/queryattributes/queryattributes.ol.min.css" rel="stylesheet" />
@@ -33,12 +38,11 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**: Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda (por defecto).
-  - 'TR': (top right) - Arriba a la derecha.
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**. Tooltip que se muestra sobre el plugin. Por defecto: Tabla de atributos.
 - **filters**: Cuando toma el valor false, en cada cambio de zoom muestra en la tabla los registros que se encuentran en el bounding box de la pantalla. Cuando toma valor true, muestra botones para establecer filtro por bounding box o por polígono trazado por el usuario. Por defecto: true.
 - **refreshBBOXFilterOnPanning**: define el comportamiento del filtro de vista al activarse. Si es *true*, se reevalúa después de cada panning o cambio de zoom. Si su valor es *false*, sólo se aplica la primera vez con los elementos en pantalla, y no se vuelve a calcular después de cada panning. Por defecto es *false*.
@@ -85,7 +89,7 @@ URL_API?queryattributes=position*collapsed*collapsible*tooltip*filters*refreshBB
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
@@ -96,6 +100,11 @@ URL_API?queryattributes=position*collapsed*collapsible*tooltip*filters*refreshBB
   <tr>
     <td>collapsible</td>
     <td>true/false</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
     <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
@@ -124,7 +133,7 @@ URL_API?queryattributes=position*collapsed*collapsible*tooltip*filters*refreshBB
 ### Ejemplo de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee?queryattributes=TR*true*true*atributos*true*true
+https://componentes.idee.es/api-idee?queryattributes=RIGHT*true*true*atributos*true*true
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -141,7 +150,7 @@ Se le pasa la capa vertices por url añadiendo lo siguiente: ``` &layers=GeoJSON
 Ejemplo de constructor del plugin:
 ``` javascript
 {
-  position: 'TL',
+  position: 'right',
   tooltip: 'Consulta de atributos',
   refreshBBOXFilterOnPanning: true,
   configuration: {
@@ -169,9 +178,10 @@ const map = IDEE.map({
 });
 
 const mp = new QueryAttributes({
-  position: 'TL',
+  position: 'right',
   collapsed: true,
   collapsible: true,
+  order: 2,
   filters: true,
   configuration: {
     layer: 'vertices',

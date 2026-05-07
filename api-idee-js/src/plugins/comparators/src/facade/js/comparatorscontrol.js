@@ -21,7 +21,7 @@ export default class ComparatorsControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api
    */
-  constructor(isDraggable, order, options) {
+  constructor({ order, options }) {
     if (IDEE.utils.isUndefined(ComparatorsImpl)
       || (IDEE.utils.isObject(ComparatorsImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(ComparatorsImpl)))) {
@@ -30,13 +30,6 @@ export default class ComparatorsControl extends IDEE.Control {
 
     const impl = new ComparatorsImpl();
     super('Comparators', impl);
-
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable_ = isDraggable || false;
 
     /**
      * Order of plugin
@@ -239,16 +232,11 @@ export default class ComparatorsControl extends IDEE.Control {
         }
       });
 
-      if (this.isDraggable_) {
-        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-comparators-title');
-      }
-
       this.accessibilityTab_(this.html);
 
       setTimeout(() => {
         this.defaultCompareMode_();
       }, 500);
-
       success(this.html);
     });
   }
@@ -274,7 +262,7 @@ export default class ComparatorsControl extends IDEE.Control {
     this.controls.forEach((c) => {
       if (c.controlParam[0]) {
         if (c.active) {
-          this.html.querySelector(`#${c.buttonsID}`).classList.add('activatedComparators');
+          this.html.querySelector(`#${c.buttonsID}`).classList.add('activated');
           if (c.id === 'lyrcompare' && c.controlParam[1].length < 1) {
             IDEE.toast.error(getValue('exception.notLayers'), null, 6000);
             setTimeout(() => {
@@ -299,7 +287,7 @@ export default class ComparatorsControl extends IDEE.Control {
           this.control = control;
           control.active(this.html);
         } else {
-          this.html.querySelector(`#${c.buttonsID}`).classList.remove('activatedComparators');
+          this.html.querySelector(`#${c.buttonsID}`).classList.remove('activated');
           if (c.control) c.control.deactivate();
           // eslint-disable-next-line no-param-reassign
           c.control = null;
@@ -585,7 +573,6 @@ export default class ComparatorsControl extends IDEE.Control {
     });
 
     this.order = null;
-    this.isDraggable_ = null;
     this.options = null;
     this.defaultCompareMode = null;
     this.mirrorpanelParams = null;

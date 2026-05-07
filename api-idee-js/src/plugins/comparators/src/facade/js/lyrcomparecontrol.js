@@ -234,8 +234,6 @@ export default class LyrCompareControl extends IDEE.Control {
     */
   active(html) {
     const templateResult = new Promise((success, fail) => {
-      this.comparisonMode = 0;
-
       const emptyLayer = new IDEE.layer.WMS({
         url: 'https://www.ign.es/wms-inspire/ign-base?',
         name: 'empty_layer',
@@ -255,13 +253,6 @@ export default class LyrCompareControl extends IDEE.Control {
     templateResult
       .then((t) => {
         html.querySelector('#m-comparators-contents').appendChild(t);
-
-        setTimeout(() => {
-          const selectFirst = document.querySelector('#m-lyrcompare-void');
-          if (selectFirst) {
-            selectFirst.click();
-          }
-        }, 1000);
       });
   }
 
@@ -332,19 +323,20 @@ export default class LyrCompareControl extends IDEE.Control {
    * @api stable
    */
   destroy() {
+    const layerNames = this.getLayersNames();
     this.deactivate();
     const swipeControl = document.querySelector('.lyrcompare-swipe-control');
     if (swipeControl) { swipeControl.remove(); }
 
-    this.control_.removeCurtainLayers(this.control_.getLayersNames());
+    this.removeCurtainLayers(layerNames);
 
     [this.name_, this.error_, this.map_,
       this.layers_,
-      this.position, this.collapsed, this.collapsible,
+      this.position, this.collapsed,
       this.staticDivision, this.opacityVal, this.comparisonMode, this.metadata_,
       this.tooltip_, this.interface, this.defaultLyrA,
       this.defaultLyrB, this.defaultLyrC, this.defaultLyrD,
-    ] = [null, null, null, null, null, null, null, null, null, null,
+    ] = [null, null, null, null, null, null, null, null, null,
       null, null, null, null, null, null, null, null];
   }
 
@@ -424,12 +416,11 @@ export default class LyrCompareControl extends IDEE.Control {
       'm-lyrcompare-vcurtain': 'set-mirror-1',
       'm-lyrcompare-hcurtain': 'set-mirror-2',
       'm-lyrcompare-void': 'set-mirror-0',
-      'm-lyrcompare-multicurtain': 'set-mirror-5',
+      'm-lyrcompare-multicurtain': 'set-mirror-3',
     };
 
     const mirrorID = dicMirrorLang[idButton];
     const langMirror = this.dicAccesibilityButton[mirrorID];
-
     langMirror.forEach(({ id, text }) => {
       document.querySelector(`.${id}`).innerHTML = text.secondaryMap;
     });
@@ -951,10 +942,10 @@ export default class LyrCompareControl extends IDEE.Control {
       this.template.querySelector('#m-lyrcompare-lyrB-lbl').classList.add('cp-th-large-2');
       this.template.querySelector('#m-lyrcompare-lyrC-lbl').classList.add('cp-th-large-3');
       this.template.querySelector('#m-lyrcompare-lyrD-lbl').classList.add('cp-th-large-4');
-      this.template.querySelector('#m-lyrcompare-lyrA-cont').style.display = 'block';
-      this.template.querySelector('#m-lyrcompare-lyrB-cont').style.display = 'block';
-      this.template.querySelector('#m-lyrcompare-lyrC-cont').style.display = 'block';
-      this.template.querySelector('#m-lyrcompare-lyrD-cont').style.display = 'block';
+      this.template.querySelector('#m-lyrcompare-lyrA-cont').style.display = 'flex';
+      this.template.querySelector('#m-lyrcompare-lyrB-cont').style.display = 'flex';
+      this.template.querySelector('#m-lyrcompare-lyrC-cont').style.display = 'flex';
+      this.template.querySelector('#m-lyrcompare-lyrD-cont').style.display = 'flex';
     }
 
     this.template.querySelector('input').disabled = false; // Habilita el range del radio

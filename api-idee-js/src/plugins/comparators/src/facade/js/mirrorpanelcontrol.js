@@ -42,13 +42,13 @@ export default class MirrorpanelControl extends IDEE.Control {
     /**
      * Define los iconos de división
      * que se mostrarán.
-     * Valores modeViz [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+     * Valores modeViz [0, 1, 2, 3, 4, 5]
      * @public
      * @type { Array<Number> }
-     * @default [0,1,2,3,4,5,6,7,8,9]
+     * @default [0,1,2,3,4,5]
      */
     this.modeVizTypes = values.modeVizTypes;
-    if (this.modeVizTypes === undefined) this.modeVizTypes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    if (this.modeVizTypes === undefined) this.modeVizTypes = [0, 1, 2, 3, 4, 5];
 
     /**
        * Visual mode
@@ -168,7 +168,7 @@ export default class MirrorpanelControl extends IDEE.Control {
     }
 
     this.modeVizTypes.forEach((n) => {
-      if (![0, 1, 2, 3, 4, 5, 6, 7, 8, 9].includes(n)) {
+      if (![0, 1, 2, 3, 4, 5].includes(n)) {
         IDEE.toast.error(`Error: ${getValue('exception.mirrorModeVizTypes')} - ${n}`);
       }
     });
@@ -204,10 +204,10 @@ export default class MirrorpanelControl extends IDEE.Control {
       const button = this.template.querySelector(`#set-mirror-${modeViz}`);
       button.style.display = 'initial';
 
-      button.addEventListener('click', ({ target }) => {
+      button.addEventListener('click', () => {
         this.createSelectorLayer(this.addValueButton(modeViz));
         this.manageVisionPanelByCSSGrid(modeViz);
-        this.changeSpanText(target.id);
+        this.changeSpanText(`set-mirror-${modeViz}`);
       });
     });
 
@@ -218,7 +218,6 @@ export default class MirrorpanelControl extends IDEE.Control {
     if (this.showCursors) {
       this.addLayerCursor('A');
     }
-
     if (this.enabledKeyFunctions) this.addEventKey_();
   }
 
@@ -227,11 +226,11 @@ export default class MirrorpanelControl extends IDEE.Control {
       return ['B'];
     }
 
-    if ([3, 7, 8, 9].includes(modeViz)) {
+    if ([4, 5].includes(modeViz)) {
       return ['B', 'C'];
     }
 
-    if ([4, 5, 6].includes(modeViz)) {
+    if ([3].includes(modeViz)) {
       return ['B', 'C', 'D'];
     }
     return ['A'];
@@ -260,14 +259,13 @@ export default class MirrorpanelControl extends IDEE.Control {
    * @api stable
    */
   destroy() {
-    document.removeEventListener('keydown', (zEvent) => { });
+    document.removeEventListener('keydown', this.keyHandler_);
     this.removeMaps();
     this.destroyMapsContainer();
     [
       this.control_,
       this.panel_,
       this.map_,
-      this.collapsible,
       this.collapsed,
       this.modeViz,
       this.enabledPlugins,
@@ -276,7 +274,7 @@ export default class MirrorpanelControl extends IDEE.Control {
       this.mirrorLayers,
       this.defaultBaseLyrs,
       this.backImgLayersParams,
-      this.interface] = [null, null, null, null, null,
+      this.interface] = [null, null, null, null,
       null, null, null, null, null, null, null, null];
   }
 
@@ -312,7 +310,7 @@ export default class MirrorpanelControl extends IDEE.Control {
     this.manageVisionPanelByCSSGrid(0);
 
     this.removeAllLayers();
-    document.removeEventListener('keydown', (zEvent) => { });
+    document.removeEventListener('keydown', this.keyHandler_);
     this.removeMaps();
 
     if (
@@ -333,11 +331,18 @@ export default class MirrorpanelControl extends IDEE.Control {
     const bigContainer = document.createElement('div');
     bigContainer.id = 'lienzo';
     bigContainer.classList.add('mirrorpanel-grid');
-    const mapjsA = document.getElementById(this.target);
-    this.oldClass = mapjsA.classList.toString();
-    mapjsA.parentElement.insertBefore(bigContainer, mapjsA);
-    mapjsA.classList.add('mirror1');
+    const defaultBaseMap = document.getElementById(this.target.id);
+    this.oldClass = defaultBaseMap.classList.toString();
+    defaultBaseMap.parentElement.insertBefore(bigContainer, defaultBaseMap);
+    const toolsContainer = document.querySelector('.m-api-idee-tool-panels-container');
+
+    const mapjsA = document.createElement('div');
+    mapjsA.id = 'mapjsA';
+    mapjsA.classList.add('mirror1', 'm-api-idee-container');
     bigContainer.appendChild(mapjsA);
+
+    mapjsA.appendChild(toolsContainer);
+    mapjsA.appendChild(defaultBaseMap);
 
     const mapjsB = document.createElement('div');
     mapjsB.id = 'mapjsB';
@@ -373,15 +378,14 @@ export default class MirrorpanelControl extends IDEE.Control {
      */
   manageVisionPanelByCSSGrid(modeViz) {
     const oldModeViz = this.defaultCompareViz;
-    const map0 = document.getElementById(this.target);
-    map0.style.display = 'none';
+    document.getElementById('mapjsA').style.display = 'none';
     document.getElementById('mapjsB').style.display = 'none';
     document.getElementById('mapjsC').style.display = 'none';
     document.getElementById('mapjsD').style.display = 'none';
     document.getElementById('lienzo').classList.remove('reverseMirror');
     this.template.querySelector(`#set-mirror-${oldModeViz}`).classList.remove('activatedComparators');
     // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 6; i++) {
       document.getElementById('lienzo').classList.remove(`modeViz${i}`);
     }
 
@@ -395,7 +399,7 @@ export default class MirrorpanelControl extends IDEE.Control {
       }
     }
 
-    if ([3, 7, 8, 9].includes(modeViz)) {
+    if ([4, 5].includes(modeViz)) {
       if (this.mapL.B === null) {
         this.createMapObjects('B');// Create MapB
       }
@@ -405,7 +409,7 @@ export default class MirrorpanelControl extends IDEE.Control {
       }
     }
 
-    if ([4, 5, 6].includes(modeViz)) {
+    if ([3].includes(modeViz)) {
       if (this.mapL.B === null) {
         this.createMapObjects('B');// Create MapB
       }
@@ -425,10 +429,6 @@ export default class MirrorpanelControl extends IDEE.Control {
     if (this.mapL.B !== null) { this.mapL.B.refresh(); }
     if (this.mapL.C !== null) { this.mapL.C.refresh(); }
     if (this.mapL.D !== null) { this.mapL.D.refresh(); }
-
-    setTimeout(() => {
-      this.changeViewPluginsGrid([3, 4, 7].includes(modeViz));
-    }, 500);
   }
 
   /**
@@ -437,11 +437,11 @@ export default class MirrorpanelControl extends IDEE.Control {
    */
   createSelectorLayer(modeViz) {
     this.lyrSelectorIds.forEach((id, i) => {
-      if (i !== 0)document.getElementById(id).parentElement.style.display = 'none';
+      if (i !== 0) this.template.querySelector(`#${id}`).parentElement.style.display = 'none';
     });
 
     modeViz.forEach((map) => {
-      document.querySelector(`#mapL${map}Select`).parentElement.style.display = 'initial';
+      this.template.querySelector(`#mapL${map}Select`).parentElement.style.display = 'flex';
     });
   }
 
@@ -452,7 +452,7 @@ export default class MirrorpanelControl extends IDEE.Control {
   changeSpanText(idButton) {
     const mapsPositions = (this.principalMap) ? 'principalMap' : 'secondaryMap';
     this.dicAccesibilityButton[idButton].forEach(({ id, text }) => {
-      document.getElementById(id).innerHTML = text[mapsPositions];
+      this.template.querySelector(`#${id}`).innerHTML = text[mapsPositions];
     });
   }
 
@@ -464,7 +464,6 @@ export default class MirrorpanelControl extends IDEE.Control {
 
     if (bgColorContainer) {
       // eslint-disable-next-line no-console
-      console.log('bgColorContainer', bgColorContainer);
       this.mapL[mapLyr] = IDEE.map({
         container: `mapjs${mapLyr}`,
         center: this.map_.getCenter(),
@@ -606,19 +605,17 @@ export default class MirrorpanelControl extends IDEE.Control {
 
   destroyMapsContainer() {
     this.manageVisionPanelByCSSGrid(0);
-    // Remove mirrors containers
-    document.getElementById('mapjsB').remove();
-    document.getElementById('mapjsC').remove();
-    document.getElementById('mapjsD').remove();
-    // Take the main map out of the container
     const lienzo = document.getElementById('lienzo');
-    const mapjsA = document.querySelector('.mirror1');
-    lienzo.parentElement.insertBefore(mapjsA, lienzo);
-    mapjsA.style.display = 'block';
-    mapjsA.classList.remove('mirror1');
-    mapjsA.classList = this.oldClass;
-    // Load the main container
-    document.getElementById('lienzo').remove();
+    const mapjsA = document.getElementById('mapjsA');
+    const mainMap = mapjsA.querySelector('.m-api-idee-map-panel');
+    const mainToolPanelsContainer = mapjsA.querySelector('.m-api-idee-tool-panels-container');
+
+    lienzo.parentElement.insertBefore(mainToolPanelsContainer, lienzo);
+    lienzo.parentElement.insertBefore(mainMap, lienzo);
+    mainMap.style.display = 'block';
+    mainMap.classList = this.oldClass;
+
+    lienzo.remove();
   }
 
   /**
@@ -717,7 +714,7 @@ export default class MirrorpanelControl extends IDEE.Control {
 
   addEventKey_() {
     // Keybindings for Ctrl + Shift + (F1-F8) / ESC
-    document.addEventListener('keydown', (zEvent) => {
+    this.keyHandler_ = (zEvent) => {
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < 10; i++) {
         if (zEvent.ctrlKey && zEvent.shiftKey && zEvent.key === `F${i + 1}`) {
@@ -733,6 +730,7 @@ export default class MirrorpanelControl extends IDEE.Control {
       if (combinedKeys === 'Escape') {
         this.manageVisionPanelByCSSGrid(0);
       }
-    });
+    };
+    document.addEventListener('keydown', this.keyHandler_);
   }
 }

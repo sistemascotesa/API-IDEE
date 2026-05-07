@@ -6,7 +6,7 @@ import template from 'templates/xylocator';
 import XYLocatorImpl from 'impl/xylocatorcontrol';
 import { getValue } from './i18n/language';
 
-const ID_CONTENEDOR_LOCATOR = '#div-contenedor-locator';
+const ID_CONTENEDOR_LOCATOR = '#plugin-panel-content-locator';
 const ID_XYLOCATOR = '#m-locator-xylocator';
 const ID_PANEL_XYLOCATOR = '#m-xylocator-panel';
 const ID_BUTTON_LIMPIAR = '#m-xylocator-limpiar';
@@ -25,7 +25,6 @@ const ID_LATSS = '#LATSS';
 const ID_M_XYLOCATOR_UTM = '#m-xylocator-utm';
 const ID_M_XYLOCATOR_DMS = '#m-xylocator-dms';
 const ID_M_XYLOCATOR_LATLON = '#m-xylocator-latlon';
-const ID_M_XYLOCATOR_HELP_PROJECTIONS = '#m-xylocator-help-projections';
 
 export default class XYLocatorControl extends IDEE.Control {
   /**
@@ -132,13 +131,7 @@ export default class XYLocatorControl extends IDEE.Control {
           },
         },
       });
-      const contenedorLocator = document.querySelector(ID_CONTENEDOR_LOCATOR);
-      if (contenedorLocator) {
-        contenedorLocator.appendChild(panel);
-      }
-      if (!IDEE.utils.isUndefined(this.help) && IDEE.utils.isUrl(this.help)) {
-        IDEE.utils.loadSvgByUrl(this.pluginName, 'projectionInfo', this.html_.querySelector(ID_M_XYLOCATOR_HELP_PROJECTIONS));
-      }
+      this.html_.appendChild(panel);
       this.activeDefaultLabel();
       this.html_.querySelector(ID_BUTTON_LIMPIAR).addEventListener('click', () => this.clearResults());
       this.html_.querySelector(ID_SELECT_SRS).addEventListener('change', (evt) => this.manageInputs_(evt));

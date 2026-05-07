@@ -34,7 +34,7 @@ const mp2 = new Attributions({
 });
 
 const mp3 = new ShareMap({
-  baseUrl: 'https://componentes-desarrollo.idee.es/api-idee/',
+  baseUrl: 'https://api-ideedes.grupotecopy.es/api-idee/',
   position: 'BR',
 });
 
@@ -52,7 +52,7 @@ const mp7 = new MouseSRS({
 const mp8 = new TOC();
 
 const mp9 = new BackImgLayer({
-  position: 'TR',
+  position: 'right',
   layerId: 0,
   layerVisibility: true,
   layerOpts: [{

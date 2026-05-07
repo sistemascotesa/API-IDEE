@@ -1,7 +1,9 @@
+import Control from './Control';
+
 /**
  * @namespace IDEE.impl.control
  */
-export default class Panzoom {
+class Panzoom extends Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a WMC selector
@@ -12,6 +14,7 @@ export default class Panzoom {
    * @api stable
    */
   constructor() {
+    super();
     this.facadeMap_ = null;
     this.leafletCtrl_ = L.control.zoom();
   }
@@ -57,3 +60,5 @@ export default class Panzoom {
     this.facadeMap_ = null;
   }
 }
+
+export default Panzoom;

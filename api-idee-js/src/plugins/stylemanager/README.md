@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.StyleManager</small></h1>
 
@@ -25,13 +25,21 @@ La simbología puede ser compuesta, y a medida que se van aplicando simbologías
 ![Imagen](./docs/images/StyleManager4.PNG)
 En dispositivos móviles, la interfaz se adaptará para ocupar la pantalla completa.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Stylemanager abierto](./src/facade/assets/images/stylemanager-abierto.png)|![Stylemanager cerrado](./src/facade/assets/images/stylemanager-cerrado.png)|
+
 
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
+Para uso de implementación OpenLayers:
+- **stylemanager.ol.min.js**
+- **stylemanager.ol.min.css**
 
-- **stylemanager.ol.js**
-- **stylemanager.min.css**
+Para uso de implementación Cesium:
+- **stylemanager.cesium.min.js**
+- **stylemanager.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/stylemanager/stylemanager.ol.min.css" rel="stylesheet" />
@@ -52,12 +60,11 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**: Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda (por defecto).
-  - 'TR': (top right) - Arriba a la derecha.
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: 'Gestor de estilos'.
 - **layer**: Capa pre seleccionada (se mostrará seleccionada en el selector de capas del plugin).
 Como requisito para usar este parámetro la capa debe de estar cargada en el mapa (ver ejemplo de uso). Además dicha capa debe de tener features (no puede estar vacía).
@@ -78,7 +85,7 @@ URL_API?stylemanager=position*collapsed*collapsible*tooltip
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -90,6 +97,11 @@ URL_API?stylemanager=position*collapsed*collapsible*tooltip
     <td>collapsible</td>
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
     <td>tooltip</td>
@@ -106,12 +118,9 @@ URL_API?stylemanager=position*collapsed*collapsible*tooltip
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee/?stylemanager=TR*true*true*tooltip&layers=TMS*TMSBaseIGN*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/%7Bz%7D/%7Bx%7D/%7B-y%7D.jpeg*true*false*17,KML*Delegaciones%20IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*true*true
+https://componentes.idee.es/api-idee/??layers=WFS*Campamentos*https://hcsigc.juntadeandalucia.es/geoserver/IECA/wfs?*sigc_campamentos_1724753464727*MPOINT,OSM&stylemanager=RIGHT*true*true*gestor%20de%20estilos
 ```
 
-```
-https://componentes.idee.es/api-idee/?stylemanager=TR&layers=TMS*TMSBaseIGN*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/%7Bz%7D/%7Bx%7D/%7B-y%7D.jpeg*true*false*17,KML*Delegaciones%20IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*true*true
-```
 
 ### Ejemplos de uso API-REST en base64
 
@@ -124,7 +133,7 @@ IDEE.utils.encodeBase64(obj_params);
 Ejemplo de constructor del plugin:
 ```javascript
 {
-  position:'TR',
+  position:'right',
   collapsible: true,
   collapsed: true,
   tooltip: 'Gestor de estilos'
@@ -146,7 +155,7 @@ capaVectorial.on(IDEE.evt.LOAD, function() {
   const mp = new IDEE.plugin.StyleManager({
       collapsed: true,
       collapsible: true,
-      position: 'TL',
+      position: 'right',
       layer: capaVectorial
   });
   map.addPlugin(mp);

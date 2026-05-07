@@ -8,13 +8,13 @@ const map = IDEE.map({
 });
 
 const mp2 = new IDEE.plugin.Infocoordinates({
-  position: 'TL',
+  position: 'right',
   decimalGEOcoord: 4,
   decimalUTMcoord: 2,
 });
 
 const mp = new Comparators({
-  position: 'TR',
+  position: 'right',
   collapsed: false,
   collapsible: true,
   transparencyParams: false,
@@ -26,7 +26,7 @@ const mp = new Comparators({
       {
         name: 'Layerswitcher',
         params: {
-          position: 'TL',
+          position: 'left',
         },
       },
     ],
@@ -39,7 +39,7 @@ window.map = map;
 map.addPlugin(mp2);
 
 const mp3 = new IDEE.plugin.Layerswitcher({
-  position: 'TL',
+  position: 'left',
 });
 
 map.addPlugin(mp3);

@@ -3,6 +3,8 @@
  */
 import Feature from 'IDEE/feature/Feature';
 import * as WKT from 'IDEE/geom/WKT';
+import GeoJSONFormat from 'IDEE/format/GeoJSON';
+import WKTFormat from 'IDEE/format/WKT';
 import { isNullOrEmpty, isString, generateRandom } from 'IDEE/util/Utils';
 import { extend, getWidth, getCenter } from 'ol/extent';
 import {
@@ -12,6 +14,7 @@ import {
   getPointResolution,
 } from 'ol/proj';
 import OLFeature from 'ol/Feature';
+import WKB from 'ol/format/WKB';
 import RenderFeature from 'ol/render/Feature';
 import Point from 'ol/geom/Point';
 import LineString from 'ol/geom/LineString';
@@ -22,6 +25,11 @@ import MultiLineString from 'ol/geom/MultiLineString';
 import MultiPolygon from 'ol/geom/MultiPolygon';
 import GeometryCollection from 'ol/geom/GeometryCollection';
 import Circle from 'ol/geom/Circle';
+import OlControlImpl from '../control/Control';
+import ScaleLineImpl from '../control/ScaleLine';
+import PanzoombarImpl from '../control/Panzoombar';
+import OverviewMapZoomImpl from '../control/Panzoom';
+import OverviewMapImpl from '../control/OverviewMap';
 
 /**
   * Este método obtiene la cantidad de unidades por
@@ -410,8 +418,8 @@ class Utils {
       if (geometry.getType() === 'Point') {
         const units = getUnitsPerMeter(projectionCode, 1000);
         const auxCoord = geometry.getCoordinates();
-        const coordX = auxCoord[0];
-        const coordY = auxCoord[1];
+        const coordX = parseFloat(auxCoord[0]);
+        const coordY = parseFloat(auxCoord[1]);
         extents = [
           [
             coordX - units,
@@ -655,16 +663,25 @@ class Utils {
     const ang = pix2[2] - pix2[0];
     // (numero de metros en el mapa / numero de pixeles) / metros por pixel
     let scale = (((mpu * ang) / pix) * 1000) / 0.28;
-    if (!exact === true) {
-      if (scale >= 1000 && scale <= 950000) {
-        scale = Math.round(scale / 1000) * 1000;
-      } else if (scale >= 950000) {
-        scale = Math.round(scale / 1000000) * 1000000;
-      } else {
-        scale = Math.round(scale);
-      }
-    }
+    if (!exact === true) scale = Utils.getRoundScale(scale);
     return Math.trunc(scale);
+  }
+
+  /**
+   * Returns an integer representing a valid scale
+   * @param {number} scale
+   * @returns {number}
+   */
+  static getRoundScale(scale) {
+    let newScale = scale;
+    if (newScale >= 1000 && newScale <= 950000) {
+      newScale = Math.round(newScale / 1000) * 1000;
+    } else if (newScale >= 950000) {
+      newScale = Math.round(newScale / 1000000) * 1000000;
+    } else {
+      newScale = Math.round(newScale);
+    }
+    return newScale;
   }
 
   /**
@@ -673,21 +690,19 @@ class Utils {
    * @function
    * @param {Number} resolution Resolución del mapa.
    * @param {View} view Vista del mapa.
-   * @param {Number} dpi DPI del mapa (por defecto 72).
-   * @returns {Number} Escala calculada.
+   * @param {Number} dpi DPI del mapa.
+   * @param {Boolean} exact Devuelve la escala exacta o aproximada.
    * @public
    * @api
    */
-  static getScaleForResolution(resolution, view, dpi = 72) {
+  static getScaleForResolution(resolution, view, dpi, exact) {
     const projection = view.getProjection();
     const center = view.getCenter();
-    const inchesPerMeter = 39.3700787;
-    const units = projection.getUnits();
-
-    const pointResolution = getPointResolution(projection, resolution, center, units);
+    const inchesPerMeter = 1000 / 25.4;
+    const pointResolution = getPointResolution(projection, resolution, center, 'm');
     const scale = pointResolution * inchesPerMeter * dpi;
 
-    return Math.round(scale);
+    return exact ? Math.round(scale) : Math.round(Utils.getRoundScale(scale));
   }
 
   /**
@@ -697,27 +712,104 @@ class Utils {
    * @function
    * @param {View} view Vista del mapa.
    * @param {String} inputValue Valor de entrada para la escala.
-   * @param {Number} dpi DPI del mapa (por defecto 72).
+   * @param {Number} dpi DPI del mapa.
    * @returns {Number} Resolución de la vista correspondiente a la escala.
    * @public
    * @api
    */
-  static getCurrentScale(view, inputValue, dpi = 72) {
-    const inchesPerMeter = 39.3700787;
-    const scale = parseFloat(inputValue.replace(/\./g, ''));
-    const calculateResolution = (targetScale) => {
-      let resolution = targetScale / (inchesPerMeter * dpi);
+  static getCurrentScale(view, inputValue, dpi) {
+    const targetScale = parseFloat(inputValue.replace(/\./g, ''));
+    const projection = view.getProjection();
+    const metersPerUnit = projection.getMetersPerUnit();
+    const dotsPerMeter = dpi / 0.0254;
+    const resolution = targetScale / (metersPerUnit * dotsPerMeter);
+    const center = view.getCenter();
+    const pointResolution = getPointResolution(projection, 1, center);
 
-      for (let i = 0; i < 3; i + 1) {
-        const currentScale = this.getScaleForResolution(resolution, view, dpi);
-        const error = targetScale - currentScale;
-        resolution *= (targetScale / currentScale);
+    return resolution / pointResolution;
+  }
 
-        if (Math.abs(error) < 1) break;
-      }
-      return resolution;
-    };
-    return calculateResolution(scale);
+  /**
+   * @function
+   * @param {any} controlImpl se espera un control de implementación de open layers
+   * @returns {Boolean} Devuelve verdadero siempre que el control en cuestión sea
+   * una implementación válida para nuestro entorno de implementaciones de control
+   * dado que no todas ellas extienden de la misma clase OlControl
+   * @public
+   * @api
+   */
+  static isOlControlImpl(controlImpl) {
+    return controlImpl instanceof OlControlImpl
+      || controlImpl instanceof ScaleLineImpl
+      || controlImpl instanceof PanzoombarImpl
+      || controlImpl instanceof OverviewMapZoomImpl
+      || controlImpl instanceof OverviewMapImpl;
+  }
+
+  /**
+   * Este método transforma un objeto de tipo Feature a formato WKB
+   *
+   * @function
+   * @param {Feature} feature Feature a parsear
+   * @returns {String|ArrayBuffer} objeto en formato WKB
+   * @public
+   * @api
+   */
+  static parseFeatureToWKB(feature) {
+    const wkbFormat = new WKB();
+    return wkbFormat.writeFeature(feature.getImpl().getFeature());
+  }
+
+  /**
+   * Este método transforma un objeto GeoJSON a formato WKB
+   *
+   * @function
+   * @param {String} json Objeto GeoJSON a parsear
+   * @param {IDEE.Projection|String} mapProjection proyección del mapa
+   * @param {IDEE.Projection|String} featureProjection proyección con la que
+   * se va a crear cada una de las features al ser leidas por el formato WKB
+   * @returns {Array<IDEE.Feature>} objeto en formato WKB
+   * @public
+   * @api
+   */
+  static parseGeoJSONToWKB(json, mapProjection, featureProjection) {
+    const wkbFormat = new WKB();
+    const geoJSONFormat = new GeoJSONFormat({
+      defaultDataProjection: mapProjection,
+    });
+    const features = geoJSONFormat.read(json, {
+      featureProjection,
+    });
+    return features.filter((feature) => {
+      const olFeature = feature.getImpl().getFeature();
+      return olFeature.getGeometry() !== null;
+    }).map((feature) => {
+      return wkbFormat.writeFeature(feature.getImpl().getFeature());
+    });
+  }
+
+  /**
+   * Este método transforma un objeto WKT a formato WKB
+   *
+   * @function
+   * @param {String} json Objeto WKT a parsear
+   * @param {IDEE.Projection|String} mapProjection proyección del mapa
+   * @param {IDEE.Projection|String} featureProjection proyección con la que
+   * se va a crear cada una de las features al ser leidas por el formato WKB
+   * @returns {Array<IDEE.Feature>} objeto en formato WKB
+   * @public
+   * @api
+   */
+  static parseWKTToWKB(wkt, mapProjection, featureProjection) {
+    const wkbFormat = new WKB();
+    const wktFormat = new WKTFormat();
+    const olFeatures = wktFormat.readCollection(wkt, {
+      mapProjection,
+      featureProjection,
+    });
+    return olFeatures.map((feature) => {
+      return wkbFormat.writeFeature(feature.getImpl().getFeature());
+    });
   }
 }
 export default Utils;

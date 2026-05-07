@@ -20,7 +20,7 @@ const backgroundlayersOpts = [{
 },
 {
   id: 'hibrido',
-  title: 'H&iacute;brido',
+  title: 'Hibrido',
   layers: [
     'QUICK*BASE_HIBRIDO_LayerGroup',
   ],
@@ -48,6 +48,7 @@ let zoom = '';
 let srs = '';
 let layers = '';
 let zoomConstrains = '';
+let extentConstrains = '';
 params.forEach((param) => {
   if (param.indexOf('center') > -1) {
     const values = param.split('=')[1].split(',');
@@ -55,6 +56,9 @@ params.forEach((param) => {
   } else if (param.indexOf('zoomConstrains') > -1) {
     const value = param.split('=')[1];
     zoomConstrains = value;
+  } else if (param.indexOf('extentConstrains') > -1) {
+    const value = param.split('=')[1];
+    extentConstrains = value;
   } else if (param.indexOf('zoom') > -1) {
     const value = param.split('=')[1];
     zoom = parseInt(value, 10);
@@ -130,6 +134,42 @@ params.forEach((param) => {
    * @api stable
    */
   IDEE.config('THEME_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${api-idee.theme.url}`);
+
+  /**
+   * Predefined WMC files. It is composed of URL,
+   * predefined name and context name.
+   * @type {object}
+   * @public
+   * @api stable
+   */
+  IDEE.config('predefinedWMC', {
+    /**
+     * Predefined WMC URLs
+     * @const
+     * @type {Array<string>}
+     * @public
+     * @api stable
+     */
+    'urls': '${wmc.urls}'.split(',').map((e) => e),
+
+    /**
+     * WMC predefined names
+     * @const
+     * @type {Array<string>}
+     * @public
+     * @api stable
+     */
+    'predefinedNames': '${wmc.predefinedNames}'.split(','),
+
+    /**
+     * WMC context names
+     * @const
+     * @type {Array<string>}
+     * @public
+     * @api stable
+     */
+    'names': '${wmc.names}'.split(','),
+  });
 
   /**
    * The path to the api-idee theme
@@ -234,7 +274,7 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  IDEE.config('implementationswitcher', implementationSwitcherOpts);
+  IDEE.config(IDEE.control.ImplementationSwitcher.NAME, implementationSwitcherOpts);
 
   /**
    * URL of sql wasm file
@@ -261,11 +301,19 @@ params.forEach((param) => {
 
   /**
    * MAP Viewer - Zoom Constrains
-   * 
+   *
    * @private
    * @type {Object}
    */
   IDEE.config('MAP_VIEWER_ZOOM_CONSTRAINS', zoomConstrains);
+
+  /**
+   * Map Viewer - Extent constrains
+   *
+   * @private
+   * @type {Object}
+   */
+  IDEE.config('MAP_VIEWER_EXTENT_CONSTRAINS', extentConstrains);
 
   /**
    * MAP Viewer - SRS
@@ -285,11 +333,19 @@ params.forEach((param) => {
 
   /**
    * MAP Viewer - DPI (Dots per inch)
-   * 
+   *
    * @private
    * @type {Number}
    */
   IDEE.config('DPI', 72);
+
+  /**
+   * MAP Viewer - DPI OGC (Dots per inch for OGC services)
+   *
+   * @private
+   * @type {Number}
+   */
+  IDEE.config('DPI_OGC', 25.4 / 0.28);
 
   /**
    * Mueve el mapa cuando se hace clic sobre un objeto
@@ -315,6 +371,22 @@ params.forEach((param) => {
    * @type {Number | String}
    */
   IDEE.config('MIN_ZOOM', '${minZoom}');
+
+  /**
+   * Zoom por defecto.
+   *
+   * @public
+   * @type {Number | String}
+   */
+  IDEE.config('DEFAULT_ZOOM', '${defaultZoom}');
+
+  /**
+   * Activar las resoluciones.
+   *
+   * @public
+   * @type {Boolean}
+   */
+  IDEE.config('ACTIVATE_RESOLUTIONS', '${activateResolutions}');
 
   /**
    * Hace el popup y dialog inteligente
@@ -347,5 +419,66 @@ params.forEach((param) => {
       audios: ['250px', '40px'],
     },
   });
+
+  /**
+   * Determina el nivel de zoom cuando se usa el control location.
+   * @public
+   * @type {Number}
+   */
+  IDEE.config('ZOOM_LOCATION', '${zoomLocation}');
+
+  // eslint-disable-next-line no-param-reassign
+  IDEE.config.token = {
+    "cnig": {
+      "color": {
+        "primary": "#71a7d3",
+        "links": "#1470db",
+        "primary_dark": "#1d5a9e",
+        "success": "#49d793",
+        "danger": "#e65244",
+        "warning": "#fc8802",
+        "neutral_05": "#f8f9fa",
+        "neutral_10": "#f1f3f5",
+        "neutral_20": "#e9ecef",
+        "neutral_30": "#dee2e6",
+        "neutral_40": "#ced4da",
+        "neutral_50": "#adb5bd",
+        "neutral_60": "#868e96",
+        "neutral_70": "#495057",
+        "neutral_80": "#343a40",
+        "neutral_90": "#212529",
+        "white": "#ffffff",
+        "black": "#000000",
+      },
+      "typography": {
+        "fontFamily": "'Roboto', sans-serif",
+        "fontSize": {
+          "caption": "12px",
+          "body_s": "14px",
+          "body_m": "16px",
+          "body_l": "18px",
+          "heading_m": "24px",
+          "heading_l": "32px",
+        },
+        "fontWeight": {
+          "regular": 400,
+          "bold": 700,
+        },
+        "lineHeight": {
+        },
+        "letterSpacing": {
+        },
+      },
+      "shape": {
+        "border": "",
+        "borderRadius": "",
+        "boxShadow": "",
+      },
+    },
+  };
+
+  // eslint-disable-next-line no-param-reassign
+  IDEE.config.activeTOKEN = 'cnig';
+
   window.M = IDEE;
 }(window.IDEE));

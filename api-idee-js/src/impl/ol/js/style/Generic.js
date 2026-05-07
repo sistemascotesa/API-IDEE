@@ -1,8 +1,10 @@
 /**
  * @module IDEE/impl/style/Generic
  */
+import { useproxy } from 'IDEE/api-idee';
 import {
   isUndefined, isArray, isFunction, isDynamic, drawDynamicStyle,
+  concatUrlPaths, addParameters, getImageSize,
 } from 'IDEE/util/Utils';
 import OLFeature from 'ol/Feature';
 import RenderFeature from 'ol/render/Feature';
@@ -70,6 +72,7 @@ class Generic extends Simple {
     let loadImageLine = null;
     const dinamic = drawDynamicStyle();
     const promises = [];
+    let iconWidth = 0;
 
     // Polygon image
     if (!isUndefined(this.options_.polygon)) {
@@ -166,25 +169,58 @@ class Generic extends Simple {
       loadImagePoint = (d) => new Promise((resolve, reject) => {
         const img = new Image();
 
-        // onload / onerror
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-
-        // img
-        img.width = imgSizeW;
-        img.height = imgSizeH;
-
-        const namesToSkip = ['label'];
-        if (isDynamic(this.options_.point, namesToSkip) === true) {
-          img.src = d;
-          img.crossOrigin = 'anonymous';
+        if (this.options_.point.icon) {
+          if (this.options_.point.icon.src) {
+            getImageSize(this.options_.point.icon.src).then((imgx) => {
+              img.onload = () => resolve(img);
+              img.onerror = reject;
+              if (!this.options_.point.icon.src.startsWith(window.location.origin) && useproxy) {
+                const proxyImageURL = concatUrlPaths([IDEE.config.PROXY_URL, '/image']);
+                img.crossOrigin = 'anonymous';
+                img.src = addParameters(proxyImageURL, {
+                  url: this.options_.point.icon.src,
+                });
+              } else {
+                img.crossOrigin = 'anonymous';
+                img.src = this.options_.point.icon.src;
+              }
+              img.width = imgSizeW > imgx.width ? imgSizeW : imgx.width;
+              img.height = imgSizeW > imgx.height ? imgSizeW : imgx.height;
+              iconWidth = img.width;
+            });
+          } else if (this.options_.point.icon.form) { // es un FORM
+            img.onload = () => resolve(img);
+            img.width = imgSizeW;
+            img.height = imgSizeW;
+            const getterPoint = GETTER_BY_GEOM.Point;
+            const stylesPoint = getterPoint(this.options_, this, this.layer_);
+            const imageFormPoint = stylesPoint[1].getImage().getImage(1);
+            if (imageFormPoint != null && imageFormPoint) {
+              img.src = imageFormPoint.toDataURL();
+            }
+          }
         } else {
-          const getterPoint = GETTER_BY_GEOM.Point;
-          const stylesPoint = getterPoint(this.options_, this, this.layer_);
-          stylesPoint[0].getImage().setRadius(5);
-          const imageURLPoint = stylesPoint[0].getImage().getImage(1).toDataURL();
-          img.src = imageURLPoint;
+          // onload / onerror
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+
+          // img
+          img.width = imgSizeW;
+          img.height = imgSizeH;
+
+          const namesToSkip = ['label'];
+          if (isDynamic(this.options_.point, namesToSkip) === true) {
+            img.src = d;
+            img.crossOrigin = 'anonymous';
+          } else {
+            const getterPoint = GETTER_BY_GEOM.Point;
+            const stylesPoint = getterPoint(this.options_, this, this.layer_);
+            stylesPoint[0].getImage().setRadius(5);
+            const imageURLPoint = stylesPoint[0].getImage().getImage(1).toDataURL();
+            img.src = imageURLPoint;
+          }
         }
+        iconWidth = img.width;
       });
       promises.push(loadImagePoint(dinamic));
     }
@@ -201,11 +237,11 @@ class Generic extends Simple {
     return Promise.all(promises).then((values) => {
       const lngt = values.length;
       if (lngt === 1) {
-        canvasGL.width = 35;
+        canvasGL.width = iconWidth !== 0 ? iconWidth : 35;
       } else if (lngt === 2) {
-        canvasGL.width = 70;
+        canvasGL.width = 70 + iconWidth;
       } else {
-        canvasGL.width = 100;
+        canvasGL.width = 100 + iconWidth;
       }
       let height = 0;
       values.forEach((image) => {

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.printviewmanagement</small></h1>
 
@@ -12,12 +12,21 @@ Plugin que permite utilizar diferentes herramientas de impresión.
 - Posibilidad de añadir fichero de georreferenciación (WLD).
 - Posibilidad de indicar los DPI (dots per inches) de la imagen impresa.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Printviewmanagement abierto](./src/facade/assets/images/printviewmanagement-abierto.png)|![Printviewmanagement cerrado](./src/facade/assets/images/printviewmanagement-cerrado.png)|
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
+Para uso de implementación OpenLayers:
 - **printviewmanagement.ol.min.js**
 - **printviewmanagement.ol.min.css**
+
+Para uso de implementación Cesium:
+- **printviewmanagement.cesium.min.js**
+- **printviewmanagement.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/printviewmanagement/printviewmanagement.ol.min.css" rel="stylesheet" />
@@ -56,12 +65,11 @@ Para poder utilizar una de las versiones, basta con indicar la versión en cada 
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**:  Ubicación del plugin sobre el mapa.
-  - 'TL': (top left) - Arriba a la izquierda (por defecto).
-  - 'TR': (top right) - Arriba a la derecha.
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Impresión del mapa.
 - **isDraggable**: "True" para que el plugin se pueda desplazar, por defecto false.
 - **useProxy**: Define si el plugin utilizará el proxy o no, valores true o false. Por defecto: false.
@@ -132,7 +140,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   ```JavaScript
   "filterTemplates": [
     "https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html",
-    "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html",
+    "https://componentes.idee.es/estaticos/plantillas/html/templateConCabeceraYBorde.html",
     "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html",
     ],
   ```
@@ -273,7 +281,7 @@ URL_API?printviewmanagement=position*collapsed*collapsible*tooltip*isDraggable*g
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -285,6 +293,11 @@ URL_API?printviewmanagement=position*collapsed*collapsible*tooltip*isDraggable*g
     <td>collapsible</td>
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
     <td>tooltip</td>
@@ -322,11 +335,13 @@ URL_API?printviewmanagement=position*collapsed*collapsible*tooltip*isDraggable*g
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee?printviewmanagement=TL*true*true*Imprimir*true***false*false*true
+https://componentes.idee.es/api-idee?printviewmanagement=LEFT*false*false*imprimir*true*true*true*true*2
 ```
 
 ```
-https://componentes.idee.es/api-idee?printviewmanagement=TL*true*true*Imprimir*true***false*true*true*0
+https://componentes.idee.es/api-idee?printviewmanagement=LEFT*true*true*Imprimir*true***false*true*true*1
+```
+
 
 ### Ejemplos de uso API-REST en base64
 
@@ -341,9 +356,10 @@ IDEE.utils.encodeBase64(obj_params);
 ```javascript
 {
   isDraggable: true,
-  position: 'TL',
+  position: 'left',
   collapsible: true,
   collapsed: true,
+  order: 0,
   tooltip: 'Imprimir',
   georefImageEpsg: {
     tooltip: 'Georeferenciar imagen',
@@ -382,9 +398,10 @@ https://componentes.idee.es/api-idee?printviewmanagement=base64=eyJpc0RyYWdnYWJs
 ```javascript
 {
   isDraggable: true,
-  position: 'TL',
+  position: 'left',
   collapsible: true,
   collapsed: true,
+  order: 0,
   tooltip: 'Imprimir',
   georefImageEpsg: false,
   georefImage: false,
@@ -404,9 +421,10 @@ const map = IDEE.map({
 
 const mp = new IDEE.plugin.PrintViewManagement({
   isDraggable: true,
-  position: 'TL',
+  position: 'left',
   collapsible: true,
   collapsed: true,
+  order: 0,
   tooltip: 'Imprimir',
   defaultOpenControl: 3,
   georefImageEpsg: {
@@ -438,7 +456,7 @@ const mp = new IDEE.plugin.PrintViewManagement({
   printermap: {
     filterTemplates: [
       "https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html",
-      "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html",
+      "https://componentes.idee.es/estaticos/plantillas/html/templateConCabeceraYBorde.html",
       "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html",
     ],
     showDefaultTemplate: true,

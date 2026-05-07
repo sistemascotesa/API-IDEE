@@ -3,7 +3,6 @@
  */
 
 import PrinterMapControlImpl from 'impl/printermapcontrol';
-import { reproject } from 'impl/utils';
 import jsPDF from 'jspdf';
 import printermapHTML from '../../templates/printermap';
 import { getValue } from './i18n/language';
@@ -22,7 +21,8 @@ import defaultTemplate from '../../templates/defaultTemplate';
 
 const ID_TITLE = '#m-printermap-title';
 const ID_FORMAT_SELECT = '#m-printermap-format';
-const ID_CUSTOM_TEMPLATE = '#m-printermap-customTemplate';
+const ID_TEMPLATE_UPLOAD_BUTTON = '#m-printermap-upload-button';
+const ID_CUSTOM_TEMPLATE = '#m-printermap-customize-button';
 const ID_PRINTERMAP_BUTTON = '#m-printviewmanagement-printermap';
 const ID_PRINTERMAP_CONTROL = '#m-printviewmanagement-controls';
 const ID_TEMPLATE_UPLOAD = '#m-printermap-template-upload';
@@ -46,8 +46,6 @@ export default class PrinterMapControl extends IDEE.Control {
       layoutsRestraintFromDpi,
     },
     map,
-    statusProxy,
-    useProxy,
   ) {
     if (IDEE.utils.isUndefined(PrinterMapControlImpl)
       || (IDEE.utils.isObject(PrinterMapControlImpl)
@@ -156,20 +154,6 @@ export default class PrinterMapControl extends IDEE.Control {
     this.tooltip_ = tooltip || getValue('tooltip');
 
     /**
-     * Estado del proxy
-     * @private
-     * @type {Boolean}
-     */
-    this.statusProxy = statusProxy;
-
-    /**
-     * Indica si se utiliza un proxy para las peticiones.
-     * @private
-     * @type {Boolean}
-     */
-    this.useProxy = useProxy;
-
-    /**
      *  Array de paths donde se encuentran las plantillas por defecto (opcional)
      * @private
      * @type {Array<String>}
@@ -261,7 +245,7 @@ export default class PrinterMapControl extends IDEE.Control {
 
         const file = { name: `${templateName}.html` };
 
-        this.handleTemplateUpload({ target: { result: content } }, file);
+        this.handleTemplateUpload({ target: { result: content } }, file, false);
       });
 
       await Promise.all(promises);
@@ -315,17 +299,36 @@ export default class PrinterMapControl extends IDEE.Control {
       unit: 'mm',
       format: dimensions,
     });
-
+    const marginPdf = 10;
+    const availableWidth = dimensions[1] - marginPdf * 2;
+    const availableHeight = dimensions[0] - marginPdf * 2;
     try {
-      doc.addImage(
-        imageData,
-        imageType,
-        0,
-        0,
-        dimensions[1],
-        dimensions[0],
-      );
-      doc.save(`${title}.pdf`);
+      const img = new Image();
+      img.onload = () => {
+        const imgWidth = img.naturalWidth;
+        const imgHeight = img.naturalHeight;
+        const imgAspectRatio = imgWidth / imgHeight;
+        const areaAspectRatio = availableWidth / availableHeight;
+
+        let finalWidth;
+        let finalHeight;
+
+        if (imgAspectRatio > areaAspectRatio) {
+          finalWidth = availableWidth;
+          finalHeight = availableWidth / imgAspectRatio;
+        } else {
+          finalHeight = availableHeight;
+          finalWidth = availableHeight * imgAspectRatio;
+        }
+
+        const offsetX = marginPdf + (availableWidth - finalWidth) / 2;
+        const offsetY = marginPdf + (availableHeight - finalHeight) / 2;
+
+        doc.addImage(imageData, imageType, offsetX, offsetY, finalWidth, finalHeight);
+        doc.save(`${title}.pdf`);
+      };
+      img.onerror = (error) => errorCallback(error);
+      img.src = imageData;
     } catch (error) {
       errorCallback(error);
     } finally {
@@ -412,9 +415,11 @@ export default class PrinterMapControl extends IDEE.Control {
    * Esta funcion comprueba que el template cumpla con los requisitos
    * @param {Event} event Evento de carga del archivo
    * @param {File} file Archivo cargado
+   * @param {boolean} showToast Indica si se muestra un toast de éxito
+   * al guardar el template. Por defecto es true
    * @returns
    */
-  handleTemplateUpload(event, file) {
+  handleTemplateUpload(event, file, showToast = true) {
     const content = event.target.result;
     const templateName = file.name.split('.')[0];
 
@@ -436,7 +441,7 @@ export default class PrinterMapControl extends IDEE.Control {
       this.extractScripts(doc),
     );
 
-    this.saveTemplate(templateData);
+    this.saveTemplate(templateData, showToast);
   }
 
   /**
@@ -585,11 +590,15 @@ export default class PrinterMapControl extends IDEE.Control {
   /**
    * Esta funcion guarda el template en la lista de templates
    * @param {*} templateData Objeto con los datos del template
+   * @param {boolean} showToast Indica si se muestra un toast de éxito
+   * al guardar el template. Por defecto es true
    */
-  saveTemplate(templateData) {
+  saveTemplate(templateData, showToast = true) {
     this.uploadedTemplates.push(templateData);
     this.updateTemplateSelect(templateData.name);
-    IDEE.toast.success(getValue('loadTemplateSuccess'), null, 3000);
+    if (showToast) {
+      IDEE.toast.success(getValue('loadTemplateSuccess'), null, 3000);
+    }
   }
 
   /**
@@ -638,7 +647,8 @@ export default class PrinterMapControl extends IDEE.Control {
     this.uploadedTemplates.forEach((template) => {
       const option = document.createElement('option');
       option.value = template.name;
-      option.textContent = template.name;
+      const label = template.name.replace(/([A-Z])/g, ' $1').toLowerCase();
+      option.textContent = label.charAt(0).toUpperCase() + label.slice(1);
       selectElement.appendChild(option);
     });
 
@@ -655,13 +665,18 @@ export default class PrinterMapControl extends IDEE.Control {
    */
   addEvents(template) {
     const customizeTemplate = template.querySelector(ID_CUSTOM_TEMPLATE);
-    const templateFile = template.querySelector(ID_TEMPLATE_UPLOAD);
+    const templateFileButton = template.querySelector(ID_TEMPLATE_UPLOAD_BUTTON);
+    const templateFileInput = template.querySelector(ID_TEMPLATE_UPLOAD);
 
     customizeTemplate.addEventListener('click', () => {
       this.openTemplateEditor();
     });
 
-    templateFile.addEventListener('change', () => {
+    templateFileButton.addEventListener('click', () => {
+      templateFileInput.click();
+    });
+
+    templateFileInput.addEventListener('change', () => {
       this.setupTemplateUpload();
     });
   }
@@ -693,7 +708,7 @@ export default class PrinterMapControl extends IDEE.Control {
       const scripts = this.extractScripts(doc);
       templateData = {
         name: 'default',
-        content: defaultTemplate,
+        content: defaultTemplate.replaceAll('${api-idee.static_resources.url}', IDEE.config.STATIC_RESOURCES_URL),
         types,
         styles,
         scripts,
@@ -744,86 +759,6 @@ export default class PrinterMapControl extends IDEE.Control {
   handleTemplateConfig(config) {
     this.templateConfig = config;
     this.downloadClient(config);
-  }
-
-  /**
-    * Converts decimal degrees coordinates to degrees, minutes, seconds
-    * @public
-    * @function
-    * @param {String} coordinate - single coordinate (one of a pair)
-    * @api
-    */
-  converterDecimalToDMS(coordinate) {
-    const coord = Number.parseFloat(coordinate);
-    const deg = Math.abs(coord);
-    const min = (deg % 1) * 60;
-    // sign Degrees Minutes Seconds
-    return `${Math.sign(coord) === -1 ? '-' : ''}${Math.trunc(deg)}º ${Math.trunc(min)}' ${Math.trunc((min % 1) * 60)}'' `;
-  }
-
-  /**
-    * Converts original bbox coordinates to DMS coordinates.
-    * @public
-    * @function
-    * @api
-    * @param {Array<Object>} bbox - { x: {min, max}, y: {min, max} }
-    */
-  convertBboxToDMS(bbox) {
-    const proj = this.map_.getProjection();
-    let dmsBbox = bbox;
-    if (proj.units === 'm') {
-      const min = [bbox.x.min, bbox.y.min];
-      const max = [bbox.x.max, bbox.y.max];
-      const newMin = reproject(proj.code, min);
-      const newMax = reproject(proj.code, max);
-      dmsBbox = {
-        x: {
-          min: newMin[0],
-          max: newMax[0],
-        },
-        y: {
-          min: newMin[1],
-          max: newMax[1],
-        },
-      };
-    }
-
-    dmsBbox = this.convertDecimalBoxToDMS(dmsBbox);
-    return dmsBbox;
-  }
-
-  /**
-    * Converts decimal coordinates Bbox to DMS coordinates Bbox.
-    * @public
-    * @function
-    * @api
-    * @param { Array < Object > } bbox - { x: { min, max }, y: { min, max } }
-    */
-  convertDecimalBoxToDMS(bbox) {
-    return {
-      x: {
-        min: this.converterDecimalToDMS(bbox.x.min),
-        max: this.converterDecimalToDMS(bbox.x.max),
-      },
-      y: {
-        min: this.converterDecimalToDMS(bbox.y.min),
-        max: this.converterDecimalToDMS(bbox.y.max),
-      },
-    };
-  }
-
-  /**
-    * This function checks if an object is equal to this control.
-    *
-    * @function
-    * @api stable
-    */
-  equals(obj) {
-    let equals = false;
-    if (obj instanceof PrinterMapControl) {
-      equals = (this.name === obj.name);
-    }
-    return equals;
   }
 
   /**

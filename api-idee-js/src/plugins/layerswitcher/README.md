@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Layerswitcher</small></h1>
 
@@ -8,14 +8,20 @@
 Extensión que permite listar y gestionar las capas (servicios web y/o ficheros) añadidas en el mapa, de forma fácil y rápida.
 La carga de nuevos servicios se pueden realizar mediante el listado predefinido o indicando la URL del servicio.
 
-
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Layerswitcher abierto](./src/facade/assets/images/layerswitcher-abierto.png)|![Layerswitcher cerrado](./src/facade/assets/images/layerswitcher-cerrado.png)|
 
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **layerswitcher.ol.min.js**
 - **layerswitcher.ol.min.css**
+
+Para uso de implementación Cesium:
+- **layerswitcher.cesium.min.js**
+- **layerswitcher.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
@@ -36,12 +42,11 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**:  Ubicación del plugin sobre el mapa.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Gestor de capas.
 - **isDraggable**: Permite mover el plugin por el mapa. Por defecto: false.
 - **http**: Si es *true* se permite la carga de capas de servicios desplegados con http, si se le da valor *false* no se permitirá la carga de servicios http. Por defecto: true.
@@ -80,7 +85,7 @@ https://componentes.idee.es/api-idee/?layerswitcher=position*collapsed*collapsib
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -92,6 +97,11 @@ https://componentes.idee.es/api-idee/?layerswitcher=position*collapsed*collapsib
     <td>collapsible</td>
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
     <td>tooltip</td>
@@ -161,7 +171,12 @@ https://componentes.idee.es/api-idee/?layerswitcher=position*collapsed*collapsib
   </tr>
 </table>
 
-### Ejemplo de uso
+### Ejemplo de uso API-REST
+```
+https://componentes.idee.es/api-idee?layerswitcher=TR*true*true*layerswitcher*true*true*eyes*zoom,legend*true*true*false*true*true*true
+```
+
+### Ejemplo de uso API-REST en base64
 
 Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
 Ejemplo:
@@ -173,8 +188,9 @@ Ejemplo de constructor del plugin:
 ```
      {
            collapsed: false,
-           position: 'TL',
-           tooltip: 'Capas',
+           position: 'right',
+           order: 1,
+           tooltip: 'Gestor de capas',
            collapsible: true,
            isDraggable: true,
            modeSelectLayers: 'eyes',
@@ -199,8 +215,9 @@ const map = IDEE.map({
 
 const mp = new IDEE.plugin.Layerswitcher({
   collapsed: false,
-  position: 'TL',
-  tooltip: 'Capas',
+  position: 'left',
+  order: 1,
+  tooltip: 'Gestor de capas',
   collapsible: true,
   isDraggable: true,
   modeSelectLayers: 'eyes',

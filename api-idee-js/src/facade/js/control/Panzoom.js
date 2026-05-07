@@ -5,49 +5,79 @@ import panzoomTemplate from 'templates/panzoom';
 import myhelp from 'templates/panzoomhelp';
 import PanzoomImpl from 'impl/control/Panzoom';
 import ControlBase from './Control';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isString,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import { compileSync as compileTemplate } from '../util/Template';
 import { getValue } from '../i18n/language';
+import * as Position from '../ui/position';
+
+/**
+ * @typedef {Object} module:IDEE/control/Panzoom~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {Number} [order] Accesibilidad, z-index.
+ * @property {String} [tooltipZoomIn] Título opcional del control que aumenta el zoom.
+ * @property {String} [tooltipZoomOut] Título opcional del control que disminuye el zoom.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
+ */
 
 /**
  * @classdesc
- * Agregue los botones '+' y '-' para acercar y alejar el mapa.
- *
+ * Control que muestra los botones '+' y '-' para acercar y alejar el mapa.
+ * @property {String} [position='down'] Posición del control.
+ * @property {Number} [order=0] Accesibilidad, z-index.
+ * @property {String} [tooltipZoomIn] Título opcional del control que aumenta el zoom.
+ * @property {String} [tooltipZoomOut] Título opcional del control que disminuye el zoom.
  * @api
  * @extends {IDEE.Control}
+ *
+ * @note Para más opciones heredadas, ver {@link module:IDEE/control/Control~Options}.
  */
 class Panzoom extends ControlBase {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base, estas opciones
-   * se pasarán en formato objeto. Opciones disponibles:
-   * - duration: Duración de la animación en milisegundos.
-   * - className: Nombre de la clase CSS.
-   * - zoomInClassName: Nombre de clase de CSS para el botón de acercamiento.
-   * - zoomOutClassName: Nombre de clase de CSS para el botón de alejamiento.
-   * - zoomInLabel: Etiqueta de texto que se usará para el botón de acercamiento.
-   * - zoomOutLabel: Etiqueta de texto que se usará para el botón de alejamiento.
-   * - zoomInTipLabel: Etiqueta de texto que se usará para la sugerencia del botón.
-   * - zoomOutTipLabel: Etiqueta de texto que se usará para la sugerencia del botón.
-   * - delta: El delta de zoom aplicado en cada clic.
-   * - target: Especifique un objetivo si desea que el control se represente
-   * fuera de la ventana gráfica del mapa.
+   * @param {module:IDEE/control/Panzoom~Options} options Opciones del control.
+   * @example
+   * const control = new IDEE.control.Panzoom({
+   *   position: 'left',
+   *   order: 2,
+   *   tooltipZoomIn: 'Más zoom',
+   *   vendorOptions: {
+   *   },
+   * });
    * @api
    */
-  constructor(vendorOptions = {}) {
+  constructor(options = {}) {
     if (isUndefined(PanzoomImpl) || (isObject(PanzoomImpl)
       && isNullOrEmpty(Object.keys(PanzoomImpl)))) {
-      Exception(getValue('exception').panzoom_method);
+      Exception(getValue('exception').panzoombar_method);
     }
 
-    // implementation of this control
+    const tooltipZoomIn = isString(options.tooltipZoomIn) ? options.tooltipZoomIn
+      : getValue(Panzoom.NAME).zoomIn;
+
+    const tooltipZoomOut = isString(options.tooltipZoomOut) ? options.tooltipZoomOut
+      : getValue(Panzoom.NAME).zoomOut;
+
+    const vendorOptions = {
+      ...(isObject(options.vendorOptions) ? options.vendorOptions : {}),
+      tooltipZoomIn,
+      tooltipZoomOut,
+    };
+
     const impl = new PanzoomImpl(vendorOptions);
 
-    // calls the super constructor
-    super(Panzoom.NAME, impl);
+    super(Panzoom.NAME, impl, options);
+
+    this.position = options.position ?? Position.DOWN;
+
+    this.tooltipZoomIn = tooltipZoomIn;
+
+    this.tooltipZoomOut = tooltipZoomOut;
   }
 
   /**
@@ -86,7 +116,7 @@ class Panzoom extends ControlBase {
    * @api
    */
   getHelp() {
-    const textHelp = getValue('panzoom').textHelp;
+    const textHelp = this.translation.textHelp;
     return {
       title: Panzoom.NAME,
       content: new Promise((success) => {

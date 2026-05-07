@@ -2,6 +2,7 @@
  * @module IDEE/plugin/Incicarto
  */
 import '../assets/css/incicarto';
+import 'assets/css/fonts';
 import IncicartoControl from './incicartocontrol';
 import api from '../../api';
 import { getValue } from './i18n/language';
@@ -23,8 +24,9 @@ export default class Incicarto extends IDEE.Plugin {
    */
   constructor(options = {}) {
     super('incicarto', {
-      position: options.position || 'right',
-      tooltip: options.tooltip || getValue('tooltip'),
+      position: options.position ?? 'right',
+      tooltip: options.tooltip ?? getValue('tooltip'),
+      order: options.order,
     });
 
     /**
@@ -42,14 +44,6 @@ export default class Incicarto extends IDEE.Plugin {
      */
     this.collapsible_ = options.collapsible;
     if (this.collapsible_ === undefined) this.collapsible_ = true;
-
-    /**
-     * Option to allow the plugin to be collapsible or not
-     * @private
-     * @type {Boolean}
-     */
-    this.wfszoom_ = parseInt(options.wfszoom, 10);
-    if (this.wfszoom_ === undefined || Number.isNaN(this.wfszoom_)) this.wfszoom_ = 12;
 
     this.controllist_ = options.controllist || [{
       id: 'themeList',
@@ -87,13 +81,6 @@ export default class Incicarto extends IDEE.Plugin {
     this.metadata_ = api.metadata;
 
     /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
-
-    /**
      * Plugin parameters
      * @public
      * @type {object}
@@ -126,11 +113,11 @@ export default class Incicarto extends IDEE.Plugin {
    */
   addTo(map) {
     this.map = map;
-
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_incid_carto.svg',
+      order: this.order,
     });
     map.addButtons(this.button);
 
@@ -138,11 +125,13 @@ export default class Incicarto extends IDEE.Plugin {
       className: 'm-incicarto',
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
-      position: IDEE.ui.position[this.position],
+      position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
       collapsedButtonClass: 'icon-incicarto',
       tooltip: this.tooltip,
+      order: this.order,
     });
-    map.addPanels(this.panel);
 
     if (this.controllist_[0].id === 'themeList') {
       this.errThemes_ = this.controllist_[0];
@@ -154,8 +143,7 @@ export default class Incicarto extends IDEE.Plugin {
       this.errProducts_ = this.controllist_[2];
     }
 
-    this.control_ = new IncicartoControl({
-      wfszoom: this.wfszoom_,
+    this.control = new IncicartoControl({
       controllist: this.controllist_,
       interfazmode: this.interfazmode_,
       prefixSubject: this.prefixSubject_,
@@ -166,25 +154,25 @@ export default class Incicarto extends IDEE.Plugin {
       errThemes: this.errThemes_,
       errTypes: this.errTypes_,
       errProducts: this.errProducts_,
-      isDraggable: this.isDraggable,
     });
 
-    this.controls.push(this.control_);
+    this.controls.push(this.control);
     this.panel.addControls(this.controls);
 
     this.map.on(IDEE.evt.ADDED_LAYER, () => {
-      if (this.control_ !== null) {
-        this.control_.renderLayers();
+      if (this.control !== null) {
+        this.control.renderLayers();
       }
     });
 
     this.map.on(IDEE.evt.REMOVED_LAYER, () => {
-      if (this.control_ !== null) {
-        this.control_.renderLayers();
+      if (this.control !== null) {
+        this.control.renderLayers();
       }
     });
     this.button.panel = this.panel;
     this.panel.button = this.button;
+    map.addPanels(this.panel);
   }
 
   /**
@@ -197,7 +185,7 @@ export default class Incicarto extends IDEE.Plugin {
   getAPIRest() {
     // eslint-disable-next-line max-len
     // *${JSON.stringify(this.buzones_)}*${JSON.stringify(this.controllist_)}*${JSON.stringify(this.themes_)}*${JSON.stringify(this.errors_)}*${JSON.stringify(this.products_)}
-    return `${this.name}=${this.position}*${this.collapsed_}*${this.collapsible_}*${this.tooltip}*${this.wfszoom_}*${this.prefixSubject_}*${this.interfazmode_}*${this.isDraggable}`;
+    return `${this.name}=${this.position}*${this.collapsed_}*${this.tooltip}*${this.prefixSubject_}*${this.interfazmode_}`;
   }
 
   /**
@@ -230,9 +218,9 @@ export default class Incicarto extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.control_.resetInteractions();
-    this.map.removeControls([this.control_]);
-    [this.map, this.control_, this.panel] = [null, null, null];
+    this.control.resetInteractions();
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
   }
 
   /**

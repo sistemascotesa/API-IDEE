@@ -10,7 +10,7 @@
       "type": "simple",
       "name": "position",
       "position": 0,
-      "possibleValues": ["TL", "TR", "BR", "BL"]
+      "possibleValues": ["left", "right"]
     }, {
       "type": "boolean",
       "name": "collapsed",
@@ -20,37 +20,41 @@
       "name": "collapsible",
       "position": 2
     }, {
-      "type": "boolean",
-      "name": "selection",
+      "type": "number",
+      "name": "order",
       "position": 3
     }, {
       "type": "boolean",
-      "name": "addlayer",
+      "name": "selection",
       "position": 4
     }, {
       "type": "boolean",
-      "name": "analysis",
+      "name": "addlayer",
       "position": 5
     }, {
       "type": "boolean",
-      "name": "creation",
+      "name": "analysis",
       "position": 6
     }, {
       "type": "boolean",
-      "name": "download",
+      "name": "creation",
       "position": 7
     }, {
       "type": "boolean",
-      "name": "edition",
+      "name": "download",
       "position": 8
+    }, {
+      "type": "boolean",
+      "name": "edition",
+      "position": 9
     }, {
       "type": "simple",
       "name": "help",
-      "position": 9
+      "position": 10
     }, {
       "type": "boolean",
       "name": "style",
-      "position": 10
+      "position": 11
     }]
   }],
   "files": {
@@ -75,7 +79,7 @@
     "name": "vectorsmanagement",
     "description": "Geometry drawing",
     "text": "Geometry management and downloading",
-    "version": "2.0.2",
+    "version": "1.1.0",
     "date": "3rd February 2024",
     "author": "CNIG",
     "org": "CNIG",

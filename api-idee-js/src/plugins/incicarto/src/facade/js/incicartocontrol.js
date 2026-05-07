@@ -1,3 +1,4 @@
+/* eslint-disable operator-linebreak */
 /**
  * @module IDEE/control/IncicartoControl
  */
@@ -55,7 +56,7 @@ export default class IncicartoControl extends IDEE.Control {
   constructor(options) {
     if (IDEE.utils.isUndefined(IncicartoImplControl)
       || (IDEE.utils.isObject(IncicartoImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(IncicartoImplControl)))) {
+        && IDEE.utils.isNullOrEmpty(Object.keys(IncicartoImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
 
@@ -164,8 +165,6 @@ export default class IncicartoControl extends IDEE.Control {
 
     this.pluginOpened = false;
 
-    this.wfszoom = options.wfszoom;
-
     this.interfazmode = options.interfazmode;
 
     this.prefixSubject = options.prefixSubject;
@@ -185,13 +184,6 @@ export default class IncicartoControl extends IDEE.Control {
 
     this.documentRead_ = document.createElement('img');
     this.canvas_ = document.createElement('canvas');
-
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable_ = options.isDraggable;
   }
 
   /**
@@ -209,11 +201,20 @@ export default class IncicartoControl extends IDEE.Control {
         jsonp: true,
         vars: {
           translations: {
+            hide_methods: getValue('hide_methods'),
+            method_1: getValue('method_1'),
+            method_2: getValue('method_2'),
+            method1_step1: getValue('method1_step1'),
+            method1_step2: getValue('method1_step2'),
+            method1_step3: getValue('method1_step3'),
+            method2_step1: getValue('method2_step1'),
+            method2_step2: getValue('method2_step2'),
             add_point_layer: getValue('add_point_layer'),
             add_line_layer: getValue('add_line_layer'),
             add_poly_layer: getValue('add_poly_layer'),
             add_wfs_layer: getValue('add_wfs_layer'),
             load_layer: getValue('load_layer'),
+
           },
           themes: [],
           errors: {},
@@ -238,7 +239,6 @@ export default class IncicartoControl extends IDEE.Control {
       this.addEvents(html);
       this.createDrawingTemplate();
       this.createUploadingTemplate();
-      this.addSvgs();
       this.map.addLayers(this.selectionLayer);
     });
   }
@@ -381,6 +381,7 @@ export default class IncicartoControl extends IDEE.Control {
     const strokeOptions = strokeOptionsContainer.querySelectorAll('.stroke-option');
 
     const defaultOption = strokeOptionsContainer.querySelector('.stroke-option.active');
+    // eslint-disable-next-line no-nested-ternary
     strokeOptionDefault.className = `stroke-option-default ${defaultOption.classList.contains('stroke-continuous') ? 'stroke-continuous' : defaultOption.classList.contains('stroke-dots') ? 'stroke-dots' : defaultOption.classList.contains('stroke-lines') ? 'stroke-lines' : 'stroke-dots-lines'}`;
     strokeOptionDefault.setAttribute('data-value', defaultOption.getAttribute('data-value'));
 
@@ -393,10 +394,12 @@ export default class IncicartoControl extends IDEE.Control {
         strokeOptions.forEach((opt) => opt.classList.remove('active'));
         option.classList.add('active');
         const value = option.getAttribute('data-value');
+        // eslint-disable-next-line no-nested-ternary
         const strokeClass = option.classList.contains('stroke-continuous') ? 'stroke-continuous' :
+          // eslint-disable-next-line no-nested-ternary
           option.classList.contains('stroke-dots') ? 'stroke-dots' :
-          option.classList.contains('stroke-lines') ? 'stroke-lines' :
-          'stroke-dots-lines';
+            option.classList.contains('stroke-lines') ? 'stroke-lines' :
+              'stroke-dots-lines';
         strokeOptionDefault.className = `stroke-option-default ${strokeClass}`;
         strokeOptionDefault.setAttribute('data-value', value);
 
@@ -422,18 +425,26 @@ export default class IncicartoControl extends IDEE.Control {
 
   toogleCollapse(e) {
     const elem = document.querySelector('#drawingtools .drawingToolsContainer');
-    if (elem !== null) {
+
+    const collapsor = document.querySelector('#drawingtools .collapsor');
+    const span = collapsor?.querySelector('span');
+    const svg = collapsor?.querySelector('svg');
+
+    if (elem) {
       if (elem.style.display !== 'none') {
         elem.style.display = 'none';
         const cond = this.drawLayer.getGeometryType() !== null && this.drawLayer.getGeometryType().toLowerCase() === 'linestring';
-        if (cond || (this.drawLayer.geometry !== undefined && this.drawLayer.geometry !== '' && this.drawLayer.geometry.toLowerCase() === 'linestring')) {
-          document.querySelector('#drawingtools .collapsor').innerHTML = `${getValue('symbology_profile')}&nbsp;&nbsp;<span class="icon-show"></span>`;
-        } else {
-          document.querySelector('#drawingtools .collapsor').innerHTML = `${getValue('symbology')}&nbsp;&nbsp;<span class="icon-show"></span>`;
-        }
+
+        const text = (cond || (this.drawLayer.geometry && this.drawLayer.geometry.toLowerCase() === 'linestring'))
+          ? getValue('symbology_profile')
+          : getValue('symbology');
+
+        if (span) span.innerHTML = text;
+        if (svg) svg.style.transform = '';
       } else {
         elem.style.display = 'block';
-        document.querySelector('#drawingtools .collapsor').innerHTML = `${getValue('collapse')}&nbsp;&nbsp;<span class="icon-hide"></span>`;
+        if (span) span.innerHTML = getValue('collapse');
+        if (svg) svg.style.transform = 'rotate(180deg)';
       }
     }
   }
@@ -477,25 +488,6 @@ export default class IncicartoControl extends IDEE.Control {
     html.querySelector('#incicarto-upload').addEventListener('click', () => this.openUploadOptions());
     html.querySelector('#incicarto-hide').addEventListener('click', () => this.hideMethods());
     this.addDragDropEvents();
-  }
-
-  /**
-   * Adds SVG icons to the plugin HTML.
-   * @public
-   * @function
-   * @api
-   */
-  addSvgs() {
-    const hideMethodsElem = this.html.querySelector('#incicarto-hide');
-    const buttonPointInciElem = this.html.querySelector('#incicarto-add-point');
-    const buttonLineInciElem = this.html.querySelector('#incicarto-add-line');
-    const buttonPolyInciElem = this.html.querySelector('#incicarto-add-poly');
-    const buttonUploadInciElem = this.html.querySelector('#incicarto-upload');
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'hidemethods', hideMethodsElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'puntualincident', buttonPointInciElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'linealincident', buttonLineInciElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'superficialincident', buttonPolyInciElem);
-    IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'fileincident', buttonUploadInciElem);
   }
 
   /**
@@ -758,7 +750,7 @@ export default class IncicartoControl extends IDEE.Control {
   }
 
   createContentEmail(emailSubject, theme, destinatary = this.themes
-    .find((item) => item.idTheme === theme).emailTheme) {
+    .find((item) => `${item.idTheme}` === `${theme}`).emailTheme) {
     const emailName = document.querySelector('#person-notify').value;
     const emailUser = document.querySelector('#email-notify').value;
     const errDescription = document.querySelector('#err-description').value;
@@ -1268,18 +1260,14 @@ export default class IncicartoControl extends IDEE.Control {
     layer.geometry = geom;
     layer.setZIndex(this.getMaxZIndex() + 1);
     this.map.addLayers(layer);
-    const layerTypeElem = document.querySelector('.m-incicarto-layer-type');
-    switch(geom) {
-      case 'Point':
-        IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'puntualincident', layerTypeElem);
-        break;
-      case 'LineString':
-        IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'linealincident', layerTypeElem);
-        break;
-      case 'Polygon':
-        IDEE.utils.loadSvgByUrl(this.name.toLowerCase(), 'superficialincident', layerTypeElem);
-        break;
-    }
+    const collapsorElem = this.drawingTools.querySelector('#collapsorButton');
+    collapsorElem.addEventListener('click', () => {
+      if (collapsorElem.classList.contains('g-cartografia-flecha-arriba2')) {
+        collapsorElem.classList.replace('g-cartografia-flecha-arriba2', 'g-cartografia-flecha-abajo2');
+      } else if (collapsorElem.classList.contains('g-cartografia-flecha-abajo2')) {
+        collapsorElem.classList.replace('g-cartografia-flecha-abajo2', 'g-cartografia-flecha-arriba2');
+      }
+    });
     setTimeout(() => {
       document.querySelector(`li[name="${layerName}"] span.m-incicarto-layer-add`).click();
     }, 100);
@@ -1489,9 +1477,15 @@ export default class IncicartoControl extends IDEE.Control {
    * @api
    */
   hideMethods() {
+    const iconHide = this.html.querySelector('#incicarto-hide');
     const elem = this.html.querySelector('#incicarto-methods-container');
     if (elem) {
       elem.style.display = elem.style.display === 'none' ? 'block' : 'none';
+    }
+    if (iconHide.classList.contains('g-cartografia-flecha-arriba2')) {
+      iconHide.classList.replace('g-cartografia-flecha-arriba2', 'g-cartografia-flecha-abajo2');
+    } else if (iconHide.classList.contains('g-cartografia-flecha-abajo2')) {
+      iconHide.classList.replace('g-cartografia-flecha-abajo2', 'g-cartografia-flecha-arriba2');
     }
   }
 
@@ -2183,7 +2177,6 @@ export default class IncicartoControl extends IDEE.Control {
       const selector = `#m-incicarto-list li[name="${layer.name}"] div.m-incicarto-layer-actions-container`;
       const selector2 = `#m-incicarto-list li[name="${layer.name}"] div.m-incicarto-layer-actions .m-incicarto-layer-add`;
       document.querySelector(selector).appendChild(this.drawingTools);
-      this.addSvgDrawingTools();
       document.querySelector(selector2).classList.add('active-tool');
       this.getImpl().addDrawInteraction(layer);
       if (document.querySelector('#drawingtools #featureInfo') !== null) {
@@ -2203,28 +2196,6 @@ export default class IncicartoControl extends IDEE.Control {
       this.isDrawingActive = false;
       this.drawLayer = undefined;
     }
-  }
-
-  addSvgDrawingTools() {
-    const name = this.name.toLowerCase();
-    const addElem = this.html.querySelector('#m-incicarto-action-add');
-    const editLineElem = this.html.querySelector('#m-incicarto-action-edit-line');
-    const editGeomElem = this.html.querySelector('#m-incicarto-action-edit-geom');
-    const zoomElem = this.html.querySelector('#m-incicarto-action-zoom');
-    const deleteElem = this.html.querySelector('#m-incicarto-action-delete');
-    const notifyElem = this.html.querySelector('#m-incicarto-action-notify');
-    const collapsorElem = this.drawingTools.querySelector('#collapsorButton');
-    IDEE.utils.loadSvgByUrl(name, 'addgeom', addElem);
-    if (editLineElem !== null) {
-      IDEE.utils.loadSvgByUrl(name, 'editgeom', editLineElem);
-    }
-    if (editGeomElem !== null) {
-      IDEE.utils.loadSvgByUrl(name, 'editgeom', editGeomElem);
-    }
-    IDEE.utils.loadSvgByUrl(name, 'zoomtoincident', zoomElem);
-    IDEE.utils.loadSvgByUrl(name, 'deleteincident', deleteElem);
-    IDEE.utils.loadSvgByUrl(name, 'notifyincident', notifyElem);
-    IDEE.utils.loadSvgByUrl(name, 'hidemethods', collapsorElem);
   }
 
   openEditOptions(layer) {

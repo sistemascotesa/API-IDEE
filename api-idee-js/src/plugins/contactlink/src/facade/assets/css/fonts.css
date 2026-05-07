@@ -1,31 +1,57 @@
-@font-face {
-    font-family: 'g-contactlink';
-    src: url('../fonts/g-contactlink.eot?xgx04x');
-    src: url('../fonts/g-contactlink.eot?xgx04x#iefix') format('embedded-opentype'),
-        url('../fonts/g-contactlink.ttf?xgx04x') format('truetype'),
-        url('../fonts/g-contactlink.woff?xgx04x') format('woff'),
-        url('../fonts/g-contactlink.svg?xgx04x#g-contactlink') format('svg');
-    font-weight: normal;
-    font-style: normal;
-    font-display: block;
+/*********************
+    LINKS
+*********************/
+
+.g-cartografia-download::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_descargasContactlink.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_descargasContactlink.svg');
 }
 
-[class^="g-contactlink-"],
-[class*=" g-contactlink-"] {
-    /* use !important to prevent issues with browser extensions that change fonts */
-    font-family: 'g-contactlink' !important;
-    speak: none;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-
-    /* Better Font Rendering =========== */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+.g-cartografia-compare::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_comparadorContactlink.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_comparadorContactlink.svg');
 }
 
-.g-contactlink-link:before {
-    content: "\e9422";
+.g-cartografia-3d::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tresd.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tresd.svg');
+}
+
+.g-cartografia-images::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_fototeca.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_fototeca.svg');
+}
+
+/****************
+   SOCIAL
+*****************/
+
+.g-cartografia-twitter::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_twitter.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_twitter.svg');
+}
+
+.g-cartografia-instagram::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_instagram.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_instagram.svg');
+}
+
+.g-cartografia-facebook::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_facebook.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_facebook.svg');
+}
+
+.g-cartografia-pinterest::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/pinterest.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/pinterest.svg');
+}
+
+.g-cartografia-youtube::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_youtube.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_youtube.svg');
+}
+
+.g-cartografia-mail::before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mail.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mail.svg');
 }

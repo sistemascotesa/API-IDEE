@@ -6,39 +6,49 @@
   "constructor": "IDEE.plugin.Infocoordinates",
   "parameters": [{
     "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "position": 0
-    }, {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    }, {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 2
-    }, {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 3
-    }, {
-      "type": "simple",
-      "name": "decimalGEOcoord",
-      "position": 4
-    }, {
-      "type": "simple",
-      "name": "decimalUTMcoord",
-      "position": 5
-    }, {
-      "type": "simple",
-      "name": "helpUrl",
-      "position": 6
-    },{
-      "type": "simple",
-      "name": "outputDownloadFormat",
-      "position": 7
-    }]
+    "properties": [
+      {
+        "type": "simple",
+        "name": "position",
+        "position": 0,
+        "possibleValues": ["left", "right"]
+      },
+      {
+        "type": "boolean",
+        "name": "collapsed",
+        "position": 1
+      },
+      {
+        "type": "number",
+        "name": "order",
+        "position": 2
+      },
+      {
+        "type": "simple",
+        "name": "tooltip",
+        "position": 3
+      },
+      {
+        "type": "simple",
+        "name": "decimalGEOcoord",
+        "position": 4
+      },
+      {
+        "type": "simple",
+        "name": "decimalUTMcoord",
+        "position": 5
+      },
+      {
+        "type": "simple",
+        "name": "helpUrl",
+        "position": 6
+      },
+      {
+        "type": "simple",
+        "name": "outputDownloadFormat",
+        "position": 7
+      }
+    ]
   }],
   "files": {
     "ol": {
@@ -52,9 +62,9 @@
   },
   "metadata": {
     "name": "Infocoordinates",
-    "description": "Show coordinates points when clicked on map",
-    "text": "Show coordinates points when clicked on map. Change its SRC and format decimal or DMS",
-    "version": "2.0.2",
+    "description": "Mostrar puntos de coordenadas al hacer clic en el mapa",
+    "text": "Mostrar puntos de coordenadas al hacer clic en el mapa. Cambiar su origen y formato decimal o DMS.",
+    "version": "1.1.0",
     "date": "May, 2020",
     "author": "",
     "org": "",

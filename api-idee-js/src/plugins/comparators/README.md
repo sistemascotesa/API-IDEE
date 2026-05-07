@@ -1,31 +1,8 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Comparators</small></h1>
 
-<p align="center">
-  <a title="MIT License" href="LICENSE">
-    <img src="https://img.shields.io/badge/license-EUPL-blue.svg">
-  </a>
-  <a title="Node version" href="https://nodejs.org/es">
-    <img src="https://img.shields.io/badge/node-v14.16-blue">
-  </a>
-  <a title="NPM version" href="https://www.npmjs.com/package/npm">
-    <img src="https://img.shields.io/badge/npm-v6.14-blue">
-  </a>
-  <a title="Language" href="https://www.w3schools.com/html/" target="_blank">
-    <img src="https://img.shields.io/static/v1?label=Lang&message=HTML&color=maroon">
-  </a>
-  <a title="Language" href="https://www.w3schools.com/js/" target="_blank">
-    <img src="https://img.shields.io/static/v1?label=Lang&message=Javascript&color=maroon">
-  </a>
-  <a title="Language" href="https://www.w3schools.com/css/" target="_blank">
-    <img src="https://img.shields.io/static/v1?label=Lang&message=CSS3&color=maroon">
-  </a>
-
-  <br />
-  <br />
-</p>
 
 ## Descripción 👷
 
@@ -40,8 +17,14 @@ Los modos de comparación son: Cortina, "spy eye" y modo espejo.
 
 ## Dependencias 👷
 
-- comparators.ol.min.js
-- comparators.ol.min.css
+Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
+Para uso de implementación OpenLayers:
+- **comparators.ol.min.js**
+- **comparators.ol.min.css**
+
+Para uso de implementación Cesium:
+- **comparators.cesium.min.js**
+- **comparators.cesium.min.css**
 
 
 ```html
@@ -72,17 +55,12 @@ Ejemplo:
 El constructor se inicializa con un JSON de options con los siguientes atributos:
 
 - **position**: Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
-
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
-
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
-
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **enabledDisplayInLayerSwitcher**: Define si se incluirán en el selector de capas las capas con displayInLayerSwitcher *true*.
-
 - **listLayers**: Array de capas (String o Object), estas capas se verán en el selector (WMS o WMTS).
 ```JavaScript
 // Ejemplos de definiciones de capas esperadas por el
@@ -110,7 +88,6 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
   - 'transparecyParams': Comparador de zona o puntual.
   - 'windowsyncParams': Comparador en ventana.
   - 'none': no arranca ninguno de los comparadores.
-
 - **enabledKeyFunctions**:
 Comparación en modo espejo:
 Si es true, se pueden usar las combinaciones de teclas Ctrl + Shift + [F1-F8] para cambiar entre los distintos modos de visualización. Con la tecla Escape se destruye el plugin.  <br>
@@ -118,15 +95,11 @@ Comparación en modo transparecyParams:
 Ctrl + Shift + Enter: Alterna el estado de congelación.
 Ctrl + Shift + Flecha hacia arriba: Aumenta el radio, si el radio alcanza el valor máximo de 200, no ocurre ningún cambio.
 Ctrl + Shift + Flecha hacia abajo: Disminuye el radio, si el radio llega al valor mínimo de 32, no ocurre ningún cambio.
-
-- **isDraggable**: "True" para que el plugins se pueda desplazar, por defecto false.
-
 - **transparencyParams**: Parámetros opcionales del control transparency, en el caso de no querer cargar este control su valor será "false".
   - radius (numérico): radio del efecto transparencia. Tiene un rango entre 30 y 200. Defecto: 100.
   - maxRadius Radio máximo, por defecto 200.
   - minRadius: Radio mínimo, por defecto 30.
   - tooltip: Valor a usar para mostrar en el tooltip del control, por defecto Transparencia / Transparency.
-
 - **lyrcompareParams**: Parámetros opcionales del plugin lyrcompare, en el caso de no querer cargar este control su valor será "false".
   - defaultLyrA (numérico): Capa cargada al inicio en posición 1. Valores de 0 al número de capas disponibles. Defecto, 0.
   - defaultLyrB (numérico): Capa cargada al inicio en posición 2. Valores de 0 al número de capas disponibles. Defecto, 1.
@@ -140,7 +113,6 @@ Ctrl + Shift + Flecha hacia abajo: Disminuye el radio, si el radio llega al valo
     - 1: dos mapas en vertical.
     - 2: dos mapas en horizontal.
     - 3: cuatro mapas.
-
 - **mirrorpanelParams**: Parámetros opcionales del plugin mirrorpanel, en el caso de no querer cargar este control su valor será "false".
   - showCursors (true/false): Si es true, muestra cursores sincronizados en cada unao de los mapas espejo. Defecto: *true*.
   - principalMap (true/false): indica en qué posición de la pantalla se mantiene el mapa principal (el que contiene el botón con las herramientas de comparación) con respecto a los demás. *False*: se sitúa a la izquierda. *True*: se sitúa a la derecha. Defecto: *false*.
@@ -153,14 +125,9 @@ Ctrl + Shift + Flecha hacia abajo: Disminuye el radio, si el radio llega al valo
     - 0: barra de herramientas desplegada con el mapa simple esperando al usuario.
     - 1: dos mapas en vertical.
     - 2: dos mapas en horizontal.
-    - 3: tres mapas en vertical.
-    - 4: cuatro mapas en vertical.
-    - 5: mosaico con cuatro mapas.
-    - 6: cuatro mapas en horizontal.
-    - 7: tres mapas en proporción 2-1-1.
-    - 8: un mapa arriba y dos abajo.
-    - 9: dos mapas arriba y uno abajo.
-
+    - 3: mosaico con cuatro mapas.
+    - 4: dos mapas a la izquierda y uno a la derecha.
+    - 5: dos mapas a la derecha y uno a la izquierda.
 - **windowsyncParams**: Parámetro opcionales del plugin windowsync, en caso de no querer cargar este control su valor será "false".
   - controls: (Array de Strings) Define que controles tendrán los mapas.
   - plugins: (Array de Objetos) Define los plugins que tendrán los mapas. Es necesario tener el script del plugin en el html principal.
@@ -171,7 +138,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
   - Servicio,Leyenda,URL,Nombre. Separados por "*".
 ```javascript
  const mp = new IDEE.plugin.Comparators({
-  position: 'TR',
+  position: 'right',
   enabledDisplayInLayerSwitcher: true,
   collapsed: false,
   collapsible: true,
@@ -212,7 +179,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
       },
       map4: {
         BackImgLayer: {
-          position: 'TR',
+          position: 'right',
           collapsible: true,
           collapsed: true,
           layerId: 0,
@@ -308,7 +275,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
       {
         name: 'Layerswitcher',
         params: {
-          position: 'TL',
+          position: 'left',
         },
       },
     ],
@@ -321,7 +288,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
 # API-REST
 
 ```javascript
-URL_API?comparators=position*!collapsed*!collapsible*!tooltip*!isDraggable*!listLayers*!defaultCompareMode*!enabledKeyFunctions*!transparencyParams*!lyrcompareParams*!mirrorpanelParams*!windowsyncParams
+URL_API?comparators=position*!collapsed*!collapsible*!tooltip*!listLayers*!defaultCompareMode*!enabledKeyFunctions*!transparencyParams*!lyrcompareParams*!mirrorpanelParams*!windowsyncParams
 ```
 
 <table>
@@ -332,7 +299,7 @@ URL_API?comparators=position*!collapsed*!collapsible*!tooltip*!isDraggable*!list
     </tr>
     <tr>
         <td>position</td>
-        <td>TR/TL/BR/BL</td>
+        <td>RIGHT/LEFT</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
      <tr>
@@ -346,13 +313,13 @@ URL_API?comparators=position*!collapsed*!collapsible*!tooltip*!isDraggable*!list
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
     <tr>
-        <td>tooltip</td>
-        <td>Valor a usar para mostrar en el tooltip del plugin</td>
+        <td>order</td>
+        <td>Número entero positivo</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
     <tr>
-        <td>isDraggable</td>
-        <td>true/false</td>
+        <td>tooltip</td>
+        <td>Valor a usar para mostrar en el tooltip del plugin</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
      <tr>
@@ -411,10 +378,10 @@ IDEE.utils.encodeBase64(obj_params);
 Ejemplo de constructor:
 ```javascript
 {
-  position: 'TL',
+  position: 'left',
   collapsed: false,
   collapsible: true,
-  isDraggable: true,
+  order: 0,
   tooltip: 'Plugin Comparators',
   defaultCompareMode: 'mirror',
   enabledDisplayInLayerSwitcher: true,
@@ -460,7 +427,7 @@ Ejemplo de constructor:
 }
 ```
 ```
-https://componentes.idee.es/api-idee?comparators=base64=ewogIHBvc2l0aW9uOiAnVEwnLAogIGNvbGxhcHNlZDogZmFsc2UsCiAgY29sbGFwc2libGU6IHRydWUsCiAgaXNEcmFnZ2FibGU6IHRydWUsCiAgdG9vbHRpcDogJ1BsdWdpbiBDb21wYXJhdG9ycycsCiAgZGVmYXVsdENvbXBhcmVNb2RlOiAnbWlycm9yJywKICBsaXN0TGF5ZXJzOiBbCiAgICAnV01TKkxhbmRzYXQgNSBUTSAxOTk2LiBDb2xvciBuYXR1cmFsKmh0dHBzOi8vd21zLXNhdGVsaXRlcy1oaXN0b3JpY29zLmlkZWUuZXMvc2F0ZWxpdGVzLWhpc3Rvcmljb3MqTEFORFNBVDUuMTk5Nl8zMjEtNTQzKnRydWUnLAogICAgJ1dNUypMYW5kc2F0IDUgVE0gMTk5Ni4gRmFsc28gY29sb3IgaW5mcmFycm9qbypodHRwczovL3dtcy1zYXRlbGl0ZXMtaGlzdG9yaWNvcy5pZGVlLmVzL3NhdGVsaXRlcy1oaXN0b3JpY29zKkxBTkRTQVQ1LjE5OTZfNDMyKnRydWUnLAogICAgJ1dNUypMYW5kc2F0IDUgVE0gMTk5MS4gQ29sb3IgbmF0dXJhbCpodHRwczovL3dtcy1zYXRlbGl0ZXMtaGlzdG9yaWNvcy5pZGVlLmVzL3NhdGVsaXRlcy1oaXN0b3JpY29zKkxBTkRTQVQ1LjE5OTFfMzIxLTU0Myp0cnVlJywKICAgICdXTVMqTGFuZHNhdCA1IFRNIDE5OTEuIEZhbHNvIGNvbG9yIGluZnJhcnJvam8qaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcypMQU5EU0FUNS4xOTkxXzQzMip0cnVlJywKICAgICdXTVMqTGFuZHNhdCA1IFRNIDE5ODYuIENvbG9yIG5hdHVyYWwqaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcypMQU5EU0FUNS4xOTg2XzMyMS01NDMqdHJ1ZScsCiAgXSwKICBlbmFibGVkS2V5RnVuY3Rpb25zOiB0cnVlLAogIGx5cnNNaXJyb3JNaW5aaW5kZXg6IDEwLAogIHRyYW5zcGFyZW5jeVBhcmFtczogewogICAgcmFkaXVzOiAxMDAsCiAgICBtYXhSYWRpdXM6IDEwMCwKICAgIG1pblJhZGl1czogMTAsCiAgICB0b29sdGlwOiAndG9vbHRpcFRyYW5zcGFyZW5jeScsCiAgfSwKICBseXJjb21wYXJlUGFyYW1zOiB7CiAgICBzdGF0aWNEaXZpc2lvbjogMSwKICAgIGRlZmF1bHRMeXJBOiAxLAogICAgZGVmYXVsdEx5ckI6IDIsCiAgICBkZWZhdWx0THlyQzogMywKICAgIGRlZmF1bHRMeXJEOiAwLAogICAgb3BhY2l0eVZhbDogMTAwLAogICAgdG9vbHRpcDogJ3Rvb2x0aXBMeXJDb21wYXJlJywKICAgIGRlZmF1bHRDb21wYXJlVml6OiAxLAogIH0sCiAgbWlycm9ycGFuZWxQYXJhbXM6IHsKICAgIHNob3dDdXJzb3JzOiB0cnVlLAogICAgcHJpbmNpcGFsTWFwOiB0cnVlLAogICAgZW5hYmxlZENvbnRyb2xzUGx1Z2luczogewogICAgICBtYXAyOiB7CiAgICAgICAgY29uc3Ryb2xzOiBbJ3NjYWxlJ10sCiAgICAgICAgRnVsbFRPQzogewogICAgICAgICAgcG9zaXRpb246ICdUTCcsCiAgICAgICAgfSwKICAgICAgfSwKICAgIH0sCiAgICBlbmFibGVkRGlzcGxheUluTGF5ZXJTd2l0Y2hlcjogdHJ1ZSwKICAgIGRlZmF1bHRDb21wYXJlVml6OiAyLAogICAgbW9kZVZpelR5cGVzOiBbMCwgMl0sCiAgICB0b29sdGlwOiAndG9vbHRpcE1pcnJvcicsCiAgfSwKfQ==
+https://componentes.idee.es/api-idee?comparators=base64=eyJwb3NpdGlvbiI6IlRMIiwiY29sbGFwc2VkIjpmYWxzZSwiY29sbGFwc2libGUiOnRydWUsImlzRHJhZ2dhYmxlIjp0cnVlLCJ0b29sdGlwIjoiUGx1Z2luIENvbXBhcmF0b3JzIiwiZGVmYXVsdENvbXBhcmVNb2RlIjoibWlycm9yIiwiZW5hYmxlZERpc3BsYXlJbkxheWVyU3dpdGNoZXIiOnRydWUsImxpc3RMYXllcnMiOlsiV01TKkxhbmRzYXQgNSBUTSAxOTk2LiBDb2xvciBuYXR1cmFsKmh0dHBzOi8vd21zLXNhdGVsaXRlcy1oaXN0b3JpY29zLmlkZWUuZXMvc2F0ZWxpdGVzLWhpc3Rvcmljb3MqTEFORFNBVDUuMTk5Nl8zMjEtNTQzKnRydWUiLCJXTVMqTGFuZHNhdCA1IFRNIDE5OTYuIEZhbHNvIGNvbG9yIGluZnJhcnJvam8qaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcypMQU5EU0FUNS4xOTk2XzQzMip0cnVlIiwiV01TKkxhbmRzYXQgNSBUTSAxOTkxLiBDb2xvciBuYXR1cmFsKmh0dHBzOi8vd21zLXNhdGVsaXRlcy1oaXN0b3JpY29zLmlkZWUuZXMvc2F0ZWxpdGVzLWhpc3Rvcmljb3MqTEFORFNBVDUuMTk5MV8zMjEtNTQzKnRydWUiLCJXTVMqTGFuZHNhdCA1IFRNIDE5OTEuIEZhbHNvIGNvbG9yIGluZnJhcnJvam8qaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcypMQU5EU0FUNS4xOTkxXzQzMip0cnVlIiwiV01TKkxhbmRzYXQgNSBUTSAxOTg2LiBDb2xvciBuYXR1cmFsKmh0dHBzOi8vd21zLXNhdGVsaXRlcy1oaXN0b3JpY29zLmlkZWUuZXMvc2F0ZWxpdGVzLWhpc3Rvcmljb3MqTEFORFNBVDUuMTk4Nl8zMjEtNTQzKnRydWUiXSwiZW5hYmxlZEtleUZ1bmN0aW9ucyI6dHJ1ZSwidHJhbnNwYXJlbmN5UGFyYW1zIjp7InJhZGl1cyI6MTAwLCJtYXhSYWRpdXMiOjEwMCwibWluUmFkaXVzIjoxMCwidG9vbHRpcCI6InRvb2x0aXBUcmFuc3BhcmVuY3kifSwibHlyY29tcGFyZVBhcmFtcyI6eyJzdGF0aWNEaXZpc2lvbiI6MSwiZGVmYXVsdEx5ckEiOjAsImRlZmF1bHRMeXJCIjoxLCJkZWZhdWx0THlyQyI6MiwiZGVmYXVsdEx5ckQiOjMsIm9wYWNpdHlWYWwiOjEwMCwidG9vbHRpcCI6InRvb2x0aXBMeXJDb21wYXJlIiwiZGVmYXVsdENvbXBhcmVWaXoiOjF9LCJtaXJyb3JwYW5lbFBhcmFtcyI6eyJzaG93Q3Vyc29ycyI6dHJ1ZSwicHJpbmNpcGFsTWFwIjp0cnVlLCJlbmFibGVkQ29udHJvbHNQbHVnaW5zIjp7Im1hcDIiOnsiY29udHJvbHMiOlsic2NhbGUiXX19LCJkZWZhdWx0Q29tcGFyZVZpeiI6MiwibW9kZVZpelR5cGVzIjpbMCwyXSwidG9vbHRpcCI6InRvb2x0aXBNaXJyb3IifSwid2luZG93c3luY1BhcmFtcyI6eyJjb250cm9scyI6WyJzY2FsZSJdfX0=
 ```
 
 

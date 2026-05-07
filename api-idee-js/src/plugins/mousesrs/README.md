@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.MouseSRS</small></h1>
 
@@ -9,12 +9,20 @@
 <p>Para utilizar un sistema de referencia nuevo, basta con elegir la opción 'Añadir EPSG'. Una vez elegida, el usuario podrá escribir el sistema que desee, siempre y cuando exista.</p>
 <p>El sistema de referencia nuevo se registrará a nivel de toda la API, por lo que se podrá utilizar en otras funcionalidades.</p>
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Mousesrs abierto](./src/facade/assets/images/mousesrs-abierto.png)|![Mcerradoo](./src/facade/assets/images/mousesrs-cerrado.png)|
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **mousesrs.ol.min.js**
 - **mousesrs.ol.min.css**
+
+Para uso de implementación Cesium:
+- **mousesrs.cesium.min.js**
+- **mousesrs.cesium.min.css**
 
 
 ```html
@@ -36,6 +44,15 @@ Ejemplo:
 
 El constructor se inicializa con un JSON con los siguientes atributos:
 
+- **position**:  Ubicación del plugin sobre el mapa.
+  - 'left' (LEFT) - Arriba a la izquierda.
+  - 'right' (RIGHT) - Arriba a la derecha (por defecto).
+  - 'down' (DOWN) - Abajo.
+  - 'center-bottom-right' (CBR) - Zona central, abajo a la derecha.
+  - 'center-bottom-left' (CBL) - Zona central, abajo a la izquierda.
+  - 'center-top-right' (CTR) - Zona central, arriba a la derecha.
+  - 'center-top-left' (CTL) - Zona central, arriba a la izquierda.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**. Tooltip que se muestra sobre el plugin (Se muestra al dejar el ratón encima del plugin como información). Por defecto: Coordenadas.
 - **srs**. Código EPSG del SRS sobre el que se mostrarán las coordenadas del ratón. Por defecto: EPSG:4326
 - **label**. Nombre del SRS sobre el que se mostrarán las coordenadas del ratón. Por defecto: WGS84
@@ -78,6 +95,16 @@ URL_API?mousesrs=tooltip*srs*label*precision*geoDecimalDigits*utmDecimalDigits*a
     <th>Opciones/Descripción</th>
     <th>Disponibilidad</th>
   <tr>
+  <tr>
+    <td>position</td>
+    <td>DOWN</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
+  </tr>
   <tr>
     <td>tooltip</td>
     <td>Texto informativo</td>
@@ -158,7 +185,7 @@ https://componentes.idee.es/api-idee?mousesrs=base64=eyJsYWJlbCI6IkVQU0c6NDMyNiI
 
 ```javascript
 const mp = new IDEE.plugin.MouseSRS({
-  position: 'BL',
+  position: 'down',
   tooltip: 'Muestra coordenadas',
   srs: 'EPSG:4326',
   label: 'WGS84',

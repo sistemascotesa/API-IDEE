@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.BackImgLayer</small></h1>
 
@@ -10,8 +10,13 @@ Plugin que permite la elección de la capa de fondo mediante la previsualizació
 # Dependencias
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
+Para uso de implementación OpenLayers:
 - **backimglayer.ol.min.js**
 - **backimglayer.ol.min.css**
+
+Para uso de implementación Cesium:
+- **backimglayer.cesium.min.js**
+- **backimglayer.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/backimglayer/backimglayer.ol.min.css" rel="stylesheet" />
@@ -33,12 +38,10 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 
 
 - **position**:  Ubicación del plugin sobre el mapa.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
-- **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: "Capas de fondo".
 - **layerId**: Índice de la capa que se quiera cargar por defecto. Por ejemplo, si se pasa el número 2 se mostrará la capa que se encuentre en la segunda posición. Por defecto: 0
 - **columnsNumber**: Número de columnas que parametrizan la tabla de capas de fondo disponibles. Por defecto: 2
@@ -59,7 +62,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 # API-REST
 
 ```javascript
-URL_API?backimglayer=position*!collapsed*!collapsible*!tooltip*!layerVisibility*!layerId*!columnsNumber*!empty*!ids*!titles*!previews*!layers
+URL_API?backimglayer=position*!collapsed*!tooltip*!layerVisibility*!layerId*!columnsNumber*!empty*!ids*!titles*!previews*!layers
 ```
 
 <table>
@@ -70,7 +73,7 @@ URL_API?backimglayer=position*!collapsed*!collapsible*!tooltip*!layerVisibility*
     </tr>
     <tr>
         <td>position</td>
-        <td>TR/TL/BR/BL</td>
+        <td>RIGHT/LEFT</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
      <tr>
@@ -78,9 +81,9 @@ URL_API?backimglayer=position*!collapsed*!collapsible*!tooltip*!layerVisibility*
         <td>true/false</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
-     <tr>
-        <td>collapsible</td>
-        <td>true/false</td>
+    <tr>
+        <td>order</td>
+        <td>Número entero positivo</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
     <tr>
@@ -136,10 +139,10 @@ URL_API?backimglayer=position*!collapsed*!collapsible*!tooltip*!layerVisibility*
 </table>
 
 
-### Ejemplos de uso API-REST
+<!-- ### Ejemplos de uso API-REST
 ```
 https://componentes.idee.es/api-idee?backimglayer=TR*!true*!true*!Capas%20de%20fondo*!true*!0*!0*!true*!mapa,hibrido*!Mapa,Hibrido*!https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqmapa.png,https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqhibrid.png*!WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa%20IGN*false*image/jpeg*false*false*true,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*Imagen%20(PNOA)*false*image/png*false*false*true
-```
+``` -->
 
 ```
 https://componentes.idee.es/api-idee/?backimglayer=TR*!true*!true*!Capas%20de%20fondo*!true
@@ -155,9 +158,9 @@ IDEE.utils.encodeBase64(obj_params);
 Ejemplo de constructor:
 ```javascript
 {
-  position: "TR",
+  position: "right",
   collapsed: true,
-  collapsible: true,
+  order: 0,
   tooltip: "Capas de fondo",
   layerVisibility: true,
   columnsNumber: 0,
@@ -195,9 +198,9 @@ const map = IDEE.map({
 });
 
 const mp = new IDEE.plugin.BackImgLayer({
-    position: 'TR',
-    collapsible: true,
+    position: 'left',
     collapsed: true,
+    order: 0,
     layerId: 0,
     columnsNumber: 2,
     layerVisibility: true,

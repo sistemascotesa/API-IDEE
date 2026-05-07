@@ -1,14 +1,12 @@
 /**
  * @module IDEE/impl/layer/OSM
  */
-import FacadeOSM from 'IDEE/layer/OSM';
 import * as LayerType from 'IDEE/layer/Type';
 import {
-  isUndefined, isNullOrEmpty, generateResolutionsFromExtent, extend,
+  isUndefined, isNullOrEmpty, generateResolutionsFromExtent, getZDirectionFunction, extend,
 } from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
 import OLLayerTile from 'ol/layer/Tile';
-import OLControlAttribution from 'ol/control/Attribution';
 import SourceOSM from 'ol/source/OSM';
 import SourceXYZ from 'ol/source/XYZ';
 import ImplMap from '../Map';
@@ -75,16 +73,6 @@ class OSM extends Layer {
     this.facadeLayer_ = null;
 
     /**
-     * OSM hasAttributtion. La OSM no tiene atribuciones.
-     */
-    this.hasAttributtion = false;
-
-    /**
-     * OSM haveOSMLayer. Existe alguna capa que necesite el attributions.
-     */
-    this.haveOSMLayer = false;
-
-    /**
      * OSM visibility. DDefine si la capa es visible o no.
      * Verdadero por defecto.
      */
@@ -96,6 +84,11 @@ class OSM extends Layer {
      * OMS tileLoadFunction. Función de carga de tiles.
      */
     this.tileLoadFunction = vendorOptions?.tileLoadFunction;
+
+    /**
+     * OSM zDirection. Función de dirección Z para la carga de teselas.
+     */
+    this.zDirection = vendorOptions?.zDirection || getZDirectionFunction();
 
     /**
      * OSM zIndex_. Índice de la capa, (+5).
@@ -128,7 +121,12 @@ class OSM extends Layer {
         }
 
         // updates resolutions and keep the bbox
-        const oldBbox = this.map.getBbox();
+        let oldBbox = this.map.getBbox();
+        // eslint-disable-next-line no-underscore-dangle
+        if (!isNullOrEmpty(this.map.impl_.userBbox_)) {
+          // eslint-disable-next-line no-underscore-dangle
+          oldBbox = this.map.impl_.userBbox_;
+        }
         this.map.getImpl().updateResolutionsFromBaseLayer();
         if (!isNullOrEmpty(oldBbox)) {
           this.map.setBbox(oldBbox);
@@ -163,20 +161,6 @@ class OSM extends Layer {
     if (addLayer) {
       this.map.getMapImpl().addLayer(this.olLayer);
       this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
-    }
-
-    this.map.getImpl().getMapImpl().getControls().getArray()
-      .forEach((cont) => {
-        if (cont instanceof OLControlAttribution) {
-          this.hasAttributtion = true;
-        }
-      }, this);
-    if (!this.hasAttributtion && !this.facadeLayer_.attribution) {
-      this.map.getMapImpl().addControl(new OLControlAttribution({
-        className: 'ol-attribution ol-unselectable ol-control ol-collapsed m-attribution',
-        collapsible: true,
-      }));
-      this.hasAttributtion = false;
     }
 
     // recalculate resolutions
@@ -257,10 +241,12 @@ class OSM extends Layer {
         newSource = new SourceXYZ({
           url: this.url,
           tileLoadFunction: this.tileLoadFunction,
+          zDirection: this.zDirection,
         });
       } else {
         newSource = new SourceOSM({
           tileLoadFunction: this.tileLoadFunction,
+          zDirection: this.zDirection,
         });
       }
       this.olLayer.setSource(newSource);
@@ -344,20 +330,6 @@ class OSM extends Layer {
       this.olLayer = null;
     }
 
-    this.map.getLayers().forEach((layer) => {
-      if (layer instanceof FacadeOSM) {
-        this.haveOSMLayer = true;
-      }
-    });
-
-    if (!this.haveOSMLayer) {
-      this.map.getImpl().getMapImpl().getControls().getArray()
-        .forEach((data) => {
-          if (data instanceof OLControlAttribution) {
-            this.map.getImpl().getMapImpl().removeControl(data);
-          }
-        });
-    }
     this.map = null;
   }
 

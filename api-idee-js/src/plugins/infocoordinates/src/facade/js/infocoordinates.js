@@ -1,8 +1,8 @@
 /**
  * @module IDEE/plugin/Infocoordinates
  */
-import 'assets/css/fonts';
 import 'assets/css/infocoordinates';
+import 'assets/css/fonts';
 import InfocoordinatesControl from './infocoordinatescontrol';
 import api from '../../api';
 import { getValue } from './i18n/language';
@@ -26,15 +26,14 @@ export default class Infocoordinates extends IDEE.Plugin {
     super('infocoordinates', {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
     });
-
     /**
      *  Decimal digits fixed on geographic coordinates
      * @public     *
      * @type {int}
      */
     this.decimalGEOcoord_ = options.decimalGEOcoord || 4;
-
     /**
      *  Decimal digits fixed on projected coordinates
      * @public     *
@@ -49,14 +48,6 @@ export default class Infocoordinates extends IDEE.Plugin {
      */
     this.collapsed_ = options.collapsed;
     if (this.collapsed_ === undefined) this.collapsed_ = true;
-
-    /**
-     * Option to allow the plugin to be collapsible or not
-     * @private
-     * @type {Boolean}
-     */
-    this.collapsible_ = options.collapsible;
-    if (this.collapsible_ === undefined) this.collapsible_ = true;
 
     /**
      * Metadata from api.json
@@ -80,17 +71,18 @@ export default class Infocoordinates extends IDEE.Plugin {
     this.outputDownloadFormat_ = options.outputDownloadFormat || 'txt';
 
     /**
-     *@private
-     *@type { Number }
-     */
-    this.order = options.order >= -1 ? options.order : null;
-
-    /**
      * Plugin parameters
      * @public
      * @type {object}
      */
     this.options = options;
+
+    /**
+     * InfoCoordinatesControl instance
+     * @private
+     * @type {InfocoordinatesControl}
+     */
+    this.control_ = null;
   }
 
   /**
@@ -118,44 +110,44 @@ export default class Infocoordinates extends IDEE.Plugin {
    */
   addTo(map) {
     this.map = map;
-    // Crear el botón por separado
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_infoCoor.svg',
+      order: this.order,
     });
+
     map.addButtons(this.button);
-    // Crear el panel por separado
+
     this.panel = new IDEE.ui.Panel(this.name, {
       collapsed: this.collapsed_,
-      collapsible: this.collapsible_,
       position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
       className: 'm-plugin-infocoordinates',
       collapsedButtonClass: 'icon-target',
       tooltip: this.tooltip,
       order: this.order,
     });
 
-    map.addPanels(this.panel);
+    this.control_ = new InfocoordinatesControl({
+      decimalGEOcoord: this.decimalGEOcoord_,
+      decimalUTMcoord: this.decimalUTMcoord_,
+      helpUrl: this.helpUrl_,
+      order: this.order,
+      outputDownloadFormat: this.outputDownloadFormat_,
+    });
 
-    this.controls.push(new InfocoordinatesControl(
-      this.decimalGEOcoord_,
-      this.decimalUTMcoord_,
-      this.helpUrl_,
-      this.order,
-      this.outputDownloadFormat_,
-    ));
-    // this.controls.push(new InfocoordinatesControl({
-    //   decimalGEOcoord: this.decimalGEOcoord_,
-    //   decimalUTMcoord: this.decimalUTMcoord_,
-    //   helpUrl: this.helpUrl_,
-    //   order: this.order,
-    //   outputDownloadFormat: this.outputDownloadFormat_,
-    // }));
+    this.controls.push(this.control_);
     this.panel.addControls(this.controls);
+
+    this.panel.on(IDEE.evt.SHOW, this.control_.activate, this.control_);
+    this.panel.on(IDEE.evt.HIDE, this.control_.deactivate, this.control_);
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
+
+    map.addPanels(this.panel);
   }
 
   /**
@@ -166,10 +158,13 @@ export default class Infocoordinates extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
-    this.map.removeControls([this.control_]);
-    this.control_.deactivate();
+    this.control_.removeAllDisplaysPoints();
+    this.control_.removeAllPoints();
     this.control_.removeLayerFeatures();
-    [this.control_, this.panel, this.map] = [null, null, null];
+    this.control_.deactivate();
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
+    this.control_ = null;
   }
 
   /**
@@ -191,7 +186,7 @@ export default class Infocoordinates extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed_}*${this.collapsible_}*${this.tooltip}*${this.decimalGEOcoord_}*${this.decimalUTMcoord_}*${this.helpUrl_}*${this.outputDownloadFormat_}`;
+    return `${this.name}=${this.position}*${this.collapsed_}*${this.order}*${this.tooltip}*${this.decimalGEOcoord_}*${this.decimalUTMcoord_}*${this.helpUrl_}*${this.outputDownloadFormat_}`;
   }
 
   /**

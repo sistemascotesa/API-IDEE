@@ -149,6 +149,8 @@
   "scale": "Scale",
   "move": "Move",
   "attributes": "Attributes",
+  "snapToPointer": "Snap to pointer",
+  "pixelTolerance": "Pixel tolerance",
   "delete": "Delete geometry",
   "newcolumn": "New column",
   "layerName": "Name",
@@ -173,5 +175,6 @@
   "fill": "Fill",
   "stroke": "Stroke",
   "opts_point": "Point Options",
-  "readingAltitude": "Consultando..."
+  "readingAltitude": "Consultando...",
+  "info_remove_vertex": "To delete the vertex, use ‘alt + click’ on the vertex to be deleted"
 }

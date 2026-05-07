@@ -157,10 +157,9 @@ const shareMap = {
 */
 
 const mp = new Comparators({
-  position: 'TR',
+  position: 'right',
   collapsed: false,
   collapsible: true,
-  isDraggable: true,
   transparencyParams: false,
   lyrcompareParams: false,
   mirrorpanelParams: false,

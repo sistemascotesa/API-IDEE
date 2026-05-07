@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.ViewManagement</small></h1>
 
@@ -11,12 +11,20 @@ Plugin que permite utilizar diferentes herramientas de zoom.
 - Navegar entre las vistas visitadas del mapa (hacia delante y atrás).
 - Acercar o alejar a una vista del mapa.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Viewmanagement abierto](./src/facade/assets/images/viewmanagement-abierto.png)|![Viewmanagement cerrado](./src/facade/assets/images/viewmanagement-cerrado.png)|
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **viewmanagement.ol.min.js**
 - **viewmanagement.ol.min.css**
+
+Para uso de implementación Cesium:
+- **viewmanagement.cesium.min.js**
+- **viewmanagement.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/viewmanagement/viewmanagement.ol.min.css" rel="stylesheet" />
@@ -37,12 +45,11 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**:  Ubicación del plugin sobre el mapa.
-  - 'TL': (top left) - Arriba a la izquierda (por defecto).
-  - 'TR': (top right) - Arriba a la derecha.
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Gestión de la vista.
 - **isDraggable**: Permite mover el plugin por el mapa. Por defecto: false.
 - **predefinedZoom**: Indica si el control PredefinedZoom se añade al plugin (true/false). Por defecto: true (zoom a España). Para añadir los zooms deseados en los que se podrá centrar el mapa se seguirá el siguiente formato:
@@ -76,7 +83,7 @@ URL_API?viewmanagement=position*collapsed*collapsible*tooltip*isDraggable*predef
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -88,6 +95,11 @@ URL_API?viewmanagement=position*collapsed*collapsible*tooltip*isDraggable*predef
     <td>collapsed</td>
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
     <td>tooltip</td>

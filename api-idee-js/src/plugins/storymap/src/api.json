@@ -7,16 +7,11 @@
   "parameters": [{
     "type": "object",
     "properties": [
-      {
+    {
       "type": "simple",
       "name": "position",
       "position": 0,
-      "possibleValues": [
-        "TL",
-        "TR",
-        "BR",
-        "BL"
-      ]
+      "possibleValues": ["left", "right"]
     },
     {
       "type": "boolean",
@@ -24,8 +19,8 @@
       "position": 1
     },
     {
-      "type": "boolean",
-      "name": "collapsible",
+      "type": "number",
+      "name": "order",
       "position": 2
     },
     {
@@ -34,14 +29,19 @@
       "position": 3
     },
     {
-      "type": "simple",
+      "type": "number",
       "name": "delay",
       "position": 4
     },
     {
-      "type": "boolean",
-      "name": "isDraggable",
+      "type": "object",
+      "name": "indexInContent",
       "position": 5
+    },
+    {
+      "type": "object",
+      "name": "content",
+      "position": 6
     }
   ]
   }],
@@ -57,12 +57,12 @@
   },
   "metadata": {
     "name": "StoryMap",
-    "description": "Table of contents of the map. Pretty design version",
-    "text": "Tabla de contenidos de fototeca. Consulta cobertura de vuelo sobre la vista",
-    "version": "2.0.2",
-    "date": "18/11/2019",
-    "author": "Guadaltel",
-    "org": "CNIG",
+    "description": "Plugin que muestra una historia en forma de carrusel. ",
+    "text": "Plugin que muestra una historia en forma de carrusel. ",
+    "version": "1.1.0",
+    "date": "08/01/2026",
+    "author": "",
+    "org": "",
     "tags": "api-idee,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }

@@ -1,5 +1,5 @@
 CP-001
-Control backimglayers
+Control backgroundlayers
 
 CP-002
 Controles de escala y zoom (scale*false, scaleline, panzoom, panzoombar)
@@ -20,7 +20,7 @@ CP-007
 Control location*false*true
 
 CP-008
-Control rotation
+Control rotation (se prueba añadiéndolo en un Plugin para el verificado de que los contenedores se guardan correctamente)
 
 CP-009
 Control attributions
@@ -30,3 +30,30 @@ Pruebas de funciones de los controles
 
 CP-011
 Control Implementation Switcher
+
+CP-012
+Control rotate
+
+CP-013
+Control parametro de ordenación (Plugins + Controles)
+
+CP-014
+Control timeline
+
+CP-015
+Control measurebar
+
+CP-016
+Control overviewmap
+
+CP-017
+Control panzoom
+
+CP-018
+Control panzoombar
+
+CP-019
+Control scale
+
+CP-020
+Control scaleline

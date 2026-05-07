@@ -18,8 +18,8 @@ export default class PrintViewManagementControl extends IDEE.Control {
    * @api
    */
   constructor({
-    isDraggable, georefImageEpsg, georefImage, printermap, order,
-    defaultOpenControl, useProxy, statusProxy,
+    georefImageEpsg, georefImage, printermap, order,
+    defaultOpenControl,
   }) {
     if (IDEE.utils.isUndefined(PrintViewManagementImpl)
       || (IDEE.utils.isObject(PrintViewManagementImpl)
@@ -29,12 +29,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
 
     const impl = new PrintViewManagementImpl();
     super('PrintViewManagement', impl);
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable_ = isDraggable;
 
     /**
      * Order of plugin
@@ -76,10 +70,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
     this.tooltipPrintermap_ = printermap.tooltip || getValue('map_printing');
 
     this.defaultOpenControl = defaultOpenControl;
-
-    this.statusProxy = statusProxy;
-
-    this.useProxy = useProxy;
   }
 
   /**
@@ -116,8 +106,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
       if (this.georefImage_) { this.addGeorefImageControl(html); }
 
       if (this.printermap_) { this.addPrinterMapControl(html); }
-
-      if (this.isDraggable_) { IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-printviewmanagement-title'); }
 
       this.accessibilityTab(html);
       this.selectElementHTML();
@@ -213,8 +201,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
     this.printerMapControl = new PrinterMapControl(
       this.printermap_,
       this.map_,
-      this.statusProxy,
-      this.useProxy,
     );
     html.querySelector('#m-printviewmanagement-printermap').addEventListener('click', () => {
       this.showDownloadButton('printermap');
@@ -227,8 +213,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
     this.georefImageControl = new GeorefimageControl(
       this.georefImage_,
       this.map_,
-      this.statusProxy,
-      this.useProxy,
     );
     html.querySelector('#m-printviewmanagement-georefImage').addEventListener('click', () => {
       this.showDownloadButton('georefImage');
@@ -294,7 +278,7 @@ export default class PrintViewManagementControl extends IDEE.Control {
       }
 
       active.classList.remove('activated');
-      // const container = document.querySelector('#div-contenedor-printviewmanagement');
+      // const container = document.querySelector('#plugin-panel-content-printviewmanagement');
       // if (container && container.children.length > 2) {
       //   container.removeChild(container.children[2]);
       // }

@@ -1,7 +1,7 @@
 /**********
 * General *
 ***********/
-.m-plugin-panel-content label {
+#plugin-panel-locator .m-plugin-panel-content label {
     font-size: 14px;
     font-weight: 400;
 }
@@ -9,6 +9,26 @@
 /*******************
 * XYLocatorControl *
 ********************/
+#plugin-panel-content-locator {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+#plugin-panel-content-locator #m-locator-previews {
+    margin: 0 .25rem .5rem;
+}
+
+.m-api-idee-tab-content {
+    padding: 0;
+}
+
+#m-infocatastro-panel,
+#m-xylocator-panel {
+    flex-grow: 1;
+    overflow: auto;
+}
+
 .m-xylocator-datas .m-xylocator-latlon-fields,
 .m-xylocator-datas div.button {
     display: flex;
@@ -21,31 +41,27 @@
     gap: 16px;
 }
 
-.m-xylocator-container > .m-xylocator-datas > div > select {
+.m-xylocator-container>.m-xylocator-datas>div>select {
     display: block;
     width: 100%;
     margin-top: 3%;
-    height: 40px;
 }
 
 .m-xylocator-datas .button button {
     width: 100%;
 }
 
-.m-xylocator-coord-system > .m-xylocator-selector-title {
+.m-xylocator-coord-system>.m-xylocator-selector-title {
     display: flex;
+    align-items: center;
 }
 
-.m-xylocator-coord-system > div > .m-xylocator-help-button > a {
-    margin-left: 5px;
-    font-size: 16px;
+.m-xylocator-coord-system>div>.m-xylocator-help-button>a {
     color: #364B5F !important;
-    text-decoration: none;
 }
 
-.m-xylocator-help-button > a svg {
-    width: 16px;
-    height: 16px;
+.m-xylocator-help-button>a:before {
+    height: 12px;
 }
 
 .m-xylocator-dms-input {
@@ -72,7 +88,7 @@
 /**********************
 * InfoCatastroControl *
 ***********************/
-.m-infocatastro-container > .m-search-tabs {
+.m-infocatastro-container>.m-search-tabs {
     width: 100%;
 }
 
@@ -94,9 +110,9 @@
     height: 25px;
 }
 
-.m-infocatastro-radio-group input[type="radio"]:checked + label,
-.m-xylocator-dms-radio input[type="radio"]:checked + label {
-    color: #1d5a9e;
+.m-infocatastro-radio-group input[type="radio"]:checked+label,
+.m-xylocator-dms-radio input[type="radio"]:checked+label {
+    color: var(--idee-color-primary-dark);
     cursor: pointer;
     height: 16px;
 }
@@ -107,101 +123,130 @@
     gap: 8px;
 }
 
-.m-infocatastro-parcela-container select,
-.m-infocatastro-catastro-container select {
-    height: 40px;
-    appearance: none;
-    background: none;
-    border: 1px solid;
-    color:#ADB5BD;
-}
-
 .m-infocatastro-parcela-container input,
 .m-infocatastro-catastro-container input,
-.m-xylocator-latlon-fields input:not([type="radio"]),
-.m-infocatastro-parcela-container select {
+.m-xylocator-latlon-fields input:not([type="radio"]) {
     margin: 0;
     margin-bottom: 8px;
     padding: 0 8px;
-    border-color: #ADB5BD;
-    color:#ADB5BD;
 }
 
 .m-xylocator-latlon-fields input:not([type="radio"]):last-child {
     margin-bottom: 0;
 }
 
-.buttonOptions {
+#plugin-panel-locator .buttonOptions {
     display: flex;
     flex-direction: column;
     width: 100%;
     gap: 16px;
 }
 
-.buttonOptions .m-infocatastro-represent {
+#plugin-panel-locator .buttonOptions .m-infocatastro-represent {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
 }
 
-.buttonOptions .m-infocatastro-represent.activated {
-    background-color: #1d5a9e;
-    border-color: #1d5a9e;
+#plugin-panel-locator .buttonOptions .m-infocatastro-represent.activated {
+    background-color: var(--idee-color-primary-dark);
+    border-color: var(--idee-color-primary-dark);
 }
 
-.buttonOptions .m-infocatastro-represent span {
+#plugin-panel-locator .buttonOptions .m-infocatastro-represent span {
     order: 2;
 }
 
-.buttonOptions .m-infocatastro-represent svg {
+#plugin-panel-locator .buttonOptions .m-infocatastro-represent svg {
     width: 7px;
     height: 15px;
 }
 
-.parcela--input {
+#plugin-panel-locator .parcela--input {
     color: #868e96;
     font-size: 12px;
     font-weight: 400;
     text-align: center;
 }
 
-
 /**************************
 * IGNSearchLocatorControl *
 ***************************/
 .m-ignsearch-container {
-    text-align: left;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.m-ignsearch-container > .m-ignsearch-results {
-    align-items: center;
-    display: flex;
-    flex-basis: 100%;
-    background: white;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    max-height: 320px;
     overflow-y: auto;
-}
-
-.m-ignsearch-container > .m-ignsearch-results > .m-ignsearch-results-list {
-    list-style-position: outside;
-    list-style-type: none;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    width: 100%;
-    overflow-y: auto;
-    margin-top: 16px;
-    padding-left: 0.5em;
+    flex-grow: 1;
+    gap: .5rem;
+    justify-content: space-between;
+    align-items: start;
+    text-align: left;
 }
 
-.m-ignsearch-results > .m-ignsearch-results-list li {
+.m-ignsearch-container button {
+    padding: 0;
+    margin: 0;
+    aspect-ratio: 1;
+}
+
+.m-ignsearchlocator-search-frame {
+    flex-grow: 1;
+    overflow: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    gap: .2rem;
+}
+
+#m-ignsearchlocator-search-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.25rem;
+}
+
+#m-ignsearchlocator-search-bar>.m-input-search {
+    width: 100%;
+    max-height: 2rem;
+    min-height: 2rem;
+    height: 2rem;
+    font-size: 14px;
+    padding: 0 .5rem;
+    margin: 0;
+    border-color: #ADB5BD;
+}
+
+.m-ignsearchlocator-search-frame>.m-ignsearch-results {
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    align-items: start;
+    overflow: auto;
+    background: transparent;
+    border-radius: 2px;
+}
+
+.m-ignsearchlocator-search-frame>.m-ignsearch-results.locator-icon-spinner::before {
+    font-size: 24px;
+    text-align: center;
+    width: 100%;
+    margin-top: 16px;
+}
+
+.m-ignsearchlocator-search-frame>.m-ignsearch-results>.m-ignsearch-results-list {
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    padding-left: .5em;
+}
+
+#plugin-panel-locator .m-ignsearch-results>.m-ignsearch-results-list li {
     color: #ADB5BD;
     font-size: 12px;
     font-weight: 400;
@@ -210,39 +255,15 @@
     overflow-wrap: break-word;
     white-space: pre-line;
     line-height: 1.2;
+    transition: all 0.3s ease;
 }
 
-.m-ignsearch-results > .m-ignsearch-results-list li:hover {
-    color: #000000;
+#plugin-panel-locator .m-ignsearch-results>.m-ignsearch-results-list li:hover {
+    color: var(--idee-color-primary);
+    transition: all 0.3s ease;
 }
 
-.m-ignsearch-results > .m-ignsearchlocator-noresults {
+.m-ignsearch-results>.m-ignsearchlocator-noresults {
     text-align: center;
     width: 100%;
-}
-
-.m-ignsearch-container > .m-input-search {
-    height: 32px;
-    font-size: 14px;
-    flex: 0.9;
-    min-width: 0;
-    padding: 0 8px;
-    margin: 0;
-    border-color: #ADB5BD;
-}
-
-.m-ignsearch-container button {
-    width: 32px;
-}
-
-.m-ignsearch-container button svg{
-    width: 19px;
-    height: 100%;
-}
-
-.m-ignsearch-results.locator-icon-spinner::before {
-    font-size: 24px;
-    text-align: center;
-    width: 100%;
-    margin-top: 16px;
 }

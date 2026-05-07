@@ -10,43 +10,60 @@ import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { compileSync as compileTemplate } from '../util/Template';
 import { getValue } from '../i18n/language';
+import * as Position from '../ui/position';
+
+/**
+ * @typedef {Object} module:IDEE/control/Scale~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Boolean} [exactScale] Indica si se debe mostrar la escala exacta.
+ * @property {Number} [order] Accesibilidad, z-index.
+ * @property {Object} [vendorOptions] Opciones específicas del proveedor,
+ * usadas en la implementación.
+ */
 
 /**
  * @classdesc
  * Agregar escala numérica.
- * @property {Number} order Orden que tendrá con respecto al
- * resto de plugins y controles por pantalla.
- *
+ * @property {String} [position='down'] Posición del control.
+ * @property {String} [tooltip_] Texto del tooltip. por defecto la tradcución
+ * @property {Boolean} [exactScale=false] Indica si se debe mostrar la escala exacta.
+ * @property {Number} [order=0] Accesibilidad, z-index.
  * @api
  * @extends {IDEE.Control}
+ *
+ * @note Para más opciones heredadas, ver {@link module:IDEE/control/Control~Options}.
  */
 class Scale extends ControlBase {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} options Opciones del control.
-   * - Order: Orden que tendrá con respecto al
-   * resto de plugins y controles por pantalla.
-   * - exactScale: Escala exacta.
+   * @param {module:IDEE/control/Scale~Options} options Opciones del control.
+   * @example
+   * const control = new IDEE.control.Scale({
+   *   position: 'down',
+   *   tooltip: 'Escala del mapa',
+   *   order: 1,
+   *   exactScale: true,
+   * });
    * @api
    */
   constructor(options = {}) {
     if (isUndefined(ScaleImpl) || (isObject(ScaleImpl) && isNullOrEmpty(Object.keys(ScaleImpl)))) {
       Exception(getValue('exception').scale_method);
     }
+    const vendorOptions = {
+      ...isObject(options.vendorOptions) ? options.vendorOptions : {},
+      exactScale: options.exactScale,
+    };
 
-    // implementation of this control
-    const impl = new ScaleImpl(options);
+    const impl = new ScaleImpl(vendorOptions);
 
-    // calls the super constructor
-    super(Scale.NAME, impl);
+    super(Scale.NAME, impl, options);
 
-    /**
-     * Order: Orden que tendrá con respecto al
-     * resto de plugins y controles por pantalla.
-     */
-    this.order = options.order;
+    this.position = options.position ?? Position.DOWN;
   }
 
   /**
@@ -61,7 +78,7 @@ class Scale extends ControlBase {
   createView(map) {
     return compileTemplate(scaleTemplate, {
       vars: {
-        title: getValue('scale').title,
+        title: this.tooltip ?? `Control ${getValue('scale').title}`,
         scale: getValue('scale').scale,
         level: getValue('scale').level,
         order: this.order,

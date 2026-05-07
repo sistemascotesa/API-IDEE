@@ -9,20 +9,36 @@ const backgroundlayersOpts = backgroundlayersIds.map((id, index) => {
   };
 });
 
-const implementationSwitcherOpts = [{
-  id: 'OL',
-  type: 'ol',
-  title: 'Open Layers',
-  js: '../../../dist/js/apiidee.ol.min.js',
-  css: '../../../dist/assets/css/apiidee.ol.min.css',
-},
-{
-  id: 'CS',
-  type: 'cesium',
-  title: 'Cesium',
-  js: '../../../dist/js/apiidee.cesium.min.js',
-  css: '../../../dist/assets/css/apiidee.cesium.min.css',
-}];
+const implementationSwitcherOpts = [
+  {
+    id: 'OL',
+    type: 'ol',
+    title: 'Open Layers',
+    js: '../../../api-idee/js/apiidee.ol.min.js',
+    css: '../../../api-idee/assets/css/apiidee.ol.min.css',
+  },
+  {
+    id: 'CS',
+    type: 'cesium',
+    title: 'Cesium',
+    js: '../../../api-idee/js/apiidee.cesium.min.js',
+    css: '../../../api-idee/assets/css/apiidee.cesium.min.css',
+  },
+  // {
+  //   id: 'OL',
+  //   type: 'ol',
+  //   title: 'Open Layers',
+  //   js: 'js/apiidee.ol.min.js',
+  //   css: 'assets/css/apiidee.ol.min.css',
+  // },
+  // {
+  //   id: 'CS',
+  //   type: 'cesium',
+  //   title: 'Cesium',
+  //   js: 'js/apiidee.cesium.min.js',
+  //   css: 'assets/css/apiidee.cesium.min.css',
+  // },
+];
 
 const config = (configKey, configValue) => {
   config[configKey] = configValue;
@@ -51,7 +67,7 @@ function fun(IDEE_) {
    * @public
    * @api stable
    */
-  IDEE_.config('API_IDEE_URL', 'https://componentes-desarrollo.idee.es/api-idee/');
+  IDEE_.config('API_IDEE_URL', 'https://api-ideedes.grupotecopy.es/api-idee/');
 
   /**
    * The path to the API-IDEE proxy to send
@@ -90,6 +106,42 @@ function fun(IDEE_) {
    * @api stable
    */
   IDEE_.config('THEME_URL', `${location.protocol}//componentes-desarrollo.idee.es/api-idee/assets/`);
+
+  /**
+   * Predefined WMC files. It is composed of URL,
+   * predefined name and context name.
+   * @type {object}
+   * @public
+   * @api stable
+   */
+  IDEE_.config('predefinedWMC', {
+    /**
+     * Predefined WMC URLs
+     * @const
+     * @type {Array<string>}
+     * @public
+     * @api stable
+     */
+    'urls': 'https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_callejero.xml,https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_hibrido.xml,https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_satelite.xml,https://componentes.idee.es/estaticos/Datos/WMC/contextCallejeroCache.xml,https://componentes.idee.es/estaticos/Datos/WMC/contextCallejero.xml,https://componentes.idee.es/estaticos/Datos/WMC/callejero2011cache.xml,https://componentes.idee.es/estaticos/Datos/WMC/ortofoto2011cache.xml,https://componentes.idee.es/estaticos/Datos/WMC/hibrido2011cache.xml,https://componentes.idee.es/estaticos/Datos/WMC/contextOrtofoto.xml'.split(',').map(e => e),
+
+    /**
+     * WMC predefined names
+     * @const
+     * @type {Array<string>}
+     * @public
+     * @api stable
+     */
+    'predefinedNames': 'cdau,cdau_hibrido,cdau_satelite,callejerocacheado,callejero,callejero2011cache,ortofoto2011cache,hibrido2011cache,ortofoto'.split(','),
+
+    /**
+     * WMC context names
+     * @const
+     * @type {Array<string>}
+     * @public
+     * @api stable
+     */
+    'names': 'Callejero,Hibrido,Satelite,mapa callejero cache,mapa del callejero,Callejero,Ortofoto,HÃ­brido,mapa ortofoto'.split(',')
+  });
 
   /**
    * TODO
@@ -227,6 +279,22 @@ function fun(IDEE_) {
   IDEE_.config('SQL_WASM_URL', '../../../../node_modules/sql.js/dist/');
 
   /**
+   * MAP Viewer - DPI (Dots per inch)
+   * 
+   * @private
+   * @type {Number}
+   */
+  IDEE.config('DPI', 72);
+
+  /**
+   * MAP Viewer - DPI OGC (Dots per inch for OGC services)
+   * 
+   * @private
+   * @type {Number}
+   */
+  IDEE.config('DPI_OGC', 90.714285714);
+
+  /**
    * Mueve el mapa cuando se hace clic sobre un objeto
    * geográfico, (extract = true) o no (extract = false)
    *
@@ -250,6 +318,22 @@ function fun(IDEE_) {
    * @type {Number | String}
    */
   IDEE_.config('MAX_ZOOM', '');
+
+  /**
+   * Zoom por defecto.
+   *
+   * @private
+   * @type {Number | String}
+   */
+  IDEE_.config('DEFAULT_ZOOM', '3');
+
+  /**
+   * Activar las resoluciones.
+   *
+   * @public
+   * @type {Boolean}
+   */
+  IDEE.config('ACTIVATE_RESOLUTIONS', '${activateResolutions}');
 
   /**
    * Hace el popup inteligente
@@ -282,6 +366,13 @@ function fun(IDEE_) {
       audios: ['250px', '40px'],
     },
   });
+
+  /**
+   * Determina el nivel de zoom cuando se usa el control location.
+   * @public
+   * @type {Number}
+   */
+  IDEE.config('ZOOM_LOCATION', 16);
 }
 
 fun(window.IDEE);

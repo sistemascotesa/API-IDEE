@@ -9,7 +9,7 @@ import ZoomPanelControl from './zoompanelcontrol';
 import PredefinedZoomControl from './predefinedzoomcontrol';
 import ZoomExtentControl from './zoomextentcontrol';
 
-export default class ViewManagementControl extends IDEE.Control {
+class ViewManagementControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
@@ -18,14 +18,14 @@ export default class ViewManagementControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api
    */
-  constructor(isDraggable, predefinedzoom, zoomextent, viewhistory, zoompanel, order) {
+  constructor(predefinedzoom, zoomextent, viewhistory, zoompanel, order) {
     if (IDEE.utils.isUndefined(ViewManagementImpl) || (IDEE.utils.isObject(ViewManagementImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(ViewManagementImpl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
 
     const impl = new ViewManagementImpl();
-    super('ViewManagement', impl);
+    super(ViewManagementControl.NAME, impl);
     /**
      * Indicates if the control PredefinedZoom is added to the plugin
      * @private
@@ -54,13 +54,6 @@ export default class ViewManagementControl extends IDEE.Control {
      * @type {Boolean}
      */
     this.zoompanel_ = zoompanel;
-
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable_ = isDraggable;
 
     /**
      * Order of plugin
@@ -152,9 +145,6 @@ export default class ViewManagementControl extends IDEE.Control {
           }
         });
       }
-      if (this.isDraggable_) {
-        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-viewmanagement-title');
-      }
       this.accessibilityTab(html);
       success(html);
     });
@@ -190,8 +180,8 @@ export default class ViewManagementControl extends IDEE.Control {
       }
       active.classList.remove('activated');
       const container = document.querySelector('#div-contenedor-viewmanagement');
-      if (container && container.children.length > 2) {
-        container.removeChild(container.children[2]);
+      if (container && container.children.length > 1) {
+        container.removeChild(container.children[1]);
       }
     }
   }
@@ -224,3 +214,14 @@ export default class ViewManagementControl extends IDEE.Control {
     }
   }
 }
+
+/**
+ * Identifier name to this control
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+ViewManagementControl.NAME = 'ViewManagement';
+
+export default ViewManagementControl;

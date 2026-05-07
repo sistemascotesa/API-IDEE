@@ -10,14 +10,14 @@
       "type": "simple",
       "name": "position",
       "position": 0,
-      "possibleValues": ["TL", "TR", "BR", "BL"]
+      "possibleValues": ["right", "left"]
     }, {
       "type": "boolean",
       "name": "collapsed",
       "position": 1
     }, {
-      "type": "boolean",
-      "name": "collapsible",
+      "type": "number",
+      "name": "order",
       "position": 2
     }, {
       "type": "simple",
@@ -79,7 +79,7 @@
     "name": "backimglayer",
     "description": "Sets background layer",
     "text": "Shows different options for background layer as clickable images and changes background layer on click on an option.",
-    "version": "2.0.2",
+    "version": "1.1.0",
     "date": "3rd September 2019",
     "author": "CNIG",
     "org": "CNIG",

@@ -1,15 +1,22 @@
+div#backimglayer-previews {
+    display: grid;
+    grid-template-columns: repeat(var(--columns-number), 1fr);
+    gap: 12px;
+}
+
 div[id^="backimglayer-layer-"] {
     position: relative;
     height: 48px;
     margin-bottom: 16px;
     border: 2px solid #ccc;
-    border-radius: 4px;   
+    border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s ease;
+    overflow: hidden;
 }
 
 div[id^="backimglayer-layer-"]:hover {
-    border: 2px solid #1470db;
+    border: 2px solid var(--idee-color-links);
     transition: all 0.3s ease;
 }
 
@@ -18,6 +25,7 @@ div[id^="backimglayer-layer-"]>img {
     height: 100%;
     padding: 2px;
     box-sizing: border-box;
+    object-fit: cover;
 }
 
 div[id^="backimglayer-layer-"]>span {
@@ -36,8 +44,8 @@ div[id^="backimglayer-layer-"]>span {
 }
 
 .m-backimglayer-active {
-    border: 2px solid #1d5a9e !important;
- }
+    border: 2px solid var(--idee-color-primary-dark) !important;
+}
 
 .m-backimglayer-active>span {
     font-weight: bold;

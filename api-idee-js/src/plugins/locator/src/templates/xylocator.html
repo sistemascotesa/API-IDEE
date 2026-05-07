@@ -1,11 +1,11 @@
-<div id="m-xylocator-panel" class="m-xylocator-container">
+<div id="m-xylocator-panel" class="m-api-idee-tab-content m-xylocator-container">
   <div class="m-xylocator-datas">
     <div id="m-xylocator-coordinatesSystem" class="m-xylocator-coord-system">
       <div class="m-xylocator-selector-title">
         <label>{{translations.srs}}:</label>
         {{#if hasHelp}}
           <div class="m-xylocator-help-button" title="EPSG">
-            <a href="{{helpUrl}}" target="_blank"  id="m-xylocator-help-projections"></a>
+            <a href="{{helpUrl}}" target="_blank" class="g-cartografia-info" id="m-xylocator-help-projections"></a>
           </div>
         {{/if}}
       </div>
@@ -95,9 +95,9 @@
     </div>
     <div id="m-xylocator-latlon" class="m-xylocator-latlon-fields">
       <label for="LON">{{translations.longitude}}:</label>
-      <input type="text" name="LON" id="LON" placeholder="-6,0">
+      <input type="text" name="LON" id="LON" value="0">
       <label for="LAT">{{translations.latitude}}:</label>
-      <input type="text" name="LAT" id="LAT" placeholder="37,5">
+      <input type="text" name="LAT" id="LAT" value="0">
     </div>
     <div class="button">
       <button class="m-xylocator-represent" id="m-xylocator-loc" title="{{translations.locate}}">

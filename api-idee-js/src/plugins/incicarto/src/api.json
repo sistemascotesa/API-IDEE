@@ -10,14 +10,14 @@
       "type": "simple",
       "name": "position",
       "position": 0,
-      "possibleValues": ["TL", "TR", "BL", "BR"]
+      "possibleValues": ["left", "right"]
     }, {
       "type": "boolean",
       "name": "collapsed",
       "position": 1
     }, {
-      "type": "boolean",
-      "name": "collapsible",
+      "type": "number",
+      "name": "order",
       "position": 2
     }, {
       "type": "simple",
@@ -25,20 +25,12 @@
       "position": 3
     }, {
       "type": "simple",
-      "name": "wfszoom",
+      "name": "prefixSubject",
       "position": 4
     }, {
       "type": "simple",
-      "name": "prefixSubject",
-      "position": 5
-    }, {
-      "type": "simple",
       "name": "interfazmode",
-      "position": 6
-    }, {
-      "type": "boolean",
-      "name": "isDraggable",
-      "position": 7
+      "position": 5
     }]
   }],
   "files": {
@@ -53,9 +45,9 @@
   },
   "metadata": {
     "name": "Incicarto",
-    "description": "Geometry drawing",
-    "text": "Geometry management and downloading",
-    "version": "2.0.2",
+    "description": "Plugin para dar de alta incidencias.",
+    "text": "Plugin para dar de alta incidencias.",
+    "version": "1.1.0",
     "date": "May 2020",
     "author": "",
     "org": "",

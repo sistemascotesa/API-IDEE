@@ -1,15 +1,19 @@
 {
   "panzoom": {
+    "zoomIn": "Más zoom",
+    "zoomOut": "Menos zoom",
     "textHelp": {
       "text1": "Esta herramienta permite cambiar el zoom del visualizador a partir de un panel con un desplazador. El mapa del visualizador cambia acercándose o alejándose según se cambie el desplazador hacia arriba o hacia abajo."
     }
   },
   "panzoombar": {
+    "title": "Nivel de zoom",
     "textHelp": {
       "text1": "Esta herramienta permite cambiar el zoom del visualizador a partir de un panel con un desplazador. El mapa del visualizador cambia acercándose o alejándose según se cambie el desplazador hacia arriba o hacia abajo."
     }
   },
   "backgroundlayers": {
+    "title": "Selección de capa de fondo",
     "textHelp": {
       "text1": "La herramienta de selector de capas base permite cambiar entre distintas capas base o capas de fondo, configuradas en un visualizador."
     }
@@ -26,6 +30,16 @@
   "layerswitcher": {
     "title": "Selector de capas"
   },
+  "overviewmap": {
+    "title": "Mapa de situación",
+    "textHelp": {
+      "help1": "Muestra una vista general con un recuadro que corresponde a la zona donde nos encontramos en la vista principal.",
+      "help2": "El recuadro del mapa de situación está sincronizado con la vista principal. Permite desplazar la vista principal, moviendo el recuadro desde el mapa de situación.",
+      "help3": "Para ocultar de nuevo el mapa de situación haga clic en el botón 'Minimizar'.",
+      "help4": "La información relevante a la extensión y su posible parametrización está documentada en",
+      "help5": "El ejemplo de uso de sus parámetros puede comprobarse en"
+    }
+  },
   "scale": {
     "title": "Escala",
     "scale": "Escala",
@@ -36,28 +50,45 @@
     }
   },
   "scaleline": {
+    "title": "Línea de escala",
     "textHelp": {
       "text1": "La escala gráfica es una línea situada en el mapa, a menudo en el margen de la hoja, que se ha subdividido en segmentos para indicar las longitudes sobre el mapa de las unidades terrestres de distancia.",
       "text2": "Gracias a este elemento es posible medir la distancia real directamente sobre el mapa con la ayuda de una regla o un compás.",
       "text3": "Fuente"
     }
   },
-  "attributionsControl": {
+  "attributions": {
+    "title": "Reconocimientos",
     "attribution": "atribución",
-    "tooltip": "Reconocimientos",
     "textHelp": {
       "text1": "La herramienta de selector de capas base permite cambiar entre distintas capas base o capas de fondo, configuradas en un visualizador.",
       "text2": "Con esta información, se puede dar la atribución a cada capa, permitiendo al usuario saber su fuente."
     }
   },
   "getfeatureinfo": {
-    "info": "Información",
     "title": "Consultar capa",
+    "info": "Información",
     "no_info": "No existe información asociada",
     "info_of": "Información de",
     "unsupported_format": "Formato no soportado",
     "textHelp": {
       "text1": "La herramienta de obtener información permite obtener el GetFeatureInfo (la información asociada al punto clickado sobre el visualizador) en servicios WMS y WMTS."
+    }
+  },
+  "timeline": {
+    "title": "Línea de tiempo",
+    "play": "Iniciar",
+    "pause": "Parar",
+    "excepcion": "La implementación usada no puede crear controles TimelineControl",
+    "intervals_error": "Los intervalos no fueron definidos correctamente",
+    "initValue": "Valor inicio",
+    "endValue": "Valor final",
+    "textHelp": {
+      "help1": "La extensión línea de tiempo.",
+      "help2": "La extensión es personalizable, por lo que puede cambiar de un visualizador a otro.",
+      "help3": "La línea de tiempo permite hacer filtros espaciales en capas a partir de un atributo de tiempo, o añadir una fecha a una capa y filtrar por ella.",
+      "help4": "La información relevante a la extensión y su posible parametrización está documentada en",
+      "help5": "El ejemplo de uso de sus parámetros puede comprobarse en"
     }
   },
   "wmcselector": {
@@ -67,7 +98,57 @@
     "title": "Girar al norte",
     "textHelp": {
       "text1": "La herramienta de rotación permite volver a una orientación Norte al visualizador.",
-      "text2": "Para poder girar el mapa en el visualizador, se realiza con la combinación de teclas Shit + Alt + click izquierdo del ratón + mover ratón para girar."
+      "text2": "Para poder girar el mapa en el visualizador, se realiza con la combinación de teclas Shift + Alt + click izquierdo del ratón + mover ratón para girar."
+    },
+    "titleCesium": "Control de movimiento",
+    "title_help": "Ayuda",
+    "help": {
+      "title": "Control del giroscopio",
+      "title1": "Girar la vista",
+      "text1": "Arrastra el anillo circular exterior para rotar el mapa 360º",
+      "title2": "Inclinar la vista",
+      "text2": "Selecciona el círculo interior y arrastralo lentamente hacia cualquier lado para inclinar y/o girar el mapa.",
+      "text3": "También, si haces doble click vuelves a la vista inicial.",
+      "text4": "Además si bloqueas la tecla CTRL y arrastras sobre el mapa, puedes inclinar o girar el mapa."
+    },
+    "textHelpCesium": {
+      "text1": "Esta herramienta te permite mover y controlar la cámara en un entorno 3D, explorando el mapa desde diferentes ángulos.",
+      "text2": "Para rotar el mapa 360º, haz clic y arrastra el anillo circular exterior alrededor del control.",
+      "text3": "Para inclinar y/o girar el mapa, selecciona el círculo interior y arrástralo en cualquier dirección. También puedes mantener pulsada la tecla CTRL y arrastrar el mapa para lograr el mismo efecto.",
+      "text4": "Haz doble clic en el círculo interior para volver rápidamente a la vista inicial.",
+      "text5": "Si necesitas ayuda, pulsa el botón '?' ubicado a la derecha del control para abrir un panel con instrucciones detalladas."
+    },
+    "close_not_show_help": "Cerrar y no mostrar de nuevo",
+    "image1_description": "Icono girar vista",
+    "image2_description": "Icono inclinar vista",
+    "close_btn": "Cerrar ayuda"
+  },
+  "measure": {
+    "textHelp": {
+      "help1": "Mide longitudes y superficies sobre el mapa.",
+      "help2": "1. Medir distancias.",
+      "help3": "2. Medir área.",
+      "help4": "3. Borrar Medidas.",
+      "help5": "Haga clic sobre la herramienta para seleccionarla y luego sobre el mapa para dibujar la distancia que quiere medir. A medida que se va dibujando se va actualizando la longitud total.",
+      "help6": "Haga doble clic para terminar la medición de distancia, y empezar otra.",
+      "help7": "Con la tecla Escape se desactiva la herramienta y se borra la medición activa. Esto puede ser útil para reiniciar la herramienta si se ha cometido un error en la última medición, sin borrar el resto de mediciones ya realizadas.",
+      "help8": "La herramienta se queda activa hasta que la desactive, haciendo clic de nuevo sobre el botón 'Medir distancias'.",
+      "help9": "Haga clic sobre la herramienta para seleccionarla y luego sobre el mapa para dibujar el área que quiere medir. A medida que se va dibujando se va actualizando la superficie medida.",
+      "help10": "Haga doble clic para terminar la medición de área, y empezar otra.",
+      "help11": "Con la tecla Escape se desactiva la herramienta y se borra la medición activa. Esto puede ser útil para reiniciar la herramienta si se ha cometido un error en la última medición, sin borrar el resto de mediciones ya realizadas.",
+      "help12": "La herramienta se queda activa hasta que la desactive, haciendo clic de nuevo sobre el botón 'Medir área'.",
+      "help13": "Borra todas las mediciones realizadas, tanto áreas como distancias.",
+      "help14": "La información relevante a la extensión y su posible parametrización está documentada en",
+      "help15": "El ejemplo de uso de sus parámetros puede comprobarse en"
+    },
+    "text": {
+      "tooltip": "Herramientas de medición",
+      "keep_drawing": "Click para continuar dibujando la línea",
+      "click_draw": "Click para empezar a dibujar",
+      "keep_drawing_area": "Click para continuar dibujando el área",
+      "measure_area": "Medir área",
+      "delete": "Borrar medidas",
+      "measure": "Medir distancias"
     }
   },
   "mouse": {
@@ -117,6 +198,8 @@
     "panzoom_method": "La implementación usada no puede crear controles Panzoom",
     "panzoombar_method": "La implementación usada no puede crear controles Panzoombar",
     "scale_method": "La implementación usada no puede crear controles Scale",
+    "measurebar_method": "La implementación usada no puede crear controles Measurebar",
+    "timeline_method": "La implementación usada no puede crear controles TimeLine",
     "scaleline_method": "La implementación usada no puede crear controles ScaleLine",
     "wmcselector_method": "La implementación usada no puede crear controles WMCSelector",
     "geojson_method": "La implementación usada no puede crear objetos IDEE.impl.format.GeoJSON",
@@ -166,9 +249,19 @@
     "getmbtiles_method": "La implementación usada no posee el método getMBtiles.",
     "getxyzs_method": "La implementación usada no posee el método getXYZs.",
     "gettms_method": "La implementación usada no posee el método getTMS.",
+    "undefined_control": "El control no está definido, consulte los controles disponibles.",
+    "control_name_method": "El control especificado necesita un nombre para poder ser creado",
+    "no_tool_position": "No existe un contenedor de herramientas para la posición indicada",
+    "invalid_tool_position": "La posición de la herramienta es incorrecta",
     "getcontrols_method": "La implementación usada no posee el método getControls.",
     "addcontrols_method": "La implementación usada no posee el método addControls.",
+    "invalid_control": "El control especificado es inválido",
     "remove_control": "No ha especificado ningún control a eliminar.",
+    "control_already_added": "El control ya ha sido añadido al mapa previamente",
+    "parseParamError": "Error al parsear el parámetro '{param}' de '{name}': {error}",
+    "paramNotAllowed": "El parámetro '{param}' no está permitido para el control '{control}' y ha sido omitido.",
+    "invalidBase64Encoding": "Codificación base64 inválida",
+    "invalidJsonFormat": "Formato JSON inválido",
     "removecontrol_method": "La implementación usada no posee el método removeControls.",
     "setmaxextent_method": "La implementación usada no posee el método setMaxExtent.",
     "getbbox_method": "La implementación usada no posee el método getBbox.",
@@ -226,6 +319,8 @@
     "invalid_resolutions_param": "El formato del parámetro resolutions no es correcto",
     "invalid_zoom_param": "El formato del parámetro zoom no es correcto",
     "invalid_zoomconstrains_param": "El formato del parámetro zoomConstraints no es correcto",
+    "no_extent_constrains": "No ha especificado ningún parámetro extentConstrains",
+    "invalid_extentconstrains_param": "El formato del parámetro extentConstrains no es correcto",
     "min_gt_max": "No puede establecerse un radio mínimo mayor que el máximo.",
     "max_lt_min": "No puede establecerse un radio máximo menor que el mínimo.",
     "no_geojson": "No se ha especificado ningun GeoJSON",
@@ -243,9 +338,10 @@
     "formatError": "La capa [replace1] de tipo [replace2] no soporta FORMAT",
     "file_size": "El fichero seleccionado sobrepasa el máximo de 20 MB permitido.",
     "file_load": "Error al cargar el fichero.",
+    "file_empty": "Error archivo no detectado",
     "no_geoms": "No se han detectado geometrías en este fichero.",
     "file_load_correct": "Error al cargar el fichero. Compruebe que se trata del fichero correcto.",
-    "file_extension": "No se ha insertado una extensión de archivo permitida. Las permitidas son: KML, SHP(.zip), GPX, GML y GeoJSON.",
+    "file_extension": "No se ha insertado una extensión de archivo permitida. Las permitidas son: KML, SHP(.zip), GPX, GML, GeoJSON, GPKG, TIF and TIFF",
     "no_setprojection": "La implementación usada no puede cambiar la proyección del mapa.",
     "no_zoomconstrains": "La implementación usada no puede utilizar el parámetro zoomConstrains.",
     "setZoomConstrains_method": "La implementación usada no posee el método setIntermediateZooms.",
@@ -309,6 +405,12 @@
     "setminscale_no_apply": "No es posible aplicar la mínima escala a la capa WMC.",
     "setmaxscale_no_apply": "No es posible aplicar la máxima escala a la capa WMC.",
     "wkt_toCQL_method": "La implementación usada no puede crear el formateador WKT por lo que no incluirá filtros CQL.",
-    "enableDrag_deprecated": "El método enableDrag de la clase Map ha quedado obsoleto, se recomienda usar en su lugar enablePan."
+    "enableDrag_deprecated": "El método enableDrag de la clase Map ha quedado obsoleto, se recomienda usar en su lugar enablePan.",
+    "impl_length": "La implementación usada no puede crear controles MeasureLength.",
+    "impl_clear": "La implementación usada no puede crear controles MeasureClear.",
+    "impl_area": "La implementación usada no puede crear controles MeasureArea",
+    "impl_overviewmap": "La implementación usada no puede crear controles OverviewMapControl.",
+    "animated_method": "La implementación usada no podrá desactivar ni modificar la animación",
+    "deactivatechangeresolution_method": "La implementación usada no posee el método deactivateChangeResolutionEvent"
   }
 }

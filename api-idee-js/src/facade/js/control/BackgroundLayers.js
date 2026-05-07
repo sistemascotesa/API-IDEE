@@ -13,6 +13,19 @@ import ControlBase from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
 import { LOAD, ADDED_TO_MAP } from '../event/eventtype';
 import { getValue } from '../i18n/language';
+import { isBoolean, isNumber, isString } from '../util/Utils';
+import * as Position from '../ui/position';
+
+/**
+ * @typedef {Object} module:IDEE/control/BackgroundLayers~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {Number} [order] Accesibilidad, z-index.
+ * @property {Number} [layerIndex] Índice de la capa base preseleccionada.
+ * @property {Boolean} [visible] Indicador de visibilidad inicial.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación.
+ */
 
 /**
  * Esta constante indica el número máximo de capas base que tendrá el control.
@@ -28,11 +41,12 @@ const MAXIMUM_LAYERS = 5;
  * Selector de capas de fondo API-CING.
  * Añade un selector de capas base al mapa.
  *
- * @property {Array<Layer>} layer Proviene de "IDEE.config.backgroundlayers".
+ * @property {Array<Layer>} layers Proviene de "IDEE.config.backgroundlayers".
  * @property {Array<Layer>} flattedLayers Concadena las capas generadas.
  * @property {Number} activeLayer Esta propiedad indica la capa que se activa.
- * @property {Number} idLayer Indica la capa que se mostrará primero.
- * @property {Boolean} visible Indica si sera visible o no.
+ * @property {Number} layerIndex Indice de una de las capas de
+ * "layers" que se preactivará si se define.
+ * @property {Boolean} visible Indica si sera visible o no inicialmente.
  *
  * @extends {IDEE.Control}
  * @api
@@ -43,26 +57,63 @@ class BackgroundLayers extends ControlBase {
    * Las capas base provienen de "IDEE.config.backgroundlayers".
    *
    * @constructor
-   * @param {IDEE.map} map Mapa.
-   * @param {Number} idLayer Identificador de la capa.
-   * @param {Boolean} visible Define si será visible.
+   * @param {module:IDEE/control/BackgroundLayers~Options} options Opciones del control.
+   * @example
+   *
+   * // Ejemplo de como configurar las capas base del mapa usando el control
+   * // los "tooltip" de las capas suplen al tooltip general del control en caso de definirse
+   * // La configuración debe definirse antes de la creación del mapa
+   *
+   * IDEE.config.backgroundlayers = [
+   *  {
+   *      "id": "baseign",
+   *      "title": "Base IGN",
+   *      "tooltip": "Seleccionar Base IGN",
+   *      "layers": [
+   *          "QUICK*Base_IGNBaseTodo_TMS"
+   *      ]
+   *  },
+   *  {
+   *      "id": "imagen",
+   *      "title": "Imagen",
+   *      "tooltip": "Seleccionar Imagen",
+   *      "layers": [
+   *          "QUICK*BASE_PNOA_MA_TMS"
+   *      ]
+   *  },
+   *  {
+   *      "id": "hibrido",
+   *      "title": "Hibrido",
+   *      "tooltip": "Seleccionar Hibrido",
+   *      "layers": [
+   *          "QUICK*BASE_HIBRIDO_LayerGroup"
+   *      ]
+   *  }
+   * ]
+   *
+   * const control = new IDEE.control.BackgroundLayers({
+   *   position: 'left',
+   *   order: 2,
+   *   layerIndex: 1,
+   *   visible: true,
+   *   tooltip: 'Selector de capas base',
+   * });
+   *
    * @api
    */
-  constructor(map, idLayer, visible) {
-    const impl = new ControlImpl();
-    super(BackgroundLayers.NAME, impl);
-    map.getBaseLayers().forEach((layer) => {
-      layer.on(LOAD, map.removeLayers(layer));
-    });
+  constructor(options = {}) {
+    const impl = new ControlImpl(options.vendorOptions);
+    super(BackgroundLayers.NAME, impl, options);
 
     /**
-     * Control layers, proviene de "IDEE.config.backgroundlayers".
+     * layers: Control layers, proviene de "IDEE.config.backgroundlayers".
      */
     this.layers = IDEE.config.backgroundlayers.slice(0, MAXIMUM_LAYERS).map((layer) => {
       return {
         id: layer.id,
         title: layer.title,
-        layers: layer.layers.map((subLayer) => {
+        tooltip: layer.tooltip ?? this.tooltip ?? this.translation.title,
+        layers: (layer.layers ?? []).map((subLayer) => {
           let l = subLayer;
           if (typeof subLayer === 'string') {
             if (/QUICK.*/.test(subLayer)) {
@@ -89,19 +140,30 @@ class BackgroundLayers extends ControlBase {
     this.flattedLayers = this.layers.reduce((current, next) => current.concat(next.layers), []);
 
     /**
-     * Active Layer, default -1.
+     * activeLayer: capa activa por defecto default -1.
      */
     this.activeLayer = -1;
 
     /**
-     * ID layer.
+     * layerIndex: Índice de la capa que se preactivará
      */
-    this.idLayer = idLayer == null ? 0 : idLayer;
+    this.layerIndex = (isNumber(options.layerIndex) && options.layerIndex < this.layers.length)
+      ? options.layerIndex : 0;
 
     /**
-     * Visibility.
+     * visible: Visibility.
      */
-    this.visible = visible == null ? true : visible;
+    this.visible = isBoolean(options.visible) ? options.visible : true;
+
+    /**
+     * position: Posición del control en el mapa.
+     */
+    this.position = options.position ?? Position.DOWN;
+
+    /**
+    * tooltip: Título del control
+    * */
+    this.tooltip = isString(options.tooltip) ? options.tooltip : null;
   }
 
   /**
@@ -115,17 +177,21 @@ class BackgroundLayers extends ControlBase {
   createView(map) {
     this.map = map;
     return new Promise((success, fail) => {
-      const html = compileTemplate(template, { vars: { layers: this.layers } });
+      const html = compileTemplate(template, {
+        vars: {
+          layers: this.layers,
+        },
+      });
       this.html = html;
       this.listen(html);
       // html.querySelector('button').click();
-      this.uniqueButton = this.html.querySelector('#m-baselayerselector-unique-btn');
-      this.uniqueButton.innerHTML = this.layers[0].title;
+      // this.uniqueButton = this.html.querySelector('#m-baselayerselector-unique-btn');
+      // this.uniqueButton.innerHTML = this.layers[0].title;
       this.on(ADDED_TO_MAP, () => {
         const visible = this.visible;
-        if (this.idLayer > -1) {
+        if (this.layerIndex > -1) {
           if (window.innerWidth > IDEE.config.MOBILE_WIDTH) {
-            this.activeLayer = this.idLayer;
+            this.activeLayer = this.layerIndex;
           }
 
           this.showBaseLayer({
@@ -136,11 +202,27 @@ class BackgroundLayers extends ControlBase {
         }
 
         if (visible === false) {
-          this.map_.removeLayers(this.map_.getBaseLayers());
+          this.map.removeLayers(this.map.getBaseLayers());
         }
       });
       success(html);
     });
+  }
+
+  /**
+   * Este método añade el control al mapa.
+   *
+   * @public
+   * @function
+   * @param {IDEE.Map} map Mapa.
+   * @api
+   * @export
+   */
+  addTo(map) {
+    map.getBaseLayers().forEach((layer) => {
+      layer.once(LOAD, map.removeLayers(layer));
+    });
+    super.addTo(map);
   }
 
   /**
@@ -185,7 +267,7 @@ class BackgroundLayers extends ControlBase {
     buttons.forEach((e) => {
       // eslint-disable-next-line no-unused-expressions
       (e.classList.contains('m-background-unique-btn'))
-      // eslint-disable-next-line space-infix-ops
+        // eslint-disable-next-line space-infix-ops
         ? e.style.display = (change) ? 'block' : 'none'
         : e.style.display = (change) ? 'none' : 'block';
     });
@@ -205,7 +287,8 @@ class BackgroundLayers extends ControlBase {
   handlerClickDesktop(e, layersInfo, i) {
     this.removeLayers();
     this.visible = false;
-    const { layers, title } = layersInfo;
+    // const { layers, title } = layersInfo;
+    const { layers } = layersInfo;
     const isActived = e.target.parentElement
       .querySelector(`#m-baselayerselector-${layersInfo.id}`)
       .classList.contains('activeBaseLayerButton');
@@ -219,7 +302,7 @@ class BackgroundLayers extends ControlBase {
     if (!isActived) {
       this.visible = true;
       this.activeLayer = i;
-      e.target.parentElement.querySelector('#m-baselayerselector-unique-btn').innerText = title;
+      // e.target.parentElement.querySelector('#m-baselayerselector-unique-btn').innerText = title;
       e.target.parentElement
         .querySelector(`#m-baselayerselector-${layersInfo.id}`).classList.add('activeBaseLayerButton');
       this.map.addLayers(layers);
@@ -252,7 +335,7 @@ class BackgroundLayers extends ControlBase {
   }
 
   /**
-   * Esta función elimina "this.layers" del mapa.
+   * Esta función elimina "this.flattedLayers" del mapa.
    * @function
    * @public
    * @api
@@ -272,7 +355,8 @@ class BackgroundLayers extends ControlBase {
   listen(html) {
     html.querySelectorAll('button.m-background-group-btn')
       .forEach((b, i) => b.addEventListener('click', (e) => this.showBaseLayer(e, this.layers[i], i)));
-    html.querySelector('#m-baselayerselector-unique-btn').addEventListener('click', (e) => this.showBaseLayer(e));
+    // html.querySelector('#m-baselayerselector-unique-btn')
+    // .addEventListener('click', (e) => this.showBaseLayer(e));
   }
 
   /**
@@ -283,7 +367,7 @@ class BackgroundLayers extends ControlBase {
    * @api
   */
   getHelp() {
-    const textHelp = getValue('backgroundlayers').textHelp;
+    const textHelp = getValue(BackgroundLayers.NAME).textHelp;
     return {
       title: BackgroundLayers.NAME,
       content: new Promise((success) => {

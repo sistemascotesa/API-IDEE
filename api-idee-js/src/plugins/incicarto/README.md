@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.InciCarto</small></h1>
 
@@ -7,13 +7,21 @@
 
 Plugin que permite la identificación de incidencias sobre la cartografía. El usuario puede describir el error y si lo desea categorizar el error. Despúes el error puede notificarse por correo electrónico a uno de los buzones de incidencias habilitados o darse de alta en el gestor de incidencias.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Incicarto abierto](./src/facade/assets/images/incicarto-abierto.png)|![Incicarto cerrado](./src/facade/assets/images/incicarto-cerrado.png)|
+
 
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **incicarto.ol.min.js**
 - **incicarto.ol.min.css**
+
+Para uso de implementación Cesium:
+- **incicarto.cesium.min.js**
+- **incicarto.cesium.min.css**
 
 
 ```html
@@ -51,14 +59,11 @@ Disponemos de dos posibilidades para notificar la incidencia.
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**: Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
-- **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: Notificar incidencia en cartografía.
-- **wfszoom**: Valor del zoom. Por defecto: 12.
 - **prefixSubject**: Prefijo que llevará el *subject* del correo electrónico enviado. Por defecto: 'Incidencia cartografía - '.
 - **interfazmode**: Indica la modalidad de envío de la incidencia. Por defecto: simple.
   - 'simple': se usará un cleinte de correo para enviar la incidencia.
@@ -103,7 +108,7 @@ Por defecto:
 # API-REST
 
 ```javascript
-URL_API?incicarto=position*collapsed*collapsible*tooltip*wfszoom*prefixSubject*interfazmode*isDraggable
+URL_API?incicarto=position*collapsed*tooltip*prefixSubject*interfazmode*isDraggable
 ```
 
 <table>
@@ -114,7 +119,7 @@ URL_API?incicarto=position*collapsed*collapsible*tooltip*wfszoom*prefixSubject*i
   </tr>
    <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
    <tr>
@@ -122,19 +127,14 @@ URL_API?incicarto=position*collapsed*collapsible*tooltip*wfszoom*prefixSubject*i
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
-   <tr>
-    <td>collapsible</td>
-    <td>true/false</td>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
     <td>tooltip</td>
     <td>Valor a usar para mostrar en el tooltip del plugin</td>
-    <td>Base64 ✔️ | Separador ✔️</td>
-  </tr>
-  <tr>
-    <td>wfszoom</td>
-    <td>Valor del zoom</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -201,9 +201,9 @@ Ejemplo del constructor:
 ```javascript
 {
   collapsed: true,
-  collapsible: true,
-  position: "TL",
-  wfszoom: 12,
+  position: "left",
+  order: 2,
+  tooltip: "Notificar incidencia en cartografía",
   prefixSubject: "Incidencia cartogrfica - ",
   interfazmode: "simple",
   buzones: [
@@ -288,8 +288,8 @@ https://componentes.idee.es/api-idee?incicarto=base64=eyJjb2xsYXBzZWQiOnRydWUsIm
 ```javascript
 const mp = new IDEE.plugin.Incicarto({
   collapsed: false,
-  collapsible: true,
-  position: 'TL',
+  position: 'right',
+  order: 1,
   interfazmode:'both', //simple, advance, both
   buzones: [{
     name: 'Cartografía (MTN, BTN, RT, HY, Pob, BCN, Prvinciales, escalas pequeñas)',

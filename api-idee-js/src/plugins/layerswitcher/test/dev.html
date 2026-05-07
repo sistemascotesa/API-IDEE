@@ -10,19 +10,142 @@
     <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
     <link href="https://componentes-desarrollo.idee.es/api-idee/plugins/information/information.ol.min.css" rel="stylesheet" />
     <link href="https://componentes-desarrollo.idee.es/api-idee/plugins/vectors/vectors.ol.min.css" rel="stylesheet" />
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-    </style>
-
 </head>
 
 <body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosition" title="Posición del plugin sobre el mapa. Por defecto: right">Posición "position"</label>
+                <select name="position" id="selectPosition">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsed" title="Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true">Colapsado "collapsed"</label>
+                <select name="collapsedValue" id="selectCollapsed">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder"
+                    title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                    entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Gestor de capas">Título de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug">
+                <datalist id="tooltipSug">
+                    <option value="Gestor de capas"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="selectStatusLayers" title="Permite añadir la funcionalidad de mostrar/ocultar todas las capas. Solo aplica cuando modeSelectLayers es 'eyes'. Por defecto: true">Estado de capas "statusLayers"</label>
+                <select name="statusValue" id="selectStatusLayers">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectAddLayers" title="Permite insertar la funcionalidad de añadir capas. Por defecto: true">Añadir capas "addLayers"</label>
+                <select name="addValue" id="selectAddLayers">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputTools" title="Lista de herramientas disponibles para cada capa separadas por coma. Valores: transparency, zoom, legend, information, style, delete">Herramientas "tools"</label>
+                <input type="text" name="tools" id="inputTools" list="toolsSug" value="transparency, zoom, legend, information, style, delete">
+                <datalist id="toolsSug">
+                    <option value="transparency, zoom, legend, information, style, delete"></option>
+                    <option value="transparency, zoom, legend, information"></option>
+                    <option value="transparency, zoom"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="isMoveLayers" title="Permite reordenar las capas arrastrándolas en el panel. Por defecto: true">Mover capas "isMoveLayers"</label>
+                <select name="moveLayerValue" id="isMoveLayers">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="modeSelectLayers" title="Modo de selección de capas: eyes (visibilidad múltiple) o radio (selección única). Por defecto: eyes">Modo de selección "modeSelectLayers"</label>
+                <select name="modeSelectLayersValue" id="modeSelectLayers">
+                    <option value="" selected="selected"></option>
+                    <option value="eyes">eyes</option>
+                    <option value="radio">radio</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputPrecharged" title="Objeto JSON con servicios y grupos precargados en el catálogo de capas. Si se deja vacío se usan los servicios por defecto">Servicios precargados "precharged"</label>
+                <input type="text" name="precharged" id="inputPrecharged" list="prechargedSug">
+                <datalist id="prechargedSug">
+                    <option value='{"services": [{"type":"WMS","name":"Camino de Santiago","url":"https://www.ign.es/wms-inspire/camino-santiago"}],"groups":[{"name":"Cartografía","services":{"type":"WMTS","name": "Mapas","url":"https://www.ign.es/wmts/mapa-raster?"}}]}'></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="isHttp" title="Permite añadir capas con URL HTTP en el catálogo. Por defecto: true">HTTP "http"</label>
+                <select name="isHttpValue" id="isHttp">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="isHttps" title="Permite añadir capas con URL HTTPS en el catálogo. Por defecto: true">HTTPS "https"</label>
+                <select name="isHttpsValue" id="isHttps">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="isShowCatalog" title="Muestra el botón de catálogo para buscar y añadir servicios externos. Por defecto: false">Mostrar catálogo "showCatalog"</label>
+                <select name="isShowCatalogValue" id="isShowCatalog">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectProxy" title="Utiliza proxy para las peticiones de capas. Por defecto: true">Proxy "useProxy"</label>
+                <select name="proxyValue" id="selectProxy">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectDisplay" title="Muestra la etiqueta con el tipo de capa (WMS, TMS, GeoJSON...). Por defecto: false">Etiqueta de tipo "displayLabel"</label>
+                <select name="displayValue" id="selectDisplay">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectUseAttributions" title="Muestra las atribuciones de las nuevas capas añadidas desde el catálogo o desde los servicios precargados. Es necesario haber instanciado e insertado el control 'attributions' en el mapa. Por defecto: false">Atribuciones "useAttributions"</label>
+                <select name="attributionsValue" id="selectUseAttributions">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+        </div>
+    </div>
+
     <div id="mapjs" class="container"></div>
     <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>

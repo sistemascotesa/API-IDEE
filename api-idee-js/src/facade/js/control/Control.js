@@ -1,22 +1,46 @@
 /**
  * @module IDEE/Control
  */
-import { isUndefined, isNullOrEmpty } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isNumber, isString,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import Base from '../Base';
 import * as EventType from '../event/eventtype';
 import { getValue } from '../i18n/language';
 import Plugin from '../Plugin';
+import * as Position from '../ui/position';
+import isControlImpl from '../../../impl/util/control/isControlImpl';
+import getControlImpl from '../../../impl/util/control/getControlImpl';
+
+/**
+ * @public
+ * @typedef {Object} Options opciones de configuración para el control de fachada.
+ * @property {String} [tooltip] Representa el valor del título del control.
+ * @property {String} [svgPath] Representa el vínculo para la imagen del botón si es usado.
+ * @property {String} [position] Posición que tendrá
+ * en el marco del mapa, un contenedor disponible.
+ * @property {Number} [order] Orden en el que se colocará dentro del contenedor,
+ * para que este parámetro funcione adecuadamente deberemos contener el control dentro de un
+ * {@link module:IDEE/ui/ControlPanel|ControlPanel}, de lo contrario se colocará en el orden que
+ * se añada al mapa.
+*/
 
 /**
  * @classdesc
- * Es la clase de la que heredan todos los controles.
+ * Clase control de fachada.
+ * @extends {IDEE.Base}
  *
- * @property {Boolean} activated Define si el control esta activado, por defecto falso.
+ * @property {IDEE.Map} map Es el mapa de fachada que se asigna al control.
+ * @property {Boolean} [activated=false] Define si el control esta activado, por defecto falso.
  * @property {String} name Nombre del control.
+ * @property {String} [tooltip] título ilustrativo sobre la acción principal del control.
+ * @property {String} [position='left'] Posición del control en el mapa, por defecto.
+ * @property {Number} [order=0] Determina la posición de la herramienta cuando se encuentra
+ * dentro de un contenedor de herramientas del mapa.
+ * @property {String} [svgPath=null] contiene la ruta a la imagen del control.
  *
  * @api
- * @extends {IDEE.Base}
  */
 class Control extends Base {
   /**
@@ -24,22 +48,118 @@ class Control extends Base {
    *
    * @constructor
    * @api
-   * @param {Object} implParam Opciones para generar el control.
    * @param {String} name Nombre del control.
+   * @param {Object} [impl] Control de implementación.
+   * @param {Options} [options] Opciones para el control de fachada.
+   *
+   * @example
+   * const map = IDEE.map({
+   *   container: 'map',
+   *   zoom: 6,
+   * };
+   *
+   * // Creación de un control personalizado, para la implementación podremos extender de
+   * // un control de implementación IDEE/impl/Control
+   *
+   * const control = new IDEE.Control('MiControl', null, {
+   *   tooltip: 'Mi control',
+   *   svgPath: '/assets/icons/control.svg',
+   *   position: 'left',
+   *   order: 2
+   * });
+   *
+   * map.addControls(control);
    */
-  constructor(name, options = {}) {
-    super(options);
+  constructor(name, impl, options = {}) {
+    super(impl);
 
-    this.name = name;
-    this.tooltip = options.tooltip || '';
-    this.svgPath = options.svgPath || null;
-
+    /**
+     * @private
+     * @property {IDEE.Map} map Es el mapa de fachada que se asigna al control.
+     */
     this.map = null;
-    this.panel = null;
+
+    /**
+     * @property {Plugin | null} parentPlugin existe quiere decir que está contenido en un Plugin
+     */
+    this.parentPlugin = null;
+
+    /**
+     * @property {HTMLElement} parentContainer define el contenedor que envuelve el control
+     */
+    this.parentContainer = null;
+
+    /**
+     * @public
+     * @property {String} name nombre del control, se usará para la traducción de los textos
+     * del control y su creación en la plantilla, por lo que es importante que el nombre sea
+     * único y descriptivo.
+     */
+    this.name = null;
+    if (isString(name)) this.name = name;
+    else Exception(getValue('exception').control_name_method);
+
+    /**
+     * @public
+     * @property {tooltip} tooltip título ilustrativo sobre la acción principal del control
+     */
+    this.tooltip = isString(options.tooltip) ? options.tooltip : null;
+
+    /**
+     * @public
+     * @property {String} svgPath contiene la ruta a la imagen del control.
+     */
+    this.svgPath = isString(options.svgPath) ? options.svgPath : null;
+
+    /**
+     * Position of control on map, default left
+     * @type {Position}
+     */
+    this.position = Position.isValid(options.position) ? options.position : Position.LEFT;
+
+    /**
+     * Determines the position of the tool when it is inside a map tool container
+     * @type {number}
+     */
+    this.order = isNumber(options.order) ? options.order : 0;
+
     this.controls = null;
+
+    /**
+     * @private
+     * @property {IDEE.ui.ControlPanel} panel_ Panel asociado al control, si el control
+     * se encuentra dentro de un ControlPanel, este atributo se asignará automáticamente
+     * al panel que lo contiene.
+     */
+    this.panel_ = null;
+
+    /**
+     * @private
+     * @property {HTMLElement} element Elemento HTML del control.
+     */
     this.element = null;
     this.activationBtn = null;
+
+    /**
+     * @public
+     * @property {Boolean} activated Define si el control esta activado, por defecto falso.
+     */
     this.activated = false;
+
+    this.options = {
+      ...options,
+      svgPath: this.svgPath,
+      position: this.position,
+      order: this.order,
+      tooltip: this.tooltip,
+    };
+  }
+
+  /**
+   * @return {Object} and object that contains the control translate JSON.
+   */
+  get translation() {
+    return getValue(this.name);
   }
 
   /**
@@ -66,6 +186,29 @@ class Control extends Base {
   }
 
   /**
+   * Consige el contenedor que contiene el control
+   *
+   * @constructor
+   * @returns {HTML} Plantilla del control.
+   * @api stable
+   * @export
+   */
+  getParentContainer() {
+    return this.parentContainer;
+  }
+
+  /**
+   * Asigna el contenedor que contendrá el control
+   *
+   * @param {HTML} parentContainer Plantilla del control.
+   * @api stable
+   * @export
+   */
+  setParentContainer(parentContainer) {
+    this.parentContainer = parentContainer;
+  }
+
+  /**
    * Este método añade el control al mapa.
    *
    * @public
@@ -74,25 +217,41 @@ class Control extends Base {
    * @api
    * @export
    */
-  addTo(parent) {
-    this.parent = parent;
-    const impl = this.getImpl();
-    const view = this.createView(parent);
-    if (view instanceof Promise) { // the view is a promise
-      view.then((html) => {
-        this.manageActivation(html);
-        impl.addTo(parent, html);
-        this.fire(EventType.ADDED_TO_MAP);
-      });
-    } else { // view is an HTML or text or null
-      if (parent instanceof Plugin) {
-        parent.addControlToPlugin(this);
-      } else {
-        impl.addTo(parent, view);
-      }
+  addTo(map) {
+    this.map = map;
 
-      this.manageActivation(view);
+    const buildImpl = (templateReady) => {
+      let controlImpl = this.getImpl();
+      if (!isControlImpl(controlImpl)) {
+        // eslint-disable-next-line no-console
+        // Consige una implementación de control nueva para un mapa de implementación concreto
+        controlImpl = getControlImpl(this.map.getImpl(), controlImpl);
+        super.setImpl(controlImpl);
+      }
+      this.manageActivation(templateReady);
+      controlImpl.addTo(this.map, templateReady);
+      if (this.parentPlugin instanceof Plugin) {
+        this.parentPlugin.addControlToPlugin(this);
+        this.parentContainer = this.parentPlugin.panel.panelContent;
+      } else {
+        const mapToolsContainer = this.map.getToolsContainer(this.position);
+        if (mapToolsContainer) {
+          this.setParentContainer(mapToolsContainer);
+          this.map.addToolToContainer(mapToolsContainer, controlImpl);
+        } else {
+          Exception(getValue('exception').invalid_tool_position);
+        }
+      }
       this.fire(EventType.ADDED_TO_MAP);
+    };
+
+    const template = this.createView(map);
+    if (template instanceof Promise) {
+      template.then((templateReady) => {
+        buildImpl(templateReady);
+      });
+    } else {
+      buildImpl(template);
     }
   }
 
@@ -108,9 +267,9 @@ class Control extends Base {
     const element = document.createElement('button');
     element.classList.add('m-control-button');
     element.id = `m-control-button-${this.name}`;
-    element.title = this.tooltip;
+    element.title = this.tooltip ?? '';
     element.role = 'button';
-    element.ariaLabel = this.tooltip;
+    element.ariaLabel = this.tooltip ?? '';
 
     if (this.svgPath) {
       fetch(this.svgPath)
@@ -173,8 +332,8 @@ class Control extends Base {
    * @export
    */
   activate() {
-    if (!isNullOrEmpty(this.parent)) {
-      this.parent.getControls().forEach((control) => {
+    if (!isNullOrEmpty(this.map)) {
+      this.map.getControls().forEach((control) => {
         control.deactivate();
       });
     }
@@ -208,6 +367,45 @@ class Control extends Base {
   }
 
   /**
+   * Sobrescribe el panel del control.
+   *
+   * @public
+   * @function
+   * @param {IDEE.ui.ControlPanel} panel ControlPanel.
+   * @api
+   * @export
+   */
+  setPanel(panel) {
+    this.panel_ = panel;
+  }
+
+  /**
+   * Devuelve el panel del control.
+   *
+   * @public
+   * @function
+   * @returns {IDEE.ui.ControlPanel} ControlPanel.
+   * @api
+   * @export
+   */
+  getPanel() {
+    return this.panel_;
+  }
+
+  /**
+   * Este método establece los elementos a usar en la implementación.
+   *
+   * @public
+   * @function
+   * @@param {HTMLElement} element
+   * @api stable
+   * @export
+   */
+  setElement(element) {
+    this.getImpl().setElement(element);
+  }
+
+  /**
    * Este método devuelve todos los elementos de la implementación.
    *
    * @public
@@ -221,40 +419,22 @@ class Control extends Base {
   }
 
   /**
-   * Sobrescribe el panel del control.
-   *
-   * @public
-   * @function
-   * @param {IDEE.ui.Panel} panel Panel.
-   * @api
-   * @export
-   */
-  setPanel(panel) {
-    this.panel = panel;
-  }
-
-  /**
-   * Devuelve el panel del control.
-   *
-   * @public
-   * @function
-   * @returns {IDEE.ui.Panel} Panel.
-   * @api
-   * @export
-   */
-  getPanel() {
-    return this.panel;
-  }
-
-  /**
    * Elimina el control.
    *
+   * Elimina el panel asociado y se desvincula del mapa de fachada
+   *
    * @public
    * @function
    * @api
    * @export
    */
-  destroy() {}
+  destroy() {
+    const el = this.getElement();
+    if (el && this.parentContainer.contains(el)) {
+      this.parentContainer.removeChild(el);
+    }
+    this.getImpl().destroy();
+  }
 }
 
 export default Control;

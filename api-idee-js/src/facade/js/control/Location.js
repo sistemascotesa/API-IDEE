@@ -7,16 +7,38 @@ import myhelp from 'templates/locationhelp';
 import 'assets/css/controls/location';
 import { getValue } from '../i18n/language';
 import ControlBase from './Control';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isBoolean,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import { compileSync as compileTemplate } from '../util/Template';
+import * as Position from '../ui/position';
+
+/**
+ * @typedef {Object} module:IDEE/control/Location~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {Boolean} [tracking] Indica si el seguimiento de la localización está activado.
+ * Por defecto verdadero.
+ * @property {Boolean} [highAccuracy] Indica si el seguimiento es de alta precisión.
+ * Por defecto falso.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación subyacente.
+ */
 
 /**
  * @classdesc
- * Localiza la posición del usuario en el mapa.
+ * Hereda de {@link module:IDEE/control/Control|Control}.
+ * Localiza la posición del usuario en el mapa y permite dibujarla.
+ *
+ * @property {String} [position='left'] Posición del control en el mapa.
+ * @property {Boolean} [tracking=true] Seguimiento de la localización activado (true)
+ * o desactivado (false).
+ * @property {Boolean} [highAccuracy=false] Seguimiento de alta precisión activado (true)
+ * o desactivado (false).
+ * @property {Object} [vendorOptions={}] Opciones para la implementación subyacente.
  *
  * @api
- * @extends {IDEE.Control}
+ * @extends {module:IDEE/control/Control}
  */
 class Location extends ControlBase {
   /**
@@ -25,13 +47,21 @@ class Location extends ControlBase {
    * posición en el mapa.
    *
    * @constructor
-   * @param {Boolean} tracking Seguimiento de localización, por defecto verdadero.
-   * @param {Boolean} highAccuracy Alta precisión del rastreo, por defecto falso.
-   * @param {Object} vendorOptions  Opciones de proveedor para la biblioteca base,
-   * por defecto objeto vacío. Estos valores no son "settable".
+   * @param {module:IDEE/control/Location~Options} options Opciones del control.
+   * @example
+   * new Location({
+   *  position: "left",
+   *  tracking: true,
+   *  highAccuracy: false,
+   *  vendorOptions: {}
+   * })
    * @api
    */
-  constructor(tracking = true, highAccuracy = false, vendorOptions = {}) {
+  constructor(options = {}) {
+    const tracking = isBoolean(options.tracking) ? options.tracking : true;
+    const highAccuracy = isBoolean(options.highAccuracy) ? options.highAccuracy : false;
+    const vendorOptions = isObject(options.vendorOptions) ? options.vendorOptions : {};
+
     if (isUndefined(LocationImpl) || (isObject(LocationImpl)
       && isNullOrEmpty(Object.keys(LocationImpl)))) {
       Exception(getValue('exception').location_method);
@@ -41,7 +71,24 @@ class Location extends ControlBase {
     const impl = new LocationImpl(tracking, highAccuracy, 60000, vendorOptions);
 
     // calls the super constructor
-    super(Location.NAME, impl);
+    super(Location.NAME, impl, options);
+
+    this.position = options.position ?? Position.LEFT;
+
+    /**
+     * @param {Boolean} tracking Seguimiento de la localización, por defecto verdadero.
+     * */
+    this.tracking = tracking;
+
+    /**
+     * @param {Boolean} highAccuracy Seguimiento de alta precisión por defecto falso.
+     */
+    this.highAccuracy = highAccuracy;
+
+    /**
+     * @param {Object} vendorOptions Opciones para la implementación
+     */
+    this.vendorOptions = vendorOptions;
   }
 
   /**
@@ -54,11 +101,15 @@ class Location extends ControlBase {
    * @api
    */
   createView(map) {
-    return compileTemplate(locationTemplate, {
+    const element = compileTemplate(locationTemplate, {
       vars: {
-        title: getValue('location').title,
+        title: this.tooltip ?? getValue('location').title,
       },
     });
+
+    this.element = element;
+
+    return element;
   }
 
   /**
@@ -73,6 +124,10 @@ class Location extends ControlBase {
    * @export
    */
   getActivationButton(element) {
+    if (!element) {
+      return null;
+    }
+
     return element.querySelector('button#m-location-button');
   }
 

@@ -12,7 +12,7 @@ const map = IDEE.map({
 });
 window.map = map;
 
-map.addPlugin(new IDEE.plugin.Layerswitcher({ collapsed: true, position: 'TR' }));
+// map.addPlugin(new IDEE.plugin.Layerswitcher({ collapsed: true, position: 'TR' }));
 
 /* / Capa Vector
 map.addLayers(new IDEE.layer.Vector({
@@ -72,7 +72,7 @@ window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/countries.mbtile
 }).catch((e) => { throw e; }); // */
 
 const mp = new VectorsManagement({
-  position: 'TL', // 'TL' | 'TR' | 'BR' | 'BL'
+  position: 'right',
   collapsible: false,
   collapsed: false,
   isDraggable: true,

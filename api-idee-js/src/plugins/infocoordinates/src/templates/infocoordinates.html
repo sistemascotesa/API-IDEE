@@ -1,11 +1,6 @@
-<div class="m-control m-container m-infocoordinates">
+<div id="plugin-panel-content-infocoordinates" class="m-plugin-panel-content" aria-label="Plugin infocoordinates" role="menuitem">
 
     <div class="div-m-infocoordinates-panel">
-
-        <!-- <div role="heading" tabindex="0" class="m-infocoordinates-title">
-            <p id="titleInfo" class="m-infocoordinates-titleInfo">{{translations.title}}</p>
-        </div> -->
-
         <div class="m-infocoordinates-content">
             <!-- Tabs -->
             <div class="m-infocoordinates-tabs">
@@ -14,43 +9,57 @@
 
             <div id="tabContent" class='m-infocoordinates-tabContent'>
                 <div class="infocoordinates-data-grid">
-                    <div class="grid-row">
+                    <div class="grid-row grid-row--3col">
                         <span class="grid-label">{{translations.point}}</span>
                         <span id="m-infocoordinates-point" class="grid-value">--</span>
-                        <button type="button" id="m-infocoordinates-buttonRemovePoint" class="icon-button" title="{{translations.removePoint}}">
-                            <img src="{{helpIconUrlPapelera}}" />
-                        </button>
+                        <button id="m-infocoordinates-buttonRemovePoint" class="secondary g-cartografia-btn-infocoordinates-removePoint" title="{{translations.removePoint}}"></button>
                     </div>
-                    <div class="grid-row has-background">
+                    <div class="grid-row has-background grid-row--2col">
                         <span class="grid-label">{{translations.datum}}</span>
                         <span id="m-infocoordinates-datum" class="grid-value">ETRS89</span>
                     </div>
-                    <div class="grid-row">
-                        <span class="grid-label">{{translations.latitude}}</span>
-                        <span id="m-infocoordinates-latitude" class="grid-value">--</span>
-                        <button type="button" id="m-infocoordinates-copylatlon" class="icon-button" title="{{translations.copyLatLon}}">
-                            <img src="{{helpIconUrlCopiar}}" />
-                        </button>
-                    </div>
-                    <div class="grid-row has-background">
-                        <span class="grid-label">{{translations.longitude}}</span>
-                        <span id="m-infocoordinates-longitude" class="grid-value">--</span>
-                    </div>
-                    <div class="grid-row gms-row">
-                        <div>
-                            <span class="grid-label-gms-row"></span>
-                            <input id="m-infocoordinates-buttonConversorFormat" type="checkbox" disabled>
-                            <label for="m-infocoordinates-buttonConversorFormat">{{translations.formatCoordinates}}</label>
+                    <div id="m-infocoordinates-geo-coords" class="noDisplay">
+                        <div class="grid-row grid-row--3col">
+                            <span class="grid-label">{{translations.latitude}}</span>
+                            <span id="m-infocoordinates-latitude" class="grid-value">--</span>
+                            <button id="m-infocoordinates-copylatlon" class="secondary g-cartografia-btn-infocoordinates-copylatlon" title="{{translations.copyLatLon}}"></button>
+                        </div>
+                        <div class="grid-row has-background grid-row--2col">
+                            <span class="grid-label">{{translations.longitude}}</span>
+                            <span id="m-infocoordinates-longitude" class="grid-value">--</span>
                         </div>
                     </div>
+                    <div id="m-infocoordinates-utm-coords" class="noDisplay">
+                        <div class="grid-row coordx-row grid-row--3col">
+                            <span class="grid-label">{{translations.coordX}}</span>
+                            <span id="m-infocoordinates-coordX" class="grid-value">--</span>
+                            <button id="m-infocoordinates-copyxy" class="secondary g-cartografia-btn-infocoordinates-copyxy" title="{{translations.copyxy}}">
+                            </button>
+                        </div>
 
-                    <div class="grid-row crs-row">
+                        <div class="grid-row has-background grid-row--2col">
+                            <span class="grid-label">{{translations.coordY}}</span>
+                            <span id="m-infocoordinates-coordY" class="grid-value">--</span>
+                        </div>
+                    </div>
+                    <div class="grid-row grid-row--2col">
+                        <span class="grid-label">{{translations.altitude}}</span>
+                        <span id="m-infocoordinates-altitude" class="grid-value">--</span>
+                    </div>
+                    <div class="grid-row grid-row--2col">
+                        <input id="m-infocoordinates-buttonConversorFormat" type="checkbox" disabled>
+                        <label for="m-infocoordinates-buttonConversorFormat">{{translations.formatCoordinates}}</label>
+                    </div>
+                    <div class="grid-row grid-row--2col">
                         <div class="grid-label">
                             <span>CRS:</span>
                             {{#if hasHelp}}
-                                <a href="{{helpUrl}}" class="help-icon" title="Ayuda EPSG" target="_blank">
-                                    <img src="{{helpIconUrlInfo}}" alt="" />
-                                </a>
+                                <button id="m-infocoordinates-help-icon"
+                                    tabindex="0"
+                                    title="Help"
+                                    class="secondary g-cartografia-btn-infocoordinates-help">
+                                    <i></i>
+                                </button>
                             {{/if}}
                         </div>
                         <div id="m-infocoordinates-comboDatum" class="m-infocoordinates-comboDatum">
@@ -74,47 +83,28 @@
                         </div>
                     </div>
 
-                    <div class="grid-row has-background coordx-row">
-                        <span class="grid-label">{{translations.coordX}}</span>
-                        <span id="m-infocoordinates-coordX" class="grid-value">--</span>
-                        <!-- <button type="button" id="m-infocoordinates-copyxy" class="icon-button" title="{{translations.copyxy}}">
-                            <img src="{{helpIconUrlCopiar}}" />
-                        </button> -->
-                    </div>
-
-                    <div class="grid-row">
-                        <span class="grid-label">{{translations.coordY}}</span>
-                        <span id="m-infocoordinates-coordY" class="grid-value">--</span>
-                    </div>
-
-                    <div class="grid-row has-background">
-                        <span class="grid-label">{{translations.altitude}}</span>
-                        <span id="m-infocoordinates-altitude" class="grid-value">--</span>
-                    </div>
                 </div>
             </div>
-            <div class="m-infocoordinates-div-buttonRemoveAllPoints noDisplay">
-                <button type="button" tabindex="0" class="icon-bin2" id="m-infocoordinates-buttonRemoveAllPoints" title="{{translations.removeAllPoints}}">
-                    <img src="{{helpIconUrlPapelera}}" alt="" />
-                </button>
-            </div>
+            <div class="m-infocoordinates-div-footerButtons">
+                <div class="m-infocoordinates-div-buttonRemoveAllPoints noDisplay">
+                    <button id="m-infocoordinates-buttonRemoveAllPoints" class="secondary g-cartografia-btn-infocoordinates-removeAllPoints" title="{{translations.removeAllPoints}}">
+                    </button>
+                </div>
 
-            <div class="m-infocoordinates-div-buttonImportAllPoints noDisplay">
-                <button type="button" tabindex="0" class="icon-file" id="m-infocoordinates-buttonImportAllPoints" title="{{translations.importAllPoints}}">
-                    <img src="{{helpIconUrlImport}}" alt="" />
-                </button>
-            </div>
+                <div class="m-infocoordinates-div-buttonImportAllPoints noDisplay">
+                    <button id="m-infocoordinates-buttonImportAllPoints" class="secondary g-cartografia-btn-infocoordinates-importAllPoints" title="{{translations.importAllPoints}}">
+                    </button>
+                </div>
 
-            <div class="m-infocoordinates-div-buttonCopyAllPoints noDisplay">
-                <button type="button" tabindex="0" class="icon-copy" id="m-infocoordinates-buttonCopyAllPoints" title="{{translations.copyAllPoints}}">
-                    <img src="{{helpIconUrlCopiar}}" alt="" />
-                </button>
-            </div>
+                <div class="m-infocoordinates-div-buttonCopyAllPoints noDisplay">
+                    <button id="m-infocoordinates-buttonCopyAllPoints" class="secondary g-cartografia-btn-infocoordinates-copyAllPoints" title="{{translations.copyAllPoints}}">
+                    </button>
+                </div>
 
-            <div class="m-infocoordinates-div-buttonDisplayAllPoints noDisplay">
-                <button type="button" tabindex="0" class="icon-displayON" id="m-infocoordinates-buttonDisplayAllPoints" title="{{translations.displayONAllPoints}}">
-                    <img src="{{helpIconUrlAllPoints}}" alt="" />
-                </button>
+                <div class="m-infocoordinates-div-buttonDisplayAllPoints noDisplay">
+                    <button id="m-infocoordinates-buttonDisplayAllPoints" class="secondary g-cartografia-btn-infocoordinates-displayAllPoints" title="{{translations.displayONAllPoints}}">
+                    </button>
+                </div>
             </div>
         </div>
     </div>

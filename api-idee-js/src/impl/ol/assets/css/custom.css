@@ -30,85 +30,6 @@ OL3 PERFORMANCE
 }
 
 /****************
-    ZOOM
-****************/
-
-.ol-zoom>button {
-    background-color: white !important;
-    margin: 0 !important;
-    padding: 0px;
-    color: #404040 !important;
-    opacity: .75;
-    font-size: 18px !important;
-    text-align: center;
-    cursor: pointer;
-    width: 30px !important;
-    height: 30px !important;
-    box-shadow: 0px 1px 3px 0px #CACACA;
-}
-
-.ol-zoom>button:hover,
-.ol-zoom>button:focus {
-    background-color: transparent;
-    outline: none !important;
-}
-
-.ol-zoom>button:hover {
-    opacity: 1;
-}
-
-.ol-zoom>button.ol-zoom-in:before {}
-
-/****************
-    PANZOOMBAR
-****************/
-
-.ol-zoomslider {
-    height: 198px !important;
-    overflow: auto !important;
-}
-
-.ol-zoomslider>button.ol-zoomslider-thumb {
-    background-color: #f0f0f0;
-    border: 1px solid rgba(64, 64, 64, 0.4);
-    border-radius: 20px;
-    padding: 0px;
-    /*margin: 0px;
-   margin-left: -5px;*/
-    /* FIXES PANZOOMBAR STYLE BUG */
-    margin: -5px;
-    /*position: absolute !important;*/
-    height: 20px !important;
-    width: 20px !important;
-}
-
-/* Position relative for Firefox because it adds
-   20px top extra if the position is absolute */
-
-@-moz-document url-prefix() {
-    .ol-zoomslider>button.ol-zoomslider-thumb {
-        position: relative !important;
-    }
-}
-
-/****************
-    SCALELINE
-****************/
-
-.ol-scale-line .ol-scale-line-inner {
-    color: #404040;
-    border-color: #404040;
-    font-weight: bold;
-}
-
-@media only screen and (max-width: 768px) {
-    .ol-scale-line-up {
-        margin-bottom: 30px;
-        margin-left: -15px;
-    }
-}
-
-/****************
     OVERVIEWMAP
 ****************/
 
@@ -122,7 +43,6 @@ OL3 PERFORMANCE
 
 .ol-overviewmap {
     order: 1 !important;
-    margin-left: 10px !important;
     display: relative !important;
 }
 
@@ -183,7 +103,6 @@ OL3 PERFORMANCE
     background: none;
     cursor: pointer;
     font-family: 'g-cartografia' !important;
-    speak: none;
     font-style: normal;
     font-weight: normal;
     font-variant: normal;

@@ -46,7 +46,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     isDraggable, order,
   }) {
     const impl = new IDEE.impl.Control();
-    super('VectorsManagement', impl);
+    super('VectorsManagement', impl, {});
 
     const allLayers = map.getLayers().concat(map.getImpl().getAllLayerInGroup());
 
@@ -130,7 +130,15 @@ export default class VectorsManagementControl extends IDEE.Control {
       this.map_.on(IDEE.evt.REMOVED_LAYER, this.refreshLayers.bind(this));
 
       if (this.isDraggable_) {
-        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-vectorsmanagement-titulo');
+        setTimeout(() => {
+          const panel = this.getPanel();
+          if (panel) {
+            IDEE.utils.draggabillyPlugin(panel, '#m-vectorsmanagement-titulo');
+          } else {
+            /* eslint-disable-next-line no-console */
+            console.warn('VectorsManagement: No se pudo activar draggabilly porque el panel es null');
+          }
+        }, 500);
       }
       this.accessibilityTab(html);
       success(html);

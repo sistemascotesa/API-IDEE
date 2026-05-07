@@ -7,6 +7,13 @@ import { getValue } from 'IDEE/i18n/language';
 import * as Dialog from 'IDEE/dialog';
 import Exception from 'IDEE/exception/exception';
 import Control from './Control';
+import { isBoolean } from '../../../../facade/js/util/Utils';
+
+/**
+ * @typedef {Object} module:IDEE/impl/control/Scale~Options
+ * @api
+ * @property {Boolean} [exactScale] Indica si se debe mostrar la escala exacta.
+ */
 
 /**
  * Formate un número pasado por parámetro.
@@ -30,15 +37,15 @@ export const formatLongNumber = (num) => {
  * @param {Number} map Mapa.
  * @api stable
  */
-const updateElement = (container, map) => {
-  const containerVariable = container;
+const updateElement = (container, map, exactScale) => {
   const view = map.getMapImpl().getView();
   const resolution = view.getResolution();
-  const dpi = IDEE.config.DPI;
-  const num = Utils.getScaleForResolution(resolution, view, dpi);
 
-  if (!isNullOrEmpty(num)) {
-    containerVariable.innerHTML = formatLongNumber(num);
+  const scale = Utils.getScaleForResolution(resolution, view, IDEE.config.DPI_OGC, exactScale);
+
+  if (!isNullOrEmpty(scale)) {
+    // eslint-disable-next-line no-param-reassign
+    container.innerHTML = formatLongNumber(scale);
   }
   const elem = document.querySelector('#m-level-number');
   if (elem !== null) {
@@ -48,23 +55,30 @@ const updateElement = (container, map) => {
 
 /**
  * @classdesc
- * Agregar escala numérica.
+ * Control de escala numérica. Hereda de {@link module:IDEE/impl/control/Control|Control}
+ * que a su vez hereda de {@link https://openlayers.org/en/latest/apidoc/module-ol_control_Control-Control.html|ol.control.Control}.
+ * Muestra la escala numérica del mapa en la esquina inferior izquierda.
+ *
+ * @property {Boolean} [exactScale=false] Indica si se debe mostrar la escala exacta del mapa.
+ * @property {HTMLElement} [scaleContainer_] Contenedor HTML del valor de escala.
+ * @property {HTMLElement} [zoomLevelContainer_] Contenedor HTML del nivel de zoom.
+ *
  * @api
+ * @extends {module:IDEE/impl/control/Control}
  */
 class Scale extends Control {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} options Opciones del control.
-   * - Order: Orden que tendrá con respecto al
-   * resto de plugins y controles por pantalla.
-   * - exactScale: Escala exacta.
+   * @param {module:IDEE/impl/control/Scale~Options} options Opciones del control.
    * @extends {ol.control.Control}
    * @api stable
    */
   constructor(options = {}) {
     super();
+    this.exactScale = isBoolean(options.exactScale) ? options.exactScale : false;
+
     this.facadeMap_ = null;
   }
 
@@ -157,9 +171,9 @@ class Scale extends Control {
             this.scaleContainer_.textContent = scaleText;
             const view = this.facadeMap_.getMapImpl().getView();
             const resolution = Utils.getCurrentScale(
-              this.facadeMap_.getMapImpl().getView(),
+              view,
               scaleText,
-              IDEE.config.DPI,
+              IDEE.config.DPI_OGC,
             );
             view.animate({
               center: view.getCenter(),
@@ -187,7 +201,7 @@ class Scale extends Control {
   renderCB(mapEvent) {
     const frameState = mapEvent.frameState;
     if (!isNullOrEmpty(frameState)) {
-      updateElement(this.scaleContainer_, this.facadeMap_);
+      updateElement(this.scaleContainer_, this.facadeMap_, this.exactScale);
     }
   }
 

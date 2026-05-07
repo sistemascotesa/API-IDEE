@@ -11,45 +11,27 @@
       "type": "simple",
       "name": "position",
       "position": 0,
-      "possibleValues": [
-        "TL",
-        "TR",
-        "BR",
-        "BL"
-      ]
-    },
-    {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 1
+      "possibleValues": ["left", "right"]
     },
     {
       "type": "boolean",
       "name": "collapsed",
+      "position": 1
+    },
+    {
+      "type": "number",
+      "name": "order",
       "position": 2
     },
     {
       "type": "simple",
-      "name": "ids",
+      "name": "tooltip",
       "position": 3
     },
     {
       "type": "simple",
-      "name": "titles",
+      "name": "options",
       "position": 4
-    }, {
-      "type": "simple",
-      "name": "previews",
-      "position": 5
-    },
-    {
-      "type": "simple",
-      "name": "bboxs",
-      "position": 6
-    }, {
-      "type": "simple",
-      "name": "zooms",
-      "position": 7
     }
   ]
   }],
@@ -75,7 +57,7 @@
     "name": "selectionzoom",
     "description": "Select geographic options to zoom",
     "text": "It shows different geographic options to zoom on the base layer.",
-    "version": "2.0.2",
+    "version": "1.1.0",
     "date": "3rd September 2019",
     "author": "CNIG",
     "org": "CNIG",

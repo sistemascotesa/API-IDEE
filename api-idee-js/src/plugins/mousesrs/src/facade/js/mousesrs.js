@@ -36,103 +36,11 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super();
-
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map_ = null;
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls_ = [];
-
-    /**
-     * Plugin tooltip
-     *
-     * @private
-     * @type {string}
-     */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
-
-    this.epsgFormat = options.epsgFormat === true;
-
-    /**
-     * Shown coordinates SRS
-     *
-     * @private
-     * @type {string}
-     */
-    this.srs_ = options.srs || 'EPSG:4326';
-
-    /**
-     * Label with SRS name
-     * @private
-     * @type {string}
-     */
-    this.label_ = options.label || 'WGS84';
-
-    /**
-     * Precision of coordinates
-     *
-     * @private
-     * @type {number}
-     */
-    this.precision_ = IDEE.utils.isNullOrEmpty(options.precision) ? 4 : options.precision;
-
-    /**
-     * Coordinates decimal digits for geographical projections
-     * @private
-     * @type {number}
-     */
-    this.geoDecimalDigits = options.geoDecimalDigits;
-
-    /**
-     * Coordinates decimal digits for UTM projections
-     * @private
-     * @type {number}
-     */
-    this.utmDecimalDigits = options.utmDecimalDigits;
-
-    /**
-     * Activate viewing z value
-     * @private
-     * @type {boolean}
-     */
-    this.activeZ = options.activeZ || false;
-
-    /**
-     * Draggable dialog
-     */
-    this.draggableDialog = options.draggableDialog === undefined ? true : options.draggableDialog;
-
-    /**
-     * URL to the help for the icon
-     * @private
-     * @type {string}
-     */
-    this.helpUrl = options.helpUrl;
-
-    /**
-     *@private
-     *@type { Number }
-     */
-    this.order = options.order >= -1 ? options.order : null;
-
-    /**
-     * Service to use for Z value
-     * Values: wcs, ogc
-     * @private
-     * @type {string}
-     */
-    this.mode = MODE_VALUES.includes(options.mode) ? options.mode : MODE_VALUES[0];
-
-    this.coveragePrecissions = options.coveragePrecissions || DEFAULT_COVERAGE_PRECISSIONS;
+    super('mousersrs', {
+      position: options.position ?? 'down',
+      tooltip: options.tooltip ?? getValue('tooltip'),
+      order: options.order,
+    });
 
     /**
      * Plugin parameters
@@ -140,6 +48,110 @@ export default class MouseSRS extends IDEE.Plugin {
      * @type {object}
      */
     this.options = options;
+
+    /**
+     * Position of the plugin
+     * @private
+     * @type {String}
+     * @default down
+     */
+    this.position = options.position || 'down';
+
+    /**
+     * Plugin tooltip
+     * @private
+     * @type {string}
+     * @default Coordenadas
+     */
+    this.tooltip = options.tooltip || getValue('tooltip');
+
+    /**
+     * Option to show the SRS of the selected EPSG
+     * @private
+     * @type {Boolean}
+     * @default false
+     */
+    this.epsgFormat = options.epsgFormat === true;
+
+    /**
+     * EPSG on which the coordinates are shown
+     * @private
+     * @type {string}
+     * @default EPSG:4326
+     */
+    this.srs = options.srs || 'EPSG:4326';
+
+    /**
+     * Label with SRS name
+     * @private
+     * @type {string}
+     * @default WGS84
+     */
+    this.label = options.label || 'WGS84';
+
+    /**
+     * Precision of coordinates. Only works if geoDecimalDigits and utmDecimalDigits are undefined
+     * @private
+     * @type {number}
+     * @default 4
+     */
+    this.precision = IDEE.utils.isNullOrEmpty(options.precision) ? 4 : options.precision;
+
+    /**
+     * Coordinates decimal digits for geographical projections
+     * @private
+     * @type {number}
+     * @default undefined
+     */
+    this.geoDecimalDigits = options.geoDecimalDigits;
+
+    /**
+     * Coordinates decimal digits for UTM projections
+     * @private
+     * @type {number}
+     * @default undefined
+     */
+    this.utmDecimalDigits = options.utmDecimalDigits;
+
+    /**
+     * Activate viewing z value
+     * @private
+     * @type {boolean}
+     * @default false
+     */
+    this.activeZ = options.activeZ || false;
+
+    /**
+     * Option that allows the EPSG selector modal to be draggable
+     * @private
+     * @type {boolean}
+     * @default false
+     */
+    this.draggableDialog = options.draggableDialog || false;
+
+    /**
+     * Help URL accessible via the help icon in the modal
+     * @private
+     * @type {string}
+     * @default undefined
+     */
+    this.helpUrl = options.helpUrl;
+
+    /**
+     * Service to use for Z value
+     * @private
+     * @type {string}
+     * @default wcs
+     */
+    this.mode = MODE_VALUES.includes(options.mode) ? options.mode : MODE_VALUES[0];
+
+    /**
+     * Object of coverage services with their min and max zooms
+     * @private
+     * @type {Object}
+     * @default DEFAULT_COVERAGE_PRECISSIONS
+     */
+    this.coveragePrecissions = options.coveragePrecissions || DEFAULT_COVERAGE_PRECISSIONS;
   }
 
   /**
@@ -166,30 +178,37 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.control_ = new MouseSRSControl(
-      this.srs_,
-      this.label_,
-      this.precision_,
-      this.geoDecimalDigits,
-      this.utmDecimalDigits,
-      this.tooltip_,
-      this.activeZ,
-      this.helpUrl,
-      this.mode,
-      this.coveragePrecissions,
-      this.order,
-      this.draggableDialog,
-      this.epsgFormat,
-    );
-    this.controls_.push(this.control_);
-    this.map_ = map;
-    this.panel_ = new IDEE.ui.Panel('panelMouseSRS', {
+    this.map = map;
+
+    this.control = new MouseSRSControl({
+      position: this.position,
+      order: this.order,
+      tooltip: this.tooltip,
+      srs: this.srs,
+      label: this.label,
+      precision: this.precision,
+      geoDecimalDigits: this.geoDecimalDigits,
+      utmDecimalDigits: this.utmDecimalDigits,
+      activeZ: this.activeZ,
+      helpUrl: this.helpUrl,
+      mode: this.mode,
+      coveragePrecissions: this.coveragePrecissions,
+      draggableDialog: this.draggableDialog,
+      epsgFormat: this.epsgFormat,
+    });
+
+    this.controls.push(this.control);
+
+    this.panel = new IDEE.ui.ControlPanel('panelMouseSRS', {
       collapsible: false,
-      tooltip: this.tooltip_,
+      tooltip: this.tooltip,
       className: 'm-plugin-mousesrs',
       order: this.order,
+      position: this.position,
     });
-    map.addControls(this.controls_);
+
+    this.control.setPanel(this.panel);
+    map.addControls(this.controls);
   }
 
   /**
@@ -200,63 +219,9 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map_.removeControls([this.control_]);
-    this.map_ = null;
-    this.control_ = null;
-    this.panel_ = null;
-  }
-
-  /**
-   * Name of the plugin
-   *
-   * @getter
-   * @function
-   */
-  get name() {
-    return 'mousesrs';
-  }
-
-  /**
-   * This function returns the position
-   *
-   * @public
-   * @return {string}
-   * @api
-   */
-  get position() {
-    return this.position_;
-  }
-
-  /**
-   * This function returns the label
-   *
-   * @public
-   * @function
-   * @api
-   */
-  get label() {
-    return this.label_;
-  }
-
-  /**
-   * This function returns the srs (Spatial Reference System)
-   *
-   * @public
-   * @function
-   * @api
-   */
-  get srs() {
-    return this.srs_;
-  }
-
-  /**
-   * Precision of coordinates
-   * @public
-   * @function
-   * @api
-   */
-  get precision() {
-    return this.precision_;
+    this.control.setPanel(null);
+    this.map.removeControls(this.controls);
+    this.map.removePanel(this.panel);
   }
 
   /**
@@ -267,23 +232,7 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    let cadena = `${this.name}=${this.tooltip_}*${this.srs_}*${this.label_}*${this.precision_}`;
-
-    if (this.geoDecimalDigits === undefined || this.geoDecimalDigits == null || this.geoDecimalDigits === '') {
-      cadena += '*';
-    } else {
-      cadena += `*${this.geoDecimalDigits}`;
-    }
-
-    if (this.utmDecimalDigits === undefined || this.utmDecimalDigits == null || this.utmDecimalDigits === '') {
-      cadena += '*';
-    } else {
-      cadena += `*${this.utmDecimalDigits}`;
-    }
-
-    cadena += `*${this.activeZ}*${this.helpUrl}*${this.draggableDialog}*${this.epsgFormat}`;
-
-    return cadena;
+    return `${this.name}=${this.position}*${this.order}*${this.tooltip}*${this.srs}*${this.label}*${this.precision}*${this.geoDecimalDigits}*${this.utmDecimalDigits}*${this.activeZ}*${this.helpUrl}*${this.draggableDialog}*${this.epsgFormat}*${this.mode}*${this.coveragePrecissions}`;
   }
 
   /**

@@ -1,40 +1,109 @@
 import ContactLink from 'facade/contactlink';
+// import ShareMap from 'facade/sharemap';
+
+window.IDEE.plugin.ContactLink = ContactLink;
+// window.IDEE.plugin.ShareMap = ShareMap;
 
 IDEE.language.setLang('es');
-//IDEE.language.setLang('en');
 
 const map = IDEE.map({
   container: 'mapjs',
-  // controls: ['layerswitcher'],
+  zoom: 5,
+  center: [-467062.8225, 4783459.6216],
 });
 window.map = map;
 
-const mp = new ContactLink({
-  position: 'BL', // TR, BR, TL, BL
-  collapsed: false,
-  collapsible: false, // false, 
-  descargascnig: 'http://centrodedescargas.cnig.es/CentroDescargas/index.jsp',
-  pnoa: 'https://www.ign.es/web/comparador_pnoa/index.html',
-  visualizador3d: 'https://visualizadores.ign.es/estereoscopico/',
-  fototeca: 'https://fototeca.cnig.es/',
-  twitter: 'https://twitter.com/IGNSpain', 
-  instagram: 'https://www.instagram.com/ignspain/',
-  facebook: 'https://www.facebook.com/IGNSpain/',
-  pinterest: 'https://www.pinterest.es/IGNSpain/',
-  youtube: 'https://www.youtube.com/user/IGNSpain',
-  mail: 'mailto:ign@fomento.es',
-  tooltip: 'Contacta con nosotros',
-  // order: 1, //
+let mp;
+
+const createPlugin = (options) => {
+  mp = new IDEE.plugin.ContactLink(options);
+  window.mp = mp;
+  map.addPlugin(mp);
+};
+
+const removePlugin = () => {
+  if (mp) map.removePlugins(mp);
+};
+
+const botonEliminar = document.getElementById('botonEliminar');
+botonEliminar.addEventListener('click', () => { removePlugin(); });
+
+const selectPosicion = document.getElementById('selectPosicion');
+const selectCollapsed = document.getElementById('selectCollapsed');
+const inputOrder = document.getElementById('inputOrder');
+const inputTooltip = document.getElementById('inputTooltip');
+const inputDescargascnig = document.getElementById('inputDescargascnig');
+const inputPnoa = document.getElementById('inputPnoa');
+const inputVisualizador3d = document.getElementById('inputVisualizador3d');
+const inputFototeca = document.getElementById('inputFototeca');
+const inputTwitter = document.getElementById('inputTwitter');
+const inputInstagram = document.getElementById('inputInstagram');
+const inputFacebook = document.getElementById('inputFacebook');
+const inputPinterest = document.getElementById('inputPinterest');
+const inputYoutube = document.getElementById('inputYoutube');
+const inputMail = document.getElementById('inputMail');
+const buttonApi = document.getElementById('buttonAPI');
+
+const updatePlugin = () => {
+  const options = {};
+  options.position = selectPosicion.options[selectPosicion.selectedIndex].value;
+  options.collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value === '' || selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true';
+  options.order = Number(inputOrder.value);
+  options.tooltip = inputTooltip.value;
+  options.descargascnig = inputDescargascnig.value;
+  options.pnoa = inputPnoa.value;
+  options.visualizador3d = inputVisualizador3d.value;
+  options.fototeca = inputFototeca.value;
+  options.twitter = inputTwitter.value;
+  options.instagram = inputInstagram.value;
+  options.facebook = inputFacebook.value;
+  options.pinterest = inputPinterest.value;
+  options.youtube = inputYoutube.value;
+  options.mail = 'mailto:' + inputMail.value;
+
+  removePlugin();
+  createPlugin(options);
+};
+
+[
+  selectPosicion,
+  selectCollapsed,
+  inputOrder,
+  inputTooltip,
+  inputDescargascnig,
+  inputPnoa,
+  inputVisualizador3d,
+  inputFototeca,
+  inputTwitter,
+  inputInstagram,
+  inputFacebook,
+  inputPinterest,
+  inputYoutube,
+  inputMail,
+].forEach((ctrl) => {
+  ctrl.addEventListener('change', updatePlugin);
 });
-window.mp = mp;
 
-/*/ PRUEBA con capa
-const mvt = new IDEE.layer.MVT({
-  url: 'https://herramienta-centralizada-sigc.desarrollo.guadaltel.es/geoserver/gwc/service/tms/1.0.0/Global:carloscastellano_rios____cc_20191104@EPSG%3A3857@pbf/{z}/{x}/{-y}.pbf',
-  name: 'vectortile',
-  projection: 'EPSG:3857',
+buttonApi.addEventListener('click', () => {
+  const posicion = selectPosicion.options[selectPosicion.selectedIndex].value;
+  const descargascnig = inputDescargascnig.value;
+  const pnoa = inputPnoa.value;
+  const visualizador3d = inputVisualizador3d.value;
+  const fototeca = inputFototeca.value;
+  const twitter = inputTwitter.value;
+  const instagram = inputInstagram.value;
+  const facebook = inputFacebook.value;
+  const pinterest = inputPinterest.value;
+  const youtube = inputYoutube.value;
+  const mail = inputMail.value;
+
+  window.location.href = `${window.location.href.substring(0, window.location.href.indexOf('api-idee'))}api-idee/?contactlink=${posicion}*${descargascnig}*${fototeca}*${visualizador3d}*${pnoa}*${twitter}*${instagram}*${pinterest}*${youtube}*${mail}`;
 });
-map.addLayers(mvt) // */
 
-map.addPlugin(mp);
+/* const mp2 = new IDEE.plugin.ShareMap({
+  baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + 'api-idee/',
+  position: 'TR',
+});
+map.addPlugin(mp2); */
 
+updatePlugin();

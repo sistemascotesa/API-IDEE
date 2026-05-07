@@ -1,83 +1,42 @@
-.m-api-idee-left-buttons,
-.m-api-idee-right-buttons {
-    position: absolute;
-    width: 48px;
-    height: 100%;
+.m-plugin-button,
+.m-control-button {
     z-index: 2;
-}
-
-.m-api-idee-left-buttons {
-    left: 0;
-    margin-left: 16px;
-}
-
-.m-api-idee-right-buttons {
-    right: 0;
-    margin-right: 16px;
-}
-
-.m-plugin-button {
     cursor: pointer;
     width: 40px;
     height: 40px;
     color: #fff;
-    background-color: #70a8d3;
+    background-color: var(--idee-color-primary);
     border: 2px solid #fff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0;
-    margin-top: 8px;
     transition: all 0.3s ease;
 }
 
-.m-plugin-button:hover {
-    background-color: #1470db;
+.m-plugin-button:hover,
+.m-control-button:hover {
+    background-color: var(--idee-color-links);
     border: 2px solid #fff;
     transition: all 0.3s ease;
 }
 
-.m-plugin-button.active {
+.m-plugin-button.active,
+.m-control-button.active {
     color: #fff;
-    background-color: #1d5a9e;
+    background-color: var(--idee-color-primary-dark);
     border: 2px solid #fff;
     transition: all 0.3s ease;
 }
 
-.m-plugin-button svg {
+.m-plugin-button svg,
+.m-control-button svg {
     width: 24px;
     height: 24px;
     transition: transform 0.3s ease;
 }
 
 .m-plugin-button.active svg {
-    transition: transform 0.3s ease;
-}
-
-.m-control-button {
-    width: 32px;
-    height: 32px;
-    padding: 4px;
-    color: #404040;
-    background-color: #e9ecef;
-    border: 2px solid #e9ecef;
-    margin-right: 8px;
-}
-
-.m-control-button:hover {
-    color: #1470db;
-    background-color: #e9ecef;
-}
-
-.m-control-button.active {
-    color: #1d5a9e;
-    border: 2px solid #1d5a9e;
-    transition: all 0.3s ease;
-}
-
-.m-control-button svg {
-    width: 20px;
-    height: 20px;
     transition: transform 0.3s ease;
 }

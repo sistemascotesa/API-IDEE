@@ -40,10 +40,8 @@
     <div>
         <label for="selectPosicion">Selector de posición del plugin</label>
         <select name="position" id="selectPosicion">
-            <option value="TL">Arriba Izquierda (TL)</option>
-            <option value="TR" selected="selected">Arriba Derecha (TR)</option>
-            <option value="BR">Abajo Derecha (BR)</option>
-            <option value="BL">Abajo Izquierda (BL)</option>
+            <option value="left" selected="selected">Izquierda (left)</option>
+            <option value="right">Derecha (left)</option>
         </select>
         <label for="typeTimeLine">Tipo TimeLine: </label>
         <select name="typeTimeLine" id="typeTimeLine">
@@ -103,11 +101,11 @@
         <label for="stepValue">Valor del step: </label>
         <input type="number" min="1" name="stepValue" id="stepValue">
 
-        <label for="sizeWidthDinamic">Tamaño plugin: </label>
+        <label for="sizeWidthDinamic">Tamaño plugin "sizeWidthDinamic"</label>
         <select name="sizeWidthDinamic" id="sizeWidthDinamic">
-            <option value="sizeWidthDinamic_medium">Mediano</option>
-            <option value="">Pequeño</option>
-            <option value="sizeWidthDinamic_big">Grande</option>
+            <option value="sizeWidthDinamic_medium">Mediano ("sizeWidthDinamic_medium")</option>
+            <option value="">Pequeño ("")</option>
+            <option value="sizeWidthDinamic_big">Grande ("sizeWidthDinamic_big")</option>
         </select>
 
         <label for="formatValueDinamic">Representación de los datos: </label>

@@ -67,7 +67,7 @@ const mp2 = new Attributions({
   scale: 10000,
 });
 const mp3 = new ShareMap({
-  baseUrl: 'https://componentes-desarrollo.idee.es/api-idee/',
+  baseUrl: 'https://api-ideedes.grupotecopy.es/api-idee/',
   position: 'BR',
 });
 const mp4 = new XYLocator({
@@ -80,7 +80,7 @@ const mp7 = new MouseSRS({
 const mp8 = new TOC();
 
 const mp9 = new BackImgLayer({
-  position: 'TR',
+  position: 'right',
   layerId: 0,
   layerVisibility: true,
   layerOpts: [{
@@ -163,7 +163,7 @@ const mp9 = new BackImgLayer({
 });
 
 const mp10 = new ViewHistory({
-  position: 'TL',
+  position: 'left',
 });
 
 mapjs.addPlugin(mp);

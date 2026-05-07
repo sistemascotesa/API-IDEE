@@ -5,8 +5,10 @@
 import 'assets/css/button';
 import buttonTemplate from 'templates/button';
 import * as Position from './position';
-import { isNullOrEmpty } from '../util/Utils';
+import { isNullOrEmpty, isNumber } from '../util/Utils';
 import { compileSync as compileTemplate } from '../util/Template';
+import * as Dialog from '../dialog';
+import Exception from '../exception/exception';
 import MObject from '../Object';
 
 /**
@@ -56,6 +58,14 @@ class Button extends MObject {
     }
 
     /**
+     * Determines the position of the tool when it is inside a map tool container
+     * @type {number}
+     * @api
+     * @expose
+     */
+    this.order = isNumber(options.order) ? options.order : 0;
+
+    /**
      * @private
      * @type {String}
      * @expose
@@ -85,7 +95,12 @@ class Button extends MObject {
     this.element.title = this.tooltip;
     this.element.role = 'button';
     this.element.ariaLabel = this.tooltip;
-    this.element.tabIndex = '300';
+    if (this.order) {
+      this.element.style.setProperty('order', this.order, 'important');
+      this.element.setAttribute('tabIndex', this.order);
+    } else {
+      this.element.setAttribute('tabIndex', '300');
+    }
 
     if (this.svgPath) {
       fetch(this.svgPath)
@@ -95,53 +110,102 @@ class Button extends MObject {
         });
     }
 
-    if (this.position === Position.LEFT) {
-      map.leftButtons.appendChild(this.element);
-    } else {
-      map.rightButtons.appendChild(this.element);
+    try {
+      switch (this.position) {
+        case Position.LEFT:
+          map.leftButtons.appendChild(this.element);
+          break;
+
+        case Position.RIGHT:
+          map.rightButtons.appendChild(this.element);
+          break;
+
+          /*
+      case Position.DOWN:
+        map.downPanel.appendChild(this.element);
+        break;
+
+      case Position.TL:
+        map.upPanelTopLeft.appendChild(this.element);
+        break;
+
+      case Position.TR:
+        map.upPanelTopRight.appendChild(this.element);
+        break;
+
+      case Position.BL:
+        map.upPanelBottomLeft.appendChild(this.element);
+        break;
+
+      case Position.BR:
+        map.upPanelBottomRight.appendChild(this.element);
+        break;
+      */
+
+        default:
+          Dialog.info(`Posición no soportada para el botón ${this.name}`);
+          break;
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn(err);
+      Exception(`El botón "${this.name}",no se ha podido colocar`);
     }
 
     this.element.addEventListener('click', (evt) => {
-      if (this.pressed) {
-        this.closePanel();
-      } else {
-        this.openPanel();
-      }
+      this.click.bind(this)(evt);
     });
   }
 
-  openPanel() {
-    this.map.buttons.filter((button) => button.position === this.position).forEach((button) => {
-      button.closePanel();
-    });
-
-    this.map.openPanel(this.position, this.panel.minWidth, this.panel.maxWidth);
-    if (this.position === Position.LEFT) {
-      if (!this.map.leftPanel.contains(this.panel.element)) {
-        this.map.leftPanel.appendChild(this.panel.element);
-      }
-    } else if (!this.map.rightPanel.contains(this.panel.element)) {
-      this.map.rightPanel.appendChild(this.panel.element);
+  /**
+   * This event is triggered when the user clicks on the button
+   *
+   * @param {PointerEvent} event
+   */
+  click(event) {
+    if (this.pressed) {
+      this.deactivate();
+    } else {
+      this.activate();
     }
+  }
 
-    this.panel.open();
+  /**
+   * Activate the button, changing its state to pressed and
+   * adding the 'active' class to its element.
+   */
+  activate() {
     this.pressed = true;
     this.element.classList.add('active');
+    if (this.panel) this.openPanel();
   }
 
-  closePanel() {
-    this.map.closePanel(this.position);
-    if (this.position === Position.LEFT) {
-      if (this.map.leftPanel.contains(this.panel.element)) {
-        this.map.leftPanel.removeChild(this.panel.element);
-      }
-    } else if (this.map.rightPanel.contains(this.panel.element)) {
-      this.map.rightPanel.removeChild(this.panel.element);
-    }
-
-    this.panel.collapse();
+  /**
+   * Deactivate the button, changing its state to not pressed and
+   * removing the 'active' class from its element.
+   */
+  deactivate() {
     this.pressed = false;
     this.element.classList.remove('active');
+    if (this.panel) this.closePanel();
+  }
+
+  /**
+   * Open one side panel associated with this button, if it exists, and activate the button.
+   */
+  openPanel() {
+    this.map.deactivateSidePanelButtons(this);
+    this.map.closeSidePanels(this.position);
+    this.map.openSidePanel(this.panel);
+    this.panel.open();
+  }
+
+  /**
+   * Close the panel associated with this button, if it is open, and deactivate the button.
+   */
+  closePanel() {
+    this.map.closeSidePanels(this.position);
+    this.panel.collapse();
   }
 
   equals(obj) {

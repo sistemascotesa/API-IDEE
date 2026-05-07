@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="idee" content="yes">
     <title>ViewManagement Production TEST</title>
-    <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <link href="https://api-ideedes.grupotecopy.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
     <link href="../dist/viewmanagement.ol.min.css" rel="stylesheet" />
     <style rel="stylesheet">
         html,
@@ -24,17 +24,16 @@
 <body>
     <div id="mapjs" class="container"></div>
     <script type="text/javascript"
-        src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
+        src="https://api-ideedes.grupotecopy.es/api-idee/js/apiidee.ol.min.js"></script>
     <script type="text/javascript"
-        src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>
+        src="https://api-ideedes.grupotecopy.es/api-idee/js/configuration.js"></script>
     <script type="text/javascript" src="../dist/viewmanagement.ol.min.js"></script>
     <script type="text/javascript">
         const map = IDEE.map({
             container: 'mapjs',
         });
         const mp = new IDEE.plugin.ViewManagement({
-            position: 'TR',
-            collapsible: true,
+            position: 'right',
             collapsed: true,
             predefinedZoom: [{
                 name: 'zoom 1',

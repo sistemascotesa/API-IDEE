@@ -48,9 +48,9 @@
         <label for="inputTooltip">Parámetro tooltip</label>
         <input type="text" id="inputTooltip" value="¡Copiado!" />
         <label for="selectURL">Parámetro baseUrl</label>
-        <input type="text" id="selectURL" list="urlSug" value="https://componentes-desarrollo.idee.es/api-idee/"/>
+        <input type="text" id="selectURL" list="urlSug" value="https://api-ideedes.grupotecopy.es/api-idee/"/>
         <datalist id="urlSug">
-            <option value="https://componentes-desarrollo.idee.es/api-idee/"></option>
+            <option value="https://api-ideedes.grupotecopy.es/api-idee/"></option>
             <option value="https://componentes.ign.es/api-idee/"></option>
         </datalist>
         <label for="selectMinimize">Selector minimize</label>

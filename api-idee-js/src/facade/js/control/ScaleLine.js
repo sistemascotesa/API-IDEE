@@ -10,55 +10,58 @@ import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
 import Exception from '../exception/exception';
 import { compileSync as compileTemplate } from '../util/Template';
 import { getValue } from '../i18n/language';
+import * as Position from '../ui/position';
+
+/**
+ * @typedef {Object} module:IDEE/control/ScaleLine~Options
+ * @api
+ * @property {String} [position] Posición del control en el mapa.
+ * @property {String} [tooltip] Texto del tooltip.
+ * @property {Number} [order] Accesibilidad, z-index.
+ * @property {Object} [vendorOptions] Opciones específicas para la implementación de OpenLayers.
+ */
 
 /**
  * @classdesc
  * Añadir escala gráfica.
- *
+ * @property {String} [position='down'] Posición del control.
+ * @property {String} [tooltip] Texto del tooltip. por defecto la tradcución
+ * @property {Number} [order=0] Accesibilidad, z-index.
  * @api
  * @extends {IDEE.Control}
+ *
+ * @note Para más opciones heredadas, ver {@link module:IDEE/control/Control~Options}.
  */
 class ScaleLine extends ControlBase {
   /**
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base, estas opciones
-   * se pasarán en formato objeto. Opciones disponibles:
-   * - className: Nombre de la clase CSS.
-   * El valor predeterminado es ol-scale-bar
-   * cuando se configura con bar: Verdadero. De lo contrario, el valor
-   * predeterminado es ol-scale-line.
-   * - minWidth: Ancho mínimo en píxeles en los dpi predeterminados de OGC.
-   * El ancho se ajustará para que coincida con los dpi utilizados.
-   * - render: Función llamada cuando se debe volver a
-   * representar el control.
-   * Esto se llama en una devolución de llamada de requestAnimationFrame.
-   * - target: Especifique un objetivo si desea que
-   * el control se represente fuera de la ventana gráfica del mapa.
-   * - units: Unidades.
-   * - bar: Representa barras de escala en lugar de una línea.
-   * - steps: Número de pasos que debe usar la barra de escala.
-   * Utilice números pares para obtener mejores resultados. Solo se aplica cuando
-   * la barra es verdadera.
-   * - text: Representa la escala de texto arriba de la barra de escala.
-   * Solo se aplica cuando la barra es verdadera.
-   * - dpi: dpi del dispositivo de salida, como una impresora.
-   * Solo se aplica cuando la barra es verdadera.
-   * Si no se define, se asumirá el tamaño de píxel de pantalla predeterminado de OGC de 0,28 mm.
+   * @param {module:IDEE/control/ScaleLine~Options} options Opciones del control.
+   * @example
+   * const control = new IDEE.control.ScaleLine({
+   *   position: 'down',
+   *   tooltip: 'Escala gráfica',
+   *   order: 1,
+   *   vendorOptions: {
+   *     bar: true,
+   *     steps: 4,
+   *   },
+   * });
    * @api
    */
-  constructor(vendorOptions = {}) {
+  constructor(options = {}) {
     if (isUndefined(ScaleLineImpl) || (isObject(ScaleLineImpl)
       && isNullOrEmpty(Object.keys(ScaleLineImpl)))) {
       Exception(getValue('exception').scaleline_method);
     }
 
     // implementation of this control
-    const impl = new ScaleLineImpl(vendorOptions);
+    const impl = new ScaleLineImpl(options.vendorOptions ?? {});
 
     // calls the super constructor
-    super(ScaleLine.NAME, impl);
+    super(ScaleLine.NAME, impl, options);
+    this.position = options.position ?? Position.DOWN;
   }
 
   /**

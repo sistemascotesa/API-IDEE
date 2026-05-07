@@ -1,10 +1,230 @@
-.m-rotate-container {
-    top: 20px;
-    left: 600px;
+#m-rotate-button {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  height: 36.8px;
+  width: 36.8px;
 }
 
-#m-rotate-button {
-    color: #337ceb;
-    border: 2px solid white;
-    border-radius: 20px;
+#m-rotate-button:hover {
+  background-color: var(--idee-color-links) !important;
+}
+
+.m-rotate-slider {
+  border-radius: 50%;
+  cursor: pointer;
+  position: absolute;
+}
+
+.m-control-panel.m-rotate.opened.no-collapsible>div.m-controls-panel {
+  background-color: transparent;
+  box-shadow: none;
+  border-radius: 50%;
+}
+
+div.m-control.m-rotate-container {
+  overflow: visible !important;
+}
+
+.m-panel.m-rotate.opened {
+  background-color: var(--idee-color-primary-dark) !important;
+}
+
+.m-panel.m-rotate.opened div.m-control.m-rotate-container button[class^=g-cartografia-] {
+  color: var(--idee-color-primary);
+  background-color: var(--idee-color-primary-dark) !important;
+  opacity: 1;
+}
+
+.m-rotate-compass {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.m-rotate-background-exterior {
+  fill: var(--idee-color-primary);
+}
+
+.m-rotate-exterior-svg.g-cartografia-exterior-1:before {
+  color: #fff;
+  font-size: 100px;
+}
+
+.m-rotate-giroscopio-svg.g-cartografia-giroscopio:before {
+  font-size: 40px;
+  background-color: white;
+  border-radius: 40px;
+  color: var(--idee-color-primary);
+}
+
+.m-rotate-help-button {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  background-color: var(--idee-color-primary);
+  color: white;
+  font-weight: bold;
+  border: 2px solid white;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  text-align: center;
+  font-family: 'Muli', 'sans-serif';
+  font-size: 18px;
+}
+
+#m-rotate-slider-container {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: #fff !important;
+  opacity: 1;
+  background-color: var(--idee-color-primary) !important;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+}
+
+#m-rotate-marker {
+  position: absolute;
+  top: -8%;
+  left: -8%;
+  width: 115%;
+  height: 115%;
+}
+
+#m-rotate-marker-circle {
+  pointer-events: none;
+  stroke: var(--idee-color-primary-dark);
+  fill: #fff;
+  cursor: pointer;
+}
+
+.m-rotate-help-button:hover {
+  background-color: var(--idee-color-primary);
+}
+
+.m-rotate-rotation-maker {
+  position: absolute;
+  width: 99px;
+  height: 99px;
+  fill: var(--idee-color-primary);
+  display: none;
+}
+
+.m-rotate-help-container {
+  position: absolute;
+  width: 260px;
+  /* height: 50px; */
+  background: rgba(255, 255, 255, 0.9);
+  opacity: 0.7;
+  top: 50%;
+  left: calc(100% + 8px);
+  transform: translateY(-12%);
+  display: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  padding: 16px;
+  color: #000;
+}
+
+@media(max-width: 465px) {
+  .m-rotate-help-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.m-rotate-help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.m-rotate-help-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.m-rotate-help-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+button.m-rotate-help-close.g-cartografia-cancelar:before {
+  color: #000;
+}
+
+.m-rotate-exterior-svg.g-cartografia-exterior:before {
+  color: #fff;
+  font-size: 120px;
+}
+
+.m-rotate-help-option {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.m-rotate-help-option .m-rotate-dot {
+  width: 43px;
+}
+
+.m-rotate-help-option p {
+  font-size: 13px;
+}
+
+.m-rotate-help-ctrl {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.m-rotate-help-ctrl .m-rotate-key {
+  color: #524F4F;
+  background: white;
+  font-weight: bold;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  border: 1px solid #524F4F;
+}
+
+.m-rotate-help-ctrl p {
+  font-size: 13px;
+  margin: 0;
+}
+
+#m-rotate-help-not-show-btn {
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.m-rotate-help-not-show-span {
+  display: block;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: Inter, sans-serif;
+  font-weight: 400;
+  color: var(--idee-color-primary);
+  font-size: 13px;
+  line-height: normal;
 }

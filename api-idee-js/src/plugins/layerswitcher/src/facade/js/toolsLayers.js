@@ -72,7 +72,7 @@ const changeLayerLegend = (layer, target) => {
 
 export const showModalChangeName = (layer, target, order) => {
   if (target.className.indexOf('m-layerswitcher-title-box') > -1
-  || target.className.indexOf('m-layerswitcher-sectionPanel-header-text') > -1) {
+  || target.className.indexOf('m-layerswitcher-layergroup-name') > -1) {
     const changeName = IDEE.template.compileSync(changeNameTemplate, {
       jsonp: true,
       parseToHtml: false,

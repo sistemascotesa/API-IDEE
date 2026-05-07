@@ -49,6 +49,7 @@ import {
 import GetCapabilities from './util/WMSCapabilities';
 import FormatWMS from './format/WMS';
 import CesiumFormatWMTSCapabilities from './format/CesiumWMTSCapabilities';
+import * as MapImplType from '../../common/mapImplType';
 
 /**
  * @classdesc
@@ -106,7 +107,7 @@ class Map extends MObject {
    * @param {object} viewVendorOptions Parámetros para la vista del mapa de la librería base.
    * @api
    */
-  constructor(div, facadeMap, options = {}, viewVendorOptions = {}) {
+  constructor(div, facadeMap, dpi, options = {}, viewVendorOptions = {}) {
     buildModuleUrl.setBaseUrl(`${IDEE.config.API_IDEE_URL}/cesium/`);
     Ion.defaultAccessToken = '';
 
@@ -260,6 +261,7 @@ class Map extends MObject {
       homeButton: false,
       selectionIndicator: false,
       skyBox: false,
+      shouldAnimate: false,
       ...viewVendorOptions,
       baseLayerPicker: false,
       geocoder: false,
@@ -269,7 +271,6 @@ class Map extends MObject {
       navigationHelpButton: false,
       navigationInstructionsInitiallyVisible: false,
       scene3DOnly: false,
-      shouldAnimate: false,
       baseLayer: false,
       mapProjection,
     });
@@ -2696,6 +2697,18 @@ class Map extends MObject {
         layer.isBase = false;
       }
     });
+  }
+
+  /**
+   * Función que obtiene el nombre de la implementación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @return {MapImplType.Cesium} Devuelve el nombre de la implementación.
+   */
+  getImplementation() {
+    return MapImplType.Cesium;
   }
 }
 

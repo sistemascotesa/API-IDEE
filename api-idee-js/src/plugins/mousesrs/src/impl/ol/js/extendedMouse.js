@@ -132,13 +132,25 @@ class Mouse extends ol.control.MousePosition {
   }
 
   updateOGCApiCoverage(map) {
-    map.removeLayers(map.getLayers().find((l) => l.name === COVERAGE_NAME));
+    const layers = map.getLayers();
+    const oldLayer = layers ? layers.find((l) => l.name === COVERAGE_NAME) : null;
+    if (oldLayer) {
+      map.removeLayers([oldLayer]);
+    }
+
+    const urlCoverage = this.getUrlCoverageByZoom(map.getZoom());
+
+    // Si la URL es vacía (zoom fuera de rango), Se aborta.
+    if (!urlCoverage || urlCoverage === '') {
+      return;
+    }
+
     let bbox = map.getBbox();
     bbox = this.transformExtent(bbox, map.getProjection().code, 'EPSG:4326');
-    bbox = `${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}`;
-    const urlCoverage = this.getUrlCoverageByZoom(map.getZoom());
+    const bboxStr = `${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}`;
+
     const coverage = new IDEE.layer.GeoTIFF({
-      blob: `${urlCoverage}?f=COG&lang=es&bbox-crs=4326&bbox=${bbox}`,
+      blob: `${urlCoverage}?f=COG&lang=es&bbox-crs=4326&bbox=${bboxStr}`,
       name: COVERAGE_NAME,
       legend: COVERAGE_NAME,
       normalize: false,
@@ -146,26 +158,29 @@ class Mouse extends ol.control.MousePosition {
     }, {
       convertToRGB: false,
       bands: [1],
-      opacity: 0.1,
+      opacity: 0, // Invisible pero consultable
     });
-    coverage.setOpacity(0);
+
     coverage.setZIndex(-9999);
     map.addLayers(coverage);
   }
 
   getUrlCoverageByZoom(mapZoom) {
+    // Redondear el zoom para evitar huecos
+    const zoom = Math.round(mapZoom);
+
+    if (!this.coveragePrecissions || !Array.isArray(this.coveragePrecissions)) {
+      return '';
+    }
+
     const coverage = this.coveragePrecissions.find((o) => {
-      if (o.minzoom && o.maxzoom) {
-        return mapZoom >= o.minzoom && mapZoom <= o.maxzoom;
-      }
-      if (o.minzoom && !o.maxzoom) {
-        return mapZoom >= o.minzoom;
-      }
-      if (!o.minzoom && o.maxzoom) {
-        return mapZoom <= o.maxzoom;
-      }
-      return false;
+      // Definir límites seguros
+      const min = (o.minzoom !== undefined && o.minzoom !== null) ? o.minzoom : 0;
+      const max = (o.maxzoom !== undefined && o.maxzoom !== null) ? o.maxzoom : 99;
+
+      return zoom >= min && zoom <= max;
     });
+
     return coverage ? coverage.url : '';
   }
 
@@ -246,7 +261,7 @@ class Mouse extends ol.control.MousePosition {
         html = `${this.coordinateFormat(coordinate)}`.replace('.', ',').replace('.', ',').replace(', ', '&nbsp;&nbsp;&nbsp;');
         if (this.activeZ) {
           const value = this.mode_ === 'wcs' ? this.getZByWCS(pixel) : this.getZByTiff(pixel);
-          if (!Number.isNaN(value)) {
+          if (!Number.isNaN(value) && value > 0) {
             html += `&nbsp;&nbsp;&nbsp;${value}`;
           }
         }
@@ -262,6 +277,10 @@ class Mouse extends ol.control.MousePosition {
   }
 
   getZByWCS(pixel) {
+    if (!this.facadeMap_ || !this.wcsloadermanager) {
+      return 0;
+    }
+
     const orgCoord = this.getMap().getCoordinateFromPixel(pixel);
     const tCoord = ol.proj.transform(orgCoord, this.facadeMap_.getProjection().code, 'EPSG:4326');
     const value = Math.round(this.wcsloadermanager.getValue(tCoord, 'EPSG:4326'));
@@ -269,10 +288,28 @@ class Mouse extends ol.control.MousePosition {
   }
 
   getZByTiff(pixel) {
-    const coverage = this.facadeMap_.getLayers()
-      .find((l) => l.name === COVERAGE_NAME).getImpl().getLayer();
-    const value = coverage ? coverage.getData(pixel) : 0;
-    return value ? Math.round(value[0]) : 0;
+    try {
+      if (!this.facadeMap_) return 0;
+
+      const layers = this.facadeMap_.getLayers();
+      const coverageLayer = layers ? layers.find((l) => l.name === COVERAGE_NAME) : null;
+
+      if (!coverageLayer) return 0;
+
+      // Implementación de la capa
+      const layerImpl = coverageLayer.getImpl().getLayer();
+
+      const value = layerImpl ? layerImpl.getData(pixel) : null;
+
+      if (!value || !Array.isArray(value)) {
+        return 0;
+      }
+
+      return Math.round(value[0]);
+    } catch (err) {
+      // Bloqueo silencioso
+      return 0;
+    }
   }
 }
 

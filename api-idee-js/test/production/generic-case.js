@@ -12,7 +12,7 @@ window.putMapOnWindowScope = function putMapOnWindowScope(mapInstance) {
 };
 
 // gets parameters to use the API
-const API_IDEE_URL = 'https://componentes-desarrollo.idee.es/api-idee/';
+const API_IDEE_URL = 'https://api-ideedes.grupotecopy.es/api-idee/';
 const useCaseUrl = `${API_IDEE_URL}api/js${window.location.search}&callback=putMapOnWindowScope`;
 
 // creates the <script> element pointing the use case URL

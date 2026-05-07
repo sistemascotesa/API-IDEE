@@ -26,6 +26,7 @@ export default class BackImgLayer extends IDEE.Plugin {
     super('backimglayer', {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
     });
 
     /**
@@ -98,14 +99,6 @@ export default class BackImgLayer extends IDEE.Plugin {
      * @private
      * @type {string}
      *
-     * Indicates if the plugin can be collapsed into a button (true/false).
-     */
-    this.collapsible = options.collapsible !== undefined ? options.collapsible : true;
-
-    /**
-     * @private
-     * @type {string}
-     *
      * Empty Layer
      */
     this.empty = options.empty !== undefined ? options.empty : false;
@@ -113,10 +106,16 @@ export default class BackImgLayer extends IDEE.Plugin {
     /**
      * @private
      * @type {string}
-     *
-     * Number of columns that parameterize the table of services shown.
-     */
-    this.columnsNumber = options.columnsNumber != null ? options.columnsNumber : 2;
+    *
+    * Number of columns that parameterize the table of services shown.
+    */
+    this.columnsNumber = 1;
+
+    const columnsNumber = options.columnsNumber;
+    if (columnsNumber !== '' && columnsNumber !== null) {
+      const numbCols = Number(columnsNumber);
+      if (!Number.isNaN(numbCols) && columnsNumber > 0) this.columnsNumber = numbCols;
+    }
 
     /**
      * Metadata from api.json
@@ -124,12 +123,6 @@ export default class BackImgLayer extends IDEE.Plugin {
      * @type {Object}
      */
     this.metadata_ = api.metadata;
-
-    /**
-     *@private
-     *@type { Number }
-     */
-    this.order = options.order >= -1 ? options.order : null;
 
     this.visible = options.visible !== undefined ? options.visible : true;
   }
@@ -163,7 +156,8 @@ export default class BackImgLayer extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_fondo.svg',
+      order: this.order,
     });
     map.addButtons(this.button);
 
@@ -173,12 +167,10 @@ export default class BackImgLayer extends IDEE.Plugin {
       minWidth: this.minPanelWidth,
       maxWidth: this.maxPanelWidth,
       className: 'm-plugin-backimglayer',
-      collapsible: this.collapsible,
       collapsed: this.collapsed,
       collapsedButtonClass: 'backimglyr-simbolo-cuadros',
       order: this.order,
     });
-    map.addPanels(this.panel);
 
     this.controls.push(new BackImgLayerControl({
       map,
@@ -191,6 +183,7 @@ export default class BackImgLayer extends IDEE.Plugin {
       previews: this.previews,
       layers: this.layers,
       empty: this.empty,
+      columnsNumber: this.columnsNumber,
       order: this.order,
     }));
     this.controls[0].on('backimglayer:activeChanges', (data) => {
@@ -200,6 +193,8 @@ export default class BackImgLayer extends IDEE.Plugin {
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
+
+    map.addPanels(this.panel);
   }
 
   /**
@@ -213,7 +208,7 @@ export default class BackImgLayer extends IDEE.Plugin {
     const layers = this.layerOpts === undefined
       ? `${this.ids}*!${this.titles}*!${this.previews}*!${this.layers}`
       : this.turnLayerOptsIntoUrl();
-    return `${this.name}=${this.position}*!${this.collapsed}*!${this.collapsible}*!${this.tooltip}*!${this.layerVisibility}*!${this.layerId}*!${this.columnsNumber}*!${this.empty}*!${layers}`;
+    return `${this.name}=${this.position}*!${this.collapsed}*!${this.order}*!${this.tooltip}*!${this.layerVisibility}*!${this.layerId}*!${this.columnsNumber}*!${this.empty}*!${layers}`;
   }
 
   /**

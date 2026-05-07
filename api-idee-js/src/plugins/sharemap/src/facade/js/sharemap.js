@@ -41,7 +41,7 @@ import en from './i18n/en';
  * @example
  *
  * {
- * 'baseUrl': 'https://componentes-desarrollo.idee.es/api-idee/'
+ * 'baseUrl': 'https://api-ideedes.grupotecopy.es/api-idee/'
  * 'position': 'BL',
  * 'title': 'Compartir Mapa',
  * 'btn': 'Aceptar',
@@ -60,7 +60,7 @@ import en from './i18n/en';
  * @example
  *
  * {
- * 'baseUrl': 'https://componentes-desarrollo.idee.es/api-idee/'
+ * 'baseUrl': 'https://api-ideedes.grupotecopy.es/api-idee/'
  * }
  */
 
@@ -280,6 +280,7 @@ export default class ShareMap extends IDEE.Plugin {
 
     this.panel_ = new IDEE.ui.Panel('ShareMap', {
       collapsible: false,
+      collapsed: this.options.collapsed,
       position: IDEE.ui.position[this.position],
       className: 'm-plugin-sharemap',
       tooltip: getValue('tooltipPanel'),

@@ -4,11 +4,17 @@
 import Base from './Base';
 import Button from './ui/Button';
 import Panel from './ui/Panel';
-
-import { isArray, isNullOrEmpty } from './util/Utils';
+import {
+  isArray,
+  isBoolean,
+  isNullOrEmpty,
+  isNumber,
+  isString,
+} from './util/Utils';
 import Control from './control/Control';
 import Tool from './tool/Tool';
 import Exception from './exception/exception';
+import * as Position from './ui/position';
 
 /**
  * @classdesc
@@ -20,10 +26,49 @@ class Plugin extends Base {
   constructor(name, options = {}) {
     super(options);
 
+    /**
+     * Name of this plugin
+     * @type {string}
+     */
     this.name = name;
-    this.tooltip = options.tooltip || '';
-    this.position = options.position || 'right';
-    this.svgPath = options.svgPath || null;
+
+    /**
+     * Tooltip
+     * @type {string}
+     */
+    this.tooltip = isString(options.tooltip) ? options.tooltip : '';
+
+    /**
+     * Position on one of map container tools, default 'right'
+     * @type {Position}
+     */
+    this.position = Position.isValid(options.position) ? options.position : Position.RIGHT;
+
+    /**
+     * Determines if the plugin is collapsible
+     *
+     * @type {boolean}
+     */
+    this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
+
+    /**
+     * Determines if the plugin is initially collapsed
+     *
+     * @type {boolean}
+     */
+    this.collapsed = isBoolean(options.collapsed) ? options.collapsed : true;
+
+    /**
+     * Determines the position of the tool when it is inside a map tool container
+     * @type {number}
+     */
+    this.order = isNumber(options.order) ? options.order : 0;
+
+    /**
+     * Url of plugin svg icon, usually load this library {@link https://github.com/Desarrollos-IDEE/icons_cota?tab=readme-ov-file | ICONS_COTA}
+     * @type {string}
+     */
+    this.svgPath = IDEE.utils.isString(options.svgPath) ? options.svgPath : null;
     this.minPanelWidth = 256;
     this.maxPanelWidth = 360;
 
@@ -39,7 +84,7 @@ class Plugin extends Base {
    *
    * @public
    * @function
-   * @param {Object} map Añade el plugin al mapa.
+   * @param {IDEE.Map} map Añade el plugin al mapa.
    * @api
    */
   addTo(map) {
@@ -49,6 +94,7 @@ class Plugin extends Base {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: this.svgPath,
+      order: this.order,
     });
     map.addButtons(this.button);
 
@@ -57,11 +103,14 @@ class Plugin extends Base {
       position: this.position,
       minWidth: this.minPanelWidth,
       maxWidth: this.maxPanelWidth,
+      collapsible: this.collapsible,
+      collapsed: this.collapsed,
     });
-    map.addPanels(this.panel);
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
+    map.addPanels(this.panel);
+    map.addControls(this.controls);
   }
 
   /**
@@ -95,21 +144,25 @@ class Plugin extends Base {
           panel.addControls(control);
           this.addPanels(panel);
         } else if (!isNullOrEmpty(control)) {
-          control.addTo(this);
+          control.parentPlugin = this;
           this.controls.push(control);
         }
       });
-      // this.getImpl().addControls(controls);
+      if (!isNullOrEmpty(this.map)) {
+        this.map.addControls(this.controls);
+      }
     }
     return this;
   }
 
+  /**
+   * @param {Control} control
+   */
   addControlToPlugin(control) {
-    if (isNullOrEmpty(this.panel.panelContent)) {
-      this.panel.createContentPanel();
-    }
-
-    this.panel.panelContent.appendChild(control.element);
+    if (isNullOrEmpty(this.panel.panelContent)) this.panel.createContentPanel();
+    const panel = control.getPanel();
+    const panelContainer = isNullOrEmpty(panel) ? null : panel.getControlsContainer();
+    this.panel.panelContent.appendChild(panelContainer ?? control.getElement());
   }
 
   addTool(toolsParamVar) {
@@ -147,7 +200,6 @@ class Plugin extends Base {
     if (isNullOrEmpty(this.panel.panelContent)) {
       this.panel.createContentPanel();
       this.createToolsPanel();
-      this.createToolPanel();
     }
 
     const ulElement = this.panel.panelContent.querySelector(`#plugin-panel-tools-${this.name}`);
@@ -155,18 +207,10 @@ class Plugin extends Base {
   }
 
   createToolsPanel() {
-    const toolsPanel = document.createElement('ul');
-    toolsPanel.classList.add('m-api-idee-tabs-container');
-    toolsPanel.id = `plugin-panel-tools-${this.name}`;
-    this.panel.panelContent.appendChild(toolsPanel);
-    return toolsPanel;
-  }
-
-  createToolPanel() {
-    const toolPanel = document.createElement('div');
-    toolPanel.id = `plugin-panel-tool-${this.name}`;
-    this.panel.panelContent.appendChild(toolPanel);
-    return toolPanel;
+    this.toolsPanel = document.createElement('ul');
+    this.toolsPanel.classList.add('m-api-idee-tabs-container');
+    this.toolsPanel.id = `plugin-panel-tools-${this.name}`;
+    this.panel.panelContent.appendChild(this.toolsPanel);
   }
 
   /**

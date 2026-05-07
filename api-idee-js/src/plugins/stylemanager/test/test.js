@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import StyleManager from 'facade/stylemanager';
 
+IDEE.language.setLang('es');
 // IDEE.language.setLang('en');
 
 const map = IDEE.map({
@@ -458,9 +459,7 @@ const generic = new IDEE.layer.GeoJSON({
     }],
   },
 });
-map.addLayers([points, lines, polygons, generic]);
-window.points = points; window.lines = lines;
-window.polygons = polygons; window.generic = generic;
+
 // */
 
 /* / Estilo de lines
@@ -553,13 +552,75 @@ const layerMunicipio = new IDEE.layer.WFS({
 });
 map.addLayers([layerMunicipio]); window.layerMunicipio = layerMunicipio; // */
 
-const mp = new StyleManager({
-  position: 'TL', // 'TL' | 'TR' | 'BR' | 'BL'
-  collapsible: true,
-  collapsed: true,
-  // tooltip: 'TEST TOOLTIP StyleManager',
+map.addLayers([points, lines, polygons, generic]);
+window.points = points;
+window.lines = lines;
+window.polygons = polygons;
+window.generic = generic;
 
-  // Seleccion de la capa default que ya estará seleccionada en el inicio.
-  // layer: wfs2, // Capas presentes en este test.js points | lines | polygons | generic | wfs1 | wfs2 | wfs3 | layerMunicipio
-});
-map.addPlugin(mp); window.mp = mp;
+map.addPlugin(new IDEE.plugin.Layerswitcher({ position: 'left' }));
+
+let mp = null;
+
+const selectPosicion = document.getElementById('selectPosicion');
+const inputOrder = document.getElementById('inputOrder');
+const inputTooltip = document.getElementById('inputTooltip');
+const selectCollapsed = document.getElementById('selectCollapsed');
+const selectLayer = document.getElementById("selectLayer");
+
+function create(propiedades) {
+  mp = new StyleManager(propiedades);
+  map.addPlugin(mp);
+}
+
+function remove() {
+  if (mp) map.removePlugin(mp);
+  mp = null;
+}
+
+function getLayer(name) {
+  if (name === 'points') {
+      return points;
+  } else if (name === 'lines') {
+      return lines;
+  } else if (name === 'polygons') {
+      return polygons;
+  } else if (name === 'generic') {
+      return generic;
+  } else {
+      return null;
+  }
+}
+
+function changeTest() {
+  remove();
+  const options = {};
+
+  const selectPosition = selectPosicion.options[selectPosicion.selectedIndex].value;
+  if (selectPosition !== '') options.position = selectPosition;
+
+  if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
+
+  if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
+
+  const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
+  if (collapsed !== '') options.collapsed = (collapsed === 'true');
+
+  // options.layer = wfs2 // Capas presentes en este test.js points | lines | polygons | generic | wfs1 | wfs2 | wfs3 | layerMunicipio
+  options.layer = getLayer(selectLayer.options[selectLayer.selectedIndex].value);
+
+  create(options);
+}
+
+[
+  selectPosicion,
+  inputOrder,
+  inputTooltip,
+  selectCollapsed,
+  selectLayer,
+].forEach((elm) => { elm.addEventListener('change', changeTest); });
+
+const removeButton = document.getElementById('removeButton');
+removeButton.addEventListener('click', () => { remove(); });
+
+changeTest();

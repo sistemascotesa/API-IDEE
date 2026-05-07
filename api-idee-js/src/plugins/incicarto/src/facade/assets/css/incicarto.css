@@ -1,43 +1,48 @@
 /*********
 * MÉTODOS *
 ***********/
-.m-incicarto-hide-methods {
-    width: fit-content;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding-bottom: 16px;
-    height: 24px;
-    font-size: 12px;
-    font-weight: 400;
-    cursor: pointer;
-    transition: all 0.3s ease;
+#plugin-panel-content-incicarto .m-incicarto-hide-methods {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: .5rem 0;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.m-incicarto-hide-methods:hover * {
-    background-color: #e9ecefFF;
+#plugin-panel-content-incicarto .m-incicarto-hide-methods:hover * {
+  color: var(--idee-color-links);
 }
 
-.m-incicarto-hide-methods span {
+#plugin-panel-content-incicarto button.secondary {
+  aspect-ratio: 1;
+}
+
+#plugin-panel-content-incicarto .m-incicarto-hide-methods span {
   order: 2;
 }
 
-.m-incicarto-hide-methods svg {
+#plugin-panel-content-incicarto .m-incicarto-hide-methods svg {
   width: 17px;
   height: 17px;
+  transition: all 0.3s ease;
 }
 
-.m-plugin-incicarto-html-title {
+#plugin-panel-content-incicarto .m-plugin-incicarto-html-title {
   padding-bottom: 16px;
   font-size: 14px;
   font-weight: 400;
 }
 
-.m-plugin-incicarto-html-method {
+#plugin-panel-content-incicarto .m-plugin-incicarto-html-method {
   width: 100%;
 }
 
-.m-plugin-incicarto-html-method ol {
+#plugin-panel-content-incicarto .m-plugin-incicarto-html-method ol {
   margin: 0;
   padding-left: 1em;
   font-size: 12px;
@@ -45,56 +50,41 @@
   color: #343A40;
 }
 
-.m-plugin-incicarto-html-method ol li {
+#plugin-panel-content-incicarto .m-plugin-incicarto-html-method ol li {
   margin-bottom: 8px;
 }
 
-.m-plugin-incicarto-html-method ol li::marker {
+#plugin-panel-content-incicarto .m-plugin-incicarto-html-method ol li::marker {
   margin-right: 8px;
 }
 
-.m-plugin-separator {
+#plugin-panel-content-incicarto .m-plugin-separator {
   display: inline-block;
 }
 
-.m-plugin-separator::after {
+#plugin-panel-content-incicarto .m-plugin-separator::after {
   content: "";
   display: block;
   border-bottom: 1px solid #CED4DA;
   margin: 16px 0;
 }
 
-.m-incicarto-method-types {
+#plugin-panel-content-incicarto .m-incicarto-method-types {
   display: flex;
   justify-content: center;
   gap: 16px;
   padding: 16px;
 }
 
-.m-incicarto-method-types button {
-  border: none;
-  color: #1D5A9E;
-  width: 32px;
-}
-
-.m-incicarto-method-types button svg {
+#plugin-panel-content-incicarto .m-incicarto-method-types button svg {
   width: 100%;
   height: 100%;
 }
 
-.m-incicarto-method-types button:nth-of-type(2n) {
-  background-color: #f1f3f5FF;
-}
-
-.m-incicarto-method-types button:nth-of-type(2n+1) {
-  background-color: #e9ecefFF;
-}
-
-
 /*************
 * INCIDENCIA *
 **************/
-.incicarto-list {
+#plugin-panel-content-incicarto .incicarto-list {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -102,7 +92,7 @@
   list-style-type: none;
 }
 
-.m-incicarto-layer {
+#plugin-panel-content-incicarto .m-incicarto-layer {
   width: 100%;
   box-sizing: border-box;
   display: flex;
@@ -114,8 +104,8 @@
   gap: 16px;
 }
 
-.m-incicarto-layer-legend,
-.m-incicarto-layer-actions {
+#plugin-panel-content-incicarto .m-incicarto-layer-legend,
+#plugin-panel-content-incicarto .m-incicarto-layer-actions {
   display: flex;
   justify-content: flex-start;
   gap: 16px;
@@ -123,47 +113,54 @@
   width: 100%;
 }
 
-.m-incicarto-layer-legend .m-incicarto-layer-type {
-  color: #1D5A9E;
+#plugin-panel-content-incicarto .m-incicarto-layer-actions {
+  justify-content: center;
 }
 
-.m-incicarto-layer-actions span {
-  color: #495057;
+#plugin-panel-content-incicarto .m-incicarto-layer-legend .m-incicarto-layer-type {
+  color: var(--idee-color-primary-dark);
+}
+
+#plugin-panel-content-incicarto .m-incicarto-layer-actions span {
+  color: var(--idee-color-neutral-50);
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.m-incicarto-layer-legend .m-incicarto-layer-type,
-.m-incicarto-layer-actions span {
+#plugin-panel-content-incicarto .m-incicarto-layer-legend .m-incicarto-layer-type,
+#plugin-panel-content-incicarto .m-incicarto-layer-actions span {
   width: 24px;
   height: 24px;
   transition: all 0.3s ease;
 }
 
-.m-incicarto-layer-actions span:hover {
-  background-color: #e9ecefFF;
+#plugin-panel-content-incicarto .m-incicarto-layer-actions span:hover {
+  color: var(--idee-color-links);
 }
 
-.m-incicarto-layer-legend .m-incicarto-layer-type > svg,
-.m-incicarto-layer-actions span > svg {
+#plugin-panel-content-incicarto .m-incicarto-layer-legend .m-incicarto-layer-type>svg,
+#plugin-panel-content-incicarto .m-incicarto-layer-actions span>svg {
   width: 100%;
   height: 100%;
   pointer-events: none;
 }
 
-.m-incicarto-layer-actions-container {
+#plugin-panel-content-incicarto .m-incicarto-layer-actions-container {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   width: 100%;
 }
 
-.m-incicarto-layer-actions-container .m-drawingtools-content {
+#plugin-panel-content-incicarto .m-incicarto-layer-actions-container .m-drawingtools-content {
+  padding: 0 .2rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
   width: 100%;
 }
 
-.m-drawingtools-content .collapsor {
+#plugin-panel-content-incicarto .m-drawingtools-content .collapsor {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -173,27 +170,27 @@
   font-weight: 12px;
   color: #364B5F;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
-.m-drawingtools-content .collapsor:hover * {
-  background-color: #e9ecefFF;
+#plugin-panel-content-incicarto .m-drawingtools-content .collapsor:hover * {
+  color: var(--idee-color-links);
 }
 
-.collapsor span {
+#plugin-panel-content-incicarto .collapsor span {
   order: 1;
 }
 
-.collapsor svg {
+#plugin-panel-content-incicarto .collapsor svg {
   width: 17px;
   height: 17px;
+  transition: all 0.3s ease;
 }
 
-.m-incicarto-layer-btn-container {
+#plugin-panel-content-incicarto .m-incicarto-layer-btn-container {
   white-space: unset;
 }
 
-.m-incicarto-layer-legend-change {
+#plugin-panel-content-incicarto .m-incicarto-layer-legend-change {
   width: 150px;
   font-size: 16px;
   text-overflow: ellipsis;
@@ -201,42 +198,46 @@
   cursor: pointer;
 }
 
-.drawingToolsContainer {
+#plugin-panel-content-incicarto .drawingToolsContainer {
   display: flex;
   flex-direction: column;
 }
 
-.drawingToolsContainer > div {
+#plugin-panel-content-incicarto .drawingToolsContainer>div {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 16px;
 }
 
-.drawingToolsContainer label {
+#plugin-panel-content-incicarto .drawingToolsContainer label {
   display: flex;
   flex-direction: column;
   gap: 8px;
   font-size: 12px;
 }
 
-.drawingToolsContainer input {
+#plugin-panel-content-incicarto .drawingToolsContainer input {
   width: 40px;
   height: 32px;
   margin: 0;
 }
 
-.drawingToolsContainer .stroke-container {
+#plugin-panel-content-incicarto .drawingToolsContainer .stroke-container {
   flex: 1;
   flex-direction: column;
   gap: 8px;
 }
 
-.stroke-container .stroke-options {
+#plugin-panel-content-incicarto .stroke-container .stroke-options {
   position: relative;
 }
 
-.stroke-options .stroke-option-default {
+#plugin-panel-content-incicarto .stroke-container .stroke-options:hover {
+  border-color: var(--idee-color-links);
+}
+
+#plugin-panel-content-incicarto .stroke-options .stroke-option-default {
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #fff;
@@ -246,7 +247,7 @@
   height: 32px;
 }
 
-.stroke-option-default::after {
+#plugin-panel-content-incicarto .stroke-option-default::after {
   content: "▼";
   position: absolute;
   right: 0;
@@ -260,57 +261,58 @@
   line-height: 20px;
 }
 
-.options-select {
+#plugin-panel-content-incicarto .options-select {
   position: absolute;
   top: 100%;
   left: 0;
   width: fill-available;
   width: -webkit-fill-available;
+  width: -moz-fill-available;
   border: 1px solid #ccc;
   background-color: #fff;
   display: none;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.stroke-options.active .options-select {
+#plugin-panel-content-incicarto .stroke-options.active .options-select {
   display: block;
 }
 
-.stroke-option {
+#plugin-panel-content-incicarto .stroke-option {
   cursor: pointer;
   height: 32px;
-  border-bottom: 1px solid #CED4DA;  
+  border-bottom: 1px solid #CED4DA;
   box-sizing: border-box;
 }
 
-.stroke-option:last-child {
+#plugin-panel-content-incicarto .stroke-option:last-child {
   border-bottom: none;
 }
 
-.stroke-option:hover {
+#plugin-panel-content-incicarto .stroke-option:hover {
   background-color: #f0f0f0;
 }
 
-.stroke-option-default,
-.stroke-option {
+#plugin-panel-content-incicarto .stroke-option-default,
+#plugin-panel-content-incicarto .stroke-option {
   background-repeat: no-repeat;
   background-size: 80% 2px;
   background-position: center;
 }
 
-.stroke-options .stroke-continuous {
+#plugin-panel-content-incicarto .stroke-options .stroke-continuous {
   background-image: linear-gradient(to right, black 100%);
 }
 
-.stroke-options .stroke-dots {
+#plugin-panel-content-incicarto .stroke-options .stroke-dots {
   background-image: repeating-linear-gradient(to right, black 0px, black 2px, transparent 2px, transparent 6px);
 }
 
-.stroke-options .stroke-lines {
+#plugin-panel-content-incicarto .stroke-options .stroke-lines {
   background-image: repeating-linear-gradient(to right, black 0px, black 8px, transparent 8px, transparent 12px)
 }
 
-.stroke-options .stroke-dots-lines {
+#plugin-panel-content-incicarto .stroke-options .stroke-dots-lines {
   background-image: repeating-linear-gradient(to right, black 0px, black 2px, transparent 2px, transparent 6px, black 6px, black 10px, transparent 10px, transparent 16px)
 }
 
@@ -339,9 +341,13 @@
 }
 
 .m-incicarto-3d-measure {
-  color: #1470db;
+  color: var(--idee-color-links);
   text-decoration: underline;
   cursor: pointer;
+}
+
+.m-incicarto-3d-measure:hover {
+  color: var(--idee-color-links);
 }
 
 .m-incicarto-layer-btn-container {
@@ -361,7 +367,7 @@
   gap: 16px;
 }
 
-.m-incicarto-loading .icon-spinner{
+.m-incicarto-loading .icon-spinner {
   width: 24px;
   height: 24px;
   display: inline-block;
@@ -371,8 +377,13 @@
 }
 
 @keyframes incicarto-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 
@@ -383,6 +394,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 16px;
 }
 
 .m-incicarto-uploading button {
@@ -395,11 +407,11 @@
 /*************************
 * VENTANA CAMBIAR NOMBRE *
 **************************/
-.m-message > div > .m-incicarto-input-name {
+.m-message .m-incicarto-input-name {
   width: 100%;
 }
 
-.m-message > div > .m-incicarto-button-change-name {
+.m-message .m-incicarto-button-change-name {
   position: absolute;
   bottom: 16px;
   right: 96px;
@@ -409,7 +421,7 @@
 /***********************
 * VENTANA NOTIFICACION *
 ************************/
-.m-message > div {
+.m-plugin-incicarto-dialog {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -428,7 +440,7 @@
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .m-plugin-incicarto-html select {
@@ -463,9 +475,9 @@
 .m-plugin-incicarto-form span[id="infoUpload"] {
   display: flex;
   align-items: center;
-  background-color: #71a7d3;
+  background-color: var(--idee-color-primary);
   color: white;
-  border: 2px solid #71a7d3;
+  border: 2px solid var(--idee-color-primary);
   border-radius: 4px;
   cursor: pointer;
   font-family: Roboto, "sans-serif";
@@ -477,8 +489,8 @@
 }
 
 .m-plugin-incicarto-form span[id="infoUpload"]:hover {
-  background-color: #1470db;
-  border: 2px solid #1470db;
+  background-color: var(--idee-color-links);
+  border: 2px solid var(--idee-color-links);
 }
 
 .m-plugin-incicarto-content .m-plugin-incicarto-html button {
@@ -498,132 +510,137 @@
 /*********************
 * PERFIL TOPOGRAFICO *
 **********************/
-.ol-control.ol-profil {
-    position: absolute;
-    bottom: 3em !important;
-    right: 4em !important;
-    text-align: right;
-    overflow: hidden;
-    top: unset !important;
+.m-api-idee-container .ol-control.ol-profil {
+  position: absolute;
+  bottom: 3em !important;
+  right: 4em !important;
+  text-align: right;
+  overflow: hidden;
+  top: unset !important;
+  z-index: 9;
 }
 
-.ol-profil button {
+.m-api-idee-container .ol-profil button {
   background-image: none !important;
 }
 
-.ol-profil .ol-inner {
-    position: relative;
-    padding: 0.5em;
-    font-size: 0.8em;
+.m-api-idee-container .ol-profil .ol-inner {
+  position: relative;
+  padding: 0.5em;
+  font-size: 0.8em;
 }
 
-.ol-control.ol-profil .ol-inner {
-    display: block;
-    background-color: rgba(255, 255, 255, 0.7);
-    margin: 2px 2px;
+.m-api-idee-container .ol-control.ol-profil .ol-inner {
+  display: block;
+  background-color: rgba(255, 255, 255, 0.7);
+  margin: 2px 2px;
 }
 
-.ol-control.ol-profil.ol-collapsed .ol-inner {
-    display: none;
+.m-api-idee-container .ol-control.ol-profil.ol-collapsed .ol-inner {
+  display: none;
 }
 
-.ol-profil canvas {
-    display: block;
+.m-api-idee-container .ol-profil canvas {
+  display: block;
 }
 
-.ol-profil button {
+.m-api-idee-container .ol-profil button {
   display: block !important;
   position: absolute;
   right: 2px;
   top: 0px;
+  height: 27px !important;
 }
 
-.ol-profil button.profile-download-button {
-  right: 20px;
+.m-api-idee-container .ol-profil button.profile-download-button {
+  right: 46px;
 }
 
-.ol-profil button svg {
+.m-api-idee-container .ol-profil button svg {
   width: 100%;
   height: 100%;
 }
 
-.ol-profil.ol-collapsed button {
-    position: static;
+.m-api-idee-container .ol-profil.ol-collapsed button {
+  position: static;
 }
 
-.ol-profil .ol-profilbar,
-.ol-profil .ol-profilcursor {
-    position: absolute;
-    pointer-events: none;
-    width: 1px;
-    display: none;
+.m-api-idee-container .ol-profil .ol-profilbar,
+.m-api-idee-container .ol-profil .ol-profilcursor {
+  position: absolute;
+  pointer-events: none;
+  width: 1px;
+  display: none;
 }
 
-.ol-profil .ol-profilcursor {
-    width: 0;
-    height: 0;
+.m-api-idee-container .ol-profil .ol-profilcursor {
+  width: 0;
+  height: 0;
 }
 
-.ol-profil .ol-profilcursor:before {
-    content: "";
-    pointer-events: none;
-    display: block;
-    margin: -2px;
-    width: 5px;
-    height: 5px;
+.m-api-idee-container .ol-profil .ol-profilcursor:before {
+  content: "";
+  pointer-events: none;
+  display: block;
+  margin: -2px;
+  width: 5px;
+  height: 5px;
 }
 
-.ol-profil .ol-profilbar,
-.ol-profil .ol-profilcursor:before {
-    background: red;
+.m-api-idee-container .ol-profil .ol-profilbar,
+.m-api-idee-container .ol-profil .ol-profilcursor:before {
+  background: red;
 }
 
-.ol-profil table {
-    text-align: center;
-    width: 100%;
+.m-api-idee-container .ol-profil table {
+  text-align: center;
+  width: 100%;
 }
 
-.ol-profil table span {
-    display: block;
+.m-api-idee-container .ol-profil table span {
+  display: block;
 }
 
-.ol-profilpopup {
-    background-color: rgba(255, 255, 255, 0.5);
-    margin: 0.5em;
-    padding: 0 0.5em;
-    position: absolute;
-    top: -1em;
-    white-space: nowrap;
+.m-api-idee-container .ol-profilpopup {
+  background-color: rgba(255, 255, 255, 0.5);
+  margin: 0.5em;
+  padding: 0 0.5em;
+  position: absolute;
+  top: -1em;
+  white-space: nowrap;
 }
 
-.ol-profilpopup.ol-left {
-    right: 0;
+.m-api-idee-container .ol-profilpopup.ol-left {
+  right: 0;
 }
 
-
-.ol-profil table td {
-    padding: 0 2px;
+.m-api-idee-container .ol-profil table td {
+  padding: 0 2px;
 }
 
-.ol-profil table .track-info {
-    display: table-row;
+.m-api-idee-container .ol-profil table .track-info {
+  display: table-row;
 }
 
-.ol-profil table .point-info {
-    display: none;
+.m-api-idee-container .ol-profil table .point-info {
+  display: none;
 }
 
-.ol-profil .over table .track-info {
-    display: none;
+.m-api-idee-container .ol-profil .over table .track-info {
+  display: none;
 }
 
-.ol-profil .over table .point-info {
-    display: table-row;
+.m-api-idee-container .ol-profil .over table .point-info {
+  display: table-row;
 }
 
-.ol-profil p {
-    text-align: center;
-    margin: 0;
-    font-weight: bold;
-    color: #1d5a9e;
+.m-api-idee-container .ol-profil p {
+  text-align: center;
+  margin: 0;
+  font-weight: bold;
+  color: #676767;
+}
+
+.m-api-idee-container .ol-profil p button {
+  z-index: 9;
 }

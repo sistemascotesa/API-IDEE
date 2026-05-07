@@ -2,26 +2,34 @@
   {{#each layers}}
     <li class="m-incicarto-layer" name="{{name}}" url={{url}}>
       <div class="m-incicarto-layer-legend">
-        <span class="m-incicarto-layer-type"></span>
+        {{#if point}}
+          <span class="m-incicarto-layer-type m-puntual-incident g-cartografia-puntual"></span>
+        {{else}}
+          {{#if line}}
+            <span class="m-incicarto-layer-type m-lineal-incident g-cartografia-lineal"></span>
+          {{else}}
+            <span class="m-incicarto-layer-type m-superficial-incident g-cartografia-poligono"></span>
+          {{/if}}
+        {{/if}}
         <span class="m-incicarto-layer-legend-change" data-layer-name="{{name}}" data-layer-url="{{url}}" title="{{../translations.change_name}}">{{legend}}</span>
       </div>
         <div class="m-incicarto-layer-actions">
           <!-- Ocultamos algunos botones que no se van a usar para simplificar la creación de geometrías -->
-          <span title="{{../translations.show_hide}}" data-layer-name="{{name}}" data-layer-url="{{url}}" class="{{#if visible}}icon-visible{{^}}icon-invisible{{/if}} m-incicarto-layer-toogle"></span>
-          <span title="{{../translations.add_geom}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-add" class="icon-add m-incicarto-layer-add"></span>
+          <!-- <span title="{{../translations.show_hide}}" data-layer-name="{{name}}" data-layer-url="{{url}}" class="{{#if visible}}icon-visible{{^}}icon-invisible{{/if}} m-incicarto-layer-toogle"></span> -->
+          <span title="{{../translations.add_geom}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-add" class="m-icon-layer m-incicarto-layer-add g-cartografia-mas2"></span>
           {{#if line}}
-            <span title="{{../translations.edit_geom_line}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-edit-line" class="icon-edit m-incicarto-layer-edit"></span>
+            <span title="{{../translations.edit_geom_line}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-edit-line" class="m-icon-layer m-incicarto-layer-edit g-cartografia-editarGeoMarco"></span>
           {{^}}
-            <span title="{{../translations.edit_geom}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-edit-geom" class="icon-edit m-incicarto-layer-edit"></span>
+            <span title="{{../translations.edit_geom}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-edit-geom" class="m-icon-layer m-incicarto-layer-edit g-cartografia-editarGeoMarco"></span>
           {{/if}}
           {{#if updatable}}
-            <span title="{{../translations.reload_from_view}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-reload" class="icon-spinner m-incicarto-layer-reload"></span>
+            <span title="{{../translations.reload_from_view}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-reload" class="m-icon-layer m-incicarto-layer-reload"></span>
           {{^}}
-            <span title="{{../translations.layer_zoom}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-zoom" class="icon-zoom m-incicarto-layer-zoom"></span>
+            <span title="{{../translations.layer_zoom}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-zoom" class="m-icon-layer m-incicarto-layer-zoom g-cartografia-zoom_incid"></span>
           {{/if}}
           <!--<span title="{{../translations.download_layer}}" data-layer-name="{{name}}" data-layer-url="{{url}}" class="icon-download m-incicarto-layer-download"></span>-->
-          <span title="{{../translations.delete_layer}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-delete" class="icon-delete m-incicarto-layer-delete"></span>
-          <span title="{{../translations.notify_err}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-notify" class="icon-notify m-incicarto-layer-download"></span>
+          <span title="{{../translations.delete_layer}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-delete" class="m-icon-layer m-incicarto-layer-delete g-cartografia-papelera"></span>
+          <span title="{{../translations.notify_err}}" data-layer-name="{{name}}" data-layer-url="{{url}}" id="m-incicarto-action-notify" class="m-icon-layer m-incicarto-layer-download g-cartografia-notificar"></span>
         </div>
       <div class="m-incicarto-layer-actions-container">
       </div>

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.OverviewMap</small></h1>
 
@@ -8,12 +8,20 @@
 Plugin que muestra una previsualización de la zona donde está centrado el mapa.
 ⚠️ Si la anchura de pantalla es 768 pixeles o menor, el botón y panel del plugin estarán ocultos.
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Overviewmap abierto](./src/facade/assets/images/overviewmap-abierto.png)|![Overviewmap cerrado](./src/facade/assets/images/overviewmap-cerrado.png)|
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **overviewmap.ol.min.js**
 - **overviewmap.ol.min.css**
+
+Para uso de implementación Cesium:
+- **overviewmap.cesium.min.js**
+- **overviewmap.cesium.min.css**
 
 
 ```html
@@ -35,12 +43,16 @@ Ejemplo:
 El constructor se inicializa con dos objetos JSON. El primero contiene el atributo 'position' y el segundo los atributos 'collapsed' y 'collapsible', descritos a continuación:
 
 - **position**: Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha.
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha (por defecto).
+  - 'left' (LEFT) - Arriba a la izquierda.
+  - 'right' (RIGHT) - Arriba a la derecha (por defecto).
+  - 'down' (DOWN) - Abajo.
+  - 'center-bottom-right' (CBR) - Zona central, abajo a la derecha.
+  - 'center-bottom-left' (CBL) - Zona central, abajo a la izquierda.
+  - 'center-top-right' (CTR) - Zona central, arriba a la derecha.
+  - 'center-top-left' (CTL) - Zona central, arriba a la izquierda.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**. Tooltip que se muestra sobre el plugin (Se muestra al dejar el ratón encima del plugin como información). Por defecto: Mapa de situación.
 - **fixed**: Indica si el mapa del plugin permanece a un zoom fijo (true/false). Por defecto: false.
 - **zoom**: Indica el nivel del zoom al que permanecerá fijo el mapa del plugin. Por defecto: '' (cadena vacía).
@@ -60,7 +72,7 @@ URL_API?overviewmap=position*!collapsed*!collapsible*!tooltip*!fixed*!zoom*!base
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>CTL/CTR/CBL/CBR/LEFT/RIGHT/DOWN</td>
     <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
@@ -71,6 +83,11 @@ URL_API?overviewmap=position*!collapsed*!collapsible*!tooltip*!fixed*!zoom*!base
    <tr>
     <td>collapsible</td>
     <td>true/false</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
     <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
@@ -99,7 +116,7 @@ URL_API?overviewmap=position*!collapsed*!collapsible*!tooltip*!fixed*!zoom*!base
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee?overviewmap=TR*!true*!true*!Mapa*!true*!5*!WMS*PNOA%202017*https://www.ign.es/wms/pnoa-historico?*PNOA2017*true*true
+https://componentes.idee.es/api-idee?overviewmap=LEFT*!true*!true*!Mapa*!true*!5*!WMS*PNOA%202017*https://www.ign.es/wms/pnoa-historico?*PNOA2017*true*true
 ```
 
 ```
@@ -117,13 +134,14 @@ IDEE.utils.encodeBase64(obj_params);
 Ejemplo de constructor:
 ```javascript
 {
-  position: "BR",
+  position: "left",
   fixed: true,
   zoom: 4,
   baseLayer: "WMTS*http://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*false*true",
   collapsed: false,
   collapsible: false,
-  tooltip: "Mapa"
+  tooltip: "Mapa",
+  order: 1,
 }
 ```
 ```
@@ -139,7 +157,9 @@ https://componentes.idee.es/api-idee?overviewmap=base64=eyJwb3NpdGlvbiI6IkJSIiwi
   });
 
   const mp = new IDEE.plugin.OverviewMap({
-    position: 'BR',
+    position: 'left',
+    order: 1,
+    tooltip: 'Mapa',
     fixed: true,
     zoom: 4,
     //baseLayer: 'WMS*PNOA 2017*https://www.ign.es/wms/pnoa-historico?*PNOA2017*true*true', Ejemplo WMS

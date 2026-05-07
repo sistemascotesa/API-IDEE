@@ -3,40 +3,40 @@
  */
 
 /**
- * Posición arriba a la izquierda.
+ * Posición zona central, arriba a la izquierda.
  * @public
  * @const
  * @type {string}
  * @api
  */
-export const TL = '.m-top.m-left';
+export const CTL = 'center-top-left';
 
 /**
- * Posición Arriba a la derecha.
+ * Posición zona central, arriba a la derecha.
  * @public
  * @const
  * @type {string}
  * @api
  */
-export const TR = '.m-top.m-right';
+export const CTR = 'center-top-right';
 
 /**
- * Posición abajo a la izquierda.
+ * Posición zona central, abajo a la izquierda.
  * @public
  * @const
  * @type {string}
  * @api
  */
-export const BL = '.m-bottom.m-left';
+export const CBL = 'center-bottom-left';
 
 /**
- * Posición abajo a la derecha.
+ * Posición zona central, abajo a la derecha.
  * @public
  * @const
  * @type {string}
  * @api
  */
-export const BR = '.m-bottom.m-right';
+export const CBR = 'center-bottom-right';
 
 /**
  * Posición izquierda.
@@ -55,3 +55,31 @@ export const LEFT = 'left';
  * @api
  */
 export const RIGHT = 'right';
+
+/**
+ * Posición abajo.
+ * @public
+ * @const
+ * @type {string}
+ * @api
+ */
+export const DOWN = 'down';
+
+export const isValid = (position) => {
+  return [
+    CTL,
+    CTR,
+    CBL,
+    CBR,
+    LEFT,
+    RIGHT,
+    DOWN,
+  ].some((validPosition) => validPosition === position);
+};
+
+export const isRightOrLeft = (position) => {
+  return [
+    LEFT,
+    RIGHT,
+  ].some((validPosition) => validPosition === position);
+};

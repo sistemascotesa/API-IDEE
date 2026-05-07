@@ -212,7 +212,6 @@ export default class IGNSearchLocatorscnControl extends IDEE.Control {
   active(html) {
     this.html_ = html;
     const ignsearchactive = this.html_.querySelector('#m-locatorscn-ignsearch').classList.contains('activated');
-    this.deactive();
     if (!ignsearchactive) {
       if (this.positionPlugin === 'TC') {
         document.querySelector('.m-plugin-locatorscn').classList.remove('m-plugin-locatorscn-tc');

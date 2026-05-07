@@ -12,75 +12,78 @@
     <meta name="idee" content="yes">
     <title>Visor base</title>
     <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
-    <link href="plugins/infocoordinates/infocoordinates.ol.min.css" rel="stylesheet" />
-    <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
+        <link href="plugins/infocoordinates/infocoordinates.ol.min.css" rel="stylesheet" />
     </link>
-    <style type="text/css">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: auto;
-        }
-    </style>
     <%
       Map<String, String[]> parameterMap = request.getParameterMap();
       PluginsManager.init (getServletContext());
       String[] cssfiles = PluginsManager.getCSSFiles(parameterMap);
       for (int i = 0; i < cssfiles.length; i++) {
          String cssfile = cssfiles[i];
-   %>
-    <link type="text/css" rel="stylesheet" href="plugins/<%=cssfile%>">
-    </link>
-    <%
-      } %>
+        %>
+        <link type="text/css" rel="stylesheet" href="plugins/<%=cssfile%>" />
+        <%
+    } %>
 </head>
 
 <body>
-
-    <div>
-        <label for="selectPosicion">Selector de posición del plugin</label>
-        <select name="position" id="selectPosicion">
-            <option value="left">Izquierda</option>
-            <option value="right" selected="selected">Derecha</option>
-        </select>
- 		<label for="selectCollapsed">Selector de collapsed</label>
-        <select name="collapsed" id="selectCollapsed">
-            <option value=''></option>
-            <option value="true" selected="selected">true</option>
-            <option value="false">false</option>
-        </select>
-
-     	<label for="selectCollapsible">Selector de collapsible</label>
-        <select name="collapsible" id="selectCollapsible">
-            <option value=''></option>
-            <option value="true" selected="selected">true</option>
-            <option value="false">false</option>
-        </select>
-
-   		<label for="inputTooltip">Parámetro tooltip</label>
-        <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Información Coordenadas">
-        <datalist id="tooltipSug">
-            <option value="Información Coordenadas"></option>
-        </datalist>
-
-		<label for="helpUrl">Parámetro helpUrl</label>
-        <input type="text" name="helpUrl" id="inputHelpUrl" list="helpUrl">
-        <datalist id="helpUrl">
-            <option value="https://www.ign.es/">Ayuda</option>
-		</datalist>
-		
-        <label for="inputDecimalGEOcoord">Parámetro decimalGEOcoord</label>
-        <input id="inputDecimalGEOcoord" type="number" value="4" min="0" max="10"></input>
-        <label for="inputDecimalUTMcoord">Parámetro decimalUTMcoord</label>
-        <input id="inputDecimalUTMcoord" type="number" value=2 min="0" max="5">
-        <label for="selectOutputDownloadFormat">Selector de outputDownloadFormat</label>
-        <select name="selectOutputDownloadFormat" id="selectOutputDownloadFormat">
-            <option value="txt" selected>txt</option>
-            <option value="csv">csv</option>
-        </select>
-        <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar">
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosicion" title="Posición del plugin en el mapa (left, right)">Posición "position"</label>
+                <select name="position" id="selectPosicion">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsed" title="Indica si el panel del plugin aparece colapsado al cargarse">Colapsado "collapsed"</label>
+                <select name="collapsed" id="selectCollapsed">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder"
+                    title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                    entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Texto que aparece al pasar el ratón sobre el botón del plugin. Por defecto: Información Coordenadas">Título de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Información Coordenadas">
+                <datalist id="tooltipSug">
+                    <option value="Información Coordenadas"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputHelpUrl" title="URL de la página de ayuda del plugin al consultar información en el selector de proyección. Por defecto: https://www.ign.es/">Ayuda SRC a consultar "helpUrl"</label>
+                <input type="text" name="helpUrl" id="inputHelpUrl" list="helpUrlSug" value="https://www.ign.es/">
+                <datalist id="helpUrlSug">
+                    <option value="https://www.ign.es/"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputDecimalGEOcoord" title="Número de decimales para las coordenadas geográficas (0-10). Por defecto: 4">Decimales GEO "decimalGEOcoord"</label>
+                <input type="number" id="inputDecimalGEOcoord" value="4" min="0" max="10">
+            </div>
+            <div>
+                <label for="inputDecimalUTMcoord" title="Número de decimales para las coordenadas UTM (0-5). Por defecto: 2">Decimales UTM "decimalUTMcoord"</label>
+                <input type="number" id="inputDecimalUTMcoord" value="2" min="0" max="5">
+            </div>
+            <div>
+                <label for="selectOutputDownloadFormat" title="Formato del fichero de descarga de coordenadas (txt, csv). Por defecto: txt">Formato "outputDownloadFormat"</label>
+                <select name="outputDownloadFormat" id="selectOutputDownloadFormat">
+                    <option value="txt" selected>txt</option>
+                    <option value="csv">csv</option>
+                </select>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="botonEliminar">Eliminar Plugin</button>
+        </div>
     </div>
 
     <div id="mapjs" class="m-container"></div>
@@ -88,20 +91,19 @@
     <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="js/configuration.js"></script>
     <script type="text/javascript" src="plugins/infocoordinates/infocoordinates.ol.min.js"></script>
-    <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
     <%
       String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
       for (int i = 0; i < jsfiles.length; i++) {
          String jsfile = jsfiles[i];
-   %>
-    <script type="text/javascript" src="plugins/<%=jsfile%>"></script>
-
-    <%
+        %>
+        <script type="text/javascript" src="plugins/<%=jsfile%>"></script>
+        <%
       }
-   %>
+    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
         IDEE.language.setLang(urlParams.get('language') || 'es');
+
         const map = IDEE.map({
             container: 'mapjs',
             zoom: 5.5,
@@ -109,71 +111,55 @@
             minZoom: 4,
             center: [-467062.8225, 4683459.6216],
         });
-        let mp2 = new IDEE.plugin.ShareMap({
-            baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
-            position: "TR",
-        });
-        map.addPlugin(mp2);
 
-        const selectPosicion = document.getElementById("selectPosicion");
-        const inputDecimalGEOcoord = document.getElementById("inputDecimalGEOcoord");
-        const inputDecimalUTMcoord = document.getElementById("inputDecimalUTMcoord");
-        const selectCollapsed = document.getElementById("selectCollapsed");
-        const selectCollapsible = document.getElementById("selectCollapsible");
-        const inputTooltip = document.getElementById("inputTooltip");
-        const inputHelpUrl = document.getElementById("inputHelpUrl");
-        const selectOutputDownloadFormat = document.getElementById("selectOutputDownloadFormat");
+        let mp = null;
 
-        let mp;
-        let posicion = selectPosicion.value;
-        let valueDecimalGEOcoord = inputDecimalGEOcoord.value;
-        let valueDecimalUTMcoord = inputDecimalUTMcoord.value;
-		let valueTooltip = inputTooltip.value;
-		let helpUrl = inputHelpUrl.value;
-        crearPlugin({
-            position: posicion,
-            decimalGEOcoord: valueDecimalGEOcoord,
-            decimalUTMcoord: valueDecimalUTMcoord,
-			collapsed: true,
-			collapsible: true,
-			tooltip: valueTooltip,
-			helpUrl: "https://www.ign.es/"
+        const selectPosicion = document.getElementById('selectPosicion');
+        const selectCollapsed = document.getElementById('selectCollapsed');
+        const inputOrder = document.getElementById('inputOrder');
+        const inputTooltip = document.getElementById('inputTooltip');
+        const inputHelpUrl = document.getElementById('inputHelpUrl');
+        const inputDecimalGEOcoord = document.getElementById('inputDecimalGEOcoord');
+        const inputDecimalUTMcoord = document.getElementById('inputDecimalUTMcoord');
+        const selectOutputDownloadFormat = document.getElementById('selectOutputDownloadFormat');
+        const botonEliminar = document.getElementById('botonEliminar');
+
+        [
+            selectPosicion,
+            selectCollapsed,
+            inputOrder,
+            inputTooltip,
+            inputHelpUrl,
+            inputDecimalGEOcoord,
+            inputDecimalUTMcoord,
+            selectOutputDownloadFormat,
+        ].forEach((ctrl) => ctrl.addEventListener('change', cambiarTest));
+
+        botonEliminar.addEventListener('click', function () {
+            map.removePlugins(mp);
         });
-        selectPosicion.addEventListener("change", cambiarTest);
-        inputDecimalGEOcoord.addEventListener("change", cambiarTest);
-        inputDecimalUTMcoord.addEventListener("change", cambiarTest);
-      	selectCollapsible.addEventListener('change',cambiarTest);
-		selectCollapsed.addEventListener('change', cambiarTest);
-		inputTooltip.addEventListener('change', cambiarTest);
-		inputHelpUrl.addEventListener('change', cambiarTest);
-		selectOutputDownloadFormat.addEventListener('change', cambiarTest);
-		
 
         function cambiarTest() {
-            let objeto = {}
+            const objeto = {};
             objeto.position = selectPosicion.options[selectPosicion.selectedIndex].value;
-			collapsible = selectCollapsible.options[selectCollapsible.selectedIndex].value;
-            collapsible != '' ? objeto.collapsible = (collapsible === "true") : '';
-	        collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
-            collapsed != '' ? objeto.collapsed = (collapsed === "true") : '';
-            objeto.decimalGEOcoord = inputDecimalGEOcoord.value;
-            objeto.decimalUTMcoord = inputDecimalUTMcoord.value;
-			objeto.tooltip = inputTooltip.value;
-			objeto.outputDownloadFormat = selectOutputDownloadFormat.options[selectOutputDownloadFormat.selectedIndex].value;
-			helpUrl = inputHelpUrl.value != "" ? objeto.helpUrl = inputHelpUrl.value : "";
-   			
+            objeto.collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value === '' || selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true';
+            objeto.order = Number(inputOrder.value);
+            objeto.tooltip = inputTooltip.value;
+            objeto.helpUrl = inputHelpUrl.value;
+            objeto.decimalGEOcoord = Number(inputDecimalGEOcoord.value);
+            objeto.decimalUTMcoord = Number(inputDecimalUTMcoord.value);
+            objeto.outputDownloadFormat = selectOutputDownloadFormat.options[selectOutputDownloadFormat.selectedIndex].value;
 
-            map.removePlugins(mp);
+            if (mp !== null) map.removePlugins(mp);
             crearPlugin(objeto);
         }
+
         function crearPlugin(propiedades) {
             mp = new IDEE.plugin.Infocoordinates(propiedades);
             map.addPlugin(mp);
         }
-        const botonEliminar = document.getElementById("botonEliminar");
-        botonEliminar.addEventListener("click", function() {
-            map.removePlugins(mp);
-        });
+
+        cambiarTest();
     </script>
 </body>
 

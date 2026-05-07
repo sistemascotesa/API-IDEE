@@ -40,14 +40,18 @@ export const displayLayers = ({ target }, layer, map) => {
 
     if (target.classList.contains(CLASS_DISPLAY_DESPLEGAR)) {
       target.classList.remove(CLASS_DISPLAY_DESPLEGAR);
+      target.classList.remove('g-cartografia-btn-layerswitcher-desplegar');
       target.classList.add(CLASS_DISPLAY_COLAPSAR);
+      target.classList.add('g-cartografia-btn-layerswitcher-colapsar');
       target.setAttribute('title', getValue('hide_group'));
       target.setAttribute('aria-label', getValue('hide_group'));
 
       groupLayer.display = true;
     } else {
       target.classList.remove(CLASS_DISPLAY_COLAPSAR);
+      target.classList.remove('g-cartografia-btn-layerswitcher-colapsar');
       target.classList.add(CLASS_DISPLAY_DESPLEGAR);
+      target.classList.add('g-cartografia-btn-layerswitcher-desplegar');
       target.setAttribute('title', getValue('show_group'));
       target.setAttribute('aria-label', getValue('show_group'));
       groupLayer.display = false;

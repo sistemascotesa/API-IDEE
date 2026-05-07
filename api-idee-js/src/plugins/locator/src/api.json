@@ -4,70 +4,64 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.Locator",
-  "parameters": [{
-    "type": "object",
-    "properties": [
+  "parameters": [
     {
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": [
-        "left",
-        "right"
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": ["left", "right"]
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "number",
+          "name": "order",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
+        },
+        {
+          "type": "number",
+          "name": "zoom",
+          "position": 4
+        },
+        {
+          "type": "simple",
+          "name": "pointStyle",
+          "position": 5
+        },
+        {
+          "type": "boolean",
+          "name": "byParcelCadastre",
+          "position": 6
+        },
+        {
+          "type": "boolean",
+          "name": "byCoordinates",
+          "position": 7
+        },
+        {
+          "type": "boolean",
+          "name": "byPlaceAddressPostal",
+          "position": 8
+        },
+        {
+          "type": "boolean",
+          "name": "useProxy",
+          "position": 9
+        }
       ]
-    },
-    {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    },
-    {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 2
-    },
-    {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 3
-    },
-    {
-      "type": "number",
-      "name": "zoom",
-      "position": 4
-    },
-    {
-      "type": "simple",
-      "name": "pointStyle",
-      "position": 5
-    },
-    {
-      "type": "boolean",
-      "name": "isDraggable",
-      "position": 6
-    },
-    {
-      "type": "boolean",
-      "name": "byParcelCadastre",
-      "position": 7
-    },
-    {
-      "type": "boolean",
-      "name": "byCoordinates",
-      "position": 8
-    },
-    {
-      "type": "boolean",
-      "name": "byPlaceAddressPostal",
-      "position": 9
-    },
-    {
-      "type": "boolean",
-      "name": "useProxy",
-      "position": 10
     }
-  ]
-  }],
+  ],
   "files": {
     "ol": {
       "scripts": [
@@ -88,9 +82,9 @@
   },
   "metadata": {
     "name": "locator",
-    "description": "Offers different localization tools",
-    "text": "It offers different localization tools.",
-    "version": "2.0.2",
+    "description": "Plugin que ofrece diferentes herramientas de localización.",
+    "text": "Ofrece diferentes herramientas de localización.",
+    "version": "1.1.0",
     "date": "30th May 2023",
     "author": "CNIG",
     "org": "CNIG",

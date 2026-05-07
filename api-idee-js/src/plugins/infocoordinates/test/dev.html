@@ -7,49 +7,80 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="idee" content="yes">
     <title>Infocoordinates TEST</title>
-    <!-- <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
     <link href="https://componentes-desarrollo.idee.es/api-idee/plugins/fulltoc/fulltoc.ol.min.css" rel="stylesheet" />
     <link href="https://componentes-desarrollo.idee.es/api-idee/plugins/information/information.ol.min.css" rel="stylesheet" />
     <link href="https://componentes-desarrollo.idee.es/api-idee/plugins/measurebar/measurebar.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes-desarrollo.idee.es/api-idee/plugins/vectors/vectors.ol.min.css" rel="stylesheet" /> -->
-    <!-- <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" /> -->
-    <link href="http://localhost:8080/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
-    <link href="http://localhost:8080/api-idee/plugins/fulltoc/fulltoc.ol.min.css" rel="stylesheet" />
-    <link href="http://localhost:8080/api-idee/plugins/information/information.ol.min.css" rel="stylesheet" />
-    <link href="http://localhost:8080/api-idee/plugins/measurebar/measurebar.ol.min.css" rel="stylesheet" />
-    <link href="http://localhost:8080/api-idee/plugins/vectors/vectors.ol.min.css" rel="stylesheet" />
-
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-    </style>
+    <link href="https://componentes-desarrollo.idee.es/api-idee/plugins/vectors/vectors.ol.min.css" rel="stylesheet" />
 
 </head>
 
 <body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosicion" title="Posición del plugin en el mapa (left, right)">Posición "position"</label>
+                <select name="position" id="selectPosicion">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsed" title="Indica si el panel del plugin aparece colapsado al cargarse">Colapsado "collapsed"</label>
+                <select name="collapsed" id="selectCollapsed">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder"
+                    title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                    entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Texto que aparece al pasar el ratón sobre el botón del plugin. Por defecto: Información Coordenadas">Título de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Información Coordenadas">
+                <datalist id="tooltipSug">
+                    <option value="Información Coordenadas"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputHelpUrl" title="URL de la página de ayuda del plugin al consultar información en el selector de proyección. Por defecto: https://www.ign.es/">Ayuda CRS a consultar "helpUrl"</label>
+                <input type="text" name="helpUrl" id="inputHelpUrl" list="helpUrlSug" value="https://www.ign.es/">
+                <datalist id="helpUrlSug">
+                    <option value="https://www.ign.es/"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputDecimalGEOcoord" title="Número de decimales para las coordenadas geográficas (0-10). Por defecto 4">Decimales GEO "decimalGEOcoord"</label>
+                <input type="number" id="inputDecimalGEOcoord" value="4" min="0" max="10">
+            </div>
+            <div>
+                <label for="inputDecimalUTMcoord" title="Número de decimales para las coordenadas UTM (0-5). Por defecto 2">Decimales UTM "decimalUTMcoord"</label>
+                <input type="number" id="inputDecimalUTMcoord" value="2" min="0" max="5">
+            </div>
+            <div>
+                <label for="selectOutputDownloadFormat" title="Formato del fichero de descarga de coordenadas (txt, csv). Por defecto: txt">Formato "outputDownloadFormat"</label>
+                <select name="outputDownloadFormat" id="selectOutputDownloadFormat">
+                    <option value="txt" selected>txt</option>
+                    <option value="csv">csv</option>
+                </select>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="botonEliminar">Eliminar Plugin</button>
+        </div>
+    </div>
     <div id="mapjs" class="container"></div>
-    <!-- <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>
     <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/plugins/fulltoc/fulltoc.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/plugins/information/information.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/plugins/measurebar/measurebar.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/plugins/vectors/vectors.ol.min.js"></script> -->
-    <!-- <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/configuration-5.2.0.js"></script> -->
-
-    <script type="text/javascript" src="http://localhost:8080/api-idee/js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="http://localhost:8080/api-idee/js/configuration.js"></script>
-    <script type="text/javascript" src="http://localhost:8080/api-idee/plugins/fulltoc/fulltoc.ol.min.js"></script>
-    <script type="text/javascript" src="http://localhost:8080/api-idee/plugins/information/information.ol.min.js"></script>
-    <script type="text/javascript" src="http://localhost:8080/api-idee/plugins/measurebar/measurebar.ol.min.js"></script>
-    <script type="text/javascript" src="http://localhost:8080/api-idee/plugins/vectors/vectors.ol.min.js"></script>
-    <script type="text/javascript" src="http://localhost:8080/api-idee/plugins/vectors/vectors.ol.min.js"></script>
+    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/plugins/vectors/vectors.ol.min.js"></script>
     <script type="text/javascript" src="/main.js"></script>
 </body>
 

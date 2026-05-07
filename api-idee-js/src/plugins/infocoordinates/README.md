@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Infocoordinates</small></h1>
 
@@ -9,12 +9,20 @@
 <p>Para utilizar un sistema de referencia nuevo, basta con elegir la opción 'Añadir EPSG'. Una vez elegida, el usuario podrá escribir el sistema que desee, siempre y cuando exista.</p>
 <p>El sistema de referencia nuevo se registrará a nivel de toda la API, por lo que se podrá utilizar en otras funcionalidades.</p>
 
+|  Herramienta abierta  |Herramienta cerrada
+|:----:|:----:|
+|![Infocoordinates abierto](./src/facade/assets/images/infocoordinates-abierto.png)|![Infocoordinates cerrado](./src/facade/assets/images/infocoordinates-cerrado.png)|
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **infocoordinates.ol.min.js**
 - **infocoordinates.ol.min.css**
+
+Para uso de implementación Cesium:
+- **infocoordinates.cesium.min.js**
+- **infocoordinates.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/infocoordinates/infocoordinates.ol.min.css" rel="stylesheet" />
@@ -36,12 +44,11 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**:  Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
 - **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: Información Coordenadas.
 - **decimalGEOcoord**: Indica el número de decimales de las coordenadas geográficas. Por defecto: 4
 - **decimalUTMcoord**: Indica el número de decimales de las coordenadas proyectadas en UTM. Por defecto: 2
@@ -62,7 +69,7 @@ URL_API?infocoordinates=position*collapsed*collapsible*tooltip*decimalGEOcoord*d
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>RIGHT/LEFT</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -73,6 +80,11 @@ URL_API?infocoordinates=position*collapsed*collapsible*tooltip*decimalGEOcoord*d
   <tr>
     <td>collapsible</td>
     <td>true/false</td>
+    <td>Base64 ✔️  | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
     <td>Base64 ✔️  | Separador ✔️ </td>
   </tr>
   <tr>
@@ -120,10 +132,11 @@ IDEE.utils.encodeBase64(obj_params);
 Ejemplo del constructor:
 ```javascript
 {
-  position: "TR",
+  position: "right",
   collapsible: true,
   collapsed: true,
-  tooltip: "Coordenadas",
+  order: 0,
+  tooltip: "Información coordenadas",
   outputDownloadFormat: "txt",
   decimalGEOcoord: 4,
   decimalUTMcoord: 4,
@@ -143,7 +156,11 @@ const map = IDEE.map({
 });
 
 const mp = new IDEE.plugin.Infocoordinates({
-  position: 'TL',
+  position: 'right',
+  collapsed: true,
+  collapsible: true,
+  order: 0,
+  tooltip: 'Información coordenadas',
   decimalGEOcoord: 4,
   decimalUTMcoord: 2
 });

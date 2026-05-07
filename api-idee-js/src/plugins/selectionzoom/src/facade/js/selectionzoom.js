@@ -1,7 +1,6 @@
 /**
  * @module IDEE/plugin/SelectionZoom
  */
-// import '/assets/css/selectionzoom';
 import '../assets/css/selectionzoom';
 import api from '../../api';
 import SelectionZoomControl from './selectionzoomcontrol';
@@ -10,6 +9,41 @@ import myhelp from '../../templates/myhelp';
 
 import es from './i18n/es';
 import en from './i18n/en';
+
+const DEFAULT_LAYER_OPTIONS = [
+  {
+    id: 'peninsula',
+    title: 'Peninsula',
+    preview: 'https://componentes.idee.es/api-idee/plugins/selectionzoom/images/espana.png',
+    bbox: '-1200091.444315327, 4348955.797933925, 365338.89496508264, 5441088.058207252',
+  },
+  {
+    id: 'canarias',
+    title: 'Canarias',
+    preview: 'https://componentes.idee.es/api-idee/plugins/selectionzoom/images/canarias.png',
+    center: '-1844272.618465, 3228700.074766',
+    zoom: 8,
+  },
+  {
+    id: 'baleares',
+    title: 'Baleares',
+    preview: 'https://componentes.idee.es/api-idee/plugins/selectionzoom/images/baleares.png',
+    bbox: '115720.89020469127,4658411.436032817,507078.4750247937,4931444.501067467',
+  },
+  {
+    id: 'ceuta',
+    title: 'Ceuta',
+    preview: 'https://componentes.idee.es/api-idee/plugins/selectionzoom/images/ceuta.png',
+    bbox: '-599755.2558583047, 4281734.817081453, -587525.3313326766, 4290267.100363785',
+  },
+  {
+    id: 'melilla',
+    title: 'Melilla',
+    preview: 'https://componentes.idee.es/api-idee/plugins/selectionzoom/images/melilla.png',
+    center: '-327838.4143151213, 4203788.135342773',
+    zoom: 14,
+  },
+];
 
 export default class SelectionZoom extends IDEE.Plugin {
   /**
@@ -23,20 +57,11 @@ export default class SelectionZoom extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super();
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map_ = null;
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls_ = [];
+    super('selectionzoom', {
+      position: options.position || 'left',
+      tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
+    });
 
     /**
      * Plugin name
@@ -53,119 +78,86 @@ export default class SelectionZoom extends IDEE.Plugin {
     this.options = options;
 
     /**
-     * Position of the plugin
-     *
-     * @private
-     * @type {Enum} TL | TR | BL | BR
+     * Indicates if the plugin is collapsed on entry (true/false).
+     * @public
+     * @type {string}
+     * @default true
      */
-    this.position_ = options.position || 'TL';
-
-    /**
-     * Layers options
-     */
-    if ('options' in options) {
-      this.newparameterization = true;
-      this.layerOpts = options.options;
-
-      /**
-       * Get layers id's separated by ',' from
-       * new parameterization.
-       */
-      this.ids = this.layerOpts.map((l) => l.id).toString();
-
-      /**
-       * Get layers titles separated by ',' from
-       * new parameterization.
-       */
-      this.titles = this.layerOpts.map((l) => l.title).toString();
-
-      /**
-       * Get layers previews separated by ',' from
-       * new parameterization.
-       */
-      this.previews = this.layerOpts.map((l) => l.preview).toString();
-
-      /**
-       * Get layers MRE from new parameterization.
-       */
-      this.bboxs = [];
-      this.zooms = [];
-      this.centers = [];
-      this.layerOpts.forEach((l, i) => {
-        if ('bbox' in l) {
-          this.bboxs[i] = l.bbox;
-          this.zooms[i] = '';
-          this.centers[i] = '';
-        } else if ('zoom' in l && 'center' in l) {
-          this.bboxs[i] = '';
-          this.zooms[i] = l.zoom;
-          this.centers[i] = l.center;
-        } else {
-          this.bboxs[i] = '';
-          this.zooms[i] = '';
-          this.centers[i] = '';
-        }
-      });
-      this.zooms = this.zooms.toString();
-    } else {
-      this.newparameterization = false;
-      /**
-       * Layers id's separated by ','.
-       * @public
-       * @type {Array}
-       */
-      this.ids = options.ids || '';
-
-      /**
-       * Layers titles separated by ','.
-       * @public
-       * @type { Array }
-       */
-      this.titles = options.titles || '';
-
-      /**
-       * Layers preview urls separated by ','.
-       * @public
-       * @type { Array }
-       */
-      this.previews = options.previews || '';
-
-      /**
-       * Layers preview urls separated by ','.
-       * @public
-       * @type { Array }
-       */
-      this.zooms = options.zooms || '';
-
-      /**
-       * Layers preview urls separated by ','.
-       * @public
-       * @type { Array }
-       */
-      this.bboxs = options.bboxs || '';
-    }
-
     this.collapsed = options.collapsed !== undefined ? options.collapsed : true;
-    this.collapsible = options.collapsible !== undefined ? options.collapsible : true;
 
     /**
      * Metadata from api.json
-     * @private
+     * @public
      * @type {Object}
      */
     this.metadata_ = api.metadata;
 
     /**
-     *@private
-     *@type { string }
+     * Array of objects. Each one has the configuration of a layer
+     * @public
+     * @type {Array<Object>}
+     * @default DEFAULT_LAYER_OPTIONS
      */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
+    this.layerOpts = options.options || DEFAULT_LAYER_OPTIONS;
 
     /**
-     *@private
-     *@type { Number }
+     * IDs of each options layer
+     * @public
+     * @type {String}
      */
-    this.order = options.order >= -1 ? options.order : null;
+    this.ids = this.layerOpts.map((l) => l.id).toString();
+
+    /**
+     * Titles of each options layer
+     * @public
+     * @type {String}
+     */
+    this.titles = this.layerOpts.map((l) => l.title).toString();
+
+    /**
+     * Previews of each options layer
+     * @public
+     * @type {String}
+     */
+    this.previews = this.layerOpts.map((l) => l.preview).toString();
+
+    /**
+     * Bboxs of each options layer
+     * @public
+     * @type {Array}
+     */
+    this.bboxs = [];
+
+    /**
+     * Zooms of each options layer
+     * @public
+     * @type {String}
+     */
+    this.zooms = [];
+
+    /**
+     * Centers of each options layer
+     * @public
+     * @type {Array}
+     */
+    this.centers = [];
+
+    this.layerOpts.forEach((l, i) => {
+      if ('bbox' in l) {
+        this.bboxs[i] = l.bbox;
+        this.zooms[i] = '';
+        this.centers[i] = '';
+      } else if ('zoom' in l && 'center' in l) {
+        this.bboxs[i] = '';
+        this.zooms[i] = l.zoom;
+        this.centers[i] = l.center;
+      } else {
+        this.bboxs[i] = '';
+        this.zooms[i] = '';
+        this.centers[i] = '';
+      }
+    });
+    this.zooms = this.zooms.toString();
   }
 
   /**
@@ -192,30 +184,48 @@ export default class SelectionZoom extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.controls_.push(new SelectionZoomControl(
-      map,
+    this.map = map;
+
+    this.button = new IDEE.ui.Button(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_selectionzoom.svg',
+      order: this.order,
+    });
+    map.addButtons(this.button);
+
+    this.panel = new IDEE.ui.Panel(this.name, {
+      collapsed: this.collapsed,
+      position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
+      className: 'm-plugin-selectionzoom',
+      tooltip: this.tooltip,
+      collapsedButtonClass: 'g-selectionzoom-selezoom',
+      order: this.order,
+    });
+
+    this.controls.push(new SelectionZoomControl(
+      this.map,
       this.ids,
       this.titles,
       this.previews,
       this.bboxs,
       this.zooms,
-      this.centers || '',
+      this.centers,
       this.order,
-      this.newparameterization,
     ));
-    this.map_ = map;
-    this.panel_ = new IDEE.ui.Panel('panelSelectionZoom', {
-      collapsible: this.collapsible,
-      collapsed: this.collapsed,
-      position: IDEE.ui.position[this.position_],
-      className: 'm-plugin-selectionzoom',
-      tooltip: this.tooltip_,
-      collapsedButtonClass: 'g-selectionzoom-selezoom',
-      order: this.order,
+
+    this.controls[0].on(IDEE.evt.ADDED_TO_MAP, () => {
+      this.fire(IDEE.evt.ADDED_TO_MAP);
     });
 
-    this.panel_.addControls(this.controls_);
-    map.addPanels(this.panel_);
+    this.panel.addControls(this.controls);
+
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
+
+    map.addPanels(this.panel);
   }
 
   /**
@@ -226,7 +236,7 @@ export default class SelectionZoom extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position_}*${this.collapsible}*${this.collapsed}*${this.ids}*${this.titles}*${this.previews}*${this.bboxs}*${this.zooms}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${this.layerOpts}`;
   }
 
   /**
@@ -281,12 +291,8 @@ export default class SelectionZoom extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
-    this.map_.removeControls(this.controls_);
-    this.map_ = null;
-    this.control_ = null;
-    this.controls_ = null;
-    this.panel_ = null;
-    this.name = null;
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
   }
 
   /**

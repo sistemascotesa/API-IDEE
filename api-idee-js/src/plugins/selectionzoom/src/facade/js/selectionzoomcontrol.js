@@ -52,7 +52,6 @@ export default class SelectionZoomControl extends IDEE.Control {
     zooms,
     centers,
     order,
-    newparam,
   ) {
     if (IDEE.utils.isUndefined(SelectionZoomImpl) || (IDEE.utils.isObject(SelectionZoomImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(SelectionZoomImpl)))) {
@@ -61,49 +60,20 @@ export default class SelectionZoomControl extends IDEE.Control {
     const impl = new SelectionZoomImpl();
     super('SelectionZoom', impl);
 
-    if (!newparam) {
-      // eslint-disable-next-line no-console
-      console.warn(getValue('exception.parameterizationDeprecated'));
-    }
-
-    // map.getBaseLayers().forEach((layer) => {
-    //   layer.on(IDEE.evt.LOAD, map.removeLayers(layer));
-    // });
     this.layers = [];
 
-    // Array<Object> => Object: { id, title, preview, Array<apiIdeeLayer>}
-    // this.layers = layerOpts.slice(0, MAXIMUM_LAYERS);
-    // const bboxArray = bbox];
     const idsArray = ids.split(',');
     const titlesArray = titles.split(',');
     const previewsArray = previews.split(',');
     const bboxArray = [];
-    if (IDEE.utils.isArray(bboxs)) {
-      bboxs.forEach((item, index) => {
-        bboxArray[index] = item.split(/[ ,]+/);
-      });
-    } else {
-      let i = 0;
-      bboxs.split(',').forEach((item, index) => {
-        if (index % 4 === 0 && index > 0) {
-          i += 1;
-          bboxArray[i] = [];
-        }
-
-        if (index % 4 === 0 && index === 0) {
-          bboxArray[i] = [];
-        }
-
-        bboxArray[i].push(item.trim());
-      });
-    }
+    bboxs.forEach((item, index) => {
+      bboxArray[index] = item.split(/[ ,]+/);
+    });
     const zoomsArray = zooms.split(',');
     const centersArray = [];
-    if (IDEE.utils.isArray(centers)) {
-      centers.forEach((item, index) => {
-        centersArray[index] = item.split(/[ ,]+/);
-      });
-    }
+    centers.forEach((item, index) => {
+      centersArray[index] = item.split(/[ ,]+/);
+    });
 
     idsArray.forEach((baseLayer, idx) => {
       const apiIdeeLyrsObject = {
@@ -113,7 +83,6 @@ export default class SelectionZoomControl extends IDEE.Control {
         bbox: bboxArray[idx],
         zoom: zoomsArray[idx],
         center: centersArray[idx],
-        isnewparam: newparam,
       };
 
       this.layers.push(apiIdeeLyrsObject);
@@ -207,22 +176,16 @@ export default class SelectionZoomControl extends IDEE.Control {
 
       if (!IDEE.utils.isNullOrEmpty(layersInfo.bbox)) {
         let BboxTransformXminYmax = [layersInfo.bbox[0], layersInfo.bbox[3]];
-        let BboxTransformXmaxYmin = [];
-
-        if (layersInfo.isnewparam) {
-          BboxTransformXmaxYmin = [layersInfo.bbox[2], layersInfo.bbox[1]];
-        } else {
-          BboxTransformXmaxYmin = [layersInfo.bbox[1], layersInfo.bbox[2]];
-        }
+        let BboxTransformXmaxYmin = [layersInfo.bbox[2], layersInfo.bbox[1]];
         BboxTransformXmaxYmin = this.getImpl().transform(
           BboxTransformXmaxYmin,
           'EPSG:3857',
-          this.map_.getProjection().code,
+          this.map.getProjection().code,
         );
         BboxTransformXminYmax = this.getImpl().transform(
           BboxTransformXminYmax,
           'EPSG:3857',
-          this.map_.getProjection().code,
+          this.map.getProjection().code,
         );
 
         nuevoBbox.x.min = BboxTransformXminYmax[0];
@@ -232,17 +195,12 @@ export default class SelectionZoomControl extends IDEE.Control {
         nuevoBbox.y.max = BboxTransformXminYmax[1];
 
         this.map.setBbox(nuevoBbox);
-        if (!layersInfo.isnewparam) {
-          this.map.setZoom(layersInfo.zoom);
-        }
-      } else if (layersInfo.isnewparam && !IDEE.utils.isNullOrEmpty(layersInfo.zoom)
+      } else if (!IDEE.utils.isNullOrEmpty(layersInfo.zoom)
         && !IDEE.utils.isNullOrEmpty(layersInfo.center)) {
         this.map.setZoom(layersInfo.zoom);
         this.map.setCenter(layersInfo.center);
-      } else if (layersInfo.isnewparam) {
-        IDEE.dialog.error(getValue('exception.formatMRE'));
       } else {
-        IDEE.dialog.error(getValue('exception.formatBBoxAndZoom'));
+        IDEE.dialog.error(getValue('exception.formatMRE'));
       }
     } else {
       nuevoBbox.x.min = bboxbase[0];
@@ -256,7 +214,7 @@ export default class SelectionZoomControl extends IDEE.Control {
     }
 
     this.fire('selectionzoom:activeChanges', [{ activeLayerId: this.activeLayer }]);
-    document.querySelector('.m-panel.m-plugin-selectionzoom.opened > button.m-panel-btn').click();
+    if (this.activationButton) this.activationButton.element.click();
   }
 
   /**
