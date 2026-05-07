@@ -306,7 +306,7 @@ class WMS extends LayerBase {
 
       // updates resolutions and keep the zoom
       const oldZoom = this.map.getZoom();
-      this.map.getImpl().updateResolutionsFromBaseLayer();
+      // this.map.getImpl().updateResolutionsFromBaseLayer();
       if (!isNullOrEmpty(oldZoom)) {
         this.map.setZoom(oldZoom);
       }

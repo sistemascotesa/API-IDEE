@@ -1,17 +1,18 @@
 /**
  * @module IDEE/plugin/WFSTControls
  */
-import '../assets/css/wfstcontrols';
-import DrawFeature from './drawfeature';
-import ModifyFeature from './modifyfeature';
-import DeleteFeature from './deletefeature';
-import ClearFeature from './clearfeature';
-import SaveFeature from './savefeature';
-import EditAttribute from './editattribute';
 import api from '../../api';
-import { getValue } from './i18n/language';
+import myhelp from '../../templates/myhelp.html';
+import '../assets/css/wfstcontrols';
+import ClearFeature from './clearfeature';
+import DeleteFeature from './deletefeature';
+import DrawFeature from './drawfeature';
+import EditAttribute from './editattribute';
 import en from './i18n/en';
 import es from './i18n/es';
+import { getValue } from './i18n/language';
+import ModifyFeature from './modifyfeature';
+import SaveFeature from './savefeature';
 
 /**
  * @classdesc
@@ -454,6 +455,38 @@ export default class WFSTControls extends IDEE.Plugin {
       return (lang === 'en') ? en : es;
     }
     return IDEE.language.getTranslation(lang).wfstcontrols;
+  }
+
+  /**
+   * Obtiene la ayuda del plugin
+   *
+   * @function
+   * @public
+   * @api
+   */
+  getHelp() {
+    return {
+      title: getValue('textHelp.title'),
+      content: new Promise((resolve) => {
+        const html = IDEE.template.compileSync(myhelp, {
+          vars: {
+            title: getValue('textHelp.title'),
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/wfstcontrols/images/`,
+            translations: {
+              paragraph1: getValue('textHelp.paragraph1'),
+              screenshot1Alt: getValue('textHelp.screenshot1Alt'),
+              screenshot1Caption: getValue('textHelp.screenshot1Caption'),
+              screenshot2Alt: getValue('textHelp.screenshot2Alt'),
+              screenshot2Caption: getValue('textHelp.screenshot2Caption'),
+              screenshot2Description: getValue(
+                'textHelp.screenshot2Description',
+              ),
+            },
+          },
+        });
+        resolve(html);
+      }),
+    };
   }
 }
 
