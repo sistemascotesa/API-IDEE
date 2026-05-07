@@ -103,5 +103,13 @@
   "calculating": "Calculating",
   "try_again": "The query could not be executed. Please try again later",
   "email_correct": "The email with the incident has been sent correctly.",
-  "sending_email": "The email is being sent..."
+  "sending_email": "The email is being sent...",
+  "hide_methods": "Hide methods",
+  "method_1": "Method 1",
+  "method_2": "Method 2",
+  "method1_step1": "Select point, line or polygon.",
+  "method1_step2": "Draw the incident on the map.",
+  "method1_step3": "Send incident.",
+  "method2_step1": "Upload a file with the incident.",
+  "method2_step2": "Send incident."
 }
