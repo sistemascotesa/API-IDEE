@@ -3,11 +3,12 @@
  * @module M/plugin/Magnify
  */
 import 'assets/css/magnify';
-import MagnifyControl from './magnifycontrol';
 import api from '../../api';
-import { getValue } from './i18n/language';
+import myhelp from '../../templates/myhelp.html';
 import en from './i18n/en';
 import es from './i18n/es';
+import { getValue } from './i18n/language';
+import MagnifyControl from './magnifycontrol';
 
 export default class Magnify extends IDEE.Plugin {
   /**
@@ -208,5 +209,37 @@ export default class Magnify extends IDEE.Plugin {
       return (lang === 'en') ? en : es;
     }
     return IDEE.language.getTranslation(lang).magnify;
+  }
+
+  /**
+   * Obtiene la ayuda del plugin
+   *
+   * @function
+   * @public
+   * @api
+   */
+  getHelp() {
+    return {
+      title: getValue('textHelp.title'),
+      content: new Promise((resolve) => {
+        const html = IDEE.template.compileSync(myhelp, {
+          vars: {
+            title: getValue('textHelp.title'),
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/magnify/images/`,
+            translations: {
+              paragraph1: getValue('textHelp.paragraph1'),
+              screenshot1Alt: getValue('textHelp.screenshot1Alt'),
+              screenshot1Caption: getValue('textHelp.screenshot1Caption'),
+              screenshot2Alt: getValue('textHelp.screenshot2Alt'),
+              screenshot2Caption: getValue('textHelp.screenshot2Caption'),
+              screenshot2Description: getValue(
+                'textHelp.screenshot2Description',
+              ),
+            },
+          },
+        });
+        resolve(html);
+      }),
+    };
   }
 }

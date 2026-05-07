@@ -2,7 +2,7 @@ import Incicarto from 'facade/incicarto';
 
 window.Incicarto = Incicarto;
 
-IDEE.language.setLang('es'); // Español
+IDEE.language.setLang('en');
 // IDEE.language.setLang('en');
 // https://api-ideedes.grupotecopy.es
 

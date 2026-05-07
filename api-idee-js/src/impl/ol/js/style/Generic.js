@@ -181,6 +181,7 @@ class Generic extends Simple {
                   url: this.options_.point.icon.src,
                 });
               } else {
+                img.crossOrigin = 'anonymous';
                 img.src = this.options_.point.icon.src;
               }
               img.width = imgSizeW > imgx.width ? imgSizeW : imgx.width;

@@ -25,3 +25,4 @@ const mp = new WFSTControls({
 });
 
 map.addPlugin(mp); window.mp = mp;
+map.addPlugin(new IDEE.plugin.Help({}));

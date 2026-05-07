@@ -68,3 +68,5 @@ const mp = new Mapfooter(configAyuntamientoSevilla);
 map.addPlugin(mp);
 
 window.map = map;
+
+map.addPlugin(new IDEE.plugin.Help({}));
