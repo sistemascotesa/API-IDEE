@@ -6,24 +6,24 @@
   "constructor": "IDEE.plugin.StyleManager",
   "parameters": [{
     "type": "object",
-    "properties": [{
+    "properties": [
+    {
       "type": "simple",
       "name": "position",
       "position": 0,
       "possibleValues": ["left", "right"]
-    }, {
+    },
+    {
       "type": "boolean",
       "name": "collapsed",
       "position": 1
-    }, {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 2
-    }, {
+    },
+    {
       "type": "number",
       "name": "order",
       "position": 3
-    }, {
+    },
+    {
       "type": "simple",
       "name": "tooltip",
       "position": 4

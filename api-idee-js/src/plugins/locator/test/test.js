@@ -61,7 +61,6 @@ const inputTooltip = document.getElementById('inputTooltip');
 const selectCollapsed = document.getElementById('selectCollapsed');
 const inputZoom = document.getElementById('inputZoom');
 const selectPointStyle = document.getElementById('selectPointStyle');
-const selectDraggable = document.getElementById('selectIsdraggable');
 const selectProxy = document.getElementById('selectProxy');
 const selectParcel = document.getElementById('inputByParcelCadastre');
 const selectCoordinates = document.getElementById('inputByCoordinates');
@@ -96,9 +95,6 @@ function changeTest() {
   const pointStyleValue = selectPointStyle.options[selectPointStyle.selectedIndex].value;
   if (pointStyleValue !== '') options.pointStyle = pointStyleValue;
 
-  const isDraggable = selectDraggable.options[selectDraggable.selectedIndex].value;
-  if (isDraggable !== '') options.isDraggable = (isDraggable === 'true');
-
   const useProxySelectValue = selectProxy.options[selectProxy.selectedIndex].value;
   if (useProxySelectValue !== '') options.useProxy = useProxySelectValue === 'true';
 
@@ -116,7 +112,6 @@ function changeTest() {
   selectProxy,
   inputZoom,
   selectPointStyle,
-  selectDraggable,
   selectParcel,
   selectCoordinates,
   selectPlace,

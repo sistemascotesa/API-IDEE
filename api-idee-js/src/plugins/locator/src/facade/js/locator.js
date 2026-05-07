@@ -45,13 +45,6 @@ export default class Locator extends IDEE.Plugin {
     this.collapsed = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
 
     /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
-
-    /**
      * Zoom
      * @private
      * @type {Number}
@@ -162,7 +155,6 @@ export default class Locator extends IDEE.Plugin {
     }
 
     this.locatorControl = new LocatorControl(
-      this.isDraggable,
       this.zoom,
       this.pointStyle,
       this.byCoordinates,
@@ -274,7 +266,7 @@ export default class Locator extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.tooltip}*${this.zoom}*${this.pointStyle}*${this.isDraggable}*${!!this.byParcelCadastre}*${!!this.byCoordinates}*${!!this.byPlaceAddressPostal}*${this.useProxy}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.tooltip}*${this.zoom}*${this.pointStyle}*${!!this.byParcelCadastre}*${!!this.byCoordinates}*${!!this.byPlaceAddressPostal}*${this.useProxy}`;
   }
 
   /**

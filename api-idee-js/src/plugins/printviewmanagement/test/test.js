@@ -212,7 +212,7 @@ const updatePlugin = () => {
   options.position = selectPosition.options[selectPosition.selectedIndex].value;
   options.collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value === '' || selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true';
   options.order = Number(inputOrder.value);
-  options.tooltip = inputTooltip.value || 'Impresión del mapa';
+  options.tooltip = inputTooltip.value !== '' ? options.tooltip = inputTooltip.value : '';
   options.defaultOpenControl = Number(inputDefaultOpenControl.value) || 0;
   options.georefImageEpsg = safeParseJSON(inputGeorefImageEpsg.value, true);
   options.georefImage = safeParseJSON(inputGeorefImage.value, true);

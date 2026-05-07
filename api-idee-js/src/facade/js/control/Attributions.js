@@ -197,15 +197,27 @@ class Attributions extends Control {
       });
 
       this.accessibilityTab(html);
+      // this.map_.getLayers().forEach((layer) => {
+      //   if (layer.attribution) {
+      //     if (typeof layer.attribution === 'string') {
+      //       this.addHTMLContent(layer.attribution, layer.id);
+      //     } else {
+      //       this.addAttributions(layer.attribution);
+      //     }
+
+      //     this.changeVisibility(layer.id, layer.isVisible());
+      //   }
+      // });
+
       this.map_.getLayers().forEach((layer) => {
         if (layer.attribution) {
-          if (typeof layer.attribution === 'string') {
-            this.addHTMLContent(layer.attribution, layer.id);
-          } else {
-            this.addAttributions(layer.attribution);
-          }
+          const attribution = layer.attribution;
+          const attrObj = typeof attribution === 'string'
+            ? { attribuccion: attribution, id: layer.idLayer ?? layer.id }
+            : attribution;
 
-          this.changeVisibility(layer.id, layer.isVisible());
+          this.addAttributions(attrObj);
+          this.changeVisibility(layer.idLayer ?? layer.id, layer.isVisible());
         }
       });
       success(html);
@@ -290,6 +302,11 @@ class Attributions extends Control {
 
       if (/<[a-z][\s\S]*>/i.test(layer.attribuccion)) {
         this.addHTMLContent(layer.attribuccion, layer.id);
+        this.map_.getLayers().forEach((mapLayer) => {
+          if (mapLayer.idLayer === layer.id) {
+            this.changeVisibility(mapLayer.idLayer, mapLayer.isVisible());
+          }
+        });
         return;
       }
 
@@ -300,7 +317,7 @@ class Attributions extends Control {
       let mapAttributions = [];
       let defaultMapAttributions = false;
 
-      if (this.checkDefaultAttribution(layer) && isNullOrEmpty(layer.name)) {
+      if (this.checkDefaultAttribution(layer)) {
         defaultMapAttributions = this.defaultAttribution(layer, zoom, mapAttributions);
       }
 
@@ -485,7 +502,8 @@ class Attributions extends Control {
    * @api
    */
   addAttributions(attribuccionParams) {
-    if (this.collectionsAttributions_.some(({ id }) => attribuccionParams === id)) {
+    if (this.collectionsAttributions_.some(({ id }) => attribuccionParams === id
+      || id === attribuccionParams.id)) {
       return;
     }
 

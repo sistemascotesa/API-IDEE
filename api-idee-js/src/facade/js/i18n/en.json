@@ -1,5 +1,7 @@
 {
   "panzoom": {
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
     "textHelp": {
       "text1": "This tool allows you to change the zoom of the viewer from a panel with a slider. The display map changes zoom in or out as you move the slider up or down."
     }
@@ -11,7 +13,7 @@
     }
   },
   "backgroundlayers": {
-    "title": "",
+    "title": "Background layer selection",
     "textHelp": {
       "text1": "The base layer selector tool allows you to switch between different base layers or background layers, configured in a viewer."
     }
@@ -55,7 +57,7 @@
     }
   },
   "attributions": {
-    "title": "Recognitions",
+    "title": "Attributions",
     "attribution": "attribution",
     "textHelp": {
       "text1": "The base layer selector tool allows you to switch between different base layers or background layers, configured in a viewer.",

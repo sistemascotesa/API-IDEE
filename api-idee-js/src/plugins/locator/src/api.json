@@ -41,28 +41,23 @@
         },
         {
           "type": "boolean",
-          "name": "isDraggable",
+          "name": "byParcelCadastre",
           "position": 6
         },
         {
           "type": "boolean",
-          "name": "byParcelCadastre",
+          "name": "byCoordinates",
           "position": 7
         },
         {
           "type": "boolean",
-          "name": "byCoordinates",
+          "name": "byPlaceAddressPostal",
           "position": 8
         },
         {
           "type": "boolean",
-          "name": "byPlaceAddressPostal",
-          "position": 9
-        },
-        {
-          "type": "boolean",
           "name": "useProxy",
-          "position": 10
+          "position": 9
         }
       ]
     }

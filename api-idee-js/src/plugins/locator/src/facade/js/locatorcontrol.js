@@ -23,7 +23,6 @@ export default class LocatorControl extends IDEE.Control {
    * @api
    */
   constructor(
-    isDraggable,
     zoom,
     pointStyle,
     byCoordinates,
@@ -63,13 +62,6 @@ export default class LocatorControl extends IDEE.Control {
      * @type {Boolean|Object}
      */
     this.byPlaceAddressPostal_ = byPlaceAddressPostal;
-
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable_ = isDraggable;
 
     /**
      * Zoom
@@ -233,9 +225,9 @@ export default class LocatorControl extends IDEE.Control {
           this.fire('ignsearchlocator:entityFound', [extent]);
         });
       }
-      if (this.isDraggable_) {
-        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-locator-title');
-      }
+      // if (this.isDraggable_) {
+      //   IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-locator-title');
+      // }
       this.accessibilityTab(html);
       success(html);
     });

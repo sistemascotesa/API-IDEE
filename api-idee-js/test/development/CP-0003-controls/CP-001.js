@@ -1,15 +1,26 @@
+/* eslint-disable camelcase */
 import { map as Mmap } from 'IDEE/api-idee';
-import WMS from 'IDEE/layer/WMS';
 import BackgroundLayers from 'IDEE/control/BackgroundLayers';
+import { setLang } from '../../../src/facade/js/i18n/language';
 
-// IDEE.config.backgroundlayers = [{
-//   id: 'mapa',
-//   title: 'Callejero',
-//   layers: [
-//     Raster3,
-//     Raster2,
-//   ],
-// }];
+const backgroundlayersIds = 'mapa,imagen,hibrido'.split(',');
+const backgroundlayersTitles = 'Base IGN,Imagen,Hibrido'.split(',');
+// const backgroundlayersTooltips = 'Base IGN,Imagen,Hibrido'.split(',');
+const backgroundlayersLayers = 'QUICK*Base_IGNBaseTodo_TMS,QUICK*BASE_PNOA_MA_TMS,QUICK*BASE_HIBRIDO_LayerGroup'.split(',');
+IDEE.config.backgroundlayers = backgroundlayersIds.map((id, index) => {
+  return {
+    id,
+    title: backgroundlayersTitles[index],
+    // tooltip: `Seleccionar ${backgroundlayersTooltips[index]}`,
+    layers: backgroundlayersLayers[index].split('+'),
+  };
+});
+
+// eslint-disable-next-line no-console
+// console.log(JSON.parse(JSON.stringify(IDEE.config.backgroundlayers)));
+
+const urlParams = new URLSearchParams(window.location.search);
+setLang(urlParams.get('language') || 'es');
 
 const map = Mmap({
   container: 'map',
@@ -21,26 +32,11 @@ const map = Mmap({
   center: [-467062.8225, 4683459.6216],
 });
 
-const layerinicial = new WMS({
-  url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
-  name: 'AU.AdministrativeBoundary',
-  legend: 'Limite administrativo',
-  tiled: false,
-}, {});
-
-const layerUA = new WMS({
-  url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
-  name: 'AU.AdministrativeUnit',
-  legend: 'Unidad administrativa',
-  tiled: false,
-}, {});
-
-const layers = [layerinicial, layerUA];
-
 const selectPosition = document.getElementById('selectPosicion');
 const inputTooltip = document.getElementById('inputTooltip');
 const inputOrder = document.getElementById('inputOrder');
 const inputLayerIndex = document.getElementById('inputLayerIndex');
+const selectVisible = document.getElementById('selectVisible');
 
 const create = (options) => {
   if (!map.hasControl(BackgroundLayers.NAME)) map.addControls(new BackgroundLayers(options));
@@ -62,7 +58,10 @@ const recreate = () => {
 
   if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
 
-  if (inputLayerIndex.value && inputLayerIndex.value !== '') options.layerIndex = Number(inputLayerIndex.value);
+  if (inputLayerIndex.value !== '') options.layerIndex = Number(inputLayerIndex.value);
+
+  const visible = selectVisible.options[selectVisible.selectedIndex].value;
+  if (visible !== '') options.visible = visible === 'true';
 
   create(options);
 };
@@ -82,5 +81,3 @@ removeButton.addEventListener('click', () => {
 });
 
 recreate();
-
-map.addLayers(layers);

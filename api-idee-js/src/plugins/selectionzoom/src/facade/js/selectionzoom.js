@@ -197,6 +197,8 @@ export default class SelectionZoom extends IDEE.Plugin {
     this.panel = new IDEE.ui.Panel(this.name, {
       collapsed: this.collapsed,
       position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
       className: 'm-plugin-selectionzoom',
       tooltip: this.tooltip,
       collapsedButtonClass: 'g-selectionzoom-selezoom',

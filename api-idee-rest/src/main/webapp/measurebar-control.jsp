@@ -13,6 +13,7 @@
                 <meta name="idee" content="yes">
                 <title>Visor base</title>
                 <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
+                <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
                 </link>
                 <% Map<String, String[]> parameterMap = request.getParameterMap();
                     PluginsManager.init (getServletContext());

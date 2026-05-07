@@ -4696,7 +4696,7 @@ class Map extends Base {
       }
 
       this.minPanelWidth = 256;
-      this.maxPanelWidth = 360;
+      this.maxPanelWidth = 608;
 
       if (minWidth >= this.minPanelWidth && minWidth <= this.maxPanelWidth) {
         this.minPanelWidth = minWidth;

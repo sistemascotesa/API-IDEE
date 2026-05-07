@@ -5,8 +5,6 @@ import 'assets/css/contactlink';
 import 'assets/css/fonts';
 import ContactLinkControl from './contactlinkcontrol';
 import api from '../../api';
-// eslint-disable-next-line import/no-relative-packages
-import { LEFT } from '../../../../../facade/js/ui/position';
 import { getValue } from './i18n/language';
 import myhelp from '../../templates/myhelp';
 
@@ -26,8 +24,8 @@ export default class ContactLink extends IDEE.Plugin {
    */
   constructor(options = {}) {
     super('contactlink', {
-      position: options.position ?? LEFT,
-      tooltip: options.tooltip ?? getValue('tooltip'),
+      position: options.position || 'left',
+      tooltip: options.tooltip || getValue('tooltip'),
       order: options.order,
     });
 
