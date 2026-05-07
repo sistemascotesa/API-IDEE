@@ -6,6 +6,7 @@ import myhelp from 'templates/overviewmaphelp';
 import OverviewMapImpl from 'impl/control/OverviewMap';
 import {
   isUndefined, isNullOrEmpty, isObject, isBoolean,
+  isNumber,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import * as Position from '../ui/position';
@@ -13,7 +14,6 @@ import * as Position from '../ui/position';
 import Control from './Control';
 import { getValue } from '../i18n/language';
 import { compileSync } from '../util/Template';
-import apiIdee from '../api-idee';
 
 /**
  * @typedef {Object} Options
@@ -46,7 +46,7 @@ import apiIdee from '../api-idee';
  * Por defecto es true.
  * @param {boolean} [collapsed=true] indica si el control está plegado o no por defecto.
  * Por defecto es true.
- * @param {boolean} [fixed] indica si el control muestra un mapa fijo.
+ * @param {boolean} [fixed=6] indica si el control muestra un mapa fijo.
  * Por defecto es false.
  * @param {Number} [zoom] Zoom del minimapa.
  * @param {Number} [maxZoom] Zoom máximo del minimapa.
@@ -120,32 +120,18 @@ class OverviewMap extends Control {
     this.map = null;
 
     /**
-    * Array of controls
-    * @private
-    * @type {Array<IDEE.Control>}
-    */
-    this.controls_ = [];
-
-    /**
-    * Options of the control
-    * @private
-    * @type {Object}
-    */
-    this.options_ = options || {};
-
-    /**
     * Fixed zoom
     * @private
     * @type {Boolean}
     */
-    this.fixed_ = options.fixed !== undefined ? options.fixed : false;
+    this.fixed_ = isBoolean(options.fixed) ? options.fixed : false;
 
     /**
     * Zoom to make fixed
     * @private
     * @type {Number}
     */
-    this.zoom_ = options.zoom !== undefined ? options.zoom : '';
+    this.zoom_ = isNumber(options.zoom) ? options.zoom : 6;
 
     /**
     * Zoom to make fixed
@@ -187,16 +173,9 @@ class OverviewMap extends Control {
     this.collapsed = isBoolean(options.collapsed) ? options.collapsed : this.collapsible;
 
     /**
-    * Metadata from api.json
+    * Options of the control
     * @private
     * @type {Object}
-    */
-    this.metadata_ = apiIdee.metadata;
-
-    /**
-    * Control parameters
-    * @public
-    * @type {object}
     */
     this.options = options;
   }
@@ -227,71 +206,6 @@ class OverviewMap extends Control {
       success(html);
     });
     return this.element;
-  }
-
-  /**
-  * This function adds this control into the map
-  *
-  * @public
-  * @function
-  * @param {IDEE.Map} map the map to add the control
-  * @api stable
-  */
-  //   addTo(map) {
-  //     this.map = map;
-
-  //     this.control_ = new OverviewMapControl(this.options_, this.vendorOptions);
-
-  //     this.panel_ = new IDEE.ui.ControlPanel('OverviewMap', {
-  //       collapsible: true,
-  //       className: 'm-overviewmap-panel',
-  //       collapsedButtonClass: 'overviewmap-mundo',
-  //       tooltip: this.tooltip,
-  //       order: this.order,
-  //       position: this.position,
-  //     });
-
-  //     this.map.addControlPanels(this.panel_);
-  //     this.panel_.addControls(this.control_);
-  //     // this.control_.setPanel(this.panel_);
-  //     this.map.addPanels(this.panel_);
-
-  //     // this.map_.addControls(this.controls_);
-  //     this.controls_.push(this.control_);
-  //   }
-
-  /**
-  * This function gets metadata control
-  *
-  * @public
-  * @function
-  * @api stable
-  */
-  getMetadata() {
-    return this.metadata_;
-  }
-
-  /**
-  * Get the API REST Parameters of the control
-  *
-  * @function
-  * @public
-  * @api
-  */
-  getAPIRest() {
-    // position*collapsed*collapsible*fixed*zoom*baseLayer
-    return `${this.name}=${this.position}*!${this.vendorOptions.collapsed}*!${this.vendorOptions.collapsible}*!${this.fixed_}*!${this.zoom_}*!${this.baseLayer_}*!${this.tooltip}`;
-  }
-
-  /**
-  * Gets the API REST Parameters in base64 of the control
-  *
-  * @function
-  * @public
-  * @api
-  */
-  getAPIRestBase64() {
-    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
