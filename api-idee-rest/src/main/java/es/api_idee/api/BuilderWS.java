@@ -163,8 +163,7 @@ public class BuilderWS {
    }
 
    /**
-    * Reads the star-format controls param and returns each entry as a quoted JS string
-    * for client-side processing via buildControl.
+    * Reads the star-format controls param and returns each entry as a JS object.
     *
     * Format: controls=name*key=val;key=val,...
     * Example: controls=scale,timeline*order=2,attributions*position=down

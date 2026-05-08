@@ -45,7 +45,7 @@
                 "examples": {
                   "absoluteSimple": {
                     "summary": "?controls=timeline*timelineType=absoluteSimple;animation=true;intervals=base64~[...]",
-                    "value": "IDEE.map({\"container\":\"map\"}).addControls(\"timeline*timelineType=absoluteSimple;animation=true;intervals=base64~W1siTkFDSU9OQUwgMTk4MS0xOTg2IiwiMTk4NiIsIldNUypOQUNJT05BTF8xOTgxLTE5ODYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypOQUNJT05BTF8xOTgxLTE5ODYiXSxbIk9MSVNUQVQiLCIxOTk4IiwiV01TKk9MSVNUQVQqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypPTElTVEFUIl0sWyJTSUdQQUMiLCIyMDAzIiwiV01TKlNJR1BBQypodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKlNJR1BBQyJdLFsiUE5PQSAyMDA0IiwiMjAwNCIsIldNUypwbm9hMjAwNCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDA0Il1d"
+                    "value": "IDEE.map({\"container\":\"map\"}).addControls(new IDEE.control.Timeline({\"timelineType\":\"absoluteSimple\",\"animation\":true,\"intervals\":\"base64~W1siTkFDSU9OQUwgMTk4MS0xOTg2IiwiMTk4NiIsIldNUypOQUNJT05BTF8xOTgxLTE5ODYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypOQUNJT05BTF8xOTgxLTE5ODYiXSxbIk9MSVNUQVQiLCIxOTk4IiwiV01TKk9MSVNUQVQqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypPTElTVEFUIl0sWyJTSUdQQUMiLCIyMDAzIiwiV01TKlNJR1BBQypodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKlNJR1BBQyJdLFsiUE5PQSAyMDA0IiwiMjAwNCIsIldNUypwbm9hMjAwNCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDA0Il1d\"}))\n"
                   }
                 }
               }

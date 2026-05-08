@@ -78,7 +78,7 @@ public abstract class PluginsManager {
 			// search plugins in "plugins" parameter (simple name or star format)
 			String pluginsParam = queryParams.getFirst("plugins");
 			if (pluginsParam != null) {
-				for (String pluginEntry : pluginsParam.split(",")) {
+				for (String pluginEntry : splitPluginEntries(pluginsParam)) {
 					pluginEntry = pluginEntry.trim();
 					if (pluginEntry.isEmpty()) continue;
 					int starIdx = pluginEntry.indexOf('*');
@@ -135,8 +135,9 @@ public abstract class PluginsManager {
 			// search plugins in "plugins" parameter
 			String pluginsParam = queryParams.getFirst("plugins");
 			if (pluginsParam != null) {
-				String[] pluginNames = pluginsParam.split(",");
-				for (String pluginName : pluginNames) {
+				for (String pluginEntry : splitPluginEntries(pluginsParam)) {
+					int starIdx = pluginEntry.indexOf('*');
+					String pluginName = starIdx > 0 ? pluginEntry.substring(0, starIdx).trim() : pluginEntry.trim();
 					PluginAPI plugin = availablePlugins.get(pluginName);
 					if (plugin == null) {
 						// Intentar cargar plugin externo
@@ -169,7 +170,7 @@ public abstract class PluginsManager {
 		// search plugins in "plugins" parameter (simple name or star format)
 		String[] pluginsParams = queryParams.get("plugins");
 		if (pluginsParams != null) {
-			for (String pluginEntry : pluginsParams[0].split(",")) {
+			for (String pluginEntry : splitPluginEntries(pluginsParams[0])) {
 				pluginEntry = pluginEntry.trim();
 				if (pluginEntry.isEmpty()) continue;
 				int starIdx = pluginEntry.indexOf('*');
@@ -219,7 +220,7 @@ public abstract class PluginsManager {
 		// search plugins in "plugins" parameter (simple name or star format)
 		String[] pluginsParams = queryParams.get("plugins");
 		if (pluginsParams != null) {
-			for (String pluginEntry : pluginsParams[0].split(",")) {
+			for (String pluginEntry : splitPluginEntries(pluginsParams[0])) {
 				pluginEntry = pluginEntry.trim();
 				if (pluginEntry.isEmpty()) continue;
 				int starIdx = pluginEntry.indexOf('*');
@@ -249,6 +250,44 @@ public abstract class PluginsManager {
 			}
 		}
 		return cssfiles.toArray(new String[cssfiles.size()]);
+	}
+
+	/**
+	 * Splits a "plugins" parameter value on commas that are plugin separators.
+	 * A comma is a plugin separator only when the token immediately after it
+	 * (up to the next comma, semicolon, '*' or '=') matches a known plugin name.
+	 * This distinguishes "plugin1*pos=left,plugin2" from "plugin1*tools=a,b,c".
+	 */
+	private static List<String> splitPluginEntries(String pluginsParam) {
+		List<String> entries = new java.util.ArrayList<>();
+		int start = 0;
+		int len = pluginsParam.length();
+		for (int i = 0; i < len; i++) {
+			if (pluginsParam.charAt(i) != ',') continue;
+			// Extract token after this comma (stops at , ; * =)
+			int j = i + 1;
+			while (j < len) {
+				char ch = pluginsParam.charAt(j);
+				if (ch == ',' || ch == ';' || ch == '*' || ch == '=') break;
+				j++;
+			}
+			String nextToken = pluginsParam.substring(i + 1, j).trim();
+			if (isKnownPlugin(nextToken)) {
+				String entry = pluginsParam.substring(start, i).trim();
+				if (!entry.isEmpty()) entries.add(entry);
+				start = i + 1;
+			}
+		}
+		String last = pluginsParam.substring(start).trim();
+		if (!last.isEmpty()) entries.add(last);
+		return entries;
+	}
+
+	private static boolean isKnownPlugin(String name) {
+		if (name == null || name.isEmpty()) return false;
+		if (availablePlugins != null && availablePlugins.containsKey(name)) return true;
+		if (AVAILABLE_EXTERNAL_PLUGINS != null && AVAILABLE_EXTERNAL_PLUGINS.contains(name.toLowerCase())) return true;
+		return false;
 	}
 
 	/**

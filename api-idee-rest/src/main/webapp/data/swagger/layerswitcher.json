@@ -254,10 +254,10 @@
         "description": "Servicio cartográfico dentro de un grupo del catálogo precargado.",
         "required": ["name", "type", "url"],
         "properties": {
-          "name":       { "type": "string",                         "description": "Nombre visible del servicio.",                                                          "example": "Mapas"                              },
-          "type":       { "type": "string", "enum": ["WMS","WMTS"], "description": "Tipo de servicio OGC.",                                                                 "example": "WMTS"                               },
-          "url":        { "type": "string",                         "description": "URL base del servicio.",                                                                "example": "https://www.ign.es/wmts/mapa-raster?" },
-          "white_list": { "type": "array",                          "description": "Capas permitidas. Si se omite, se muestran todas las capas del servicio.", "items": { "type": "string" } }
+          "name": { "type": "string", "description": "Nombre visible del servicio.", "example": "Mapas" },
+          "type": { "type": "string", "description": "Tipo de servicio OGC.", "example": "WMTS" },
+          "url": { "type": "string", "description": "URL base del servicio.", "example": "https://www.ign.es/wmts/mapa-raster?" },
+          "white_list": { "type": "array",  "description": "Capas permitidas. Si se omite, se muestran todas las capas del servicio.", "items": { "type": "string" } }
         }
       }
     }
