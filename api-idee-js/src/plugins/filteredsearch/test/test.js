@@ -35,3 +35,5 @@ const mp = new FilteredSearch({
 });
 
 map.addPlugin(mp);
+
+map.addPlugin(new IDEE.plugin.Help({}));

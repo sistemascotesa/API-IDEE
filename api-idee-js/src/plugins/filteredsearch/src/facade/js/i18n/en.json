@@ -39,5 +39,14 @@
   "filter_exp": "Filter expression",
   "placeholder": "The query will appear here.",
   "no_saved_queries": "No saved queries.",
-  "no_entities": "No entities with the specified characteristics."
+  "no_entities": "No entities with the specified characteristics.",
+  "textHelp": {
+    "title": "FILTEREDSEARCH",
+    "paragraph1": "This plugin lets you build attribute queries on queryable map layers, combine operators and values, apply the selection on the map, and manage saved queries.",
+    "screenshot1Alt": "Map with the filter manager button (funnel icon) visible on the cartography",
+    "screenshot1Caption": "help-01.png",
+    "screenshot2Alt": "Manager panel: layer, method, field and value lists, operators and filter expression area",
+    "screenshot2Caption": "help-02.png",
+    "screenshot2Description": "In the panel choose the layer and method (new selection, over previous selection, etc.). Pick fields and values, use the operator buttons to build the expression in the text area, and click Accept to apply. Clear search or Clear filter reset the selection or filter; My queries reuses saved expressions."
+  }
 }

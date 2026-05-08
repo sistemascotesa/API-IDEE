@@ -117,7 +117,7 @@ class OverviewMap extends OlControlOverviewMap {
      */
     this.facadeMap = null;
 
-    this.order = (options.order) ? options.order : null;
+    this.order = options.order ? options.order : null;
 
     this.bindedUpdateBox = this.updateBox_.bind(this);
   }
@@ -168,6 +168,33 @@ class OverviewMap extends OlControlOverviewMap {
   }
 
   /**
+   * @param {IDEE.Map} facadeMap mapa de fachada
+   */
+  registerRenderCompleteListener() {
+    this.onceRenderCompleteFn = () => {
+      const ovmap = this.getOverviewMap();
+      ovmap.removeEventListener('postrender', this.bindedUpdateBox);
+      setTimeout(() => {
+        this.resetExtent_();
+        ovmap.render();
+        ovmap.updateSize();
+        ovmap.addEventListener('postrender', this.bindedUpdateBox);
+      }, this.toggleDelay_);
+    };
+    this.olMap.once('rendercomplete', this.onceRenderCompleteFn);
+  }
+
+  /**
+   * Removes rendercomplete from ol map.
+   */
+  removeRenderCompleteListener() {
+    if (typeof this.onceRenderCompleteFn === 'function') {
+      this.olMap.un('rendercomplete', this.onceRenderCompleteFn);
+      this.onceRenderCompleteFn = null;
+    }
+  }
+
+  /**
    * This function adds the control to the specified map
    *
    * @public
@@ -178,12 +205,14 @@ class OverviewMap extends OlControlOverviewMap {
    */
   addTo(map, html) {
     this.facadeMap = map;
-    const olMap = map.getMapImpl();
-    this.setMap(olMap);
+    this.olMap = map.getMapImpl();
+    this.setMap(this.olMap);
 
     this.update(map, html);
     this.html_ = html;
     this.addLayers();
+
+    this.registerRenderCompleteListener();
   }
 
   resetExtent_() {
@@ -391,7 +420,7 @@ class OverviewMap extends OlControlOverviewMap {
       } else {
         this.ovmap_.addLayer(olLayers[0]);
       }
-    } else {
+    } else if (!isNullOrEmpty(olLayers[0])) {
       this.ovmap_.addLayer(olLayers[0]);
     }
 
@@ -403,28 +432,9 @@ class OverviewMap extends OlControlOverviewMap {
    * @overrides ol.control.Control.prototype
    */
   handleToggle_() {
-    this.classToggle(this.element, 'ol-collapsed');
-    const button = this.element.querySelector('button');
-    button.setAttribute('tabindex', this.order);
-
     setTimeout(() => {
-      if (this.collapsed_) {
-        this.replaceNode(this.collapseLabel_, this.label_);
-      } else {
-        this.replaceNode(this.label_, this.collapseLabel_);
-      }
-      this.collapsed_ = !this.collapsed_;
-
-      // manage overview map if it had not been rendered before and control
-      // is expanded
-      const ovmap = this.ovmap_;
-
-      if (!this.collapsed_ && !ovmap.isRendered()) {
-        ovmap.updateSize();
-        this.resetExtent_();
-        ovmap.removeEventListener('postrender', this.bindedUpdateBox);
-        ovmap.addEventListener('postrender', this.bindedUpdateBox);
-      }
+      // eslint-disable-next-line no-underscore-dangle
+      super.handleToggle_();
     }, this.toggleDelay_);
   }
 
@@ -438,6 +448,7 @@ class OverviewMap extends OlControlOverviewMap {
    * @export
    */
   destroy() {
+    this.removeRenderCompleteListener();
     this.facadeMap.getMapImpl().removeControl(this);
     this.facadeMap = null;
   }

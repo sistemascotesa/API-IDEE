@@ -25,5 +25,14 @@
   "edit": "Editar",
   "modify": "Modificar",
   "save_element_successfully": "Se ha guardado correctamente el elemento",
-  "save_successfully": "Se ha guardado correctamente"
+  "save_successfully": "Se ha guardado correctamente",
+  "textHelp": {
+    "title": "WFSTCONTROLS",
+    "paragraph1": "Este plugin agrupa acciones de edición transaccional sobre una capa WFS cargada en el mapa: dibujar, modificar o eliminar geometrías, editar atributos, limpiar cambios locales y guardar en el servicio (según los controles configurados). Requiere capa WFS compatible y, si aplica, parámetro geometry o detección automática de tipo.",
+    "screenshot1Alt": "Icono de wfstcontrols en el mapa",
+    "screenshot1Caption": "help-01.png",
+    "screenshot2Alt": "Detalle del panel con dibujar, modificar, guardar y otras acciones de edición",
+    "screenshot2Caption": "help-02.png",
+    "screenshot2Description": "Use dibujar o modificar sobre el mapa, edite atributos si está activo, pulse Guardar para enviar los cambios al servicio o Limpiar para descartar ediciones locales no guardadas."
+  }
 }

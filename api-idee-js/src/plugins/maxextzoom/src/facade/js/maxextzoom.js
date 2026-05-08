@@ -2,11 +2,12 @@
  * @module M/plugin/MaxExtZoom
  */
 import 'assets/css/maxextzoom';
-import MaxExtZoomControl from './maxextzoomcontrol';
 import api from '../../api';
-import { getValue } from './i18n/language';
+import myhelp from '../../templates/myhelp.html';
 import en from './i18n/en';
 import es from './i18n/es';
+import { getValue } from './i18n/language';
+import MaxExtZoomControl from './maxextzoomcontrol';
 
 export default class MaxExtZoom extends IDEE.Plugin {
   /**
@@ -123,5 +124,35 @@ export default class MaxExtZoom extends IDEE.Plugin {
       return (lang === 'en') ? en : es;
     }
     return IDEE.language.getTranslation(lang).maxextzoom;
+  }
+
+  /**
+   * Obtiene la ayuda del plugin
+   *
+   * @function
+   * @public
+   * @api
+   */
+  getHelp() {
+    return {
+      title: getValue('textHelp.title'),
+      content: new Promise((resolve) => {
+        const html = IDEE.template.compileSync(myhelp, {
+          vars: {
+            title: getValue('textHelp.title'),
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/maxextzoom/images/`,
+            translations: {
+              paragraph1: getValue('textHelp.paragraph1'),
+              screenshot1Alt: getValue('textHelp.screenshot1Alt'),
+              screenshot1Caption: getValue('textHelp.screenshot1Caption'),
+              screenshot1Description: getValue(
+                'textHelp.screenshot1Description',
+              ),
+            },
+          },
+        });
+        resolve(html);
+      }),
+    };
   }
 }
