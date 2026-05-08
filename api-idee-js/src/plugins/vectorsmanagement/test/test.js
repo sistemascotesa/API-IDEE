@@ -7,6 +7,7 @@ IDEE.language.setLang('es');
 const map = IDEE.map({
   container: 'mapjs',
   center: [-458756.9690741142, 4682774.665868655],
+  controls: ['measurebar'],
   layers: ['OSM'],
   zoom: 6,
 });
@@ -73,9 +74,7 @@ window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/countries.mbtile
 
 const mp = new VectorsManagement({
   position: 'right',
-  collapsible: false,
   collapsed: false,
-  isDraggable: true,
   // tooltip: 'TOOLTIP TEST Gestionar mis vectores',
   // useProxy => falta implementar
 

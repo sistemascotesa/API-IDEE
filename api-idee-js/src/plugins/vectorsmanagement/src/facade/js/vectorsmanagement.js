@@ -3,6 +3,7 @@
  */
 
 import '../assets/css/vectorsmanagement';
+import '../assets/css/fonts';
 import VectorsManagementControl from './vectorsmanagementcontrol';
 import myhelp from '../../templates/myhelp';
 import { getValue } from './i18n/language';
@@ -26,6 +27,7 @@ export default class VectorsManagement extends IDEE.Plugin {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
       order: options.order,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vector.svg',
     });
 
     /**
@@ -52,7 +54,7 @@ export default class VectorsManagement extends IDEE.Plugin {
     /**
      * Panel of the plugin
      * @private
-     * @type {IDEE.ui.Panel}wq
+     * @type {IDEE.ui.Panel}
      */
     this.panel = null;
 
@@ -194,7 +196,7 @@ export default class VectorsManagement extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: this.svgPath,
       order: this.order,
     });
     map.addButtons(this.button);
@@ -210,7 +212,6 @@ export default class VectorsManagement extends IDEE.Plugin {
       collapsedButtonClass: 'vectorsmanagement-icon-vectors',
       order: this.order,
     });
-    map.addPanels(this.panel);
 
     this.controls.push(new VectorsManagementControl({
       map,
@@ -231,10 +232,10 @@ export default class VectorsManagement extends IDEE.Plugin {
     });
 
     this.panel.addControls(this.controls);
-    // map.addPanels(this.panel_); */
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
+    map.addPanels(this.panel);
   }
 
   /**
@@ -247,7 +248,7 @@ export default class VectorsManagement extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.selection}*${this.addlayer}*${this.analysis}*${this.creation}*${this.download}*${this.edition}*${this.help}*${this.style}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.selection}*${this.addlayer}*${this.analysis}*${this.creation}*${this.download}*${this.edition}*${this.help}*${this.style}`;
   }
 
   /**
