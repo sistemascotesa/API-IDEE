@@ -125,8 +125,10 @@ export default class StoryMap extends IDEE.Plugin {
       order: this.order,
     });
 
+    const lang = IDEE.language.getLang();
+    const contentForLang = this.content[lang] || this.content[Object.keys(this.content)[0]];
     this.controls.push(new StoryMapControl(
-      this.content[IDEE.language.getLang()],
+      contentForLang,
       this.delay,
       this.indexInContent,
     ));
