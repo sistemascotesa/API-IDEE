@@ -128,13 +128,16 @@ export default class MapheaderControl extends IDEE.Control {
       const btnMapHeader = panelMapheader ? panelMapheader.querySelector('button.m-panel-btn') : null;
 
       if (btnMapHeader) {
+        btnMapHeader.textContent = this.opened ? getValue('hide') : getValue('show');
         btnMapHeader.title = this.opened ? getValue('hideheader') : getValue('showheader');
         btnMapHeader.addEventListener('click', () => {
           if (this.opened) {
+            btnMapHeader.textContent = getValue('show');
             btnMapHeader.title = getValue('showheader');
             this.opened = false;
             this.setTopMargin(false);
           } else {
+            btnMapHeader.textContent = getValue('hide');
             btnMapHeader.title = getValue('hideheader');
             this.opened = true;
             this.checkHeaderheight();

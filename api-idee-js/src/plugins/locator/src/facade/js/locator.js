@@ -64,7 +64,7 @@ export default class Locator extends IDEE.Plugin {
      * @type {Boolean|Object}
      */
     this.byParcelCadastre = IDEE.utils.isUndefined(options.byParcelCadastre)
-      ?? options.byParcelCadastre === true
+      || options.byParcelCadastre === true
       ? this.getInfoCatastro()
       : options.byParcelCadastre;
 
@@ -74,7 +74,8 @@ export default class Locator extends IDEE.Plugin {
      * @type {Boolean|Object}
      */
     this.byCoordinates = IDEE.utils.isUndefined(options.byCoordinates)
-      ?? options.byCoordinates === true ? this.getXYLocator() : options.byCoordinates;
+      || options.byCoordinates === true
+      ? this.getXYLocator() : options.byCoordinates;
 
     /**
      * Indicates if the control ignsearchlocator is added to the plugin
@@ -82,7 +83,7 @@ export default class Locator extends IDEE.Plugin {
      * @type {Boolean|Object}
      */
     this.byPlaceAddressPostal = IDEE.utils.isUndefined(options.byPlaceAddressPostal)
-      ?? options.byPlaceAddressPostal === true
+      || options.byPlaceAddressPostal === true
       ? this.getIGNSearchLocator()
       : options.byPlaceAddressPostal;
 

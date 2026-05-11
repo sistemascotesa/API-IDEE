@@ -107,7 +107,6 @@
 
         let mp;
         const selectPosicion = document.getElementById("selectPosicion");
-        const buttonApi = document.getElementById("buttonAPI");
         const botonEliminar = document.getElementById("botonEliminar");
         const layernameInput = document.getElementById('layername');
         const geometrySelect = document.getElementById('geometry');

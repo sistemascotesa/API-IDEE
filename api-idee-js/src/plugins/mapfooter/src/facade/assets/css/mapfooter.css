@@ -6,11 +6,11 @@
   > div.m-area.m-bottom.m-left
   > div.m-panel.m-mapfooter
   > button.g-cartografia-flecha-izquierda::before {
-  content: "Ocultar \e905" !important;
+  content: "\e905" !important;
 }
 
 .mapfooter-abrir:before {
-  content: "Mostrar \e935";
+  content: "\e935";
 }
 .m-areas > div.m-area.m-bottom > div.m-panel {
   margin-bottom: 0px !important;
