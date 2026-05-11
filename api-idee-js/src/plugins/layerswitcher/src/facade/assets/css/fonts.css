@@ -1,51 +1,16 @@
 /**************************
-    LAYER ICONS 
+    LAYER ICONS
 **************************/
-
-.g-cartografia-btn-layerswitcher-ocultar::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojoOculto.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojoOculto.svg');
-}
-
-.g-cartografia-btn-layerswitcher-ver::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojoLine.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojoLine.svg');
-}
-
-.g-cartografia-btn-layerswitcher-image::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_foto.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_foto.svg');
-}
-
-.g-cartografia-btn-layerswitcher-target::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_posicion.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_posicion.svg');
-}
-
-.g-cartografia-btn-layerswitcher-info::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_info.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_info.svg');
-}
 
 .g-cartografia-btn-layerswitcher-style::before {
     -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_rodillo.svg');
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_rodillo.svg');
 }
 
-.g-cartografia-btn-layerswitcher-delete::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');
-}
-
 
 /**************************
-    DIALOG MAIN BUTTONS 
+    DIALOG MAIN BUTTONS
 **************************/
-
-.g-cartografia-btn-layerswitcher-zoom::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lupa.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lupa.svg');
-}
 
 .g-cartografia-btn-layerswitcher-group::before {
     -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_carpeta.svg');
@@ -60,50 +25,4 @@
 .g-cartografia-btn-layerswitcher-lista::before {
     -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lista.svg');
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lista.svg');
-}
-
-.g-cartografia-btn-layerswitcher-upload::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_subirArchivo.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_subirArchivo.svg');
-}
-
-
-/*************************
-    DIALOG SELECT ICON
-*************************/
-
-.g-cartografia-btn-layerswitcher-caret::before,
-.g-cartografia-btn-layerswitcher-caret-close::before,
-.g-cartografia-btn-layerswitcher-desplegar::before,
-.g-cartografia-btn-layerswitcher-colapsar::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg');
-    margin: 0;
-}
-
-.g-cartografia-btn-layerswitcher-caret-close::before,
-.g-cartografia-btn-layerswitcher-colapsar::before {
-    transform: rotate(180deg);
-}
-
-
-/*************************
-    LOADING ICON
-*************************/
-
-.g-cartografia-btn-layerswitcher-spinner::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_actualizar.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_actualizar.svg');
-}
-
-
-/*************************
-    EMPTY CONTENT ICON
-*************************/
-
-.g-cartografia-layerswitcher-empty-content::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_anadirCapas.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_anadirCapas.svg');
-    width: 92px;
-    height: 92px;
 }

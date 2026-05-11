@@ -2,39 +2,7 @@
     BUTTONS
 *********************/
 
-.g-cartografia-btn-infocoordinates-removePoint::before,
-.g-cartografia-btn-infocoordinates-removeAllPoints::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');
-}
-
-.g-cartografia-btn-infocoordinates-copylatlon::before,
-.g-cartografia-btn-infocoordinates-copyxy::before,
-.g-cartografia-btn-infocoordinates-copyAllPoints::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_copy.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_copy.svg');
-}
-
 .g-cartografia-btn-infocoordinates-importAllPoints::before {
     -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_notas.svg');
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_notas.svg');
-}
-
-.g-cartografia-btn-infocoordinates-displayAllPoints::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojoLine.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojoLine.svg');
-}
-
-.g-cartografia-btn-infocoordinates-displayAllPoints.hidden::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojoOculto.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojoOculto.svg');
-}
-
-/*********************
-    HELP ICON
-*********************/
-
-.g-cartografia-btn-infocoordinates-help::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ayuda.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ayuda.svg');
 }

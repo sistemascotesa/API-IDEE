@@ -2,11 +2,6 @@
     TAB BUTTONS
 *********************/
 
-.g-cartografia-btn-comparators-mirrorpanel::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_zoom_recuad.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_zoom_recuad.svg');
-}
-
 .g-cartografia-btn-comparators-windowsync::before {
     -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_sincro.svg');
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_sincro.svg');
@@ -15,11 +10,6 @@
 .g-cartografia-btn-comparators-lyrcompare::before {
     -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent.svg');
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent.svg');
-}
-
-.g-cartografia-btn-comparators-transparency::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_posicion.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_posicion.svg');
 }
 
 /*********************
@@ -83,7 +73,3 @@
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent.svg');
 }
 
-.g-cartografia-btn-comparators-windowsync-close::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent_cerrar.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent_cerrar.svg');
-}
