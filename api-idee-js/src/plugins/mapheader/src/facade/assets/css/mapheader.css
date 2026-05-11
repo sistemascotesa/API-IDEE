@@ -5,13 +5,13 @@
   > div.m-area.m-top.m-right
   > div.m-panel.m-mapheader
   > button.g-cartografia-flecha-abajo::before {
-  content: "Mostrar \e935" !important;
+  content: "\e935" !important;
 }
 .m-areas
   > div.m-area.m-top.m-right
   > div.m-panel.m-mapheader
   > button.g-cartografia-flecha-derecha::before {
-  content: "Ocultar \e905" !important;
+  content: "\e906" !important;
 }
 
 .m-areas > div.m-area.m-top > div.m-panel {

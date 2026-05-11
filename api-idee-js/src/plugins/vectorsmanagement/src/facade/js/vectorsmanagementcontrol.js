@@ -224,7 +224,7 @@ export default class VectorsManagementControl extends IDEE.Control {
       this.selectionControl.deactivate();
     }
 
-    if (this.editionControl.isActivated()) {
+    if (this.editionControl && this.editionControl.isActivated()) {
       document.querySelector('#m-vectorsmanagement-edition').classList.remove('activated');
       this.editionControl.deactivate();
     }

@@ -3876,6 +3876,9 @@ class Map extends Base {
       projection = parameter.projection(projection);
 
       if (oldProj.code !== projection.code || asDefault === true) {
+        if (oldProj.code !== projection.code) {
+          this.userCenter_ = null;
+        }
         this.getImpl().setProjection(projection);
         this._defaultProj = (this._defaultProj && (asDefault === true));
         this.fire(EventType.CHANGE_PROJ, [oldProj, projection]);

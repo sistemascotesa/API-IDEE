@@ -148,3 +148,5 @@ const mp = new Magnify({ position: 'TL', layers: 'toporaster' });
 map.addPlugin(mp);
 
 window.map = map;
+
+map.addPlugin(new IDEE.plugin.Help({}));

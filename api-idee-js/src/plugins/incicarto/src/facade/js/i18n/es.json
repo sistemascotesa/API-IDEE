@@ -103,5 +103,13 @@
   "calculating": "Calculando",
   "try_again": "No se ha podido realizar la consulta. Por favor, inténtelo de nuevo más tarde",
   "email_correct": "El correo con la incidencia se ha enviado correctamente.",
-  "sending_email": "El correo está siendo enviado..."
+  "sending_email": "El correo está siendo enviado...",
+  "hide_methods": "Ocultar métodos",
+  "method_1": "Método 1",
+  "method_2": "Método 2",
+  "method1_step1": "Seleccionar punto, línea o polígono.",
+  "method1_step2": "Dibujar incidencia sobre el mapa.",
+  "method1_step3": "Enviar incidencia.",
+  "method2_step1": "Cargue un fichero con la incidencia.",
+  "method2_step2": "Enviar incidencia."
 }

@@ -1,6 +1,5 @@
 /*eslint-disable*/
 
-import ARROWS_MOVES from '../../../facade/assets/arrows-move.svg'
 import { getValue } from '../../../facade/js/i18n/language';
 
 const inherits = (child, parent) => {
@@ -68,7 +67,7 @@ class Profil extends ol.control.Control {
 
       const buttonMove = document.createElement('button');
       const imgMove = document.createElement('img');
-      imgMove.setAttribute('src', ARROWS_MOVES);
+      imgMove.setAttribute('src', 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mover.svg');
       imgMove.setAttribute('alt', 'Icon Move');
 
       buttonMove.appendChild(imgMove);

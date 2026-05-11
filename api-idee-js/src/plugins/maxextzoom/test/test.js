@@ -14,3 +14,4 @@ const mp = new MaxExtZoom({
 });
 
 map.addPlugin(mp);
+map.addPlugin(new IDEE.plugin.Help({}));

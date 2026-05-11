@@ -1,5 +1,5 @@
 CP-001
-Control backimglayers
+Control backgroundlayers
 
 CP-002
 Controles de escala y zoom (scale*false, scaleline, panzoom, panzoombar)

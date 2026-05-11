@@ -201,11 +201,20 @@ export default class IncicartoControl extends IDEE.Control {
         jsonp: true,
         vars: {
           translations: {
+            hide_methods: getValue('hide_methods'),
+            method_1: getValue('method_1'),
+            method_2: getValue('method_2'),
+            method1_step1: getValue('method1_step1'),
+            method1_step2: getValue('method1_step2'),
+            method1_step3: getValue('method1_step3'),
+            method2_step1: getValue('method2_step1'),
+            method2_step2: getValue('method2_step2'),
             add_point_layer: getValue('add_point_layer'),
             add_line_layer: getValue('add_line_layer'),
             add_poly_layer: getValue('add_poly_layer'),
             add_wfs_layer: getValue('add_wfs_layer'),
             load_layer: getValue('load_layer'),
+
           },
           themes: [],
           errors: {},

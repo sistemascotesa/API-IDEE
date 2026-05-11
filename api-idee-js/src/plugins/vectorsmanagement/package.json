@@ -65,6 +65,15 @@
   },
   "overrides": {
     "webpack": "5.88.2",
-    "eslint": "8.51.0"
+    "eslint": "8.51.0",
+    "tokml": {
+      "minimist": "1.2.8"
+    },
+    "strxml": {
+      "tap": "file:vendor/tap-stub"
+    },
+    "togpx": {
+      "xmldom": "npm:@xmldom/xmldom@0.9.10"
+    }
   }
 }

@@ -41,3 +41,5 @@ const mp = new Mapheader(config);
 map.addPlugin(mp);
 
 map.addPlugin(new IDEE.plugin.Layerswitcher({}));
+
+map.addPlugin(new IDEE.plugin.Help({}));
