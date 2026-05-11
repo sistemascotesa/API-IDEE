@@ -1,7 +1,9 @@
 
 @layer base {
-    [class^="g-cartografia"]::before,
-    [class*=" g-cartografia-"]::before {
+    html:has(>body>.m-api-idee-test-form-frame) [class^="g-cartografia"]::before,
+    html:has(>body>.m-api-idee-test-form-frame) [class*=" g-cartografia-"]::before,
+    .m-api-idee-container [class^="g-cartografia"]::before,
+    .m-api-idee-container [class*=" g-cartografia-"]::before {
         content: '' !important;
         display: block;
         margin: auto;
@@ -42,8 +44,8 @@
     }
     
     .g-cartografia-capas2::before {
-        -webkit-mask-image: url('../images/icon_ue901.svg');
-        mask-image: url('../images/icon_ue901.svg');
+        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_capas.svg');
+        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_capas.svg');
     }
     
     .g-cartografia-comentarios::before {
