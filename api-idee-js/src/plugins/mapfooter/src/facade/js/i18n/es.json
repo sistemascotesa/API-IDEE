@@ -4,6 +4,8 @@
   },
   "hidefooter": "Ocultar pie de página",
   "showfooter": "Mostrar pie de página",
+  "hide": " Ocultar ",
+  "show": " Mostrar ",
   "textHelp": {
     "title": "MAPFOOTER",
     "paragraph1": "El plugin mapfooter inserta un pie HTML bajo el visor (panel inferior izquierdo por defecto) con contenido configurable (htmlCode) y hojas de estilo opcionales (cssList), habitual para avisos legales, enlaces o créditos.",

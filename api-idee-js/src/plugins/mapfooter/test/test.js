@@ -7,7 +7,7 @@ const ortofoto2016_color = new IDEE.layer.WMS({
   url: 'http://www.ideandalucia.es/wms/ortofoto2016?',
   name: 'ortofotografia_2016_rgb',
   legend: 'Ortofotografía Color 0,5 metros/pixel (Año 2016)',
-  transparent: false,
+  isBase: true,
   tiled: true,
 }, {
   styles: 'default',
@@ -17,7 +17,7 @@ const pnoa = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/pnoa-ma?',
   name: 'OI.OrthoimageCoverage',
   legend: 'PNOA',
-  transparent: false,
+  isBase: true,
   tiled: true,
 }, {
   styles: 'default',
