@@ -58,7 +58,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
      * @private
      * @type {number}
      */
-    this.maxResults = options.maxResults ?? 99;
+    this.maxResults = options.maxResults || 99;
 
     /**
      * This variable indicate which entities shouldn't be searched
@@ -73,7 +73,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
      * @private
      * @type {string} - 'es'
      */
-    this.countryCode = options.countryCode ?? 'es';
+    this.countryCode = options.countryCode || 'es';
 
     /**
      * This variable indicates whether the option to obtain the address
@@ -97,21 +97,21 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
      * @private
      * @type {string}
      */
-    this.urlCandidates = options.urlCandidates ?? 'https://www.cartociudad.es/geocoder/api/geocoder/candidatesJsonp';
+    this.urlCandidates = options.urlCandidates || 'https://www.cartociudad.es/geocoder/api/geocoder/candidatesJsonp';
 
     /**
      * This variable indicates Geocoder Find service url
      * @private
      * @type {string}
      */
-    this.urlFind = options.urlFind ?? 'https://www.cartociudad.es/geocoder/api/geocoder/findJsonp';
+    this.urlFind = options.urlFind || 'https://www.cartociudad.es/geocoder/api/geocoder/findJsonp';
 
     /**
      * This variable indicates Geocoder Reverse service url
      * @private
      * @type {string}
      */
-    this.urlReverse = options.urlReverse ?? 'https://www.cartociudad.es/geocoder/api/geocoder/reverseGeocode';
+    this.urlReverse = options.urlReverse || 'https://www.cartociudad.es/geocoder/api/geocoder/reverseGeocode';
 
     /**
      * Type of icon to display when a punctual type result is found
@@ -174,7 +174,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
      * @private
      * @type {String}
      */
-    this.pluginName = pluginName ?? 'locator';
+    this.pluginName = pluginName || 'locator';
 
     /**
      * Map
@@ -398,7 +398,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       || jsonResult.tip_via === undefined) ? '' : jsonResult.tip_via;
     const address = (jsonResult.address === null
       || jsonResult.address === undefined) ? '' : jsonResult.address;
-    const portal = (jsonResult.type === 'portal' && (jsonResult.portalNumber === undefined || jsonResult.portalNumber === null)) ? 'S-N' : String(jsonResult.portalNumber ?? '');
+    const portal = (jsonResult.type === 'portal' && (jsonResult.portalNumber === undefined || jsonResult.portalNumber === null)) ? 'S-N' : String(jsonResult.portalNumber || '');
     const muni = (jsonResult.muni === null
       || jsonResult.muni === undefined) ? '' : jsonResult.muni;
     const province = (jsonResult.province === null

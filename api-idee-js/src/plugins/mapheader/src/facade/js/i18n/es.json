@@ -4,6 +4,8 @@
   },
   "hideheader": "Ocultar cabecera de página",
   "showheader": "Mostrar cabecera de página",
+  "hide": " Ocultar ",
+  "show": " Mostrar ",
   "textHelp": {
     "title": "MAPHEADER",
     "paragraph1": "El plugin mapheader inserta una franja superior sobre el visor con contenido HTML configurable: logotipos institucionales, título, subtítulos y enlaces, habitual en portales de descargas o visores corporativos.",

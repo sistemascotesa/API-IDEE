@@ -66,15 +66,18 @@ export default class MapfooterControl extends IDEE.Control {
       const btnMapFooter = panelMapfooter ? panelMapfooter.querySelector('button.m-panel-btn') : null;
 
       if (btnMapFooter) {
+        btnMapFooter.textContent = this.opened ? getValue('hide') : getValue('show');
         btnMapFooter.title = this.opened ? getValue('hidefooter') : getValue('showfooter');
         btnMapFooter.addEventListener('click', () => {
           if (this.opened) {
             btnMapFooter.title = getValue('showfooter');
+            btnMapFooter.textContent = getValue('show');
             this.opened = false;
             this.checkFooterheight(html);
             this.setBottomMargin(this.opened);
           } else {
             btnMapFooter.title = getValue('hidefooter');
+            btnMapFooter.textContent = getValue('hide');
             this.opened = true;
             this.checkFooterheight(html);
             this.setBottomMargin(this.opened);
