@@ -1,5 +1,6 @@
 package es.api_idee.builder;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -67,8 +68,44 @@ public class JSBuilder {
 			}
 		}
 
-		// IDEE.map({..<params>..})
-		codeJS.append("IDEE.map(").append(parameters.toJSON()).append(")");
+		// Build the map params JSON, merging quoted controls/layers into the JSON object.
+		// Quoted strings (starting with '"') are GET star-format entries → go inside IDEE.map({}).
+		// JS expressions (starting with 'new') are POST-built objects → stay as .addControls()/.addLayers() chains.
+		JSONObject paramsJSON = parameters.toJSON();
+
+		List<String> chainControls = new ArrayList<>();
+		if (controls != null && !controls.isEmpty()) {
+			JSONArray controlsArr = paramsJSON.has("controls")
+					? paramsJSON.getJSONArray("controls") : new JSONArray();
+			for (String control : controls) {
+				if (control.startsWith("\"") && control.endsWith("\"")) {
+					controlsArr.put(control.substring(1, control.length() - 1));
+				} else {
+					chainControls.add(control);
+				}
+			}
+			if (controlsArr.length() > 0) {
+				paramsJSON.put("controls", controlsArr);
+			}
+		}
+
+		List<String> chainLayers = new ArrayList<>();
+		if (layers != null && !layers.isEmpty()) {
+			JSONArray layersArr = paramsJSON.has("layers")
+					? paramsJSON.getJSONArray("layers") : new JSONArray();
+			for (String layer : layers) {
+				if (layer.startsWith("\"") && layer.endsWith("\"")) {
+					layersArr.put(layer.substring(1, layer.length() - 1));
+				} else {
+					chainLayers.add(layer);
+				}
+			}
+			if (layersArr.length() > 0) {
+				paramsJSON.put("layers", layersArr);
+			}
+		}
+
+		codeJS.append("IDEE.map(").append(paramsJSON).append(")");
 
 		// add plugins with .addPlugin(...)
 		if (plugins != null) {
@@ -77,21 +114,19 @@ public class JSBuilder {
 			}
 		}
 
-		// add controls with .addControls(...)
-		if (controls != null) {
-			for (String control : controls) {
-				addControls(codeJS, control);
-			}
+		// add POST JS-expression controls with .addControls(...)
+		for (String control : chainControls) {
+			addControls(codeJS, control);
 		}
 
-		// add layers with .addLayers([...])
-		if (layers != null && !layers.isEmpty()) {
+		// add POST JS-expression layers with .addLayers([...])
+		if (!chainLayers.isEmpty()) {
 			codeJS.append(".addLayers([");
-			for (int i = 0; i < layers.size(); i++) {
+			for (int i = 0; i < chainLayers.size(); i++) {
 				if (i > 0) {
 					codeJS.append(",");
 				}
-				codeJS.append(layers.get(i));
+				codeJS.append(chainLayers.get(i));
 			}
 			codeJS.append("])");
 		}
@@ -351,84 +386,29 @@ public class JSBuilder {
 	}
 
 	/**
-	 * Builds a JS layer instantiation from a star-format entry.
-	 *
-	 * Format: "TYPE*key=val;key=val"
-	 * Example: "WMTS*url=http://...;name=MTN" → new IDEE.layer.WMTS({"url":"http://...","name":"MTN"})
+	 * Returns a quoted star-format string so client-side buildLayer() resolves and instantiates the layer.
 	 *
 	 * @param layerEntry star-format string (e.g. "WMTS*url=http://...;name=MTN")
-	 * @return JS layer instantiation string
+	 * @return quoted JS string for client-side buildLayer()
 	 */
 	public static String createLayerWithParams(String layerEntry) {
-		layerEntry = layerEntry.trim();
-		int starIdx = layerEntry.indexOf('*');
-		if (starIdx <= 0) {
-			return "\"" + layerEntry.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
-		}
-		String layerType = layerEntry.substring(0, starIdx).trim();
-		String paramsStr = layerEntry.substring(starIdx + 1).trim();
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("new IDEE.layer.").append(layerType).append("(");
-
-		if (!paramsStr.isEmpty()) {
-			JSONObject paramsObj = new JSONObject();
-			for (String pair : paramsStr.split(";")) {
-				int eqIdx = pair.indexOf('=');
-				if (eqIdx > 0) {
-					String key = pair.substring(0, eqIdx).trim();
-					String value = pair.substring(eqIdx + 1).trim();
-					inferAndPutValue(paramsObj, key, value);
-				}
-			}
-			sb.append(paramsObj.toString());
-		}
-
-		sb.append(")");
-		return sb.toString();
+		return "\"" + layerEntry.trim().replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
 	}
 
 	/**
 	 * Builds a JS control instantiation from a star-format entry.
 	 *
 	 * Format: "controlName*key=val;key=val"
-	 * Example: "timeline*order=2;paramsDate=yr" → new IDEE.control.Timeline({"order":2,"paramsDate":"yr"})
+	 * Example: "timeline*order=2;paramsDate=yr"
 	 *
-	 * @param controlEntry star-format string (e.g. "timeline*order=2;collapsed=false" or just "scale")
-	 * @return JS control instantiation string
+	 * Returns a quoted string so client-side buildControl() resolves the class name,
+	 * which owns the control name→class mapping via ControlClass.NAME constants.
+	 *
+	 * @param controlEntry star-format string (e.g. "timeline*order=2;collapsed=false")
+	 * @return quoted JS string for client-side buildControl()
 	 */
 	public static String createControlWithParams(String controlEntry) {
-		controlEntry = controlEntry.trim();
-		int starIdx = controlEntry.indexOf('*');
-		String controlName;
-		String paramsStr = null;
-		if (starIdx > 0) {
-			controlName = controlEntry.substring(0, starIdx).trim();
-			paramsStr = controlEntry.substring(starIdx + 1).trim();
-		} else {
-			controlName = controlEntry;
-		}
-		String className = controlName.isEmpty() ? controlName
-				: (controlName.substring(0, 1).toUpperCase() + controlName.substring(1));
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("new IDEE.control.").append(className).append("(");
-
-		if (paramsStr != null && !paramsStr.isEmpty()) {
-			JSONObject paramsObj = new JSONObject();
-			for (String pair : paramsStr.split(";")) {
-				int eqIdx = pair.indexOf('=');
-				if (eqIdx > 0) {
-					String key = pair.substring(0, eqIdx).trim();
-					String value = pair.substring(eqIdx + 1).trim();
-					inferAndPutValue(paramsObj, key, value);
-				}
-			}
-			sb.append(paramsObj.toString());
-		}
-
-		sb.append(")");
-		return sb.toString();
+		return "\"" + controlEntry.trim().replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
 	}
 
 	/**
