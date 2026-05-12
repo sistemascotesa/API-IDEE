@@ -7,11 +7,11 @@ test('Test MaxExtZoom', async ({ page }) => {
       container: 'mapjs',
     });
     window.mp = new IDEE.plugin.MaxExtZoom({
-      position: 'TL',
+      position: 'left',
     });
     window.mapjs.addPlugin(window.mp);
   });
-  
+
   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins().length);
   expect(nPlugins).toBe(1);
 });
