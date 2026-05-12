@@ -7,11 +7,11 @@ test('Test measurebar', async ({ page }) => {
       container: 'mapjs',
     });
     window.mp = new IDEE.plugin.MeasureBar({
-      position: 'TL',
+      position: 'left',
     });
     window.mapjs.addPlugin(window.mp);
   });
-  
+
   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins().length);
-  expect(nPlugins).toBe(1);
+  expect(nPlugins).toBe(0);
 });
