@@ -81,14 +81,16 @@ const mp = new VectorsManagement({
   // Herramientas
   help: true,
   addlayer: true,
-  selection: true, // Automaticamente desactiva "edition" y "analysis"
+  selection: false, // Automaticamente desactiva "edition" y "analysis"
   creation: true,
   edition: true,
   style: true,
   analysis: true,
   download: true,
-
   order: null,
 });
 
-map.addPlugin(mp); window.mp = mp;
+map.addPlugin(mp);
+window.mp = mp;
+
+// vectorsmanagement=position*!collapsed*!order*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style
