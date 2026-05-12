@@ -44,7 +44,7 @@
       "name": "edition",
       "position": 8
     }, {
-      "type": "simple",
+      "type": "boolean",
       "name": "help",
       "position": 9
     }, {
