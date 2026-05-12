@@ -81,7 +81,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
      */
     if (georefImage === true) {
       this.georefImage = {
-        tooltip: 'Georeferenciar imagen',
+        tooltip: getValue('georeferenced_img'),
         defaultDpiOptions: [72, 150, 300],
       };
     } else if (options.georefImage) {
