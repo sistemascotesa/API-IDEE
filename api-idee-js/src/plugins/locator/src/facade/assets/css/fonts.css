@@ -9,11 +9,6 @@
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_buscaCoord.svg');
 }
 
-#plugin-panel-locator .g-cartografia-info-consulta:before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_info.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_info.svg');
-}
-
 #plugin-panel-locator .g-cartografia-info-point-on-plane:before {
     -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_point_on_plane.svg');
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_point_on_plane.svg');
