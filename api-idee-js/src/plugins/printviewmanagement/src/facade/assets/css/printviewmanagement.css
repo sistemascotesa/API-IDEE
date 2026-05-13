@@ -1,21 +1,50 @@
 /*******************
 * CLASES GENERALES *
 ********************/
-.d-flex {
+
+#plugin-panel-content-printviewmanagement {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    overflow: auto;
+    gap: 0.5rem;
+}
+
+#plugin-panel-printviewmanagement .d-flex {
     display: flex;
     justify-content: center;
 }
 
-.d-flex-column {
+#plugin-panel-printviewmanagement .d-flex-column {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 /**********************
 * PRINTVIEWMANAGEMENT *
 ***********************/
-.m-georefimage-download-button button {
+
+#plugin-panel-printviewmanagement .m-api-idee-tabs-container {
+    width: 100%;
+}
+
+.m-printviewmanagement-controls {
+    display: flex;
+    flex-grow: 1;
+    overflow: auto;
+    width: 100%;
+    flex-direction: column;
+}
+
+#m-printviewmanagement-controls label {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+#plugin-panel-printviewmanagement .m-georefimage-download-button,
+#plugin-panel-printviewmanagement .m-georefimage-download-button button {
     width: 100%;
 }
 
@@ -23,32 +52,24 @@
 * PRINTERMAP *
 **************/
 .m-container {
-    gap: 16px;
-    padding: 16px 0;
+    gap: 1rem;
+    padding: 1rem 0;
 }
 
 .m-printermap-title-container,
 .m-printermap-format-container,
 .m-printermap-loadTemplate-container {
-    gap: 8px;
+    gap: .5rem;
 }
 
 .m-printermap-customizeTemplate-container {
     flex-wrap: wrap;
-    gap: 16px;
-}
-
-.m-printermap-title-container label,
-.m-printermap-format-container label,
-.m-printermap-loadTemplate-container label {
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.2;
+    gap: 1rem;
 }
 
 .m-printermap-customizeTemplate-container {
     border-bottom: 1px solid var(--idee-color-neutral-40);
-    padding-bottom: 16px;
+    padding-bottom: 1rem;
 }
 
 .m-printermap-title-container input {
@@ -78,7 +99,7 @@
 ***************/
 .m-georefimage-container {
     border-bottom: 1px solid var(--idee-color-neutral-40);
-    margin-bottom: 16px;
+    margin-bottom: 1rem;
 }
 
 .m-georefimage-title-container,
@@ -117,11 +138,11 @@
 *******************/
 .m-georefimageepsg-container {
     border-bottom: 1px solid var(--idee-color-neutral-40);
-    margin-bottom: 16px;
+    margin-bottom: 1rem;
 }
 
 .m-georefimageepsg-layer-container,
-.m-georefimageepsg-dpi-container  {
+.m-georefimageepsg-dpi-container {
     gap: 8px;
 }
 
@@ -143,7 +164,7 @@
 }
 
 .m-templateCustomizer-left-wrapper {
-    padding: 16px;
+    padding: 1rem;
     box-sizing: border-box;
     height: 100%;
 }
@@ -152,8 +173,8 @@
     justify-content: start;
     overflow-y: auto;
     border-right: 1px solid var(--idee-color-neutral-40);
-    padding-right: 16px;
-    gap: 16px;
+    padding-right: 1rem;
+    gap: 1rem;
 }
 
 .m-templateCustomizer-right-wrapper {
@@ -245,7 +266,7 @@
 }
 
 .templateDownload {
-    bottom: 16px;
+    bottom: 1rem;
     position: absolute;
     right: 96px;
 }
@@ -254,23 +275,28 @@
  * LOADING SPINNER *
  *******************/
 .loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: color-mix(in srgb, var(--idee-color-neutral-60) 70%, transparent);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999999999;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: color-mix(in srgb, var(--idee-color-neutral-60) 70%, transparent);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999999;
 }
 
 .loading-spinner {
-  animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
