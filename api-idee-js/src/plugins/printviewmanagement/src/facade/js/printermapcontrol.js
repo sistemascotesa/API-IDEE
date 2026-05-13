@@ -27,6 +27,7 @@ const ID_PRINTERMAP_BUTTON = '#m-printviewmanagement-printermap';
 const ID_PRINTERMAP_CONTROL = '#m-printviewmanagement-controls';
 const ID_TEMPLATE_UPLOAD = '#m-printermap-template-upload';
 const ID_UPLOADED_TEMPLATES = '#m-printermap-uploaded-templates';
+const ID_PRINTERMAP_PRINT_BUTTON = '#m-printermap-print';
 export default class PrinterMapControl extends IDEE.Control {
   /**
     * @classdesc
@@ -193,6 +194,11 @@ export default class PrinterMapControl extends IDEE.Control {
           projection: getValue('projection'),
           delete: getValue('delete'),
           download: getValue('download'),
+          map: getValue('map'),
+          mapWithTemplate: getValue('mapWithTemplate'),
+          preloadedTemplates: getValue('preloadedTemplates'),
+          customTemplates: getValue('customTemplates'),
+          helpCustomTemplates: getValue('helpCustomTemplates'),
           nameTitle: getValue('title_map'),
           maintain_view: getValue('maintain_view'),
           customizeTemplate: getValue('customizeTemplate'),
@@ -667,6 +673,7 @@ export default class PrinterMapControl extends IDEE.Control {
     const customizeTemplate = template.querySelector(ID_CUSTOM_TEMPLATE);
     const templateFileButton = template.querySelector(ID_TEMPLATE_UPLOAD_BUTTON);
     const templateFileInput = template.querySelector(ID_TEMPLATE_UPLOAD);
+    const printButton = template.querySelector(ID_PRINTERMAP_PRINT_BUTTON);
 
     customizeTemplate.addEventListener('click', () => {
       this.openTemplateEditor();
@@ -679,6 +686,12 @@ export default class PrinterMapControl extends IDEE.Control {
     templateFileInput.addEventListener('change', () => {
       this.setupTemplateUpload();
     });
+
+    if (printButton) {
+      printButton.addEventListener('click', (evt) => {
+        this.printClick(evt);
+      });
+    }
   }
 
   /**
