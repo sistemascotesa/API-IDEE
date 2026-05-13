@@ -7,7 +7,6 @@
     flex-direction: column;
     align-items: flex-start;
     overflow: auto;
-    gap: 0.5rem;
 }
 
 #plugin-panel-printviewmanagement .d-flex {
@@ -15,10 +14,40 @@
     justify-content: center;
 }
 
+#plugin-panel-printviewmanagement .d-flex-start {
+    display: flex;
+    justify-content: flex-start;
+}
+
 #plugin-panel-printviewmanagement .d-flex-column {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+}
+
+
+#plugin-panel-printviewmanagement .button-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    row-gap: .5rem;
+}
+
+#plugin-panel-printviewmanagement .backimg-button {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    column-gap: .5rem;
+}
+
+#plugin-panel-content-printviewmanagement hr {
+    margin: .4rem 0;
+    width: 100%;
+    border: none;
+    border-top: 1px solid var(--idee-color-neutral-40);
 }
 
 /**********************
@@ -51,9 +80,8 @@
 /*************
 * PRINTERMAP *
 **************/
-.m-container {
-    gap: 1rem;
-    padding: 1rem 0;
+#plugin-panel-printviewmanagement .m-container {
+    gap: .65rem;
 }
 
 .m-printermap-title-container,
@@ -63,13 +91,14 @@
 }
 
 .m-printermap-customizeTemplate-container {
-    flex-wrap: wrap;
-    gap: 1rem;
+    width: 100%;
+    flex-direction: column;
+    gap: .65rem;
+    padding-bottom: 1rem;
 }
 
-.m-printermap-customizeTemplate-container {
-    border-bottom: 1px solid var(--idee-color-neutral-40);
-    padding-bottom: 1rem;
+#plugin-panel-printviewmanagement #m-printermap-customize-button {
+    margin-top: 0.35rem;
 }
 
 .m-printermap-title-container input {
@@ -87,26 +116,21 @@
 .m-printermap-loadTemplate-container select {
     background-color: var(--idee-color-neutral-20);
     color: var(--idee-color-black);
-    height: 40px;
-}
-
-.m-printermap-customizeTemplate-container button {
-    flex: 1 1 auto;
+    height: 2rem;
 }
 
 /**************
 * GEOREFIMAGE *
 ***************/
 .m-georefimage-container {
-    border-bottom: 1px solid var(--idee-color-neutral-40);
-    margin-bottom: 1rem;
+    margin-bottom: 0.2rem;
 }
 
 .m-georefimage-title-container,
 .m-georefimage-format-container,
 .m-georefimage-wld-container,
 .m-georefimage-dpi-container {
-    gap: 8px;
+    gap: .5rem;
 }
 
 .m-georefimage-wld-container {
@@ -124,7 +148,7 @@
 .m-georefimage-dpi-container select {
     background-color: var(--idee-color-neutral-20);
     color: var(--idee-color-black);
-    height: 40px;
+    height: 2rem;
 }
 
 .m-georefimage-container h3 {
@@ -150,7 +174,7 @@
 .m-georefimageepsg-dpi-container select {
     background-color: var(--idee-color-neutral-20);
     color: var(--idee-color-black);
-    height: 40px;
+    height: 2rem;
 }
 
 
@@ -212,7 +236,7 @@
 .template-dpi select {
     background-color: var(--idee-color-neutral-20);
     color: var(--idee-color-black);
-    height: 40px;
+    height: 2rem;
     width: 100%;
 }
 
