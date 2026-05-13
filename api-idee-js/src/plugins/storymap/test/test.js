@@ -2,10 +2,8 @@ import StoryMap from 'facade/storymap';
 
 window.IDEE.plugin.StoryMap = StoryMap;
 
-const urlParams = new URLSearchParams(window.location.search)
+const urlParams = new URLSearchParams(window.location.search);
 IDEE.language.setLang(urlParams.get('language') || 'es');
-
-const DEFAULT_INDEX = `{"title": "Indice StoryMap","subtitle": "Visualizador de Cervantes y el Madrid del siglo XVII","js": "console.log('HolaMundo')"}`;
 
 const map = IDEE.map({
   container: 'mapjs',
