@@ -59,7 +59,7 @@
 - Se incorporan a API-IDEE los plugins mapheader y mapfooter.
 - Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: queryattributes, infocoordinates, modal, vectorsmanagement, incicarto, locator, measurebar, viewmanagement y storymap.
 - Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: selectionzoom, contactlink, printviewmanagement, sharemap, information, backimglayer, comparators, timeline y stylemanager.
-- Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: basic, help, layerswitcher, locatorscn, mousesrs, overviewmap y stereoscopic
+- Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: basic, help, layerswitcher, locatorscn, mousesrs, overviewmap y stereoscopic.
 - Se modifica el comportamiento del método getMaxExtent de MVT para que devuelva el extent en el siguiente orden: el especificado por el usuario, el de la extensión de los features, el especificado en el mapa o el de la proyección en función del que pueda obtener.
 - Se incorpora el método setToClosestScale a la clase Mapa que permite aplicar una resolución al mapa en función de una escala dada.
 - Se resuelve problema con gestión de evento change cuando se llaman a los métodos redraw, addfeatures y removefeatures.
@@ -82,11 +82,13 @@
 - Se soluciona problema con enlace a controles que no existen.
 - Se soluciona problema al obtener la extensión de una capa vector con un solo punto mediante el método getFeaturesExtent.
 - El control location disparará un evento CHANGE en cada cambio de posición.
-- Se implementa multilenguaje en el plugin magnify y filteredsearch.
 - Se soluciona la carga de varias capas bases WMS visibles en un mapa.
+- Se soluciona la vista al cambiar capas bases WMS.
 - Se soluciona problemas con cambio de proyección.
 - Se soluciona problema con el almacenado de altitud en el plugin infocoordinates.
-- Se implementa multilenguaje en los plugins mapheader y mapfooter.
+- Se implementa multilenguaje en los plugins mapheader, mapfooter, maxextzoom, magnify y filteredsearch.
+- Se soluciona problema al usar estilo categórico con un estilo genérico e icono sin tener el proxy activado.
+- Se genera en legacy el versionado de 1.0.0 y se modifica la versión del proyecto a la 1.1.0.
 - Se pueden importar archivos .tif, .tiff y .gpkg y se implementa mejora a la hora de añadir archivos pesados en el plugin LayerSwitcher.
 - Se crean métodos en Utils para la transformación de formato GeoJSON y WKT a WKB, tanto a nivel de feature como de capa.
 - La información recibida de un servicio en formato GeoJSON o KML se proyecta en la proyección estándar de estos formatos, EPSG:4326.
@@ -101,7 +103,6 @@
 - Permite la creación de grupos anidados de capas en LayerSwitcher.
 - Se sube la versión de OpenLayers de la 10.4 a la 10.7.
 - Se implementa funcionalidad de resoluciones automáticas y configuración para activar dicha funcionalidad.
-- Se implementa multilenguaje en plugin maxextzoom.
 
 01/01/25 - Versión 1.0.0
 - Se incluye implementación 3D con Cesium
