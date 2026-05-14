@@ -1,7 +1,10 @@
 package es.api_idee.builder;
 
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -65,8 +68,44 @@ public class JSBuilder {
 			}
 		}
 
-		// IDEE.map({..<params>..})
-		codeJS.append("IDEE.map(").append(parameters.toJSON()).append(")");
+		// Build the map params JSON, merging quoted controls/layers into the JSON object.
+		// Quoted strings (starting with '"') are GET star-format entries → go inside IDEE.map({}).
+		// JS expressions (starting with 'new') are POST-built objects → stay as .addControls()/.addLayers() chains.
+		JSONObject paramsJSON = parameters.toJSON();
+
+		List<String> chainControls = new ArrayList<>();
+		if (controls != null && !controls.isEmpty()) {
+			JSONArray controlsArr = paramsJSON.has("controls")
+					? paramsJSON.getJSONArray("controls") : new JSONArray();
+			for (String control : controls) {
+				if (control.startsWith("\"") && control.endsWith("\"")) {
+					controlsArr.put(control.substring(1, control.length() - 1));
+				} else {
+					chainControls.add(control);
+				}
+			}
+			if (controlsArr.length() > 0) {
+				paramsJSON.put("controls", controlsArr);
+			}
+		}
+
+		List<String> chainLayers = new ArrayList<>();
+		if (layers != null && !layers.isEmpty()) {
+			JSONArray layersArr = paramsJSON.has("layers")
+					? paramsJSON.getJSONArray("layers") : new JSONArray();
+			for (String layer : layers) {
+				if (layer.startsWith("\"") && layer.endsWith("\"")) {
+					layersArr.put(layer.substring(1, layer.length() - 1));
+				} else {
+					chainLayers.add(layer);
+				}
+			}
+			if (layersArr.length() > 0) {
+				paramsJSON.put("layers", layersArr);
+			}
+		}
+
+		codeJS.append("IDEE.map(").append(paramsJSON).append(")");
 
 		// add plugins with .addPlugin(...)
 		if (plugins != null) {
@@ -75,21 +114,19 @@ public class JSBuilder {
 			}
 		}
 
-		// add controls with .addControls(...)
-		if (controls != null) {
-			for (String control : controls) {
-				addControls(codeJS, control);
-			}
+		// add POST JS-expression controls with .addControls(...)
+		for (String control : chainControls) {
+			addControls(codeJS, control);
 		}
 
-		// add layers with .addLayers([...])
-		if (layers != null && !layers.isEmpty()) {
+		// add POST JS-expression layers with .addLayers([...])
+		if (!chainLayers.isEmpty()) {
 			codeJS.append(".addLayers([");
-			for (int i = 0; i < layers.size(); i++) {
+			for (int i = 0; i < chainLayers.size(); i++) {
 				if (i > 0) {
 					codeJS.append(",");
 				}
-				codeJS.append(layers.get(i));
+				codeJS.append(chainLayers.get(i));
 			}
 			codeJS.append("])");
 		}
@@ -173,10 +210,22 @@ public class JSBuilder {
 	}
 
 	public static String createPlugin(PluginAPI plugin) {
-		return createPlugin(plugin, null);
+		return createPlugin(plugin, (String) null);
 	}
 
 	public static String createPlugin(PluginAPI plugin, String paramValue) {
+		// New star format: value is "key=val;key=val" — delegate to Map-based approach
+		if (!StringUtils.isEmpty(paramValue) && paramValue.matches("\\w+=.*")) {
+			Map<String, String> params = new java.util.LinkedHashMap<>();
+			for (String pair : paramValue.split(";")) {
+				int eqIdx = pair.indexOf('=');
+				if (eqIdx > 0) {
+					params.put(pair.substring(0, eqIdx).trim(), pair.substring(eqIdx + 1).trim());
+				}
+			}
+			return createPlugin(plugin, params);
+		}
+
 		StringBuilder pluginBuilder = new StringBuilder();
 
 		String[] paramValues = null;
@@ -290,6 +339,167 @@ public class JSBuilder {
 		}
 
 		return pluginParam;
+	}
+
+	/**
+	 * Creates a plugin using OpenAPI key=value style parameters.
+	 * Example URL: ?layerswitcher.position=BL&layerswitcher.collapsed=true
+	 *
+	 * @param plugin       the plugin API definition
+	 * @param keyValueParams map of paramName->value extracted from URL
+	 * @return plugin instantiation code
+	 */
+	public static String createPlugin(PluginAPI plugin, Map<String, String> keyValueParams) {
+		StringBuilder pluginBuilder = new StringBuilder();
+		pluginBuilder.append("new ").append(plugin.getConstructor()).append("(");
+
+		if (keyValueParams != null && !keyValueParams.isEmpty()) {
+			Map<String, String> paramTypes = getParamTypes(plugin);
+			JSONObject paramsObj = new JSONObject();
+
+			for (Map.Entry<String, String> entry : keyValueParams.entrySet()) {
+				String paramName = entry.getKey();
+				String paramValue = entry.getValue();
+				String paramType = paramTypes.containsKey(paramName) ? paramTypes.get(paramName) : null;
+
+				if (paramType != null && paramType.equalsIgnoreCase(PluginAPIParam.BOOLEAN)) {
+					paramsObj.put(paramName, Boolean.parseBoolean(paramValue));
+				} else if (paramType != null && paramType.equalsIgnoreCase(PluginAPIParam.NUMBER)) {
+					try {
+						paramsObj.put(paramName, Double.parseDouble(paramValue));
+					} catch (NumberFormatException e) {
+						paramsObj.put(paramName, paramValue);
+					}
+				} else if (paramType != null && paramType.equalsIgnoreCase(PluginAPIParam.ARRAY)) {
+					paramsObj.put(paramName, parseArrayValue(paramValue));
+				} else {
+					// Type unknown from API definition: use heuristic inference
+					inferAndPutValue(paramsObj, paramName, paramValue);
+				}
+			}
+
+			pluginBuilder.append(paramsObj.toString());
+		}
+
+		pluginBuilder.append(")");
+		return pluginBuilder.toString();
+	}
+
+	/**
+	 * Returns a quoted star-format string so client-side buildLayer() resolves and instantiates the layer.
+	 *
+	 * @param layerEntry star-format string (e.g. "WMTS*url=http://...;name=MTN")
+	 * @return quoted JS string for client-side buildLayer()
+	 */
+	public static String createLayerWithParams(String layerEntry) {
+		return "\"" + layerEntry.trim().replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+	}
+
+	/**
+	 * Builds a JS control instantiation from a star-format entry.
+	 *
+	 * Format: "controlName*key=val;key=val"
+	 * Example: "timeline*order=2;paramsDate=yr"
+	 *
+	 * Returns a quoted string so client-side buildControl() resolves the class name,
+	 * which owns the control name→class mapping via ControlClass.NAME constants.
+	 *
+	 * @param controlEntry star-format string (e.g. "timeline*order=2;collapsed=false")
+	 * @return quoted JS string for client-side buildControl()
+	 */
+	public static String createControlWithParams(String controlEntry) {
+		return "\"" + controlEntry.trim().replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+	}
+
+	/**
+	 * Puts a value into a JSONObject using heuristic type inference:
+	 *   "true"/"false"       → boolean
+	 *   numeric string       → double
+	 *   "[a, b, c]"          → JSONArray  (brackets optional)
+	 *   "{\"k\":\"v\"}"      → JSONObject (inline JSON)
+	 *   anything else        → string
+	 */
+	private static void inferAndPutValue(JSONObject obj, String key, String value) {
+		String trimmed = value.trim();
+		if ("true".equalsIgnoreCase(trimmed) || "false".equalsIgnoreCase(trimmed)) {
+			obj.put(key, Boolean.parseBoolean(trimmed));
+		} else if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+			try {
+				obj.put(key, new JSONObject(trimmed));
+			} catch (Exception e) {
+				obj.put(key, value);
+			}
+		} else if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+			obj.put(key, parseArrayValue(trimmed));
+		} else {
+			try {
+				if (trimmed.matches("-?\\d+")) {
+					obj.put(key, Integer.parseInt(trimmed));
+				} else {
+					obj.put(key, Double.parseDouble(trimmed));
+				}
+			} catch (NumberFormatException e) {
+				obj.put(key, value);
+			}
+		}
+	}
+
+	/**
+	 * Parses a comma-separated array value, with or without surrounding brackets.
+	 * Handles: [legend,style,delete] | legend,style,delete | ["a","b"] | [1,2,3]
+	 * Each element is trimmed and surrounding quotes are stripped.
+	 */
+	private static JSONArray parseArrayValue(String value) {
+		String trimmed = value.trim();
+		if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+			trimmed = trimmed.substring(1, trimmed.length() - 1);
+		}
+		JSONArray arr = new JSONArray();
+		for (String element : trimmed.split(",")) {
+			String el = element.trim();
+			// Strip surrounding quotes if present
+			if (el.length() >= 2
+					&& ((el.startsWith("\"") && el.endsWith("\""))
+					|| (el.startsWith("'") && el.endsWith("'")))) {
+				el = el.substring(1, el.length() - 1);
+			}
+			if ("true".equalsIgnoreCase(el) || "false".equalsIgnoreCase(el)) {
+				arr.put(Boolean.parseBoolean(el));
+			} else {
+				try {
+					arr.put(Double.parseDouble(el));
+				} catch (NumberFormatException e) {
+					arr.put(el);
+				}
+			}
+		}
+		return arr;
+	}
+
+	/**
+	 * Builds a flat map of paramName -> paramType from a plugin's API definition.
+	 * Recurses into OBJECT-type parameters to extract their properties.
+	 */
+	private static Map<String, String> getParamTypes(PluginAPI plugin) {
+		Map<String, String> types = new HashMap<>();
+		List<PluginAPIParam> params = plugin.getParameters();
+		if (params != null) {
+			for (PluginAPIParam param : params) {
+				if (PluginAPIParam.OBJECT.equalsIgnoreCase(param.getType())) {
+					List<PluginAPIParam> properties = param.getProperties();
+					if (properties != null) {
+						for (PluginAPIParam prop : properties) {
+							if (prop.getName() != null) {
+								types.put(prop.getName(), prop.getType());
+							}
+						}
+					}
+				} else if (param.getName() != null) {
+					types.put(param.getName(), param.getType());
+				}
+			}
+		}
+		return types;
 	}
 
 	/**

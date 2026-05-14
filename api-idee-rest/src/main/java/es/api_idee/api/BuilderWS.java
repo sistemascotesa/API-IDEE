@@ -39,16 +39,32 @@ public class BuilderWS {
     */
    @GET
    @Path("/js")
+   @Produces("text/plain; charset=UTF-8")
    public String js(@Context UriInfo uriInfo) {
       MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 
       Parameters parameters = ParametersParser.parse(queryParams);
-      
+
       // plugins
       PluginsManager.init(context);
       List<String> plugins = PluginsManager.getPlugins(queryParams);
-      
-      String codeJS = JSBuilder.build(parameters, plugins);
+
+      List<String> controls = detectKeyValueControls(queryParams);
+      List<String> layers = detectKeyValueLayers(queryParams);
+
+      // When detect functions handle controls/layers (any format), remove them from
+      // parameters to avoid client-side duplication with IDEE.map({controls/layers:[...]})
+      if (!controls.isEmpty()) {
+         parameters.clearControls();
+      }
+      if (!layers.isEmpty()) {
+         parameters.clearLayers();
+      }
+
+      String codeJS = JSBuilder.build(parameters, plugins,
+            controls.isEmpty() ? null : controls,
+            layers.isEmpty() ? null : layers,
+            null);
 
       return codeJS;
    }
@@ -64,6 +80,7 @@ public class BuilderWS {
    @POST
    @Path("/js")
    @Consumes("application/json")
+   @Produces("text/plain; charset=UTF-8")
    public String jsPost(@Context UriInfo uriInfo, String jsonBody) {
       try {
          // Parse JSON body
@@ -71,6 +88,10 @@ public class BuilderWS {
 
          // Parse map parameters
          Parameters parameters = ParametersParser.parseFromJSON(jsonBody);
+         // Ensure container defaults to "map" when no map config is present in the body
+         if (parameters.toJSON().optString("container", "").isEmpty()) {
+            parameters.addContainer("map");
+         }
 
          // Parse plugins
          List<String> plugins = new ArrayList<>();
@@ -118,5 +139,46 @@ public class BuilderWS {
          e.printStackTrace();
          return "// Error processing JSON: " + e.getMessage();
       }
+   }
+
+   /**
+    * Reads the star-format layers param and returns each entry as a quoted JS string
+    * for client-side processing via buildLayer.
+    *
+    * Format: layers=TYPE*key=val;key=val,...
+    * Example: layers=WMTS*url=http://...;name=MTN,WMS*url=http://...;name=capas
+    */
+   private List<String> detectKeyValueLayers(MultivaluedMap<String, String> queryParams) {
+      List<String> layers = new ArrayList<>();
+      String layersParam = queryParams.getFirst("layers");
+      if (layersParam != null) {
+         for (String entry : layersParam.split(",")) {
+            entry = entry.trim();
+            if (!entry.isEmpty()) {
+               layers.add(JSBuilder.createLayerWithParams(entry));
+            }
+         }
+      }
+      return layers;
+   }
+
+   /**
+    * Reads the star-format controls param and returns each entry as a JS object.
+    *
+    * Format: controls=name*key=val;key=val,...
+    * Example: controls=scale,timeline*order=2,attributions*position=down
+    */
+   private List<String> detectKeyValueControls(MultivaluedMap<String, String> queryParams) {
+      List<String> controls = new ArrayList<>();
+      String controlsParam = queryParams.getFirst("controls");
+      if (controlsParam != null) {
+         for (String entry : controlsParam.split(",")) {
+            entry = entry.trim();
+            if (!entry.isEmpty()) {
+               controls.add(JSBuilder.createControlWithParams(entry));
+            }
+         }
+      }
+      return controls;
    }
 }

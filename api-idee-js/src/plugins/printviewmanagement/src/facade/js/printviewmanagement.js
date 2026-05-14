@@ -25,6 +25,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
       order: options.order,
+      svgPath: options.svgPath || 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_impresora.svg',
     });
 
     /**
@@ -39,7 +40,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
      * @private
      * @type {Boolean}
      */
-    this.collapsed = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
+    this.collapsed = typeof options.collapsed === 'boolean' ? options.collapsed : true;
 
     const { georefImageEpsg = true } = options;
 
@@ -81,7 +82,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
      */
     if (georefImage === true) {
       this.georefImage = {
-        tooltip: 'Georeferenciar imagen',
+        tooltip: getValue('georeferenced_img'),
         defaultDpiOptions: [72, 150, 300],
       };
     } else if (options.georefImage) {
@@ -100,9 +101,9 @@ export default class PrintViewManagement extends IDEE.Plugin {
     if (printermap === true) {
       this.printermap = {
         filterTemplates: [
-          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConBorde.html`,
-          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConCabezeraYBorde.html`,
-          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConFooterYBorde.html`,
+          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/mapaConMarco.html`,
+          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/mapaConCabeceraYMarco.html`,
+          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/mapaConPieYMarco.html`,
         ],
         showDefaultTemplate: true,
         defaultDpiOptions: [96, 150, 300],
@@ -150,7 +151,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_impresora.svg',
+      svgPath: this.svgPath,
       order: this.order,
     });
     map.addButtons(this.button);

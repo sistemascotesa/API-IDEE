@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -59,34 +60,58 @@ public abstract class PluginsManager {
 
 	public static List<String> getPlugins(MultivaluedMap<String, String> queryParams) {
 		List<String> plugins = new LinkedList<String>();
+		java.util.Set<String> addedPlugins = new java.util.HashSet<String>();
 		if (availablePlugins != null) {
-			// searchs plugins by name
+			// searchs plugins by name (legacy separator format: pluginName=value)
 			for (String paramName : queryParams.keySet()) {
 				PluginAPI plugin = availablePlugins.get(paramName);
 				if (plugin == null) {
-					// Intentar cargar plugin externo
 					plugin = loadExternalPlugin(paramName);
 				}
 				if (plugin != null) {
 					String paramValue = queryParams.getFirst(paramName);
 					String pluginStr = JSBuilder.createPlugin(plugin, paramValue);
 					plugins.add(pluginStr);
+					addedPlugins.add(paramName);
 				}
 			}
-			// search plugins in "plugins" parameter
+			// search plugins in "plugins" parameter (simple name or star format)
 			String pluginsParam = queryParams.getFirst("plugins");
 			if (pluginsParam != null) {
-				String[] pluginNames = pluginsParam.split(",");
-				for (String pluginName : pluginNames) {
+				for (String pluginEntry : splitPluginEntries(pluginsParam)) {
+					pluginEntry = pluginEntry.trim();
+					if (pluginEntry.isEmpty()) continue;
+					int starIdx = pluginEntry.indexOf('*');
+					String pluginName = starIdx > 0 ? pluginEntry.substring(0, starIdx) : pluginEntry;
+					if (addedPlugins.contains(pluginName)) continue;
 					PluginAPI plugin = availablePlugins.get(pluginName);
-					if (plugin == null) {
-						// Intentar cargar plugin externo
-						plugin = loadExternalPlugin(pluginName);
-					}
+					if (plugin == null) plugin = loadExternalPlugin(pluginName);
 					if (plugin != null) {
-						String pluginStr = JSBuilder.createPlugin(plugin);
+						String pluginStr = starIdx > 0
+							? JSBuilder.createPlugin(plugin, parseStarParams(pluginEntry.substring(starIdx + 1)))
+							: JSBuilder.createPlugin(plugin);
 						plugins.add(pluginStr);
+						addedPlugins.add(pluginName);
 					}
+				}
+			}
+			// Star format: pluginName*firstParamName=value;key=val;...
+			for (String paramName : queryParams.keySet()) {
+				int starIdx = paramName.indexOf('*');
+				if (starIdx <= 0) continue;
+				String pluginName = paramName.substring(0, starIdx);
+				if (addedPlugins.contains(pluginName)) continue;
+				PluginAPI plugin = availablePlugins.get(pluginName);
+				if (plugin == null) {
+					plugin = loadExternalPlugin(pluginName);
+				}
+				if (plugin != null) {
+					String firstParamName = paramName.substring(starIdx + 1);
+					String urlValue = queryParams.getFirst(paramName);
+					String paramsStr = firstParamName + "=" + (urlValue != null ? urlValue : "");
+					String pluginStr = JSBuilder.createPlugin(plugin, parseStarParams(paramsStr));
+					plugins.add(pluginStr);
+					addedPlugins.add(pluginName);
 				}
 			}
 		}
@@ -110,8 +135,9 @@ public abstract class PluginsManager {
 			// search plugins in "plugins" parameter
 			String pluginsParam = queryParams.getFirst("plugins");
 			if (pluginsParam != null) {
-				String[] pluginNames = pluginsParam.split(",");
-				for (String pluginName : pluginNames) {
+				for (String pluginEntry : splitPluginEntries(pluginsParam)) {
+					int starIdx = pluginEntry.indexOf('*');
+					String pluginName = starIdx > 0 ? pluginEntry.substring(0, starIdx).trim() : pluginEntry.trim();
 					PluginAPI plugin = availablePlugins.get(pluginName);
 					if (plugin == null) {
 						// Intentar cargar plugin externo
@@ -128,32 +154,49 @@ public abstract class PluginsManager {
 
 	public static String[] getJSFiles(Map<String, String[]> queryParams) {
 		List<String> jsfiles = new LinkedList<String>();
+		java.util.Set<String> addedPlugins = new java.util.HashSet<String>();
 		String impl = ParametersParser.getImplementation(queryParams);
-		// searchs plugins by name
+		// searchs plugins by name (legacy format)
 		for (String paramName : queryParams.keySet()) {
 			PluginAPI plugin = availablePlugins.get(paramName);
 			if (plugin == null) {
-				// Intentar cargar plugin externo solo si no es un parámetro del sistema
 				plugin = loadExternalPlugin(paramName);
 			}
 			if (plugin != null) {
 				jsfiles.addAll(plugin.getJSFiles(impl));
+				addedPlugins.add(paramName);
 			}
 		}
-		// search plugins in "plugins" parameter
+		// search plugins in "plugins" parameter (simple name or star format)
 		String[] pluginsParams = queryParams.get("plugins");
 		if (pluginsParams != null) {
-			String pluginsParam = pluginsParams[0];
-			String[] pluginNames = pluginsParam.split(",");
-			for (String pluginName : pluginNames) {
+			for (String pluginEntry : splitPluginEntries(pluginsParams[0])) {
+				pluginEntry = pluginEntry.trim();
+				if (pluginEntry.isEmpty()) continue;
+				int starIdx = pluginEntry.indexOf('*');
+				String pluginName = starIdx > 0 ? pluginEntry.substring(0, starIdx) : pluginEntry;
+				if (addedPlugins.contains(pluginName)) continue;
 				PluginAPI plugin = availablePlugins.get(pluginName);
-				if (plugin == null) {
-					// Intentar cargar plugin externo
-					plugin = loadExternalPlugin(pluginName);
-				}
+				if (plugin == null) plugin = loadExternalPlugin(pluginName);
 				if (plugin != null) {
 					jsfiles.addAll(plugin.getJSFiles(impl));
+					addedPlugins.add(pluginName);
 				}
+			}
+		}
+		// Star format: pluginName*firstParamName=value;key=val;...
+		for (String paramName : queryParams.keySet()) {
+			int starIdx = paramName.indexOf('*');
+			if (starIdx <= 0) continue;
+			String pluginName = paramName.substring(0, starIdx);
+			if (addedPlugins.contains(pluginName)) continue;
+			PluginAPI plugin = availablePlugins.get(pluginName);
+			if (plugin == null) {
+				plugin = loadExternalPlugin(pluginName);
+			}
+			if (plugin != null) {
+				jsfiles.addAll(plugin.getJSFiles(impl));
+				addedPlugins.add(pluginName);
 			}
 		}
 		return jsfiles.toArray(new String[jsfiles.size()]);
@@ -161,35 +204,127 @@ public abstract class PluginsManager {
 
 	public static String[] getCSSFiles(Map<String, String[]> queryParams) {
 		List<String> cssfiles = new LinkedList<String>();
+		java.util.Set<String> addedPlugins = new java.util.HashSet<String>();
 		String impl = ParametersParser.getImplementation(queryParams);
-		// searchs plugins by name
+		// searchs plugins by name (legacy format)
 		for (String paramName : queryParams.keySet()) {
 			PluginAPI plugin = availablePlugins.get(paramName);
 			if (plugin == null) {
-				// Intentar cargar plugin externo solo si no es un parámetro del sistema
 				plugin = loadExternalPlugin(paramName);
 			}
 			if (plugin != null) {
 				cssfiles.addAll(plugin.getCSSFiles(impl));
+				addedPlugins.add(paramName);
 			}
 		}
-		// search plugins in "plugins" parameter
+		// search plugins in "plugins" parameter (simple name or star format)
 		String[] pluginsParams = queryParams.get("plugins");
 		if (pluginsParams != null) {
-			String pluginsParam = pluginsParams[0];
-			String[] pluginNames = pluginsParam.split(",");
-			for (String pluginName : pluginNames) {
+			for (String pluginEntry : splitPluginEntries(pluginsParams[0])) {
+				pluginEntry = pluginEntry.trim();
+				if (pluginEntry.isEmpty()) continue;
+				int starIdx = pluginEntry.indexOf('*');
+				String pluginName = starIdx > 0 ? pluginEntry.substring(0, starIdx) : pluginEntry;
+				if (addedPlugins.contains(pluginName)) continue;
 				PluginAPI plugin = availablePlugins.get(pluginName);
-				if (plugin == null) {
-					// Intentar cargar plugin externo
-					plugin = loadExternalPlugin(pluginName);
-				}
+				if (plugin == null) plugin = loadExternalPlugin(pluginName);
 				if (plugin != null) {
 					cssfiles.addAll(plugin.getCSSFiles(impl));
+					addedPlugins.add(pluginName);
 				}
+			}
+		}
+		// Star format: pluginName*firstParamName=value;key=val;...
+		for (String paramName : queryParams.keySet()) {
+			int starIdx = paramName.indexOf('*');
+			if (starIdx <= 0) continue;
+			String pluginName = paramName.substring(0, starIdx);
+			if (addedPlugins.contains(pluginName)) continue;
+			PluginAPI plugin = availablePlugins.get(pluginName);
+			if (plugin == null) {
+				plugin = loadExternalPlugin(pluginName);
+			}
+			if (plugin != null) {
+				cssfiles.addAll(plugin.getCSSFiles(impl));
+				addedPlugins.add(pluginName);
 			}
 		}
 		return cssfiles.toArray(new String[cssfiles.size()]);
+	}
+
+	/**
+	 * Splits a "plugins" parameter value on commas that are plugin separators.
+	 * A comma is a plugin separator only when the token immediately after it
+	 * (up to the next comma, semicolon, '*' or '=') matches a known plugin name
+	 * AND we are not already inside a multi-value parameter (e.g. tools=a,b,c).
+	 *
+	 */
+	private static List<String> splitPluginEntries(String pluginsParam) {
+		List<String> entries = new java.util.ArrayList<>();
+		int start = 0;
+		int len = pluginsParam.length();
+		boolean inValue = false;
+		boolean commaSeenInValue = false;
+
+		for (int i = 0; i < len; i++) {
+			char ch = pluginsParam.charAt(i);
+			if (ch == '=') {
+				inValue = true;
+				commaSeenInValue = false;
+			} else if (ch == ';') {
+				inValue = false;
+				commaSeenInValue = false;
+			} else if (ch == '*') {
+				inValue = false;
+				commaSeenInValue = false;
+			} else if (ch == ',') {
+				if (inValue && commaSeenInValue) continue;
+
+				int j = i + 1;
+				while (j < len) {
+					char c2 = pluginsParam.charAt(j);
+					if (c2 == ',' || c2 == ';' || c2 == '*' || c2 == '=') break;
+					j++;
+				}
+				String nextToken = pluginsParam.substring(i + 1, j).trim();
+
+				if (isKnownPlugin(nextToken)) {
+					String entry = pluginsParam.substring(start, i).trim();
+					if (!entry.isEmpty()) entries.add(entry);
+					start = i + 1;
+					inValue = false;
+					commaSeenInValue = false;
+				} else if (inValue) {
+					commaSeenInValue = true;
+				}
+			}
+		}
+		String last = pluginsParam.substring(start).trim();
+		if (!last.isEmpty()) entries.add(last);
+		return entries;
+	}
+
+	private static boolean isKnownPlugin(String name) {
+		if (name == null || name.isEmpty()) return false;
+		if (availablePlugins != null && availablePlugins.containsKey(name)) return true;
+		if (AVAILABLE_EXTERNAL_PLUGINS != null && AVAILABLE_EXTERNAL_PLUGINS.contains(name.toLowerCase())) return true;
+		return false;
+	}
+
+	/**
+	 * Parses a semicolon-separated key=value string (e.g. "position=left;collapsed=false")
+	 * into a map. Used for the star-format plugin parameters.
+	 */
+	private static Map<String, String> parseStarParams(String paramsStr) {
+		Map<String, String> result = new LinkedHashMap<String, String>();
+		if (paramsStr == null || paramsStr.isEmpty()) return result;
+		for (String pair : paramsStr.split(";")) {
+			int eqIdx = pair.indexOf('=');
+			if (eqIdx > 0) {
+				result.put(pair.substring(0, eqIdx).trim(), pair.substring(eqIdx + 1).trim());
+			}
+		}
+		return result;
 	}
 
 	public static void readPlugins() {

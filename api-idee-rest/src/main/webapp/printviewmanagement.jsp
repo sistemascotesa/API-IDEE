@@ -61,9 +61,9 @@
                         </div>
                         <div>
                             <label for="inputTooltip"
-                                title="Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Impresión del mapa">Título
+                                title="Texto que se muestra al dejar el ratón encima del plugin.">Título
                                 de la herramienta "tooltip"</label>
-                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Impresión del mapa">
+                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug">
                             <datalist id="tooltipSug">
                                 <option value="Impresión del mapa"></option>
                             </datalist>
@@ -97,7 +97,7 @@
                                 "printermap"</label>
                             <input type="text" id="inputPrintermap" list="printermapSug">
                             <datalist id="printermapSug">
-                                <option value='{"tooltip":"Impresión del mapa","filterTemplates":["${api-idee.static_resources.url}/plantillas/html/templateConBorde.html","${api-idee.static_resources.url}/plantillas/html/templateConCabezeraYBorde.html","${api-idee.static_resources.url}/plantillas/html/templateConFooterYBorde.html"],"showDefaultTemplate":true,"defaultDpiOptions":[96,150,300],"layoutsRestraintFromDpi":["screensize","A0","A1","A2"]}'></option>
+                                <option value='{"tooltip":"Impresión del mapa","filterTemplates":["${api-idee.static_resources.url}/plantillas/html/mapaConMarco.html","${api-idee.static_resources.url}/plantillas/html/mapaConCabeceraYMarco.html","${api-idee.static_resources.url}/plantillas/html/mapaConPieYMarco.html"],"showDefaultTemplate":true,"defaultDpiOptions":[96,150,300],"layoutsRestraintFromDpi":["screensize","A0","A1","A2"]}'></option>
                             </datalist>
                         </div>
                     </div>
@@ -158,14 +158,6 @@
                             const inputGeorefImageEpsg = document.getElementById('inputGeorefImageEpsg');
                             const inputGeorefImage = document.getElementById('inputGeorefImage');
                             const inputPrintermap = document.getElementById('inputPrintermap');
-
-                            const DEFAULT_GEOREF_EPSG = '{"tooltip":"Georeferenciar imagen predefinida","layers":[{"url":"http://www.ign.es/wms-inspire/mapa-raster?","name":"mtn_rasterizado","format":"image/jpeg","legend":"Mapa ETRS89 UTM"},{"url":"http://www.ign.es/wms-inspire/pnoa-ma?","name":"OI.OrthoimageCoverage","format":"image/jpeg","legend":"Imagen (PNOA) ETRS89 UTM"}],"defaultDpiOptions":[96,150,300]}';
-                            const DEFAULT_GEOREF_IMAGE = '{"tooltip":"Georeferenciar imagen","defaultDpiOptions":[96,150,300]}';
-                            const DEFAULT_PRINTERMAP = '{"tooltip":"Impresión del mapa","filterTemplates":["${api-idee.static_resources.url}/plantillas/html/templateConBorde.html","${api-idee.static_resources.url}/plantillas/html/templateConCabezeraYBorde.html","${api-idee.static_resources.url}/plantillas/html/templateConFooterYBorde.html"],"showDefaultTemplate":true,"defaultDpiOptions":[96,150,300],"layoutsRestraintFromDpi":["screensize","A0","A1","A2"]}';
-
-                            inputGeorefImageEpsg.value = DEFAULT_GEOREF_EPSG;
-                            inputGeorefImage.value = DEFAULT_GEOREF_IMAGE;
-                            inputPrintermap.value = DEFAULT_PRINTERMAP;
 
                             const safeParseJSON = (val, fallback) => {
                                 try { return val ? JSON.parse(val) : fallback; } catch (e) { return fallback; }

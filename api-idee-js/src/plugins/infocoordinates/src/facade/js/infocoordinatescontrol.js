@@ -342,7 +342,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       if (!response || response === NO_DATA_VALUE) {
         altitudeFromElevationProcess = getValue('noDatafromElevationProcess');
       } else {
-        altitudeFromElevationProcess = parseFloat(response).toFixed(2).replace('.', ',');
+        altitudeFromElevationProcess = parseFloat(response).toFixed(2);
       }
       featurePoint.setAttribute('Altitude', altitudeFromElevationProcess);
       altitudeBox.innerHTML = altitudeFromElevationProcess;

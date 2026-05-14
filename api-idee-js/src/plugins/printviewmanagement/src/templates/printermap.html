@@ -12,15 +12,30 @@
         </select>
     </div>
 
+    <hr/>
+
+    <div class="m-printermap-download-button button-container" id="m-printermap-download-button">
+        <b>{{translations.map}}</b>
+        <button tabindex="0" id="m-printermap-print" class="g-cartografia-download-file backimg-button" title="{{translations.download}}">{{translations.download}}</button>
+    </div>
+
+    <hr/>
+
+    <b>{{translations.mapWithTemplate}}</b>
+
     <div class="m-printermap-loadTemplate-container d-flex-column">
-        <label for="m-printermap-uploaded-templates" class="m-printermap-paramsLabel" tabindex="0" role="text" aria-label="{{translations.selectUploadedTemplate}}">{{translations.selectUploadedTemplate}}</label>
+        <label for="m-printermap-uploaded-templates" class="m-printermap-paramsLabel" tabindex="0" role="text" aria-label="{{translations.preloadedTemplates}}">{{translations.preloadedTemplates}}</label>
         <select id="m-printermap-uploaded-templates" class="m-printermap-template-select" disabled>
-            <option disabled hidden selected>-- {{translations.selectUploadedTemplate}} --</option>
+            <option disabled hidden selected>-- {{translations.preloadedTemplates}} --</option>
         </select>
     </div>
+
+    <label>{{translations.customTemplates}}</label>
+
     <div class="m-printermap-customizeTemplate-container d-flex">
         <input type="file" id="m-printermap-template-upload" accept=".html,.txt" title=" " class="m-printermap-file-input">
-        <button tabindex="0" id="m-printermap-upload-button" class="uploadTemplate" title="{{translations.uploadTemplate}}">{{translations.uploadTemplate}}</button>
-        <button tabindex="0" id="m-printermap-customize-button" class="customTemplate" title="{{translations.customizeTemplate}}">{{translations.customizeTemplate}}</button>
+        <button tabindex="0" id="m-printermap-upload-button" class="uploadTemplate backimg-button" title="{{translations.uploadTemplate}}">{{translations.uploadTemplate}}</button>
+        <span><a href="https://github.com/administradorcnig/Wiki-APIIDEE-2.0.0/wiki/printviewmanagement" target="_blank">{{translations.helpCustomTemplates}}</a></span>
+        <button tabindex="0" id="m-printermap-customize-button" class="customTemplate backimg-button g-cartografia-open-window" title="{{translations.download}}">{{translations.download}}</button>
     </div>
 </div>

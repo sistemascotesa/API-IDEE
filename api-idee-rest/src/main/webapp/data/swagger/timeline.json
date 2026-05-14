@@ -1,0 +1,284 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API IDEE - Timeline",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "https://api-ideedes.grupotecopy.es/api-idee", "description": "Producción COTESA" },
+    { "url": "http://localhost:8080/api-idee", "description": "Local" },
+    { "url": "https://componentes-desarrollo.idee.es/api-idee", "description": "Desarrollo" },
+    { "url": "https://componentes.idee.es/api-idee", "description": "Producción" }
+  ],
+  "tags": [
+    {
+      "name": "Timeline",
+      "description": "Configuración del control Timeline para la visualización temporal de capas cartográficas"
+    }
+  ],
+  "paths": {
+    "/api/js": {
+      "get": {
+        "tags": ["Timeline"],
+        "summary": "Configura el control Timeline (GET)",
+        "description": "Genera el código JavaScript que inicializa un mapa IDEE con el control **Timeline**.\n\nUsa el **formato `<campo>=<valor>`**: el parámetro de query es `controls` y su valor tiene la forma `timeline*<campo1>=<valor1>;<campo2>=<valor2>;...`\n\nEl campo `intervals` **debe codificarse en base64**: `intervals=base64~<base64_del_array_JSON>`\n\nEl array JSON contiene sub-arrays posicionales `[name, tag, service]` (para `absoluteSimple`) o `[name, tag, service, init, end]` (para `absolute`/`relative`).\n",
+        "operationId": "timelineGet",
+        "parameters": [
+          {
+            "name": "controls",
+            "in": "query",
+            "required": true,
+            "description": "Nombre del control seguido de `*` y los campos de configuración en formato `<campo>=<valor>` separados por `;`.\n\nLos campos `timelineType` e `intervals` son **obligatorios**.\n\nEl campo `intervals` debe ir **codificado en base64**: `intervals=base64~<base64_del_array_JSON>`.\n\nEl array JSON codificado contiene sub-arrays posicionales:\n- **`absoluteSimple`**: `[[name, tag, service], ...]`\n- **`absolute` / `relative`**: `[[name, tag, service, init, end], ...]`\n\nEl campo `service` sigue el formato legado API-REST: `TIPO*url*nombre*...`\n\n**Ejemplo `absoluteSimple`:**\n```\ntimeline*timelineType=absoluteSimple;intervals=base64~<base64>\n```\nDonde `<base64>` = base64 de `[[\"PNOA 2020\",\"pnoa2020\",\"WMTS*url*...\"],...]`\n",
+            "schema": { "type": "string" },
+            "examples": {
+              "absoluteSimple": {
+                "summary": "absoluteSimple — 3 capas PNOA",
+                "value": "timeline*timelineType=absoluteSimple;animation=true;intervals=base64~W1siTkFDSU9OQUwgMTk4MS0xOTg2IiwiMTk4NiIsIldNUypOQUNJT05BTF8xOTgxLTE5ODYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypOQUNJT05BTF8xOTgxLTE5ODYiXSxbIk9MSVNUQVQiLCIxOTk4IiwiV01TKk9MSVNUQVQqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypPTElTVEFUIl0sWyJTSUdQQUMiLCIyMDAzIiwiV01TKlNJR1BBQypodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKlNJR1BBQyJdLFsiUE5PQSAyMDA0IiwiMjAwNCIsIldNUypwbm9hMjAwNCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDA0Il0sWyJQTk9BIDIwMDUiLCIyMDA1IiwiV01TKnBub2EyMDA1Kmh0dHBzOi8vd3d3Lmlnbi5lcy93bXMvcG5vYS1oaXN0b3JpY28qcG5vYTIwMDUiXSxbIlBOT0EgMjAwNiIsIjIwMDYiLCJXTVMqcG5vYTIwMDYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3Rvcmljbypwbm9hMjAwNiJdLFsiUE5PQSAyMDEwIiwiMjAxMCIsIldNUypwbm9hMjAxMCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDEwIl1d"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Código JavaScript que inicializa el mapa con el control Timeline.",
+            "content": {
+              "text/plain": {
+                "examples": {
+                  "absoluteSimple": {
+                    "summary": "?controls=timeline*timelineType=absoluteSimple;animation=true;intervals=base64~[...]",
+                    "value": "IDEE.map({\"container\":\"map\",\"controls\":[\"timeline*timelineType=absoluteSimple;animation=true;intervals=base64~W1siTkFDSU9OQUwgMTk4MS0xOTg2IiwiMTk4NiIsIldNUypOQUNJT05BTF8xOTgxLTE5ODYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypOQUNJT05BTF8xOTgxLTE5ODYiXSxbIk9MSVNUQVQiLCIxOTk4IiwiV01TKk9MSVNUQVQqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypPTElTVEFUIl0sWyJTSUdQQUMiLCIyMDAzIiwiV01TKlNJR1BBQypodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKlNJR1BBQyJdLFsiUE5PQSAyMDA0IiwiMjAwNCIsIldNUypwbm9hMjAwNCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDA0Il0sWyJQTk9BIDIwMDUiLCIyMDA1IiwiV01TKnBub2EyMDA1Kmh0dHBzOi8vd3d3Lmlnbi5lcy93bXMvcG5vYS1oaXN0b3JpY28qcG5vYTIwMDUiXSxbIlBOT0EgMjAwNiIsIjIwMDYiLCJXTVMqcG5vYTIwMDYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3Rvcmljbypwbm9hMjAwNiJdLFsiUE5PQSAyMDEwIiwiMjAxMCIsIldNUypwbm9hMjAxMCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDEwIl1d\"]})\n"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Timeline"],
+        "summary": "Configura el control Timeline (POST JSON)",
+        "description": "Genera el código JavaScript que inicializa un mapa IDEE con el control **Timeline**.\nEl cuerpo de la petición es un objeto JSON con la clave `controls`.\n",
+        "operationId": "timelinePost",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TimelineBody" },
+              "examples": {
+                "absoluteSimple": {
+                  "summary": "Capas PNOA intercambiables (absoluteSimple)",
+                  "value": {
+                    "controls": [
+                      {
+                        "type": "Timeline",
+                        "params": {
+                          "position": "left",
+                          "timelineType": "absoluteSimple",
+                          "animation": true,
+                          "speed": 1,
+                          "collapsible": true,
+                          "collapsed": false,
+                          "intervals": [
+                            { "name": "PNOA 2020", "tag": "pnoa2020", "service": "WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*PNOA MA*true*image/jpeg"   },
+                            { "name": "PNOA 2019", "tag": "pnoa2019", "service": "WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*PNOA 2019*true*image/jpeg" },
+                            { "name": "PNOA 2018", "tag": "pnoa2018", "service": "WMTS*https://www.ign.es/wmts/pnoa-historico?*PNOA2018*GoogleMapsCompatible*PNOA 2018*true*image/jpeg"       }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "absolute": {
+                  "summary": "Rango de fechas dinámico (absolute)",
+                  "value": {
+                    "controls": [
+                      {
+                        "type": "Timeline",
+                        "params": {
+                          "position": "left",
+                          "timelineType": "absolute",
+                          "speedDate": 2,
+                          "paramsDate": "yr",
+                          "stepValue": 1,
+                          "formatMove": "continuous",
+                          "formatValue": "linear",
+                          "intervals": [
+                            { "name": "Ortofotos históricas", "tag": "orto_historica", "service": "WMS*https://pnoa.ign.es/web/wcs/pnoa/ows?*Mosaic*false*Mosaico PNOA*true", "init": "2000", "end": "2023" }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "relative": {
+                  "summary": "Slider discreto con ancho personalizado (relative)",
+                  "value": {
+                    "controls": [
+                      {
+                        "type": "Timeline",
+                        "params": {
+                          "position": "right",
+                          "timelineType": "relative",
+                          "speedDate": 1,
+                          "paramsDate": "mos",
+                          "stepValue": 3,
+                          "sizeWidthDinamic": "sizeWidthDinamic_medium",
+                          "formatMove": "discrete",
+                          "formatValue": "linear",
+                          "tooltip": "Línea temporal",
+                          "collapsible": true,
+                          "collapsed": false,
+                          "intervals": [
+                            { "name": "Serie histórica", "tag": "serie", "service": "WMS*https://servicios.idee.es/wms-inspire/ocupacion-suelo-historico?*LC.LandCoverSurfaces*true*Usos del suelo*true", "init": "1990", "end": "2018" }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Código JavaScript que inicializa el mapa con el control Timeline.",
+            "content": {
+              "text/plain": {
+                "examples": {
+                  "respuestaAbsoluteSimple": {
+                    "summary": "JS con Timeline absoluteSimple (3 capas PNOA)",
+                    "value": "IDEE.map({\"container\":\"map\"}).addControls(new IDEE.control.Timeline({\"position\":\"left\",\"timelineType\":\"absoluteSimple\",\"animation\":true,\"speed\":1,\"collapsible\":true,\"collapsed\":false,\"intervals\":[{\"name\":\"PNOA 2020\",\"tag\":\"pnoa2020\",\"service\":\"WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*PNOA MA*true*image/jpeg\"},{\"name\":\"PNOA 2019\",\"tag\":\"pnoa2019\",\"service\":\"WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*PNOA 2019*true*image/jpeg\"},{\"name\":\"PNOA 2018\",\"tag\":\"pnoa2018\",\"service\":\"WMTS*https://www.ign.es/wmts/pnoa-historico?*PNOA2018*GoogleMapsCompatible*PNOA 2018*true*image/jpeg\"}]}))\n"
+                  },
+                  "respuestaAbsolute": {
+                    "summary": "JS con Timeline absolute con rango de fechas",
+                    "value": "IDEE.map({\"container\":\"map\"}).addControls(new IDEE.control.Timeline({\"position\":\"left\",\"timelineType\":\"absolute\",\"speedDate\":2,\"paramsDate\":\"yr\",\"stepValue\":1,\"formatMove\":\"continuous\",\"formatValue\":\"linear\",\"intervals\":[{\"name\":\"Ortofotos históricas\",\"tag\":\"orto_historica\",\"service\":\"WMS*https://pnoa.ign.es/web/wcs/pnoa/ows?*Mosaic*false*Mosaico PNOA*true\",\"init\":\"2000\",\"end\":\"2023\"}]}))\n"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "JSON inválido o parámetros incorrectos.",
+            "content": {
+              "text/plain": { "example": "// Error processing JSON: Unexpected token ..." }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TimelineBody": {
+        "type": "object",
+        "required": ["controls"],
+        "description": "Cuerpo de la petición POST. El servidor procesa el array `controls` llamando a `createControlFromJSON` por cada elemento (`type` → nombre del constructor, `params` → opciones).",
+        "properties": {
+          "controls": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["type", "params"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Nombre del control tal como aparece en `IDEE.control.{type}`.",
+                  "example": "Timeline"
+                },
+                "params": { "$ref": "#/components/schemas/TimelineDto" }
+              }
+            }
+          }
+        }
+      },
+      "TimelineDto": {
+        "type": "object",
+        "required": ["timelineType", "intervals"],
+        "description": "Opciones de configuración del control Timeline.",
+        "properties": {
+          "timelineType": {
+            "type": "string",
+            "description": "**Obligatorio.** Tipo de línea temporal:\n- `absoluteSimple` — capas estáticas intercambiables (sin fechas).\n- `absolute` — capas con rangos de fecha absolutos.\n- `relative` — capas con rangos de fecha relativos.\n",
+            "enum": ["absoluteSimple", "absolute", "relative"],
+            "example": "absoluteSimple"
+          },
+          "intervals": {
+            "description": "**Obligatorio.** Lista de intervalos/capas a mostrar en la línea temporal. Puede ser un array de objetos o una cadena JSON.\n\n- **`absoluteSimple`**: objetos con `name`, `tag` y `service`.\n- **`absolute` / `relative`**: objetos con `name`, `tag`, `service`, `init` y `end`.\n",
+            "oneOf": [
+              {
+                "type": "array",
+                "description": "Intervalos para `absoluteSimple`",
+                "items": { "$ref": "#/components/schemas/AbsoluteRelativeDto" }
+              },
+              {
+                "type": "array",
+                "description": "Intervalos para `absolute` / `relative` (con rango de fechas)",
+                "items": { "$ref": "#/components/schemas/IntervalDateDto" }
+              }
+            ]
+          },
+          "position":         { "type": "string",  "description": "Posición del control en el mapa.",                                                                    "example": "left"           },
+          "tooltip":          { "type": "string",  "description": "Texto del tooltip del control.",                                                                        "example": "Línea temporal" },
+          "order":            { "type": "number",  "description": "Accesibilidad: z-index del control.",                                                                   "example": 1                },
+          "collapsible":      { "type": "boolean", "description": "Indica si el control puede colapsarse.",                                                                "example": true             },
+          "collapsed":        { "type": "boolean", "description": "Indica si el control está colapsado.",                                                                  "example": false            },
+          "animation":        { "type": "boolean", "description": "(**Solo `absoluteSimple`**) Indica si la línea de tiempo se anima automáticamente.",  "default": true, "example": true },
+          "speed":            { "type": "number",  "description": "(**Solo `absoluteSimple`**) Velocidad de la animación en segundos (rango: 1–100).", "minimum": 1, "maximum": 100, "default": 1, "example": 1 },
+          "speedDate":        { "type": "number",  "description": "(**Solo `absolute`/`relative`**) Velocidad de la animación.",                        "example": 2 },
+          "paramsDate":       {
+            "type": "string",
+            "description": "(**Solo `absolute`/`relative`**) Unidad de tiempo para los pasos.",
+            "enum": ["sec", "min", "hrs", "day", "mos", "yr"],
+            "example": "yr"
+          },
+          "stepValue":        { "type": "number",  "description": "(**Solo `absolute`/`relative`**) Valor del paso para la navegación temporal.",       "example": 1 },
+          "sizeWidthDinamic": {
+            "type": "string",
+            "description": "(**Solo `absolute`/`relative`**) Ancho dinámico del control.",
+            "enum": ["", "sizeWidthDinamic_medium", "sizeWidthDinamic_big"],
+            "default": "",
+            "example": "sizeWidthDinamic_medium"
+          },
+          "formatMove":       {
+            "type": "string",
+            "description": "(**Solo `absolute`/`relative`**) Formato de movimiento del slider.",
+            "enum": ["continuous", "discrete"],
+            "default": "continuous",
+            "example": "continuous"
+          },
+          "formatValue":      {
+            "type": "string",
+            "description": "(**Solo `absolute`/`relative`**) Formato de visualización del valor del slider.",
+            "enum": ["linear", "logarithmic", "exponential"],
+            "default": "linear",
+            "example": "linear"
+          }
+        }
+      },
+      "AbsoluteRelativeDto": {
+        "type": "object",
+        "description": "Intervalo para el tipo `absoluteSimple`.",
+        "required": ["name", "service"],
+        "properties": {
+          "name":    { "type": "string", "description": "Nombre visible del intervalo en el slider.", "example": "PNOA 2020"    },
+          "tag":     { "type": "string", "description": "Identificador interno del intervalo.",       "example": "pnoa2020"     },
+          "service": { "type": "string", "description": "Capa en formato legado API-REST: `TIPO*url*nombre*...*parámetros`.", "example": "WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*PNOA MA*true*image/jpeg" }
+        }
+      },
+      "IntervalDateDto": {
+        "type": "object",
+        "description": "Intervalo para los tipos `absolute` y `relative`. Incluye rango de fechas.",
+        "required": ["name", "service", "init", "end"],
+        "properties": {
+          "name":    { "type": "string", "description": "Nombre visible del intervalo.",              "example": "Ortofoto histórica" },
+          "tag":     { "type": "string", "description": "Identificador interno del intervalo.",       "example": "orto_historica"     },
+          "service": { "type": "string", "description": "Capa en formato legado API-REST.",           "example": "WMS*https://pnoa.ign.es/web/wcs/pnoa/ows?*Mosaic*false*Mosaico PNOA*true" },
+          "init":    { "type": "string", "description": "Fecha de inicio del intervalo.",             "example": "2000"               },
+          "end":     { "type": "string", "description": "Fecha de fin del intervalo.",               "example": "2023"               }
+        }
+      }
+    }
+  }
+}

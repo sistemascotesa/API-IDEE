@@ -42,8 +42,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   constructor({
-    map, selection, addlayer, analysis, creation, download, edition, help, style,
-    isDraggable, order,
+    map, selection, addlayer, analysis, creation, download, edition, help, style, order,
   }) {
     const impl = new IDEE.impl.Control();
     super('VectorsManagement', impl, {});
@@ -65,7 +64,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     this.selectedLayer = null;
 
     // Determina si el plugin es draggable o no
-    this.isDraggable_ = isDraggable;
+    this.isDraggable_ = false;
 
     // order
     this.order = order;
@@ -224,7 +223,7 @@ export default class VectorsManagementControl extends IDEE.Control {
       this.selectionControl.deactivate();
     }
 
-    if (this.editionControl.isActivated()) {
+    if (this.editionControl && this.editionControl.isActivated()) {
       document.querySelector('#m-vectorsmanagement-edition').classList.remove('activated');
       this.editionControl.deactivate();
     }

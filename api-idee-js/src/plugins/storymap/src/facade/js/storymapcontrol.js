@@ -85,7 +85,7 @@ export default class StoryMapControl extends IDEE.Control {
 
   createContent(allhtml, indexInContent) {
     const contentHistory = allhtml.querySelector('#contentStoryMap');
-    this.cap_ = [...this.content_.cap];
+    this.cap_ = [...(this.content_?.cap || [])];
 
     if (indexInContent) {
       const index = {

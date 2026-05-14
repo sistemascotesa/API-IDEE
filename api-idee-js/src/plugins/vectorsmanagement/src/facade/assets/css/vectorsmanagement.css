@@ -10,33 +10,6 @@
     display: -webkit-box;
 }
 
-.m-areas>div.m-area>div.m-panel.collapsed>div.m-panel-controls {
-    display: none;
-}
-
-.m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened>div.m-panel-controls>div.m-control.m-container.m-vectorsmanagement>div#m-vectorsmanagement-previews>div {
-    height: 110px;
-    width: 110px;
-}
-
-.m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened>div.m-panel-controls>div.m-control.m-container.m-vectorsmanagement>div#m-vectorsmanagement-previews>div>img {
-    height: 100px;
-    width: 100px;
-}
-
-.m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened>div.m-panel-controls>div.m-control.m-container.m-vectorsmanagement>div#m-vectorsmanagement-previews>div>span {
-    font-size: 1.1em;
-    height: 20px;
-    line-height: 23px;
-    top: 80px;
-    width: 100px;
-}
-
-.m-areas>div.m-area>div.m-panel.opened.m-plugin-vectorsmanagement {
-    background-color: transparent !important;
-    box-shadow: none !important;
-}
-
 div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-container.m-vectorsmanagement>#m-vectorsmanagement-previews,
 div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-container.m-vectorsmanagement>.m-vectorsmanagement-selection-layer {
     text-align: center;
@@ -104,6 +77,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 #m-vectorsmanagement-layer-selector {
+    flex: 1;
     padding: 0 25px 0 .5rem;
     width: calc(146px - 25px - 8px - 1.6px);
     position: relative;
@@ -823,23 +797,6 @@ ol-profil button.profile-download-button::before {
     background-color: hsl(0deg 0% 100%)
 }
 
-.m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control>button,
-.m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.collapsed>button.m-panel-btn,
-[class^="vectorsmanagement-"],
-[class*=" vectorsmanagement-"] {
-    font-family: 'vectorsmanagement' !important;
-    speak: none;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-
-    /* Better Font Rendering =========== */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
 .m-vectorsmanagement-previews {
     width: 100%;
     display: flex;
@@ -922,9 +879,9 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     color: #fff !important;
 }
 
-#creationBtns,
-#analysisBtns>div,
-#editionBtns {
+#plugin-panel-vectorsmanagement #creationBtns,
+#plugin-panel-vectorsmanagement #analysisBtns>div,
+#plugin-panel-vectorsmanagement #editionBtns {
     padding: 1rem 0;
     display: flex;
     flex-direction: row;
@@ -933,33 +890,33 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     column-gap: .2rem;
 }
 
-#creationBtns,
-#creationBtns>button,
-#creationBtns>button.activated,
-#analysisBtns,
-#analysisBtns>div>button,
-#analysisBtns>div>button.activated,
-#editionBtns,
-#editionBtns>button,
-#editionBtns>button.activated {
+#plugin-panel-vectorsmanagement #creationBtns,
+#plugin-panel-vectorsmanagement #creationBtns>button,
+#plugin-panel-vectorsmanagement #creationBtns>button.activated,
+#plugin-panel-vectorsmanagement #analysisBtns,
+#plugin-panel-vectorsmanagement #analysisBtns>div>button,
+#plugin-panel-vectorsmanagement #analysisBtns>div>button.activated,
+#plugin-panel-vectorsmanagement #editionBtns,
+#plugin-panel-vectorsmanagement #editionBtns>button,
+#plugin-panel-vectorsmanagement #editionBtns>button.activated {
     background-color: transparent !important;
 }
 
-#creationBtns>button:before,
-#analysisBtns>div>button:before,
-#editionBtns>button:before {
+#plugin-panel-vectorsmanagement #creationBtns>button:before,
+#plugin-panel-vectorsmanagement #analysisBtns>div>button:before,
+#plugin-panel-vectorsmanagement #editionBtns>button:before {
     color: #757474 !important;
 }
 
-#creationBtns>button:hover:before,
-#analysisBtns>div>button:hover:before,
-#editionBtns>button:hover:before {
+#plugin-panel-vectorsmanagement #creationBtns>button:hover:before,
+#plugin-panel-vectorsmanagement #analysisBtns>div>button:hover:before,
+#plugin-panel-vectorsmanagement #editionBtns>button:hover:before {
     color: var(--idee-color-primary) !important;
 }
 
-#creationBtns>button.activated:before,
-#analysisBtns>div>button.activated:before,
-#editionBtns>button.activated:before {
+#plugin-panel-vectorsmanagement #creationBtns>button.activated:before,
+#plugin-panel-vectorsmanagement #analysisBtns>div>button.activated:before,
+#plugin-panel-vectorsmanagement #editionBtns>button.activated:before {
     color: var(--idee-color-primary-dark) !important;
 }
 
@@ -968,7 +925,6 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     flex-direction: column;
     align-items: center;
 }
-
 
 .vectorsmanagement-icon-resize-full-alt.disabled,
 .vectorsmanagement-icon-hole.disabled,
@@ -997,30 +953,10 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     width: 40px;
 }
 
-div.m-areas>div.m-area>div.m-panel-modal.opened {
-    display: flex;
-    position: fixed;
-    margin: auto;
-    background-color: white;
-    border: 1px solid #d3d3d3;
-    border-radius: 5px;
-    top: calc(50vh - 250px);
-    left: calc(50vw - 250px);
-}
-
 .m-control.m-container.m-modal>button.m-panel-btn.vectorsmanagement-icon-cancelar {
     font-size: 20px;
     border: none;
     background-color: #fff;
-}
-
-.m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened .m-control.m-container.m-modal>button.m-panel-btn.vectorsmanagement-icon-cancelar {
-    color: var(--idee-color-primary);
-    position: fixed !important;
-    right: 0 !important;
-    top: 0;
-    box-shadow: none;
-    z-index: 9999;
 }
 
 #vectorsmanagement-point-profile-container>button.m-panel-btn.vectorsmanagement-icon-cancelar,
@@ -1077,15 +1013,6 @@ th .vectorsmanagement-icon-papelera {
     margin-top: 0;
 }
 
-.m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened .m-control.m-container.m-modal>button.m-panel-btn.vectorsmanagement-icon-cancelar:before {
-    font-weight: bolder;
-    font-size: 1rem;
-}
-
-.m-areas>div.m-area>div.m-panel.m-panel-modal.collapsed>.m-panel-controls>.m-modal {
-    display: block;
-}
-
 .m-modal::after,
 .m-modal::before {
     content: none;
@@ -1093,7 +1020,7 @@ th .vectorsmanagement-icon-papelera {
 
 /* Help content */
 
-.m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened div#popup-box {
+.m-panel.m-plugin-vectorsmanagement.opened div#popup-box {
     margin: 30px 0 20px 0;
     padding: 0 20px;
     overflow-y: auto;
@@ -1141,19 +1068,13 @@ th .vectorsmanagement-icon-papelera {
     gap: 5px
 }
 
-.m-areas>div.m-area>div.m-plugin-vectorsmanagement.opened div.m-vectorsmanagement-controls>div {
-    width: auto;
-    height: auto;
-}
-
 /* modal panel */
 
 .m-modal {
     border: 0 !important;
 }
 
-#vectorsmanagement-point-profile-container,
-div.m-areas>div.m-area>div.m-plugin-vectorsmanagement.opened .m-control.m-container.m-modal {
+#vectorsmanagement-point-profile-container {
     position: fixed !important;
     top: 50%;
     left: 50%;
@@ -1171,222 +1092,7 @@ div#popup-box {
     max-height: calc(100vh - 175px) !important;
 }
 
-[class^="vectorsmanagement-icon"]:before {
-    content: '';
-    display: inline-block;
-    max-width: 1.15rem;
-    width: 100%;
-    aspect-ratio: 1;
-    background-color: currentColor;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    -webkit-mask-size: contain;
-    mask-repeat: no-repeat;
-    mask-position: center;
-    mask-size: contain;
-}
-
-.m-dialog div.m-message [class^="vectorsmanagement-icon"]:before {
-    color: var(--idee-color-primary-dark);
-}
-
-.vectorsmanagement-icon-font:before {
-    -webkit-mask-image: url('../images/icon_ue801.svg');
-    mask-image: url('../images/icon_ue801.svg');
-}
-
-.vectorsmanagement-icon-layers:before {
-    -webkit-mask-image: url('../images/icon_ue802.svg');
-    mask-image: url('../images/icon_ue802.svg');
-}
-
-.vectorsmanagement-icon-linea:before {
-    -webkit-mask-image: url('../images/icon_ue803.svg');
-    mask-image: url('../images/icon_ue803.svg');
-}
-
-.vectorsmanagement-icon-poligono:before {
-    -webkit-mask-image: url('../images/icon_ue806.svg');
-    mask-image: url('../images/icon_ue806.svg');
-}
-
-.vectorsmanagement-icon-pin:before {
-    -webkit-mask-image: url('../images/icon_ue807.svg');
-    mask-image: url('../images/icon_ue807.svg');
-}
-
-.vectorsmanagement-icon-vectors:before {
-    -webkit-mask-image: url('../images/icon_ue819.svg');
-    mask-image: url('../images/icon_ue819.svg');
-}
-
-.vectorsmanagement-icon-profile:before {
-    -webkit-mask-image: url('../images/icon_ue81b.svg');
-    mask-image: url('../images/icon_ue81b.svg');
-}
-
-.vectorsmanagement-icon-hole:before {
-    -webkit-mask-image: url('../images/icon_ue81c.svg');
-    mask-image: url('../images/icon_ue81c.svg');
-}
-
-.vectorsmanagement-icon-pin-located:before {
-    -webkit-mask-image: url('../images/icon_ue903.svg');
-    mask-image: url('../images/icon_ue903.svg');
-}
-
-.vectorsmanagement-icon-design-tool:before {
-    -webkit-mask-image: url('../images/icon_ue902.svg');
-    mask-image: url('../images/icon_ue902.svg');
-}
-
-.vectorsmanagement-icon-cancelar:before {
-    -webkit-mask-image: url('../images/icon_ue905.svg');
-    mask-image: url('../images/icon_ue905.svg');
-}
-
-.vectorsmanagement-icon-aceptar:before {
-    -webkit-mask-image: url('../images/icon_ue908.svg');
-    mask-image: url('../images/icon_ue908.svg');
-}
-
-.vectorsmanagement-icon-radio-vacio:before {
-    -webkit-mask-image: url('../images/icon_ue90b.svg');
-    mask-image: url('../images/icon_ue90b.svg');
-}
-
-.vectorsmanagement-icon-radio-relleno:before {
-    -webkit-mask-image: url('../images/icon_ue90c.svg');
-    mask-image: url('../images/icon_ue90c.svg');
-}
-
-.vectorsmanagement-icon-descargar:before {
-    -webkit-mask-image: url('../images/icon_ue90e.svg');
-    mask-image: url('../images/icon_ue90e.svg');
-}
-
-.vectorsmanagement-icon-editar:before {
-    -webkit-mask-image: url('../images/icon_ue90f.svg');
-    mask-image: url('../images/icon_ue90f.svg');
-}
-
-.vectorsmanagement-icon-editar2:before {
-    -webkit-mask-image: url('../images/icon_ue910.svg');
-    mask-image: url('../images/icon_ue910.svg');
-}
-
-.vectorsmanagement-icon-estilo:before {
-    -webkit-mask-image: url('../images/icon_ue91c.svg');
-    mask-image: url('../images/icon_ue91c.svg');
-}
-
-.vectorsmanagement-icon-mover:before {
-    -webkit-mask-image: url('../images/icon_ue921.svg');
-    mask-image: url('../images/icon_ue921.svg');
-}
-
-.vectorsmanagement-icon-seleccionar:before {
-    -webkit-mask-image: url('../images/icon_ue901.svg');
-    mask-image: url('../images/icon_ue901.svg');
-    position: relative;
-}
-
-.vectorsmanagement-icon-mas:before {
-    -webkit-mask-image: url('../images/icon_ue935.svg');
-    mask-image: url('../images/icon_ue935.svg');
-}
-
-.vectorsmanagement-icon-medir-area:before {
-    -webkit-mask-image: url('../images/icon_ue936.svg');
-    mask-image: url('../images/icon_ue936.svg');
-}
-
-.vectorsmanagement-icon-analisis:before {
-    -webkit-mask-image: url('../images/icon_ue938.svg');
-    mask-image: url('../images/icon_ue938.svg');
-}
-
-.vectorsmanagement-icon-papelera:before {
-    -webkit-mask-image: url('../images/icon_ue93e.svg');
-    mask-image: url('../images/icon_ue93e.svg');
-}
-
-.vectorsmanagement-icon-subir:before {
-    -webkit-mask-image: url('../images/icon_ue95e.svg');
-    mask-image: url('../images/icon_ue95e.svg');
-}
-
-.vectorsmanagement-icon-tamano:before {
-    -webkit-mask-image: url('../images/icon_ue95f.svg');
-    mask-image: url('../images/icon_ue95f.svg');
-}
-
-.vectorsmanagement-icon-ayuda:before {
-    -webkit-mask-image: url('../images/icon_ue981.svg');
-    mask-image: url('../images/icon_ue981.svg');
-}
-
-.vectorsmanagement-icon-scissors:before {
-    -webkit-mask-image: url('../images/icon_uea5a.svg');
-    mask-image: url('../images/icon_uea5a.svg');
-}
-
-.vectorsmanagement-icon-resize-full-alt:before {
-    -webkit-mask-image: url('../images/icon_ue800.svg');
-    mask-image: url('../images/icon_ue800.svg');
-}
-
-.vectorsmanagement-icon-table:before {
-    -webkit-mask-image: url('../images/icon_uf0ce.svg');
-    mask-image: url('../images/icon_uf0ce.svg');
-}
-
-.vectorsmanagement-icon-selector-arrow-up:before {
-    -webkit-mask-image: url('../images/icon_ue904.svg');
-    mask-image: url('../images/icon_ue904.svg');
-}
-
-.vectorsmanagement-icon-selector-arrow-down:before {
-    -webkit-mask-image: url('../images/icon_ue906.svg');
-    mask-image: url('../images/icon_ue906.svg');
-}
-
-.vectorsmanagement-icon-json-file:before {
-    -webkit-mask-image: url('../images/icon_ue900.svg');
-    mask-image: url('../images/icon_ue900.svg');
-}
-
 #options-content input[type=number],
 #edition-container div input[type=number] {
     width: 50px;
-}
-
-@media (max-width: 600px) {
-    .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened {
-        z-index: 999999999999;
-    }
-
-    .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened div#popup-box {
-        position: relative !important;
-        top: 0 !important;
-        padding: 0 20px;
-        margin: 30px 0 20px !important;
-        overflow-y: auto;
-        height: calc(100vh - 40px);
-        width: calc(100vw - 40px);
-        left: 0 !important;
-        background-color: #fff;
-        border-radius: 5px;
-    }
-
-    .m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened div#popup-box>div.popup-section img {
-        height: auto !important;
-        width: -webkit-fill-available !important;
-    }
-
-    div.m-areas>div.m-area>div.m-panel.m-plugin-vectorsmanagement.opened>button.m-panel-btn {
-        top: 0px !important;
-        left: 50vw;
-        z-index: 9999;
-    }
 }

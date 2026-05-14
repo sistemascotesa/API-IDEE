@@ -471,6 +471,35 @@ export const buildControl = (controlParam, map) => {
 };
 
 /**
+ * Converts a layer URL parameter string in the named-param format
+ * ('WMTS*url=http://...;name=MTN;matrixSet=GM') into a plain object
+ * that parameter.layer() can consume directly.
+ *
+ * The old positional format ('WMTS*http://....*name') is returned unchanged
+ * so existing callers are unaffected.
+ *
+ * @public
+ * @function
+ * @param {string|*} layerParam Raw layer parameter.
+ * @returns {Object|string} Parsed object for named-param format, original value otherwise.
+ */
+export const buildLayer = (layerParam) => {
+  if (!isString(layerParam)) return layerParam;
+  const starIdx = layerParam.indexOf('*');
+  if (starIdx <= 0) return layerParam;
+
+  const type = layerParam.substring(0, starIdx);
+  const paramsStr = layerParam.substring(starIdx + 1);
+
+  // Named-param format: params start with 'key=value' (word chars then '=')
+  if (/^\w+=/.test(paramsStr)) {
+    return { type, ...parseUrlParams(paramsStr, type) };
+  }
+
+  return layerParam;
+};
+
+/**
  * Este comentario no se verá, es necesario incluir
  * una exportación por defecto para que el compilador
  * muestre las funciones.

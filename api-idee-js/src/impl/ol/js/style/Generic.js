@@ -290,12 +290,33 @@ class Generic extends Simple {
       if (!(featureVariable instanceof OLFeature || featureVariable instanceof RenderFeature)) {
         featureVariable = this;
       } else {
-        const type = featureVariable.getGeometry().getType();
-        const getter = GETTER_BY_GEOM[type];
+        const geometry = featureVariable.getGeometry();
+        const type = geometry.getType();
 
-        if (isFunction(getter)) {
-          styles = getter(options, featureVariable, this.layer_);
+        if (type === 'GeometryCollection' && isFunction(geometry.getGeometries)) {
+          // Un GeometryCollection no tiene una entrada propia en GETTER_BY_GEOM,
+          // por lo que se recorren sus sub-geometrías para obtener un estilo por
+          // cada tipo presente (evitando duplicar el mismo getter).
+          const processedTypes = new Set();
+          geometry.getGeometries().forEach((subGeom) => {
+            const subType = subGeom.getType();
+            if (processedTypes.has(subType)) {
+              return;
+            }
+            processedTypes.add(subType);
+            const getter = GETTER_BY_GEOM[subType];
+            if (isFunction(getter)) {
+              styles = styles.concat(getter(options, featureVariable, this.layer_));
+            }
+          });
           this.styles_[idFeature] = styles;
+        } else {
+          const getter = GETTER_BY_GEOM[type];
+
+          if (isFunction(getter)) {
+            styles = getter(options, featureVariable, this.layer_);
+            this.styles_[idFeature] = styles;
+          }
         }
       }
       return styles;

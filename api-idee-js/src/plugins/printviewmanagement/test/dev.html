@@ -8,15 +8,6 @@
     <meta name="idee" content="yes">
     <title>PrintViewManagement TEST</title>
     <link href="https://api-ideedes.grupotecopy.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-    </style>
 </head>
 
 <body>
@@ -35,9 +26,9 @@
                     title="Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true">Colapsado
                     "collapsed"</label>
                 <select name="collapsed" id="selectCollapsed">
-                    <option value="" selected="selected"></option>
+                    <option value=""></option>
                     <option value="true">true</option>
-                    <option value="false">false</option>
+                    <option value="false" selected="selected">false</option>
                 </select>
             </div>
             <div>
@@ -48,9 +39,9 @@
             </div>
             <div>
                 <label for="inputTooltip"
-                    title="Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Impresión del mapa">Título
+                    title="Texto que se muestra al dejar el ratón encima del plugin.">Título
                     de la herramienta "tooltip"</label>
-                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Impresión del mapa">
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug">
                 <datalist id="tooltipSug">
                     <option value="Impresión del mapa"></option>
                 </datalist>
@@ -84,7 +75,7 @@
                     "printermap"</label>
                 <input type="text" id="inputPrintermap" list="printermapSug">
                 <datalist id="printermapSug">
-                    <option value='{"tooltip":"Impresión del mapa","filterTemplates":["${api-idee.static_resources.url}/plantillas/html/templateConBorde.html","${api-idee.static_resources.url}/plantillas/html/templateConCabezeraYBorde.html","${api-idee.static_resources.url}/plantillas/html/templateConFooterYBorde.html"],"showDefaultTemplate":false,"defaultDpiOptions":[96,150,300],"layoutsRestraintFromDpi":["screensize","A0","A1","A2"]}'></option>
+                    <option value='{"tooltip":"Impresión del mapa","filterTemplates":["${api-idee.static_resources.url}/plantillas/html/mapaConMarco.html","${api-idee.static_resources.url}/plantillas/html/mapaConCabeceraYMarco.html","${api-idee.static_resources.url}/plantillas/html/mapaConPieYMarco.html"],"showDefaultTemplate":false,"defaultDpiOptions":[96,150,300],"layoutsRestraintFromDpi":["screensize","A0","A1","A2"]}'></option>
                 </datalist>
             </div>
         </div>

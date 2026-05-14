@@ -23,7 +23,7 @@ export default class PrintViewManagementControl extends IDEE.Control {
   }) {
     if (IDEE.utils.isUndefined(PrintViewManagementImpl)
       || (IDEE.utils.isObject(PrintViewManagementImpl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(PrintViewManagementImpl)))) {
+        && IDEE.utils.isNullOrEmpty(Object.keys(PrintViewManagementImpl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
 
@@ -115,6 +115,13 @@ export default class PrintViewManagementControl extends IDEE.Control {
     });
   }
 
+  addTo(map) {
+    super.addTo(map);
+    if (this.defaultOpenControl === 0 && this.printermap_ && this.printMapButton_) {
+      this.printMapButton_.click();
+    }
+  }
+
   selectElementHTML() {
     // IDs
     const ID_PRINT_BUTTON = '#m-printviewmanagement-print';
@@ -124,24 +131,26 @@ export default class PrintViewManagementControl extends IDEE.Control {
   }
 
   addEvent() {
-    // ADD EVENT PRINT
-    this.elementPrintButton_.addEventListener('click', (evt) => {
-      const active = this.getControlActive(this.html);
+    // ADD EVENT PRINT - Only if the button exists (for backward compatibility)
+    if (this.elementPrintButton_) {
+      this.elementPrintButton_.addEventListener('click', (evt) => {
+        const active = this.getControlActive(this.html);
 
-      if (active) {
-        if (active.id === 'm-printviewmanagement-georefImage') {
-          this.georefImageControl.printClick(evt);
-        }
+        if (active) {
+          if (active.id === 'm-printviewmanagement-georefImage') {
+            this.georefImageControl.printClick(evt);
+          }
 
-        if (active.id === 'm-printviewmanagement-georefImageEpsg') {
-          this.georefImageEpsgControl.printClick(evt);
-        }
+          if (active.id === 'm-printviewmanagement-georefImageEpsg') {
+            this.georefImageEpsgControl.printClick(evt);
+          }
 
-        if (active.id === 'm-printviewmanagement-printermap') {
-          this.printerMapControl.printClick(evt);
+          if (active.id === 'm-printviewmanagement-printermap') {
+            this.printerMapControl.printClick(evt);
+          }
         }
-      }
-    });
+      });
+    }
 
     document.addEventListener('keydown', (evt) => {
       if (evt.key === 'Escape') {
@@ -155,19 +164,16 @@ export default class PrintViewManagementControl extends IDEE.Control {
 
   defaultOpenControl_(html) {
     if (this.defaultOpenControl === 1 && this.printermap_) {
-      this.showDownloadButton('printermap');
       this.deactive(html, 'printermap');
       this.printerMapControl.active(html);
     }
 
     if (this.defaultOpenControl === 2 && this.georefImage_) {
-      this.showDownloadButton('georefImage');
       this.deactive(html, 'georefImage');
       this.georefImageControl.active(html);
     }
 
     if (this.defaultOpenControl === 3 && this.georefImageEpsg_) {
-      this.showDownloadButton('georefImageEpsg');
       this.deactive(html, 'georefImageEpsg');
       this.georefImageEpsgControl.active(html);
     }
@@ -191,7 +197,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
       this.map_,
     );
     html.querySelector('#m-printviewmanagement-georefImageEpsg').addEventListener('click', () => {
-      this.showDownloadButton('georefImageEpsg');
       this.deactive(html, 'georefImageEpsg');
       this.georefImageEpsgControl.active(html);
     });
@@ -202,8 +207,8 @@ export default class PrintViewManagementControl extends IDEE.Control {
       this.printermap_,
       this.map_,
     );
-    html.querySelector('#m-printviewmanagement-printermap').addEventListener('click', () => {
-      this.showDownloadButton('printermap');
+    this.printMapButton_ = html.querySelector('#m-printviewmanagement-printermap');
+    this.printMapButton_.addEventListener('click', () => {
       this.deactive(html, 'printermap');
       this.printerMapControl.active(html);
     });
@@ -215,39 +220,9 @@ export default class PrintViewManagementControl extends IDEE.Control {
       this.map_,
     );
     html.querySelector('#m-printviewmanagement-georefImage').addEventListener('click', () => {
-      this.showDownloadButton('georefImage');
       this.deactive(html, 'georefImage');
       this.georefImageControl.active(html);
     });
-  }
-
-  showDownloadButton(type) {
-    const ID_DOWNLOAD_BUTTON = '#m-georefimage-download-button';
-    this.elementDownloadButton_ = this.html.querySelector(ID_DOWNLOAD_BUTTON);
-    const elementDownloadButtonDW = this.html.querySelector(`${ID_DOWNLOAD_BUTTON} > button`);
-
-    const display = this.elementDownloadButton_.style.display;
-    if (display === 'none') {
-      this.elementDownloadButton_.style.display = 'flex';
-    }
-
-    if (type === 'printermap') {
-      elementDownloadButtonDW.title = getValue('downMap');
-      elementDownloadButtonDW.innerHTML = getValue('downMap');
-    } else {
-      elementDownloadButtonDW.title = getValue('downImg');
-      elementDownloadButtonDW.innerHTML = getValue('downImg');
-    }
-  }
-
-  hidemDownloadButton() {
-    const ID_DOWNLOAD_BUTTON = '#m-georefimage-download-button';
-    this.elementDownloadButton_ = this.html.querySelector(ID_DOWNLOAD_BUTTON);
-
-    const display = this.elementDownloadButton_.style.display;
-    if (display === 'flex') {
-      this.elementDownloadButton_.style.display = 'none';
-    }
   }
 
   /**
@@ -278,12 +253,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
       }
 
       active.classList.remove('activated');
-      // const container = document.querySelector('#plugin-panel-content-printviewmanagement');
-      // if (container && container.children.length > 2) {
-      //   container.removeChild(container.children[2]);
-      // }
-    } else if (active.id === `m-printviewmanagement-${control}`) {
-      this.hidemDownloadButton();
     }
   }
 

@@ -3,12 +3,13 @@
  */
 
 import '../assets/css/vectorsmanagement';
+import '../assets/css/fonts';
+import es from './i18n/es';
+import en from './i18n/en';
+
 import VectorsManagementControl from './vectorsmanagementcontrol';
 import myhelp from '../../templates/myhelp';
 import { getValue } from './i18n/language';
-
-import es from './i18n/es';
-import en from './i18n/en';
 
 export default class VectorsManagement extends IDEE.Plugin {
   /**
@@ -26,6 +27,7 @@ export default class VectorsManagement extends IDEE.Plugin {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
       order: options.order,
+      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vector.svg',
     });
 
     /**
@@ -52,9 +54,17 @@ export default class VectorsManagement extends IDEE.Plugin {
     /**
      * Panel of the plugin
      * @private
-     * @type {IDEE.ui.Panel}wq
+     * @type {IDEE.ui.Panel}
      */
     this.panel = null;
+
+    /**
+     * @private
+     * @type {string}
+     *
+     * Indicates if the plugin is collapsed on entry (true/false).
+     */
+    this.collapsed = typeof options.collapsed === 'boolean' ? options.collapsed : true;
 
     /**
      * Array of controls
@@ -71,36 +81,12 @@ export default class VectorsManagement extends IDEE.Plugin {
     this.options = options;
 
     /**
-     * Position of the plugin
-     *
-     * @private
-     * @type {Enum} left | right
-     */
-    this.position = options.position || 'right';
-
-    /**
-     * @private
-     * @type {string}
-     *
-     * Indicates if the plugin is collapsed on entry (true/false).
-     */
-    this.collapsed = options.collapsed !== undefined ? options.collapsed : true;
-
-    /**
-     * @private
-     * @type {string}
-     *
-     * Indicates if the plugin can be collapsed into a button (true/false).
-     */
-    this.collapsible = options.collapsible !== undefined ? options.collapsible : true;
-
-    /**
      * @private
      * @type {boolean}
      *
      * Indicates if the selection control is active (true/false)
      */
-    this.selection = options.selection !== undefined ? options.selection : true;
+    this.selection = typeof options.selection === 'boolean' ? options.selection : true;
 
     /**
      * @private
@@ -108,7 +94,7 @@ export default class VectorsManagement extends IDEE.Plugin {
      *
      * Indicates if the addlayer control is active (true/false)
      */
-    this.addlayer = options.addlayer !== undefined ? options.addlayer : true;
+    this.addlayer = typeof options.addlayer === 'boolean' ? options.addlayer : true;
 
     /**
      * @private
@@ -116,7 +102,7 @@ export default class VectorsManagement extends IDEE.Plugin {
      *
      * Indicates if the analysis control is active (true/false)
      */
-    this.analysis = this.selection && (options.analysis !== undefined ? options.analysis : true);
+    this.analysis = typeof options.analysis === 'boolean' ? options.analysis : true;
 
     /**
      * @private
@@ -124,7 +110,7 @@ export default class VectorsManagement extends IDEE.Plugin {
      *
      * Indicates if the creation control is active (true/false)
      */
-    this.creation = options.creation !== undefined ? options.creation : true;
+    this.creation = typeof options.creation === 'boolean' ? options.creation : true;
 
     /**
      * @private
@@ -132,7 +118,7 @@ export default class VectorsManagement extends IDEE.Plugin {
      *
      * Indicates if the download control is active (true/false)
      */
-    this.download = options.download !== undefined ? options.download : true;
+    this.download = typeof options.download === 'boolean' ? options.download : true;
 
     /**
      * @private
@@ -140,7 +126,7 @@ export default class VectorsManagement extends IDEE.Plugin {
      *
      * Indicates if the edition control is active (true/false)
      */
-    this.edition = this.selection && (options.edition !== undefined ? options.edition : true);
+    this.edition = typeof options.edition === 'boolean' ? options.edition : true;
 
     /**
      * @private
@@ -148,7 +134,7 @@ export default class VectorsManagement extends IDEE.Plugin {
      *
      * Indicates if the help control is active (true/false)
      */
-    this.help = (options.help !== undefined ? options.help : true);
+    this.help = typeof options.help === 'boolean' ? options.help : true;
 
     /**
      * @private
@@ -156,13 +142,10 @@ export default class VectorsManagement extends IDEE.Plugin {
      *
      * Indicates if the style control is active (true/false)
      */
-    this.style = options.style !== undefined ? options.style : true;
+    this.style = typeof options.style === 'boolean' ? options.style : true;
 
     // Tooltip
     this.tooltip = options.tooltip || getValue('tooltip');
-
-    // Determina si el plugin es draggable o no
-    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
   }
 
   /**
@@ -194,7 +177,7 @@ export default class VectorsManagement extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
+      svgPath: this.svgPath,
       order: this.order,
     });
     map.addButtons(this.button);
@@ -210,7 +193,6 @@ export default class VectorsManagement extends IDEE.Plugin {
       collapsedButtonClass: 'vectorsmanagement-icon-vectors',
       order: this.order,
     });
-    map.addPanels(this.panel);
 
     this.controls.push(new VectorsManagementControl({
       map,
@@ -222,7 +204,6 @@ export default class VectorsManagement extends IDEE.Plugin {
       edition: this.edition,
       help: this.help,
       style: this.style,
-      isDraggable: this.isDraggable,
       order: this.order,
     }));
 
@@ -231,10 +212,10 @@ export default class VectorsManagement extends IDEE.Plugin {
     });
 
     this.panel.addControls(this.controls);
-    // map.addPanels(this.panel_); */
 
     this.button.panel = this.panel;
     this.panel.button = this.button;
+    map.addPanels(this.panel);
   }
 
   /**
@@ -247,7 +228,7 @@ export default class VectorsManagement extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.selection}*${this.addlayer}*${this.analysis}*${this.creation}*${this.download}*${this.edition}*${this.help}*${this.style}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.selection}*${this.addlayer}*${this.analysis}*${this.creation}*${this.download}*${this.edition}*${this.help}*${this.style}`;
   }
 
   /**

@@ -7,6 +7,7 @@ IDEE.language.setLang('es');
 const map = IDEE.map({
   container: 'mapjs',
   center: [-458756.9690741142, 4682774.665868655],
+  controls: ['measurebar'],
   layers: ['OSM'],
   zoom: 6,
 });
@@ -73,23 +74,23 @@ window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/countries.mbtile
 
 const mp = new VectorsManagement({
   position: 'right',
-  collapsible: false,
   collapsed: false,
-  isDraggable: true,
   // tooltip: 'TOOLTIP TEST Gestionar mis vectores',
   // useProxy => falta implementar
 
   // Herramientas
   help: true,
   addlayer: true,
-  selection: true, // Automaticamente desactiva "edition" y "analysis"
+  selection: false, // Automaticamente desactiva "edition" y "analysis"
   creation: true,
   edition: true,
   style: true,
   analysis: true,
   download: true,
-
   order: null,
 });
 
-map.addPlugin(mp); window.mp = mp;
+map.addPlugin(mp);
+window.mp = mp;
+
+// vectorsmanagement=position*!collapsed*!order*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style
