@@ -53,8 +53,8 @@
 }
 
 .vectorsmanagement-icon-linea:before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_draw_line');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_draw_line');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_draw_line.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_draw_line.svg');
 }
 
 .vectorsmanagement-icon-poligono:before {

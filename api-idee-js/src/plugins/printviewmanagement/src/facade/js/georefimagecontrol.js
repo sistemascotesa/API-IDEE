@@ -17,6 +17,7 @@ const ID_FORMAT_SELECT = '#m-georefimage-format';
 const ID_PROJECTION = '#m-georefimage-projection';
 const ID_WLD = '#m-georefimage-wld';
 const ID_DPI = '#m-georefimage-dpi';
+const ID_GEOREFIMAGE_PRINT_BUTTON = '#m-georefimage-print';
 
 // SELECTOR CANVAS
 const SELECTOR_CANVAS = '.ol-layer canvas';
@@ -117,7 +118,8 @@ export default class GeorefimageControl extends IDEE.Control {
           translations: {
             referenced: getValue('referenced'),
             projection: getValue('projection'),
-            down: getValue('down'),
+            download: getValue('download'),
+            image: getValue('image'),
             title: getValue('title'),
             georefimageWld: getValue('georefimageWld'),
             selectDpi: getValue('selectDPI'),
@@ -163,6 +165,13 @@ export default class GeorefimageControl extends IDEE.Control {
     this.elementWld_ = html.querySelector(ID_WLD);
     this.elementCanvas_ = document.querySelector(SELECTOR_CANVAS);
     this.elementProjection_ = html.querySelector(ID_PROJECTION);
+
+    const printButton = html.querySelector(ID_GEOREFIMAGE_PRINT_BUTTON);
+    if (printButton) {
+      printButton.addEventListener('click', (evt) => {
+        this.printClick(evt);
+      });
+    }
   }
 
   /**

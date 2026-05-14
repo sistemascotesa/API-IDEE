@@ -60,7 +60,7 @@ import Tiles3D from './layer/Tiles3D';
 import Terrain from './layer/Terrain';
 import WMC from './layer/WMC';
 import Attributions from './control/Attributions';
-import { buildControl, getPanelForControl } from './builder/builder';
+import { buildControl, buildLayer, getPanelForControl } from './builder/builder';
 import applyDesignTokenCssVariables from './theme/tokens';
 // eslint-disable-next-line no-unused-vars
 import Plugin from './Plugin';
@@ -719,16 +719,23 @@ class Map extends Base {
         let layer;
 
         if (isString(layerParam)) {
-          const splt = layerParam.split('*');
-          if (splt.length === 2 && splt[0] === 'QUICK') {
-            const ly = getQuickLayers(splt[1]);
-            if (!isUndefined(ly)) {
-              // eslint-disable-next-line
-              layerParam = ly;
-            } else {
-              // eslint-disable-next-line
-              console.error(`No se encuentra definida ${splt[1]} como capa rápida`);
-              return null;
+          // Named-param format: 'WMTS*url=http://...;name=MTN;matrixSet=GM'
+          if (isString(layerParam)) {
+            // eslint-disable-next-line
+            layerParam = buildLayer(layerParam);
+          }
+          if (isString(layerParam)) {
+            const splt = layerParam.split('*');
+            if (splt.length === 2 && splt[0] === 'QUICK') {
+              const ly = getQuickLayers(splt[1]);
+              if (!isUndefined(ly)) {
+                // eslint-disable-next-line
+                layerParam = ly;
+              } else {
+                // eslint-disable-next-line
+                console.error(`No se encuentra definida ${splt[1]} como capa rápida`);
+                return null;
+              }
             }
           }
         }

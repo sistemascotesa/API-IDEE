@@ -14,6 +14,7 @@ import { DPI_OPTIONS, GEOREFIMAGEEPSG_FORMAT } from '../../constants';
 const FILE_EXTENSION_GEO = '.wld';
 const FILE_EXTENSION_IMG = '.'.concat(GEOREFIMAGEEPSG_FORMAT);
 const TYPE_SAVE = '.zip';
+const ID_GEOREFIMAGEEPSG_PRINT_BUTTON = '#m-georefimageepsg-print';
 
 export default class GeorefImageEpsgControl extends IDEE.Control {
   /**
@@ -116,6 +117,8 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
           translations: {
             selectLayer: getValue('selectLayer'),
             selectDpi: getValue('selectDPI'),
+            download: getValue('download'),
+            image: getValue('image'),
             nameTitle: getValue('title_list'),
           },
           layers: this.layers_,
@@ -131,6 +134,13 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
         document.querySelector('.m-georefimageepsg-container').remove();
       }
       button.classList.toggle('activated');
+
+      const printButton = t.querySelector(ID_GEOREFIMAGEEPSG_PRINT_BUTTON);
+      if (printButton) {
+        printButton.addEventListener('click', (evt) => {
+          this.printClick(evt);
+        });
+      }
     });
 
     this.accessibilityTab(html);

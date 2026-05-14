@@ -14,7 +14,7 @@ const map = IDEE.map({
 });
 window.map = map;
 
-/* 
+/*
 const capaGeoJSON = new IDEE.layer.GeoJSON({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tematicos:Provincias&maxFeatures=50&outputFormat=application%2Fjson',
   name: 'Capa GeoJSON', legend: 'Capa GeoJSON',
@@ -95,7 +95,6 @@ const capaWMS = new IDEE.layer.WMS({
 }, { crossOrigin: 'anonymous' });
 map.addLayers(capaWMS); window.capaWMS = capaWMS;
 
-
 const capaWMTS = new IDEE.layer.WMTS({
   url: 'https://servicios.idee.es/wmts/ocupacion-suelo',
   name: 'LC.LandCoverSurfaces', legend: 'LC.LandCoverSurfaces l',
@@ -118,7 +117,6 @@ window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/cabrera.mbtiles`
   });
   map.addLayers(mbtile); window.mbtile = mbtile;
 }).catch((e) => { throw e; });
-
 
 window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/countries.mbtiles`).then((response) => {
   const mbtilesvector = new IDEE.layer.MBTilesVector({

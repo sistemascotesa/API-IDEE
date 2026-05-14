@@ -25,6 +25,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
       order: options.order,
+      svgPath: options.svgPath || 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_impresora.svg',
     });
 
     /**
@@ -39,7 +40,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
      * @private
      * @type {Boolean}
      */
-    this.collapsed = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
+    this.collapsed = typeof options.collapsed === 'boolean' ? options.collapsed : true;
 
     const { georefImageEpsg = true } = options;
 
@@ -150,7 +151,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
     this.button = new IDEE.ui.Button(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_impresora.svg',
+      svgPath: this.svgPath,
       order: this.order,
     });
     map.addButtons(this.button);
