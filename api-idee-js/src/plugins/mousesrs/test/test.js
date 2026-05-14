@@ -39,7 +39,6 @@ const selectActiveZ = document.getElementById('selectActiveZ');
 const selectEpsgFormat = document.getElementById('selectEpsgFormat');
 const selectMode = document.getElementById('selectMode');
 const inputCoveragePrecissions = document.getElementById('inputCoveragePrecissions');
-const selectDraggableDialog = document.getElementById('selectDraggableDialog');
 const inputHelpUrl = document.getElementById('inputHelpUrl');
 const inputOrder = document.getElementById('inputOrder');
 
@@ -62,9 +61,12 @@ const updatePlugin = () => {
   options.epsgFormat = boolVal(selectEpsgFormat, false);
   options.mode = selectMode.options[selectMode.selectedIndex].value;
   if (inputCoveragePrecissions.value.trim()) {
-    try { options.coveragePrecissions = JSON.parse(inputCoveragePrecissions.value); } catch (e) { options.coveragePrecissions = inputCoveragePrecissions.value; }
+    try {
+      options.coveragePrecissions = JSON.parse(inputCoveragePrecissions.value);
+    } catch (e) {
+      options.coveragePrecissions = inputCoveragePrecissions.value;
+    }
   }
-  options.draggableDialog = boolVal(selectDraggableDialog, false);
   options.helpUrl = inputHelpUrl.value;
   options.order = Number(inputOrder.value);
 
@@ -84,7 +86,6 @@ const updatePlugin = () => {
   selectEpsgFormat,
   selectMode,
   inputCoveragePrecissions,
-  selectDraggableDialog,
   inputHelpUrl,
   inputOrder,
 ].forEach((ctrl) => {

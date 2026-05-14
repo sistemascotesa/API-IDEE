@@ -7,3 +7,24 @@
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_impresora.svg');
 }
 
+/*********************
+    PRINT BUTTONS
+*********************/
+
+.g-cartografia-download-file::before {
+    margin: 0;
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_bajarArchivo.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_bajarArchivo.svg');
+}
+
+.g-cartografia-download-file::before {
+    margin: 0;
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_bajarArchivo.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_bajarArchivo.svg');
+}
+
+.g-cartografia-open-window::before {
+    margin: 0;
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent.svg');
+}

@@ -14,7 +14,7 @@ const map = IDEE.map({
 });
 window.map = map;
 
-/* 
+/*
 const capaGeoJSON = new IDEE.layer.GeoJSON({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tematicos:Provincias&maxFeatures=50&outputFormat=application%2Fjson',
   name: 'Capa GeoJSON', legend: 'Capa GeoJSON',
@@ -95,7 +95,6 @@ const capaWMS = new IDEE.layer.WMS({
 }, { crossOrigin: 'anonymous' });
 map.addLayers(capaWMS); window.capaWMS = capaWMS;
 
-
 const capaWMTS = new IDEE.layer.WMTS({
   url: 'https://servicios.idee.es/wmts/ocupacion-suelo',
   name: 'LC.LandCoverSurfaces', legend: 'LC.LandCoverSurfaces l',
@@ -118,7 +117,6 @@ window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/cabrera.mbtiles`
   });
   map.addLayers(mbtile); window.mbtile = mbtile;
 }).catch((e) => { throw e; });
-
 
 window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/countries.mbtiles`).then((response) => {
   const mbtilesvector = new IDEE.layer.MBTilesVector({
@@ -194,14 +192,6 @@ const inputDefaultOpenControl = document.getElementById('inputDefaultOpenControl
 const inputGeorefImageEpsg = document.getElementById('inputGeorefImageEpsg');
 const inputGeorefImage = document.getElementById('inputGeorefImage');
 const inputPrintermap = document.getElementById('inputPrintermap');
-
-const DEFAULT_GEOREF_EPSG = '{"tooltip":"Georeferenciar imagen predefinida","layers":[{"url":"http://www.ign.es/wms-inspire/mapa-raster?","name":"mtn_rasterizado","format":"image/jpeg","legend":"Mapa ETRS89 UTM"},{"url":"http://www.ign.es/wms-inspire/pnoa-ma?","name":"OI.OrthoimageCoverage","format":"image/jpeg","legend":"Imagen (PNOA) ETRS89 UTM"}],"defaultDpiOptions":[96,150,300]}';
-const DEFAULT_GEOREF_IMAGE = '{"tooltip":"Georeferenciar imagen","defaultDpiOptions":[96,150,300]}';
-const DEFAULT_PRINTERMAP = `{"tooltip":"Impresión del mapa","filterTemplates":["${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConBorde.html","${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConCabezeraYBorde.html","${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConFooterYBorde.html"],"showDefaultTemplate":true,"defaultDpiOptions":[96,150,300],"layoutsRestraintFromDpi":["screensize","A0","A1","A2"]}`;
-
-inputGeorefImageEpsg.value = DEFAULT_GEOREF_EPSG;
-inputGeorefImage.value = DEFAULT_GEOREF_IMAGE;
-inputPrintermap.value = DEFAULT_PRINTERMAP;
 
 const safeParseJSON = (val, fallback) => {
   try { return val ? JSON.parse(val) : fallback; } catch (e) { return fallback; }
