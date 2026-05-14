@@ -1,6 +1,7 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { test, expect } from '@playwright/test';
 
-test('Test QueryAttributes', async ({ page }) => {
+test('Test Plugin QueryAttributes', async ({ page }) => {
   await page.goto('/src/plugins/queryattributes/test/playwright/ol/queryattributes-ol.html');
   await page.evaluate(() => {
     window.mapjs = IDEE.map({
@@ -11,7 +12,7 @@ test('Test QueryAttributes', async ({ page }) => {
     });
     window.mapjs.addPlugin(window.mp);
   });
-  
+
   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins().length);
   expect(nPlugins).toBe(1);
 });
