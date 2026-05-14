@@ -269,7 +269,7 @@
     .g-cartografia-layerswitcher-empty-content::before {
         -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_anadirCapas.svg');
         mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_anadirCapas.svg');
-        width: 92px;
+        width: 92px !important;
         height: 92px;
     }
 

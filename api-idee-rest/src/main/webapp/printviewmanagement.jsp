@@ -97,7 +97,7 @@
                                 "printermap"</label>
                             <input type="text" id="inputPrintermap" list="printermapSug">
                             <datalist id="printermapSug">
-                                <option value='{"tooltip":"Impresión del mapa","filterTemplates":["${api-idee.static_resources.url}/plantillas/html/templateConBorde.html","${api-idee.static_resources.url}/plantillas/html/templateConCabezeraYBorde.html","${api-idee.static_resources.url}/plantillas/html/templateConFooterYBorde.html"],"showDefaultTemplate":true,"defaultDpiOptions":[96,150,300],"layoutsRestraintFromDpi":["screensize","A0","A1","A2"]}'></option>
+                                <option value='{"tooltip":"Impresión del mapa","filterTemplates":["${api-idee.static_resources.url}/plantillas/html/mapaConMarco.html","${api-idee.static_resources.url}/plantillas/html/mapaConCabeceraYMarco.html","${api-idee.static_resources.url}/plantillas/html/mapaConPieYMarco.html"],"showDefaultTemplate":true,"defaultDpiOptions":[96,150,300],"layoutsRestraintFromDpi":["screensize","A0","A1","A2"]}'></option>
                             </datalist>
                         </div>
                     </div>

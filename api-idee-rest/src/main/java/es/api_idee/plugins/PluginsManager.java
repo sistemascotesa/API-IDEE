@@ -255,27 +255,48 @@ public abstract class PluginsManager {
 	/**
 	 * Splits a "plugins" parameter value on commas that are plugin separators.
 	 * A comma is a plugin separator only when the token immediately after it
-	 * (up to the next comma, semicolon, '*' or '=') matches a known plugin name.
-	 * This distinguishes "plugin1*pos=left,plugin2" from "plugin1*tools=a,b,c".
+	 * (up to the next comma, semicolon, '*' or '=') matches a known plugin name
+	 * AND we are not already inside a multi-value parameter (e.g. tools=a,b,c).
+	 *
 	 */
 	private static List<String> splitPluginEntries(String pluginsParam) {
 		List<String> entries = new java.util.ArrayList<>();
 		int start = 0;
 		int len = pluginsParam.length();
+		boolean inValue = false;
+		boolean commaSeenInValue = false;
+
 		for (int i = 0; i < len; i++) {
-			if (pluginsParam.charAt(i) != ',') continue;
-			// Extract token after this comma (stops at , ; * =)
-			int j = i + 1;
-			while (j < len) {
-				char ch = pluginsParam.charAt(j);
-				if (ch == ',' || ch == ';' || ch == '*' || ch == '=') break;
-				j++;
-			}
-			String nextToken = pluginsParam.substring(i + 1, j).trim();
-			if (isKnownPlugin(nextToken)) {
-				String entry = pluginsParam.substring(start, i).trim();
-				if (!entry.isEmpty()) entries.add(entry);
-				start = i + 1;
+			char ch = pluginsParam.charAt(i);
+			if (ch == '=') {
+				inValue = true;
+				commaSeenInValue = false;
+			} else if (ch == ';') {
+				inValue = false;
+				commaSeenInValue = false;
+			} else if (ch == '*') {
+				inValue = false;
+				commaSeenInValue = false;
+			} else if (ch == ',') {
+				if (inValue && commaSeenInValue) continue;
+
+				int j = i + 1;
+				while (j < len) {
+					char c2 = pluginsParam.charAt(j);
+					if (c2 == ',' || c2 == ';' || c2 == '*' || c2 == '=') break;
+					j++;
+				}
+				String nextToken = pluginsParam.substring(i + 1, j).trim();
+
+				if (isKnownPlugin(nextToken)) {
+					String entry = pluginsParam.substring(start, i).trim();
+					if (!entry.isEmpty()) entries.add(entry);
+					start = i + 1;
+					inValue = false;
+					commaSeenInValue = false;
+				} else if (inValue) {
+					commaSeenInValue = true;
+				}
 			}
 		}
 		String last = pluginsParam.substring(start).trim();

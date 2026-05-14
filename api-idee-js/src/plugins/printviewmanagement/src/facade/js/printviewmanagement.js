@@ -101,9 +101,9 @@ export default class PrintViewManagement extends IDEE.Plugin {
     if (printermap === true) {
       this.printermap = {
         filterTemplates: [
-          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConBorde.html`,
-          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConCabezeraYBorde.html`,
-          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConFooterYBorde.html`,
+          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/mapaConMarco.html`,
+          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/mapaConCabeceraYMarco.html`,
+          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/mapaConPieYMarco.html`,
         ],
         showDefaultTemplate: true,
         defaultDpiOptions: [96, 150, 300],

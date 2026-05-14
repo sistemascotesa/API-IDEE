@@ -86,7 +86,9 @@
 - Se soluciona la vista al cambiar capas bases WMS.
 - Se soluciona problemas con cambio de proyección.
 - Se soluciona problema con el almacenado de altitud en el plugin infocoordinates.
+- Se soluciona la visualización de objetos geográficos de tipo "GeometryCollection".
 - Se implementa multilenguaje en los plugins mapheader, mapfooter, maxextzoom, magnify y filteredsearch.
+- Se implementa el método getHelp en los plugins filteredsearch, magnify, mapheader, mapfooter, maxextzoom y wfstcontrols.
 - Se soluciona problema al usar estilo categórico con un estilo genérico e icono sin tener el proxy activado.
 - Se genera en legacy el versionado de 1.0.0 y se modifica la versión del proyecto a la 1.1.0.
 - Se pueden importar archivos .tif, .tiff y .gpkg y se implementa mejora a la hora de añadir archivos pesados en el plugin LayerSwitcher.
