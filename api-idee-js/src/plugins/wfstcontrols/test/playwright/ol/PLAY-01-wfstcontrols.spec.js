@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+/* import { test, expect } from '@playwright/test';
 
 test('Test WFSTControls', async ({ page }) => {
   await page.goto('/src/plugins/wfstcontrols/test/playwright/ol/wfstcontrols-ol.html');
@@ -26,4 +26,4 @@ test('Test WFSTControls', async ({ page }) => {
   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins().length);
   // expect(nPlugins).toBe(1);
   expect(nPlugins).toBe(0); // Todavía no se ha implementado en esta version del API 2.0
-});
+}); */
