@@ -170,7 +170,8 @@ class OverviewMap extends Control {
     * @public
     * @type {Object}
     */
-    this.collapsed = isBoolean(options.collapsed) ? options.collapsed : this.collapsible;
+    this.collapsed = (isBoolean(options.collapsed) && this.collapsible)
+      ? options.collapsed : this.collapsible;
 
     /**
     * Options of the control
@@ -188,7 +189,7 @@ class OverviewMap extends Control {
   }
 
   getActivationButton(element) {
-    return document.createElement('button');
+    return isNullOrEmpty(element) ? null : document.querySelector('button');
   }
 
   /**
