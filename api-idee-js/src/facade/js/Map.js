@@ -3937,7 +3937,7 @@ class Map extends Base {
    * @public
    * @function
    * @param {Mx.Plugin} namesParam Nombre del plugin.
-   * @returns {Map} Devuelve el estado del mapa.
+   * @returns {Array<IDEE.Plugin>} Devuelve la colección de plugins.
    * @api
    */
   getPlugins(namesParam) {

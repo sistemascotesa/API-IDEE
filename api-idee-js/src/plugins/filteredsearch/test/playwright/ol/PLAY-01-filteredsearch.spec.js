@@ -11,7 +11,7 @@ test('Test FilteredSearch', async ({ page }) => {
     });
     window.mapjs.addPlugin(window.mp);
   });
-  
+
   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins().length);
   expect(nPlugins).toBe(1);
 });
