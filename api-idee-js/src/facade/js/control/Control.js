@@ -356,7 +356,7 @@ class Control extends Base {
    * @export
    */
   deactivate() {
-    if (!isNullOrEmpty(this.element)) {
+    if (!isNullOrEmpty(this.element) && this.element.classList) {
       this.element.classList.remove('active');
     }
     if (!isUndefined(this.getImpl()) && !isUndefined(this.getImpl().deactivate)) {

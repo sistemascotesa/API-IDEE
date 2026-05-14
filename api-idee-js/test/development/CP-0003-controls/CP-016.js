@@ -3,7 +3,7 @@ import OverviewMap from 'IDEE/control/OverviewMap';
 
 const map = Mmap({
   container: 'map',
-  controls: ['rotate'],
+  controls: ['measurebar', 'backgroundlayers', 'getfeatureinfo'],
   projection: 'EPSG:3857',
   center: [-467062.8225, 4683459.6216],
   zoom: 6,
