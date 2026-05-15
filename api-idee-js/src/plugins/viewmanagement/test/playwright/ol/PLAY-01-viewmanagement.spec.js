@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('Test plugin Viewmanagement', async ({ page }) => {
+test('Test plugin ViewManagement', async ({ page }) => {
   await page.goto('/src/plugins/viewmanagement/test/playwright/ol/viewmanagement-ol.html');
   await page.evaluate(() => {
     window.mapjs = IDEE.map({

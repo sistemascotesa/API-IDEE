@@ -7,9 +7,7 @@ test('Test Plugin Locator', async ({ page }) => {
     window.mapjs = IDEE.map({
       container: 'mapjs',
     });
-    window.mp = new IDEE.plugin.Locator({
-      position: 'left',
-    });
+    window.mp = new IDEE.plugin.Locator();
     window.mapjs.addPlugin(window.mp);
   });
 
