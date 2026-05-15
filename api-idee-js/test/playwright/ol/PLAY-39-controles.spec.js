@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { test, expect } from '@playwright/test';
 
-test('Probamos añadir controles desde API', async ({ page }) => {
+test('Probamos añadir controles desde API 2.0', async ({ page }) => {
   await page.goto('/test/playwright/ol/basic-ol.html');
 
   await page.evaluate(() => {
