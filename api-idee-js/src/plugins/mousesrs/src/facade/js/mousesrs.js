@@ -36,7 +36,7 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super('mousersrs', {
+    super('mousesrs', {
       position: options.position ?? 'down',
       tooltip: options.tooltip ?? getValue('tooltip'),
       order: options.order,
