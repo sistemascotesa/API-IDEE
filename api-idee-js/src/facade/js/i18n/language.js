@@ -57,7 +57,6 @@ export const getTranslation = (lang) => {
       .esInfocoordinates;
     configuration.translations[lang].information = pluginsLanguage.information.esInformation;
     configuration.translations[lang].layerswitcher = pluginsLanguage.layerswitcher.esLayerswitcher;
-    configuration.translations[lang].measurebar = pluginsLanguage.measurebar.esMeasurebar;
     configuration.translations[lang].mousesrs = pluginsLanguage.mousesrs.esMousesrs;
     configuration.translations[lang].printviewmanagement = pluginsLanguage.printviewmanagement
       .esPrintviewmanagement;
@@ -91,7 +90,6 @@ export const getTranslation = (lang) => {
       .enInfocoordinates;
     configuration.translations[lang].information = pluginsLanguage.information.enInformation;
     configuration.translations[lang].layerswitcher = pluginsLanguage.layerswitcher.enLayerswitcher;
-    configuration.translations[lang].measurebar = pluginsLanguage.measurebar.enMeasurebar;
     configuration.translations[lang].mousesrs = pluginsLanguage.mousesrs.enMousesrs;
     configuration.translations[lang].printviewmanagement = pluginsLanguage.printviewmanagement
       .enPrintviewmanagement;

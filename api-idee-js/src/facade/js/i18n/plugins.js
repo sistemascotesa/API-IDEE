@@ -52,10 +52,6 @@ import enMapfooter from '../../../plugins/mapfooter/src/facade/js/i18n/en';
 import esMagnify from '../../../plugins/magnify/src/facade/js/i18n/es';
 import enMagnify from '../../../plugins/magnify/src/facade/js/i18n/en';
 
-// Measurebar
-import esMeasurebar from '../../../plugins/measurebar/src/facade/js/i18n/es';
-import enMeasurebar from '../../../plugins/measurebar/src/facade/js/i18n/en';
-
 // Mousesrs
 import esMousesrs from '../../../plugins/mousesrs/src/facade/js/i18n/es';
 import enMousesrs from '../../../plugins/mousesrs/src/facade/js/i18n/en';
@@ -168,10 +164,6 @@ const pluginsLanguage = {
   magnify: {
     esMagnify,
     enMagnify,
-  },
-  measurebar: {
-    esMeasurebar,
-    enMeasurebar,
   },
   mousesrs: {
     esMousesrs,
