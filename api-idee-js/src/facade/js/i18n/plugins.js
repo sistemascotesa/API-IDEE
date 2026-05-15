@@ -88,10 +88,6 @@ import enSharemap from '../../../plugins/sharemap/src/facade/js/i18n/en';
 import esStylemanager from '../../../plugins/stylemanager/src/facade/js/i18n/es';
 import enStylemanager from '../../../plugins/stylemanager/src/facade/js/i18n/en';
 
-// Timeline
-import esTimeline from '../../../plugins/timeline/src/facade/js/i18n/es';
-import enTimeline from '../../../plugins/timeline/src/facade/js/i18n/en';
-
 // Viewmanagement
 import esViewmanagement from '../../../plugins/viewmanagement/src/facade/js/i18n/es';
 import enViewmanagement from '../../../plugins/viewmanagement/src/facade/js/i18n/en';
@@ -210,10 +206,6 @@ const pluginsLanguage = {
   stylemanager: {
     esStylemanager,
     enStylemanager,
-  },
-  timeline: {
-    esTimeline,
-    enTimeline,
   },
   viewmanagement: {
     esViewmanagement,
