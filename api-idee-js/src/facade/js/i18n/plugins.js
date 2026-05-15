@@ -56,10 +56,6 @@ import enMagnify from '../../../plugins/magnify/src/facade/js/i18n/en';
 import esMousesrs from '../../../plugins/mousesrs/src/facade/js/i18n/es';
 import enMousesrs from '../../../plugins/mousesrs/src/facade/js/i18n/en';
 
-// Overviewmap
-import esOverviewmap from '../../../plugins/overviewmap/src/facade/js/i18n/es';
-import enOverviewmap from '../../../plugins/overviewmap/src/facade/js/i18n/en';
-
 // Printviewmanagement
 import esPrintviewmanagement from '../../../plugins/printviewmanagement/src/facade/js/i18n/es';
 import enPrintviewmanagement from '../../../plugins/printviewmanagement/src/facade/js/i18n/en';
@@ -168,10 +164,6 @@ const pluginsLanguage = {
   mousesrs: {
     esMousesrs,
     enMousesrs,
-  },
-  overviewmap: {
-    esOverviewmap,
-    enOverviewmap,
   },
   printviewmanagement: {
     esPrintviewmanagement,
