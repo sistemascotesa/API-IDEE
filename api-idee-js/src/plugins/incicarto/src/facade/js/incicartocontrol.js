@@ -30,7 +30,7 @@ const POINTS = [1, 15];
 const LINES = [10, 15];
 const LINE_POINTS = [1, 15, 20, 15];
 
-const HOSTNAME = ['componentes-desarrollo.idee.es', 'componentes.idee.es'];
+const HOSTNAME = ['api-ideedes.grupotecopy.es', 'componentes.idee.es'];
 const PATH_NAME = 'api-idee';
 const CONTROLS = [
   'scale',

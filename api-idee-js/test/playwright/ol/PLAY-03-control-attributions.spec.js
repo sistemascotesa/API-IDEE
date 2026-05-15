@@ -12,10 +12,8 @@ test('Click attributions', async ({ page }) => {
   await page.waitForFunction(() => window.mapjs.isFinished());
   const attributions = await page.locator('.m-attributions').first();
   await expect(attributions).toHaveClass(/collapsed/);
-  await attributions.getByRole('button', { name: 'Plugin attributions' }).click();
-  await page.waitForTimeout(1000);
+  await attributions.locator('button.m-control-panel-btn').click();
   await expect(attributions).toHaveClass(/opened/);
-  await attributions.getByRole('button', { name: 'Plugin attributions' }).click();
-  await page.waitForTimeout(1000);
+  await attributions.locator('button.m-control-panel-btn').click();
   await expect(attributions).toHaveClass(/collapsed/);
 });

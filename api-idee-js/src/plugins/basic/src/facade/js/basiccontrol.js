@@ -23,7 +23,7 @@ export default class BasicControl extends IDEE.Control {
       IDEE.exception(getValue('exception.impl'));
     }
     // 2. Crea la implementación del control
-    const impl = new BasicImplControl();
+    const impl = new BasicImplControl(false);
     super('Basic', impl);
 
     /**

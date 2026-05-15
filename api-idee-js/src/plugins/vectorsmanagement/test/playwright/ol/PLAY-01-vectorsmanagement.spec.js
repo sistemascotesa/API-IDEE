@@ -1,17 +1,16 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { test, expect } from '@playwright/test';
 
-test('Test vectorsmanagement', async ({ page }) => {
+test('Test Plugin VectorsManagement', async ({ page }) => {
   await page.goto('/src/plugins/vectorsmanagement/test/playwright/ol/vectorsmanagement-ol.html');
   await page.evaluate(() => {
     window.mapjs = IDEE.map({
       container: 'mapjs',
     });
-      window.mp = new IDEE.plugin.VectorsManagement({
-      position: 'BR'
-    });
+    window.mp = new IDEE.plugin.VectorsManagement();
     window.mapjs.addPlugin(window.mp);
   });
-  
-  const nPlugins = await page.evaluate(() => window.mapjs.getPlugins().length);
+
+  const nPlugins = await page.evaluate(() => window.mapjs.getPlugins(window.mp.name).length);
   expect(nPlugins).toBe(1);
 });

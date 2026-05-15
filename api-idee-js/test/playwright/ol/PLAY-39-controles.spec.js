@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { test, expect } from '@playwright/test';
 
 test('Probamos añadir controles desde API', async ({ page }) => {
@@ -11,20 +12,23 @@ test('Probamos añadir controles desde API', async ({ page }) => {
   });
 
   // Hacer petición a la API para obtener los controles
-  const response = await page.evaluate(async () => {
+  const apiAvaliableControls = await page.evaluate(async () => {
     const res = await fetch(`${IDEE.config.API_IDEE_URL}api/actions/controls`);
     return await res.json();
   });
 
   // Añadir los controles al mapa
-  await page.evaluate((controls) => {
-    window.mapjs.addControls(controls);
-  }, response);
+  await page.evaluate((controlNames) => {
+    window.mapjs.addControls(controlNames);
+  }, apiAvaliableControls);
 
-  // Verificar que el número de controles coincide con el array de la petición
-  const controlsLength = await page.evaluate(() => {
-    return window.mapjs.getControls().length;
-  });
+  // Verificar que todos los controles cargados están ahora en el mapa y no están repetidos.
+  const isControlListCorrect = await page.evaluate((controlNames) => {
+    return controlNames.every(
+      (controlName) => window.mapjs.getControls()
+        .filter((mapControl) => mapControl.constructor.NAME === controlName).length === 1,
+    );
+  }, apiAvaliableControls);
 
-  expect(controlsLength).toBe(response.length);
+  expect(isControlListCorrect).toBe(true);
 });

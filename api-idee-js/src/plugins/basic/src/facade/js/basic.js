@@ -21,28 +21,27 @@ export default class Basic extends IDEE.Plugin {
    * @api
    */
   constructor(options = {}) {
-    super();
-
-    /**
-     * Nombre del plugin
-     * @private
-     * @type {String}
-     */
-    this.name_ = 'basic';
+    super('basic', {
+      position: options.position ?? 'right',
+      tooltip: options.tooltip ?? getValue('tooltip'),
+      order: options.order,
+      svgPath: options.svgPath ?? 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_foto.svg',
+      ...options,
+    });
 
     /**
      * Fachada del mapa
      * @private
      * @type {IDEE.Map}
      */
-    this.map_ = null;
+    this.map = null;
 
     /**
      * Lista de controles
      * @private
      * @type {Array<IDEE.Control>}
      */
-    this.controls_ = [];
+    this.controls = [];
 
     /**
      * Nombre de clase de la vista html
@@ -50,51 +49,6 @@ export default class Basic extends IDEE.Plugin {
      * @type {string}
      */
     this.className = 'm-plugin-basic';
-
-    /**
-     * Posición del Plugin
-     * @public
-     * Posibles valores: TR | TL | BL | BR
-     * @type {String}
-     */
-    const positions = ['TR', 'TL', 'BL', 'BR'];
-    this.position = positions.includes(options.position) ? options.position : 'TR';
-
-    /**
-     * Tooltip del plugin
-     *
-     * @private
-     * @type {string}
-     */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
-
-    /**
-     * Indicador de si el plugin se muestra contraido
-     * @public
-     * @type {boolean}
-     */
-    this.collapsed = options.collapsed !== false;
-
-    /**
-     * Indicador de si el plugin se puede contraer no.
-     * @public
-     * @type {boolean}
-     */
-    this.collapsible = options.collapsible !== false;
-
-    /**
-     * Indicador de si el plugin puede arrastrarse o no
-     * @public
-     * @type {boolean}
-     */
-    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
-
-    /**
-     * Prioridad en la colocación del plugin en su área
-     *@private
-     *@type { Number }
-     */
-    this.order = options.order >= -1 ? options.order : null;
 
     /**
      * Parámetros del plugin
@@ -113,19 +67,32 @@ export default class Basic extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.controls_.push(new BasicControl(this.isDraggable));
-    this.map_ = map;
-    this.panel_ = new IDEE.ui.Panel('Basic', {
-      collapsible: this.collapsible,
-      collapsed: this.collapsed,
-      position: IDEE.ui.position[this.position],
-      className: this.className,
-      collapsedButtonClass: 'icon-basic-wrench',
-      tooltip: this.tooltip_,
+    this.map = map;
+    this.controls.push(new BasicControl(this.isDraggable));
+
+    this.button = new IDEE.ui.Button(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+      svgPath: this.svgPath,
       order: this.order,
     });
-    this.panel_.addControls(this.controls_);
-    map.addPanels(this.panel_);
+    map.addButtons(this.button);
+
+    this.panel = new IDEE.ui.Panel('Basic', {
+      tooltip: this.tooltip,
+      position: this.position,
+      collapsed: this.collapsed,
+      className: this.className,
+      collapsedButtonClass: 'icon-basic-wrench',
+      order: this.order,
+    });
+
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
+
+    this.panel.addControls(this.controls);
+
+    map.addPanels(this.panel);
   }
 
   /**
@@ -135,7 +102,7 @@ export default class Basic extends IDEE.Plugin {
    * @function
    */
   get name() {
-    return this.name_;
+    return this.name;
   }
 
   /**
@@ -146,7 +113,7 @@ export default class Basic extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
-    this.map_.removeControls(this.controls_);
+    this.map.removeControls(this.controls);
   }
 
   /**
@@ -158,7 +125,7 @@ export default class Basic extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.isDraggable}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.tooltip}`;
   }
 
   /**
