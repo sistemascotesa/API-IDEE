@@ -4,7 +4,6 @@
  */
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import OLLayerVectorTile from 'ol/layer/VectorTile';
-// import { get as getProj } from 'ol/proj';
 import {
   isNullOrEmpty, extend, isObject, getZDirectionFunction,
 } from 'IDEE/util/Utils';
@@ -13,7 +12,7 @@ import TileEventType from 'ol/source/TileEventType';
 import TileState from 'ol/TileState';
 import MVTFormatter from 'ol/format/MVT';
 import Feature from 'ol/Feature';
-import { get as getProj } from 'ol/proj';
+import { get as getProj, equivalent } from 'ol/proj';
 import RenderFeature from 'ol/render/Feature';
 import { createXYZ } from 'ol/tilegrid';
 import { mode } from 'IDEE/layer/MVT';
@@ -193,7 +192,8 @@ class MVT extends Vector {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    const projection = getProj('EPSG:3857');
+    const mapProjection = getProj(map.getProjection().code);
+    const projection = getProj(this.projection_);
 
     if (this.layers_ !== undefined) {
       this.formater_ = new MVTFormatter({
@@ -210,15 +210,23 @@ class MVT extends Vector {
     const ticket = IDEE.config.TICKET;
     const url = isNullOrEmpty(ticket) ? this.url : `${this.url}?ticket=${ticket}`;
 
+    const tileGrid = createXYZ({
+      extent: projection.getExtent(),
+      tileSize: this.getTileSize(),
+    });
+
+    if (!equivalent(projection, mapProjection)) {
+      const scaleFactor = (mapProjection.getMetersPerUnit() || 1) ** 2;
+      const originalGetZ = tileGrid.getZForResolution.bind(tileGrid);
+      tileGrid.getZForResolution = (res, dir) => originalGetZ(res * scaleFactor, dir);
+    }
+
     const source = new OLSourceVectorTile({
       format: this.formater_,
       url,
       projection,
       tileLoadFunction: this.tileLoadFunction,
-      tileGrid: createXYZ({
-        extent: projection.getExtent(),
-        tileSize: this.getTileSize(),
-      }),
+      tileGrid,
       zDirection: this.zDirection,
     });
 
