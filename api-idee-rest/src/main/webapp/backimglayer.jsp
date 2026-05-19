@@ -212,7 +212,7 @@
                                     const restLayer4 = 'WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*false*true,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*Imagen (PNOA)*false*image/png*false*false*truesumarWMTS*https://www.ign.es/wmts/ign-base?*IGNBaseOrto*GoogleMapsCompatible*Mapa IGN*true*image/jpeg*false*false*true';
 
                                     const pwImg1 = 'plugins/backimglayer/images/svqimagen.png';
-                                    const pwImg2 = 'https://www.ign.es/iberpix/static/media/raster.c7a904f3.png';
+                                    const pwImg2 = 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/14/7896/10319.jpeg';
                                     const pwImg3 = 'plugins/backimglayer/images/svqmapa.png';
                                     const pwImg4 = 'plugins/backimglayer/images/svqhibrid.png';
                                     options.layerOpts = [

@@ -2,7 +2,7 @@
  * @module IDEE/Plugin
  */
 import Base from './Base';
-import Button from './ui/Button';
+import SidePanelButton from './ui/buttons/SidePanelButton';
 import Panel from './ui/Panel';
 import {
   isArray,
@@ -90,7 +90,7 @@ class Plugin extends Base {
   addTo(map) {
     this.map = map;
 
-    this.button = new Button(this.name, {
+    this.button = new SidePanelButton(this.name, {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: this.svgPath,

@@ -357,7 +357,7 @@
         height: 32px;
         color: var(--idee-color-primary-dark);
         background-color: var(--idee-color-neutral-20);
-        border: none;
+        border: 2px solid transparent;
         border-radius: 4px;
         cursor: pointer;
         font-size: 14px;

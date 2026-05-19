@@ -114,7 +114,7 @@ export default class Modal extends IDEE.Plugin {
     this.control_ = new ModalControl(this.url_);
     this.controls_.push(this.control_);
 
-    this.button = new IDEE.ui.Button(this.name, {
+    this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: `plugins/${this.name}/images/icon.svg`,

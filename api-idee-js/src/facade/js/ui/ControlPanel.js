@@ -1,8 +1,9 @@
 /**
  * @module IDEE/ui/ControlPanel
  */
-import 'assets/css/controlpanel';
+import 'assets/css/control_panel';
 import controlPanelTemplate from 'templates/control_panel';
+import PanelButton from './buttons/PanelButton';
 import * as Position from './position';
 import {
   isArray, isNullOrEmpty, isString, includes,
@@ -197,6 +198,12 @@ class ControlPanel extends MObject {
     if (isNumber(options.order)) {
       this._order = options.order;
     }
+
+    /**
+     * @private
+     * @type {PanelButton}
+     */
+    this._panelButtonObj = null;
   }
 
   /**
@@ -227,23 +234,25 @@ class ControlPanel extends MObject {
   addTo(map) {
     this._map = map;
     this._areaContainer = this._map.getToolsContainer(this.position);
-    const html = compileTemplate(controlPanelTemplate);
-    const button = html.querySelector('.m-control-panel-btn');
-    button.setAttribute('type', 'button');
+    this._element = compileTemplate(controlPanelTemplate);
+    this._panelButtonObj = new PanelButton(this.name, {
+      tooltip: this._tooltip,
+      classList: 'm-control-panel-btn',
+      order: this._order,
+      panel: this,
+    });
+    this._panelButtonObj.createElement();
+    this._buttonPanel = this._panelButtonObj.element;
 
-    this._element = html;
-
-    // Accessibility
-    button.setAttribute('role', 'button');
-    button.setAttribute('aria-label', `Control ${this.name}`);
+    if (this._element && this._buttonPanel) {
+      this._element.insertBefore(this._buttonPanel, this._element.firstChild);
+    }
 
     if (this._order) {
       this._element.style.setProperty('order', this._order, 'important');
-      // this._element.setAttribute('tabIndex', this._order);
-      button.setAttribute('tabIndex', this._order);
+      this._element.setAttribute('tabIndex', this._order);
     } else {
-      button.setAttribute('tabIndex', '300');
-      // this._element.style.setProperty('order', 100, 'important');
+      this._element.style.setProperty('order', 100, 'important');
     }
 
     this._tabAccessibility();
@@ -251,37 +260,35 @@ class ControlPanel extends MObject {
     if (!isNullOrEmpty(this._tooltip)) {
       this._element.setAttribute('title', this._tooltip);
     }
-    this._buttonPanel = html.querySelector('button.m-control-panel-btn');
+
     if (!isNullOrEmpty(this._className)) {
       this._className.split(/\s+/).forEach((className) => {
-        html.classList.add(className);
+        this._element.classList.add(className);
       });
     }
 
-    if (this._collapsed === true) {
+    if (!this._collapsible) {
+      this._element.classList.add('no-collapsible');
+    }
+
+    this._panelButtonObj.openPanel = () => {
+      this.open();
+    };
+    this._panelButtonObj.closePanel = () => {
+      this.collapse();
+    };
+
+    if (this._collapsed) {
       this.collapse();
     } else {
-      this.open();
+      this._panelButtonObj.click();
     }
 
-    if (this._collapsible !== true) {
-      html.classList.add('no-collapsible');
-    }
-
-    this._controlsContainer = html.querySelector('div.m-controls-panel');
-    this._areaContainer.appendChild(html);
-
-    this._buttonPanel.addEventListener('click', (evt) => {
-      evt.preventDefault();
-      if (this._collapsed === false) {
-        this.collapse();
-      } else {
-        this.open();
-      }
-    });
+    this._controlsContainer = this._element.querySelector('div.m-controls-panel');
+    this._areaContainer.appendChild(this._element);
 
     this.addControls(this._controls);
-    this.fire(EventType.ADDED_TO_MAP, html);
+    this.fire(EventType.ADDED_TO_MAP, this._element);
   }
 
   /**
@@ -601,7 +608,7 @@ class ControlPanel extends MObject {
   }
 
   /**
-   * Este método devuelve el botón del panel.
+   * Este método devuelve el contenido del elemento HTML correspondiente al botón que abre el panel.
    *
    * @public
    * @function

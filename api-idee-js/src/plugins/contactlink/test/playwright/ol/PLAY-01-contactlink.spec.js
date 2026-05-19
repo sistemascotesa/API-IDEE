@@ -9,7 +9,7 @@ test('Test plugin ContactLink', async ({ page }) => {
     window.mp = new IDEE.plugin.ContactLink();
     window.mapjs.addPlugin(window.mp);
   });
-  
+
   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins(window.mp.name).length);
   expect(nPlugins).toBe(1);
 });
