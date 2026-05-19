@@ -239,7 +239,7 @@ export default class ShareMap extends IDEE.Plugin {
   addTo(map) {
     this.map = map;
 
-    this.button = new IDEE.ui.Button(this.name, {
+    this.button = new IDEE.ui.buttons.OverviewMapButton(this.name, {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: this.svgPath,
