@@ -103,7 +103,7 @@ export default class StoryMap extends IDEE.Plugin {
   addTo(map) {
     this.map = map;
 
-    this.button = new IDEE.ui.Button(this.name, {
+    this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_storymap.svg',

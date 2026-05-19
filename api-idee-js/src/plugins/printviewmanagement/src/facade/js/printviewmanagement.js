@@ -148,7 +148,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
       IDEE.dialog.error(getValue('exception.no_controls'));
     }
 
-    this.button = new IDEE.ui.Button(this.name, {
+    this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: this.svgPath,

@@ -42,7 +42,7 @@ import MVT from './layer/MVT';
 import OGCAPIFeatures from './layer/OGCAPIFeatures';
 import GenericRaster from './layer/GenericRaster';
 import GenericVector from './layer/GenericVector';
-import Button from './ui/Button';
+import OverviewMapButton from './ui/buttons/OverviewMapButton';
 import Panel from './ui/Panel';
 import ControlPanel from './ui/ControlPanel';
 import * as Position from './ui/position';
@@ -4412,7 +4412,7 @@ class Map extends Base {
         buttons = [buttons];
       }
       buttons.forEach((button) => {
-        if (button instanceof Button && !this.buttons.includes(button)) {
+        if (button instanceof OverviewMapButton && !this.buttons.includes(button)) {
           this.buttons.push(button);
           button.addTo(this);
         }
@@ -4429,7 +4429,7 @@ class Map extends Base {
    * @returns {Map} Devuelve el estado del mapa.
    */
   removeButton(button) {
-    if (button instanceof Button) {
+    if (button instanceof OverviewMapButton) {
       button.destroy();
       this.buttons = this.buttons.filter((button2) => !button.equals(button));
     }
@@ -4779,11 +4779,11 @@ class Map extends Base {
    * This method deactivate all side active panel buttons except the one that is going to be open,
    * if is possible depending on the map view.
    *
-   * @param {Button} button represents one avaliable button to open a side panel
+   * @param {OverviewMapButton} button represents one avaliable button to open a side panel
    */
   deactivateSidePanelButtons(button) {
     const isCompact = this.isCompactMode();
-    /** @type {IDEE.ui.Button[]} */
+    /** @type {IDEE.ui.OverviewMapButton[]} */
     let buttons = this.buttons ?? [];
 
     const isUpPanelOpened = (() => {

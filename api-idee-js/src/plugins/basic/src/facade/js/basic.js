@@ -70,7 +70,7 @@ export default class Basic extends IDEE.Plugin {
     this.map = map;
     this.controls.push(new BasicControl(this.isDraggable));
 
-    this.button = new IDEE.ui.Button(this.name, {
+    this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: this.svgPath,

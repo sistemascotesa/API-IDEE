@@ -42,7 +42,6 @@ test('Probamos añadir plugins desde API 2.0', async ({ page }) => {
     }));
   }, REFACTOR_PLUGINS);
 
-
   // Añadir los plugins al mapa
   for (const pluginInfo of pluginInfoList) {
     await page.addScriptTag({ url: pluginInfo.scriptUrl });

@@ -83,7 +83,7 @@ export default class Comparators extends IDEE.Plugin {
       return layer.type !== 'GenericRaster' || layer.type !== 'GenericVector';
     });
 
-    this.button = new IDEE.ui.Button(this.name, {
+    this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_comparator.svg',
