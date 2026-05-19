@@ -255,11 +255,11 @@
 
                             botonEliminar.addEventListener('click', removePlugin);
 
-                            /* const mp2 = new IDEE.plugin.ShareMap({
+                            const mp2 = new IDEE.plugin.ShareMap({
                                 baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
-                                position: "TR",
+                                position: "right",
                             });
-                            map.addPlugin(mp2); */
+                            map.addPlugin(mp2);
 
                             updatePlugin();
                         </script>
