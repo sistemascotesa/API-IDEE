@@ -3,6 +3,7 @@
  */
 import template from '../../templates/sharemap';
 import modal from '../../templates/modal';
+import { getValue } from './i18n/language';
 /**
  * This function adds the animation shade class.
  *
@@ -271,7 +272,7 @@ export default class ShareMapControl extends IDEE.Control {
    * @param html - HTML template of the view
    * @api
    */
-  activateModal() {
+  activateModal(onClose) {
     const dialog = IDEE.template.compileSync(modal, {
       vars: {
         title: this.title_,
@@ -304,8 +305,12 @@ export default class ShareMapControl extends IDEE.Control {
     const okButton = dialog.querySelector('#m-plugin-sharemap-button > button');
     okButton.addEventListener('click', () => {
       removeElement(dialog);
-      document.querySelector('.m-sharemap-container').click();
-      document.querySelector('#m-sharemap-geturl').focus();
+      if (typeof onClose === 'function') {
+        onClose();
+      } else {
+        document.querySelector('.m-sharemap-container').click();
+        document.querySelector('#m-sharemap-geturl').focus();
+      }
     });
 
     const copyButton = dialog.querySelector('#m-plugin-sharemap-copybutton');
@@ -361,7 +366,7 @@ export default class ShareMapControl extends IDEE.Control {
           if (newControls.indexOf('scale') === -1 || (newControls.indexOf('scale') === newControls.indexOf('scaleline'))) {
             newControls = newControls.concat(',scale*true');
           }
-          shareURL = shareURL.concat(`&controls=${newControls}`).concat('&plugins=toc,zoompanel,measurebar,mousesrs');
+          shareURL = shareURL.concat(`&controls=${newControls}`).concat('&plugins=layerswitcher,mousesrs');
         }
 
         shareURL = this.getLayers().length > 0 ? shareURL.concat(`&layers=${this.getLayers()}`) : shareURL.concat('');
@@ -440,7 +445,7 @@ export default class ShareMapControl extends IDEE.Control {
             newControls = newControls.concat(',scale*true');
           }
 
-          shareURL = shareURL.concat(`&controls=${newControls}`).concat('&plugins=toc,zoompanel,measurebar,mousesrs');
+          shareURL = shareURL.concat(`&controls=${newControls}`).concat('&plugins=layerswitcher,mousesrs');
         }
         const layerParam = this.getLayers();
         shareURL = layerParam.length > 0 ? shareURL.concat(`&layers=${layerParam}`) : shareURL.concat('');
@@ -489,9 +494,12 @@ export default class ShareMapControl extends IDEE.Control {
    * @function
    */
   getControls() {
+    if (this.controlsPromise_) {
+      return this.controlsPromise_;
+    }
     const url = this.baseUrl_.match(/(.*[A-Za-z-0-9])/)[0];
     const controls = this.map_.getControls().map((control) => control.name);
-    return new Promise((resolve) => {
+    this.controlsPromise_ = new Promise((resolve) => {
       IDEE.remote.get(`${url}/api/actions/controls`).then((response) => {
         const allowedControls = JSON.parse(response.text);
         const resolvedControls = controls.filter((control) => allowedControls.includes(control))
@@ -520,8 +528,12 @@ export default class ShareMapControl extends IDEE.Control {
         }
         resolvedControls.push(backgroundlayersAPI);
         resolve(resolvedControls);
+      }).catch((e) => {
+        IDEE.toast.error(getValue('exception.baseUrl'));
+        resolve([]);
       });
     });
+    return this.controlsPromise_;
   }
 
   /**

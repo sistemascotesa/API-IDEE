@@ -6,52 +6,79 @@
   "constructor": "IDEE.plugin.ShareMap",
   "parameters": [{
     "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": ["left", "right"]
-    },{
-      "type": "simple",
-      "name": "tooltip",
-      "position": 1
-    },{
-      "type": "simple",
-      "name": "baseUrl",
-      "position": 2
-    }, {
-      "type": "boolean",
-      "name": "minimize",
-      "position": 3
-    },{
-      "type": "simple",
-      "name": "title",
-      "position": 4
-    },{
-      "type": "simple",
-      "name": "btn",
-      "position": 5
-    },{
-      "type": "simple",
-      "name": "copyBtn",
-      "position": 6
-    },{
-      "type": "simple",
-      "name": "text",
-      "position": 7
-    },{
-      "type": "simple",
-      "name": "copyBtnHtml",
-      "position": 8
-    },{
-      "type": "boolean",
-      "name": "urlAPI",
-      "position": 9
-    },{
-      "type": "boolean",
-      "name": "shareLayer",
-      "position": 10
-    }]
+    "properties": [
+      {
+        "type": "simple",
+        "name": "position",
+        "position": 0,
+        "possibleValues": ["left", "right"]
+      },
+      {
+        "type": "number",
+        "name": "order",
+        "position": 1
+      },
+      {
+        "type": "simple",
+        "name": "tooltip",
+        "position": 2
+      },
+      {
+        "type": "simple",
+        "name": "baseUrl",
+        "position": 3
+      },
+      {
+        "type": "boolean",
+        "name": "urlAPI",
+        "position": 4
+      },
+      {
+        "type": "boolean",
+        "name": "minimize",
+        "position": 5
+      },
+      {
+        "type": "simple",
+        "name": "title",
+        "position": 6
+      },
+      {
+        "type": "simple",
+        "name": "text",
+        "position": 7
+      },
+      {
+        "type": "boolean",
+        "name": "shareLayer",
+        "position": 8
+      },
+      {
+        "type": "simple",
+        "name": "btn",
+        "position": 9
+      },
+      {
+        "type": "simple",
+        "name": "copyBtn",
+        "position": 10
+      },
+      {
+        "type": "simple",
+        "name": "copyBtnHtml",
+        "position": 11
+      },
+      {
+        "type": "simple",
+        "name": "tooltipCopy",
+        "position": 12
+      },
+      {
+        "type": "object",
+        "name": "overwritestyles",
+        "position": 13
+      }
+   ]
   }],
   "files": {
     "ol": {

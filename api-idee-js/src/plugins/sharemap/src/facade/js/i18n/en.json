@@ -1,6 +1,7 @@
 {
   "exception": {
-    "impl": "The implementation used cannot create Attributions controls."
+    "impl": "The implementation used cannot create Attributions controls.",
+    "baseUrl": "The implementation used cannot obtain the base URL of the application."
   },
   "textHelp": {
     "help1": "Allows you to share the map view with the loaded information layers through a Web link. It also provides the HTML code in case you want to embed the viewer in another Web portal.",
@@ -14,6 +15,6 @@
   "title": "Share URL",
   "text": "Embedded HTML",
   "copy": "Copy",
-  "tooltip": "Copied!",
-  "tooltipPanel": "Share"
+  "tooltip": "Share",
+  "tooltipCopy": "Copied!"
 }

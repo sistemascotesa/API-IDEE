@@ -14,18 +14,9 @@
     <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
     <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
     <link href="plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
-    <style type="text/css">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: auto;
-        }
-    </style>
     <%
       Map<String, String[]> parameterMap = request.getParameterMap();
-      PluginsManager.init (getServletContext());
+      PluginsManager.init(getServletContext());
       String[] cssfiles = PluginsManager.getCSSFiles(parameterMap);
       for (int i = 0; i < cssfiles.length; i++) {
          String cssfile = cssfiles[i];
@@ -37,62 +28,137 @@
 </head>
 
 <body>
-    <div>
-        <label for="selectPosicion">Selector de posición del plugin</label>
-        <select name="position" id="selectPosicion">
-          <option value="TR" selected="selected">Arriba Derecha (TR)</option>
-            <option value="TL">Arriba Izquierda (TL)</option>
-            <option value="BR">Abajo Derecha (BR)</option>
-            <option value="BL">Abajo Izquierda (BL)</option>
-        </select>
-        <label for="inputTooltip">Parámetro tooltip</label>
-        <input type="text" id="inputTooltip" value="¡Copiado!" />
-        <label for="selectURL">Parámetro baseUrl</label>
-        <input type="text" id="selectURL" list="urlSug" value="https://api-ideedes.grupotecopy.es/api-idee/"/>
-        <datalist id="urlSug">
-            <option value="https://api-ideedes.grupotecopy.es/api-idee/"></option>
-            <option value="https://componentes.ign.es/api-idee/"></option>
-        </datalist>
-        <label for="selectMinimize">Selector minimize</label>
-        <select name="selectMinimize" id="selectMinimize">
-            <option value=true>true</option>
-            <option value=false selected>false</option>
-        </select>
-        <label for="inputTitle">Parámetro title</label>
-        <input type="text" id="inputTitle" value="Compartir Mapa" />
-        <label for="inputBtn">Parámetro btn</label>
-        <input type="text" id="inputBtn" value="OK" />
-        <label for="inputCopyBtn">Parámetro copyBtn</label>
-        <input type="text" id="inputCopyBtn" value="Copiar" />
-        <label for="inputText">Parámetro text</label>
-        <input type="text" id="inputText" value="HTML embebido" />
-        <label for="inputCopyBtnHtml">Parámetro copyBtnHtml</label>
-        <input type="text" id="inputCopyBtnHtml" value="Copiar" />
-        <label for="selectOverwriteStyles">Selector overwriteStyles</label>
-        <select name="selectOverwriteStyles" id="selectOverwriteStyles">
-            <option value=true>true</option>
-            <option value=false selected>false</option>
-        </select>
-        <label for="inputStylesPC">Styles: Color primario</label>
-        <input type="color" id="inputStylesPC" value="#71a7d3"/>
-        <label for="inputStylesSC">Styles: Color secundario</label>
-        <input type="color" id="inputStylesSC" value="#ffffff"/>       
-        <label for="selectURLAPI">Parámetro URL API</label>
-        <select name="selectURLAPI" id="selectURLAPI">
-            <option value="true">true</option>
-            <option value="false" selected>false</option>
-        </select>
-        <label for="selectShareLayer">Selector sharelayer</label>
-        <select name="selectShareLayer" id="selectShareLayer">
-            <option value=true>true</option>
-            <option value=false selected>false</option>
-        </select>
-        <label for="inputFilterLayers">Parámetro filterLayers (separado por ,)</label>
-        <input type="text" name="filterLayers" id="inputFilterLayers" value="AU.AdministrativeUnit"/>
-        <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar">
-
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosition" title="Posición del plugin sobre el mapa. Por defecto: left">Posición "position"</label>
+                <select name="position" id="selectPosition">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda (left)</option>
+                    <option value="right">Derecha (right)</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder" title="Define en qué posición del panel debe aparecer en el conjunto de controles o plugins">Orden entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" value="1">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Texto del tooltip que aparece al pasar el ratón sobre el botón principal del plugin">Tooltip del botón del plugin "tooltip"</label>
+                <input type="text" id="inputTooltip" list="tooltipSug">
+                <datalist id="tooltipSug">
+                    <option value="Compartir"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputBaseUrl" title="URL base que se usará para construir el enlace compartido. Se emplea cuando urlAPI es true">URL base "baseUrl"</label>
+                <input type="text" id="inputBaseUrl" list="baseUrlSug">
+                <datalist id="baseUrlSug">
+                    <option value="https://componentes.idee.es/api-idee/"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="selectUrlAPI" title="Controla si se usa baseUrl (true) o la URL actual del visor (false) para generar el enlace compartido. Por defecto: false">Usar URL de API "urlAPI"</label>
+                <select name="urlAPI" id="selectUrlAPI">
+                    <option value=""></option>
+                    <option value="true">true</option>
+                    <option value="false" selected="selected">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectMinimize" title="Solo actúa cuando urlAPI es true. Genera una URL minimizada (true) o en formato estándar (false). Por defecto: false">URL minimizada "minimize"</label>
+                <select name="minimize" id="selectMinimize">
+                    <option value=""></option>
+                    <option value="true">true</option>
+                    <option value="false" selected="selected">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputTitle" title="Título primario del modal">Título principal del modal "title"</label>
+                <input type="text" id="inputTitle" list="titleSug">
+                <datalist id="titleSug">
+                    <option value="Compartir URL"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputText" title="Texto que aparece como título de la sección de HTML embebido en el panel del plugin">Título secundario del modal "text"</label>
+                <input type="text" id="inputText" list="textSug">
+                <datalist id="textSug">
+                    <option value="HTML embebido"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="selectShareLayer" title="Solo actúa cuando urlAPI es false. Incluye en el enlace todas las capas presentes en el mapa (true) o ninguna (false). Por defecto: false">Compartir capas "shareLayer"</label>
+                <select name="shareLayer" id="selectShareLayer">
+                    <option value=""></option>
+                    <option value="true">true</option>
+                    <option value="false" selected="selected">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputFilterLayers" title="Lista de nombres de capas (separados por coma) que se incluirán en el enlace. Solo aplica cuando shareLayer es false o no está definido">Filtro de capas "filterLayers"</label>
+                <input type="text" id="inputFilterLayers" list="filterLayersSug">
+                <datalist id="filterLayersSug">
+                    <option value="AU.AdministrativeBoundary"></option>
+                    <option value="AU.AdministrativeBoundary,AU.AdministrativeUnit"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputBtn" title="Texto del botón que cierra el panel del plugin">Texto del botón cerrar "btn"</label>
+                <input type="text" id="inputBtn" list="btnSug">
+                <datalist id="btnSug">
+                    <option value="OK"></option>
+                    <option value="Aceptar"></option>
+                    <option value="Cerrar"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputCopyBtn" title="Texto del botón que copia la URL compartida al portapapeles">Botón copiar URL "copyBtn"</label>
+                <input type="text" id="inputCopyBtn" list="copyBtnSug">
+                <datalist id="copyBtnSug">
+                    <option value="Copiar"></option>
+                    <option value="Copiar URL"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputCopyBtnHtml" title="Texto del botón que copia el código HTML embebido al portapapeles">Botón copiar HTML "copyBtnHtml"</label>
+                <input type="text" id="inputCopyBtnHtml" list="copyBtnHtmlSug">
+                <datalist id="copyBtnHtmlSug">
+                    <option value="Copiar"></option>
+                    <option value="Copiar HTML"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputTooltipCopy" title="Mensaje que aparece como notificación emergente cuando se copia la URL o el HTML">Mensaje de confirmación "tooltipCopy"</label>
+                <input type="text" id="inputTooltipCopy" list="tooltipCopySug">
+                <datalist id="tooltipCopySug">
+                    <option value="¡Copiado!"></option>
+                    <option value="Copiado al portapapeles"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="selectOverwriteStyles" title="Controla si se aplican los colores personalizados definidos en styles (true) o se mantienen los estilos por defecto (false). Por defecto: false">Sobreescribir estilos "overwriteStyles"</label>
+                <select name="overwriteStyles" id="selectOverwriteStyles">
+                    <option value=""></option>
+                    <option value="true">true</option>
+                    <option value="false" selected="selected">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputPrimaryColor" title="Color primario del plugin: botón de apertura, caja y botones internos. Requiere overwriteStyles=true">Color primario "styles.primaryColor"</label>
+                <input type="color" id="inputPrimaryColor" value="#71a7d3">
+            </div>
+            <div>
+                <label for="inputSecondaryColor" title="Color secundario del plugin: fondo del panel abierto e imagen interior del botón. Requiere overwriteStyles=true">Color secundario "styles.secondaryColor"</label>
+                <input type="color" id="inputSecondaryColor" value="#ffffff">
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="botonEliminar">Eliminar Plugin</button>
+        </div>
     </div>
+
     <div id="mapjs" class="m-container"></div>
+
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
     <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="js/configuration.js"></script>
@@ -114,13 +180,12 @@
 
         const map = IDEE.map({
             container: 'mapjs',
-            zoom: 3,
+            zoom: 7,
+            minZoom: 4,
+            maxZoom: 20,
+            center: [144112, 4839064],
+            controls: ['scale*true', 'location', 'backgroundlayers'],
         });
-
-        function crearPlugin(propiedades) {
-            mp = new IDEE.plugin.ShareMap(propiedades);
-            map.addPlugin(mp);
-        }
 
         const layerinicial = new IDEE.layer.WMS({
             url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
@@ -134,97 +199,92 @@
             legend: 'Unidad administrativa'
         }, {});
 
-        const ocupacionSuelo = new IDEE.layer.WMTS({
-          url: 'https://www.ign.es/wmts/pnoa-ma?',
-          name: 'OI.OrthoimageCoverage',
-          legend: 'Imagen',
-          matrixSet: 'GoogleMapsCompatible',
-          isBase: true,
-          displayInLayerSwitcher: false,
-          queryable: false,
-          visible: true,
-          format: 'image/jpeg',
+        map.addLayers([layerinicial, layerUA]);
+
+        let mp = null;
+
+        const selectPosition = document.getElementById('selectPosition');
+        const inputOrder = document.getElementById('inputOrder');
+        const inputTooltip = document.getElementById('inputTooltip');
+        const inputBaseUrl = document.getElementById('inputBaseUrl');
+        const selectUrlAPI = document.getElementById('selectUrlAPI');
+        const selectMinimize = document.getElementById('selectMinimize');
+        const selectShareLayer = document.getElementById('selectShareLayer');
+        const inputFilterLayers = document.getElementById('inputFilterLayers');
+        const selectOverwriteStyles = document.getElementById('selectOverwriteStyles');
+        const inputPrimaryColor = document.getElementById('inputPrimaryColor');
+        const inputSecondaryColor = document.getElementById('inputSecondaryColor');
+        const inputTitle = document.getElementById('inputTitle');
+        const inputText = document.getElementById('inputText');
+        const inputBtn = document.getElementById('inputBtn');
+        const inputCopyBtn = document.getElementById('inputCopyBtn');
+        const inputCopyBtnHtml = document.getElementById('inputCopyBtnHtml');
+        const inputTooltipCopy = document.getElementById('inputTooltipCopy');
+        const botonEliminar = document.getElementById('botonEliminar');
+
+        const parseBool = (val) => {
+            if (val === 'true') return true;
+            if (val === 'false') return false;
+            return undefined;
+        };
+
+        [
+            selectPosition,
+            inputOrder,
+            inputTooltip,
+            inputBaseUrl,
+            selectUrlAPI,
+            selectMinimize,
+            selectShareLayer,
+            inputFilterLayers,
+            selectOverwriteStyles,
+            inputPrimaryColor,
+            inputSecondaryColor,
+            inputTitle,
+            inputText,
+            inputBtn,
+            inputCopyBtn,
+            inputCopyBtnHtml,
+            inputTooltipCopy,
+        ].forEach((ctrl) => ctrl.addEventListener('change', cambiarTest));
+
+        botonEliminar.addEventListener('click', function () {
+            map.removePlugins(mp);
         });
-
-        map.addLayers([ocupacionSuelo, layerinicial, layerUA]);
-
-        let mp = undefined;
-        crearPlugin({ 
-        	position: "TR",
-	        tooltip: "¡Copiado!",
-	        minimize: false,
-	        title: "Compartir Mapa",
-	        btn: "OK",
-	        copyBtn: "Copiar",
-	        text: "HTML embebido",
-	        copyBtnHtml: "Copiar",
-	        shareLayer: false,
-	        filterLayers: ['AU.AdministrativeUnit'],
-	        urlAPI: false,
-        });
-
-        const selectURL = document.getElementById("selectURL");
-        const selectURLAPI = document.getElementById("selectURLAPI");
-        const selectPosicion = document.getElementById("selectPosicion");
-        const inputTooltip = document.getElementById("inputTooltip");
-        const selectMinimize = document.getElementById("selectMinimize");
-        const inputTitle = document.getElementById("inputTitle");
-        const inputBtn = document.getElementById("inputBtn");
-        const inputCopyBtn = document.getElementById("inputCopyBtn");
-        const inputText = document.getElementById("inputText");
-        const inputCopyBtnHtml = document.getElementById("inputCopyBtnHtml");
-        const selectShareLayer = document.getElementById("selectShareLayer");
-        const selectOverwriteStyles = document.getElementById("selectOverwriteStyles");
-        const inputStylesPC = document.getElementById("inputStylesPC");          
-        const inputStylesSC = document.getElementById("inputStylesSC");
-        const inputFilterLayers = document.getElementById("inputFilterLayers");          
-        
-
-        selectURL.addEventListener('change', cambiarTest);
-        selectPosicion.addEventListener('change', cambiarTest);
-        selectURLAPI.addEventListener('change', cambiarTest);
-        inputTooltip.addEventListener('change', cambiarTest);
-        selectMinimize.addEventListener('change', cambiarTest);
-        inputTitle.addEventListener('change', cambiarTest);
-        inputBtn.addEventListener('change', cambiarTest);
-        inputCopyBtn.addEventListener('change', cambiarTest);
-        inputText.addEventListener('change', cambiarTest);
-        inputCopyBtnHtml.addEventListener('change', cambiarTest);
-        selectShareLayer.addEventListener('change', cambiarTest);
-        inputStylesPC.addEventListener('change', cambiarTest);
-        inputStylesSC.addEventListener('change', cambiarTest);
-        inputFilterLayers.addEventListener('change', cambiarTest);
-        selectOverwriteStyles.addEventListener('change', cambiarTest);
 
         function cambiarTest() {
-            let objeto = {};
-            let styles = {};
-            (selectURL.value != "") ? objeto.baseUrl = selectURL.value : objeto.baseUrl = window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/";
-            objeto.position = selectPosicion.options[selectPosicion.selectedIndex].value;
-            (inputTooltip.value != "¡Copiado!") ? objeto.tooltip = inputTooltip.value : "¡Copiado!";
-            objeto.minimize = (selectMinimize.options[selectMinimize.selectedIndex].value === 'true');
-            (inputTitle.value != "") ? objeto.title = inputTitle.value : "Compartir Mapa";
-            (inputBtn.value != "") ? objeto.btn = inputBtn.value : "OK";
-            (inputCopyBtn.value != "") ? objeto.copyBtn = inputCopyBtn.value : "Copiar";
-            (inputText.value != "") ? objeto.text = inputText.value : "HTML embebido";
-            (inputCopyBtnHtml.value != "")? objeto.copyBtnHtml = inputCopyBtnHtml.value : "Copiar";
-            objeto.shareLayer = (selectShareLayer.options[selectShareLayer.selectedIndex].value === 'true');
-            (inputFilterLayers.value != "") ? objeto.filterLayers = inputFilterLayers.value.split(',') : ['AU.AdministrativeUnit'];
-            objeto.overwriteStyles = (selectOverwriteStyles.options[selectOverwriteStyles.selectedIndex].value === 'true');
-			(inputStylesPC.value != "") ? styles.primaryColor = inputStylesPC.value : "#71a7d3";
-            (inputStylesSC.value != "") ? styles.secondaryColor = inputStylesSC.value : "#ffffff";
-            objeto.styles = styles;
-               
-            objeto.urlAPI = selectURLAPI.options[selectURLAPI.selectedIndex].value;
-            map.removePlugins(mp);
-            crearPlugin(objeto);
+            if (mp !== null) {
+                map.removePlugins(mp);
+            }
+            crearPlugin({
+                position: selectPosition.value,
+                order: Number(inputOrder.value),
+                tooltip: inputTooltip.value.trim(),
+                baseUrl: inputBaseUrl.value,
+                urlAPI: parseBool(selectUrlAPI.value),
+                minimize: parseBool(selectMinimize.value),
+                shareLayer: parseBool(selectShareLayer.value),
+                filterLayers: inputFilterLayers.value.trim().split(',').map((l) => l.trim()),
+                overwriteStyles: parseBool(selectOverwriteStyles.value),
+                styles: {
+                    primaryColor: inputPrimaryColor.value.trim(),
+                    secondaryColor: inputSecondaryColor.value.trim(),
+                },
+                title: inputTitle.value.trim(),
+                text: inputText.value.trim(),
+                btn: inputBtn.value.trim(),
+                copyBtn: inputCopyBtn.value.trim(),
+                copyBtnHtml: inputCopyBtnHtml.value.trim(),
+                tooltipCopy: inputTooltipCopy.value.trim(),
+            });
         }
 
-        const botonEliminar = document.getElementById("botonEliminar");
-        botonEliminar.addEventListener("click", function() {
-            map.removePlugins(mp);
-        });
+        function crearPlugin(propiedades) {
+            mp = new IDEE.plugin.ShareMap(propiedades);
+            map.addPlugin(mp);
+        }
 
+        cambiarTest();
         const layerswitcher = new IDEE.plugin.Layerswitcher({});
         map.addPlugin(layerswitcher);
     </script>
@@ -233,10 +293,10 @@
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-19NTRSBP21"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-19NTRSBP21');
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-19NTRSBP21');
 </script>
 
 </html>
