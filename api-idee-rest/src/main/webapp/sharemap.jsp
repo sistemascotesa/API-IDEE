@@ -29,7 +29,7 @@
 
 <body>
     <div class="m-api-idee-test-form-frame">
-        <div class="m-test-form">
+        <div class="m-test-form" style="max-height: 13rem;">
             <div>
                 <label for="selectPosition" title="Posición del plugin sobre el mapa. Por defecto: left">Posición "position"</label>
                 <select name="position" id="selectPosition">
