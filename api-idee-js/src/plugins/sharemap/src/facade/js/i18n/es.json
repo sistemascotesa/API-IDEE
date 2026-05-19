@@ -1,6 +1,7 @@
 {
   "exception": {
-    "impl": "La implementación no puede crear controles de Attribution."
+    "impl": "La implementación no puede crear controles de Attribution.",
+    "baseUrl": "La implementación no puede obtener la URL base de la aplicación."
   },
   "textHelp": {
     "help1": "Permite compartir la vista de mapa con las capas de información cargadas a través de un enlace Web. También proporciona el código HTML por si se quiere embeber el visualizador en otro portal Web.",
@@ -14,6 +15,6 @@
   "title": "Compartir URL",
   "text": "HTML embebido",
   "copy": "Copiar",
-  "tooltip": "¡Copiado!",
-  "tooltipPanel": "Compartir"
+  "tooltip": "Compartir",
+  "tooltipCopy": "¡Copiado!"
 }

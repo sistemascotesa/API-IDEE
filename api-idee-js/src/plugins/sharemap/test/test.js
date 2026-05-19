@@ -1,15 +1,19 @@
-/* eslint-disable max-len */
 import ShareMap from 'facade/sharemap';
+
+window.IDEE.plugin.ShareMap = ShareMap;
+
+IDEE.language.setLang('es');
 
 const map = IDEE.map({
   container: 'mapjs',
-  controls: ['scale*true', 'location', 'backgroundlayers'],
-  center: [144112, 4839064],
   zoom: 7,
+  minZoom: 4,
+  maxZoom: 20,
+  center: [144112, 4839064],
+  controls: ['scale*true', 'location', 'backgroundlayers'],
 });
 window.map = map;
 
-// Layer para probar el URL/IFRAME con este incluido
 const geoJSON = new IDEE.layer.GeoJSON({
   name: 'cosas1_poligono',
   source: {
@@ -26,28 +30,94 @@ const geoJSON = new IDEE.layer.GeoJSON({
       { type: 'Feature', properties: { fecha_entero: 1985, fecha_fecha: '1985-01-01' }, geometry: { type: 'Polygon', coordinates: [[[-7.788982, 43.786743], [-9.226948, 43.167196], [-8.867457, 41.964781], [-8.70269, 41.135274], [-9.032224, 39.663869], [-9.451631, 38.781988], [-8.777584, 38.325152], [-8.95733, 37.033025], [-6.785402, 37.164442], [-6.141313, 36.288055], [-5.826758, 35.997749], [-5.332457, 36.082533], [-4.478665, 36.685469], [-2.126991, 36.733501], [-0.778898, 37.628537], [0.179746, 38.770311], [-0.284597, 39.560014], [0.134809, 40.180801], [1.647669, 41.214197], [3.02572, 41.730462], [3.220445, 42.486095], [-1.827415, 43.417953], [-1.827415, 43.417953], [-7.788982, 43.786743]]] } },
     ],
   },
-}); map.addLayers(geoJSON); // */
+});
+map.addLayers(geoJSON);
 
-const mp = new ShareMap({
-  position: 'BL', // 'TL' | 'TR' | 'BR' | 'BL'
-  // title: 'TEST TITULO', // Texto título de compartir URL
-  // copyBtn: 'TEST COPIAR BOTÓN', // Texto del botón de copiado de URL
-  // text: 'TEST TEXTO', // Texto título de HTML embebido
-  // copyBtnHtml: 'TEST HTML BOTÓN', // Texto del botón de copiado de HTML
-  // btn: 'TEST BOTÓN', // Botón de cerrado con texto "OK"
-  // tooltip: 'TEST TOOLTIP', // Mensaje del Tooltip que confirma que se ha copiado elementos
-  baseUrl: 'https://componentes.idee.es/api-idee/',
-  urlAPI: true, // Controla si baseUrl se tiene que usar o si se usa la URL actual.
-  minimize: false, // Solo se usa si "urlAPI" esta puesto a true, cambia el formato de URL o HTML a copiar.
-  shareLayer: true, // Solo se usa si "urlAPI" es false, incluye los layers presentes en URL o HTML si esta puesto a true
-  filterLayers: [], // ['cosas1_poligono'], // Solo se usa si "shareLayer" es false o undefined, aplica filtro de layers para incluir solo los nombrados aquí en URL o HTML.
-  overwriteStyles: true, // Controla si se aplica o no el estilo aportado en "styles".
-  styles: {
-    primaryColor: '#d39571', // Color del botón de abrir panel, la caja y sus botones internos.
-    secondaryColor: '#fff', // Color de imagen dentro de botón de abrir panel y background del panel abierto
-  },
-  order: 1,
+let mp;
+
+const createPlugin = (options) => {
+  mp = new IDEE.plugin.ShareMap(options);
+  window.mp = mp;
+  map.addPlugin(mp);
+};
+
+const removePlugin = () => {
+  if (mp) map.removePlugins(mp);
+};
+
+const removeButton = document.getElementById('removeButton');
+removeButton.addEventListener('click', () => { removePlugin(); });
+
+const selectPosition = document.getElementById('selectPosition');
+const inputOrder = document.getElementById('inputOrder');
+const inputTooltip = document.getElementById('inputTooltip');
+const inputBaseUrl = document.getElementById('inputBaseUrl');
+const selectUrlAPI = document.getElementById('selectUrlAPI');
+const selectMinimize = document.getElementById('selectMinimize');
+const selectShareLayer = document.getElementById('selectShareLayer');
+const inputFilterLayers = document.getElementById('inputFilterLayers');
+const selectOverwriteStyles = document.getElementById('selectOverwriteStyles');
+const inputPrimaryColor = document.getElementById('inputPrimaryColor');
+const inputSecondaryColor = document.getElementById('inputSecondaryColor');
+const inputTitle = document.getElementById('inputTitle');
+const inputText = document.getElementById('inputText');
+const inputBtn = document.getElementById('inputBtn');
+const inputCopyBtn = document.getElementById('inputCopyBtn');
+const inputCopyBtnHtml = document.getElementById('inputCopyBtnHtml');
+const inputTooltipCopy = document.getElementById('inputTooltipCopy');
+
+const parseBool = (val) => {
+  if (val === 'true') return true;
+  if (val === 'false') return false;
+  return undefined;
+};
+
+const updatePlugin = () => {
+  const options = {};
+
+  options.position = selectPosition.value;
+  options.order = Number(inputOrder.value);
+  options.tooltip = inputTooltip.value.trim();
+  options.baseUrl = inputBaseUrl.value;
+  options.urlAPI = parseBool(selectUrlAPI.value);
+  options.minimize = parseBool(selectMinimize.value);
+  options.shareLayer = parseBool(selectShareLayer.value);
+  options.filterLayers = inputFilterLayers.value.trim().split(',').map((l) => l.trim());
+  options.overwriteStyles = parseBool(selectOverwriteStyles.value);
+  options.styles = {};
+  options.styles.primaryColor = inputPrimaryColor.value.trim();
+  options.styles.secondaryColor = inputSecondaryColor.value.trim();
+  options.title = inputTitle.value.trim();
+  options.text = inputText.value.trim();
+  options.btn = inputBtn.value.trim();
+  options.copyBtn = inputCopyBtn.value.trim();
+  options.copyBtnHtml = inputCopyBtnHtml.value.trim();
+  options.tooltipCopy = inputTooltipCopy.value.trim();
+
+  removePlugin();
+  createPlugin(options);
+};
+
+[
+  selectPosition,
+  inputOrder,
+  inputTooltip,
+  inputBaseUrl,
+  selectUrlAPI,
+  selectMinimize,
+  selectShareLayer,
+  inputFilterLayers,
+  selectOverwriteStyles,
+  inputPrimaryColor,
+  inputSecondaryColor,
+  inputTitle,
+  inputText,
+  inputBtn,
+  inputCopyBtn,
+  inputCopyBtnHtml,
+  inputTooltipCopy,
+].forEach((ctrl) => {
+  ctrl.addEventListener('change', updatePlugin);
 });
 
-map.addPlugin(mp); window.mp = mp;
-
+updatePlugin();

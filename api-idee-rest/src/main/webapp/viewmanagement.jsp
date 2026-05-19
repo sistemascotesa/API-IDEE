@@ -14,6 +14,7 @@
                 <title>Visor base</title>
                 <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css" />
                 <link href="plugins/viewmanagement/viewmanagement.ol.min.css" rel="stylesheet" />
+                <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
                 <style type="text/css">
                     html,
                     body {
@@ -101,6 +102,7 @@
                 <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
                 <script type="text/javascript" src="js/configuration.js"></script>
                 <script type="text/javascript" src="plugins/viewmanagement/viewmanagement.ol.min.js"></script>
+                <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
                 <% String[] jsfiles=PluginsManager.getJSFiles(parameterMap); for (int i=0; i < jsfiles.length; i++) {
                     String jsfile=jsfiles[i]; %>
                     <script type="text/javascript" src="plugins/<%=jsfile%>"></script>
@@ -181,6 +183,11 @@
                             removeButton.addEventListener('click', () => { remove(); });
 
                             changeTest();
+                            const mp2 = new IDEE.plugin.ShareMap({
+                                baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
+                                position: "left",
+                            });
+                            map.addPlugin(mp2);
                         </script>
             </body>
 

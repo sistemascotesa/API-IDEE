@@ -23,13 +23,11 @@
                         <link href="plugins/incicarto/incicarto.ol.min.css" rel="stylesheet" />
                         <link href="plugins/geometrydraw/geometrydraw.ol.min.css" rel="stylesheet" />
                         <link href="plugins/infocoordinates/infocoordinates.ol.min.css" rel="stylesheet" />
-                        <link href="plugins/measurebar/measurebar.ol.min.css" rel="stylesheet" />
                         <link href="plugins/queryattributes/queryattributes.ol.min.css" rel="stylesheet" />
                         <link href="plugins/printermap/printermap.ol.min.css" rel="stylesheet" />
                         <link href="plugins/selectionzoom/selectionzoom.ol.min.css" rel="stylesheet" />
                         <link href="plugins/buffer/buffer.ol.min.css" rel="stylesheet" />
                         <link href="plugins/xylocator/xylocator.ol.min.css" rel="stylesheet" />
-                        <link href="plugins/overviewmap/overviewmap.ol.min.css" rel="stylesheet" />
                         <link href="plugins/calendar/calendar.ol.min.css" rel="stylesheet" />
                         <link href="plugins/contactlink/contactlink.ol.min.css" rel="stylesheet" />
                         <link href="plugins/ignsearch/ignsearch.ol.min.css" rel="stylesheet" />
@@ -41,7 +39,6 @@
                         <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
                         <link href="plugins/georefimage/georefimage.ol.min.css" rel="stylesheet" />
                         <link href="plugins/infocatastro/infocatastro.ol.min.css" rel="stylesheet" />
-                        <link href="plugins/timeline/timeline.ol.min.css" rel="stylesheet" />
                         <link href="plugins/backimglayer/backimglayer.ol.min.css" rel="stylesheet" />
                         <link href="plugins/information/information.ol.min.css" rel="stylesheet" />
                         <link href="plugins/viewhistory/viewhistory.ol.min.css" rel="stylesheet" />
@@ -274,6 +271,11 @@
                                     map.addPlugin(mp);
                                 }
                                 cambiarTest();
+                                const mp2 = new IDEE.plugin.ShareMap({
+                                    baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
+                                    position: "right",
+                                });
+                                map.addPlugin(mp2);
                             </script>
                 </body>
 
