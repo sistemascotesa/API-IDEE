@@ -47,7 +47,7 @@ export default class VectorsManagement extends IDEE.Plugin {
     /**
      * Button of the plugin
      * @private
-     * @type {IDEE.ui.Button}
+     * @type {IDEE.ui.buttons.SidePanelButton}
      */
     this.button = null;
 
@@ -174,7 +174,7 @@ export default class VectorsManagement extends IDEE.Plugin {
   addTo(map) {
     this.map = map;
 
-    this.button = new IDEE.ui.Button(this.name, {
+    this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: this.svgPath,

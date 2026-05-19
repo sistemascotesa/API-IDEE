@@ -104,7 +104,7 @@ export default class ViewManagement extends IDEE.Plugin {
       IDEE.dialog.error(getValue('exception.no_controls'));
     }
 
-    this.button = new IDEE.ui.Button(this.name, {
+    this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vista.svg',

@@ -568,7 +568,7 @@ export default class ComparatorsControl extends IDEE.Control {
    * @api
    */
   deactivate() {
-    this.controls.forEach((c) => {
+    (this.controls ?? []).forEach((c) => {
       if (c.control) { c.control.destroy(); }
     });
 

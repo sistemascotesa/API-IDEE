@@ -51,7 +51,7 @@ export default class ModalControl extends IDEE.Control {
       }
     });
 
-    // Devuelve elemento vacío. El botón se puso con new IDEE.ui.Button
+    // Devuelve elemento vacío. El botón se puso con new IDEE.ui.buttons.SidePanelButton
     return document.createElement('div');
   }
 

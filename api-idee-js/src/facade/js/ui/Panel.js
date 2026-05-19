@@ -60,7 +60,7 @@ class Panel extends MObject {
 
     /**
      * @private
-     * @type {IDEE.ui.Button}
+     * @type {IDEE.ui.buttons.SidePanelButton}
      * @expose
      */
     this.button = null;

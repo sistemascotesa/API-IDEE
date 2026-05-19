@@ -248,7 +248,7 @@
     layerOpts: [
       {
         id: 'raster',
-        preview: 'https://www.ign.es/iberpix/static/media/raster.c7a904f3.png',
+        preview: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/14/7896/10319.jpeg',
         title: 'Mapa',
         layers: [
           new IDEE.layer.TMS({

@@ -12,6 +12,7 @@ import Plugin from '../Plugin';
 import * as Position from '../ui/position';
 import isControlImpl from '../../../impl/util/control/isControlImpl';
 import getControlImpl from '../../../impl/util/control/getControlImpl';
+import OverviewMapButton from '../ui/buttons/OverviewMapButton';
 
 /**
  * @public
@@ -264,23 +265,16 @@ class Control extends Base {
    * @export
    */
   createView(map) {
-    const element = document.createElement('button');
-    element.classList.add('m-control-button');
-    element.id = `m-control-button-${this.name}`;
-    element.title = this.tooltip ?? '';
-    element.role = 'button';
-    element.ariaLabel = this.tooltip ?? '';
-
-    if (this.svgPath) {
-      fetch(this.svgPath)
-        .then((response) => response.text())
-        .then((svgContent) => {
-          element.innerHTML = svgContent;
-        });
-    }
-
-    this.element = element;
-    return element;
+    const btn = new OverviewMapButton(this.name, {
+      tooltip: this.tooltip ?? '',
+      svgPath: this.svgPath,
+      classList: 'm-control-button',
+    });
+    btn.createElement();
+    btn.element.ariaLabel = this.tooltip;
+    this.element = btn.element;
+    this._buttonObj = btn;
+    return this.element;
   }
 
   /**

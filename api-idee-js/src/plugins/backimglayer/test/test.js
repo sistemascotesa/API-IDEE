@@ -123,11 +123,11 @@ const updatePlugin = () => {
 
     /** a usar en el .jsp */
     // const pwImg1 = 'plugins/backimglayer/images/svqimagen.png';
-    // const pwImg2 = 'https://www.ign.es/iberpix/static/media/raster.c7a904f3.png';
+    // const pwImg2 = 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/14/7896/10319.jpeg';
     // const pwImg3 = 'plugins/backimglayer/images/svqmapa.png';
     // const pwImg4 = 'plugins/backimglayer/images/svqhibrid.png';
     const pwImg1 = '../src/facade/assets/images/svqimagen.png';
-    const pwImg2 = 'https://www.ign.es/iberpix/static/media/raster.c7a904f3.png';
+    const pwImg2 = 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/14/7896/10319.jpeg';
     const pwImg3 = '../src/facade/assets/images/svqmapa.png';
     const pwImg4 = '../src/facade/assets/images/svqhibrid.png';
     options.layerOpts = [
