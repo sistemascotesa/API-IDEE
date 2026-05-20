@@ -2,7 +2,6 @@
  * @module IDEE/plugin/Basic
  */
 import '../assets/css/basic';
-import '../assets/css/fonts';
 import BasicControl from './basiccontrol';
 import myhelp from '../../templates/myhelp';
 import { getValue } from './i18n/language';
@@ -22,26 +21,11 @@ export default class Basic extends IDEE.Plugin {
    */
   constructor(options = {}) {
     super('basic', {
-      position: options.position ?? 'right',
-      tooltip: options.tooltip ?? getValue('tooltip'),
+      position: options.position || 'right',
+      tooltip: options.tooltip || getValue('tooltip'),
       order: options.order,
-      svgPath: options.svgPath ?? 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_foto.svg',
-      ...options,
+      svgPath: options.svgPath || 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_base.svg',
     });
-
-    /**
-     * Fachada del mapa
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map = null;
-
-    /**
-     * Lista de controles
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls = [];
 
     /**
      * Nombre de clase de la vista html
@@ -49,6 +33,13 @@ export default class Basic extends IDEE.Plugin {
      * @type {string}
      */
     this.className = 'm-plugin-basic';
+
+    /**
+     * Atributo colapsado del panel
+     * @public
+     * @type {boolean}
+     */
+    this.collapsed = IDEE.utils.isBoolean(options.collapsed) ? options.collapsed : true;
 
     /**
      * Parámetros del plugin
@@ -68,7 +59,6 @@ export default class Basic extends IDEE.Plugin {
    */
   addTo(map) {
     this.map = map;
-    this.controls.push(new BasicControl(this.isDraggable));
 
     this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
       position: this.position,
@@ -78,31 +68,23 @@ export default class Basic extends IDEE.Plugin {
     });
     map.addButtons(this.button);
 
-    this.panel = new IDEE.ui.panels.SidePanel('Basic', {
+    this.panel = new IDEE.ui.panels.SidePanel(this.name, {
       tooltip: this.tooltip,
       position: this.position,
       collapsed: this.collapsed,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
       className: this.className,
       collapsedButtonClass: 'icon-basic-wrench',
       order: this.order,
     });
 
+    this.controls.push(new BasicControl());
+    this.panel.addControls(this.controls);
     this.button.panel = this.panel;
     this.panel.button = this.button;
 
-    this.panel.addControls(this.controls);
-
     map.addPanels(this.panel);
-  }
-
-  /**
-   * Obtiene el nombre del plugin
-   *
-   * @getter
-   * @function
-   */
-  get name() {
-    return this.name;
   }
 
   /**
@@ -113,6 +95,8 @@ export default class Basic extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
+    this.map.removeButton(this.button);
+    this.map.removePanel(this.panel);
     this.map.removeControls(this.controls);
   }
 
@@ -125,7 +109,7 @@ export default class Basic extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.tooltip}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}`;
   }
 
   /**

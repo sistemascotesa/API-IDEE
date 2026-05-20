@@ -266,10 +266,10 @@ export default class ShareMap extends IDEE.Plugin {
     // eslint-disable-next-line no-underscore-dangle
     this.controls[0].map_ = map;
 
+    const superActivate = this.button.activate.bind(this.button);
     this.button.activate = () => {
       if (document.querySelector('#m-plugin-sharemap-title')) return;
-      this.button.pressed = true;
-      this.button.element.classList.add('active');
+      superActivate();
       this.controls[0].activateModal(() => this.button.deactivate());
     };
 
