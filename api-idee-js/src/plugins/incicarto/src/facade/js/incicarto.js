@@ -121,7 +121,7 @@ export default class Incicarto extends IDEE.Plugin {
     });
     map.addButtons(this.button);
 
-    this.panel = new IDEE.ui.Panel(this.name, {
+    this.panel = new IDEE.ui.panels.SidePanel(this.name, {
       className: 'm-incicarto',
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,

@@ -55,7 +55,7 @@ const mp = new BackImgLayer({
 
 const map = IDEE.map({
   container: 'mapjs',
-  // controls: ['scale'],
+  controls: ['rotate', "measurebar*position='center-top-right'"],
   center: [-458756.9690741142, 4682774.665868655],
   // Este layer OSM o wmstTestLayer se quitan al añadir el plugin, si son layer base, en este caso si fue configurado como transparente false.
   // Parece ser por map.getBaseLayers().forEach((layer) => {layer.on(IDEE.evt.LOAD, map.removeLayers(layer));});.
@@ -65,6 +65,12 @@ const map = IDEE.map({
 });
 
 window.map = map;
+
+map.addPlugin(
+  new IDEE.plugin.VectorsManagement({
+    position: 'left',
+  }),
+);
 
 let mp;
 

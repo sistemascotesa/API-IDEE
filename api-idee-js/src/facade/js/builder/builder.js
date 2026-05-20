@@ -6,7 +6,7 @@
 import {
   isNullOrEmpty, isFunction, isString, concatUrlPaths, normalize,
 } from 'IDEE/util/Utils';
-import ControlPanel from '../ui/ControlPanel';
+import CollapsiblePanel from '../ui/panels/CollapsiblePanel';
 import { getValue } from '../i18n/language';
 import Control from '../control/Control';
 import Attributions from '../control/Attributions';
@@ -57,11 +57,11 @@ export const getDefaultPanelOptions = (control, params) => ({
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getAttributionsPanel = (control, map, params = {}) => {
-  return new ControlPanel(Attributions.NAME, {
+  return new CollapsiblePanel(Attributions.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsedButtonClass: 'g-cartografia-comments-simple',
   });
@@ -78,13 +78,13 @@ export const getAttributionsPanel = (control, map, params = {}) => {
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getScalePanel = (control, map, params = {}) => {
   let panel = map.getPanels('map-info')[0];
   if (isNullOrEmpty(panel)) {
-    panel = new ControlPanel('map-info', {
+    panel = new CollapsiblePanel('map-info', {
       ...getDefaultPanelOptions(control, params),
       collapsible: false,
       className: 'm-map-info',
@@ -106,11 +106,11 @@ export const getScalePanel = (control, map, params = {}) => {
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getScaleLinePanel = (control, map, params = {}) => {
-  const panel = new ControlPanel(ScaleLine.NAME, {
+  const panel = new CollapsiblePanel(ScaleLine.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
     tooltip: params.tooltip ?? control.title ?? getValue('scaleline').title,
@@ -130,11 +130,11 @@ export const getScaleLinePanel = (control, map, params = {}) => {
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getMeasureBarPanel = (control, map, params = {}) => {
-  const panel = new ControlPanel(MeasureBar.NAME, {
+  const panel = new CollapsiblePanel(MeasureBar.NAME, {
     ...getDefaultPanelOptions(control, params),
     className: `m-control-${MeasureBar.NAME}`,
     collapsedButtonClass: 'g-cartografia-regla',
@@ -153,11 +153,11 @@ export const getMeasureBarPanel = (control, map, params = {}) => {
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getOverviewMapPanel = (control, map, params = {}) => {
-  const panel = new ControlPanel(OverviewMap.NAME, {
+  const panel = new CollapsiblePanel(OverviewMap.NAME, {
     ...getDefaultPanelOptions(control, params),
     className: `m-control-${OverviewMap.NAME}`,
     collapsedButtonClass: 'g-cartografia-mundo',
@@ -176,11 +176,11 @@ export const getOverviewMapPanel = (control, map, params = {}) => {
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getPanzoombarPanel = (control, map, params = {}) => {
-  return new ControlPanel(Panzoombar.NAME, {
+  return new CollapsiblePanel(Panzoombar.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
   });
@@ -197,11 +197,11 @@ export const getPanzoombarPanel = (control, map, params = {}) => {
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getPanzoomPanel = (control, map, params = {}) => {
-  return new ControlPanel(Panzoom.NAME, {
+  return new CollapsiblePanel(Panzoom.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
   });
@@ -218,11 +218,11 @@ export const getPanzoomPanel = (control, map, params = {}) => {
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getGetFeatureInfo = (control, map, params = {}) => {
-  return new ControlPanel(GetFeatureInfo.NAME, {
+  return new CollapsiblePanel(GetFeatureInfo.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
     collapsedButtonClass: 'g-cartografia-featureInfo',
@@ -240,11 +240,11 @@ export const getGetFeatureInfo = (control, map, params = {}) => {
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getLocationPanel = (control, map, params = {}) => {
-  return new ControlPanel(Location.NAME, {
+  return new CollapsiblePanel(Location.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
   });
@@ -261,11 +261,11 @@ export const getLocationPanel = (control, map, params = {}) => {
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getRotatePanel = (control, map, params = {}) => {
-  return new ControlPanel(Rotate.NAME, {
+  return new CollapsiblePanel(Rotate.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
     className: 'm-rotate',
@@ -283,11 +283,11 @@ export const getRotatePanel = (control, map, params = {}) => {
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getBackgroundLayersPanel = (control, map, params = {}) => {
-  return new ControlPanel(BackgroundLayers.NAME, {
+  return new CollapsiblePanel(BackgroundLayers.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
     className: 'm-control-baselayer',
@@ -305,11 +305,11 @@ export const getBackgroundLayersPanel = (control, map, params = {}) => {
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getImpSwitcherPanel = (control, map, params = {}) => {
-  return new ControlPanel(ImplementationSwitcher.NAME, {
+  return new CollapsiblePanel(ImplementationSwitcher.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsedButtonClass: 'g-cartografia-implementacion',
     className: 'm-implementationswitcher',
@@ -327,13 +327,13 @@ export const getImpSwitcherPanel = (control, map, params = {}) => {
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getWMCSelectorPanel = (control, map, params = {}) => {
   let panel = map.getPanels('map-info')[0];
   if (isNullOrEmpty(panel)) {
-    panel = new ControlPanel('map-info', {
+    panel = new CollapsiblePanel('map-info', {
       ...getDefaultPanelOptions(control, params),
       collapsible: false,
       className: 'm-map-info',
@@ -355,12 +355,12 @@ export const getWMCSelectorPanel = (control, map, params = {}) => {
  * @param {Object} params Parámetros del control.
  * @param {Object} defaultOptions Parámetros por defecto para el panel
  *
- * @return {ControlPanel} Devuelve un panel de control compatible.
+ * @return {CollapsiblePanel} Devuelve un panel de control compatible.
  * @api stable
  */
 export const getTimelinePanel = (control, map, params = {}) => {
   const defaultOptions = getDefaultPanelOptions(control, params);
-  return new ControlPanel(Timeline.NAME, {
+  return new CollapsiblePanel(Timeline.NAME, {
     ...defaultOptions,
     className: 'm-control-timeline',
     collapsedButtonClass: 'g-cartografia-gestion-reloj2',
