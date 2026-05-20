@@ -6,20 +6,29 @@
   "constructor": "IDEE.plugin.Basic",
   "parameters": [{
     "type": "object",
-    "properties": [{
+    "properties": [
+      {
       "type": "simple",
       "name": "position",
       "possibleValues": ["left", "right"],
       "position": 0
-    }, {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    }, {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 2
-    }]
+      },
+      {
+        "type": "boolean",
+        "name": "collapsed",
+        "position": 1
+      },
+      {
+        "type": "number",
+        "name": "order",
+        "position": 2
+      },
+      {
+        "type": "simple",
+        "name": "tooltip",
+        "position": 3
+      }
+    ]
   }],
   "files": {
     "ol": {
