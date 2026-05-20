@@ -177,7 +177,7 @@ export default class Help extends IDEE.Plugin {
       });
       this.controls_.push(this.ctrl);
       this.map_ = map;
-      this.panel_ = new IDEE.ui.Panel('Help', {
+      this.panel_ = new IDEE.ui.panels.SidePanel('Help', {
         className: 'm-plugin-help',
         position: IDEE.ui.position[this.position_],
         tooltip: this.tooltip_,

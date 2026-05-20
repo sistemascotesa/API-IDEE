@@ -92,7 +92,7 @@ export default class Stereoscopic extends IDEE.Plugin {
 
     this.controls_.push(control);
     this.map_ = map;
-    this.panel_ = new IDEE.ui.Panel('panelStereoscopic', {
+    this.panel_ = new IDEE.ui.panels.SidePanel('panelStereoscopic', {
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
       className: 'm-plugin-stereoscopic',

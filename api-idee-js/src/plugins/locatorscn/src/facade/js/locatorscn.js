@@ -165,7 +165,7 @@ export default class Locatorscn extends IDEE.Plugin {
     if (this.position_ === 'TC') {
       this.collapsible = false;
     }
-    this.panel_ = new IDEE.ui.Panel('panelLocatorscn', {
+    this.panel_ = new IDEE.ui.panels.SidePanel('panelLocatorscn', {
       collapsible: this.collapsible,
       collapsed: this.collapsed,
       position: IDEE.ui.position[this.position_],

@@ -114,9 +114,9 @@ export default class Magnify extends IDEE.Plugin {
     this.map_ = map;
 
     // panel para agregar control - no obligatorio
-    this.panel_ = new IDEE.ui.Panel('panelMagnify', {
+    this.panel_ = new IDEE.ui.panels.SidePanel('panelMagnify', {
       collapsible: this.collapsible,
-      position: IDEE.ui.position[this.position],
+      position: this.position,
       className: this.className,
       collapsedButtonClass: 'g-cartografia-zoom-extension',
       tooltip: getValue('tooltip'),

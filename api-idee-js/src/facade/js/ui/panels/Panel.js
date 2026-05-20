@@ -1,46 +1,20 @@
 /**
- * @module IDEE/ui/Panel
+ * @module IDEE/ui/panels/Panel
  */
-import 'assets/css/panel';
-import panelTemplate from 'templates/panel';
-import * as Position from './position';
 import {
-  isArray, isNullOrEmpty, isString, includes,
+  isArray,
+  isNullOrEmpty,
+  isString,
   isNumber,
+  includes,
   isBoolean,
-} from '../util/Utils';
-import MObject from '../Object';
-import * as EventType from '../event/eventtype';
-import ControlBase from '../control/Control';
-import { compileSync as compileTemplate } from '../util/Template';
+} from '../../util/Utils';
+import MObject from '../../Object';
+import * as Position from '../position';
+import * as EventType from '../../event/eventtype';
+import ControlBase from '../../control/Control';
 
-/**
- * @classdesc
- * Esta clase se encarga de general el panel de los plugins.
- * @property {String} name Nombre del panel.
- * @property {String} position Posición del panel.
- *
- * @api
- */
 class Panel extends MObject {
-  /**
-   * Constructor principal de la clase.
-   * @constructor
-   * @param {string} name Nombre del panel.
-   * @param {Mx.parameters.Panel} options Opciones del panel.
-   * - collapsible: Indica si el panel se puede colapsar.
-   * - position: Posición del panel.
-   *   - L: "left".
-   *   - R: "right".
-   * - collapsed: Indica si el panel aparece por defecto colapsado o no.
-   * - multiActivation: Si el panel puede estar activado o no.
-   * - className: Clase CSS del panel.
-   * - collapsedButtonClass: Clase CSS del botón del panel.
-   * - tooltip: Información sobre la herramienta.
-   * - order: Orden del panel respecto a los otros paneles y su posición.
-   * @extends {IDEE.Object}
-   * @api
-   */
   constructor(name, options = {}) {
     super();
 
@@ -49,7 +23,10 @@ class Panel extends MObject {
      * @api
      * @expose
      */
-    this.name = name;
+    this.name = '';
+    if (isString(name)) {
+      this.name = name;
+    }
 
     /**
      * @private
@@ -60,90 +37,10 @@ class Panel extends MObject {
 
     /**
      * @private
-     * @type {IDEE.ui.buttons.SidePanelButton}
-     * @expose
-     */
-    this.button = null;
-
-    /**
-     * @private
      * @type {array}
      * @expose
      */
     this.controls = [];
-
-    /**
-     * @type {Position}
-     * @api
-     * @expose
-     */
-    this.position = Position.RIGHT;
-    if (Position.isRightOrLeft(options.position)) this.position = options.position;
-
-    /**
-     * @type {Number}
-     * @api
-     * @expose
-     */
-    if (isNumber(options.minWidth)) {
-      this.minWidth = options.minWidth;
-    }
-
-    /**
-     * @type {Number}
-     * @api
-     * @expose
-     */
-    if (isNumber(options.maxWidth)) {
-      this.maxWidth = options.maxWidth;
-    }
-
-    /**
-     * Defines minimun height of this panel if is in compact mode
-     *
-     * @type {Number}
-     * @api
-     * @expose
-     */
-    if (isNumber(options.minHeightCompact)) {
-      this.minHeightCompact = options.minHeightCompact;
-    }
-
-    /**
-     * Defines maximun height of this panel if is in compact mode
-     *
-     * @type {Number}
-     * @api
-     * @expose
-     */
-    if (isNumber(options.maxHeightCompact)) {
-      this.maxHeightCompact = options.maxHeightCompact;
-    }
-
-    /**
-     * By default panels are collapsible and start collapsed.
-     *
-     * @private
-     * @type {boolean}
-     * @expose
-     */
-    this._collapsible = true;
-    if (isBoolean(options.collapsible)) {
-      this._collapsible = options.collapsible;
-    }
-
-    /**
-     * @private
-     * @type {boolean}
-     * @expose
-     */
-    this._collapsed = true;
-
-    if (!this._collapsible) {
-      this._collapsed = false;
-    } else if (isBoolean(options.collapsed)) {
-      this._collapsed = options.collapsed;
-    }
 
     /**
      * @private
@@ -151,9 +48,6 @@ class Panel extends MObject {
      * @expose
      */
     this._multiActivation = false;
-    if (!isNullOrEmpty(options.multiActivation)) {
-      this._multiActivation = options.multiActivation;
-    }
 
     /**
      * @private
@@ -161,9 +55,6 @@ class Panel extends MObject {
      * @expose
      */
     this._className = null;
-    if (!isNullOrEmpty(options.className)) {
-      this._className = options.className;
-    }
 
     /**
      * @private
@@ -171,13 +62,6 @@ class Panel extends MObject {
      * @expose
      */
     this._collapsedButtonClass = null;
-    if (!isNullOrEmpty(options.collapsedButtonClass)) {
-      this._collapsedButtonClass = options.collapsedButtonClass;
-    } else if ((this.position === Position.CTL) || (this.position === Position.CBL)) {
-      this._collapsedButtonClass = 'g-cartografia-flecha-derecha';
-    } else if ((this.position === Position.CTR) || (this.position === Position.CBR)) {
-      this._collapsedButtonClass = 'g-cartografia-flecha-izquierda';
-    }
 
     /**
      * @private
@@ -185,13 +69,6 @@ class Panel extends MObject {
      * @expose
      */
     this._openedButtonClass = null;
-    if (!isNullOrEmpty(options.openedButtonClass)) {
-      this._openedButtonClass = options.openedButtonClass;
-    } else if ((this.position === Position.CTL) || (this.position === Position.CBL)) {
-      this._openedButtonClass = 'g-cartografia-flecha-izquierda';
-    } else if ((this.position === Position.CTR) || (this.position === Position.CBR)) {
-      this._openedButtonClass = 'g-cartografia-flecha-derecha';
-    }
 
     /**
      * @private
@@ -208,12 +85,26 @@ class Panel extends MObject {
     this._areaContainer = null;
 
     /**
+     * @type {Position}
+     * @api
+     * @expose
+     */
+    this.position = Position.isValid(options.position) ? options.position : Position.LEFT;
+
+    /**
+     * @private
+     * @type {boolean}
+     * @expose
+     */
+    this._collapsed = isBoolean(options.collapsed) ? options.collapsed : true;
+
+    /**
      * @private
      * @type {String}
      * @expose
      */
     this._tooltip = null;
-    if (!isNullOrEmpty(options.tooltip)) {
+    if (isString(options.tooltip)) {
       this._tooltip = options.tooltip;
     }
 
@@ -222,15 +113,9 @@ class Panel extends MObject {
      * @type {Number}
      * @expose
      */
-    if (!isNullOrEmpty(options.order)) {
+    if (isNumber(options.order)) {
       this._order = options.order;
     }
-
-    this.once(EventType.ADDED_TO_MAP, () => {
-      if (!this._collapsed) {
-        this.button.activate();
-      }
-    });
   }
 
   /**
@@ -244,54 +129,8 @@ class Panel extends MObject {
     if (this.element != null) {
       this.element.remove();
     }
-  }
-
-  /**
-   * Este método añade el panel al mapa.
-   *
-   * @public
-   * @function
-   * @param {IDEE.map} map Mapa.
-   * @param {HTMLElement} areaContainer Elemento contenedor.
-   * @api
-   */
-  addTo(map) {
-    this.map = map;
-
-    this.element = compileTemplate(panelTemplate);
-    this.element.id = `plugin-panel-${this.name}`;
-
-    this.createTitlePanel();
-
-    this._tabAccessibility();
-
-    if (!isNullOrEmpty(this._tooltip)) {
-      this.element.setAttribute('title', this._tooltip);
-    }
-
-    this.addControls(this.controls);
-
-    this.fire(EventType.ADDED_TO_MAP, this.element);
-  }
-
-  createTitlePanel() {
-    this.panelTitle = document.createElement('div');
-    this.panelTitle.id = `plugin-panel-title-${this.name}`;
-    this.panelTitle.classList.add('m-plugin-panel-title');
-    this.panelTitle.role = 'heading';
-    this.panelTitle.ariaLabel = this._tooltip;
-    this.panelTitle.tabIndex = 'null';
-    this.panelTitle.textContent = this._tooltip;
-    this.panelTitle.title = this._tooltip;
-    this.element.appendChild(this.panelTitle);
-  }
-
-  createContentPanel() {
-    this.panelContent = document.createElement('div');
-    this.panelContent.id = `plugin-panel-content-${this.name}`;
-    this.panelContent.classList.add('m-plugin-panel-content');
-    this.panelContent.tabIndex = 'null';
-    this.element.appendChild(this.panelContent);
+    this.element = null;
+    this._areaContainer = null;
   }
 
   /**
@@ -326,10 +165,6 @@ class Panel extends MObject {
    * @api
    */
   _collapse(html) {
-    /* html.classList.remove('opened');
-    this.button.classList.remove(this._openedButtonClass);
-    html.classList.add('collapsed');
-    this.button.classList.add(this._collapsedButtonClass); */
     this._collapsed = true;
     this.fire(EventType.HIDE);
   }
@@ -342,10 +177,6 @@ class Panel extends MObject {
    * @api
    */
   _open(html) {
-    /* html.classList.remove('collapsed');
-    this.button.classList.remove(this._collapsedButtonClass);
-    html.classList.add('opened');
-    this.button.classList.add(this._openedButtonClass); */
     this._collapsed = false;
     this.fire(EventType.SHOW);
   }
@@ -419,11 +250,11 @@ class Panel extends MObject {
       if (!isArray(controls)) {
         controls = [controls];
       }
-      controls.forEach((control, i) => {
+      controls.forEach((control) => {
         if (control instanceof ControlBase) {
           if (!this.hasControl(control)) {
             this.controls.push(control);
-            control.setParentContainer(this);
+            this.attachControl(control);
             control.on(EventType.DESTROY, this._removeControl.bind(this), this);
           }
           if (!isNullOrEmpty(this.element)) {
@@ -434,15 +265,13 @@ class Panel extends MObject {
         }
         control.on(EventType.ADDED_TO_MAP, () => {
           // eslint-disable-next-line no-underscore-dangle
-          // control.element_.setAttribute('role', 'button');
-
-          // eslint-disable-next-line no-underscore-dangle
-          // control.element_.setAttribute('tabIndex', 0);
-
-          // eslint-disable-next-line no-underscore-dangle
         });
       });
     }
+  }
+
+  attachControl(control) {
+    // Implemented by subclasses when control association differs.
   }
 
   /**
@@ -487,9 +316,7 @@ class Panel extends MObject {
           this.controls = this.controls.filter((control2) => !control2.equals(control));
         }
       }, this);
-      // if this panel hasn't any controls then it's removed
-      // from the map
-      if (this.controls.length === 0) {
+      if (this.controls.length === 0 && this.map && typeof this.map.removePanel === 'function') {
         this.map.removePanel(this);
       }
     }
@@ -524,7 +351,7 @@ class Panel extends MObject {
   removeClassName(className) {
     if (!isNullOrEmpty(this.element)) {
       this.element.classList.remove(className);
-    } else {
+    } else if (this._className) {
       this._className = this._className.replace(new RegExp(`s* ${className} s*`), '');
     }
   }
@@ -540,8 +367,10 @@ class Panel extends MObject {
   addClassName(className) {
     if (!isNullOrEmpty(this.element)) {
       this.element.classList.add(className);
-    } else {
+    } else if (this._className) {
       this._className = this._className.concat(' ').concat(className);
+    } else {
+      this._className = className;
     }
   }
 
@@ -550,15 +379,16 @@ class Panel extends MObject {
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
-   * @param {array<IDEE.Control>} controls Control.
+   * @param {IDEE.Control} control Control.
    * @api
    */
   _moveControlView(control) {
     const controlElem = control.getElement();
-    if (!isNullOrEmpty(this.element)) {
-      this.element.appendChild(controlElem);
+    const container = this.getControlsContainer();
+    if (!isNullOrEmpty(container) && !isNullOrEmpty(controlElem)) {
+      container.appendChild(controlElem);
+      control.fire(EventType.PANEL_VIEW_CHANGE);
     }
-    control.fire(EventType.PANEL_VIEW_CHANGE);
   }
 
   /**
@@ -589,7 +419,7 @@ class Panel extends MObject {
    * @api
    */
   equals(obj) {
-    return obj instanceof Panel && obj.name === this.name;
+    return obj instanceof this.constructor && obj.name === this.name;
   }
 
   /**
@@ -605,7 +435,7 @@ class Panel extends MObject {
   }
 
   /**
-   * Este método devuelve el botón del panel.
+   * Este método devuelve el contenido del elemento HTML correspondiente al botón que abre el panel.
    *
    * @public
    * @function
@@ -613,7 +443,7 @@ class Panel extends MObject {
    * @returns {HTMLElement} Elemento botón.
    */
   getButtonPanel() {
-    return this.button;
+    return this.button || this._buttonPanel;
   }
 
   /**
@@ -631,23 +461,10 @@ class Panel extends MObject {
   }
 
   /**
-   * Este método establece el estado del panel.
-   *
-   * @public
-   * @function
-   * @param {Boolean} flag Estado del panel.
-   * @api
-   */
-  setCollapsed(flag) {
-    this._collapsed = flag;
-  }
-
-  /**
    * Este método devuelve el contenedor.
    *
    * @public
    * @function
-   * @api
    * @returns {HTMLElement} Contenedor.
    */
   getControlsContainer() {

@@ -176,7 +176,7 @@ export default class ContactLink extends IDEE.Plugin {
     });
     map.addButtons(this.button);
 
-    this.panel = new IDEE.ui.Panel(this.name, {
+    this.panel = new IDEE.ui.panels.SidePanel(this.name, {
       collapsed: this.collapsed,
       position: this.position,
       minWidth: this.minPanelWidth,
