@@ -21,7 +21,7 @@ const map = Mmap({
 window.mapa = map;
 
 const measurebar = new MeasureBar({
-  order: 1,
+  order: 5,
   position: Position.CBR,
   collapsed: false,
 });

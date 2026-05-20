@@ -157,7 +157,7 @@ class CollapsiblePanel extends Panel {
     this._panelButtonObj = new PanelButton(this.name, {
       tooltip: this._tooltip,
       classList: 'm-control-panel-btn',
-      order: this._order,
+      order: 0,
       panel: this,
     });
     this._panelButtonObj.createElement();
