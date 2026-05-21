@@ -236,7 +236,7 @@ export default class WFSTControls extends IDEE.Plugin {
       }
     }
 
-    this.panel_ = new IDEE.ui.Panel('edit', {
+    this.panel_ = new IDEE.ui.panels.SidePanel('edit', {
       collapsible: true,
       className: 'm-edition',
       collapsedButtonClass: 'g-cartografia-editar',

@@ -43,8 +43,8 @@ import OGCAPIFeatures from './layer/OGCAPIFeatures';
 import GenericRaster from './layer/GenericRaster';
 import GenericVector from './layer/GenericVector';
 import OverviewMapButton from './ui/buttons/OverviewMapButton';
-import Panel from './ui/Panel';
-import ControlPanel from './ui/ControlPanel';
+import Panel from './ui/panels/Panel';
+import CollapsiblePanel from './ui/panels/CollapsiblePanel';
 import * as Position from './ui/position';
 import GeoJSON from './layer/GeoJSON';
 import GeoTIFF from './layer/GeoTIFF';
@@ -523,7 +523,7 @@ class Map extends Base {
         }),
         order,
       });
-      const panel = new ControlPanel(Attributions.NAME, {
+      const panel = new CollapsiblePanel(Attributions.NAME, {
         collapsible: true,
         position: Position[position] || Position.LEFT,
         className: 'm-attributions',
@@ -3130,7 +3130,7 @@ class Map extends Base {
       controls.forEach((control) => {
         const panel = control.getPanel();
         // check if this control has panels and remove it if
-        if (panel instanceof ControlPanel) {
+        if (panel instanceof Panel) {
           const panelControls = panel.getControls();
           if (isArray(panelControls) && panelControls.legth === 1) {
             this.removePanel(panel);
@@ -4431,7 +4431,7 @@ class Map extends Base {
   removeButton(button) {
     if (button instanceof OverviewMapButton) {
       button.destroy();
-      this.buttons = this.buttons.filter((button2) => !button.equals(button));
+      this.buttons = this.buttons.filter((buttonSaved) => !buttonSaved.equals(button));
     }
 
     return this;
@@ -4473,7 +4473,7 @@ class Map extends Base {
     if (!isNullOrEmpty(controlPanelsVar)) {
       (isArray(controlPanelsVar) ? controlPanelsVar : [controlPanelsVar])
         .filter((panel) => !this.panels.some((panel2) => panel2.equals(panel))
-          && panel instanceof ControlPanel)
+          && panel instanceof CollapsiblePanel)
         .forEach((panel) => {
           this.panels.push(panel);
           panel.addTo(this);
@@ -4490,7 +4490,7 @@ class Map extends Base {
    * @returns {Map} Devuelve el estado del mapa.
    */
   removePanel(panel) {
-    if (panel instanceof Panel || panel instanceof ControlPanel) {
+    if (panel instanceof Panel) {
       panel.destroy();
       this.panels = this.panels.filter((panel2) => !panel2.equals(panel));
     }
@@ -4783,9 +4783,10 @@ class Map extends Base {
    */
   deactivateSidePanelButtons(button) {
     const isCompact = this.isCompactMode();
-    /** @type {IDEE.ui.OverviewMapButton[]} */
+    /** @type {OverviewMapButton[]} */
     let buttons = this.buttons ?? [];
 
+    // Cuando el mapa cambia de tamaño teniendo todavía el panel superior abierto, debemos apagarlo
     const isUpPanelOpened = (() => {
       const v = this.toolPanelsContainer.style.getPropertyValue('--up-height');
       return v !== '' && v !== '0px';

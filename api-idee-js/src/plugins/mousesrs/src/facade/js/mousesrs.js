@@ -190,7 +190,7 @@ export default class MouseSRS extends IDEE.Plugin {
 
     this.controls.push(this.control);
 
-    this.panel = new IDEE.ui.ControlPanel('panelMouseSRS', {
+    this.panel = new IDEE.ui.panels.CollapsiblePanel('panelMouseSRS', {
       collapsible: false,
       tooltip: this.tooltip,
       className: 'm-plugin-mousesrs',

@@ -50,10 +50,7 @@ class OverviewMapButton extends MObject {
      * @api
      * @expose
      */
-    this.position = Position.RIGHT;
-    if (!isNullOrEmpty(options.position)) {
-      this.position = options.position;
-    }
+    this.position = isNullOrEmpty(options.position) ? Position.RIGHT : options.position;
 
     /**
      * Determines the position of the tool when it is inside a map tool container
@@ -96,11 +93,15 @@ class OverviewMapButton extends MObject {
     this.classList = options.classList ?? null;
 
     /**
-     * @type {HTMLButtonElement} contenido html del botón.
+     * contenido html del botón.
+     *
+     * @type {HTMLButtonElement}
      * @api
      * @expose
      */
     this.element = null;
+
+    this.pressed = null;
   }
 
   destroy() {
@@ -218,7 +219,7 @@ class OverviewMapButton extends MObject {
    * @returns {boolean}
    */
   equals(obj) {
-    return obj instanceof OverviewMapButton && obj.name === this.name;
+    return obj instanceof this.constructor && obj.name === this.name;
   }
 }
 
