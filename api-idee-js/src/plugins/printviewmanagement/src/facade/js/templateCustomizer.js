@@ -135,7 +135,7 @@ export default class TemplateCustomizer extends IDEE.Control {
      * @type {string}
      */
     this.layout = (this.layoutOptions_.find((layout) => layout.default)
-    || this.layoutOptions_[0]).value;
+      || this.layoutOptions_[0]).value;
 
     /**
      * Proyección seleccionada por defecto
@@ -232,10 +232,9 @@ export default class TemplateCustomizer extends IDEE.Control {
       },
     });
     IDEE.dialog.info(content.outerHTML, getValue('customizeTemplate'), this.order);
-    document.querySelector('.m-dialog>div.m-modal>div.m-content').style.minWidth = '80vw';
-    document.querySelector('.m-dialog>div.m-modal>div.m-content').style.minHeight = '80vh';
-    document.querySelector('.m-dialog>div.m-modal>div.m-content').style.maxWidth = '80vw';
-    document.querySelector('.m-dialog>div.m-modal>div.m-content').style.maxHeight = 'fit-content';
+    document.querySelector('.m-dialog>div.m-modal>div.m-content').style.width = '90%';
+    document.querySelector('.m-dialog>div.m-modal>div.m-content').style.maxWidth = '90%';
+    document.querySelector('.m-dialog>div.m-modal>div.m-content').style.height = '90%';
 
     const buttonContainer = document.querySelector('div.m-dialog.info div.m-button');
     const closeButton = buttonContainer.querySelector('button');
@@ -254,7 +253,7 @@ export default class TemplateCustomizer extends IDEE.Control {
     const doc = parser.parseFromString(this.templateData_.content, 'text/html');
     const templateContent = doc.body;
     const container = document.querySelector(CLASS_MAP_CONTAINER)
-    || document.querySelector('.m-dialog .m-content');
+      || document.querySelector('.m-dialog .m-content');
     container.appendChild(templateContent);
 
     this.createPreviewMap();
@@ -645,7 +644,7 @@ export default class TemplateCustomizer extends IDEE.Control {
   applyTemplateScripts() {
     if (this.templateData_.scripts
       && (this.templateData_.scripts.src.length > 0
-      || this.templateData_.scripts.inline.length > 0)) {
+        || this.templateData_.scripts.inline.length > 0)) {
       const { src, inline } = this.templateData_.scripts;
 
       src.forEach((scriptSrc) => {
@@ -966,7 +965,7 @@ export default class TemplateCustomizer extends IDEE.Control {
     const layoutSelect = document.querySelector(templateId);
 
     const initialLayout = this.layoutOptions_.find((layout) => layout.default)
-    || this.layoutOptions_[0];
+      || this.layoutOptions_[0];
     this.applyLayout(initialLayout);
 
     layoutSelect.addEventListener('change', (e) => {
@@ -1152,6 +1151,7 @@ export default class TemplateCustomizer extends IDEE.Control {
         this.loadingOverlay_.remove();
         this.loadingOverlay_ = null;
       }
+
       maskImageContainer.innerHTML = '';
       parentNode.appendChild(originalMapViewport);
     });
