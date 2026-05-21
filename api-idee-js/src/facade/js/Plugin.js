@@ -3,7 +3,6 @@
  */
 import Base from './Base';
 import SidePanelButton from './ui/buttons/SidePanelButton';
-import SidePanel from './ui/panels/SidePanel';
 import {
   isArray,
   isBoolean,
@@ -15,6 +14,7 @@ import Control from './control/Control';
 import Tool from './tool/Tool';
 import Exception from './exception/exception';
 import * as Position from './ui/position';
+import PluginSidePanel from './ui/panels/PluginSidePanel';
 
 /**
  * @classdesc
@@ -98,7 +98,7 @@ class Plugin extends Base {
     });
     map.addButtons(this.button);
 
-    this.panel = new SidePanel(this.name, {
+    this.panel = new PluginSidePanel(this.name, {
       tooltip: this.tooltip,
       position: this.position,
       minWidth: this.minPanelWidth,

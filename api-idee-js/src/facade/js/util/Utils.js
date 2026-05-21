@@ -1500,7 +1500,7 @@ export const decodeBase64 = (base64) => {
  * Esta función proporciona movimiento a un plugin.
  *
  * @function
- * @param {IDEE.ui.Panel} panel Panel del "plugin".
+ * @param {IDEE.ui.panels.Panel} panel Panel del "plugin".
  * @param {String} handleEl Elemento o selector en el que
  * comienza la interacción del arrastre.
  * @api
