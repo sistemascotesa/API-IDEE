@@ -285,35 +285,6 @@
     gap: 0.5em;
 }
 
-.m-plugin-panel {
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-    height: 100%;
-    width: 100%;
-    z-index: 0;
-}
-
-.m-plugin-panel-title {
-    padding: 16px;
-    font-size: 18px;
-    font-family: 'Roboto';
-    font-weight: 500;
-    color: var(--idee-color-primary-dark);
-    white-space: normal;
-    word-break: break-word;
-    text-overflow: ellipsis;
-    height: 1.5rem;
-    width: fit-content;
-}
-
-.m-plugin-panel-content {
-    flex-grow: 1;
-    margin: 0 .5rem .5rem;
-    overflow-y: auto;
-    padding: 0 .25rem;
-}
-
 @layer base {
 
     html:has(>body>.m-api-idee-test-form-frame) button,
@@ -625,8 +596,6 @@ div.m-control button[class*=" g-cartografia-"] {
     margin: 0;
     opacity: 1;
 }
-
-
 
 div.m-control.activated button[class^="g-cartografia-"],
 div.m-control button[class^="g-cartografia-"]:hover,
@@ -983,4 +952,14 @@ body>.m-api-idee-test-form-frame>.m-test-buttons>.m-test-button {
     align-items: center;
     justify-content: center;
     min-width: 180px;
+}
+
+/** OTHERS **/
+
+:where(.m-api-idee-container) .m-kml-desc>table {
+    width: 100%;
+}
+
+:where(.m-api-idee-container) .focusStyle {
+    border: 3px solid black !important;
 }

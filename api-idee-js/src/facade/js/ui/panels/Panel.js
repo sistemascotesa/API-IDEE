@@ -116,6 +116,15 @@ class Panel extends MObject {
     if (isNumber(options.order)) {
       this._order = options.order;
     }
+
+    /**
+     * Identificador css que aplica a los elementos del panel distintivamente.
+     *
+     * @private
+     * @type {String}
+     * @expose
+     */
+    this.cssName = isString(options.cssName) ? options.cssName : 'base';
   }
 
   /**

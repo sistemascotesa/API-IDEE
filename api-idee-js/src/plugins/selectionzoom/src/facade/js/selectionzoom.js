@@ -194,7 +194,7 @@ export default class SelectionZoom extends IDEE.Plugin {
     });
     map.addButtons(this.button);
 
-    this.panel = new IDEE.ui.panels.SidePanel(this.name, {
+    this.panel = new IDEE.ui.panels.PluginSidePanel(this.name, {
       collapsed: this.collapsed,
       position: this.position,
       minWidth: this.minPanelWidth,

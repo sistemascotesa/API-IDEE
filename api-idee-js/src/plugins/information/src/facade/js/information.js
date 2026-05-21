@@ -150,7 +150,7 @@ export default class Information extends IDEE.Plugin {
     );
     this.controls_.push(this.ctrl);
     this.map_ = map;
-    this.panel_ = new IDEE.ui.panels.SidePanel('Information', {
+    this.panel_ = new IDEE.ui.panels.PluginSidePanel('Information', {
       className: 'm-plugin-information',
       position: IDEE.ui.position[this.position_],
       tooltip: this.tooltip_,
