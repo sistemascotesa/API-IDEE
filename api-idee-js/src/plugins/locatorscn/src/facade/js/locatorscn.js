@@ -19,7 +19,7 @@ export default class Locatorscn extends IDEE.Plugin {
    * @api
    */
   constructor(options = {}) {
-    super('printviewmanagement', {
+    super('locatorscn', {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
       order: options.order,
@@ -109,7 +109,7 @@ export default class Locatorscn extends IDEE.Plugin {
     });
     map.addButtons(this.button);
 
-    this.panel = new IDEE.ui.panels.SidePanel(this.name, {
+    this.panel = new IDEE.ui.panels.PluginSidePanel(this.name, {
       collapsed: this.collapsed,
       position: this.position,
       minWidth: this.minPanelWidth,

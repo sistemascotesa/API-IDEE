@@ -72,11 +72,6 @@
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_distancias.svg');
 }
 
-.vectorsmanagement-icon-aceptar:before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_circle_check.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_circle_check.svg');
-}
-
 .vectorsmanagement-icon-radio-vacio:before {
     -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_circle.svg');
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_circle.svg');
