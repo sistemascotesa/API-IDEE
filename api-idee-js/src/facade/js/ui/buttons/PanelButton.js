@@ -19,7 +19,7 @@ class PanelButton extends OverviewMapButton {
     super(name, options);
 
     /**
-     * @type {IDEE.ui.Panel}
+     * @type {IDEE.ui.panels.Panel}
      * @expose
      */
     this.panel = options.panel ?? null;

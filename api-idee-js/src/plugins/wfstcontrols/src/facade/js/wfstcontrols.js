@@ -236,13 +236,14 @@ export default class WFSTControls extends IDEE.Plugin {
       }
     }
 
-    this.panel_ = new IDEE.ui.panels.SidePanel('edit', {
+    this.panel_ = new IDEE.ui.panels.PluginSidePanel('edit', {
       collapsible: true,
       className: 'm-edition',
       collapsedButtonClass: 'g-cartografia-editar',
       position: IDEE.ui.position.TL,
       tooltip: getValue('tooltip'),
     });
+
     if (IDEE.utils.isNullOrEmpty(wfslayer)) {
       IDEE.dialog.error(`${getValue('noWFSlayerloaded')}<b>${this.controls.join(',')}</b>${getValue('exception.noWFSlayerloaded1')}`);
     } else {

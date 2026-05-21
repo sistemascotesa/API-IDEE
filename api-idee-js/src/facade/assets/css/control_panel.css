@@ -341,13 +341,7 @@
     }
 }
 
-:where(.m-api-idee-container) .m-kml-desc>table {
-    width: 100%;
-}
 
-:where(.m-api-idee-container) .focusStyle {
-    border: 3px solid black !important;
-}
 
 /* ANIMACIÓN SUAVE DEL BOTÓN Y DEL PANEL */
 

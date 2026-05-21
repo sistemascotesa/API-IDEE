@@ -1,4 +1,14 @@
 .m-wmcselector-container {
+   background-color: white !important;
+   padding: 5px 10px 3px 12px !important;
+   font-family: 'Muli', 'sans-serif' !important;
+   font-size: 12px !important;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02) !important;
+   display: flex !important;
+   height: 17px;
+}
+
+.m-wmcselector-container {
    bottom: 8px;
    right: 60px;
    display: block;
@@ -6,6 +16,12 @@
    padding: 0px;
    margin: 0px;
    border: 2px solid white;
+}
+
+.m-wmcselector-container:before {
+   color: #a35d38;
+   margin-right: 5px;
+   margin-top: 3px;
 }
 
 .m-wmcselector-container:before {
@@ -25,6 +41,23 @@
    -webkit-appearance: none;
 }
 
-.m-wmcselector-select > option {
+.m-wmcselector-select>option {
    color: #6C6C6C;
+}
+
+.m-panel.m-map-info>div.m-panel-controls>div.m-control.m-wmcselector-container {
+   order: 2;
+}
+
+.m-panel.m-map-info.m-with-mouse>div.m-panel-controls>div.m-control.m-wmcselector-container,
+.m-panel.m-map-info.m-with-scale>div.m-panel-controls>div.m-control.m-wmcselector-container {
+   border-top-left-radius: 0px !important;
+   border-bottom-left-radius: 0px !important;
+}
+
+@media only screen and (max-width: 768px) {
+   .m-panel.m-map-info.m-with-mouse:not(.m-with-scale)>div.m-panel-controls>div.m-control.m-wmcselector-container {
+      border-top-left-radius: 20px !important;
+      border-bottom-left-radius: 20px !important;
+   }
 }

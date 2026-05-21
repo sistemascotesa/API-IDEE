@@ -123,7 +123,7 @@ export default class QueryAttributes extends IDEE.Plugin {
    */
   addTo(map) {
     this.map_ = map;
-    this.panel_ = new IDEE.ui.panels.SidePanel('panelQueryAttributes', {
+    this.panel_ = new IDEE.ui.panels.PluginSidePanel('panelQueryAttributes', {
       className: 'm-queryattributes',
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,

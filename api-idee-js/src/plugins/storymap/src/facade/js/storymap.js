@@ -114,7 +114,7 @@ export default class StoryMap extends IDEE.Plugin {
     window.mapjs = map;
     map.addButtons(this.button);
 
-    this.panel = new IDEE.ui.panels.SidePanel(this.name, {
+    this.panel = new IDEE.ui.panels.PluginSidePanel(this.name, {
       tooltip: this.tooltip,
       position: this.position,
       minWidth: this.minPanelWidth,

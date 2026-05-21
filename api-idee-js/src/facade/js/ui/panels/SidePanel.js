@@ -1,13 +1,14 @@
 /**
  * @module IDEE/ui/panels/SidePanel
  */
-import 'assets/css/panel';
-import panelTemplate from 'templates/panel';
+// import 'assets/css/panel';
+import sidePanelTemplate from 'templates/side_panel';
 import * as Position from '../position';
 import {
   isNullOrEmpty,
   isNumber,
   isBoolean,
+  isString,
 } from '../../util/Utils';
 import Panel from './Panel';
 import * as EventType from '../../event/eventtype';
@@ -16,11 +17,14 @@ import OverviewMapButton from '../buttons/OverviewMapButton';
 
 /**
  * @classdesc
- * Esta clase se encarga de general el panel de los plugins.
+ * Panel lateral para herramientas.
+ * Se pueden colocar en el lado derecho o izquierdo del mapa.
+ *
  * @property {String} name Nombre del panel.
- * @property {String} position Posición del panel.
+ * @property {String} options Opciones de configuración del panel.
  *
  * @api
+ * @extends Panel
  */
 class SidePanel extends Panel {
   constructor(name, options = {}) {
@@ -200,6 +204,15 @@ class SidePanel extends Panel {
       this._order = options.order;
     }
 
+    /**
+     * Identificador css que aplica a los elementos del panel distintivamente.
+     *
+     * @private
+     * @type {String}
+     * @expose
+     */
+    this.cssName = isString(options.cssName) ? options.cssName : 'side';
+
     this.once(EventType.ADDED_TO_MAP, () => {
       if (this.button && !this._collapsed) {
         this.button.activate();
@@ -216,8 +229,16 @@ class SidePanel extends Panel {
   addTo(map) {
     this.map = map;
 
-    this.element = compileTemplate(panelTemplate);
-    this.element.id = `plugin-panel-${this.name}`;
+    this.element = compileTemplate(
+      sidePanelTemplate,
+      {
+        vars: {
+          cssName: this.cssName,
+        },
+      },
+    );
+
+    this.element.id = `${this.cssName}-panel-${this.name}`;
 
     this.createTitlePanel();
 
@@ -234,8 +255,8 @@ class SidePanel extends Panel {
 
   createTitlePanel() {
     this.panelTitle = document.createElement('div');
-    this.panelTitle.id = `plugin-panel-title-${this.name}`;
-    this.panelTitle.classList.add('m-plugin-panel-title');
+    this.panelTitle.id = `${this.cssName}-panel-title-${this.name}`;
+    this.panelTitle.classList.add('m-side-panel-title', `m-${this.cssName}-panel-title`);
     this.panelTitle.role = 'heading';
     this.panelTitle.ariaLabel = this._tooltip;
     this.panelTitle.tabIndex = 'null';
@@ -246,8 +267,8 @@ class SidePanel extends Panel {
 
   createContentPanel() {
     this.panelContent = document.createElement('div');
-    this.panelContent.id = `plugin-panel-content-${this.name}`;
-    this.panelContent.classList.add('m-plugin-panel-content');
+    this.panelContent.id = `${this.cssName}-panel-content-${this.name}`;
+    this.panelContent.classList.add('m-side-panel-content', `m-${this.cssName}-panel-content`);
     this.panelContent.tabIndex = 'null';
     this.element.appendChild(this.panelContent);
   }

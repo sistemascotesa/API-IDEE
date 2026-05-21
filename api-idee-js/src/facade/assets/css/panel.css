@@ -1,26 +1,4 @@
 /****************************
-     GENERAL
-****************************/
-
-@media only screen and (max-width: 768px) {
-    .m-top.m-right {
-        /*top: 50px;*/
-    }
-
-    .m-top.top-extra {
-        top: 65px;
-    }
-
-    .m-top.top-extra.top-extra-search {
-        top: 75px;
-    }
-
-    .m-top.top-extra.top-extra-searchs {
-        top: 135px;
-    }
-}
-
-/****************************
      SPECIFIC PANELS
 ****************************/
 .m-panel {
@@ -39,21 +17,6 @@
 div.m-panel>button {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
 }
-
-/*
-.m-panel.m-geosearch.opened {
-   border-radius: 4px;
-   border-top-right-radius: 0px;
-   border-bottom-right-radius: 0px;
-}
-
-@media only screen and (max-width: 768px) {
-   .m-panel.m-geosearch.opened {
-      border-top-right-radius: 4px;
-      border-bottom-right-radius: 4px;
-   }
-}
-*/
 
 /* NO COLLAPSIBLE */
 .m-panel.no-collapsible {
@@ -142,13 +105,6 @@ div.m-panel>button {
     display: none;
 }
 
-.m-areas>div.m-area.m-left>div.m-panel,
-.m-areas>div.m-area.m-left>div.m-panel>div.m-panel-controls {
-    -webkit-flex-direction: row-reverse;
-    flex-direction: row-reverse;
-    align-items: flex-end;
-}
-
 /* LEFT AND RIGHT */
 .m-panel.m-tools {
     order: -90;
@@ -203,27 +159,13 @@ div.m-panel>button {
     box-shadow: none;
 }
 
-.m-panel.m-overviewmap.collapsed {
-    /*   height: 40px;*/
-}
-
 /****************************
      PANELS CONTAINER
 ****************************/
-.m-panel {}
 
 .m-panel>div.m-panel-controls {
     display: flex;
 }
-
-/****************************
-     FIREFOX HACKS
-****************************/
-/* @-moz-document url-prefix() {
-    .m-panel>div.m-panel-controls {
-        display: inline-flex;
-    }
-} */
 
 /****************************
  INTERNET EXPLORER HACKS
@@ -259,21 +201,6 @@ div.m-panel>button {
  SAFARI HACKS
 ****************************/
 @supports (overflow:-webkit-marquee) and (justify-content:inherit) {
-
-    /*
-		div.m-panel.m-panzoombar {
-		   margin-top: 75px;
-		}
-
-	div.m-panel.m-panzoom {
-		   margin-top: 55px;
-		}
-	*/
-    .m-areas>div.m-area.m-top {
-        top: 0;
-        /*height: auto;
-	   max-height: 1000px;*/
-    }
 }
 
 /****************************
@@ -295,11 +222,6 @@ div.m-panel>button {
 /****************************
      ANIMATIONS
 ****************************/
-/*
-.m-panel {
-    -webkit-transition: border-radius .5s ease 0s;
-    transition: border-radius .5s ease 0s;
-} */
 
 .m-panel.collapsed {
     border-radius: 20px;
@@ -417,39 +339,6 @@ div.m-panel>button {
     border-bottom-right-radius: 0px !important;
 }
 
-.m-panel.m-map-info>div.m-panel-controls>div.m-control.m-wmcselector-container {
-    order: 2;
-}
-
-.m-panel.m-map-info.m-with-mouse>div.m-panel-controls>div.m-control.m-wmcselector-container,
-.m-panel.m-map-info.m-with-scale>div.m-panel-controls>div.m-control.m-wmcselector-container {
-    border-top-left-radius: 0px !important;
-    border-bottom-left-radius: 0px !important;
-}
-
-@media only screen and (max-width: 768px) {
-    .m-panel.m-map-info.m-with-mouse:not(.m-with-scale)>div.m-panel-controls>div.m-control.m-wmcselector-container {
-        border-top-left-radius: 20px !important;
-        border-bottom-left-radius: 20px !important;
-    }
-}
-
-.m-wmcselector-container {
-    background-color: white !important;
-    padding: 5px 10px 3px 12px !important;
-    font-family: 'Muli', 'sans-serif' !important;
-    font-size: 12px !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02) !important;
-    display: flex !important;
-    height: 17px;
-}
-
-.m-wmcselector-container:before {
-    color: #a35d38;
-    margin-right: 5px;
-    margin-top: 3px;
-}
-
 @media only screen and (max-width: 768px) {
     .m-scale-container {
         border-top-left-radius: 20px !important;
@@ -464,10 +353,6 @@ div.m-panel>button {
     .m-geosearch.collapsed div.results-panel {
         display: none !important;
     }
-}
-
-.m-kml-desc>table {
-    width: 100%;
 }
 
 button.g-cartografia-flecha-derecha,
