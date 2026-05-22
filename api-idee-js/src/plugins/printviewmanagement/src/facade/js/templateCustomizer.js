@@ -1049,6 +1049,10 @@ export default class TemplateCustomizer extends IDEE.Control {
 
     document.body.appendChild(clone);
 
+    const templateBody = clone.querySelector('body');
+    templateBody.style.width = clone.style.width;
+    templateBody.style.height = clone.style.height;
+
     const targetElement = clone.querySelector(ID_CONTAINER_DEFAULT_TEMPLATE) || clone;
     const screenshotScale = this.getScreenshotScale(this.dpi);
     const canvas = await domToCanvas(targetElement, {
