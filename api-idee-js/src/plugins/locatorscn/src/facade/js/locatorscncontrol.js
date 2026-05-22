@@ -16,7 +16,6 @@ export default class LocatorscnControl extends IDEE.Control {
    * @api
    */
   constructor(
-    isDraggable,
     zoom,
     pointStyle,
     searchOptions,
@@ -39,13 +38,6 @@ export default class LocatorscnControl extends IDEE.Control {
      * @type {Boolean|Object}
      */
     this.searchOptions_ = searchOptions;
-
-    /**
-     * Option to allow the plugin to be draggable or not
-     * @private
-     * @type {Boolean}
-     */
-    this.isDraggable_ = isDraggable;
 
     /**
      * Zoom
@@ -86,9 +78,9 @@ export default class LocatorscnControl extends IDEE.Control {
      * Position of the plugin
      *
      * @private
-     * @type {String} TL | TR | BL | BR | TC
+     * @type {String}
      */
-    this.position = position || 'TR';
+    this.position = position;
 
     /**
      * Control activated
@@ -111,7 +103,6 @@ export default class LocatorscnControl extends IDEE.Control {
     return new Promise((success, fail) => {
       const html = IDEE.template.compileSync(template, {
         vars: {
-          showTitle: this.position !== 'TC',
           byParcelCadastre: this.byParcelCadastre_,
           byPlaceAddressPostal: this.searchOptions_,
           translations: {
@@ -142,9 +133,6 @@ export default class LocatorscnControl extends IDEE.Control {
         this.ignsearchControl.on('ignsearchlocatorscn:entityFound', (extent) => {
           this.fire('ignsearchlocatorscn:entityFound', [extent]);
         });
-      }
-      if (this.isDraggable_) {
-        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-locatorscn-title');
       }
       this.accessibilityTab(html);
       success(html);

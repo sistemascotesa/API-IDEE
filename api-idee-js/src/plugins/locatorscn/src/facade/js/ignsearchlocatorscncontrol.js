@@ -176,7 +176,7 @@ export default class IGNSearchLocatorscnControl extends IDEE.Control {
   initializateAddress(html) {
     if ((this.locationID && this.locationID.length > 0) || (this.requestStreet
         && this.requestStreet.length > 0)
-        || (this.geocoderCoords && this.geocoderCoords.length === 2)) {
+        || (this.peliasCoords && this.peliasCoords.length === 2)) {
       this.active(html);
     }
     if (this.locationID && this.locationID.length > 0) {
@@ -192,8 +192,8 @@ export default class IGNSearchLocatorscnControl extends IDEE.Control {
       }).catch();
       // IDEE.proxy(this.statusProxy);
     }
-    if (this.geocoderCoords && this.geocoderCoords.length === 2) {
-      const reprojCoords = this.getImpl().reproject('EPSG:4326', this.geocoderCoords);
+    if (this.peliasCoords && this.peliasCoords.length === 2) {
+      const reprojCoords = this.getImpl().reproject('EPSG:4326', this.peliasCoords);
       this.showReversePopUp({
         coord: reprojCoords,
         fake: true,
@@ -213,10 +213,6 @@ export default class IGNSearchLocatorscnControl extends IDEE.Control {
     this.html_ = html;
     const ignsearchactive = this.html_.querySelector('#m-locatorscn-ignsearch').classList.contains('activated');
     if (!ignsearchactive) {
-      if (this.positionPlugin === 'TC') {
-        document.querySelector('.m-plugin-locatorscn').classList.remove('m-plugin-locatorscn-tc');
-        document.querySelector('.m-plugin-locatorscn').classList.add('m-plugin-locatorscn-tc-withpanel');
-      }
       this.html_.querySelector('#m-locatorscn-ignsearch').classList.add('activated');
       const panel = IDEE.template.compileSync(template, {
         vars: {
@@ -229,7 +225,7 @@ export default class IGNSearchLocatorscnControl extends IDEE.Control {
           },
         },
       });
-      document.querySelector('#div-contenedor-locatorscn').appendChild(panel);
+      this.html_.appendChild(panel);
       this.resultsBox = this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocatorscn-results');
       this.searchInput = this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocatorscn-search-input');
       this.addEvents();
@@ -361,13 +357,18 @@ export default class IGNSearchLocatorscnControl extends IDEE.Control {
         if (res.text) {
           const returnData = JSON.parse(res.text);
           const { features } = returnData;
+          if (!features || features.length === 0) {
+            IDEE.toast.warning(getValue('exception.noresults'));
+            return;
+          }
           addressData = this.parsePeliasToGeocoder(features[0]);
-          // fullAddress = this.createFullAddress(addressData);
-        } else {
-          addressData = {};
-          // fullAddress = '';
         }
-        this.showPopUp(addressData, mapCoordinates, dataCoordinates, null, e, false);
+        if (isPeliasCoords && addressData.geom) {
+          this.createGeometryStyles();
+          this.drawPeliasResult(addressData);
+        } else {
+          this.showPopUp(addressData, mapCoordinates, dataCoordinates, null, e, false);
+        }
       });
       // IDEE.proxy(this.statusProxy);
     }
@@ -753,6 +754,7 @@ export default class IGNSearchLocatorscnControl extends IDEE.Control {
       } else {
         const extent = this.clickedElementLayer.getImpl().getLayer().getSource().getExtent();
         this.map.setBbox(extent);
+        this.map.setZoom(zoom);
         this.fire('ignsearchlocatorscn:entityFound', [extent]);
       }
 

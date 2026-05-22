@@ -11,12 +11,7 @@
       "type": "simple",
       "name": "position",
       "position": 0,
-      "possibleValues": [
-        "TL",
-        "TR",
-        "BR",
-        "BL"
-      ]
+      "possibleValues": ["left", "right"]
     },
     {
       "type": "boolean",
@@ -24,8 +19,8 @@
       "position": 1
     },
     {
-      "type": "boolean",
-      "name": "collapsible",
+      "type": "number",
+      "name": "order",
       "position": 2
     },
     {
@@ -42,11 +37,6 @@
       "type": "simple",
       "name": "pointStyle",
       "position": 5
-    },
-    {
-      "type": "boolean",
-      "name": "isDraggable",
-      "position": 6
     },
     {
       "type": "boolean",
