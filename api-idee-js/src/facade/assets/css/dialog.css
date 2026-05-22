@@ -97,7 +97,7 @@
 
 .m-dialog.info div.m-title {
    font-size: 16px;
-   color: var(--idee-color-primary);
+   color: var(--idee-color-primary-dark);
 }
 
 .m-dialog.info div.m-button>button {

@@ -15,7 +15,7 @@ import en from './i18n/en';
  * @property {enum<string>} [position='right']? Position of the view plugin.
  * Allowed values: 'left | right'.
  * @property {string} [title='Compartir URL']? The title of the plugin modal.
- * @property {string} [btn='OK']? The button text which close the modal plugin.
+ * @property {string} [btn='Aceptar']? The button text which close the modal plugin.
  * @property {string} [copyBtn='Copiar']? The button text which copy the url of shared map.
  * @property {StyleOptions} [styles={}]? The object with the information about primary color
  * and secondary color.
@@ -90,11 +90,6 @@ export default class ShareMap extends IDEE.Plugin {
      */
     this.name = 'sharemap';
 
-    if (IDEE.utils.isNullOrEmpty(options.baseUrl)) {
-      // eslint-disable-next-line no-console
-      console.warn('options.baseUrl is null or undefined.');
-    }
-
     /**
      * Base url of the shared map
      *
@@ -129,7 +124,7 @@ export default class ShareMap extends IDEE.Plugin {
      * @private
      * @type {String}
      */
-    this.btn_ = options.btn || 'OK';
+    this.btn_ = options.btn || getValue('accept');
 
     /**
      * Text of the button with which copy the url of shared map
