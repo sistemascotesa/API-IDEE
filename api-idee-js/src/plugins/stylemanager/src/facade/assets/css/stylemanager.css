@@ -86,7 +86,7 @@ label.check-inactive+label {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    +padding-right: 0px;
+    padding-right: 0px;
     line-height: 40px;
 }
 

@@ -61,7 +61,6 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **utmDecimalDigits**. Cifras decimales para proyecciones UTM.
 - **activeZ**. Activar visualización valor z. Por defecto: false
 - **helpUrl**. URL a la ayuda para el icono.
-- **draggableDialog**. Permite mover el dialog por la pantalla. Por defecto: true.
 - **mode**. Tipo de servicio para la obtención de valor z. Posibles valores: wcs, ogcapicoverage. Por defecto: wcs
 - **coveragePrecissions**. Lista de JSON con las urls de los coverage junto con los niveles de zoom en los que se utilizan (sólo válido con mode ogcapicoverage).
   - **url**. Url blob del coverage.
@@ -86,7 +85,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 # API-REST
 
 ```javascript
-URL_API?mousesrs=position*order*tooltip*srs*label*precision*geoDecimalDigits*utmDecimalDigits*activeZ*helpUrl*draggableDialog*epsgFormat*mode*coveragePrecissions
+URL_API?mousesrs=tooltip*srs*label*precision*geoDecimalDigits*utmDecimalDigits*activeZ*helpUrl*epsgFormat
 ```
 
 <table>

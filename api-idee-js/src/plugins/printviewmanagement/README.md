@@ -126,24 +126,25 @@ El constructor se inicializa con un JSON con los siguientes atributos:
     ],
 
   ```
-  - **defaultDpiOptions**: Array de niveles de DPI a elegir por el usuario. Por defecto [72, 150, 300].
+  - **defaultDpiOptions**: Array de niveles de DPI a elegir por el usuario. Por defecto [96, 150, 300].
 - **georefImage**: Indica si el control "Impresión de imagen (desde servidor o desde cliente)" se añade al plugin (true/false). Por defecto: true.
   - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Impresión del mapa.
   - **printSelector**: Añade los dos modos de impresión (true/false). Por defecto: true.
   - **printType**: Define el modo de impresión (client/server), es necesario que printSelector tenga valor false.
-  - **defaultDpiOptions**: Array de niveles de DPI a elegir por el usuario. Por defecto [72, 150, 300].
+  - **defaultDpiOptions**: Array de niveles de DPI a elegir por el usuario. Por defecto [96, 150, 300].
 - **printermap**:  Indica si el control "Impresión de imagen con plantilla" se añade al plugin (true/false). Por defecto: true.
   - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Impresión del mapa.
   - **filterTemplates**: Listado de rutas realtivas o absolutas de las cuales se obtendrán cada una de las plantillas a elegir en el modo de impresión. Por defecto:
   ```JavaScript
   "filterTemplates": [
-    "https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html",
-    "https://componentes.idee.es/estaticos/plantillas/html/templateConCabeceraYBorde.html",
-    "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html",
+    "https://componentes.idee.es/estaticos/plantillas/html/mapaConMarco.html",
+    "https://componentes.idee.es/estaticos/plantillas/html/mapaConCabeceraYMarco.html",
+    "https://componentes.idee.es/estaticos/plantillas/html/mapaConPieYMarco.html",
     ],
   ```
+  - **defaultOpenControl**: Indica el control que aparecerá abierto al inicio. Por defecto: 1.
   - **showDefaultTemplate**: Si se quiere mostrar la opción de elegir la plantilla por defecto que tiene el plugin asignado. Por defecto: false.
-  - **defaultDpiOptions**: Valores DPI a elegir en el modo de impresión. Por defecto 72, 150 y 300.
+  - **defaultDpiOptions**: Valores DPI a elegir en el modo de impresión. Por defecto 96, 150 y 300.
   - **layoutsRestraintFromDpi**: Plantillas en las que no se puede elegir el DPI debido al esfuerzo computaciona. Por defecto no se puede en A2, A1, A0 y tamaño pantalla.
 
 # Uso de plantilla personalizada
@@ -156,20 +157,7 @@ Para crear una plantilla personalizada para el plugin de impresión, se deben de
 
 2. **Adaptación dinámica de estilos**: La creación de estilos CSS debe de tener en cuenta que los elementos de la plantilla deben adaptarse dinámicamente al contenedor principal según los elementos activos o inactivos. Asegúrarse de probar diferentes configuraciones para verificar la adaptabilidad de los elementos.
 
-3. **Propiedades CSS no soportadas**: La librería de exportación html2canvas no admite ciertas propiedades CSS. Evitar usar las siguientes:
-   - `background-blend-mode`
-   - `border-image`
-   - `box-decoration-break`
-   - `box-shadow`
-   - `filter`
-   - `font-variant-ligatures`
-   - `mix-blend-mode`
-   - `object-fit`
-   - `repeating-linear-gradient()`
-   - `writing-mode`
-   - `zoom`
-
-4. **Identificación de elementos editables**: Para que el plugin reconozca los elementos que pueden activarse o desactivarse, debe de añadirse el atributo `data-type` a los elementos correspondientes. Este atributo debe tener uno de los siguientes valores:
+3. **Identificación de elementos editables**: Para que el plugin reconozca los elementos que pueden activarse o desactivarse, debe de añadirse el atributo `data-type` a los elementos correspondientes. Este atributo debe tener uno de los siguientes valores:
    - `api-idee-template-titulo`
    - `api-idee-template-texto-libre`
    - `api-idee-template-leyenda`
@@ -184,16 +172,16 @@ Para crear una plantilla personalizada para el plugin de impresión, se deben de
 
    El elemento texto-libre es un elemento genérico, es decir, se puede introducir en la plantilla tantos elementos texto-libre como sea necesario. Para poder diferenciarlos, ademas del atributo `data-type`, es necesario añadirles el atributo `data-type-name`, el cual se usará internamente para diferenciar los elementos texto-libre. Este atributo puede tener el valor que se desee, aunque hay que tener precaución para que el valor no coincida con otro valor ya asignado a un atributo `data-type-name`.
 
-5. **Uso de imágenes**: Evitar el formato SVG, ya que la librería html2canvas no lo soporta correctamente al exportar. Debe de utilizarse formatos como PNG, JPG o JPEG para las imágenes incluidas en la plantilla.
+4. **Uso de imágenes**: Evitar el formato SVG, ya que la librería html2canvas no lo soporta correctamente al exportar. Debe de utilizarse formatos como PNG, JPG o JPEG para las imágenes incluidas en la plantilla.
 
-6. **Diseño de bordes**: Si se desea incluir un borde alrededor del mapa, asegurarse de crear un contenedor con el `id="imagen-mascara"`. Este contenedor es obligatorio, ya que el plugin insertará la previsualización del mapa dentro de él. Ejemplo:
+5. **Diseño de bordes**: Si se desea incluir un borde alrededor del mapa, asegurarse de crear un contenedor con el `id="imagen-mascara"`. Este contenedor es obligatorio, ya que el plugin insertará la previsualización del mapa dentro de él. Ejemplo:
   ```html
   <div class="interior-container" data-type="api-idee-template-borde">
       <div class="cell imagen-mascara" id="imagen-mascara"></div>
   </div>
   ```
 
-7. **Contenedor principal**: El contenedor raíz de la plantilla debe tener el `id="api-idee-template-container"` para garantizar su correcto funcionamiento.
+6. **Contenedor principal**: El contenedor raíz de la plantilla debe tener el `id="api-idee-template-container"` para garantizar su correcto funcionamiento.
 Ejemplo:
   ```html
   <div class="api-idee-template-container" id="api-idee-template-container">
@@ -363,12 +351,12 @@ IDEE.utils.encodeBase64(obj_params);
         legend: 'Imagen (PNOA) ETRS89 UTM',
       },
     ],
-    defaultDpiOptions: [72, 150, 300],
+    defaultDpiOptions: [96, 150, 300],
   },
   georefImage: {
     tooltip: 'Georeferenciar imagen',
     printSelector: true,
-    defaultDpiOptions: [72, 150, 300],
+    defaultDpiOptions: [96, 150, 300],
   },
   printermap: true,
   defaultOpenControl: 3
@@ -426,22 +414,22 @@ const mp = new IDEE.plugin.PrintViewManagement({
         // EPSG: 'EPSG:4258',
       },
     ],
-    defaultDpiOptions: [72, 150, 300],
+    defaultDpiOptions: [96, 150, 300],
   },
   georefImage: {
     tooltip: 'Georeferenciar imagen',
     printSelector: false,
     printType: 'client',
-    defaultDpiOptions: [72, 150, 300],
+    defaultDpiOptions: [96, 150, 300],
   },
   printermap: {
     filterTemplates: [
-      "https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html",
-      "https://componentes.idee.es/estaticos/plantillas/html/templateConCabeceraYBorde.html",
-      "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html",
+      "https://componentes.idee.es/estaticos/plantillas/html/mapaConMarco.html",
+      "https://componentes.idee.es/estaticos/plantillas/html/mapaConCabeceraYMarco.html",
+      "https://componentes.idee.es/estaticos/plantillas/html/mapaConPieYMarco.html",
     ],
     showDefaultTemplate: true,
-    defaultDpiOptions: [72, 150, 300],
+    defaultDpiOptions: [96, 150, 300],
     layoutsRestraintFromDpi: ['screensize', 'A0', 'A1', 'A2'],
   },
 });

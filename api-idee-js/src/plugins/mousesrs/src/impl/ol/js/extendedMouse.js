@@ -111,14 +111,14 @@ class Mouse extends ol.control.MousePosition {
         ];
 
         this.wcsloadermanager.addLayers(layers);
-        map.getMapImpl().on('moveend', () => {
-          this.updateDataGrid(map);
-        });
+
+        this.onMoveEndWCS_ = () => this.updateDataGrid(map);
+        map.getMapImpl().on('moveend', this.onMoveEndWCS_);
       } else if (this.mode_ === 'ogcapicoverage') {
         this.updateOGCApiCoverage(map);
-        map.getMapImpl().on('moveend', () => {
-          this.updateOGCApiCoverage(map);
-        });
+
+        this.onMoveEndOGC_ = () => this.updateOGCApiCoverage(map);
+        map.getMapImpl().on('moveend', this.onMoveEndOGC_);
       }
     }
   }
@@ -212,6 +212,22 @@ class Mouse extends ol.control.MousePosition {
    * @export
    */
   destroy() {
+    const olMap = this.facadeMap_.getMapImpl();
+    if (olMap) {
+      if (this.onMoveEndWCS_) {
+        olMap.un('moveend', this.onMoveEndWCS_);
+        this.onMoveEndWCS_ = null;
+      }
+      if (this.onMoveEndOGC_) {
+        olMap.un('moveend', this.onMoveEndOGC_);
+        this.onMoveEndOGC_ = null;
+      }
+    }
+
+    if (this.wcsloadermanager) {
+      this.wcsloadermanager = null;
+    }
+
     const coverage = this.facadeMap_.getLayers()
       .find((l) => l.name === COVERAGE_NAME);
     this.facadeMap_.removeLayers(coverage);

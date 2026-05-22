@@ -38,19 +38,15 @@ Ejemplo:
 El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **position**: Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha (por defecto).
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha.
+  - 'left': (top left) - Arriba a la izquierda.
+  - 'right': (top right) - Arriba a la derecha (por defecto).
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
-- **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
 - **tooltip**. Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: 'Plantilla plugin'
-- **draggable**. Indica si el plugin puede arrastrarse.
 
 # API-REST
 
 ```javascript
-URL_API?basic=position*collapsed*collapsible*tooltip*draggable
+URL_API?basic=position*collapsed*tooltip
 ```
 
 <table>
@@ -66,11 +62,6 @@ URL_API?basic=position*collapsed*collapsible*tooltip*draggable
   </tr>
   <tr>
     <td>collapsed</td>
-    <td>true/false</td>
-    <td>Base64 ✔️ | Separador ✔️</td>
-  </tr>
-  <tr>
-    <td>collapsible</td>
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>

@@ -64,7 +64,7 @@ export default class Locator extends IDEE.Plugin {
      * @type {Boolean|Object}
      */
     this.byParcelCadastre = IDEE.utils.isUndefined(options.byParcelCadastre)
-      ?? options.byParcelCadastre === true
+      || options.byParcelCadastre === true
       ? this.getInfoCatastro()
       : options.byParcelCadastre;
 
@@ -74,7 +74,8 @@ export default class Locator extends IDEE.Plugin {
      * @type {Boolean|Object}
      */
     this.byCoordinates = IDEE.utils.isUndefined(options.byCoordinates)
-      ?? options.byCoordinates === true ? this.getXYLocator() : options.byCoordinates;
+      || options.byCoordinates === true
+      ? this.getXYLocator() : options.byCoordinates;
 
     /**
      * Indicates if the control ignsearchlocator is added to the plugin
@@ -82,7 +83,7 @@ export default class Locator extends IDEE.Plugin {
      * @type {Boolean|Object}
      */
     this.byPlaceAddressPostal = IDEE.utils.isUndefined(options.byPlaceAddressPostal)
-      ?? options.byPlaceAddressPostal === true
+      || options.byPlaceAddressPostal === true
       ? this.getIGNSearchLocator()
       : options.byPlaceAddressPostal;
 
@@ -127,7 +128,7 @@ export default class Locator extends IDEE.Plugin {
   addTo(map) {
     this.map = map;
 
-    this.button = new IDEE.ui.Button(this.name, {
+    this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: this.svgPath,
@@ -135,7 +136,7 @@ export default class Locator extends IDEE.Plugin {
     });
     map.addButtons(this.button);
 
-    this.panel = new IDEE.ui.Panel(this.name, {
+    this.panel = new IDEE.ui.panels.PluginSidePanel(this.name, {
       tooltip: this.tooltip,
       position: this.position,
       minWidth: this.minPanelWidth,

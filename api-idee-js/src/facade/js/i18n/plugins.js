@@ -52,17 +52,9 @@ import enMapfooter from '../../../plugins/mapfooter/src/facade/js/i18n/en';
 import esMagnify from '../../../plugins/magnify/src/facade/js/i18n/es';
 import enMagnify from '../../../plugins/magnify/src/facade/js/i18n/en';
 
-// Measurebar
-import esMeasurebar from '../../../plugins/measurebar/src/facade/js/i18n/es';
-import enMeasurebar from '../../../plugins/measurebar/src/facade/js/i18n/en';
-
 // Mousesrs
 import esMousesrs from '../../../plugins/mousesrs/src/facade/js/i18n/es';
 import enMousesrs from '../../../plugins/mousesrs/src/facade/js/i18n/en';
-
-// Overviewmap
-import esOverviewmap from '../../../plugins/overviewmap/src/facade/js/i18n/es';
-import enOverviewmap from '../../../plugins/overviewmap/src/facade/js/i18n/en';
 
 // Printviewmanagement
 import esPrintviewmanagement from '../../../plugins/printviewmanagement/src/facade/js/i18n/es';
@@ -87,10 +79,6 @@ import enSharemap from '../../../plugins/sharemap/src/facade/js/i18n/en';
 // Sharemap
 import esStylemanager from '../../../plugins/stylemanager/src/facade/js/i18n/es';
 import enStylemanager from '../../../plugins/stylemanager/src/facade/js/i18n/en';
-
-// Timeline
-import esTimeline from '../../../plugins/timeline/src/facade/js/i18n/es';
-import enTimeline from '../../../plugins/timeline/src/facade/js/i18n/en';
 
 // Viewmanagement
 import esViewmanagement from '../../../plugins/viewmanagement/src/facade/js/i18n/es';
@@ -173,17 +161,9 @@ const pluginsLanguage = {
     esMagnify,
     enMagnify,
   },
-  measurebar: {
-    esMeasurebar,
-    enMeasurebar,
-  },
   mousesrs: {
     esMousesrs,
     enMousesrs,
-  },
-  overviewmap: {
-    esOverviewmap,
-    enOverviewmap,
   },
   printviewmanagement: {
     esPrintviewmanagement,
@@ -210,10 +190,6 @@ const pluginsLanguage = {
   stylemanager: {
     esStylemanager,
     enStylemanager,
-  },
-  timeline: {
-    esTimeline,
-    enTimeline,
   },
   viewmanagement: {
     esViewmanagement,

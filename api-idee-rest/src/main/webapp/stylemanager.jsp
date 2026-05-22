@@ -15,6 +15,7 @@
     <link href="plugins/stylemanager/stylemanager.ol.min.css" rel="stylesheet" />
     <link href="plugins/vectors/vectors.ol.min.css" rel="stylesheet" />
     <link href="plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
+    <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
     <style type="text/css">
         html,
         body {
@@ -88,6 +89,7 @@
     <script type="text/javascript" src="plugins/stylemanager/stylemanager.ol.min.js"></script>
     <script type="text/javascript" src="plugins/vectors/vectors.ol.min.js"></script>
     <script type="text/javascript" src="plugins/layerswitcher/layerswitcher.ol.min.js"></script>
+    <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
     <%
             String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
             for (int i = 0; i < jsfiles.length; i++) {
@@ -285,6 +287,11 @@
         removeButton.addEventListener('click', () => { remove(); });
 
         changeTest();
+        const mp2 = new IDEE.plugin.ShareMap({
+            baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
+            position: "left",
+        });
+        map.addPlugin(mp2);
     </script>
 </body>
 

@@ -1,0 +1,53 @@
+@layer base {
+
+    .m-api-idee-container .m-overviewmap-button,
+    .m-api-idee-container .m-control-button {
+        z-index: 2;
+        cursor: pointer;
+        height: 40px;
+        aspect-ratio: 1;
+        color: var(--idee-color-white);
+        background-color: var(--idee-color-primary);
+        border: 2px solid var(--idee-color-white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+    }
+
+    .m-api-idee-container .m-overviewmap-button:hover,
+    .m-api-idee-container .m-control-button:hover {
+        border: 2px solid var(--idee-color-white) !important;
+        background-color: var(--idee-color-links);
+        transition: all 0.3s ease;
+    }
+
+    .m-api-idee-container .m-overviewmap-button:focus,
+    .m-api-idee-container .m-control-button:focus {
+        outline: none;
+    }
+
+    .m-api-idee-container .m-overviewmap-button.active,
+    .m-api-idee-container .m-control-button.active {
+        border: 2px solid var(--idee-color-white);
+        color: var(--idee-color-white);
+        background-color: var(--idee-color-primary-dark);
+        transition: all 0.3s ease;
+    }
+
+    .m-api-idee-container .m-button svg,
+    .m-api-idee-container .m-overviewmap-button svg,
+    .m-api-idee-container .m-control-button svg {
+        height: 24px;
+        width: 24px;
+        transition: transform 0.3s ease;
+    }
+
+    .m-api-idee-container .m-button.active svg,
+    .m-api-idee-container .m-overviewmap-button.active svg {
+        transition: transform 0.3s ease;
+    }
+}

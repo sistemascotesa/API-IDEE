@@ -617,8 +617,8 @@ Todo: see can i use and delete this commet */
     justify-content: center;
 }
 
-#m-viewhistory-panel,
-#m-zoompanel-panel {
+#div-contenedor-comparators #m-viewhistory-panel,
+#div-contenedor-comparators #m-zoompanel-panel {
     background-color: var(--idee-color-neutral-20);
     border-top: 1px solid var(--idee-color-neutral-60);
     padding: 10px;
@@ -626,7 +626,7 @@ Todo: see can i use and delete this commet */
     width: 230px;
 }
 
-#m-predefinedzoom-panel {
+#div-contenedor-comparators #m-predefinedzoom-panel {
     background-color: var(--idee-color-neutral-20);
     border-top: 1px solid var(--idee-color-neutral-60);
     padding: 5px;
@@ -635,11 +635,11 @@ Todo: see can i use and delete this commet */
     width: 240px;
 }
 
-#m-historyprevious-button,
-#m-historynext-button,
-#m-zoompanel-zoomin,
-#m-zoompanel-zoomout,
-#m-predefinedzoom-panel .comparators-icon-expand {
+#div-contenedor-comparators #m-historyprevious-button,
+#div-contenedor-comparators #m-historynext-button,
+#div-contenedor-comparators #m-zoompanel-zoomin,
+#div-contenedor-comparators #m-zoompanel-zoomout,
+#div-contenedor-comparators #m-predefinedzoom-panel .comparators-icon-expand {
     border: none;
     background-color: transparent;
     font-size: 22px;

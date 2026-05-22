@@ -3,49 +3,6 @@
     width: 40px;
 }
 
-div.m-areas>div.m-area>div.m-panel-modal.opened {
-    display: flex;
-    position: fixed;
-    margin: auto;
-    background-color: white;
-    border: 1px solid #d3d3d3;
-    border-radius: 5px;
-    top: calc(50vh - 250px);
-    left: calc(50vw - 250px);
-}
-
-/* Opening/closing buttons */
-
-.m-areas>div.m-area>div.m-panel.m-panel-modal.collapsed>button.m-panel-btn {
-    background-color: #71a7d3 !important;
-    color: white;
-}
-
-.m-areas>div.m-area>div.m-panel.m-panel-modal.collapsed>button.m-panel-btn:disabled {
-    background-color: #acacac !important;
-}
-
-.m-areas>div.m-area>div.m-panel.m-panel-modal.opened>button.m-panel-btn {
-    color: #71a7d3;
-    position: fixed;
-    left: calc(50vw + 210px);
-    top: inherit;
-    right: 0 !important;
-    box-shadow: none;
-    z-index: 9999;
-}
-
-.m-areas>div.m-area>div.m-panel.m-panel-modal.opened>button.m-panel-btn:before {
-    content: "\2716";
-    font-weight: bolder;
-    font-family: Arial;
-    font-size: 1rem;
-}
-
-.m-areas>div.m-area>div.m-panel.m-panel-modal.collapsed>.m-panel-controls>.m-modal {
-    display: block;
-}
-
 .m-modal::after,
 .m-modal::before {
     content: none;
@@ -131,56 +88,8 @@ div.m-areas>div.m-area>div.m-panel-modal.opened {
     border: 0 !important;
 }
 
-.m-areas>div.m-area>div.m-panel.m-panel-modal.opened>button.m-panel-btn {
-    left: auto !important;
-    right: 0;
-    position: absolute !important;
-    float: none;
-    top: 0 !important;
-    cursor: pointer;
-}
-
-div.m-areas>div.m-area>div.m-panel-modal.opened {
-    position: fixed !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    height: auto !important;
-    z-index: 999999;
-}
-
 div#popup-box {
     max-height: calc(100vh - 175px) !important;
-}
-
-@media (max-width: 600px) {
-    .m-areas>div.m-area>div.m-panel.m-panel-modal.opened {
-        z-index: 999999999999;
-    }
-
-    .m-areas>div.m-area>div.m-panel.m-panel-modal.opened div#popup-box {
-        position: relative !important;
-        top: 0 !important;
-        padding: 0 20px;
-        margin: 30px 0 20px !important;
-        overflow-y: auto;
-        height: calc(100vh - 40px);
-        width: calc(100vw - 40px);
-        left: 0 !important;
-        background-color: #fff;
-        border-radius: 5px;
-    }
-
-    .m-areas>div.m-area>div.m-panel.m-panel-modal.opened div#popup-box>div.popup-section img {
-        height: auto !important;
-        width: -webkit-fill-available !important;
-    } 
-
-    div.m-areas>div.m-area>div.m-panel.m-panel-modal.opened>button.m-panel-btn {
-        top: 0px !important;
-        left: 50vw;
-        z-index: 9999;
-    }
 }
 
 /******/
@@ -303,6 +212,6 @@ div#popup-box {
     filter: brightness(1.1);
 }
 
-.m-plugin-button {
+.m-overviewmap-button {
     cursor: pointer;
 }

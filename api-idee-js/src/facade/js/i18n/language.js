@@ -57,7 +57,6 @@ export const getTranslation = (lang) => {
       .esInfocoordinates;
     configuration.translations[lang].information = pluginsLanguage.information.esInformation;
     configuration.translations[lang].layerswitcher = pluginsLanguage.layerswitcher.esLayerswitcher;
-    configuration.translations[lang].measurebar = pluginsLanguage.measurebar.esMeasurebar;
     configuration.translations[lang].mousesrs = pluginsLanguage.mousesrs.esMousesrs;
     configuration.translations[lang].printviewmanagement = pluginsLanguage.printviewmanagement
       .esPrintviewmanagement;
@@ -68,7 +67,6 @@ export const getTranslation = (lang) => {
     configuration.translations[lang].selectionzoom = pluginsLanguage.selectionzoom.esSelectionzoom;
     configuration.translations[lang].sharemap = pluginsLanguage.sharemap.esSharemap;
     configuration.translations[lang].stylemanager = pluginsLanguage.stylemanager.esStylemanager;
-    configuration.translations[lang].timeline = pluginsLanguage.timeline.esTimeline;
     configuration.translations[lang].viewmanagement = pluginsLanguage.viewmanagement
       .esViewmanagement;
     configuration.translations[lang].locator = pluginsLanguage.locator.esLocator;
@@ -92,7 +90,6 @@ export const getTranslation = (lang) => {
       .enInfocoordinates;
     configuration.translations[lang].information = pluginsLanguage.information.enInformation;
     configuration.translations[lang].layerswitcher = pluginsLanguage.layerswitcher.enLayerswitcher;
-    configuration.translations[lang].measurebar = pluginsLanguage.measurebar.enMeasurebar;
     configuration.translations[lang].mousesrs = pluginsLanguage.mousesrs.enMousesrs;
     configuration.translations[lang].printviewmanagement = pluginsLanguage.printviewmanagement
       .enPrintviewmanagement;
@@ -105,7 +102,6 @@ export const getTranslation = (lang) => {
     configuration.translations[lang].selectionzoom = pluginsLanguage.selectionzoom.enSelectionzoom;
     configuration.translations[lang].sharemap = pluginsLanguage.sharemap.enSharemap;
     configuration.translations[lang].stylemanager = pluginsLanguage.stylemanager.enStylemanager;
-    configuration.translations[lang].timeline = pluginsLanguage.timeline.enTimeline;
     configuration.translations[lang].viewmanagement = pluginsLanguage.viewmanagement
       .enViewmanagement;
     configuration.translations[lang].locator = pluginsLanguage.locator.enLocator;

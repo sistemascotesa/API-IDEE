@@ -151,7 +151,6 @@
         ];
 
         let mp = null;
-        let mp2 = null;
 
         const createPlugin = (options) => {
             mp = new IDEE.plugin.SelectionZoom(options);
@@ -204,11 +203,11 @@
         });
 
         updatePlugin();
-        /* mp2 = new IDEE.plugin.ShareMap({
+        const mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "left",
         });
-        map.addPlugin(mp2); */
+        map.addPlugin(mp2);
     </script>
 </body>
 

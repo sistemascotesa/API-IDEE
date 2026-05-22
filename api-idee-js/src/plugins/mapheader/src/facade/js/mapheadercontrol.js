@@ -32,6 +32,8 @@ export default class MapheaderControl extends IDEE.Control {
     this.cssList = (IDEE.utils.isArray(this.config.cssList) ? this.config.cssList : this.config.cssList.split(',')).map((s) => s.trim());
     this.injectCSS(this.cssList);
     this.templateVars = { vars: { htmlCode: this.htmlCode } };
+    /** @type {number} altura del panel mapheader (px). 0 hasta primera medición. */
+    this.panelHeight = 0;
   }
 
   /**
@@ -100,109 +102,96 @@ export default class MapheaderControl extends IDEE.Control {
 
   // Add your own functions
   injectCSS(cssList) {
-    for (let index = 0; index < cssList.length; index += 1) {
-      const cssFile = cssList[index];
+    cssList.forEach((cssFile) => {
       const link = document.createElement('link');
       link.href = cssFile;
       link.rel = 'stylesheet';
       link.addEventListener('load', () => {
-        if (this.opened) {
-          this.checkHeaderheight();
-        }
+        this.checkHeaderheight();
       });
       link.media = 'screen';
       document.getElementsByTagName('head')[0].appendChild(link);
-    }
+    });
   }
 
   addEvents() {
-    setTimeout(() => {
-      if (this.opened) {
-        this.checkHeaderheight();
-      } else {
-        this.setTopMargin(false);
-      }
+    this.checkHeaderheight();
 
-      // Selector del botón del panel mapheader
-      const panelMapheader = document.querySelector('div.m-panel.m-mapheader');
-      const btnMapHeader = panelMapheader ? panelMapheader.querySelector('button.m-panel-btn') : null;
+    // Selector del botón del panel mapheader
+    const panelMapheader = document.querySelector('div.m-panel.m-mapheader');
+    const btnMapHeader = panelMapheader ? panelMapheader.querySelector('button.m-panel-btn') : null;
+    if (!btnMapHeader) {
+      return;
+    }
 
-      if (btnMapHeader) {
-        btnMapHeader.title = this.opened ? getValue('hideheader') : getValue('showheader');
-        btnMapHeader.addEventListener('click', () => {
-          if (this.opened) {
-            btnMapHeader.title = getValue('showheader');
-            this.opened = false;
-            this.setTopMargin(false);
-          } else {
-            btnMapHeader.title = getValue('hideheader');
-            this.opened = true;
-            this.checkHeaderheight();
-            this.setTopMargin(true);
-          }
-        });
-      }
-    }, 0);
+    btnMapHeader.title = this.opened ? getValue('hideheader') : getValue('showheader');
+    btnMapHeader.addEventListener('click', () => {
+      this.opened = !this.opened;
+      btnMapHeader.title = this.opened ? getValue('hideheader') : getValue('showheader');
+      this.checkHeaderheight();
+    });
   }
 
   checkHeaderheight() {
-    let bottomElements = document.querySelectorAll('div.m-top');
-    if (document.querySelectorAll('div.m-panel.m-mapheader').length > 0) {
-      this.panelHeight = document.querySelectorAll('div.m-panel.m-mapheader')[0].clientHeight;
-      const button = document.querySelectorAll('div.m-panel.m-mapheader>button')[0];
-      if (button) {
-        button.style.setProperty('top', `${this.panelHeight}px`, 'important');
-      }
+    const panel = document.querySelector('div.m-panel.m-mapheader');
+    if (panel) {
+      this.panelHeight = panel.clientHeight;
     }
-    for (let index = 0; index < bottomElements.length; index += 1) {
-      const element = bottomElements[index];
-      if (element.classList.contains('m-left')) {
-        element.style.marginTop = `${this.panelHeight + 30}px`;
-      }
-    }
-    bottomElements = document.querySelectorAll('div.m-top.m-right')[0].childNodes;
-
-    for (let index = 0; index < bottomElements.length; index += 1) {
-      const element = bottomElements[index];
-      if (!element.classList.contains('m-mapheader')) {
-        element.style.setProperty('margin-top', `${this.panelHeight + 10}px`, 'important');
-      }
-    }
+    this.setTopMargin(this.opened);
   }
 
   setTopMargin(opened) {
-    const button = document.querySelectorAll('div.m-panel.m-mapheader>button')[0];
-    if (button) {
-      if (opened) {
-        button.style.setProperty('top', `${this.panelHeight}px`, 'important');
-      } else {
-        button.style.removeProperty('top');
-      }
-    }
+    const ph = this.panelHeight || 0;
+    this.applyButtonOffset(opened, ph);
+    this.applyTopLeftMargin(opened, ph);
+    this.applyHeaderContainerVisibility(opened);
+    this.applyTopRightSiblingsMargin(opened, ph);
+  }
 
-    let bottomElements = document.querySelectorAll('div.m-top');
-    for (let index = 0; index < bottomElements.length; index += 1) {
-      const element = bottomElements[index];
-      if (element.classList.contains('m-left')) {
-        if (opened) {
-          element.style.marginTop = `${this.panelHeight + 30}px`;
-        } else {
-          element.style.marginTop = '30px';
-        }
-      }
+  applyButtonOffset(opened, ph) {
+    const button = document.querySelector('div.m-panel.m-mapheader>button');
+    if (!button) {
+      return;
     }
-    bottomElements = document.querySelectorAll('div.m-top.m-right')[0].childNodes;
-    for (let index = 0; index < bottomElements.length; index += 1) {
-      const element = bottomElements[index];
-      if (!element.classList.contains('m-mapheader')) {
-        if (opened) {
-          element.style.setProperty('margin-top', `${this.panelHeight + 10}px`, 'important');
-          document.getElementById('div-contenedor').style.display = 'block';
-        } else {
-          element.style.setProperty('margin-top', '10px', 'important');
-          document.getElementById('div-contenedor').style.display = 'none';
-        }
-      }
+    if (opened) {
+      button.style.setProperty('top', `${ph}px`, 'important');
+    } else {
+      button.style.removeProperty('top');
     }
+  }
+
+  applyTopLeftMargin(opened, ph) {
+    const topLeft = document.querySelector('div.m-area.m-top.m-left');
+    if (topLeft) {
+      topLeft.style.marginTop = opened ? `${ph + 30}px` : '30px';
+    }
+  }
+
+  applyHeaderContainerVisibility(opened) {
+    const panel = document.querySelector('div.m-panel.m-mapheader');
+    if (!panel) {
+      return;
+    }
+    const headerContainer = panel.querySelector('#div-contenedor, .m-control.m-container.m-mapheader');
+    if (headerContainer) {
+      headerContainer.style.display = opened ? 'block' : 'none';
+    }
+  }
+
+  applyTopRightSiblingsMargin(opened, ph) {
+    const topRight = document.querySelector('div.m-area.m-top.m-right');
+    if (!topRight) {
+      return;
+    }
+    const firstMargin = opened ? `${ph + 10}px` : '10px';
+    let firstApplied = false;
+    Array.from(topRight.children).forEach((element) => {
+      if (!element.classList || element.classList.contains('m-mapheader')) {
+        return;
+      }
+      const margin = firstApplied ? '10px' : firstMargin;
+      element.style.setProperty('margin-top', margin, 'important');
+      firstApplied = true;
+    });
   }
 }

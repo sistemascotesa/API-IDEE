@@ -15,7 +15,7 @@ export default class BasicControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api stable
    */
-  constructor(isDraggable) {
+  constructor() {
     // 1. Comprueba si la implementación puede crear el control
     if (IDEE.utils.isUndefined(BasicImplControl)
       || (IDEE.utils.isObject(BasicImplControl)
@@ -25,13 +25,6 @@ export default class BasicControl extends IDEE.Control {
     // 2. Crea la implementación del control
     const impl = new BasicImplControl();
     super('Basic', impl);
-
-    /**
-     * Indicador de si el plugin puede arrastrarse o no
-     * @public
-     * @type {boolean}
-     */
-    this.isDraggable_ = isDraggable || false;
   }
 
   /**
@@ -47,15 +40,10 @@ export default class BasicControl extends IDEE.Control {
       const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
-            title: getValue('title'),
             text: getValue('text'),
           },
         },
       });
-
-      if (this.isDraggable_) {
-        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-basic-title');
-      }
       success(html);
     });
   }

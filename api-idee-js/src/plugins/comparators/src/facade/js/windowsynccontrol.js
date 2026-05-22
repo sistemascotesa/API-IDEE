@@ -236,7 +236,9 @@ export default class WindowSyncControl extends IDEE.Control {
 
   getAPIRestScriptAndLink(type, attr) {
     if (type === 'script') {
-      return [...document.querySelectorAll(`${type}[${attr}*=".ol.min"]`), document.querySelector('script[src="js/configuration.js"]')];
+      const configScript = document.querySelector('script[src="js/configuration.js"]')
+        || document.querySelector('script[src*="configuration.js"]');
+      return [...document.querySelectorAll(`${type}[${attr}*=".ol.min"]`), configScript].filter(Boolean);
     }
     return [...document.querySelectorAll(`${type}[${attr}*=".ol.min"]`)];
   }

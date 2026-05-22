@@ -12,8 +12,8 @@ import en from './i18n/en';
 /**
  * @typedef {Object} ShareMapOptions
  * @property {number} [baseUrl] Base url of the shared map.
- * @property {enum<string>} [position='BR']? Position of the view plugin.
- * Allowed values: 'BR' | 'TR' | 'BL' | 'TL'.
+ * @property {enum<string>} [position='right']? Position of the view plugin.
+ * Allowed values: 'left | right'.
  * @property {string} [title='Compartir URL']? The title of the plugin modal.
  * @property {string} [btn='OK']? The button text which close the modal plugin.
  * @property {string} [copyBtn='Copiar']? The button text which copy the url of shared map.
@@ -75,8 +75,13 @@ export default class ShareMap extends IDEE.Plugin {
    * @param {ShareMapOptions} options
    * @api
    */
-  constructor({ filterLayers = [], ...options }) {
-    super();
+  constructor({ filterLayers = [], ...options } = {}) {
+    super('sharemap', {
+      position: options.position || 'right',
+      tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
+      svgPath: options.svgPath || 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_share.svg',
+    });
 
     /**
      * Plugin name
@@ -91,24 +96,10 @@ export default class ShareMap extends IDEE.Plugin {
     }
 
     /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map = null;
-
-    /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls_ = [];
-
-    /**
      * Base url of the shared map
      *
      * @private
-     * @type {URLLike}
+     * @type {URL}
      */
     this.baseUrl_ = options.baseUrl || 'https://componentes.idee.es/api-idee/';
 
@@ -117,114 +108,105 @@ export default class ShareMap extends IDEE.Plugin {
     }
 
     /**
-     * Position of the plugin
+     * Primary Title / tooltip of the modal
      *
      * @private
-     * @type {Enum} TL | TR | BL | BR
-     */
-    this.position = options.position || 'right';
-
-    /**
-     * Title of the modal
-     *
-     * @private
-     * @type {string}
+     * @type {String}
      */
     this.title_ = options.title || getValue('title');
 
     /**
-     * Title of the modal
+     * Secondary Title / tooltip of the modal
      *
      * @private
-     * @type {string}
+     * @type {String}
      */
     this.text_ = options.text || getValue('text');
 
     /**
-     * Text of the button
+     * Text of the button which close the modal plugin
      *
      * @private
-     * @type {string}
+     * @type {String}
      */
     this.btn_ = options.btn || 'OK';
 
     /**
-     * Text of the button
+     * Text of the button with which copy the url of shared map
      *
      * @private
-     * @type {string}
+     * @type {String}
      */
     this.copyBtn_ = options.copyBtn || getValue('copy');
 
     /**
-     * Text of the button
+     * Text of the button with which copy the url of shared map in html format
      *
      * @private
-     * @type {string}
+     * @type {String}
      */
     this.copyBtnHtml_ = options.copyBtnHtml || getValue('copy');
 
     /**
+     * Text of the tooltip when the url is copied
+     *
+     * @private
+     * @type {String}
+     */
+    this.tooltipCopy_ = options.tooltipCopy || getValue('tooltipCopy');
+
+    /**
      * Styles options
      * @private
-     * @type {object}
+     * @type {Object}
      */
     this.styles_ = options.styles || {};
 
     /**
-     * Overwritten styles
+     * Flag to overwrite the styles of the plugin with a custom css
      *
      * @private
-     * @type {bool}
+     * @type {Boolean}
      */
     this.overwriteStyles_ = options.overwriteStyles || false;
 
     /**
-     * Generate minimized url
+     * Flag to generate minimized URL
      *
      * @private
-     * @type {bool}
+     * @type {Boolean}
      */
     this.minimize_ = options.minimize || false;
 
     /**
-     * Tooltip information for copy action
+     * Flag to generate URL with API REST or not
      *
      * @private
-     * @type {string}
+     * @type @type {Boolean}
      */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
-
-    /**
-      * URL API or URL Visor (true o fdefault API, false visor)
-      *
-      * @private
-      * @type @type {bool}
-      */
     this.urlAPI_ = options.urlAPI || false;
 
     /**
-     *@private
-     *@type { Number }
+     * Array of layers to share in the URL
+     *
+     * @private
+     * @type {Array<String>}
      */
-    this.order = options.order >= -1 ? options.order : null;
-
-    /** Select layers share by the name
-      * @private
-      * @type @type {Array}
-      */
     this.filterLayers = (options.shareLayer === undefined || options.shareLayer === false)
       ? filterLayers
       : [];
 
-    /** Select all layers or not
-      * @private
-      * @type {Boolean}
-      */
+    /**
+     * Flag to share the layers of the map
+     *
+     * @private
+     * @type {Boolean}
+     */
     this.shareLayer = options.shareLayer || false;
 
     /**
      * Plugin parameters
+     *
      * @public
      * @type {object}
      */
@@ -255,7 +237,16 @@ export default class ShareMap extends IDEE.Plugin {
    * @api
    */
   addTo(map) {
-    this.control = new ShareMapControl({
+    this.map = map;
+
+    this.button = new IDEE.ui.buttons.OverviewMapButton(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+      svgPath: this.svgPath,
+      order: this.order,
+    });
+
+    this.controls.push(new ShareMapControl({
       baseUrl: this.baseUrl_,
       title: this.title_,
       text: this.text_,
@@ -264,32 +255,25 @@ export default class ShareMap extends IDEE.Plugin {
       copyBtnHtml: this.copyBtnHtml_,
       primaryColor: this.styles_.primaryColor,
       secondaryColor: this.styles_.secondaryColor,
-      tooltip: this.tooltip_,
+      tooltip: this.tooltipCopy_,
       overwriteStyles: this.overwriteStyles_,
       minimize: this.minimize_,
       urlAPI: this.urlAPI_,
       order: this.order,
       filterLayers: this.filterLayers,
       shareLayer: this.shareLayer,
-      addBaseLayer: this.addBaseLayer,
-    });
+    }));
+    // eslint-disable-next-line no-underscore-dangle
+    this.controls[0].map_ = map;
 
-    this.controls_.push(this.control);
+    const superActivate = this.button.activate.bind(this.button);
+    this.button.activate = () => {
+      if (document.querySelector('#m-plugin-sharemap-title')) return;
+      superActivate();
+      this.controls[0].activateModal(() => this.button.deactivate());
+    };
 
-    this.map = map;
-
-    this.panel_ = new IDEE.ui.Panel('ShareMap', {
-      collapsible: false,
-      collapsed: this.options.collapsed,
-      position: IDEE.ui.position[this.position],
-      className: 'm-plugin-sharemap',
-      tooltip: getValue('tooltipPanel'),
-      order: this.order,
-    });
-
-    this.panel_.addControls(this.controls_);
-
-    map.addPanels(this.panel_);
+    map.addButtons(this.button);
   }
 
   /**
@@ -300,99 +284,11 @@ export default class ShareMap extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map.removeControls([this.control]);
-    [this.map, this.control, this.controls_, this.panel_, this.baseUrl_,
-      this.position, this.title_, this.text_, this.btn_, this.copyBtn_,
-      this.copyBtnHtml_, this.styles_, this.overwriteStyles_, this.tooltip_,
-    ] = [null, null, null, null, null, null, null, null, null, null, null, null, null, null];
-  }
-
-  /**
-   * This functions returns the controls of the plugin.
-   *
-   * @public
-   * @return {IDEE.Control}
-   * @api
-   */
-  getControls() {
-    return this.controls_;
-  }
-
-  /**
-   * This function returns the base url option
-   *
-   * @public
-   * @function
-   * @api
-   */
-  get baseUrl() {
-    return this.baseUrl_;
-  }
-
-  /**
-   * This function returns the position
-   *
-   * @public
-   * @return {string}
-   * @api
-   */
-  get tooltip() {
-    return this.tooltip_;
-  }
-
-  /**
-   * This function returns the title
-   *
-   * @public
-   * @return {string}
-   * @api
-   */
-  get title() {
-    return this.title_;
-  }
-
-  /**
-   * This function returns the text
-   *
-   * @public
-   * @return {string}
-   * @api
-   */
-  get text() {
-    return this.text_;
-  }
-
-  /**
-   * This function returns the accept button
-   *
-   * @public
-   * @return {string}
-   * @api
-   */
-  get btn() {
-    return this.btn_;
-  }
-
-  /**
-   * This function returns the copy button
-   *
-   * @public
-   * @return {string}
-   * @api
-   */
-  get copyBtn() {
-    return this.copyBtn_;
-  }
-
-  /**
-   * This function returns the copy button html
-   *
-   * @public
-   * @return {string}
-   * @api
-   */
-  get copyBtnHtml() {
-    return this.copyBtnHtml_;
+    const dialog = document.querySelector('#m-plugin-sharemap-dialog');
+    if (dialog) {
+      dialog.parentElement.removeChild(dialog);
+    }
+    this.map.removeButton(this.button);
   }
 
   /**
@@ -403,7 +299,7 @@ export default class ShareMap extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.tooltip_}*${this.baseUrl}*${this.minimize_}*${this.title_}*${this.btn_}*${this.copyBtn_}*${this.text_}*${this.copyBtnHtml_}*${this.urlAPI_}*${this.shareLayer}`;
+    return `${this.name}=${this.position}*${this.order}*${this.tooltip}*${this.baseUrl_}*${this.urlAPI_}*${this.minimize_}*${this.title_}*${this.text_}*${this.shareLayer}*${this.btn_}*${this.copyBtn_}*${this.copyBtnHtml_}*${this.tooltipCopy_}*${this.overwriteStyles_}`;
   }
 
   /**

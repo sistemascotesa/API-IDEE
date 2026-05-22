@@ -6,6 +6,7 @@ import Scale from 'IDEE/control/Scale';
 import ScaleLine from 'IDEE/control/ScaleLine';
 import Panzoom from 'IDEE/control/Panzoom';
 import * as Position from 'IDEE/ui/position';
+import MeasureBar from 'IDEE/control/MeasureBar';
 
 /**
  * Este test debería contener todos los controles para comprobar la funcionalidad de
@@ -18,6 +19,12 @@ const map = Mmap({
 });
 
 window.mapa = map;
+
+const measurebar = new MeasureBar({
+  order: 5,
+  position: Position.CBR,
+  collapsed: false,
+});
 
 const panzoom = new Panzoom({
   order: 1,
@@ -42,6 +49,7 @@ const controlsDown = [
   scale,
   scaleLine,
   panzoom,
+  measurebar,
 ];
 
 const githubPlugin = new Plugin('github-1', {
@@ -49,6 +57,7 @@ const githubPlugin = new Plugin('github-1', {
   position: Position.LEFT,
   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
   order: 2,
+  collapsed: false,
 });
 
 const githubPlugin2 = new Plugin('github-2', {
@@ -63,6 +72,7 @@ const githubPlugin3 = new Plugin('github-3', {
   position: Position.RIGHT,
   svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
   order: 4,
+  collapsed: false,
 });
 
 const tools = [
@@ -89,3 +99,7 @@ tools.forEach((tool) => {
   if (tool instanceof Control) map.addControls(tool);
   else if (tool instanceof Plugin) map.addPlugins(tool);
 });
+
+map.removePlugin(githubPlugin2);
+// map.closeSidePanels(githubPlugin2.position);
+map.addPlugin(githubPlugin2);

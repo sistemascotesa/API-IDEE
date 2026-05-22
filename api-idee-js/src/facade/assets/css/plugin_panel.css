@@ -1,0 +1,28 @@
+.m-plugin-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+.m-plugin-panel-title {
+  padding: 16px;
+  font-size: 18px;
+  font-family: 'Roboto';
+  font-weight: 500;
+  color: var(--idee-color-primary-dark);
+  white-space: normal;
+  word-break: break-word;
+  text-overflow: ellipsis;
+  height: 1.5rem;
+  width: fit-content;
+}
+
+.m-plugin-panel-content {
+  flex-grow: 1;
+  margin: 0 .5rem .5rem;
+  overflow-y: auto;
+  padding: 0 .25rem;
+}

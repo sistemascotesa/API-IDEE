@@ -3,7 +3,3 @@
   -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_puntero.svg');
 }
 
-.g-cartografia-btn-mousesrs-help::before {
-   mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ayuda.svg');
-  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ayuda.svg');
-}

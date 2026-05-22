@@ -17,11 +17,6 @@
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tresd.svg');
 }
 
-.g-cartografia-images::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_fototeca.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_fototeca.svg');
-}
-
 /****************
    SOCIAL
 *****************/

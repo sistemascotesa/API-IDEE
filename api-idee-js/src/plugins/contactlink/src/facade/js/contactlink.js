@@ -168,7 +168,7 @@ export default class ContactLink extends IDEE.Plugin {
   addTo(map) {
     this.map = map;
 
-    this.button = new IDEE.ui.Button(this.name, {
+    this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
       position: this.position,
       tooltip: this.tooltip,
       svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_link.svg',
@@ -176,7 +176,7 @@ export default class ContactLink extends IDEE.Plugin {
     });
     map.addButtons(this.button);
 
-    this.panel = new IDEE.ui.Panel(this.name, {
+    this.panel = new IDEE.ui.panels.PluginSidePanel(this.name, {
       collapsed: this.collapsed,
       position: this.position,
       minWidth: this.minPanelWidth,

@@ -36,7 +36,7 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api stable
    */
   constructor(options = {}) {
-    super('mousersrs', {
+    super('mousesrs', {
       position: options.position ?? 'down',
       tooltip: options.tooltip ?? getValue('tooltip'),
       order: options.order,
@@ -122,14 +122,6 @@ export default class MouseSRS extends IDEE.Plugin {
     this.activeZ = options.activeZ || false;
 
     /**
-     * Option that allows the EPSG selector modal to be draggable
-     * @private
-     * @type {boolean}
-     * @default false
-     */
-    this.draggableDialog = options.draggableDialog || false;
-
-    /**
      * Help URL accessible via the help icon in the modal
      * @private
      * @type {string}
@@ -193,13 +185,12 @@ export default class MouseSRS extends IDEE.Plugin {
       helpUrl: this.helpUrl,
       mode: this.mode,
       coveragePrecissions: this.coveragePrecissions,
-      draggableDialog: this.draggableDialog,
       epsgFormat: this.epsgFormat,
     });
 
     this.controls.push(this.control);
 
-    this.panel = new IDEE.ui.ControlPanel('panelMouseSRS', {
+    this.panel = new IDEE.ui.panels.CollapsiblePanel('panelMouseSRS', {
       collapsible: false,
       tooltip: this.tooltip,
       className: 'm-plugin-mousesrs',
@@ -232,7 +223,7 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.order}*${this.tooltip}*${this.srs}*${this.label}*${this.precision}*${this.geoDecimalDigits}*${this.utmDecimalDigits}*${this.activeZ}*${this.helpUrl}*${this.draggableDialog}*${this.epsgFormat}*${this.mode}*${this.coveragePrecissions}`;
+    return `${this.name}=${this.position}*${this.order}*${this.tooltip}*${this.srs}*${this.label}*${this.precision}*${this.geoDecimalDigits}*${this.utmDecimalDigits}*${this.activeZ}*${this.helpUrl}*${this.epsgFormat}*${this.mode}*${this.coveragePrecissions}`;
   }
 
   /**

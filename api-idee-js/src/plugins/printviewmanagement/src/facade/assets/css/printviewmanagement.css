@@ -1,54 +1,104 @@
 /*******************
 * CLASES GENERALES *
 ********************/
-.d-flex {
+
+#plugin-panel-content-printviewmanagement {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    overflow: auto;
+}
+
+#plugin-panel-printviewmanagement .d-flex {
     display: flex;
     justify-content: center;
 }
 
-.d-flex-column {
+#plugin-panel-printviewmanagement .d-flex-start {
+    display: flex;
+    justify-content: flex-start;
+}
+
+#plugin-panel-printviewmanagement .d-flex-column {
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
+}
+
+
+#plugin-panel-printviewmanagement .button-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    row-gap: .5rem;
+}
+
+#plugin-panel-printviewmanagement .backimg-button {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
     justify-content: center;
+    align-items: center;
+    text-align: center;
+    column-gap: .5rem;
+}
+
+#plugin-panel-content-printviewmanagement hr {
+    margin: .4rem 0;
+    width: 100%;
+    border: none;
+    border-top: 1px solid var(--idee-color-neutral-40);
 }
 
 /**********************
 * PRINTVIEWMANAGEMENT *
 ***********************/
-.m-georefimage-download-button button {
+
+#plugin-panel-printviewmanagement .m-api-idee-tabs-container {
+    width: 100%;
+}
+
+.m-printviewmanagement-controls {
+    display: flex;
+    flex-grow: 1;
+    overflow: auto;
+    width: 100%;
+    flex-direction: column;
+}
+
+#m-printviewmanagement-controls label {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+#plugin-panel-printviewmanagement .m-georefimage-download-button,
+#plugin-panel-printviewmanagement .m-georefimage-download-button button {
     width: 100%;
 }
 
 /*************
 * PRINTERMAP *
 **************/
-.m-container {
-    gap: 16px;
-    padding: 16px 0;
+#plugin-panel-printviewmanagement .m-container {
+    gap: .65rem;
 }
 
 .m-printermap-title-container,
 .m-printermap-format-container,
 .m-printermap-loadTemplate-container {
-    gap: 8px;
+    gap: .5rem;
 }
 
 .m-printermap-customizeTemplate-container {
-    flex-wrap: wrap;
-    gap: 16px;
+    width: 100%;
+    flex-direction: column;
+    gap: .65rem;
+    padding-bottom: 1rem;
 }
 
-.m-printermap-title-container label,
-.m-printermap-format-container label,
-.m-printermap-loadTemplate-container label {
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.2;
-}
-
-.m-printermap-customizeTemplate-container {
-    border-bottom: 1px solid var(--idee-color-neutral-40);
-    padding-bottom: 16px;
+#plugin-panel-printviewmanagement #m-printermap-customize-button {
+    margin-top: 0.35rem;
 }
 
 .m-printermap-title-container input {
@@ -66,26 +116,21 @@
 .m-printermap-loadTemplate-container select {
     background-color: var(--idee-color-neutral-20);
     color: var(--idee-color-black);
-    height: 40px;
-}
-
-.m-printermap-customizeTemplate-container button {
-    flex: 1 1 auto;
+    height: 2rem;
 }
 
 /**************
 * GEOREFIMAGE *
 ***************/
 .m-georefimage-container {
-    border-bottom: 1px solid var(--idee-color-neutral-40);
-    margin-bottom: 16px;
+    margin-bottom: 0.2rem;
 }
 
 .m-georefimage-title-container,
 .m-georefimage-format-container,
 .m-georefimage-wld-container,
 .m-georefimage-dpi-container {
-    gap: 8px;
+    gap: .5rem;
 }
 
 .m-georefimage-wld-container {
@@ -103,7 +148,7 @@
 .m-georefimage-dpi-container select {
     background-color: var(--idee-color-neutral-20);
     color: var(--idee-color-black);
-    height: 40px;
+    height: 2rem;
 }
 
 .m-georefimage-container h3 {
@@ -117,11 +162,11 @@
 *******************/
 .m-georefimageepsg-container {
     border-bottom: 1px solid var(--idee-color-neutral-40);
-    margin-bottom: 16px;
+    margin-bottom: 1rem;
 }
 
 .m-georefimageepsg-layer-container,
-.m-georefimageepsg-dpi-container  {
+.m-georefimageepsg-dpi-container {
     gap: 8px;
 }
 
@@ -129,7 +174,7 @@
 .m-georefimageepsg-dpi-container select {
     background-color: var(--idee-color-neutral-20);
     color: var(--idee-color-black);
-    height: 40px;
+    height: 2rem;
 }
 
 
@@ -138,27 +183,39 @@
 **********************/
 .m-templateCustomizer-container {
     display: flex;
-    max-height: 80vh;
-    height: 69vh;
+    min-height: 20vh;
+    flex-grow: 1;
+    overflow: auto;
 }
 
 .m-templateCustomizer-left-wrapper {
-    padding: 16px;
+    display: flex;
+    padding: 1rem;
     box-sizing: border-box;
     height: 100%;
+    width: fit-content;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-grow: 1;
 }
 
 .m-templateCustomizer-left-wrapper .m-customize-template-form {
+    width: 26rem;
+    display: flex;
+    flex-direction: column;
     justify-content: start;
-    overflow-y: auto;
+    gap: 1rem;
     border-right: 1px solid var(--idee-color-neutral-40);
-    padding-right: 16px;
-    gap: 16px;
+    padding-right: 1rem;
 }
 
 .m-templateCustomizer-right-wrapper {
-    position: relative;
     width: 100%;
+    position: relative;
+    overflow: auto;
+    min-height: 300px;
+    /* display: flex; */
+    /* flex-grow: 1; */
 }
 
 .m-templateCustomizer-map-preview {
@@ -168,6 +225,7 @@
 }
 
 .m-templateCustomizer-option {
+    width: calc(100% - 45px);
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -191,7 +249,7 @@
 .template-dpi select {
     background-color: var(--idee-color-neutral-20);
     color: var(--idee-color-black);
-    height: 40px;
+    height: 2rem;
     width: 100%;
 }
 
@@ -212,6 +270,7 @@
 }
 
 .m-customize-template-select-editable .m-templateCustomizer-input-srs {
+    width: 100%;
     box-sizing: border-box;
 }
 
@@ -245,7 +304,7 @@
 }
 
 .templateDownload {
-    bottom: 16px;
+    bottom: 1rem;
     position: absolute;
     right: 96px;
 }
@@ -254,23 +313,28 @@
  * LOADING SPINNER *
  *******************/
 .loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: color-mix(in srgb, var(--idee-color-neutral-60) 70%, transparent);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999999999;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: color-mix(in srgb, var(--idee-color-neutral-60) 70%, transparent);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999999;
 }
 
 .loading-spinner {
-  animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }

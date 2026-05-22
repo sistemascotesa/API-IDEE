@@ -70,7 +70,7 @@ export default class MaxExtZoom extends IDEE.Plugin {
     this.controls_.push(new MaxExtZoomControl());
     this.map_ = map;
     // panel para agregar control - no obligatorio
-    this.panel_ = new IDEE.ui.Panel('panelMaxExtZoom', {
+    this.panel_ = new IDEE.ui.panels.PluginSidePanel('panelMaxExtZoom', {
       collapsible: false,
       collapsed: this.options.collapsed,
       position: IDEE.ui.position[this.position],

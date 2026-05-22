@@ -28,7 +28,7 @@ test.describe('IDEE.control.Scale', () => {
     });
   };
 
-  test.describe('scale*true - escalas OGC exactas', () => {
+  test.describe('scale*exactScale=true - REST OGC exactas', () => {
     test.beforeEach(async ({ page }) => {
       await page.goto('/test/playwright/ol/basic-ol.html');
 
@@ -36,12 +36,13 @@ test.describe('IDEE.control.Scale', () => {
         const map = IDEE.map({
           container: 'map',
           center: [0, 0],
-          controls: ['scale*true'],
+          controls: ['scale*exactScale=true'],
         });
         window.map = map;
       });
     });
 
+    // eslint-disable-next-line no-plusplus
     for (let i = 0; i < zooms.length; i++) {
       const zoom = zooms[i];
       const expectedScale = ogcScales[i];
@@ -67,6 +68,7 @@ test.describe('IDEE.control.Scale', () => {
       });
     });
 
+    // eslint-disable-next-line no-plusplus
     for (let i = 0; i < zooms.length; i++) {
       const zoom = zooms[i];
       const expectedScale = approxScales[i];

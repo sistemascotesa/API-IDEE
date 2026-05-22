@@ -55,7 +55,7 @@ const mp = new BackImgLayer({
 
 const map = IDEE.map({
   container: 'mapjs',
-  // controls: ['scale'],
+  controls: ['rotate', "measurebar*position='center-top-right'"],
   center: [-458756.9690741142, 4682774.665868655],
   // Este layer OSM o wmstTestLayer se quitan al añadir el plugin, si son layer base, en este caso si fue configurado como transparente false.
   // Parece ser por map.getBaseLayers().forEach((layer) => {layer.on(IDEE.evt.LOAD, map.removeLayers(layer));});.
@@ -65,6 +65,12 @@ const map = IDEE.map({
 });
 
 window.map = map;
+
+map.addPlugin(
+  new IDEE.plugin.VectorsManagement({
+    position: 'left',
+  }),
+);
 
 let mp;
 
@@ -123,11 +129,11 @@ const updatePlugin = () => {
 
     /** a usar en el .jsp */
     // const pwImg1 = 'plugins/backimglayer/images/svqimagen.png';
-    // const pwImg2 = 'https://www.ign.es/iberpix/static/media/raster.c7a904f3.png';
+    // const pwImg2 = 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/14/7896/10319.jpeg';
     // const pwImg3 = 'plugins/backimglayer/images/svqmapa.png';
     // const pwImg4 = 'plugins/backimglayer/images/svqhibrid.png';
     const pwImg1 = '../src/facade/assets/images/svqimagen.png';
-    const pwImg2 = 'https://www.ign.es/iberpix/static/media/raster.c7a904f3.png';
+    const pwImg2 = 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/14/7896/10319.jpeg';
     const pwImg3 = '../src/facade/assets/images/svqmapa.png';
     const pwImg4 = '../src/facade/assets/images/svqhibrid.png';
     options.layerOpts = [

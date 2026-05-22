@@ -83,18 +83,19 @@ class MeasureBar extends Control {
     this.order = options.order >= -1 ? options.order : null;
 
     /**
-     * Option to allow the control to be collapsed or not
-     * @private
-     * @type {Boolean}
-     */
-    this.collapsed = isBoolean(options.collapsed) ? options.collapsed : true;
-
-    /**
      * Option to allow the control to be collapsible or not
      * @private
      * @type {Boolean}
     */
     this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
+
+    /**
+     * Option to allow the control to be collapsed or not
+     * @private
+     * @type {Boolean}
+     */
+    this.collapsed = (isBoolean(options.collapsed) && this.collapsible)
+      ? options.collapsed : this.collapsible;
 
     /**
      * Control tooltip

@@ -3,6 +3,10 @@ import { test, expect } from '@playwright/test';
 test.describe('IDEE.map', () => {
   test.describe('constructor', () => {
     test.beforeEach(async ({ page }) => {
+      page.on('console', (msg) => {
+        // eslint-disable-next-line no-console
+        console.log(`[BROWSER:${msg.type()}] ${msg.text()}`);
+      });
       await page.goto('/test/playwright/ol/basic-ol.html');
       await page.evaluate(() => {
         const map = IDEE.map({ container: 'map', bgColorContainer: 'red' });
@@ -23,7 +27,9 @@ test.describe('IDEE.map', () => {
 
     test.describe('Param bgColorContainer', () => {
       test('Map background color', async ({ page }) => {
-        const changeColor = await page.evaluate(() => window.map.getContainer().closest('.m-api-idee-container').style.backgroundColor === 'red');
+        const changeColor = await page.evaluate(() => {
+          return window.map.getBGColorContainer() === 'red';
+        });
         expect(changeColor).toBe(true);
       });
     });

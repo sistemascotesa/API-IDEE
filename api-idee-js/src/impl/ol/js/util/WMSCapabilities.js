@@ -51,6 +51,13 @@ class GetCapabilities {
       * @type {String}
       */
     this.serviceUrl_ = serviceUrl;
+
+    /**
+      * Flag para indicar si la extensión ya ha sido transformada.
+      * @private
+      * @type {Boolean}
+      */
+    this.extentAlreadyTransformed_ = false;
   }
 
   /**
@@ -145,17 +152,21 @@ class GetCapabilities {
               const bbox = layer.BoundingBox[0];
               this.capabilitiesProj = bbox.crs;
               const projSrc = getProjection(bbox.crs) || getProjection(bbox.srs);
-              const projDest = getProjection(this.projection_.code);
-              extent = ImplUtils.transformExtent(bbox.extent, projSrc, projDest);
+              const projDest = getProjection(projection);
+              let bboxExtent = bbox.extent;
+              if (this.isReversedAxisOrder_(bbox.crs, projSrc)) {
+                bboxExtent = [bbox.extent[1], bbox.extent[0], bbox.extent[3], bbox.extent[2]];
+              }
+              extent = ImplUtils.transformExtent(bboxExtent, projSrc, projDest);
+              this.extentAlreadyTransformed_ = true;
             }
           } else if (!isNullOrEmpty(layer.LatLonBoundingBox)) {
             const bbox = layer.LatLonBoundingBox[0];
             this.capabilitiesProj = 'EPSG:4326';
-            // if the layer has not the SRS then transformExtent
-            // the latLonBoundingBox which is always present
             const projSrc = getProjection('EPSG:4326');
-            const projDest = getProjection(this.projection_.code);
+            const projDest = getProjection(projection);
             extent = ImplUtils.transformExtent(bbox.extent, projSrc, projDest);
+            this.extentAlreadyTransformed_ = true;
           }
         } else if (!isUndefined(layer.Layer)) {
           // recursive case
@@ -164,6 +175,34 @@ class GetCapabilities {
       }
     }
     return extent;
+  }
+
+  /**
+   * Determina si el BoundingBox de un CRS en WMS 1.3.0 tiene el orden
+   * de ejes invertido (lat/lon en lugar de lon/lat).
+   *
+   * En WMS 1.3.0, los CRS geográficos (como EPSG:4326, EPSG:4230, etc.)
+   * definen su BoundingBox en orden (lat, lon), pero OL/proj4 internamente
+   * usa (lon, lat). Se necesita intercambiar los ejes antes de transformar.
+   *
+   * @param {String} crsCode Código del CRS (e.g. 'EPSG:4230').
+   * @param {ol.proj.Projection} proj Proyección de OL.
+   * @return {Boolean} true si los ejes deben intercambiarse.
+   * @private
+   */
+  isReversedAxisOrder_(crsCode, proj) {
+    if (this.capabilities_.version !== '1.3.0' || !proj) {
+      return false;
+    }
+    const axisOrientation = proj.getAxisOrientation();
+    if (axisOrientation && axisOrientation.substr(0, 2) === 'ne') {
+      return true;
+    }
+    const units = proj.getUnits();
+    if (units === 'd' || units === 'degrees' || units === 'degree') {
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -248,15 +287,26 @@ class GetCapabilities {
     * @api
     */
   transformExtent(extent) {
-    let transformExtent = extent;
+    let result = extent;
+
+    if (this.extentAlreadyTransformed_) {
+      this.extentAlreadyTransformed_ = false;
+      return result;
+    }
 
     if (this.capabilities_.version === '1.3.0' && isString(this.capabilitiesProj)) {
-      const axisOrientation = getProjection(this.capabilitiesProj).getAxisOrientation();
-      if (Array.isArray(transformExtent) && axisOrientation.substr(0, 2) === 'ne') {
-        transformExtent = [extent[1], extent[0], extent[3], extent[2]];
+      const proj = getProjection(this.capabilitiesProj);
+      if (proj && Array.isArray(result)) {
+        const axisOrientation = proj.getAxisOrientation();
+        const units = proj.getUnits();
+        const isReversed = (axisOrientation && axisOrientation.substr(0, 2) === 'ne')
+          || units === 'd' || units === 'degrees' || units === 'degree';
+        if (isReversed) {
+          result = [extent[1], extent[0], extent[3], extent[2]];
+        }
       }
     }
-    return transformExtent;
+    return result;
   }
 }
 

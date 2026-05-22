@@ -42,9 +42,9 @@ import MVT from './layer/MVT';
 import OGCAPIFeatures from './layer/OGCAPIFeatures';
 import GenericRaster from './layer/GenericRaster';
 import GenericVector from './layer/GenericVector';
-import Button from './ui/Button';
-import Panel from './ui/Panel';
-import ControlPanel from './ui/ControlPanel';
+import OverviewMapButton from './ui/buttons/OverviewMapButton';
+import Panel from './ui/panels/Panel';
+import CollapsiblePanel from './ui/panels/CollapsiblePanel';
 import * as Position from './ui/position';
 import GeoJSON from './layer/GeoJSON';
 import GeoTIFF from './layer/GeoTIFF';
@@ -60,7 +60,7 @@ import Tiles3D from './layer/Tiles3D';
 import Terrain from './layer/Terrain';
 import WMC from './layer/WMC';
 import Attributions from './control/Attributions';
-import { buildControl, getPanelForControl } from './builder/builder';
+import { buildControl, buildLayer, getPanelForControl } from './builder/builder';
 import applyDesignTokenCssVariables from './theme/tokens';
 // eslint-disable-next-line no-unused-vars
 import Plugin from './Plugin';
@@ -523,7 +523,7 @@ class Map extends Base {
         }),
         order,
       });
-      const panel = new ControlPanel(Attributions.NAME, {
+      const panel = new CollapsiblePanel(Attributions.NAME, {
         collapsible: true,
         position: Position[position] || Position.LEFT,
         className: 'm-attributions',
@@ -719,16 +719,23 @@ class Map extends Base {
         let layer;
 
         if (isString(layerParam)) {
-          const splt = layerParam.split('*');
-          if (splt.length === 2 && splt[0] === 'QUICK') {
-            const ly = getQuickLayers(splt[1]);
-            if (!isUndefined(ly)) {
-              // eslint-disable-next-line
-              layerParam = ly;
-            } else {
-              // eslint-disable-next-line
-              console.error(`No se encuentra definida ${splt[1]} como capa rápida`);
-              return null;
+          // Named-param format: 'WMTS*url=http://...;name=MTN;matrixSet=GM'
+          if (isString(layerParam)) {
+            // eslint-disable-next-line
+            layerParam = buildLayer(layerParam);
+          }
+          if (isString(layerParam)) {
+            const splt = layerParam.split('*');
+            if (splt.length === 2 && splt[0] === 'QUICK') {
+              const ly = getQuickLayers(splt[1]);
+              if (!isUndefined(ly)) {
+                // eslint-disable-next-line
+                layerParam = ly;
+              } else {
+                // eslint-disable-next-line
+                console.error(`No se encuentra definida ${splt[1]} como capa rápida`);
+                return null;
+              }
             }
           }
         }
@@ -3123,7 +3130,7 @@ class Map extends Base {
       controls.forEach((control) => {
         const panel = control.getPanel();
         // check if this control has panels and remove it if
-        if (panel instanceof ControlPanel) {
+        if (panel instanceof Panel) {
           const panelControls = panel.getControls();
           if (isArray(panelControls) && panelControls.legth === 1) {
             this.removePanel(panel);
@@ -3930,7 +3937,7 @@ class Map extends Base {
    * @public
    * @function
    * @param {Mx.Plugin} namesParam Nombre del plugin.
-   * @returns {Map} Devuelve el estado del mapa.
+   * @returns {Array<IDEE.Plugin>} Devuelve la colección de plugins.
    * @api
    */
   getPlugins(namesParam) {
@@ -4405,7 +4412,7 @@ class Map extends Base {
         buttons = [buttons];
       }
       buttons.forEach((button) => {
-        if (button instanceof Button && !this.buttons.includes(button)) {
+        if (button instanceof OverviewMapButton && !this.buttons.includes(button)) {
           this.buttons.push(button);
           button.addTo(this);
         }
@@ -4422,9 +4429,9 @@ class Map extends Base {
    * @returns {Map} Devuelve el estado del mapa.
    */
   removeButton(button) {
-    if (button instanceof Button) {
+    if (button instanceof OverviewMapButton) {
       button.destroy();
-      this.buttons = this.buttons.filter((button2) => !button.equals(button));
+      this.buttons = this.buttons.filter((buttonSaved) => !buttonSaved.equals(button));
     }
 
     return this;
@@ -4466,7 +4473,7 @@ class Map extends Base {
     if (!isNullOrEmpty(controlPanelsVar)) {
       (isArray(controlPanelsVar) ? controlPanelsVar : [controlPanelsVar])
         .filter((panel) => !this.panels.some((panel2) => panel2.equals(panel))
-          && panel instanceof ControlPanel)
+          && panel instanceof CollapsiblePanel)
         .forEach((panel) => {
           this.panels.push(panel);
           panel.addTo(this);
@@ -4483,7 +4490,7 @@ class Map extends Base {
    * @returns {Map} Devuelve el estado del mapa.
    */
   removePanel(panel) {
-    if (panel instanceof Panel || panel instanceof ControlPanel) {
+    if (panel instanceof Panel) {
       panel.destroy();
       this.panels = this.panels.filter((panel2) => !panel2.equals(panel));
     }
@@ -4772,13 +4779,14 @@ class Map extends Base {
    * This method deactivate all side active panel buttons except the one that is going to be open,
    * if is possible depending on the map view.
    *
-   * @param {Button} button represents one avaliable button to open a side panel
+   * @param {OverviewMapButton} button represents one avaliable button to open a side panel
    */
   deactivateSidePanelButtons(button) {
     const isCompact = this.isCompactMode();
-    /** @type {IDEE.ui.Button[]} */
+    /** @type {OverviewMapButton[]} */
     let buttons = this.buttons ?? [];
 
+    // Cuando el mapa cambia de tamaño teniendo todavía el panel superior abierto, debemos apagarlo
     const isUpPanelOpened = (() => {
       const v = this.toolPanelsContainer.style.getPropertyValue('--up-height');
       return v !== '' && v !== '0px';

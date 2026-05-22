@@ -14,6 +14,7 @@
                 <title>Visor base</title>
                 <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
                 <link href="plugins/backimglayer/backimglayer.ol.min.css" rel="stylesheet" />
+                <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
                 </link>
                 <% Map<String, String[]> parameterMap = request.getParameterMap();
                     PluginsManager.init (getServletContext());
@@ -140,6 +141,7 @@
                 <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
                 <script type="text/javascript" src="js/configuration.js"></script>
                 <script type="text/javascript" src="plugins/backimglayer/backimglayer.ol.min.js"></script>
+                <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
                 <% String[] jsfiles=PluginsManager.getJSFiles(parameterMap); for (int i=0; i < jsfiles.length; i++) {
                     String jsfile=jsfiles[i]; %>
                     <script type="text/javascript" src="plugins/<%=jsfile%>"></script>
@@ -210,7 +212,7 @@
                                     const restLayer4 = 'WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*false*true,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*Imagen (PNOA)*false*image/png*false*false*truesumarWMTS*https://www.ign.es/wmts/ign-base?*IGNBaseOrto*GoogleMapsCompatible*Mapa IGN*true*image/jpeg*false*false*true';
 
                                     const pwImg1 = 'plugins/backimglayer/images/svqimagen.png';
-                                    const pwImg2 = 'https://www.ign.es/iberpix/static/media/raster.c7a904f3.png';
+                                    const pwImg2 = 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/14/7896/10319.jpeg';
                                     const pwImg3 = 'plugins/backimglayer/images/svqmapa.png';
                                     const pwImg4 = 'plugins/backimglayer/images/svqhibrid.png';
                                     options.layerOpts = [
@@ -400,6 +402,11 @@
                             });
 
                             updatePlugin();
+                            const mp2 = new IDEE.plugin.ShareMap({
+                                baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
+                                position: "right",
+                            });
+                            map.addPlugin(mp2);
                         </script>
             </body>
             <!-- Global site tag (gtag.js) - Google Analytics -->
