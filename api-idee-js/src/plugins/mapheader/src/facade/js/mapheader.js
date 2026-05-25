@@ -58,7 +58,7 @@ export default class Mapheader extends IDEE.Plugin {
     this.controls_.push(new MapheaderControl(this.config));
     this.map_ = map;
     // panel para agregar control - no obligatorio
-    this.panel_ = new IDEE.ui.Panel('panelMapheader', {
+    this.panel_ = new IDEE.ui.panels.PluginSidePanel('panelMapheader', {
       collapsible: true,
       className: 'm-mapheader',
       position: IDEE.ui.position.TR,

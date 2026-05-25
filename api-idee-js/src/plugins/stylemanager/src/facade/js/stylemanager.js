@@ -81,7 +81,7 @@ export default class StyleManager extends IDEE.Plugin {
     });
     map.addButtons(this.button);
 
-    this.panel = new IDEE.ui.Panel(this.name, {
+    this.panel = new IDEE.ui.panels.PluginSidePanel(this.name, {
       tooltip: this.tooltip,
       position: this.position,
       minWidth: this.minPanelWidth,

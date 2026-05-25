@@ -183,27 +183,39 @@
 **********************/
 .m-templateCustomizer-container {
     display: flex;
-    max-height: 80vh;
-    height: 69vh;
+    min-height: 20vh;
+    flex-grow: 1;
+    overflow: auto;
 }
 
 .m-templateCustomizer-left-wrapper {
+    display: flex;
     padding: 1rem;
     box-sizing: border-box;
     height: 100%;
+    width: fit-content;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-grow: 1;
 }
 
 .m-templateCustomizer-left-wrapper .m-customize-template-form {
+    width: 26rem;
+    display: flex;
+    flex-direction: column;
     justify-content: start;
-    overflow-y: auto;
+    gap: 1rem;
     border-right: 1px solid var(--idee-color-neutral-40);
     padding-right: 1rem;
-    gap: 1rem;
 }
 
 .m-templateCustomizer-right-wrapper {
-    position: relative;
     width: 100%;
+    position: relative;
+    overflow: auto;
+    min-height: 300px;
+    /* display: flex; */
+    /* flex-grow: 1; */
 }
 
 .m-templateCustomizer-map-preview {
@@ -213,6 +225,7 @@
 }
 
 .m-templateCustomizer-option {
+    width: calc(100% - 45px);
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -257,6 +270,7 @@
 }
 
 .m-customize-template-select-editable .m-templateCustomizer-input-srs {
+    width: 100%;
     box-sizing: border-box;
 }
 

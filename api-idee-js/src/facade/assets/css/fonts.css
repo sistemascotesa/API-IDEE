@@ -315,4 +315,27 @@
         mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_vent_cerrar.svg');
     }
 
+    .vectorsmanagement-icon-aceptar:before,
+    .g-cartografia-check::before {
+        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_circle_check.svg');
+        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_circle_check.svg');
+    }
+
+    .g-cartografia-warning::before {
+        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_incidencia.svg');
+        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_incidencia.svg');
+    }
+
+    .g-cartografia-facebook::before,
+    .g-cartografia-sharemap-facebook::before {
+        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_facebook.svg');
+        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_facebook.svg');
+    }
+
+    .g-cartografia-pinterest::before,
+    .g-cartografia-sharemap-pinterest::before {
+        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/pinterest.svg');
+        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/pinterest.svg');
+    }
+
 }

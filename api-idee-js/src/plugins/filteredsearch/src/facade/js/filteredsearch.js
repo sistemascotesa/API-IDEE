@@ -91,7 +91,7 @@ export default class FilteredSearch extends IDEE.Plugin {
     const collapsedButton = 'g-plugin-filteredsearch-filter';
 
     // panel para agregar control - no obligatorio
-    this.panel_ = new IDEE.ui.Panel('panelFilteredSearch', {
+    this.panel_ = new IDEE.ui.panels.PluginSidePanel('panelFilteredSearch', {
       className: 'filtered-search-panel',
       collapsible: true,
       position: IDEE.ui.position[this.position_],

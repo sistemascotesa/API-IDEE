@@ -59,7 +59,7 @@ export default class Mapfooter extends IDEE.Plugin {
     this.controls_.push(this.control_);
     this.map_ = map;
     // panel para agregar control - no obligatorio
-    this.panel_ = new IDEE.ui.Panel('panelMapfooter', {
+    this.panel_ = new IDEE.ui.panels.PluginSidePanel('panelMapfooter', {
       collapsible: true,
       className: 'm-mapfooter',
       position: IDEE.ui.position.BL,

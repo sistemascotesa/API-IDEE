@@ -4,7 +4,7 @@ import { setLang } from '../../../src/facade/js/i18n/language';
 
 const map = Mmap({
   container: 'map',
-  controls: ['rotate'],
+  controls: ['rotate', 'measurebar'],
   projection: 'EPSG:3857',
   center: [-467062.8225, 4683459.6216],
   zoom: 6,

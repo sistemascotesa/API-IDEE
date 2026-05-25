@@ -31,8 +31,25 @@ class SidePanelButton extends PanelButton {
   }
 
   /**
+   * Maneja el clic del botón para cerrar correctamente en modo compacto.
+   * @override
+   */
+  click(event) {
+    if (this.pressed) {
+      if (this.map.isCompactMode()) {
+        this.map.deactivateSidePanelButtons(this);
+      }
+      this.deactivate();
+    } else {
+      this.activate();
+    }
+  }
+
+  /**
    * Abre el panel asociado en el lado correspondiente del mapa, desactivando
    * cualquier otro botón de panel lateral previamente activo.
+   *
+   * @override
    */
   openPanel() {
     this.map.deactivateSidePanelButtons(this);
@@ -43,6 +60,8 @@ class SidePanelButton extends PanelButton {
 
   /**
    * Cierra el panel asociado, colapsándolo.
+   *
+   * @override
    */
   closePanel() {
     this.map.closeSidePanels(this.position);

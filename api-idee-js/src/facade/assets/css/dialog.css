@@ -29,13 +29,14 @@
    display: flex;
    flex-direction: column;
    position: relative;
-   max-height: 70vh;
-   max-width: 70vw;
-   min-width: 30vw;
+   max-height: calc(100% - 4rem);
+   max-width: 85%;
+   min-width: 30%;
    margin: 0 auto;
-   background-color: #fff;
-   padding: 8px;
-   border-radius: 4px;
+   overflow: auto;
+   background-color: var(--idee-color-white);
+   padding: .5rem;
+   border-radius: .25rem;
    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
 }
 
@@ -55,6 +56,7 @@
 /**************************/
 
 .m-dialog div.m-message {
+   display: flex;
    flex-grow: 1;
    font-size: 16px;
    overflow: auto;
@@ -95,7 +97,7 @@
 
 .m-dialog.info div.m-title {
    font-size: 16px;
-   color: var(--idee-color-primary);
+   color: var(--idee-color-primary-dark);
 }
 
 .m-dialog.info div.m-button>button {

@@ -1,40 +1,73 @@
+/* eslint-disable max-len,object-property-newline */
 import Locatorscn from 'facade/locatorscn';
 
-IDEE.language.setLang('es');
-// IDEE.language.setLang('en');
+window.IDEE.plugin.Locatorscn = Locatorscn;
 
-// IDEE.proxy(false);
+IDEE.language.setLang('es');
 
 const map = IDEE.map({
   container: 'mapjs',
-  minZoom: 4, maxZoom: 20, zoom: 5,
+  zoom: 5,
+  minZoom: 4,
+  maxZoom: 20,
   center: [-467062.8225, 4783459.6216],
 });
 window.map = map;
 
-const mp = new Locatorscn({
-  collapsible: true,
-  collapsed: true,
-  isDraggable: true,
-  position: 'TC', // TL | TR | BL | BR | TC
-  tooltip: 'EJEMPLO DE TOOLTIP',
-  zoom: 16,
-  pointStyle: 'pinRojo', // 'pinAzul'|'pinRojo'|'pinMorado' Otros string causan que sea estilo deafult de API_IGN.
-  //
-  searchOptions: { // https://gzllpz.github.io/prueba2/api/informacion_general/
-    reverse: true, // Activa la opcion de escoger punto
-    resultVisibility: true, // Permite generado de features de la busqueda
-    addendum: 'iderioja',
-    size: 15,
-    layers: 'address,street,venue',
-    radius: 200,
-    urlAutocomplete: 'https://geocoder.larioja.org/v1/autocomplete', // Search with text input // https://gzllpz.github.io/prueba2/api/autocompletar/#filtros
-    urlReverse: 'https://geocoder.larioja.org/v1/reverse', // Search with Coordinate // https://gzllpz.github.io/prueba2/api/geocodificacion_inversa/
-    sources: '', // 'cnig' | 'dgcat' | 'ieca' | 'ign' | 'cnig,ign' | etc (default is all) // cnig	Centro Nacional de Información Geográfica (CNIG) // dgcat	Dirección General del Catastro // ieca	Instituto de Estadística y Cartografía de Andalucía (IECA) // ign	Instituto Geográfico Nacional (IGN)
-    peliasCoords: [-273618, 5224405], // 
-  }, // */
-  useProxy: true,
-  order: 1,
+let mp;
+
+const createPlugin = (options) => {
+  mp = new IDEE.plugin.Locatorscn(options);
+  window.mp = mp;
+  map.addPlugin(mp);
+};
+
+const removePlugin = () => {
+  if (mp) map.removePlugins(mp);
+};
+
+const removeButton = document.getElementById('removeButton');
+removeButton.addEventListener('click', () => { removePlugin(); });
+
+const selectPosition = document.getElementById('selectPosition');
+const selectCollapsed = document.getElementById('selectCollapsed');
+const inputOrder = document.getElementById('inputOrder');
+const inputTooltip = document.getElementById('inputTooltip');
+const inputZoom = document.getElementById('inputZoom');
+const selectPointStyle = document.getElementById('selectPointStyle');
+const inputSearchOptions = document.getElementById('inputSearchOptions');
+const selectUseProxy = document.getElementById('selectUseProxy');
+
+const safeParseJSON = (val, fallback) => {
+  try { return val ? JSON.parse(val) : fallback; } catch (e) { return fallback; }
+};
+
+const updatePlugin = () => {
+  const options = {};
+  options.position = selectPosition.value;
+  options.collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value === '' || selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true';
+  options.order = Number(inputOrder.value);
+  options.tooltip = inputTooltip.value;
+  options.zoom = Number(inputZoom.value);
+  options.pointStyle = selectPointStyle.options[selectPointStyle.selectedIndex].value;
+  options.searchOptions = safeParseJSON(inputSearchOptions.value, {});
+  if (selectUseProxy.value !== '') options.useProxy = selectUseProxy.value === 'true';
+
+  removePlugin();
+  createPlugin(options);
+};
+
+[
+  selectPosition,
+  selectCollapsed,
+  inputOrder,
+  inputTooltip,
+  inputZoom,
+  selectPointStyle,
+  inputSearchOptions,
+  selectUseProxy,
+].forEach((ctrl) => {
+  ctrl.addEventListener('change', updatePlugin);
 });
-map.addPlugin(mp);
-window.mp = mp;
+
+updatePlugin();

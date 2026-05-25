@@ -3380,6 +3380,19 @@ class Map extends MObject {
   }
 
   /**
+   * Obtiene la proyección nativa de OpenLayers activa en el mapa.
+   *
+   * @function
+   * @returns {OLProjection} Instancia nativa de ol/proj/Projection.
+   * @public
+   * @api
+   */
+  getNativeProjection() {
+    const olMap = this.getMapImpl();
+    return olMap.getView().getProjection();
+  }
+
+  /**
    * Este método obtiene la implementación del mapa.
    *
    * @function

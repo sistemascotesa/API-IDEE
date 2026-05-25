@@ -3,7 +3,6 @@
  */
 import Base from './Base';
 import SidePanelButton from './ui/buttons/SidePanelButton';
-import Panel from './ui/Panel';
 import {
   isArray,
   isBoolean,
@@ -15,6 +14,7 @@ import Control from './control/Control';
 import Tool from './tool/Tool';
 import Exception from './exception/exception';
 import * as Position from './ui/position';
+import PluginSidePanel from './ui/panels/PluginSidePanel';
 
 /**
  * @classdesc
@@ -68,7 +68,7 @@ class Plugin extends Base {
      * Url of plugin svg icon, usually load this library {@link https://github.com/Desarrollos-IDEE/icons_cota?tab=readme-ov-file | ICONS_COTA}
      * @type {string}
      */
-    this.svgPath = IDEE.utils.isString(options.svgPath) ? options.svgPath : null;
+    this.svgPath = isString(options.svgPath) ? options.svgPath : null;
     this.minPanelWidth = 256;
     this.maxPanelWidth = 360;
 
@@ -98,7 +98,7 @@ class Plugin extends Base {
     });
     map.addButtons(this.button);
 
-    this.panel = new Panel(this.name, {
+    this.panel = new PluginSidePanel(this.name, {
       tooltip: this.tooltip,
       position: this.position,
       minWidth: this.minPanelWidth,
@@ -120,7 +120,7 @@ class Plugin extends Base {
    * @param {IDEE.Map} map Añade la vista al mapa.
    * @api
    */
-  createView(map) {}
+  createView(map) { }
 
   addControl(controlsParamVar) {
     let controlsParam = controlsParamVar;
@@ -230,6 +230,33 @@ class Plugin extends Base {
 
   equals(obj) {
     return obj instanceof Plugin && obj.name === this.name;
+  }
+
+  /**
+   * This function destroys this plugin
+   *
+   * @public
+   * @function
+   * @api
+   */
+  destroy() {
+    if (this.controls.length > 0) {
+      this.controls.forEach((control) => {
+        control.deactivate();
+        // eslint-disable-next-line no-param-reassign
+        control.controls = [];
+      });
+      this.map.removeControls(this.controls);
+      this.controls = [];
+    }
+    if (this.button) {
+      this.map.removeButton(this.button);
+      this.button = null;
+    }
+    if (this.panel) {
+      this.map.removePanel(this.panel);
+      this.panel = null;
+    }
   }
 }
 

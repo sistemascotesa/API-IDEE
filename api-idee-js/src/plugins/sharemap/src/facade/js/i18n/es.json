@@ -12,8 +12,10 @@
     "help6": "La información relevante a la extensión y su posible parametrización está documentada en",
     "help7": "El ejemplo de uso de sus parámetros puede comprobarse en"
   },
+  "modalTitle": "Compartir mapa",
   "title": "Compartir URL",
   "text": "HTML embebido",
+  "accept": "Aceptar",
   "copy": "Copiar",
   "tooltip": "Compartir",
   "tooltipCopy": "¡Copiado!"
