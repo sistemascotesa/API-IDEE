@@ -28,6 +28,8 @@ const selectPosition = document.getElementById('selectPosition');
 const selectCollapsed = document.getElementById('selectCollapsed');
 const inputOrder = document.getElementById('inputOrder');
 const inputTooltip = document.getElementById('inputTooltip');
+const inputSvgPath = document.getElementById('inputSvgPath');
+const inputPluginContent = document.getElementById('inputPluginContent');
 
 const parseBool = (val) => {
   if (val === 'true') return true;
@@ -42,6 +44,11 @@ const updatePlugin = () => {
   options.collapsed = parseBool(selectCollapsed.value);
   options.order = Number(inputOrder.value);
   options.tooltip = inputTooltip.value.trim();
+  options.svgPath = inputSvgPath.value.trim();
+  const pluginContentRaw = inputPluginContent.value.trim();
+  if (pluginContentRaw) {
+    try { options.pluginContent = JSON.parse(pluginContentRaw); } catch (e) { }
+  }
 
   removePlugin();
   createPlugin(options);
@@ -52,6 +59,8 @@ const updatePlugin = () => {
   selectCollapsed,
   inputOrder,
   inputTooltip,
+  inputSvgPath,
+  inputPluginContent,
 ].forEach((ctrl) => {
   ctrl.addEventListener('change', updatePlugin);
 });

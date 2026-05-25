@@ -24,27 +24,34 @@ export default class Basic extends IDEE.Plugin {
       position: options.position || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
       order: options.order,
-      svgPath: options.svgPath || 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_base.svg',
+      svgPath: options.svgPath || 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tool.svg',
     });
 
     /**
      * Nombre de clase de la vista html
      * @public
-     * @type {string}
+     * @type {String}
      */
     this.className = 'm-plugin-basic';
 
     /**
      * Atributo colapsado del panel
      * @public
-     * @type {boolean}
+     * @type {Boolean}
      */
     this.collapsed = IDEE.utils.isBoolean(options.collapsed) ? options.collapsed : true;
 
     /**
+     * Contenido personalizado del plugin
+     * @public
+     * @type {Object}
+     */
+    this.pluginContent = options.pluginContent;
+
+    /**
      * Parámetros del plugin
      * @public
-     * @type {object}
+     * @type {Object}
      */
     this.options = options;
   }
@@ -79,7 +86,7 @@ export default class Basic extends IDEE.Plugin {
       order: this.order,
     });
 
-    this.controls.push(new BasicControl());
+    this.controls.push(new BasicControl(this.pluginContent));
     this.panel.addControls(this.controls);
     this.button.panel = this.panel;
     this.panel.button = this.button;
@@ -109,7 +116,7 @@ export default class Basic extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${this.svgPath}}`;
   }
 
   /**
