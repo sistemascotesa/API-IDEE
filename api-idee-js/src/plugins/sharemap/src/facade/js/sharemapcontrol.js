@@ -22,17 +22,6 @@ const beginShade = (element) => {
 };
 
 /**
- * This function removes the html element from DOM.
- *
- * @function
- * @private
- */
-const removeElement = (element) => {
-  const parent = element.parentElement;
-  parent.removeChild(element);
-};
-
-/**
  * This function copies the textr input in clipboard
  *
  * @function
@@ -273,7 +262,9 @@ export default class ShareMapControl extends IDEE.Control {
    * @api
    */
   activateModal(onClose) {
-    const dialog = IDEE.template.compileSync(modal, {
+    const content = IDEE.template.compileSync(modal, {
+      jsonp: true,
+      parseToHtml: false,
       vars: {
         title: this.title_,
         text: this.text_,
@@ -284,12 +275,18 @@ export default class ShareMapControl extends IDEE.Control {
       },
     });
 
-    this.accessibilityTab(dialog);
+    IDEE.dialog.info(content, getValue('modalTitle'), this.order);
+
+    const dialogEl = document.querySelector('.m-dialog:last-of-type');
+    const dialogContainer = dialogEl.querySelector('.m-message');
+
+    dialogEl.classList.add('m-dialog-sharemap');
+    this.accessibilityTab(dialogEl);
 
     if (this.overwriteStyles_ === true) {
       this.styles_.forEach((style) => {
-        const element = dialog.querySelectorAll(style.id);
-        element.forEach((elm) => {
+        const elements = dialogContainer.querySelectorAll(style.id);
+        elements.forEach((elm) => {
           const changeElementStyle = elm;
           Object.keys(style.styles).forEach((key) => {
             changeElementStyle.style[key] = style.styles[key];
@@ -298,13 +295,12 @@ export default class ShareMapControl extends IDEE.Control {
       });
     }
 
-    const message = dialog.querySelector('#m-plugin-sharemap-message input');
-    const html = dialog.querySelector('#m-plugin-sharemap-html input');
+    const message = dialogContainer.querySelector('#m-plugin-sharemap-message input');
+    const html = dialogContainer.querySelector('#m-plugin-sharemap-html input');
 
-    const apiIdeeContainer = document.querySelector('div.m-api-idee-container');
-    const okButton = dialog.querySelector('#m-plugin-sharemap-button > button');
+    const okButton = dialogContainer.querySelector('#m-plugin-sharemap-button > button');
     okButton.addEventListener('click', () => {
-      removeElement(dialog);
+      IDEE.dialog.remove();
       if (typeof onClose === 'function') {
         onClose();
       } else {
@@ -313,10 +309,10 @@ export default class ShareMapControl extends IDEE.Control {
       }
     });
 
-    const copyButton = dialog.querySelector('#m-plugin-sharemap-copybutton');
-    const copyButtonHtml = dialog.querySelector('#m-plugin-sharemap-copybuttonhtml');
+    const copyButton = dialogContainer.querySelector('#m-plugin-sharemap-copybutton');
+    const copyButtonHtml = dialogContainer.querySelector('#m-plugin-sharemap-copybuttonhtml');
 
-    const title = dialog.querySelector('#m-plugin-sharemap-title');
+    const title = dialogContainer.querySelector('#m-plugin-sharemap-title');
     copyButton.addEventListener('click', () => {
       copyURL(message);
       beginShade(title.querySelector('#m-plugin-sharemap-tooltip'));
@@ -327,10 +323,8 @@ export default class ShareMapControl extends IDEE.Control {
       beginShade(title.querySelector('#m-plugin-sharemap-tooltip'));
     });
 
-    this.buildURL(dialog).then(() => apiIdeeContainer.appendChild(dialog));
-    this.buildHtml(dialog)
-      .then(() => apiIdeeContainer.appendChild(dialog))
-      .then(() => { title.focus(); title.click(); });
+    this.buildURL(dialogContainer);
+    this.buildHtml(dialogContainer).then(() => { title.focus(); title.click(); });
   }
 
   /**
@@ -406,9 +400,9 @@ export default class ShareMapControl extends IDEE.Control {
       }
       shareURL = encodeURI(shareURL);
       IDEE.remote.get(`http://tinyurl.com/api-create.php?url=${shareURL}`).then((response) => {
-        facebook.href = `http://www.facebook.com/sharer.php?u=${response.text}`;
-        twitter.href = `https://twitter.com/intent/tweet?url=${response.text}`;
-        pinterest.href = `https://www.pinterest.es/pin/create/button/?url=${response.text}`;
+        facebook.addEventListener('click', () => window.open(`http://www.facebook.com/sharer.php?u=${response.text}`, '_blank'));
+        twitter.addEventListener('click', () => window.open(`https://twitter.com/intent/tweet?url=${response.text}`, '_blank'));
+        pinterest.addEventListener('click', () => window.open(`https://www.pinterest.es/pin/create/button/?url=${response.text}`, '_blank'));
       });
     });
   }

@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="idee" content="yes">
     <title>Basic TEST</title>
-    <link href="https://api-ideedes.grupotecopy.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <link href="http://localhost:8080/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -42,6 +42,20 @@
                     <option value="Plantilla plugin"></option>
                 </datalist>
             </div>
+            <div>
+                <label for="inputSvgPath" title="Ruta al SVG que se usa como icono del botón del plugin">Ruta SVG del icono "svgPath"</label>
+                <input type="text" id="inputSvgPath" list="svgPathSug">
+                <datalist id="svgPathSug">
+                    <option value="https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tool.svg"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputPluginContent" title='Objeto JSON con las claves "html", "css" y "js" a incrustar en el panel'>Contenido del panel "pluginContent"</label>
+                <input type="text" id="inputPluginContent" list="pluginContentSug">
+                <datalist id="pluginContentSug">
+                    <option value='{"html": "<p>Contenido personalizado del plugin que se despliega en el panel. Se permite definir contenido HTML, CSS y JavaScript.</p>", "css": "p { color: red; }", "js": "console.log(\"Contenido del plugin implementado en el panel\")"}'></option>
+                </datalist>
+            </div>
         </div>
         <div class="m-test-buttons">
             <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
@@ -49,8 +63,8 @@
     </div>
 
     <div id="mapjs" class="container"></div>
-    <script type="text/javascript" src="https://api-ideedes.grupotecopy.es/api-idee/js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="https://api-ideedes.grupotecopy.es/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/api-idee/js/apiidee.ol.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/api-idee/js/configuration.js"></script>
     <script type="text/javascript" src="/main.js"></script>
 </body>
 

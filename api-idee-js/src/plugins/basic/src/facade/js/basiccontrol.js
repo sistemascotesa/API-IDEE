@@ -15,7 +15,7 @@ export default class BasicControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api stable
    */
-  constructor() {
+  constructor(pluginContent) {
     // 1. Comprueba si la implementación puede crear el control
     if (IDEE.utils.isUndefined(BasicImplControl)
       || (IDEE.utils.isObject(BasicImplControl)
@@ -25,6 +25,7 @@ export default class BasicControl extends IDEE.Control {
     // 2. Crea la implementación del control
     const impl = new BasicImplControl();
     super('Basic', impl);
+    this.pluginContent = pluginContent;
   }
 
   /**
@@ -39,11 +40,26 @@ export default class BasicControl extends IDEE.Control {
     return new Promise((success, fail) => {
       const html = IDEE.template.compileSync(template, {
         vars: {
-          translations: {
-            text: getValue('text'),
-          },
+          text: getValue('text'),
         },
       });
+
+      if (this.pluginContent?.html) {
+        html.querySelector('.m-plugin-basic-default-content').style.display = 'none';
+        html.querySelector('.m-plugin-basic-custom-content').innerHTML = this.pluginContent.html;
+      }
+
+      if (this.pluginContent?.css) {
+        const style = document.createElement('style');
+        style.textContent = this.pluginContent.css;
+        document.head.appendChild(style);
+      }
+
+      if (this.pluginContent?.js) {
+        // eslint-disable-next-line no-new-func
+        setTimeout(() => new Function(this.pluginContent.js)(), 0);
+      }
+
       success(html);
     });
   }

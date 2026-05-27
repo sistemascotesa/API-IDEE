@@ -12,8 +12,10 @@
     "help6": "The information relevant to the extension and its possible parameterization is documented in",
     "help7": "The example of use of its parameters can be checked in"
   },
+  "modalTitle": "Share map",
   "title": "Share URL",
   "text": "Embedded HTML",
+  "accept": "Accept",
   "copy": "Copy",
   "tooltip": "Share",
   "tooltipCopy": "Copied!"

@@ -27,6 +27,11 @@
         "type": "simple",
         "name": "tooltip",
         "position": 3
+      },
+      {
+        "type": "simple",
+        "name": "svgPath",
+        "position": 4
       }
     ]
   }],

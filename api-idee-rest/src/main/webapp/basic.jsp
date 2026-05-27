@@ -59,6 +59,21 @@
                                 <option value="Plantilla plugin"></option>
                             </datalist>
                         </div>
+                        <div>
+                            <label for="inputSvgPath"
+                                title="Ruta al SVG que se usa como icono del botón del plugin.">Ruta SVG del icono "svgPath"</label>
+                            <input type="text" name="svgPath" id="inputSvgPath" list="svgPathSug">
+                            <datalist id="svgPathSug">
+                                <option value="https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tool.svg"></option>
+                            </datalist>
+                        </div>
+                        <div>
+                            <label for="inputPluginContent" title='Objeto JSON con las claves "html", "css" y "js" a incrustar en el panel'>Contenido del panel "pluginContent"</label>
+                            <input type="text" id="inputPluginContent" list="pluginContentSug">
+                            <datalist id="pluginContentSug">
+                                <option value='{"html": "<p>Contenido personalizado del plugin que se despliega en el panel. Se permite definir contenido HTML, CSS y JavaScript.</p>", "css": "p { color: red; }", "js": "console.log(\"Contenido del plugin implementado en el panel\")"}'></option>
+                            </datalist>
+                        </div>
                         <input type="hidden" id="buttonAPI" value="API Rest" />
                     </div>
                     <div class="m-test-buttons">
@@ -90,6 +105,8 @@
                             const selectCollapsed = document.getElementById('selectCollapsed');
                             const inputOrder = document.getElementById('inputOrder');
                             const inputTooltip = document.getElementById('inputTooltip');
+                            const inputSvgPath = document.getElementById('inputSvgPath');
+                            const inputPluginContent = document.getElementById('inputPluginContent');
                             const botonEliminar = document.getElementById('botonEliminar');
 
                             const parseBool = (val) => {
@@ -114,6 +131,11 @@
                                 options.collapsed = parseBool(selectCollapsed.value);
                                 options.order = Number(inputOrder.value);
                                 options.tooltip = inputTooltip.value;
+                                options.svgPath = inputSvgPath.value.trim();
+                                const pluginContentRaw = inputPluginContent.value.trim();
+                                if (pluginContentRaw) {
+                                    try { options.pluginContent = JSON.parse(pluginContentRaw); } catch (e) { /* JSON inválido, se ignora */ }
+                                }
                                 removePlugin();
                                 createPlugin(options);
                             };
@@ -123,6 +145,8 @@
                                 selectCollapsed,
                                 inputOrder,
                                 inputTooltip,
+                                inputSvgPath,
+                                inputPluginContent,
                             ].forEach((ctrl) => {
                                 ctrl.addEventListener('change', updatePlugin);
                             });

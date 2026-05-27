@@ -3848,6 +3848,21 @@ class Map extends Base {
   }
 
   /**
+   * Obtiene la proyección nativa de OpenLayers activa en el mapa.
+   *
+   * @public
+   * @function
+   * @returns {OLProjection} Instancia nativa de ol/proj/Projection.
+   * @api
+   */
+  getNativeProjection() {
+    if (isUndefined(MapImpl.prototype.getNativeProjection)) {
+      Exception(getValue('exception').getprojection_method);
+    }
+    return this.getImpl().getNativeProjection();
+  }
+
+  /**
    * Este método establece la proyección para esta
    * instancia del mapa.
    *

@@ -31,16 +31,6 @@
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_instagram.svg');
 }
 
-.g-cartografia-facebook::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_facebook.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_facebook.svg');
-}
-
-.g-cartografia-pinterest::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/pinterest.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/pinterest.svg');
-}
-
 .g-cartografia-youtube::before {
     -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_youtube.svg');
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_youtube.svg');
