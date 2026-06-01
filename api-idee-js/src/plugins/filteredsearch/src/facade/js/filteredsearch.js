@@ -141,7 +141,7 @@ export default class FilteredSearch extends IDEE.Plugin {
    */
   getHelp() {
     return {
-      title: getValue('textHelp.title'),
+      title: getValue('textHelp.squemaTitle'),
       content: new Promise((resolve) => {
         const html = IDEE.template.compileSync(myhelp, {
           vars: {

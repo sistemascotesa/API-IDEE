@@ -3152,7 +3152,7 @@ class Map extends MObject {
     // calculates the new resolution
     let newResolution;
     // eslint-disable-next-line no-underscore-dangle
-    const facadeUserZoom = this.facadeMap_._userZoom;
+    const facadeUserZoom = this.facadeMap_._userZoom || IDEE.config.DEFAULT_ZOOM;
     const userAskedZoom = !isNullOrEmpty(facadeUserZoom);
     const useZoomIndex = isNullOrEmpty(this.userBbox_) || userAskedZoom;
     if (!isNullOrEmpty(resolutions) && useZoomIndex) {

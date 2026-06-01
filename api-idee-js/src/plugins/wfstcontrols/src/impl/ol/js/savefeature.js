@@ -153,9 +153,9 @@ export default class SaveFeature extends IDEE.impl.Control {
           if (response.code === 200 && response.text.indexOf('ExceptionText') === -1 && response.text.indexOf('<error><descripcion>') === -1) {
             IDEE.dialog.success(getValue('save_successfully'));
           } else if (response.code === 401) {
-            IDEE.dialog.error(getValue('save_error_unauthorized'));
+            IDEE.dialog.error(getValue('exception.save_error_unauthorized'));
           } else {
-            IDEE.dialog.error(getValue('save_element_error').concat(response.text));
+            IDEE.dialog.error(getValue('exception.save_element_error').concat(response.text));
           }
         });
 

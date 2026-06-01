@@ -141,7 +141,9 @@ class GetCapabilities {
         }
       } else if (isObject(layer)) {
         // base case
-        if (isNullOrEmpty(layerName) || (layer.Name === layerName)) {
+        if (isNullOrEmpty(layerName) || (layer.Name === layerName)
+          || (isString(layer.Name) && isString(layerName)
+          && layer.Name.toLowerCase() === layerName.toLowerCase())) {
           const projection = tgtProjection || this.projection_.code;
           if (!isNullOrEmpty(layer.BoundingBox)) {
             const bboxSameProj = layer.BoundingBox.find((bbox) => bbox.crs === projection);
@@ -191,7 +193,12 @@ class GetCapabilities {
    * @private
    */
   isReversedAxisOrder_(crsCode, proj) {
-    if (this.capabilities_.version !== '1.3.0' || !proj) {
+    if (this.capabilities_.version !== '1.3.0' || !proj || isNullOrEmpty(crsCode)) {
+      return false;
+    }
+    const crs = crsCode.toUpperCase();
+    // CRS:84 usa orden lon/lat (e/n); no aplicar intercambio de ejes WMS 1.3.0
+    if (crs === 'CRS:84' || crs === 'OGC:1.3:CRS84' || crs.includes('CRS84')) {
       return false;
     }
     const axisOrientation = proj.getAxisOrientation();
@@ -295,6 +302,10 @@ class GetCapabilities {
     }
 
     if (this.capabilities_.version === '1.3.0' && isString(this.capabilitiesProj)) {
+      const crs = this.capabilitiesProj.toUpperCase();
+      if (crs === 'CRS:84' || crs === 'OGC:1.3:CRS84' || crs.includes('CRS84')) {
+        return result;
+      }
       const proj = getProjection(this.capabilitiesProj);
       if (proj && Array.isArray(result)) {
         const axisOrientation = proj.getAxisOrientation();

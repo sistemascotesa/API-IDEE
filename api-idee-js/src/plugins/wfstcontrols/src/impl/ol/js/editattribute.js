@@ -68,59 +68,70 @@ export default class EditAttribute extends IDEE.impl.Control {
    * @param {array} coordinate - Coordinated to show popup
    */
   showEditPopup_(features, evt) {
-    this.unselectFeature_();
-    this.editFeature = features[0].getImpl().getOLFeature();
-    const coordinate = evt.coord;
+    if (features.length !== 0) {
+      this.unselectFeature_();
+      this.editFeature = features[0].getImpl().getOLFeature();
+      const coordinate = evt.coord;
 
-    // avoid editing new features
-    if (IDEE.utils.isNullOrEmpty(this.editFeature.getId())) {
-      this.editFeature = null;
-      IDEE.dialog.info(getValue('save_element_before'));
-    } else {
-      this.editFeature.setStyle(EditAttribute.SELECTED_STYLE);
+      // avoid editing new features
+      if (IDEE.utils.isNullOrEmpty(this.editFeature.getId())) {
+        this.editFeature = null;
+        IDEE.dialog.info(getValue('exception.save_element_before'));
+      } else {
+        this.editFeature.setStyle(EditAttribute.SELECTED_STYLE);
 
-      const templateVar = {
-        properties: [],
-      };
-      Object.keys(this.editFeature.getProperties()).filter((propName) => {
-        return (propName !== 'geometry');
-      }).forEach((propName) => {
-        templateVar.properties.push({
-          key: propName,
-          value: this.editFeature.get(propName),
+        const templateVar = {
+          properties: [],
+        };
+        Object.keys(this.editFeature.getProperties()).filter((propName) => {
+          return (propName !== 'geometry');
+        }).forEach((propName) => {
+          templateVar.properties.push({
+            key: propName,
+            value: this.editFeature.get(propName),
           // 'type': p.localType
-        });
-      }, this);
-      const options = { jsonp: true, vars: templateVar, parseToHtml: false };
-      const htmlAsText = IDEE.template.compileSync(templatePopupHTML, options);
-      const popupContent = {
-        icon: 'g-cartografia-texto',
-        title: POPUP_TITLE,
-        content: htmlAsText,
-        listeners: [{
-          selector: '#m-button-editattributeSave',
-          all: true,
-          type: 'click',
-          callback: (e) => this.saveAttributes_(e),
-        }],
-      };
-      this.popup_ = this.facadeMap_.getPopup();
-      if (!IDEE.utils.isNullOrEmpty(this.popup_)) {
-        const hasExternalContent = this.popup_.getTabs().some((tab) => {
-          return (tab.title !== POPUP_TITLE);
-        });
-        if (!hasExternalContent) {
-          this.facadeMap_.removePopup();
+          });
+        }, this);
+        const options = {
+          jsonp: true,
+          vars: {
+            ...templateVar,
+            translations: {
+              save: getValue('save'),
+            },
+          },
+          parseToHtml: false,
+        };
+        const htmlAsText = IDEE.template.compileSync(templatePopupHTML, options);
+        const popupContent = {
+          icon: 'g-cartografia-texto',
+          title: POPUP_TITLE,
+          content: htmlAsText,
+          listeners: [{
+            selector: '#m-button-editattributeSave',
+            all: true,
+            type: 'click',
+            callback: (e) => this.saveAttributes_(e),
+          }],
+        };
+        this.popup_ = this.facadeMap_.getPopup();
+        if (!IDEE.utils.isNullOrEmpty(this.popup_)) {
+          const hasExternalContent = this.popup_.getTabs().some((tab) => {
+            return (tab.title !== POPUP_TITLE);
+          });
+          if (!hasExternalContent) {
+            this.facadeMap_.removePopup();
+            this.popup_ = new IDEE.Popup();
+            this.popup_.addTab(popupContent);
+            this.facadeMap_.addPopup(this.popup_, coordinate);
+          } else {
+            this.popup_.addTab(popupContent);
+          }
+        } else {
           this.popup_ = new IDEE.Popup();
           this.popup_.addTab(popupContent);
           this.facadeMap_.addPopup(this.popup_, coordinate);
-        } else {
-          this.popup_.addTab(popupContent);
         }
-      } else {
-        this.popup_ = new IDEE.Popup();
-        this.popup_.addTab(popupContent);
-        this.facadeMap_.addPopup(this.popup_, coordinate);
       }
     }
   }
@@ -189,7 +200,7 @@ export default class EditAttribute extends IDEE.impl.Control {
         if (response.code === 200) {
           IDEE.dialog.success(getValue('save_element_successfully'));
         } else {
-          IDEE.dialog.error(getValue('save_element_error').concat(response.text));
+          IDEE.dialog.error(getValue('exception.save_element_error').concat(response.text));
         }
         this.unselectFeature_();
       });

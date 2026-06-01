@@ -34,6 +34,7 @@ export default class WFSTControls extends IDEE.Plugin {
     let layernamefix;
     let geometryfix;
     const proxyfix = {};
+    let optionsPosition = 'TL';
 
     // Parse new controls model to the old one
 
@@ -43,6 +44,9 @@ export default class WFSTControls extends IDEE.Plugin {
       geometryfix = controls.geometry;
       proxyfix.status = controls.proxy ? controls.proxy.status === true || controls.proxy.status === 'true' : true;
       proxyfix.disable = controls.proxy ? controls.proxy.disable === true || controls.proxy.disable === 'true' : true;
+      if (controls.position) {
+        optionsPosition = controls.position;
+      }
     } else {
       layernamefix = layername;
       controlsfix = controls;
@@ -50,6 +54,9 @@ export default class WFSTControls extends IDEE.Plugin {
       proxyfix.status = proxyStatus;
       proxyfix.disable = proxyDisable;
     }
+
+    const positions = ['TR', 'TL', 'BL', 'BR'];
+    this.position_ = positions.includes(optionsPosition) ? optionsPosition : 'TL';
 
     /**
      * Array of controls to be added
@@ -240,12 +247,12 @@ export default class WFSTControls extends IDEE.Plugin {
       collapsible: true,
       className: 'm-edition',
       collapsedButtonClass: 'g-cartografia-editar',
-      position: IDEE.ui.position.TL,
+      position: IDEE.ui.position[this.position_],
       tooltip: getValue('tooltip'),
     });
 
     if (IDEE.utils.isNullOrEmpty(wfslayer)) {
-      IDEE.dialog.error(`${getValue('noWFSlayerloaded')}<b>${this.controls.join(',')}</b>${getValue('exception.noWFSlayerloaded1')}`);
+      IDEE.dialog.error(`${getValue('exception.noWFSlayerloaded')}<b>${this.controls.join(',')}</b>${getValue('exception.noWFSlayerloaded1')}`);
     } else {
       let addSave = false;
       let addClear = false;
@@ -373,7 +380,7 @@ export default class WFSTControls extends IDEE.Plugin {
       name: this.layername_,
     })[0];
     if (IDEE.utils.isNullOrEmpty(wfslayer)) {
-      IDEE.dialog.error(`${getValue('noloadedWFSlayer')}<b>${layername}</b>${getValue('noloadedWFSlayer1')}.`);
+      IDEE.dialog.error(`${getValue('exception.noloadedWFSlayer')}<b>${layername}</b>${getValue('exception.noloadedWFSlayer1')}.`);
     } else {
       const objControls = [];
       if (!IDEE.utils.isNullOrEmpty(this.drawfeature_)) objControls.push(this.drawfeature_);
@@ -467,7 +474,7 @@ export default class WFSTControls extends IDEE.Plugin {
    */
   getHelp() {
     return {
-      title: getValue('textHelp.title'),
+      title: getValue('textHelp.squemaTitle'),
       content: new Promise((resolve) => {
         const html = IDEE.template.compileSync(myhelp, {
           vars: {

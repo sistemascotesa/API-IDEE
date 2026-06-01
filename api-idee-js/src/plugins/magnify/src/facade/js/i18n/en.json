@@ -8,6 +8,7 @@
   "actmagnifier": "Activate magnifier",
   "zoomlevel": "Zoom level: ",
   "textHelp": {
+    "squemaTitle": "magnify",
     "title": "MAGNIFY",
     "paragraph1": "The magnifier enlarges a circular area of the map over the background cartography (e.g. imagery or basemaps) while the rest of the view stays at normal scale for comparison.",
     "screenshot1Alt": "Icon of the plugin magnify in the map",

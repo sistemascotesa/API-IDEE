@@ -87,11 +87,34 @@
 - Se soluciona problemas con cambio de proyección.
 - Se soluciona problema con el almacenado de altitud en el plugin infocoordinates.
 - Se soluciona la visualización de objetos geográficos de tipo "GeometryCollection".
-- Se implementa multilenguaje en los plugins mapheader, mapfooter, maxextzoom, magnify y filteredsearch.
+- Se implementa multilenguaje en los plugins mapheader, mapfooter, maxextzoom, magnify, filteredsearch y wfstcontrols.
 - Se implementa el método getHelp en los plugins filteredsearch, magnify, mapheader, mapfooter, maxextzoom y wfstcontrols.
 - Se soluciona problema al usar estilo categórico con un estilo genérico e icono sin tener el proxy activado.
 - Se soluciona problema con capas geojson con source GeometryCollection.
 - Se genera en legacy el versionado de 1.0.0 y se modifica la versión del proyecto a la 1.1.0.
+- Se soluciona problema al activar resoluciones automáticas y cargar capa wms sin zoom.
+- Se adaptan los plugins para que muestre el título del índice en minúscula y el del contenido de la ayuda en mayúsculas.
+- Se soluciona problema con parámetro listeners en popup.
+- Se implementa la funcionalidad de listar los plugins de Community Plugins al llamar al servicio https://componentes.idee.es/api-idee/api/actions/resourcesPlugins.
+- Se elimina librería jackson y jersey-json por desuso y se aumenta la versión de log4j.
+- Se soluciona problemas con el control rotate en Cesium.
+- Se aumenta tamaño disponible para mostrar información en attributions.
+- Se resuelve problema con carga de capas WMS con proyección 4230 en el capabilities.
+- Se resuelven vulnerabilidades críticas en las librerías en el proyecto.
+- Se soluciona problema con estilo categoría y toImage.
+- Se soluciona problema con borde blanco del plugin Overviewmap.
+- Se soluciona problema con las capas WMS en versión 1.1.0 y el sistema de referencia.
+- Se soluciona problema con la actualización del valor de IDEE.useproxy.
+- Se incorpora en Cesium el estilo cluster.
+- Se implementa la posibilidad de añadir patrones en estilos en implementación Cesium.
+- Se mejora rendimiento de compilación.
+- Se implementa la posibilidad de añadir iconos con formato GLB/GLTF en Cesium.
+- Se soluciona problemas con coropletas y rango de colores.
+- Se elimina la librería ticket así como sus dependencias y se adapta el proxy para que no la use.
+- Se elimina librería commons-fileupload al no usarse.
+- Se actualizan las librerías log4j y postgresql.
+- Se fija la versión de la librería jackson-mapper-asl.
+- Se eliminan ficheros innecesarios de configuración de log.
 - Se pueden importar archivos .tif, .tiff y .gpkg y se implementa mejora a la hora de añadir archivos pesados en el plugin LayerSwitcher.
 - Se crean métodos en Utils para la transformación de formato GeoJSON y WKT a WKB, tanto a nivel de feature como de capa.
 - La información recibida de un servicio en formato GeoJSON o KML se proyecta en la proyección estándar de estos formatos, EPSG:4326.
@@ -104,8 +127,8 @@
 - Se cambia la estructura del archivo GeoJSON que toma como entrada el parámetro 'precharged' de LayerSwitcher.
 - Se reconoce el parámetro 'type' del servicio cargado en LayerSwitcher.
 - Permite la creación de grupos anidados de capas en LayerSwitcher.
-- Se sube la versión de OpenLayers de la 10.4 a la 10.7.
 - Se implementa funcionalidad de resoluciones automáticas y configuración para activar dicha funcionalidad.
+- Se sube la versión de OpenLayers de la 10.4 a la 10.7.
 
 01/01/25 - Versión 1.0.0
 - Se incluye implementación 3D con Cesium

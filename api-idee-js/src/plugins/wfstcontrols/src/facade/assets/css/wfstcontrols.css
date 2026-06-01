@@ -104,6 +104,15 @@
    border: 2px solid red;
 }
 
+.m-left .m-panel.m-edition.opened div.m-control button[class^=g-cartografia-],
+.m-left .m-panel.m-edition.opened div.m-control button[class*=" g-cartografia-"],
+.m-right .m-panel.m-edition.opened div.m-control button[class^=g-cartografia-],
+.m-right .m-panel.m-edition.opened div.m-control button[class*=" g-cartografia-"] {
+   color: #364b5f !important;
+   background-color: white !important;
+   opacity: 1;
+}
+
 .m-areas>div.m-area>div.m-panel.m-edition>div.m-panel-controls>div.m-control.activated>button {
    color: #67af13 !important;
 }

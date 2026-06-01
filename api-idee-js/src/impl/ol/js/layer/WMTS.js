@@ -257,7 +257,7 @@ class WMTS extends LayerBase {
   setVisible(visibility) {
     this.visibility = visibility;
     // if this layer is base then it hides all base layers
-    if ((visibility === true) && (this.isBase === true)) {
+    if ((visibility === true) && (this.isBase !== false) && !this.isVisible()) {
       // hides all base layers
       this.map.getBaseLayers()
         .filter((layer) => !layer.equals(this.facadeLayer_) && layer.isVisible())
@@ -268,18 +268,11 @@ class WMTS extends LayerBase {
         this.olLayer.setVisible(visibility);
       }
 
-      // updates resolutions and keep the zoom (priorizar bbox guardado en el mapa)
-      let oldBbox = this.map.getBbox();
-      // eslint-disable-next-line no-underscore-dangle
-      if (!isNullOrEmpty(this.map.getImpl().userBbox_)) {
-        // eslint-disable-next-line no-underscore-dangle
-        oldBbox = this.map.getImpl().userBbox_;
-      }
-      if (!isNullOrEmpty(oldBbox)) {
-        const extent = isArray(oldBbox)
-          ? oldBbox
-          : [oldBbox.x.min, oldBbox.y.min, oldBbox.x.max, oldBbox.y.max];
-        this.map.setBbox(extent, { nearest: true });
+      // updates resolutions and keep the zoom
+      const oldZoom = this.map.getZoom();
+      // this.map.getImpl().updateResolutionsFromBaseLayer();
+      if (!isNullOrEmpty(oldZoom)) {
+        this.map.setZoom(oldZoom);
       }
     } else if (!isNullOrEmpty(this.olLayer)) {
       this.olLayer.setVisible(visibility);

@@ -41,6 +41,7 @@
   "no_saved_queries": "No saved queries.",
   "no_entities": "No entities with the specified characteristics.",
   "textHelp": {
+    "squemaTitle": "filteredsearch",
     "title": "FILTEREDSEARCH",
     "paragraph1": "This plugin lets you build attribute queries on queryable map layers, combine operators and values, apply the selection on the map, and manage saved queries.",
     "screenshot1Alt": "Map with the filter manager button (funnel icon) visible on the cartography",

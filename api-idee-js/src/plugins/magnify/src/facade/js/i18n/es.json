@@ -8,6 +8,7 @@
   "actmagnifier": "Activar lupa",
   "zoomlevel": "Nivel de zoom: ",
   "textHelp": {
+    "squemaTitle": "magnify",
     "title": "MAGNIFY",
     "paragraph1": "La lupa amplía una zona circular del mapa sobre la cartografía de fondo, manteniendo el resto del visor a escala normal para comparar el detalle.",
     "screenshot1Alt": "Icono del plugin magnify en el mapa",

@@ -8,6 +8,11 @@
     "type": "object",
     "properties": [{
       "type": "simple",
+      "name": "position",
+      "possibleValues": ["TL", "TR", "BL", "BR"],
+      "value": "TL"
+    },{
+      "type": "simple",
       "name": "features",
       "value": "drawfeature,modifyfeature,deletefeature,editattribute"
     },{

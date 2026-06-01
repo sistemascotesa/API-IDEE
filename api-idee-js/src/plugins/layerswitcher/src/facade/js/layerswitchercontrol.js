@@ -319,8 +319,11 @@ export default class LayerswitcherControl extends IDEE.Control {
       && !IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata.abstract);
 
     return new Promise((success) => {
-      let hasStyles = (hasMetadata && layer.capabilitiesMetadata.style.length > 1)
-        || (layer instanceof IDEE.layer.Vector && !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
+      let hasStyles = (hasMetadata
+        && layer.capabilitiesMetadata.style !== undefined
+        && layer.capabilitiesMetadata.style.length > 1)
+        || (layer instanceof IDEE.layer.Vector
+          && !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
           && layer.predefinedStyles.length > 1);
       if (layer.type === 'KML') {
         if (layer.options === null) {
@@ -1308,6 +1311,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     if (precharged && precharged.groups && !Array.isArray(precharged.groups[0].services)) {
       precharged = this.normalizePrecharged(precharged);
+      this.precharged = precharged;
     }
 
     const hasPrecharged = (precharged.groups !== undefined && precharged.groups.length > 0)
@@ -2050,7 +2054,7 @@ export default class LayerswitcherControl extends IDEE.Control {
             this.capabilities[j].options.origen = this.capabilities[j].type;
             const legendUrl = this.capabilities[j].getLegendURL();
             const meta = this.capabilities[j].capabilitiesMetadata;
-            if ((legendUrl.indexOf('GetLegendGraphic') > -1 || legendUrl.indexOf(`${IDEE.config.STATIC_RESOURCES_URL}/imagenes/leyenda/legend-default.png`) > -1) && meta !== undefined && meta.style.length > 0) {
+            if ((legendUrl.indexOf('GetLegendGraphic') > -1 || legendUrl.indexOf(`${IDEE.config.STATIC_RESOURCES_URL}/imagenes/leyenda/legend-default.png`) > -1) && meta !== undefined && meta.style !== undefined && meta.style.length > 0) {
               if (meta.style[0].LegendURL !== undefined && meta.style[0].LegendURL.length > 0) {
                 const style = meta.style[0].LegendURL[0].OnlineResource;
                 if (style !== undefined && style !== null) {

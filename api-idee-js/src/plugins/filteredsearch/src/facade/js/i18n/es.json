@@ -41,6 +41,7 @@
   "no_saved_queries": "No hay consultas guardadas.",
   "no_entities": "No hay entidades con las caracerísticas indicadas.",
   "textHelp": {
+    "squemaTitle": "filteredsearch",
     "title": "FILTEREDSEARCH",
     "paragraph1": "Este plugin permite construir consultas por atributos sobre capas del mapa que admitan consulta, combinar operadores y valores, aplicar la selección al mapa y gestionar consultas guardadas.",
     "screenshot1Alt": "Icono del plugin filteredsearch en el mapa",

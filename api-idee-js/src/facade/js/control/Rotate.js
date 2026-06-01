@@ -259,17 +259,19 @@ class Rotate extends Control {
       });
     }
 
-    const transform = 'transform';
-    compTemplate.querySelector('#m-rotate-marker').style.WebkitTransform = 'rotate(45deg)';
-    compTemplate.querySelector('#m-rotate-marker').style.MozTransform = 'rotate(45deg)';
-    compTemplate.querySelector('#m-rotate-marker').style[transform] = 'rotate(45deg)';
-    onMouseDown(this, compTemplate);
-    onMouseMove(this, compTemplate, map);
-    onMouseUp(this, compTemplate);
-    onClick(this, compTemplate, map);
-    this.on(EventType.ADDED_TO_MAP, () => {
-      this.getImpl().onChangeView(compTemplate);
-    });
+    if (this.map.getImplementation() !== 'cesium') {
+      const transform = 'transform';
+      compTemplate.querySelector('#m-rotate-marker').style.WebkitTransform = 'rotate(45deg)';
+      compTemplate.querySelector('#m-rotate-marker').style.MozTransform = 'rotate(45deg)';
+      compTemplate.querySelector('#m-rotate-marker').style[transform] = 'rotate(45deg)';
+      onMouseDown(this, compTemplate);
+      onMouseMove(this, compTemplate, map);
+      onMouseUp(this, compTemplate);
+      onClick(this, compTemplate, map);
+      this.on(EventType.ADDED_TO_MAP, () => {
+        this.getImpl().onChangeView(compTemplate);
+      });
+    }
     return compTemplate;
   }
 

@@ -7,6 +7,7 @@
   "hide": " Ocultar ",
   "show": " Mostrar ",
   "textHelp": {
+    "squemaTitle": "mapfooter",
     "title": "MAPFOOTER",
     "paragraph1": "El plugin mapfooter inserta un pie HTML bajo el visor (panel inferior izquierdo por defecto) con contenido configurable (htmlCode) y hojas de estilo opcionales (cssList), habitual para avisos legales, enlaces o créditos.",
     "screenshot1Alt": "Visor con el pie de página plegado; el mapa aprovecha la altura inferior",

@@ -2,6 +2,7 @@
   "plugins": [
     {
       "name": "backimglayer",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -22,6 +23,7 @@
     },
     {
       "name": "basic",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -42,6 +44,7 @@
     },
     {
       "name": "comparators",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -62,6 +65,7 @@
     },
     {
       "name": "contactlink",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -82,6 +86,7 @@
     },
     {
       "name": "filteredsearch",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -97,6 +102,7 @@
     },
     {
       "name": "help",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -117,6 +123,7 @@
     },
     {
       "name": "incicarto",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -137,6 +144,7 @@
     },
     {
       "name": "infocoordinates",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -157,6 +165,7 @@
     },
     {
       "name": "information",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -177,6 +186,7 @@
     },
     {
       "name": "layerswitcher",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -197,6 +207,7 @@
     },
     {
       "name": "locator",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -217,6 +228,7 @@
     },
     {
       "name": "locatorscn",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -237,6 +249,7 @@
     },
     {
       "name": "magnify",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -252,6 +265,7 @@
     },
     {
       "name": "mapheader",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -267,6 +281,7 @@
     },
     {
       "name": "mapfooter",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -282,6 +297,7 @@
     },
     {
       "name": "maxextzoom",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -297,6 +313,7 @@
     },
     {
       "name": "measurebar",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -317,6 +334,7 @@
     },
     {
       "name": "modal",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -337,6 +355,7 @@
     },
     {
       "name": "mousesrs",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -357,6 +376,7 @@
     },
     {
       "name": "overviewmap",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -377,6 +397,7 @@
     },
     {
       "name": "printviewmanagement",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -397,6 +418,7 @@
     },
     {
       "name": "queryattributes",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -417,6 +439,7 @@
     },
     {
       "name": "selectionzoom",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -437,6 +460,7 @@
     },
     {
       "name": "sharemap",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -457,6 +481,7 @@
     },
     {
       "name": "storymap",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -477,6 +502,7 @@
     },
     {
       "name": "stylemanager",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -497,6 +523,7 @@
     },
     {
       "name": "timeline",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -517,6 +544,7 @@
     },
     {
       "name": "vectorsmanagement",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -537,6 +565,7 @@
     },
     {
       "name": "viewmanagement",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",
@@ -557,6 +586,7 @@
     },
     {
       "name": "wfstcontrols",
+      "obsolete": "false",
       "versions": [
         {
           "api-idee": "1.1.0",

@@ -45,7 +45,6 @@
             <option value="TR" selected="selected">Arriba Derecha (TR)</option>
             <option value="BR">Abajo Derecha (BR)</option>
             <option value="BL">Abajo Izquierda (BL)</option>
-            <option value="TC">Arriba Centro (TC)</option>
         </select>
 
         <label>Herramientas</label>
@@ -153,10 +152,6 @@
             map.removePlugins(mp);
         });
 
-        buttonApi.addEventListener('click', function() {
-            const posicion = selectPosicion.options[selectPosicion.selectedIndex].value;
-            window.location.href = 'https://api-ideedes.grupotecopy.es/api-idee//api-idee/?wfstcontrols=' + posicion;
-        });
     </script>
 </body>
 
