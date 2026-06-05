@@ -263,6 +263,7 @@
     "invalidJsonFormat": "Invalid JSON format",
     "removecontrol_method": "The used implementation does not have the removeControls method.",
     "setmaxextent_method": "The used implementation does not have the setMaxExtent method.",
+    "flyTo_method": "The used implementation does not have the flyTo method.",
     "getbbox_method": "The used implementation does not have the getBbox method.",
     "no_bbox": "You have not specified any bbox.",
     "setbbox_method": "The used implementation does not have the setBbox method.",

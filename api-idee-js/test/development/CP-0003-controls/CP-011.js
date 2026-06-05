@@ -2,12 +2,24 @@
 import { map as Mmap } from 'IDEE/api-idee';
 import ImplementationSwitcher from 'IDEE/control/ImplementationSwitcher';
 
+IDEE.config('PROXY_URL', 'https://mapea4-sigc.juntadeandalucia.es/mapea/api/proxy');
+
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
-  controls: ['location'],
+  // controls: ['rotate'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
+});
+
+map.flyTo([
+  -1060000,
+  5150000,
+  -650000,
+  5450000,
+], {
+  duration: 500,
+  padding: [20, 20, 20, 20],
 });
 
 const selectPosition = document.getElementById('selectPosicion');

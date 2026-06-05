@@ -1867,8 +1867,9 @@ class Map extends MObject {
     const response = await getRemote(getCapabilitiesUrl);
     const getCapabilitiesDocument = response.xml;
     const parser = (type === 'WMS') ? new FormatWMS() : new CesiumFormatWMTSCapabilities();
-    const parsedCapabilities = (type === 'WMS') ? await
-    parser.customRead(getCapabilitiesDocument) : await parser.read(getCapabilitiesDocument);
+    const parsedCapabilities = (type === 'WMS')
+      ? await parser.customRead(getCapabilitiesDocument)
+      : await parser.read(getCapabilitiesDocument);
 
     if (type === 'WMS') {
       const getCapabilitiesUtils = await new GetCapabilities(
@@ -1888,51 +1889,10 @@ class Map extends MObject {
           });
         });
         /* eslint-disable no-empty */
-      } catch (err) {}
+      } catch (err) { }
       this.getCapabilitiesPromise = parsedCapabilities;
     }
     return this.getCapabilitiesPromise;
-  }
-
-  /**
-   * Este método establece el encuadre de visualización del mapa.
-   *
-   * @function
-   * @param {Mx.Extent} bbox Nuevo encuadre de visualización del mapa.
-   * @param {Object} vendorOpts Opciones para la biblioteca base.
-   * @returns {Map} Mapa.
-   * @public
-   * @api
-   */
-  setBbox(bbox, vendorOpts) {
-    // checks if the param is null or empty
-    if (isNullOrEmpty(bbox)) {
-      Exception(getValue('exception').no_bbox);
-    }
-
-    this.userBbox_ = bbox;
-
-    // set the extent by cesium
-    let extent;
-    if (isArray(bbox)) {
-      extent = bbox;
-    } else if (isObject(bbox)) {
-      extent = [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
-    }
-
-    const cesiumMap = this.getMapImpl();
-    // chaeck if bbox is out range
-    if (extent[0] < -180 || extent[1] < -90 || extent[2] > 180 || extent[3] > 90) {
-      extent = [-180, -90, 180, 90];
-    }
-
-    const options = {
-      destination: new Rectangle.fromDegrees(extent[0], extent[1], extent[2], extent[3]),
-      ...vendorOpts,
-    };
-    cesiumMap.camera.setView(options);
-
-    return this;
   }
 
   /**
@@ -1969,6 +1929,86 @@ class Map extends MObject {
     };
 
     return bbox;
+  }
+
+  /**
+   * Construye una extensión mínima para el encuadre de visualización del mapa.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @function
+   * @param {Mx.Extent} bbox
+   * @returns {Map} El objeto de extensión mínimo a partir de un objeto bbox dado.
+   * @private
+   * @api
+   */
+  buildRectangle(bbox) {
+    // checks if the param is null or empty
+    if (isNullOrEmpty(bbox)) {
+      Exception(getValue('exception').no_bbox);
+    }
+
+    this.userBbox_ = bbox;
+
+    // set the extent by cesium
+    let extent;
+    if (isArray(bbox)) {
+      extent = bbox;
+    } else if (isObject(bbox)) {
+      extent = [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
+    }
+
+    // chaeck if bbox is out range
+    if (extent[0] < -180 || extent[1] < -90 || extent[2] > 180 || extent[3] > 90) {
+      extent = [-180, -90, 180, 90];
+    }
+
+    return new Rectangle.fromDegrees(extent[0], extent[1], extent[2], extent[3]);
+  }
+
+  /**
+   * Este método establece el encuadre de visualización del mapa.
+   *
+   * @function
+   * @param {Mx.Extent} bbox Nuevo encuadre de visualización del mapa.
+   * @param {Object} vendorOpts Opciones para la biblioteca base.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  setBbox(bbox, vendorOpts) {
+    // checks if the param is null or empty
+    const rectangle = this.buildRectangle(bbox);
+
+    const options = {
+      destination: rectangle,
+      ...vendorOpts,
+    };
+    const cesiumMap = this.getMapImpl();
+    cesiumMap.camera.setView(options);
+
+    return this;
+  }
+
+  /**
+  * Centra el mapa en una extensión con animación de cámara.
+  * El extent debe estar en grados (lon/lat) dado que Cesium
+  * trabaja siempre en EPSG:4979.
+  *
+  * @function
+  * @param {Mx.Extent} extent [minLon, minLat, maxLon, maxLat] en grados.
+  * @param {Object} vendorOpts Opciones para la biblioteca base.
+  * @returns {Map}
+  * @public
+  * @api
+  */
+  fitToExtent(extent, vendorOpts = {}) {
+    const rectangle = this.buildRectangle(extent);
+
+    this.getMapImpl().camera.flyTo({
+      destination: rectangle,
+      ...vendorOpts,
+    });
+
+    return this;
   }
 
   /**
