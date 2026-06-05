@@ -55,7 +55,7 @@ class ImplementationSwitcher extends ControlBase {
    */
   constructor(options = {}) {
     if (isUndefined(ImplementationSwitcherImpl) || (isObject(ImplementationSwitcherImpl)
-        && isNullOrEmpty(Object.keys(ImplementationSwitcherImpl)))) {
+      && isNullOrEmpty(Object.keys(ImplementationSwitcherImpl)))) {
       Exception(getValue('exception').implementationswitcher_method);
     }
 
@@ -129,20 +129,39 @@ class ImplementationSwitcher extends ControlBase {
    * @api
    */
   loadImplementation(implementation) {
-    const API_IDEE_URL = IDEE.config.API_IDEE_URL;
+    const API_IDEE_URL = IDEE.config.API_IDEE_URL || '';
+    const baseUrl = API_IDEE_URL.endsWith('/') ? API_IDEE_URL : `${API_IDEE_URL}/`;
+    const resolveUrl = (value) => {
+      if (!value) return '';
+      if (/^(?:https?:)?\/\//i.test(value)) {
+        return value;
+      }
+      try {
+        return new URL(value.replace(/^\/+/, ''), baseUrl || document.baseURI).href;
+      } catch (error) {
+        return `${baseUrl}${value.replace(/^\/+/, '')}`;
+      }
+    };
+
+    const implementationUrl = resolveUrl(implementation.js);
+    // const implementationCssUrl = resolveUrl(implementation.css);
+    // detect existing configuration script (dev server emits /config.js)
+    const existingConfigScript = document.querySelector('script[src$="/config.js"], script[src$="config.js"]');
+    const configurationUrl = existingConfigScript ? existingConfigScript.src : resolveUrl('js/configuration.js');
+
     window.implementations.forEach((impl) => {
       // eslint-disable-next-line no-param-reassign
       delete impl.selected;
 
       const scripts = Array.from(document.querySelectorAll('script'))
-        .filter((script) => script.src === `${API_IDEE_URL}${impl.js}`);
+        .filter((script) => script.src === resolveUrl(impl.js));
 
       if (scripts.length > 0) {
         scripts[0].remove();
       }
 
       const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-        .filter((style) => style.href === `${API_IDEE_URL}${impl.css}`);
+        .filter((style) => style.href === resolveUrl(impl.css));
 
       if (styles.length > 0) {
         styles[0].remove();
@@ -153,22 +172,24 @@ class ImplementationSwitcher extends ControlBase {
     implementation.selected = true;
 
     const configurations = Array.from(document.querySelectorAll('script'))
-      .filter((configuration) => configuration.src === `${API_IDEE_URL}js/configuration.js`);
+      .filter((configuration) => configuration.src === configurationUrl);
 
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = `${API_IDEE_URL}${implementation.js}`;
+    script.src = implementationUrl;
     script.onload = () => {
       if (configurations.length > 0) {
-        fetch(`${API_IDEE_URL}js/configuration.js`)
-          .then((response) => response.text())
-          .then((scriptContent) => {
-            // eslint-disable-next-line no-eval
-            const scriptFn = eval(scriptContent);
-            scriptFn.call(window);
-
-            this.loadMap(implementation);
-          });
+        const configScript = document.createElement('script');
+        configScript.type = 'text/javascript';
+        configScript.src = configurationUrl;
+        configScript.onload = () => {
+          this.loadMap(implementation);
+        };
+        configScript.onerror = (error) => {
+          console.error('CONFIGURATION LOAD ERROR', configurationUrl, error);
+          this.loadMap(implementation);
+        };
+        document.body.appendChild(configScript);
       } else {
         this.loadMap(implementation);
       }
@@ -182,29 +203,55 @@ class ImplementationSwitcher extends ControlBase {
 
     const style = document.createElement('link');
     style.type = 'text/css';
-    style.href = `${API_IDEE_URL}${implementation.css}`;
+    style.href = resolveUrl(implementation.css);
     style.rel = 'stylesheet';
     document.head.appendChild(style);
   }
 
   loadMap(implementation) {
-    const div = this.map.getContainer().id === ''
-      ? this.map.getContainer().parentElement.parentElement : this.map.getContainer();
-    div.innerHTML = '';
+    /** @type {HTMLDivElement} */
+    const mapFrameContainer = this.map.getFrameContainer();
+    const rootContainer = mapFrameContainer || this.map.getContainer();
 
-    const center = [this.map.getCenter().x, this.map.getCenter().y];
+    const zoom = this.map.getZoom();
+    const projection = implementation.epsg;
     const sourceProjection = this.map.getProjection().code;
-    const destProjection = implementation.epsg;
+
+    const currentCenter = [this.map.getCenter().x, this.map.getCenter().y];
+    const center = (typeof ol !== 'undefined' && ol !== null)
+      ? ol.proj.transform(currentCenter, sourceProjection, projection)
+      : transform(currentCenter, sourceProjection, projection);
+
+    const controls = Array.from(this.map.getControls()).map(
+      (control) => control.name ?? control.NAME,
+    );
+    const plugins = this.map.getPlugins();
+    const layers = this.map.getLayers();
+
+    // try {
+    //   if (this.map && typeof this.map.destroy === 'function') {
+    //     this.map.destroy();
+    //   }
+    // } catch (e) {
+    //   // eslint-disable-next-line no-console
+    //   console.warn('Error destroying previous map', e);
+    // }
+
+    if (!rootContainer.id) {
+      rootContainer.id = `map-replace-${Date.now()}`;
+    }
+    rootContainer.innerHTML = '';
+
+    this.map.removeControls(this);
 
     IDEE.map({
-      container: div.id,
-      zoom: this.map.getZoom(),
-      center: (typeof ol !== 'undefined' && ol !== null)
-        ? ol.proj.transform(center, sourceProjection, destProjection)
-        : transform(center, sourceProjection, destProjection),
-      controls: Array.from(this.map.getControls()).map((control) => control.name),
-      plugins: this.map.getPlugins(),
-      layers: this.map.getLayers(),
+      container: rootContainer.id,
+      zoom,
+      projection,
+      center,
+      controls,
+      plugins,
+      layers,
     });
   }
 

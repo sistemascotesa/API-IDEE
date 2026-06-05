@@ -9,36 +9,58 @@ const backgroundlayersOpts = backgroundlayersIds.map((id, index) => {
   };
 });
 
-const implementationSwitcherOpts = [
+const { protocol, host } = window.location;
+let PROTOCOL_BASE = 'https:';
+const IDEE_PATH = 'api-idee';
+let HOST_BASE = 'api-ideedes.grupotecopy.es';
+// const isLocalhost = host !== IDEE_PATH;
+const isLocalhost = false;
+let API_IDEE_URL = '';
+
+if (isLocalhost) {
+  HOST_BASE = host;
+  PROTOCOL_BASE = protocol;
+  API_IDEE_URL = `${PROTOCOL_BASE}//${HOST_BASE}/`;
+} else {
+  API_IDEE_URL = `${PROTOCOL_BASE}//${HOST_BASE}/${IDEE_PATH}/`;
+}
+
+let implementationSwitcherOpts = [
   {
     id: 'OL',
     type: 'ol',
     title: 'Open Layers',
-    js: '../../../api-idee/js/apiidee.ol.min.js',
-    css: '../../../api-idee/assets/css/apiidee.ol.min.css',
+    js: `${API_IDEE_URL}js/apiidee.ol.min.js`,
+    css: `${API_IDEE_URL}assets/css/apiidee.ol.min.css`,
   },
   {
     id: 'CS',
     type: 'cesium',
     title: 'Cesium',
-    js: '../../../api-idee/js/apiidee.cesium.min.js',
-    css: '../../../api-idee/assets/css/apiidee.cesium.min.css',
+    js: `${API_IDEE_URL}js/apiidee.cesium.min.js`,
+    css: `${API_IDEE_URL}assets/css/apiidee.cesium.min.css`,
   },
-  // {
-  //   id: 'OL',
-  //   type: 'ol',
-  //   title: 'Open Layers',
-  //   js: 'js/apiidee.ol.min.js',
-  //   css: 'assets/css/apiidee.ol.min.css',
-  // },
-  // {
-  //   id: 'CS',
-  //   type: 'cesium',
-  //   title: 'Cesium',
-  //   js: 'js/apiidee.cesium.min.js',
-  //   css: 'assets/css/apiidee.cesium.min.css',
-  // },
 ];
+
+if (isLocalhost) {
+  const localPath = 'dist/';
+  implementationSwitcherOpts = [
+    {
+      id: 'OL',
+      type: 'ol',
+      title: 'Open Layers',
+      js: `${localPath}js/apiidee.ol.min.js`,
+      css: `${localPath}assets/css/apiidee.ol.min.css`,
+    },
+    {
+      id: 'CS',
+      type: 'cesium',
+      title: 'Cesium',
+      js: `${localPath}js/apiidee.cesium.min.js`,
+      css: `${localPath}assets/css/apiidee.cesium.min.css`,
+    },
+  ];
+}
 
 const config = (configKey, configValue) => {
   config[configKey] = configValue;
@@ -67,7 +89,7 @@ function fun(IDEE_) {
    * @public
    * @api stable
    */
-  IDEE_.config('API_IDEE_URL', 'https://api-ideedes.grupotecopy.es/api-idee/');
+  IDEE_.config('API_IDEE_URL', `${API_IDEE_URL}`);
 
   /**
    * The path to the API-IDEE proxy to send
@@ -77,7 +99,7 @@ function fun(IDEE_) {
    * @public
    * @api stable
    */
-  IDEE_.config('PROXY_URL', `${location.protocol}//api-ideedes.grupotecopy.es/api-idee/api/proxy`);
+  IDEE_.config('PROXY_URL', `${API_IDEE_URL}api/proxy`);
 
   /**
    * The path to the API-IDEE proxy to send
@@ -87,7 +109,7 @@ function fun(IDEE_) {
    * @public
    * @api stable
    */
-  IDEE_.config('PROXY_POST_URL', `${location.protocol}//api-ideedes.grupotecopy.es/api-idee/proxyPost`);
+  IDEE_.config('PROXY_POST_URL', `${API_IDEE_URL}proxyPost`);
 
   /**
    * The static resources URL
@@ -105,7 +127,15 @@ function fun(IDEE_) {
    * @public
    * @api stable
    */
-  IDEE_.config('THEME_URL', `${location.protocol}//api-ideedes.grupotecopy.es/api-idee/assets/`);
+  IDEE_.config('THEME_URL', `${API_IDEE_URL}assets/`);
+
+  /**
+   * Cesium path to static resources
+   *
+   * @private
+   * @type {string}
+   */
+  IDEE_.config('CESIUM_BASE_URL', `${API_IDEE_URL}cesium/`);
 
   /**
    * Predefined WMC files. It is composed of URL,
@@ -122,7 +152,7 @@ function fun(IDEE_) {
      * @public
      * @api stable
      */
-    'urls': 'https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_callejero.xml,https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_hibrido.xml,https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_satelite.xml,https://componentes.idee.es/estaticos/Datos/WMC/contextCallejeroCache.xml,https://componentes.idee.es/estaticos/Datos/WMC/contextCallejero.xml,https://componentes.idee.es/estaticos/Datos/WMC/callejero2011cache.xml,https://componentes.idee.es/estaticos/Datos/WMC/ortofoto2011cache.xml,https://componentes.idee.es/estaticos/Datos/WMC/hibrido2011cache.xml,https://componentes.idee.es/estaticos/Datos/WMC/contextOrtofoto.xml'.split(',').map(e => e),
+    'urls': 'https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_callejero.xml,https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_hibrido.xml,https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_satelite.xml,https://componentes.idee.es/estaticos/Datos/WMC/contextCallejeroCache.xml,https://componentes.idee.es/estaticos/Datos/WMC/contextCallejero.xml,https://componentes.idee.es/estaticos/Datos/WMC/callejero2011cache.xml,https://componentes.idee.es/estaticos/Datos/WMC/ortofoto2011cache.xml,https://componentes.idee.es/estaticos/Datos/WMC/hibrido2011cache.xml,https://componentes.idee.es/estaticos/Datos/WMC/contextOrtofoto.xml'.split(',').map((e) => e),
 
     /**
      * WMC predefined names
@@ -140,7 +170,7 @@ function fun(IDEE_) {
      * @public
      * @api stable
      */
-    'names': 'Callejero,Hibrido,Satelite,mapa callejero cache,mapa del callejero,Callejero,Ortofoto,HÃ­brido,mapa ortofoto'.split(',')
+    'names': 'Callejero,Hibrido,Satelite,mapa callejero cache,mapa del callejero,Callejero,Ortofoto,HÃ­brido,mapa ortofoto'.split(','),
   });
 
   /**
@@ -280,7 +310,7 @@ function fun(IDEE_) {
 
   /**
    * MAP Viewer - DPI (Dots per inch)
-   * 
+   *
    * @private
    * @type {Number}
    */
@@ -288,7 +318,7 @@ function fun(IDEE_) {
 
   /**
    * MAP Viewer - DPI OGC (Dots per inch for OGC services)
-   * 
+   *
    * @private
    * @type {Number}
    */

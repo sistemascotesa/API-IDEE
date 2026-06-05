@@ -8,7 +8,7 @@
         aspect-ratio: 1;
         color: var(--idee-color-white);
         background-color: var(--idee-color-primary);
-        border: 2px solid var(--idee-color-white);
+        border: 2px solid var(--button-border-color);
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -20,7 +20,7 @@
 
     .m-api-idee-container .m-overviewmap-button:hover,
     .m-api-idee-container .m-control-button:hover {
-        border: 2px solid var(--idee-color-white) !important;
+        border: 2px solid var(--button-border-color) !important;
         background-color: var(--idee-color-links);
         transition: all 0.3s ease;
     }
@@ -32,7 +32,7 @@
 
     .m-api-idee-container .m-overviewmap-button.active,
     .m-api-idee-container .m-control-button.active {
-        border: 2px solid var(--idee-color-white);
+        border: 2px solid var(--button-border-color);
         color: var(--idee-color-white);
         background-color: var(--idee-color-primary-dark);
         transition: all 0.3s ease;

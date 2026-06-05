@@ -1423,7 +1423,7 @@ class Map extends MObject {
             if (filterLayer instanceof FacadeGeoTIFF) {
               layerMatched = (filterLayer === geotiffLayer);
             } else {
-            // type
+              // type
               if (!isNullOrEmpty(filterLayer.type)) {
                 layerMatched = (layerMatched && (filterLayer.type === geotiffLayer.type));
               }
@@ -2784,6 +2784,38 @@ class Map extends MObject {
   }
 
   /**
+   * Este método obtiene el encuadre de visualización del mapa.
+   *
+   * @function
+   * @returns {Mx.Extent} Encuadre de visualización del mapa.
+   * @public
+   * @api
+   */
+  getBbox() {
+    let bbox = null;
+
+    const olMap = this.getMapImpl();
+    const view = olMap.getView();
+    if (!isNullOrEmpty(view.getCenter())) {
+      const olExtent = view.calculateExtent(olMap.getSize());
+
+      if (!isNullOrEmpty(olExtent)) {
+        bbox = {
+          x: {
+            min: olExtent[0],
+            max: olExtent[2],
+          },
+          y: {
+            min: olExtent[1],
+            max: olExtent[3],
+          },
+        };
+      }
+    }
+    return bbox;
+  }
+
+  /**
    * Este método establece el encuadre de visualización del mapa.
    *
    * @function
@@ -2815,35 +2847,19 @@ class Map extends MObject {
   }
 
   /**
-   * Este método obtiene el encuadre de visualización del mapa.
-   *
-   * @function
-   * @returns {Mx.Extent} Encuadre de visualización del mapa.
-   * @public
-   * @api
-   */
-  getBbox() {
-    let bbox = null;
-
-    const olMap = this.getMapImpl();
-    const view = olMap.getView();
-    if (!isNullOrEmpty(view.getCenter())) {
-      const olExtent = view.calculateExtent(olMap.getSize());
-
-      if (!isNullOrEmpty(olExtent)) {
-        bbox = {
-          x: {
-            min: olExtent[0],
-            max: olExtent[2],
-          },
-          y: {
-            min: olExtent[1],
-            max: olExtent[3],
-          },
-        };
-      }
-    }
-    return bbox;
+  * Hace un vuelo a una extensión dada con opciones de animación.
+  * Las opciones se pasan directamente a ol/View.fit(), por lo que admite cualquier
+  *
+  * @function
+  * @param {Mx.Extent} extent Nuevo encuadre de visualización del mapa.
+  * @param {Object} vendorOpts Opciones para la biblioteca base.
+  * @returns {Map}
+  * @public
+  * @api
+  */
+  flyTo(extent, vendorOpts = {}) {
+    this.setBbox(extent, vendorOpts);
+    return this;
   }
 
   /**

@@ -3324,6 +3324,32 @@ class Map extends Base {
   }
 
   /**
+  * Hace un vuelo a una extensión dada con opciones de animación.
+  *
+  * @public
+  * @function
+  * @param {String|Array<String>|Array<Number>|Mx.Extent} extent Extensión [minX, minY, maxX, maxY].
+  * @param {Object} vendorOpts Opciones de proveedores.
+  * @returns {Map}
+  * @api
+  */
+  flyTo(extent, vendorOpts = {}) {
+    if (isUndefined(MapImpl.prototype.flyTo)) {
+      Exception(getValue('exception').flyTo_method);
+    }
+
+    try {
+      // parses the parameter
+      const maxExtent = parameter.maxExtent(extent);
+      this.getImpl().flyTo(maxExtent, vendorOpts);
+    } catch (err) {
+      Dialog.error(getValue('exception').flyTo_method);
+      throw err;
+    }
+    return this;
+  }
+
+  /**
      * Este método proporciona el zoom actual de esta
      * instancia del mapa.
      *
@@ -4681,6 +4707,8 @@ class Map extends Base {
         this.toolPanelsContainer.style.setProperty('--up-height', `${newHeight}px`);
       }
     });
+
+    this.mapFrameContainer_ = container;
   }
 
   /**
@@ -4863,6 +4891,17 @@ class Map extends Base {
     this.addPanelToPanelContainer(this.upPanel, panel);
     this.upHandle.style.visibility = 'visible';
     this.toolPanelsContainer.style.setProperty('--up-height', `${this.openUpPanelHeight}px`);
+  }
+
+  /**
+   * Este método devuelve el contenedor del marco del mapa.
+   *
+   * @function
+   * @api
+   * @returns {Object} Devuelve el contenedor.
+   */
+  getFrameContainer() {
+    return this.mapFrameContainer_;
   }
 
   /**

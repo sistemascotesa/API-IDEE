@@ -32,7 +32,7 @@ CP-011
 Control Implementation Switcher
 
 CP-012
-Control rotate
+Control Rotate & Implementation Switcher
 
 CP-013
 Control parametro de ordenación (Plugins + Controles)
