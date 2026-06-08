@@ -6,20 +6,14 @@ IDEE.config('PROXY_URL', 'https://mapea4-sigc.juntadeandalucia.es/mapea/api/prox
 
 const map = Mmap({
   container: 'map',
-  projection: 'EPSG:3857',
+  projection: 'EPSG:4326',
   // controls: ['rotate'],
-  center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
-});
-
-map.flyTo([
-  -1060000,
-  5150000,
-  -650000,
-  5450000,
-], {
-  duration: 500,
-  padding: [20, 20, 20, 20],
+  layers: ['OSM'],
+  center: [
+    -7.68,
+    43.084999999999994,
+  ],
 });
 
 const selectPosition = document.getElementById('selectPosicion');
@@ -30,7 +24,7 @@ const selectCollapsed = document.getElementById('selectCollapsed');
 
 const create = (options) => {
   if (!map.hasControl(ImplementationSwitcher.NAME)) {
-    map.addControls(new ImplementationSwitcher(options));
+    // map.addControls(new ImplementationSwitcher(options));
   }
 };
 
