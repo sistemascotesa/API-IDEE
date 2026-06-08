@@ -36,28 +36,32 @@ class Control {
    */
   addTo(map, element) {
     this.facadeMap_ = map;
-    this.element = element;
-    // eslint-disable-next-line no-underscore-dangle
-    map.getMapImpl()._element.prepend(this.element);
+    this.setElement(element);
   }
 
   /**
-   * Este método destruye este control, limpiando el HTML
-   * y anulando el registro de todos los eventos.
+   * Devuelve la vista de implementación.
    *
    * @public
    * @function
+   * @return {HTMLElement} vista de implementación
+   * @api stable
+   */
+  getView() {
+    return this.panel ?? this.element;
+  }
+
+  /**
+   * Este método establece los elementos a usar.
+   *
+   * @public
+   * @function
+   * @param {HTMLElement} element Elemento HTML del control.
    * @api stable
    * @export
    */
-  destroy() {
-    if (this.element.parentElement
-      // eslint-disable-next-line no-underscore-dangle
-      && this.element.parentElement === this.facadeMap_.getMapImpl()._element) {
-      // eslint-disable-next-line no-underscore-dangle
-      this.facadeMap_.getMapImpl()._element.removeChild(this.element);
-    }
-    this.facadeMap_ = null;
+  setElement(element) {
+    this.element = element;
   }
 
   /**
@@ -71,6 +75,21 @@ class Control {
    */
   getElement() {
     return this.element;
+  }
+
+  /**
+   * Este método destruye este control, limpiando el HTML
+   * y anulando el registro de todos los eventos.
+   *
+   * @public
+   * @function
+   * @api stable
+   * @export
+   */
+  destroy() {
+    if (this.element) this.element.remove();
+    this.setElement(null);
+    this.facadeMap_ = null;
   }
 }
 

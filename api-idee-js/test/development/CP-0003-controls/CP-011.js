@@ -8,7 +8,7 @@ const map = Mmap({
   container: 'map',
   projection: 'EPSG:4326',
   // controls: ['rotate'],
-  zoom: 6,
+  zoom: 10,
   layers: ['OSM'],
   center: [
     -7.68,
@@ -24,7 +24,7 @@ const selectCollapsed = document.getElementById('selectCollapsed');
 
 const create = (options) => {
   if (!map.hasControl(ImplementationSwitcher.NAME)) {
-    // map.addControls(new ImplementationSwitcher(options));
+    map.addControls(new ImplementationSwitcher(options));
   }
 };
 
