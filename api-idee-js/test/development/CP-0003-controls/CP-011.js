@@ -9,7 +9,7 @@ const map = Mmap({
   projection: 'EPSG:4326',
   // controls: ['rotate'],
   zoom: 10,
-  layers: ['OSM'],
+  // layers: ['OSM'],
   center: [
     -7.68,
     43.084999999999994,

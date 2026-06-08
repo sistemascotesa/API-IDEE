@@ -64,16 +64,10 @@ class ImplementationSwitcher extends ControlBase {
     super(ImplementationSwitcher.NAME, implementationSwitcherImpl, options);
 
     if (!window.implementations) {
-      window.implementations = IDEE.config.implementationswitcher;
-
-      if (window.implementations?.length > 0) {
-        window.implementations[0].selected = true;
-
-        window.implementations = window.implementations.map((impl) => ({
-          ...impl,
-          epsg: impl.type === 'cesium' ? 'EPSG:4979' : impl.epsg,
-        }));
-      }
+      window.implementations = (IDEE.config.implementationswitcher || []).map((impl) => ({
+        ...impl,
+        epsg: impl.type === 'cesium' ? 'EPSG:4979' : impl.epsg,
+      }));
     }
 
     this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
@@ -90,8 +84,10 @@ class ImplementationSwitcher extends ControlBase {
    * @returns {Promise} HTML generado, promesa.
    * @api
    */
-  createView() {
+  createView(map) {
     return new Promise((resolve) => {
+      this.selectCurrentImplementation(map);
+
       this.html = compileTemplate(template, {
         vars: {
           title: this.tooltip ?? getValue(ImplementationSwitcher.NAME).title,
@@ -104,6 +100,35 @@ class ImplementationSwitcher extends ControlBase {
 
       resolve(this.html);
     });
+  }
+
+  /**
+   * Selecciona en el desplegable la implementación del mapa actual.
+   *
+   * @public
+   * @function
+   * @param {IDEE.Map} map Mapa actual.
+   * @api
+   */
+  selectCurrentImplementation(map) {
+    const currentImplementation = map?.getImplementation?.();
+    const implementations = window.implementations || [];
+
+    if (implementations.length > 0) {
+      const currentIndex = implementations.findIndex((impl) => impl.type === currentImplementation);
+      const selectedIndex = implementations.findIndex((impl) => impl.selected);
+      const targetIndex = currentIndex >= 0 ? currentIndex : Math.max(selectedIndex, 0);
+
+      window.implementations = implementations.map((impl, index) => {
+        const nextImpl = { ...impl };
+        if (index === targetIndex) {
+          nextImpl.selected = true;
+        } else {
+          delete nextImpl.selected;
+        }
+        return nextImpl;
+      });
+    }
   }
 
   /**
@@ -229,14 +254,14 @@ class ImplementationSwitcher extends ControlBase {
     const plugins = this.map.getPlugins();
     const layers = this.map.getLayers();
 
-    // try {
-    //   if (this.map && typeof this.map.destroy === 'function') {
-    //     this.map.destroy();
-    //   }
-    // } catch (e) {
-    //   // eslint-disable-next-line no-console
-    //   console.warn('Error destroying previous map', e);
-    // }
+    try {
+      if (this.map && typeof this.map.destroy === 'function') {
+        this.map.destroy();
+      }
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn('Error destroying previous map', e);
+    }
 
     // if (!rootContainer.id) {
     //   rootContainer.id = `map-replace-${Date.now()}`;
