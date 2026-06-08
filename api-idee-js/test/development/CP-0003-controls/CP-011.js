@@ -2,14 +2,14 @@
 import { map as Mmap } from 'IDEE/api-idee';
 import ImplementationSwitcher from 'IDEE/control/ImplementationSwitcher';
 
-IDEE.config('PROXY_URL', 'https://mapea4-sigc.juntadeandalucia.es/mapea/api/proxy');
+// IDEE.config('PROXY_URL', 'https://mapea4-sigc.juntadeandalucia.es/mapea/api/proxy');
 
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:4326',
   // controls: ['rotate'],
   zoom: 10,
-  layers: ['OSM'],
+  // layers: ['OSM'],
   center: [
     -7.68,
     43.084999999999994,
