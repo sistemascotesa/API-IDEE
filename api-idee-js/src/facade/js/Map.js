@@ -4250,6 +4250,17 @@ class Map extends Base {
   }
 
   /**
+   * Este método elimina todas las capas del mapa.
+   *
+   * @public
+   * @function
+    * @api
+   */
+  removeAllLayers() {
+    this.removeLayers(this.getLayers());
+  }
+
+  /**
    * Este método destruye el mapa, limpiando el HTML
    * y anular el registro de todos los eventos.
    *
@@ -4263,8 +4274,13 @@ class Map extends Base {
     if (isUndefined(MapImpl.prototype.destroy)) {
       Exception(getValue('exception').destroy_method);
     }
-
+    this.removeAllLayers();
     this.getImpl().destroy();
+
+    const mapFrameContainer = this.getFrameContainer();
+    if (mapFrameContainer.children.length > 0) {
+      Array.from(mapFrameContainer.children).forEach((child) => child.remove());
+    }
 
     return this;
   }

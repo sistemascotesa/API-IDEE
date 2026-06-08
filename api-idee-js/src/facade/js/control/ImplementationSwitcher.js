@@ -172,7 +172,12 @@ class ImplementationSwitcher extends ControlBase {
     const implementationCssUrl = resolveUrl(implementation.css);
 
     const existingConfigScript = document.querySelector('script[src$="/config.js"], script[src$="config.js"]');
-    const configurationUrl = existingConfigScript ? existingConfigScript.src : resolveUrl('js/configuration.js');
+
+    if (existingConfigScript) {
+      existingConfigScript.remove();
+    }
+
+    const configurationUrl = resolveUrl('js/configuration.js');
 
     window.implementations.forEach((impl) => {
       // eslint-disable-next-line no-param-reassign
@@ -254,21 +259,14 @@ class ImplementationSwitcher extends ControlBase {
     const plugins = this.map.getPlugins();
     const layers = this.map.getLayers();
 
+    this.map.removeControls(this);
+
     try {
-      if (this.map && typeof this.map.destroy === 'function') {
-        this.map.destroy();
-      }
+      this.map.destroy();
     } catch (e) {
       // eslint-disable-next-line no-console
       console.warn('Error destroying previous map', e);
     }
-
-    // if (!rootContainer.id) {
-    //   rootContainer.id = `map-replace-${Date.now()}`;
-    // }
-    // rootContainer.innerHTML = '';
-
-    this.map.removeControls(this);
 
     IDEE.map({
       container: rootContainer.id,

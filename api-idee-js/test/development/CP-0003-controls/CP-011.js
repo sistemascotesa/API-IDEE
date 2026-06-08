@@ -2,7 +2,7 @@
 import { map as Mmap } from 'IDEE/api-idee';
 import ImplementationSwitcher from 'IDEE/control/ImplementationSwitcher';
 
-IDEE.config('PROXY_URL', 'https://mapea4-sigc.juntadeandalucia.es/mapea/api/proxy');
+// IDEE.config('PROXY_URL', 'https://mapea4-sigc.juntadeandalucia.es/mapea/api/proxy');
 
 const map = Mmap({
   container: 'map',
