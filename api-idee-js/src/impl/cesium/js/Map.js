@@ -1778,7 +1778,7 @@ class Map extends MObject {
    */
   addControls(controls) {
     controls.forEach((control) => {
-      if (!includes(this.controls_, control) && control) {
+      if (!includes(this.controls_, control)) {
         this.controls_.push(control);
       }
     });
@@ -1936,7 +1936,7 @@ class Map extends MObject {
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
    * @param {Mx.Extent} bbox
-   * @returns {Map} El objeto de extensión mínimo a partir de un objeto bbox dado.
+   * @returns {Mx.Extent} El objeto de extensión mínimo a partir de un objeto bbox dado.
    * @private
    * @api
    */
@@ -1989,7 +1989,7 @@ class Map extends MObject {
   }
 
   /**
-  * Centra el mapa en una extensión con animación de cámara.
+  * Hace un vuelo a una extensión con animación de cámara.
   * El extent debe estar en grados (lon/lat) dado que Cesium
   * trabaja siempre en EPSG:4979.
   *
@@ -2000,7 +2000,7 @@ class Map extends MObject {
   * @public
   * @api
   */
-  fitToExtent(extent, vendorOpts = {}) {
+  flyTo(extent, vendorOpts = {}) {
     const rectangle = this.buildRectangle(extent);
 
     this.getMapImpl().camera.flyTo({

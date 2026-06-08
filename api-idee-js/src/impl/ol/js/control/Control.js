@@ -87,21 +87,6 @@ class Control extends OLControl {
   }
 
   /**
-   * Este método destruye este control, limpiando el HTML
-   * y anulando el registro de todos los eventos.
-   *
-   * @public
-   * @function
-   * @api stable
-   * @export
-   */
-  destroy() {
-    this.facadeMap_.getMapImpl().removeControl(this);
-    this.facadeMap_ = null;
-    this.setElement(null);
-  }
-
-  /**
    * Este método establece los elementos a usar.
    *
    * @public
@@ -125,6 +110,21 @@ class Control extends OLControl {
    */
   getElement() {
     return this.element;
+  }
+
+  /**
+   * Este método destruye este control, limpiando el HTML
+   * y anulando el registro de todos los eventos.
+   *
+   * @public
+   * @function
+   * @api stable
+   * @export
+   */
+  destroy() {
+    this.facadeMap_.getMapImpl().removeControl(this);
+    this.facadeMap_ = null;
+    this.setElement(null);
   }
 }
 

@@ -144,8 +144,8 @@ class ImplementationSwitcher extends ControlBase {
     };
 
     const implementationUrl = resolveUrl(implementation.js);
-    // const implementationCssUrl = resolveUrl(implementation.css);
-    // detect existing configuration script (dev server emits /config.js)
+    const implementationCssUrl = resolveUrl(implementation.css);
+
     const existingConfigScript = document.querySelector('script[src$="/config.js"], script[src$="config.js"]');
     const configurationUrl = existingConfigScript ? existingConfigScript.src : resolveUrl('js/configuration.js');
 
@@ -153,32 +153,31 @@ class ImplementationSwitcher extends ControlBase {
       // eslint-disable-next-line no-param-reassign
       delete impl.selected;
 
-      const scripts = Array.from(document.querySelectorAll('script'))
-        .filter((script) => script.src === resolveUrl(impl.js));
+      Array.from(document.querySelectorAll('script'))
+        .filter((script) => script.src.endsWith(impl.js))
+        .forEach((script) => script.remove());
 
-      if (scripts.length > 0) {
-        scripts[0].remove();
-      }
-
-      const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-        .filter((style) => style.href === resolveUrl(impl.css));
-
-      if (styles.length > 0) {
-        styles[0].remove();
-      }
+      Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+        .filter((style) => style.href.endsWith(impl.css))
+        .forEach((style) => style.remove());
     });
+
+    // remove duplicate configuration scripts, keep only the first one
+    if (configurationUrl) {
+      const configurationScripts = Array.from(document.querySelectorAll('script'))
+        .filter((configuration) => configuration.src === configurationUrl);
+      configurationScripts.slice(1).forEach((configuration) => configuration.remove());
+    }
 
     // eslint-disable-next-line no-param-reassign
     implementation.selected = true;
-
-    const configurations = Array.from(document.querySelectorAll('script'))
-      .filter((configuration) => configuration.src === configurationUrl);
 
     const script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = implementationUrl;
     script.onload = () => {
-      if (configurations.length > 0) {
+      const existingConfig = configurationUrl && document.querySelector(`script[src="${configurationUrl}"]`);
+      if (configurationUrl && !existingConfig) {
         const configScript = document.createElement('script');
         configScript.type = 'text/javascript';
         configScript.src = configurationUrl;
@@ -201,11 +200,13 @@ class ImplementationSwitcher extends ControlBase {
     };
     document.body.appendChild(script);
 
-    const style = document.createElement('link');
-    style.type = 'text/css';
-    style.href = resolveUrl(implementation.css);
-    style.rel = 'stylesheet';
-    document.head.appendChild(style);
+    if (implementationCssUrl) {
+      const style = document.createElement('link');
+      style.type = 'text/css';
+      style.href = implementationCssUrl;
+      style.rel = 'stylesheet';
+      document.head.appendChild(style);
+    }
   }
 
   loadMap(implementation) {
@@ -237,10 +238,10 @@ class ImplementationSwitcher extends ControlBase {
     //   console.warn('Error destroying previous map', e);
     // }
 
-    if (!rootContainer.id) {
-      rootContainer.id = `map-replace-${Date.now()}`;
-    }
-    rootContainer.innerHTML = '';
+    // if (!rootContainer.id) {
+    //   rootContainer.id = `map-replace-${Date.now()}`;
+    // }
+    // rootContainer.innerHTML = '';
 
     this.map.removeControls(this);
 

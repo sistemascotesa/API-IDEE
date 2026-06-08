@@ -17,32 +17,13 @@ let HOST_BASE = 'api-ideedes.grupotecopy.es';
 const isLocalhost = false;
 let API_IDEE_URL = '';
 
+let implementationSwitcherOpts = [];
+
 if (isLocalhost) {
   HOST_BASE = host;
   PROTOCOL_BASE = protocol;
   API_IDEE_URL = `${PROTOCOL_BASE}//${HOST_BASE}/`;
-} else {
-  API_IDEE_URL = `${PROTOCOL_BASE}//${HOST_BASE}/${IDEE_PATH}/`;
-}
 
-let implementationSwitcherOpts = [
-  {
-    id: 'OL',
-    type: 'ol',
-    title: 'Open Layers',
-    js: `${API_IDEE_URL}js/apiidee.ol.min.js`,
-    css: `${API_IDEE_URL}assets/css/apiidee.ol.min.css`,
-  },
-  {
-    id: 'CS',
-    type: 'cesium',
-    title: 'Cesium',
-    js: `${API_IDEE_URL}js/apiidee.cesium.min.js`,
-    css: `${API_IDEE_URL}assets/css/apiidee.cesium.min.css`,
-  },
-];
-
-if (isLocalhost) {
   const localPath = 'dist/';
   implementationSwitcherOpts = [
     {
@@ -58,6 +39,25 @@ if (isLocalhost) {
       title: 'Cesium',
       js: `${localPath}js/apiidee.cesium.min.js`,
       css: `${localPath}assets/css/apiidee.cesium.min.css`,
+    },
+  ];
+} else {
+  API_IDEE_URL = `${PROTOCOL_BASE}//${HOST_BASE}/${IDEE_PATH}/`;
+
+  implementationSwitcherOpts = [
+    {
+      id: 'OL',
+      type: 'ol',
+      title: 'Open Layers',
+      js: `${API_IDEE_URL}js/apiidee.ol.min.js`,
+      css: `${API_IDEE_URL}assets/css/apiidee.ol.min.css`,
+    },
+    {
+      id: 'CS',
+      type: 'cesium',
+      title: 'Cesium',
+      js: `${API_IDEE_URL}js/apiidee.cesium.min.js`,
+      css: `${API_IDEE_URL}assets/css/apiidee.cesium.min.css`,
     },
   ];
 }
@@ -128,14 +128,6 @@ function fun(IDEE_) {
    * @api stable
    */
   IDEE_.config('THEME_URL', `${API_IDEE_URL}assets/`);
-
-  /**
-   * Cesium path to static resources
-   *
-   * @private
-   * @type {string}
-   */
-  IDEE_.config('CESIUM_BASE_URL', `${API_IDEE_URL}cesium/`);
 
   /**
    * Predefined WMC files. It is composed of URL,

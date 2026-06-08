@@ -2848,7 +2848,6 @@ class Map extends MObject {
 
   /**
   * Hace un vuelo a una extensión dada con opciones de animación.
-  * Las opciones se pasan directamente a ol/View.fit(), por lo que admite cualquier
   *
   * @function
   * @param {Mx.Extent} extent Nuevo encuadre de visualización del mapa.
