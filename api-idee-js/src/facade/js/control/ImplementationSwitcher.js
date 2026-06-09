@@ -174,9 +174,9 @@ class ImplementationSwitcher extends ControlBase {
 
     const configurationUrl = existingConfigScript ? existingConfigScript.src : resolveUrl('js/configuration.js');
 
-    // if (existingConfigScript) {
-    //   existingConfigScript.remove();
-    // }
+    if (existingConfigScript) {
+      existingConfigScript.remove();
+    }
 
     window.implementations.forEach((impl) => {
       // eslint-disable-next-line no-param-reassign
@@ -244,19 +244,18 @@ class ImplementationSwitcher extends ControlBase {
     const rootContainer = mapFrameContainer || this.map.getContainer();
 
     const zoom = this.map.getZoom();
-    const projection = implementation.epsg;
     const sourceProjection = this.map.getProjection().code;
-
-    const currentCenter = [this.map.getCenter().x, this.map.getCenter().y];
+    const projection = implementation.epsg ?? IDEE.config.DEFAULT_PROJ;
+    const { x, y } = this.map.getCenter();
     const center = (typeof ol !== 'undefined' && ol !== null)
-      ? ol.proj.transform(currentCenter, sourceProjection, projection)
-      : transform(currentCenter, sourceProjection, projection);
+      ? ol.proj.transform([x, y], sourceProjection, projection)
+      : transform([x, y], sourceProjection, projection);
 
     const controls = Array.from(this.map.getControls()).map(
       (control) => control.name ?? control.NAME,
     );
     const plugins = this.map.getPlugins();
-    const layers = this.map.getLayers();
+    const layers = [...this.map.getBaseLayers(), ...this.map.getRootLayers()];
 
     this.map.removeControls(this);
 

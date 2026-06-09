@@ -221,8 +221,10 @@ class SidePanel extends Panel {
   }
 
   destroy() {
-    if (this.element != null) {
-      this.element.remove();
+    super.destroy();
+    if (this.button && this.button.pressed) {
+      this.button.deactivate();
+      this.button = null;
     }
   }
 

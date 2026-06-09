@@ -17,49 +17,34 @@ let HOST_BASE = 'api-ideedes.grupotecopy.es';
 const isLocalhost = false;
 let API_IDEE_URL = '';
 
-let implementationSwitcherOpts = [];
+const implementationSwitcherOpts = [
+  {
+    id: 'OL',
+    type: 'ol',
+    title: 'Open Layers',
+  },
+  {
+    id: 'CS',
+    type: 'cesium',
+    title: 'Cesium',
+  },
+];
 
 if (isLocalhost) {
   HOST_BASE = host;
   PROTOCOL_BASE = protocol;
   API_IDEE_URL = `${PROTOCOL_BASE}//${HOST_BASE}/`;
-
   const localPath = 'dist/';
-  implementationSwitcherOpts = [
-    {
-      id: 'OL',
-      type: 'ol',
-      title: 'Open Layers',
-      js: `${localPath}js/apiidee.ol.min.js`,
-      css: `${localPath}assets/css/apiidee.ol.min.css`,
-    },
-    {
-      id: 'CS',
-      type: 'cesium',
-      title: 'Cesium',
-      js: `${localPath}js/apiidee.cesium.min.js`,
-      css: `${localPath}assets/css/apiidee.cesium.min.css`,
-    },
-  ];
+  implementationSwitcherOpts[0].js = `${localPath}js/apiidee.ol.min.js`;
+  implementationSwitcherOpts[0].css = `${localPath}assets/css/apiidee.ol.min.css`;
+  implementationSwitcherOpts[1].js = `${localPath}js/apiidee.cesium.min.js`;
+  implementationSwitcherOpts[1].css = `${localPath}assets/css/apiidee.cesium.min.css`;
 } else {
   API_IDEE_URL = `${PROTOCOL_BASE}//${HOST_BASE}/${IDEE_PATH}/`;
-
-  implementationSwitcherOpts = [
-    {
-      id: 'OL',
-      type: 'ol',
-      title: 'Open Layers',
-      js: `${API_IDEE_URL}js/apiidee.ol.min.js`,
-      css: `${API_IDEE_URL}assets/css/apiidee.ol.min.css`,
-    },
-    {
-      id: 'CS',
-      type: 'cesium',
-      title: 'Cesium',
-      js: `${API_IDEE_URL}js/apiidee.cesium.min.js`,
-      css: `${API_IDEE_URL}assets/css/apiidee.cesium.min.css`,
-    },
-  ];
+  implementationSwitcherOpts[0].js = `${API_IDEE_URL}js/apiidee.ol.min.js`;
+  implementationSwitcherOpts[0].css = `${API_IDEE_URL}assets/css/apiidee.ol.min.css`;
+  implementationSwitcherOpts[1].js = `${API_IDEE_URL}js/apiidee.cesium.min.js`;
+  implementationSwitcherOpts[1].css = `${API_IDEE_URL}assets/css/apiidee.cesium.min.css`;
 }
 
 const config = (configKey, configValue) => {
