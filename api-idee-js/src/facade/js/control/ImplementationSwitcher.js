@@ -170,14 +170,13 @@ class ImplementationSwitcher extends ControlBase {
 
     const implementationUrl = resolveUrl(implementation.js);
     const implementationCssUrl = resolveUrl(implementation.css);
-
     const existingConfigScript = document.querySelector('script[src$="/config.js"], script[src$="config.js"]');
 
     if (existingConfigScript) {
       existingConfigScript.remove();
     }
 
-    const configurationUrl = resolveUrl('js/configuration.js');
+    const configurationUrl = existingConfigScript ? existingConfigScript.src : resolveUrl('js/configuration.js');
 
     window.implementations.forEach((impl) => {
       // eslint-disable-next-line no-param-reassign
