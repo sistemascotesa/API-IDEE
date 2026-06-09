@@ -4061,8 +4061,9 @@ class Map extends Base {
       plugin.destroy();
       this.plugins = this.plugins.filter((plugin2) => plugin2.name !== plugin.name);
 
-      const plugins = this.plugins.filter((plugin2) => plugin2.position === plugin.position);
-      if (plugins.length === 0) {
+      const positionPlugins = this.plugins
+        .filter((plugin2) => plugin2.position === plugin.position);
+      if (positionPlugins.length === 0) {
         this.closeSidePanels(plugin.position);
       }
     } catch (e) {
