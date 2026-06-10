@@ -9,43 +9,30 @@ const backgroundlayersOpts = backgroundlayersIds.map((id, index) => {
   };
 });
 
-const { protocol, host } = window.location;
-let PROTOCOL_BASE = 'https:';
+const { host, protocol } = window.location;
+
+const PROTOCOL_BASE = 'https:';
 const IDEE_PATH = 'api-idee';
-let HOST_BASE = 'api-ideedes.grupotecopy.es';
-// const isLocalhost = host !== IDEE_PATH;
-const isLocalhost = false;
-let API_IDEE_URL = '';
+const HOST_BASE = 'api-ideedes.grupotecopy.es';
+const isLocal = host === HOST_BASE;
+const API_IDEE_URL = isLocal ? `${PROTOCOL_BASE}//${HOST_BASE}/${IDEE_PATH}/` : `${protocol}//${host}/dist/`;
 
 const implementationSwitcherOpts = [
   {
     id: 'OL',
     type: 'ol',
     title: 'Open Layers',
+    js: '../../../dist/js/apiidee.ol.min.js',
+    css: '../../../dist/assets/css/apiidee.ol.min.css',
   },
   {
     id: 'CS',
     type: 'cesium',
     title: 'Cesium',
+    js: '../../../dist/js/apiidee.cesium.min.js',
+    css: '../../../dist/assets/css/apiidee.cesium.min.css',
   },
 ];
-
-if (isLocalhost) {
-  HOST_BASE = host;
-  PROTOCOL_BASE = protocol;
-  API_IDEE_URL = `${PROTOCOL_BASE}//${HOST_BASE}/`;
-  const localPath = 'dist/';
-  implementationSwitcherOpts[0].js = `${localPath}js/apiidee.ol.min.js`;
-  implementationSwitcherOpts[0].css = `${localPath}assets/css/apiidee.ol.min.css`;
-  implementationSwitcherOpts[1].js = `${localPath}js/apiidee.cesium.min.js`;
-  implementationSwitcherOpts[1].css = `${localPath}assets/css/apiidee.cesium.min.css`;
-} else {
-  API_IDEE_URL = `${PROTOCOL_BASE}//${HOST_BASE}/${IDEE_PATH}/`;
-  implementationSwitcherOpts[0].js = `${API_IDEE_URL}js/apiidee.ol.min.js`;
-  implementationSwitcherOpts[0].css = `${API_IDEE_URL}assets/css/apiidee.ol.min.css`;
-  implementationSwitcherOpts[1].js = `${API_IDEE_URL}js/apiidee.cesium.min.js`;
-  implementationSwitcherOpts[1].css = `${API_IDEE_URL}assets/css/apiidee.cesium.min.css`;
-}
 
 const config = (configKey, configValue) => {
   config[configKey] = configValue;
