@@ -170,7 +170,8 @@ class ImplementationSwitcher extends ControlBase {
 
     const implementationUrl = resolveUrl(implementation.js);
     const implementationCssUrl = resolveUrl(implementation.css);
-    const existingConfigScript = document.querySelector('script[src$="/config.js"], script[src$="config.js"]');
+    const existingConfigScript = document
+      .querySelector('script[src$="/config.js"], script[src$="config.js"], script[src$="/configuration.js"], script[src$="configuration.js"]');
 
     const configurationUrl = existingConfigScript ? existingConfigScript.src : resolveUrl('js/configuration.js');
 
