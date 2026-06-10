@@ -9,25 +9,28 @@ const backgroundlayersOpts = backgroundlayersIds.map((id, index) => {
   };
 });
 
+const { host, protocol } = window.location;
+
 const PROTOCOL_BASE = 'https:';
 const IDEE_PATH = 'api-idee';
 const HOST_BASE = 'api-ideedes.grupotecopy.es';
-const API_IDEE_URL = `${PROTOCOL_BASE}//${HOST_BASE}/${IDEE_PATH}/`;
+const isLocal = host === HOST_BASE;
+const API_IDEE_URL = isLocal ? `${PROTOCOL_BASE}//${HOST_BASE}/${IDEE_PATH}/` : `${protocol}//${host}/dist/`;
 
 const implementationSwitcherOpts = [
   {
     id: 'OL',
     type: 'ol',
     title: 'Open Layers',
-    js: `${API_IDEE_URL}js/apiidee.ol.min.js`,
-    css: `${API_IDEE_URL}assets/css/apiidee.ol.min.css`,
+    js: '../../../dist/js/apiidee.ol.min.js',
+    css: '../../../dist/assets/css/apiidee.ol.min.css',
   },
   {
     id: 'CS',
     type: 'cesium',
     title: 'Cesium',
-    js: `${API_IDEE_URL}js/apiidee.cesium.min.js`,
-    css: `${API_IDEE_URL}assets/css/apiidee.cesium.min.css`,
+    js: '../../../dist/js/apiidee.cesium.min.js',
+    css: '../../../dist/assets/css/apiidee.cesium.min.css',
   },
 ];
 
