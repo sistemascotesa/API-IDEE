@@ -19,43 +19,31 @@ const LOCAL_URL = `${protocol}//${host}/`;
 const API_IDEE_URL = `${PROTOCOL_BASE}//${HOST_BASE}/${IDEE_PATH}/`;
 const BASE_URL = isLocal ? LOCAL_URL : API_IDEE_URL;
 
-let implementationSwitcherOpts = [];
+const implementationSwitcherOpts = [
+  {
+    id: 'OL',
+    type: 'ol',
+    title: 'Open Layers',
+    js: 'js/apiidee.ol.min.js',
+    css: 'assets/css/apiidee.ol.min.css',
+  },
+  {
+    id: 'CS',
+    type: 'cesium',
+    title: 'Cesium',
+    js: 'js/apiidee.cesium.min.js',
+    css: 'assets/css/apiidee.cesium.min.css',
+  },
+];
 
 if (isLocal) {
-  const BASE_URL_COMPLETE = `${LOCAL_URL}dist/`;
-  implementationSwitcherOpts = [
-    {
-      id: 'OL',
-      type: 'ol',
-      title: 'Open Layers',
-      js: `${BASE_URL_COMPLETE}js/apiidee.ol.min.js`,
-      css: `${BASE_URL_COMPLETE}assets/css/apiidee.ol.min.css`,
-    },
-    {
-      id: 'CS',
-      type: 'cesium',
-      title: 'Cesium',
-      js: `${BASE_URL_COMPLETE}js/apiidee.cesium.min.js`,
-      css: `${BASE_URL_COMPLETE}assets/css/apiidee.cesium.min.css`,
-    },
-  ];
-} else {
-  implementationSwitcherOpts = [
-    {
-      id: 'OL',
-      type: 'ol',
-      title: 'Open Layers',
-      js: 'js/apiidee.ol.min.js',
-      css: 'assets/css/apiidee.ol.min.css',
-    },
-    {
-      id: 'CS',
-      type: 'cesium',
-      title: 'Cesium',
-      js: 'js/apiidee.cesium.min.js',
-      css: 'assets/css/apiidee.cesium.min.css',
-    },
-  ];
+  const localDistBaseURL = '../../../dist/';
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < implementationSwitcherOpts.length; i++) {
+    const implSwitcherOpt = implementationSwitcherOpts[i];
+    implSwitcherOpt.js = `${localDistBaseURL}${implSwitcherOpt.js}`;
+    implSwitcherOpt.css = `${localDistBaseURL}${implSwitcherOpt.css}`;
+  }
 }
 
 const config = (configKey, configValue) => {
