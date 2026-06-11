@@ -222,6 +222,22 @@ class ImplementationSwitcher extends ControlBase {
       } else {
         this.loadMap(implementation);
       }
+
+      // if (configurationUrl && !existingConfig) {
+      //   fetch(implementationUrl)
+      //     .then((response) => response.text())
+      //     .then((scriptContent) => {
+      //       // eslint-disable-next-line no-eval
+      //       eval(scriptContent);
+
+      //       this.loadMap(implementation);
+      //     }).catch((err) => {
+      //       console.error('CONFIGURATION LOAD ERROR', configurationUrl, err);
+      //       this.loadMap(implementation);
+      //     });
+      // } else {
+      //   this.loadMap(implementation);
+      // }
     };
     script.onerror = (err) => {
       // eslint-disable-next-line no-console
@@ -230,13 +246,11 @@ class ImplementationSwitcher extends ControlBase {
     };
     document.body.appendChild(script);
 
-    if (implementationCssUrl) {
-      const style = document.createElement('link');
-      style.type = 'text/css';
-      style.href = implementationCssUrl;
-      style.rel = 'stylesheet';
-      document.head.appendChild(style);
-    }
+    const style = document.createElement('link');
+    style.type = 'text/css';
+    style.href = implementationCssUrl;
+    style.rel = 'stylesheet';
+    document.head.appendChild(style);
   }
 
   loadMap(implementation) {
@@ -252,7 +266,8 @@ class ImplementationSwitcher extends ControlBase {
       (control) => control.name ?? control.NAME,
     );
     const plugins = this.map.getPlugins();
-    const layers = [...this.map.getBaseLayers(), ...this.map.getRootLayers()];
+
+    // const layers = this.map.getLayers();
 
     this.map.removeControls(this);
 
@@ -273,7 +288,7 @@ class ImplementationSwitcher extends ControlBase {
       center,
       controls,
       plugins,
-      layers,
+      // layers,
     });
   }
 
