@@ -14,25 +14,37 @@ const { host, protocol } = window.location;
 const PROTOCOL_BASE = 'https:';
 const IDEE_PATH = 'api-idee';
 const HOST_BASE = 'api-ideedes.grupotecopy.es';
-const isLocal = host === HOST_BASE;
-const API_IDEE_URL = isLocal ? `${PROTOCOL_BASE}//${HOST_BASE}/${IDEE_PATH}/` : `${protocol}//${host}/dist/`;
+const isLocal = host !== HOST_BASE;
+const LOCAL_URL = `${protocol}//${host}/`;
+const API_IDEE_URL = `${PROTOCOL_BASE}//${HOST_BASE}/${IDEE_PATH}/`;
+const BASE_URL = isLocal ? LOCAL_URL : API_IDEE_URL;
 
 const implementationSwitcherOpts = [
   {
     id: 'OL',
     type: 'ol',
     title: 'Open Layers',
-    js: '../../../dist/js/apiidee.ol.min.js',
-    css: '../../../dist/assets/css/apiidee.ol.min.css',
+    js: 'js/apiidee.ol.min.js',
+    css: 'assets/css/apiidee.ol.min.css',
   },
   {
     id: 'CS',
     type: 'cesium',
     title: 'Cesium',
-    js: '../../../dist/js/apiidee.cesium.min.js',
-    css: '../../../dist/assets/css/apiidee.cesium.min.css',
+    js: 'js/apiidee.cesium.min.js',
+    css: 'assets/css/apiidee.cesium.min.css',
   },
 ];
+
+if (isLocal) {
+  const localDistBaseURL = '../../../dist/';
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < implementationSwitcherOpts.length; i++) {
+    const implSwitcherOpt = implementationSwitcherOpts[i];
+    implSwitcherOpt.js = `${localDistBaseURL}${implSwitcherOpt.js}`;
+    implSwitcherOpt.css = `${localDistBaseURL}${implSwitcherOpt.css}`;
+  }
+}
 
 const config = (configKey, configValue) => {
   config[configKey] = configValue;
@@ -61,7 +73,7 @@ function fun(IDEE_) {
    * @public
    * @api stable
    */
-  IDEE_.config('API_IDEE_URL', `${API_IDEE_URL}`);
+  IDEE_.config('API_IDEE_URL', BASE_URL);
 
   /**
    * The path to the API-IDEE proxy to send
@@ -71,7 +83,7 @@ function fun(IDEE_) {
    * @public
    * @api stable
    */
-  IDEE_.config('PROXY_URL', `${API_IDEE_URL}api/proxy`);
+  IDEE_.config('PROXY_URL', `${BASE_URL}api/proxy`);
 
   /**
    * The path to the API-IDEE proxy to send
@@ -81,7 +93,7 @@ function fun(IDEE_) {
    * @public
    * @api stable
    */
-  IDEE_.config('PROXY_POST_URL', `${API_IDEE_URL}proxyPost`);
+  IDEE_.config('PROXY_POST_URL', `${BASE_URL}proxyPost`);
 
   /**
    * The static resources URL
@@ -99,7 +111,16 @@ function fun(IDEE_) {
    * @public
    * @api stable
    */
-  IDEE_.config('THEME_URL', `${API_IDEE_URL}assets/`);
+  IDEE_.config('THEME_URL', `${BASE_URL}assets/`);
+
+  /**
+   * The path to the API IDEE theme
+   * @const
+   * @type {string}
+   * @public
+   * @api stable
+   */
+  IDEE_.config('CESIUM_URL', `${isLocal ? `${LOCAL_URL}dist/` : API_IDEE_URL}cesium/`);
 
   /**
    * Predefined WMC files. It is composed of URL,

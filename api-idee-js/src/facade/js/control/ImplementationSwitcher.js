@@ -240,10 +240,6 @@ class ImplementationSwitcher extends ControlBase {
   }
 
   loadMap(implementation) {
-    /** @type {HTMLDivElement} */
-    const mapFrameContainer = this.map.getFrameContainer();
-    const rootContainer = mapFrameContainer || this.map.getContainer();
-
     const zoom = this.map.getZoom();
     const sourceProjection = this.map.getProjection().code;
     const projection = implementation.epsg ?? IDEE.config.DEFAULT_PROJ;
@@ -260,6 +256,9 @@ class ImplementationSwitcher extends ControlBase {
 
     this.map.removeControls(this);
 
+    /** @type {HTMLDivElement} */
+    const mapFrameContainer = this.map.getFrameContainer();
+
     try {
       this.map.destroy();
     } catch (e) {
@@ -268,7 +267,7 @@ class ImplementationSwitcher extends ControlBase {
     }
 
     IDEE.map({
-      container: rootContainer.id,
+      container: mapFrameContainer.id,
       zoom,
       projection,
       center,
