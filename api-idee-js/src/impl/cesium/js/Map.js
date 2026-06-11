@@ -108,7 +108,7 @@ class Map extends MObject {
    * @api
    */
   constructor(div, facadeMap, dpi, options = {}, viewVendorOptions = {}) {
-    buildModuleUrl.setBaseUrl(IDEE.config.CESIUM_URL);
+    buildModuleUrl.setBaseUrl(`${IDEE.config.CESIUM_URL}/cesium`);
     Ion.defaultAccessToken = '';
 
     super();
