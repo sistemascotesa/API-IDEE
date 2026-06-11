@@ -136,6 +136,15 @@ params.forEach((param) => {
   IDEE.config('THEME_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${api-idee.theme.url}`);
 
   /**
+   * The path to the API IDEE theme
+   * @const
+   * @type {string}
+   * @public
+   * @api stable
+   */
+  IDEE.config('CESIUM_URL', '${api-idee.url}cesium/');
+
+  /**
    * Predefined WMC files. It is composed of URL,
    * predefined name and context name.
    * @type {object}

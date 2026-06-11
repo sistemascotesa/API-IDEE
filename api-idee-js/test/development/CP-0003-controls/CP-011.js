@@ -15,6 +15,8 @@ const map = Mmap({
   ],
 });
 
+IDEE.map = map;
+
 const selectPosition = document.getElementById('selectPosicion');
 const inputTooltip = document.getElementById('inputTooltip');
 const inputOrder = document.getElementById('inputOrder');
