@@ -7,7 +7,7 @@ import ImplementationSwitcher from 'IDEE/control/ImplementationSwitcher';
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:4326',
-  // controls: ['rotate'],
+  controls: ['location'],
   zoom: 8,
   center: [
     -7.68,

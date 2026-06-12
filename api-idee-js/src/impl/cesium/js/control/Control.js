@@ -25,6 +25,20 @@ class Control {
   }
 
   /**
+   * Guarda la referencia del al mapa de fachada
+   * Este método no debe ser usado por el usuario
+   *
+   * @private
+   * @function
+   * @param {IDEE.Map} map Mapa de fachada
+   * @api stable
+   * @export
+   */
+  set facadeMap(map) {
+    this.facadeMap_ = map;
+  }
+
+  /**
    * Este método añade el control al mapa.
    *
    * @public
