@@ -222,22 +222,6 @@ class ImplementationSwitcher extends ControlBase {
       } else {
         this.loadMap(implementation);
       }
-
-      // if (configurationUrl && !existingConfig) {
-      //   fetch(implementationUrl)
-      //     .then((response) => response.text())
-      //     .then((scriptContent) => {
-      //       // eslint-disable-next-line no-eval
-      //       eval(scriptContent);
-
-      //       this.loadMap(implementation);
-      //     }).catch((err) => {
-      //       console.error('CONFIGURATION LOAD ERROR', configurationUrl, err);
-      //       this.loadMap(implementation);
-      //     });
-      // } else {
-      //   this.loadMap(implementation);
-      // }
     };
     script.onerror = (err) => {
       // eslint-disable-next-line no-console

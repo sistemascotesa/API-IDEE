@@ -13,7 +13,7 @@ const { host, protocol } = window.location;
 
 const PROTOCOL_BASE = 'https:';
 const IDEE_PATH = 'api-idee';
-const HOST_BASE = 'api-ideedes.grupotecopy.es';
+const HOST_BASE = 'componentes-beta.idee.es';
 const isLocal = host !== HOST_BASE;
 const LOCAL_URL = `${protocol}//${host}/`;
 const API_IDEE_URL = `${PROTOCOL_BASE}//${HOST_BASE}/${IDEE_PATH}/`;
