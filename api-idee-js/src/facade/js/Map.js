@@ -2995,7 +2995,6 @@ class Map extends Base {
         }
         const panel = getPanelForControl(control, this, control.builderParams ?? {});
         const isControlWithoutAdding = !this.hasControl(control);
-
         if (isControlWithoutAdding || skipCheckDuplicate) {
           if (!isNullOrEmpty(panel) && isControlWithoutAdding) {
             panel.addControls(control);
