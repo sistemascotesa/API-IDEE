@@ -261,13 +261,12 @@ class ImplementationSwitcher extends ControlBase {
     const center = (typeof ol !== 'undefined' && ol !== null)
       ? ol.proj.transform([x, y], sourceProjection, projection)
       : transform([x, y], sourceProjection, projection);
-
     const controls = Array.from(this.map.getControls()).map(
       (control) => control.name ?? control.NAME,
     );
     const plugins = this.map.getPlugins();
-
-    // const layers = this.map.getLayers();
+    /** Layers has an error on change cesium to open layers */
+    const layers = this.map.getLayers();
 
     this.map.removeControls(this);
 
@@ -288,7 +287,7 @@ class ImplementationSwitcher extends ControlBase {
       center,
       controls,
       plugins,
-      // layers,
+      layers,
     });
   }
 
