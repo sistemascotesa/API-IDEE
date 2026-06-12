@@ -141,7 +141,7 @@
    * @public
    * @api stable
    */
-  IDEE.config('CESIUM_URL', '${api-idee.url}');
+  IDEE.config('CESIUM_URL', '${api-idee.url}cesium/');
 
   /**
    * Predefined WMC files. It is composed of URL,
