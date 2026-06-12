@@ -22,7 +22,7 @@ const wfs = new WFS({
 });
 
 const kml = new KML({
-  url: 'https://api-ideedes.grupotecopy.es/files/kml/arbda_sing_se.kml',
+  url: 'https://componentes-beta.idee.es/files/kml/arbda_sing_se.kml',
 });
 
 const geojson = new GeoJSON({
