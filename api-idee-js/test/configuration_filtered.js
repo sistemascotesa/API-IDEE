@@ -120,7 +120,7 @@ function fun(IDEE_) {
    * @public
    * @api stable
    */
-  IDEE_.config('CESIUM_URL', isLocal ? `${LOCAL_URL}dist/` : API_IDEE_URL);
+  IDEE_.config('CESIUM_URL', `${isLocal ? `${LOCAL_URL}dist/` : API_IDEE_URL}cesium/`);
 
   /**
    * Predefined WMC files. It is composed of URL,
