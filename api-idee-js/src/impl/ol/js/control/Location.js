@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /**
  * @module IDEE/impl/control/Location
  */
@@ -16,6 +17,17 @@ import OLStyleFill from 'ol/style/Fill';
 import OLStyleStroke from 'ol/style/Stroke';
 import Control from './Control';
 import Feature from '../feature/Feature';
+
+/**
+  * @typedef {Object} Options Opciones de configuración del control de implementación
+  * @param {Boolean} [tracking] Seguimiento de la localización, por defecto verdadero.
+  * @param {Boolean} [highAccuracy] Alta precisión del seguimiento, por defecto falso.
+  * @param {Number} [maximumAge] Indica la antigüedad máxima en milisegundos de una posible
+  * posición almacenada en caché.
+  * Valor por defecto 60000.
+  * @param {Object} [vendorOptions] Opciones de proveedor para la biblioteca base,
+  * por defecto objeto vacío. Estos valores no son configurables.
+*/
 
 /**
  *  @classdesc
@@ -41,30 +53,23 @@ class Location extends Control {
    * posición en el mapa.
    *
    * @constructor
-   * @param {Boolean} tracking Seguimiento de la localización, por defecto verdadero.
-   * @param {Boolean} highAccuracy Alta precisión del seguimiento, por defecto falso.
-   * @param {Number} maximumAge Indica la antigüedad máxima en milisegundos de una posible
-   * posición almacenada en caché.
-   * Valor por defecto 60000.
-   * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base,
-   * por defecto objeto vacío. Estos valores no son configurables.
+   * @extends {IDEE.impl.Control}
+   * @param {Options} options
    * @example
    * const control = new IDEE.impl.ol.control.Location(true, false, 60000, {
    *   enableHighAccuracy: true,
    * });
-   * @extends {IDEE.impl.Control}
    * @api stable
    */
-
-  constructor(tracking, highAccuracy, maximumAge, vendorOptions) {
-    super(vendorOptions);
+  constructor(options = {}) {
+    super(options.vendorOptions);
 
     /**
      * Opciones para la biblioteca base.
      * @private
      * @type {Object}
      */
-    this.vendorOptions_ = vendorOptions;
+    this.vendorOptions_ = options.vendorOptions;
 
     /**
      * Proporcionar Geolocalización HTML5.
@@ -79,7 +84,7 @@ class Location extends Control {
      * @type {OLFeature}
      */
     const olAccuracyFeature = new OLFeature();
-    olAccuracyFeature.set('isUtilityFeature', true); // No interactivo
+    olAccuracyFeature.set('isUtilityFeature', true);
     this.accuracyFeature_ = Feature.feature2Facade(olAccuracyFeature);
 
     /**
@@ -87,21 +92,21 @@ class Location extends Control {
      * @private
      * @type {Boolean}
      */
-    this.tracking_ = tracking;
+    this.tracking_ = options.tracking ?? true;
 
     /**
      * Alta precisión del seguimiento, por defecto falso.
      * @private
      * @type {Boolean}
      */
-    this.highAccuracy_ = highAccuracy;
+    this.highAccuracy_ = options.highAccuracy ?? false;
 
     /**
      * Valor por defecto 60000.
      * @private
      * @type {Number}
      */
-    this.maximumAge_ = maximumAge;
+    this.maximumAge_ = options.maximumAge ?? 6000;
 
     /**
      * Activa el control.
@@ -168,18 +173,38 @@ class Location extends Control {
         },
       }, this.vendorOptions_, true));
       this.geolocation_.on('change:accuracyGeometry', (evt) => {
-        const accuracyGeom = evt.target.get(evt.key);
+        // const accuracyGeom = evt.target.get(evt.key);
+        const accuracyGeom = evt.target.getAccuracyGeometry();
+        if (accuracyGeom) {
+          const nativeMap = this.facadeMap_.getImpl().map_;
+          const mapProjection = nativeMap.getView().getProjection();
+          accuracyGeom.transform('EPSG:4326', mapProjection);
+          const nativeAccuracyFeature = this.accuracyFeature_.getImpl().getFeature();
+          nativeAccuracyFeature.setGeometry(accuracyGeom);
+          nativeAccuracyFeature.setStyle(
+            new OLStyle({
+              fill: new OLStyleFill({
+                color: 'rgba(0, 204, 255, 0.12)',
+              }),
+              stroke: new OLStyleStroke({
+                color: 'rgba(0, 68, 85, 0.42)',
+                width: 1.5,
+              }),
+            }),
+          );
+        }
         this.accuracyFeature_.getImpl().getFeature().setGeometry(accuracyGeom);
       });
       this.geolocation_.on('change:position', (evt) => {
-        const newCoord = evt.target.get(evt.key);
+        const [lon, lat] = evt.target.get(evt.key);
+        const newCoord = [lon, lat];
         const newPosition = isNullOrEmpty(newCoord)
           ? null
           : new OLGeomPoint(newCoord);
         this.positionFeature_.getImpl().getFeature().setGeometry(newPosition);
         this.facadeMap_.setCenter(newCoord);
         if (this.element.classList.contains('m-locating')) {
-          this.facadeMap_.setZoom(Location.ZOOM); // solo 1a vez
+          this.facadeMap_.setZoom(Location.ZOOM);
         }
         this.element.classList.remove('m-locating');
         this.element.classList.add('m-located');

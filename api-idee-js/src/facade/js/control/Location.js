@@ -5,6 +5,7 @@ import LocationImpl from 'impl/control/Location';
 import locationTemplate from 'templates/location';
 import myhelp from 'templates/locationhelp';
 import 'assets/css/controls/location';
+import * as EventType from 'IDEE/event/eventtype';
 import { getValue } from '../i18n/language';
 import ControlBase from './Control';
 import {
@@ -68,7 +69,11 @@ class Location extends ControlBase {
     }
 
     // implementation of this control
-    const impl = new LocationImpl(tracking, highAccuracy, 60000, vendorOptions);
+    const impl = new LocationImpl({
+      tracking,
+      highAccuracy,
+      vendorOptions,
+    });
 
     // calls the super constructor
     super(Location.NAME, impl, options);
@@ -101,9 +106,10 @@ class Location extends ControlBase {
    * @api
    */
   createView(map) {
+    const lang = this.translation || {};
     const element = compileTemplate(locationTemplate, {
       vars: {
-        title: this.tooltip ?? getValue('location').title,
+        title: this.tooltip ?? lang.title,
       },
     });
 
@@ -132,6 +138,60 @@ class Location extends ControlBase {
   }
 
   /**
+   * Genera un objeto clave-valor traducido con los datos actualizados.
+   * Perfecto para el InfoBox nativo de Cesium.
+   * @param {number} lon
+   * @param {number} lat
+   * @returns {Object} Diccionario mapeado con traducciones vigentes
+   */
+  getPopupProperties(lon, lat) {
+    const lang = this.translation || {};
+    const labels = lang.popup;
+
+    return {
+      [labels.title]: labels.titleValue || 'Mi ubicación',
+      [labels.longitude]: typeof lon === 'number' ? lon.toFixed(6) : lon,
+      [labels.latitude]: typeof lat === 'number' ? lat.toFixed(6) : lat,
+    };
+  }
+
+  /**
+   * Crea un contenedor DOM con una tabla estructurada y traducida.
+   * Perfecto para inyectar en Overlays de OpenLayers.
+   * @param {number} lon
+   * @param {number} lat
+   * @returns {HTMLElement} Elemento contenedor de la tabla
+   */
+  createPopupContent(lon, lat) {
+    const lang = this.translation || {};
+    const labels = lang.popup;
+
+    const container = document.createElement('div');
+    container.className = 'm-location-popup-container';
+
+    container.innerHTML = `
+      <table class="m-location-popup-table">
+        <thead>
+          <tr>
+            <th colspan="2" class="popup-title">${labels.titleValue || 'Mi ubicación'}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="popup-label"><strong>${labels.longitude}</strong></td>
+            <td class="popup-value lon-value">${typeof lon === 'number' ? lon.toFixed(6) : lon}</td>
+          </tr>
+          <tr>
+            <td class="popup-label"><strong>${labels.latitude}</strong></td>
+            <td class="popup-value lat-value">${typeof lat === 'number' ? lat.toFixed(6) : lat}</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+    return container;
+  }
+
+  /**
    * Obtiene la ayuda del control
    *
    * @function
@@ -139,7 +199,8 @@ class Location extends ControlBase {
    * @api
   */
   getHelp() {
-    const textHelp = getValue('location').textHelp;
+    const lang = this.translation || {};
+    const textHelp = lang.textHelp;
     return {
       title: Location.NAME,
       content: new Promise((success) => {
@@ -147,9 +208,9 @@ class Location extends ControlBase {
           vars: {
             urlImages: `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/controles`,
             translations: {
-              help1: textHelp.text1,
-              help2: textHelp.text2,
-              help3: textHelp.text2,
+              help1: textHelp.text1 ?? '',
+              help2: textHelp.text2 ?? '',
+              help3: textHelp.text2 ?? '',
             },
           },
         });
@@ -182,6 +243,15 @@ class Location extends ControlBase {
    */
   setTracking(tracking) {
     this.getImpl().tracking = tracking;
+  }
+
+  /**
+   * @override
+   * Destroys facade implementacion of this control
+   */
+  destroy() {
+    super.destroy();
+    this.un(EventType.CHANGE);
   }
 }
 
