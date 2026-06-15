@@ -181,17 +181,7 @@ class Location extends Control {
           accuracyGeom.transform('EPSG:4326', mapProjection);
           const nativeAccuracyFeature = this.accuracyFeature_.getImpl().getFeature();
           nativeAccuracyFeature.setGeometry(accuracyGeom);
-          nativeAccuracyFeature.setStyle(
-            new OLStyle({
-              fill: new OLStyleFill({
-                color: 'rgba(0, 204, 255, 0.12)',
-              }),
-              stroke: new OLStyleStroke({
-                color: 'rgba(0, 68, 85, 0.42)',
-                width: 1.5,
-              }),
-            }),
-          );
+          nativeAccuracyFeature.setStyle(Location.ACCURACY_STYLE);
         }
         this.accuracyFeature_.getImpl().getFeature().setGeometry(accuracyGeom);
       });
@@ -305,6 +295,24 @@ Location.POSITION_STYLE = new OLStyle({
       color: '#fff',
       width: 2,
     }),
+  }),
+});
+
+/**
+ * Estilo del area de cercanía para la localización.
+ * @const
+ * @type {ol.style.Style}
+ * @public
+ * @api stable
+ * @memberof module:IDEE/impl/control/Location~
+ */
+Location.ACCURACY_STYLE = new OLStyle({
+  fill: new OLStyleFill({
+    color: 'rgba(0, 204, 255, 0.12)',
+  }),
+  stroke: new OLStyleStroke({
+    color: 'rgba(0, 68, 85, 0.42)',
+    width: 1.5,
   }),
 });
 
