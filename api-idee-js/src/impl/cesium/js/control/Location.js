@@ -9,6 +9,17 @@ import Control from './Control';
 import Feature from '../feature/Feature';
 
 /**
+  * @typedef {Object} Options Opciones de configuración del control de implementación
+  * @param {Boolean} [tracking] Seguimiento de la localización, por defecto verdadero.
+  * @param {Boolean} [highAccuracy] Alta precisión del seguimiento, por defecto falso.
+  * @param {Number} [maximumAge] Indica la antigüedad máxima en milisegundos de una posible
+  * posición almacenada en caché.
+  * Valor por defecto 60000.
+  * @param {Object} [vendorOptions] Opciones de proveedor para la biblioteca base,
+  * por defecto objeto vacío. Estos valores no son configurables.
+*/
+
+/**
  * @classdesc
  * Hereda de {@link module:IDEE/impl/control/Control|Control}.
  * Control de localización geográfica para Cesium 3D. Localiza la posición actual del usuario
@@ -25,24 +36,22 @@ import Feature from '../feature/Feature';
 class Location extends Control {
   /**
    * @constructor
-   * @param {Boolean} tracking Seguimiento de la localización.
-   * @param {Boolean} highAccuracy Alta precisión del seguimiento.
-   * @param {Number} maximumAge Antigüedad máxima en caché.
-   * @param {Object} vendorOptions Opciones de proveedor para Cesium/Geolocation.
+   * @extends {IDEE.impl.Control}
+   * @param {Options} options
    * @example
    * const control = new IDEE.impl.ol.control.Location(true, false, 60000, {
    *   enableHighAccuracy: true,
    * });
    */
-  constructor(tracking, highAccuracy, maximumAge, vendorOptions) {
-    super(vendorOptions);
+  constructor(options = {}) {
+    super(options.vendorOptions);
 
     /**
      * Opciones para la biblioteca base.
      * @private
      * @type {Object}
      */
-    this.vendorOptions_ = vendorOptions;
+    this.vendorOptions_ = options.vendorOptions;
     this.watchId_ = null;
 
     /**
@@ -50,21 +59,21 @@ class Location extends Control {
      * @private
      * @type {Boolean}
      */
-    this.tracking_ = tracking;
+    this.tracking_ = options.tracking ?? true;
 
     /**
      * Alta precisión del seguimiento, por defecto falso.
      * @private
      * @type {Boolean}
      */
-    this.highAccuracy_ = highAccuracy;
+    this.highAccuracy_ = options.highAccuracy ?? false;
 
     /**
      * Valor por defecto 60000.
      * @private
      * @type {Number}
      */
-    this.maximumAge_ = maximumAge;
+    this.maximumAge_ = options.maximumAge ?? 6000;
 
     /**
      * Activa el control.
@@ -101,7 +110,7 @@ class Location extends Control {
         outlineWidth: 1,
       },
     });
-    // Inyección de compatibilidad (Duck Typing) para la fachada Feature.js
+
     cesiumAccuracyEntity.get = (key) => {
       return this[key];
     };
@@ -121,8 +130,20 @@ class Location extends Control {
         disableDepthTestDistance: Number.POSITIVE_INFINITY,
       },
     });
-    // Inyección de compatibilidad (Duck Typing) para la fachada Feature.js
+
+    cesiumPositionEntity.getAttributes = () => {
+      return this._rawProperties;
+    };
+
+    cesiumPositionEntity.getAttribute = (key) => {
+      return this._rawProperties[key];
+    };
+
     cesiumPositionEntity.get = (key) => {
+      // eslint-disable-next-line no-prototype-builtins
+      if (this._rawProperties && this._rawProperties.hasOwnProperty(key)) {
+        return this._rawProperties[key];
+      }
       return this[key];
     };
     cesiumPositionEntity.isUtilityFeature = true;
@@ -150,10 +171,9 @@ class Location extends Control {
       const accuracy = position.coords.accuracy;
       const newCoord = [lon, lat];
 
-      // Cesium trabaja con coordenadas Cartesianas 3D basándose en WGS84 (grados)
       const centerCartesian = Cesium.Cartesian3.fromDegrees(lon, lat);
 
-      // 1. Actualizar posición y radio de la geometría de precisión
+      // Actualizar anillo de precisión
       const accEntity = this.accuracyFeature_.getImpl().getFeature();
       accEntity.position = centerCartesian;
       if (accEntity.ellipse) {
@@ -161,11 +181,18 @@ class Location extends Control {
         accEntity.ellipse.semiMinorAxis = accuracy;
       }
 
-      // 2. Actualizar posición del punto indicador
       const posEntity = this.positionFeature_.getImpl().getFeature();
       posEntity.position = centerCartesian;
 
-      // 3. Reposicionar el mapa global (Fachada)
+      if (!isNullOrEmpty(this.facadeObj_)) {
+        const translatedProps = this.facadeObj_.getPopupProperties(lon, lat);
+
+        posEntity.properties = new Cesium.PropertyBag(translatedProps);
+
+        // eslint-disable-next-line no-underscore-dangle
+        posEntity._rawProperties = translatedProps;
+      }
+
       this.facadeMap_.setCenter(newCoord);
       if (this.element.classList.contains('m-locating')) {
         this.facadeMap_.setZoom(Location.ZOOM);
@@ -174,12 +201,10 @@ class Location extends Control {
       this.element.classList.remove('m-locating');
       this.element.classList.add('m-located');
 
-      // Si no requiere trackear continuamente, apagamos el watcher tras la primera lectura fija
       if (!this.tracking_) {
         this.clearWatch_();
       }
 
-      // 4. Notificar cambios a la fachada mediante eventos abstractos
       if (!isNullOrEmpty(this.facadeObj_)) {
         if (!setEquals(newCoord, this.lastCoord_)) {
           this.facadeObj_.fire(EventType.CHANGE, [newCoord]);
