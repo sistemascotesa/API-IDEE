@@ -20,6 +20,12 @@
   },
   "location": {
     "title": "Get current location",
+    "popup": {
+      "title": "Location",
+      "titleValue": "Current Position",
+      "longitude": "Longitude",
+      "latitude": "Latitude"
+    },
     "textHelp": {
       "text1": "The location tool allows you to obtain the position of a device and position it on the map. Its operation is restricted to WEB pages that are published securely over the HTTPS protocol and in local environments.",
       "text2": "If used on a mobile device equipped with a GNSS system, the position will be obtained according to the device's location permissions.",
