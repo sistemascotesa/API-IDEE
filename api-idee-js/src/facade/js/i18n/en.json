@@ -262,6 +262,8 @@
     "invalidBase64Encoding": "Invalid base64 encoding",
     "invalidJsonFormat": "Invalid JSON format",
     "removecontrol_method": "The used implementation does not have the removeControls method.",
+    "addinteraction_method": "La implementación usada no posee el método addInteraction.",
+    "removeinteraction_method": "La implementación usada no posee el método removeInteraction.",
     "setmaxextent_method": "The used implementation does not have the setMaxExtent method.",
     "flyTo_method": "The used implementation does not have the flyTo method.",
     "getbbox_method": "The used implementation does not have the getBbox method.",

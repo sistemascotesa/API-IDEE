@@ -5422,6 +5422,40 @@ class Map extends Base {
   }
 
   /**
+   * Este método añade una interacción de OpenLayers al mapa.
+   *
+   * @function
+   * @param {ol.interaction.Interaction} interaction Interacción a añadir.
+   * @returns {IDEE.Map} Mapa.
+   * @public
+   * @api
+  */
+  addInteraction(interaction) {
+    if (isUndefined(MapImpl.prototype.addInteraction)) {
+      Exception(getValue('exception').addinteraction_method);
+    }
+    this.getImpl().addInteraction(interaction);
+    return this;
+  }
+
+  /**
+   * Este método elimina una interacción de OpenLayers del mapa.
+   *
+   * @function
+   * @param {ol.interaction.Interaction} interaction Interacción a eliminar.
+   * @returns {IDEE.Map} Mapa.
+   * @public
+   * @api
+  */
+  removeInteraction(interaction) {
+    if (isUndefined(MapImpl.prototype.removeInteraction)) {
+      Exception(getValue('exception').removeinteraction_method);
+    }
+    this.getImpl().removeInteraction(interaction);
+    return this;
+  }
+
+  /**
    * Este método permite activar o desactivar la interacción de panneo.
    * El valor por defecto es true.
    *
