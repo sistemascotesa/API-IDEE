@@ -303,24 +303,15 @@ export default class MouseSRSControl extends IDEE.impl.Control {
    */
   async getDecimalUnits() {
     let decimalDigits;
-    let srsUnits;
-    try {
-      // eslint-disable-next-line no-underscore-dangle
-      srsUnits = ol.proj.get(this.srs).units_;
-    } catch (e) {
-      try {
-        await IDEE.impl.ol.js.projections.setNewProjection(this.srs);
-        const newProj = ol.proj.get(this.srs);
-        // eslint-disable-next-line no-underscore-dangle
-        srsUnits = newProj.units_;
-      } catch (err) {
+    if (!ol.proj.get(this.srs)) {
+      if (!await IDEE.impl.ol.js.projections.ensureProjection(this.srs)) {
         this.srs = 'EPSG:4326';
         this.label = this.formatEPSG(this.srs);
         IDEE.dialog.error(`${getValue('exception.srs')} ${this.srs}`);
-        // eslint-disable-next-line no-underscore-dangle
-        srsUnits = ol.proj.get('EPSG:4326').units_;
       }
     }
+    // eslint-disable-next-line no-underscore-dangle
+    const srsUnits = ol.proj.get(this.srs).units_;
 
     if (srsUnits === 'd' && this.geoDecimalDigits !== undefined) {
       decimalDigits = this.geoDecimalDigits;
