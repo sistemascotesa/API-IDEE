@@ -2,12 +2,10 @@
 import { map as Mmap } from 'IDEE/api-idee';
 import ImplementationSwitcher from 'IDEE/control/ImplementationSwitcher';
 
-// IDEE.config('PROXY_URL', 'https://mapea4-sigc.juntadeandalucia.es/mapea/api/proxy');
-
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:4326',
-  controls: ['location'],
+  controls: ['location', 'implementationswitcher'],
   zoom: 8,
   center: [
     -7.68,
@@ -31,7 +29,9 @@ const create = (options) => {
 
 const remove = () => {
   const ctrls = map.getControls(ImplementationSwitcher.NAME);
-  if (ctrls.length === 1) map.removeControls(ctrls[0]);
+  ctrls.forEach((ctrl) => {
+    map.removeControls(ctrl);
+  });
 };
 
 const recreate = () => {
@@ -65,4 +65,6 @@ removeButton.addEventListener('click', () => {
   remove();
 });
 
-recreate();
+map.once('load', () => {
+  recreate();
+});
