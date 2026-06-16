@@ -792,6 +792,32 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
+   * Refresca el listado de proyecciones del selector de EPSG con las
+   * proyecciones actualmente soportadas, incluyendo las registradas
+   * al vuelo por otros plugins.
+   * @param {HTMLElement} selectorEl Elemento <ul> del selector de EPSG
+   * @public
+   * @function
+   * @api
+   */
+  refreshProjectionsSelector(selectorEl) {
+    this.projectionsOptions_ = IDEE.impl.ol.js.projections.getSupportedProjs();
+    // eslint-disable-next-line no-param-reassign
+    selectorEl.innerHTML = `
+      <li><a class="m-customize-template-option-disabled" href="#" value="default" tabindex="-1" disabled>
+          ${getValue('choose_create_epsg')}
+      </a></li>
+      ${this.projectionsOptions_.map((proj) => `
+          <li>
+              <a href="#" value="${proj.codes[0]}">
+                  ${proj.codes[0]}
+              </a>
+          </li>
+      `).join('')}
+    `;
+  }
+
+  /**
    * Configura el control de entrada de SRS
    * @param {String} inputElementId ID del elemento de entrada de SRS
    * @param {String} selectorElementId ID del listado de SRS
@@ -806,6 +832,7 @@ export default class TemplateCustomizer extends IDEE.Control {
 
     inputElement.addEventListener('focus', () => {
       if (!isEditable) {
+        this.refreshProjectionsSelector(selectorElement);
         selectorElement.style.display = 'block';
         const list = selectorElement.querySelectorAll('li a');
         list.forEach((li) => {
@@ -861,42 +888,19 @@ export default class TemplateCustomizer extends IDEE.Control {
     const selectorEl = document.querySelector(ID_TEMPLATE_SRS_SELECTOR);
     if (currentProjection !== this.projection) {
       const currentCenter = previewView.getCenter();
-      let transformedCenter;
-      try {
-        transformedCenter = this.getImpl().transformCoordinates(
-          currentCenter,
-          currentProjection,
-          this.projection,
-        );
-      } catch (error) {
-        try {
-          await IDEE.impl.ol.js.projections.setNewProjection(epsg);
-          transformedCenter = this.getImpl().transformCoordinates(
-            currentCenter,
-            currentProjection,
-            this.projection,
-          );
-        } catch (err) {
-          this.projection = previousProjection;
-          IDEE.dialog.error(`${getValue('exception.srs')} ${this.projection}`);
-          return;
-        }
+      if (!await IDEE.impl.ol.js.projections.ensureProjection(epsg)) {
+        this.projection = previousProjection;
+        IDEE.dialog.error(`${getValue('exception.srs')} ${this.projection}`);
+        return;
       }
+      const transformedCenter = this.getImpl().transformCoordinates(
+        currentCenter,
+        currentProjection,
+        this.projection,
+      );
 
       inputElement.value = this.projection;
-      this.projectionsOptions_ = IDEE.impl.ol.js.projections.getSupportedProjs();
-      selectorEl.innerHTML = `
-        <li><a class="m-customize-template-option-disabled" href="#" value="default" tabindex="-1" disabled>
-            ${getValue('choose_create_epsg')}
-        </a></li>
-        ${this.projectionsOptions_.map((proj) => `
-            <li>
-                <a href="#" value="${proj.codes[0]}">
-                    ${proj.codes[0]}
-                </a>
-            </li>
-        `).join('')}
-      `;
+      this.refreshProjectionsSelector(selectorEl);
 
       const newView = this.getImpl().createView({
         projection: this.projection,

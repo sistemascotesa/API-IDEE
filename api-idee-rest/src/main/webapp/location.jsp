@@ -93,7 +93,7 @@
         IDEE.language.setLang(urlParams.get('language') || 'es');
         const map = IDEE.map({
             container: 'mapjs',
-            controls: ['rotate'],
+            controls: ['implementationswitcher'],
             zoom: 5,
             maxZoom: 20,
             minZoom: 4,

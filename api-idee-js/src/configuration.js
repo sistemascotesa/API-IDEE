@@ -4,82 +4,81 @@
  * Date ${build.timestamp}
  */
 
-const backgroundlayersOpts = [{
-  id: 'mapa',
-  title: 'Callejero',
-  layers: [
-    'QUICK*Base_IGNBaseTodo_TMS',
-  ],
-},
-{
-  id: 'imagen',
-  title: 'Imagen',
-  layers: [
-    'QUICK*BASE_PNOA_MA_TMS',
-  ],
-},
-{
-  id: 'hibrido',
-  title: 'Hibrido',
-  layers: [
-    'QUICK*BASE_HIBRIDO_LayerGroup',
-  ],
-},
-];
-
-const implementationSwitcherOpts = [{
-  id: 'OL',
-  type: 'ol',
-  title: 'Open Layers',
-  js: 'js/apiidee.ol.min.js',
-  css: 'assets/css/apiidee.ol.min.css',
-},
-{
-  id: 'CS',
-  type: 'cesium',
-  title: 'Cesium',
-  js: 'js/apiidee.cesium.min.js',
-  css: 'assets/css/apiidee.cesium.min.css',
-}];
-
-const params = window.location.search.split('&');
-let center = '';
-let zoom = '';
-let srs = '';
-let layers = '';
-let zoomConstrains = '';
-let extentConstrains = '';
-params.forEach((param) => {
-  if (param.indexOf('center') > -1) {
-    const values = param.split('=')[1].split(',');
-    center = [parseFloat(values[0]), parseFloat(values[1])];
-  } else if (param.indexOf('zoomConstrains') > -1) {
-    const value = param.split('=')[1];
-    zoomConstrains = value;
-  } else if (param.indexOf('extentConstrains') > -1) {
-    const value = param.split('=')[1];
-    extentConstrains = value;
-  } else if (param.indexOf('zoom') > -1) {
-    const value = param.split('=')[1];
-    zoom = parseInt(value, 10);
-  } else if (param.indexOf('srs') > -1) {
-    const value = param.split('=')[1];
-    srs = value;
-  } else if (param.indexOf('layers') > -1) {
-    let value = param.substring(param.indexOf('=') + 1, param.length);
-
-    let layerGroups = [];
-    const regex = /LayerGroup\*.*?!/g;
-    if (value.match(regex) !== null) {
-      layerGroups = value.match(regex).map((item) => item.slice(0, -1));
-      value = value.replace(regex, '');
-    }
-
-    layers = value.split(',').filter((item) => item !== '').concat(layerGroups);
-  }
-});
-
 (function (IDEE) {
+  const backgroundlayersOpts = [{
+    id: 'mapa',
+    title: 'Callejero',
+    layers: [
+      'QUICK*Base_IGNBaseTodo_TMS',
+    ],
+  },
+  {
+    id: 'imagen',
+    title: 'Imagen',
+    layers: [
+      'QUICK*BASE_PNOA_MA_TMS',
+    ],
+  },
+  {
+    id: 'hibrido',
+    title: 'Hibrido',
+    layers: [
+      'QUICK*BASE_HIBRIDO_LayerGroup',
+    ],
+  },
+  ];
+
+  const implementationSwitcherOpts = [{
+    id: 'OL',
+    type: 'ol',
+    title: 'Open Layers',
+    js: 'js/apiidee.ol.min.js',
+    css: 'assets/css/apiidee.ol.min.css',
+  },
+  {
+    id: 'CS',
+    type: 'cesium',
+    title: 'Cesium',
+    js: 'js/apiidee.cesium.min.js',
+    css: 'assets/css/apiidee.cesium.min.css',
+  }];
+
+  const params = window.location.search.split('&');
+  let center = '';
+  let zoom = '';
+  let srs = '';
+  let layers = '';
+  let zoomConstrains = '';
+  let extentConstrains = '';
+  params.forEach((param) => {
+    if (param.indexOf('center') > -1) {
+      const values = param.split('=')[1].split(',');
+      center = [parseFloat(values[0]), parseFloat(values[1])];
+    } else if (param.indexOf('zoomConstrains') > -1) {
+      const value = param.split('=')[1];
+      zoomConstrains = value;
+    } else if (param.indexOf('extentConstrains') > -1) {
+      const value = param.split('=')[1];
+      extentConstrains = value;
+    } else if (param.indexOf('zoom') > -1) {
+      const value = param.split('=')[1];
+      zoom = parseInt(value, 10);
+    } else if (param.indexOf('srs') > -1) {
+      const value = param.split('=')[1];
+      srs = value;
+    } else if (param.indexOf('layers') > -1) {
+      let value = param.substring(param.indexOf('=') + 1, param.length);
+  
+      let layerGroups = [];
+      const regex = /LayerGroup\*.*?!/g;
+      if (value.match(regex) !== null) {
+        layerGroups = value.match(regex).map((item) => item.slice(0, -1));
+        value = value.replace(regex, '');
+      }
+  
+      layers = value.split(',').filter((item) => item !== '').concat(layerGroups);
+    }
+  });
   /**
    * Pixels width for mobile devices
    *
@@ -134,6 +133,15 @@ params.forEach((param) => {
    * @api stable
    */
   IDEE.config('THEME_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${api-idee.theme.url}`);
+
+  /**
+   * The path to the API IDEE theme
+   * @const
+   * @type {string}
+   * @public
+   * @api stable
+   */
+  IDEE.config('CESIUM_URL', '${api-idee.url}cesium/');
 
   /**
    * Predefined WMC files. It is composed of URL,

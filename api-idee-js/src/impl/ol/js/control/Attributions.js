@@ -27,7 +27,7 @@ class Attributions extends Control {
    * @api stable
    */
   constructor(options = {}) {
-    super();
+    super(options);
     /**
      * Map of the plugin
      * @private

@@ -34,7 +34,7 @@ const mp2 = new Attributions({
 });
 
 const mp3 = new ShareMap({
-  baseUrl: 'https://api-ideedes.grupotecopy.es/api-idee/',
+  baseUrl: 'https://componentes-beta.idee.es/api-idee/',
   position: 'BR',
 });
 

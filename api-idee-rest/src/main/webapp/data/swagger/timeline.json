@@ -5,7 +5,7 @@
     "version": "1.0.0"
   },
   "servers": [
-    { "url": "https://api-ideedes.grupotecopy.es/api-idee", "description": "Producción COTESA" },
+    { "url": "https://componentes-beta.idee.es/api-idee", "description": "Producción COTESA" },
     { "url": "http://localhost:8080/api-idee", "description": "Local" },
     { "url": "https://componentes-desarrollo.idee.es/api-idee", "description": "Desarrollo" },
     { "url": "https://componentes.idee.es/api-idee", "description": "Producción" }

@@ -2,7 +2,7 @@ const map = IDEE.map({
   container: 'mapjs',
 });
 const mp = new IDEE.plugin.ShareMap({
-  baseUrl: 'https://api-ideedes.grupotecopy.es/',
+  baseUrl: 'https://componentes-beta.idee.es/',
 });
 map.addPlugin(mp);
 

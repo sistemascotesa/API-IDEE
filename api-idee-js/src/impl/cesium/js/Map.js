@@ -108,7 +108,7 @@ class Map extends MObject {
    * @api
    */
   constructor(div, facadeMap, dpi, options = {}, viewVendorOptions = {}) {
-    buildModuleUrl.setBaseUrl(`${IDEE.config.API_IDEE_URL}/cesium/`);
+    buildModuleUrl.setBaseUrl(IDEE.config.CESIUM_URL);
     Ion.defaultAccessToken = '';
 
     super();
@@ -139,6 +139,13 @@ class Map extends MObject {
      * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
+
+    /**
+     * Interacciones añadidas al mapa.
+     * @private
+     * @type {Array}
+     */
+    this.interactions_ = [];
 
     /**
      * Indica si el zoom inicial fue calculado. Por defecto verdadero.
@@ -2461,6 +2468,18 @@ class Map extends MObject {
   }
 
   /**
+   * Obtiene la proyección nativa de Cesium activa en el mapa.
+   *
+   * @function
+   * @returns {GeographicProjection} Instancia nativa de Cesium MapProjection.
+   * @public
+   * @api
+   */
+  getNativeProjection() {
+    return this.map_.scene.mapProjection;
+  }
+
+  /**
    * Este método obtiene la implementación del mapa.
    *
    * @function
@@ -2737,6 +2756,45 @@ class Map extends MObject {
         layer.isBase = false;
       }
     });
+  }
+
+  /**
+   * Este método añade una interacción al mapa.
+   *
+   * @function
+   * @param {Object} interaction Interacción a añadir.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  addInteraction(interaction) {
+    if (!isNullOrEmpty(interaction) && !this.interactions_.includes(interaction)) {
+      this.interactions_.push(interaction);
+      if (typeof interaction.activate === 'function') {
+        interaction.activate(this.map_);
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Este método elimina una interacción del mapa.
+   *
+   * @function
+   * @param {Object} interaction Interacción a eliminar.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  removeInteraction(interaction) {
+    const idx = this.interactions_.indexOf(interaction);
+    if (idx !== -1) {
+      if (typeof interaction.deactivate === 'function') {
+        interaction.deactivate();
+      }
+      this.interactions_.splice(idx, 1);
+    }
+    return this;
   }
 
   /**

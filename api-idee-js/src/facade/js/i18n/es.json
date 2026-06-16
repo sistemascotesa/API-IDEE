@@ -21,6 +21,12 @@
   "location": {
     "error": "El control ubicación no acepta http. Debe usar https.",
     "title": "Obtener ubicación actual",
+    "popup": {
+      "title": "Ubicación",
+      "titleValue": "Posición actual",
+      "longitude": "Longitud",
+      "latitude": "Latitud"
+    },
     "textHelp": {
       "text1": "La herramienta de localización permite obtener la posición de un dispositivo y posicionarla en el mapa. Su funcionamiento queda restringido a páginas WEB que se publiquen de forma segura sobre el protocolo HTTPS y en entornos locales.",
       "text2": "En el caso de su utilización en un dispositivo móvil provisto de un sistema GNSS, se obtendrá la posición según los permisos de localización del dispositivo.",
@@ -263,6 +269,8 @@
     "invalidBase64Encoding": "Codificación base64 inválida",
     "invalidJsonFormat": "Formato JSON inválido",
     "removecontrol_method": "La implementación usada no posee el método removeControls.",
+    "addinteraction_method": "The used implementation does not have the addInteraction method.",
+    "removeinteraction_method": "The used implementation does not have the removeInteraction method.",
     "setmaxextent_method": "La implementación usada no posee el método setMaxExtent.",
     "flyTo_method": "La implementación usada no posee el método flyTo.",
     "getbbox_method": "La implementación usada no posee el método getBbox.",

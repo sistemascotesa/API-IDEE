@@ -5,7 +5,7 @@
 import proj4 from 'proj4';
 import OLProjection from 'ol/proj/Projection';
 import { register } from 'ol/proj/proj4';
-import { addEquivalentProjections } from 'ol/proj';
+import { addEquivalentProjections, get as getProj } from 'ol/proj';
 import { parseCRSWKTtoJSON } from '../../../facade/js/util/Utils';
 
 /**
@@ -709,6 +709,25 @@ const setNewProjection = async (projection) => {
   addProjections([newProjection]);
 };
 
+/**
+ * Asegura que una proyección está registrada. Si no lo está, la obtiene de epsg.io y la registra.
+ * @param {String} projCode Código EPSG de la proyección
+ * @returns {Promise<boolean>} true si la proyección está disponible, false si no existe
+ * @public
+ * @function
+ * @api
+ */
+const ensureProjection = async (projCode) => {
+  const normalizedCode = projCode.startsWith('EPSG:') ? projCode : `EPSG:${projCode}`;
+  if (getProj(normalizedCode)) return true;
+  try {
+    await setNewProjection(normalizedCode);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 // register proj4
 addProjections(projections, false);
 
@@ -724,4 +743,5 @@ export default {
   addProjections,
   getSupportedProjs,
   setNewProjection,
+  ensureProjection,
 };

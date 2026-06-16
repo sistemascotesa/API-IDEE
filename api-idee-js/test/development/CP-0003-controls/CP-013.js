@@ -52,14 +52,6 @@ const controlsDown = [
   measurebar,
 ];
 
-const githubPlugin = new Plugin('github-1', {
-  tooltip: 'Githuh 1',
-  position: Position.LEFT,
-  svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
-  order: 2,
-  collapsed: false,
-});
-
 const githubPlugin2 = new Plugin('github-2', {
   tooltip: 'Github 2',
   position: Position.RIGHT,
@@ -77,7 +69,6 @@ const githubPlugin3 = new Plugin('github-3', {
 
 const tools = [
   ...controlsDown,
-  githubPlugin,
   githubPlugin2,
   githubPlugin3,
 ];
@@ -103,3 +94,46 @@ tools.forEach((tool) => {
 map.removePlugin(githubPlugin2);
 // map.closeSidePanels(githubPlugin2.position);
 map.addPlugin(githubPlugin2);
+
+const selectPosition = document.getElementById('selectPosicion');
+const selectCollapsed = document.getElementById('selectCollapsed');
+
+let plugin1;
+
+const create = (options) => {
+  plugin1 = new Plugin('github-1', {
+    tooltip: 'Githuh 1',
+    svgPath: 'https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg',
+    order: 2,
+    ...options,
+  });
+  map.addPlugin(plugin1);
+};
+
+const remove = () => {
+  if (plugin1) map.removePlugin(plugin1);
+};
+
+const recreate = () => {
+  remove();
+
+  const options = {};
+  options.position = selectPosition.options[selectPosition.selectedIndex].value;
+  options.collapsed = (selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true');
+
+  create(options);
+};
+
+[
+  selectPosition,
+  selectCollapsed,
+].forEach((ctrl) => {
+  ctrl.addEventListener('change', recreate);
+});
+
+const removeButton = document.getElementById('removeButton');
+removeButton.addEventListener('click', () => {
+  remove();
+});
+
+recreate();

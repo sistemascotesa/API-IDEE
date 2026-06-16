@@ -170,13 +170,14 @@ class ImplementationSwitcher extends ControlBase {
 
     const implementationUrl = resolveUrl(implementation.js);
     const implementationCssUrl = resolveUrl(implementation.css);
-    const existingConfigScript = document.querySelector('script[src$="/config.js"], script[src$="config.js"]');
+    const existingConfigScript = document
+      .querySelector('script[src$="/config.js"], script[src$="config.js"], script[src$="/configuration.js"], script[src$="configuration.js"]');
+
+    const configurationUrl = existingConfigScript ? existingConfigScript.src : resolveUrl('js/configuration.js');
 
     if (existingConfigScript) {
       existingConfigScript.remove();
     }
-
-    const configurationUrl = existingConfigScript ? existingConfigScript.src : resolveUrl('js/configuration.js');
 
     window.implementations.forEach((impl) => {
       // eslint-disable-next-line no-param-reassign
@@ -229,36 +230,32 @@ class ImplementationSwitcher extends ControlBase {
     };
     document.body.appendChild(script);
 
-    if (implementationCssUrl) {
-      const style = document.createElement('link');
-      style.type = 'text/css';
-      style.href = implementationCssUrl;
-      style.rel = 'stylesheet';
-      document.head.appendChild(style);
-    }
+    const style = document.createElement('link');
+    style.type = 'text/css';
+    style.href = implementationCssUrl;
+    style.rel = 'stylesheet';
+    document.head.appendChild(style);
   }
 
   loadMap(implementation) {
-    /** @type {HTMLDivElement} */
-    const mapFrameContainer = this.map.getFrameContainer();
-    const rootContainer = mapFrameContainer || this.map.getContainer();
-
     const zoom = this.map.getZoom();
-    const projection = implementation.epsg;
     const sourceProjection = this.map.getProjection().code;
-
-    const currentCenter = [this.map.getCenter().x, this.map.getCenter().y];
+    const projection = implementation.epsg ?? IDEE.config.DEFAULT_PROJ;
+    const { x, y } = this.map.getCenter();
     const center = (typeof ol !== 'undefined' && ol !== null)
-      ? ol.proj.transform(currentCenter, sourceProjection, projection)
-      : transform(currentCenter, sourceProjection, projection);
-
+      ? ol.proj.transform([x, y], sourceProjection, projection)
+      : transform([x, y], sourceProjection, projection);
     const controls = Array.from(this.map.getControls()).map(
       (control) => control.name ?? control.NAME,
     );
     const plugins = this.map.getPlugins();
+    /** Layers has an error on change cesium to open layers */
     const layers = this.map.getLayers();
 
     this.map.removeControls(this);
+
+    /** @type {HTMLDivElement} */
+    const mapFrameContainer = this.map.getFrameContainer();
 
     try {
       this.map.destroy();
@@ -268,7 +265,7 @@ class ImplementationSwitcher extends ControlBase {
     }
 
     IDEE.map({
-      container: rootContainer.id,
+      container: mapFrameContainer.id,
       zoom,
       projection,
       center,

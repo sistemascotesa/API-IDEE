@@ -156,6 +156,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
 
     const openDropdown = () => {
       if (!isEditable) {
+        this.refreshProjectionsSelector(selector);
         selector.classList.remove('noDisplay');
         arrow.classList.add('arrow-up');
       }
@@ -194,6 +195,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
     });
 
     arrow.addEventListener('click', () => {
+      if (selector.classList.contains('noDisplay')) {
+        this.refreshProjectionsSelector(selector);
+      }
       selector.classList.toggle('noDisplay');
       arrow.classList.toggle('arrow-up');
     });
@@ -491,6 +495,32 @@ export default class InfocoordinatesControl extends IDEE.Control {
     idBotonTab.classList.add('active');
   }
 
+  /**
+   * Refresca el listado de proyecciones del selector de EPSG con las
+   * proyecciones actualmente soportadas, incluyendo las registradas
+   * al vuelo por otros plugins.
+   * @param {HTMLElement} selector Elemento <ul> del selector de EPSG
+   * @public
+   * @function
+   * @api
+   */
+  refreshProjectionsSelector(selector) {
+    this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
+    // eslint-disable-next-line no-param-reassign
+    selector.innerHTML = `
+      <li><a class="m-infocoordinates-option-disabled" href="#" value="default" tabindex="-1" disabled>
+          ${getValue('choose_create_epsg')}
+      </a></li>
+      ${this.projections.map((proj) => `
+          <li>
+              <a href="#" value="${proj.codes[0]}">
+                  ${proj.codes[0]}
+              </a>
+          </li>
+      `).join('')}
+    `;
+  }
+
   changeSelectSRSorChangeFormat() {
     // Cojo la tab activa
     const elem = document.querySelector('.tablinks.active');
@@ -520,38 +550,18 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
 
     // Cambio coordenadas y calculo las UTM
-    let pointDataOutput;
-    try {
-      pointDataOutput = this.getImpl().getCoordinates(
-        featureSelected,
-        selectSRS,
-        formatGMS,
-        this.decimalGEOcoord_,
-        this.decimalUTMcoord_,
-      );
+    if (!await IDEE.impl.ol.js.projections.ensureProjection(selectSRS)) {
+      IDEE.dialog.error(`${getValue('exception.srs')} ${this.selectedProjection}`);
+    } else {
       this.selectedProjection = selectSRS;
-    } catch (error) {
-      try {
-        await IDEE.impl.ol.js.projections.setNewProjection(selectSRS);
-        pointDataOutput = this.getImpl().getCoordinates(
-          featureSelected,
-          selectSRS,
-          formatGMS,
-          this.decimalGEOcoord_,
-          this.decimalUTMcoord_,
-        );
-        this.selectedProjection = selectSRS;
-      } catch (err) {
-        pointDataOutput = this.getImpl().getCoordinates(
-          featureSelected,
-          this.selectedProjection,
-          formatGMS,
-          this.decimalGEOcoord_,
-          this.decimalUTMcoord_,
-        );
-        IDEE.dialog.error(`${getValue('exception.srs')} ${this.selectedProjection}`);
-      }
     }
+    const pointDataOutput = this.getImpl().getCoordinates(
+      featureSelected,
+      this.selectedProjection,
+      formatGMS,
+      this.decimalGEOcoord_,
+      this.decimalUTMcoord_,
+    );
     inputSRS.value = this.selectedProjection;
     this.isProjGeographic = this.getImpl().isProjGeographic(this.selectedProjection);
     const gmsButton = document.getElementById('m-infocoordinates-buttonConversorFormat');
@@ -565,19 +575,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       gmsButton.checked = false;
       gmsButton.setAttribute('disabled', 'disabled');
     }
-    this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
-    selector.innerHTML = `
-      <li><a class="m-infocoordinates-option-disabled" href="#" value="default" tabindex="-1" disabled>
-          ${getValue('choose_create_epsg')}
-      </a></li>
-      ${this.projections.map((proj) => `
-          <li>
-              <a href="#" value="${proj.codes[0]}">
-                  ${proj.codes[0]}
-              </a>
-          </li>
-      `).join('')}
-    `;
+    this.refreshProjectionsSelector(selector);
 
     // pinto
     pointBox.innerHTML = pointDataOutput.NumPoint;

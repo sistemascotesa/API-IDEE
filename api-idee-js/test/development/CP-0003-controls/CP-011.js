@@ -7,14 +7,15 @@ import ImplementationSwitcher from 'IDEE/control/ImplementationSwitcher';
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:4326',
-  // controls: ['rotate'],
-  zoom: 10,
-  // layers: ['OSM'],
+  controls: ['location'],
+  zoom: 8,
   center: [
     -7.68,
     43.084999999999994,
   ],
 });
+
+IDEE.map = map;
 
 const selectPosition = document.getElementById('selectPosicion');
 const inputTooltip = document.getElementById('inputTooltip');

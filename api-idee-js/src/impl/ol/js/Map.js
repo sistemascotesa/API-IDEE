@@ -3890,6 +3890,34 @@ class Map extends MObject {
   }
 
   /**
+   * Este método añade una interacción de OpenLayers al mapa.
+   *
+   * @function
+   * @param {ol.interaction.Interaction} interaction Interacción a añadir.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+  */
+  addInteraction(interaction) {
+    this.map_.addInteraction(interaction);
+    return this;
+  }
+
+  /**
+   * Este método elimina una interacción de OpenLayers del mapa.
+   *
+   * @function
+   * @param {ol.interaction.Interaction} interaction Interacción a eliminar.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+  */
+  removeInteraction(interaction) {
+    this.map_.removeInteraction(interaction);
+    return this;
+  }
+
+  /**
    * Función que obtiene el nombre de la implementación del mapa.
    *
    * @function

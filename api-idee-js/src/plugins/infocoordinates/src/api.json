@@ -64,7 +64,7 @@
     "name": "Infocoordinates",
     "description": "Mostrar puntos de coordenadas al hacer clic en el mapa",
     "text": "Mostrar puntos de coordenadas al hacer clic en el mapa. Cambiar su origen y formato decimal o DMS.",
-    "version": "1.1.0",
+    "version": "2.0",
     "date": "May, 2020",
     "author": "",
     "org": "",

@@ -4,7 +4,7 @@ window.Incicarto = Incicarto;
 
 IDEE.language.setLang('en');
 // IDEE.language.setLang('en');
-// https://api-ideedes.grupotecopy.es
+// https://componentes-beta.idee.es
 
 const map = IDEE.map({
   container: 'mapjs',
