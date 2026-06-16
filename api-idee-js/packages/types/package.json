@@ -1,0 +1,54 @@
+{
+  "name": "@types/apiidee",
+  "version": "1.1.0",
+  "description": "TypeScript declarations for the API IDEE browser global API.",
+  "keywords": [
+    "api-idee",
+    "apiidee",
+    "types",
+    "typescript",
+    "mapping"
+  ],
+  "homepage": "https://idee.es",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Desarrollos-IDEE/API-IDEE",
+    "directory": "api-idee-js/packages/types"
+  },
+  "bugs": {
+    "url": "https://github.com/Desarrollos-IDEE/API-IDEE/issues"
+  },
+  "license": "EUPL-1.2",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts"
+    },
+    "./ol": {
+      "types": "./dist/ol.d.ts"
+    },
+    "./cesium": {
+      "types": "./dist/cesium.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "ol": [
+        "dist/ol.d.ts"
+      ],
+      "cesium": [
+        "dist/cesium.d.ts"
+      ],
+      "*": [
+        "dist/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false
+}
