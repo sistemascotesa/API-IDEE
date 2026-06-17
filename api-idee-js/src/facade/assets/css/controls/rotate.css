@@ -10,7 +10,7 @@
   background-color: var(--idee-color-links) !important;
 }
 
-.m-areas > div.m-area > div.m-panel.opened.m-rotate {
+.m-areas>div.m-area>div.m-panel.opened.m-rotate {
   background-color: transparent !important;
   box-shadow: none !important;
   border: none !important;
@@ -77,14 +77,18 @@ div.m-control.m-rotate-container {
 
 .m-rotate-exterior-svg {
   position: absolute;
-  width: 120px;
-  height: 120px;
+  width: 105px;
   overflow: hidden;
 }
 
+.m-rotate-exterior-svg.g-cartografia-exterior:before {
+  margin-bottom: 5px;
+}
+
+.m-rotate-exterior-svg.g-cartografia-exterior:before,
 .m-rotate-exterior-svg.g-cartografia-exterior-1:before {
   color: #fff;
-  font-size: 100px;
+  width: inherit;
 }
 
 .m-rotate-giroscopio-svg {
@@ -92,12 +96,15 @@ div.m-control.m-rotate-container {
   width: 40px;
   height: 40px;
   box-sizing: content-box;
+  background-color: var(--idee-color-white);
+  border-radius: 40px;
 }
 
 .m-rotate-giroscopio-svg.g-cartografia-giroscopio:before {
-  font-size: 40px;
-  background-color: white;
-  border-radius: 40px;
+  margin: 0;
+  width: 26px;
+  margin: calc((40px - 26px) / 2);
+  border-radius: inherit;
   color: var(--idee-color-primary);
 }
 
@@ -207,11 +214,6 @@ div.m-control.m-rotate-container {
 
 button.m-rotate-help-close.g-cartografia-cancelar:before {
   color: #000;
-}
-
-.m-rotate-exterior-svg.g-cartografia-exterior:before {
-  color: #fff;
-  font-size: 120px;
 }
 
 .m-rotate-help-option {
