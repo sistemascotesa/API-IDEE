@@ -10,16 +10,10 @@
   background-color: var(--idee-color-links) !important;
 }
 
-.m-areas>div.m-area>div.m-panel.opened.m-rotate {
-  background-color: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
-}
-
 .m-rotate-compass {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: 90px;
+  height: 90px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -51,15 +45,6 @@ div.m-control.m-rotate-container {
   opacity: 1;
 }
 
-.m-rotate-compass {
-  position: relative;
-  width: 150px;
-  height: 150px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .m-rotate-background-exterior {
   fill: var(--idee-color-primary);
 }
@@ -67,22 +52,24 @@ div.m-control.m-rotate-container {
 .m-rotate-background-exterior,
 .m-rotate-svgPath-svg {
   position: absolute;
-  width: 99px;
-  height: 99px;
+  /* width: 99px;
+  height: 99px; */
+  width: 80px;
+  height: 84px;
 }
 
 .m-rotate-svgPath-svg {
-  width: 100px;
+  width: 85px;
 }
 
 .m-rotate-exterior-svg {
   position: absolute;
-  width: 105px;
+  width: 85px;
   overflow: hidden;
 }
 
 .m-rotate-exterior-svg.g-cartografia-exterior:before {
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 
 .m-rotate-exterior-svg.g-cartografia-exterior:before,
@@ -93,24 +80,24 @@ div.m-control.m-rotate-container {
 
 .m-rotate-giroscopio-svg {
   position: absolute;
-  width: 40px;
-  height: 40px;
+  width: 26px;
+  height: 26px;
   box-sizing: content-box;
   background-color: var(--idee-color-white);
-  border-radius: 40px;
+  border-radius: 26px;
 }
 
 .m-rotate-giroscopio-svg.g-cartografia-giroscopio:before {
   margin: 0;
-  width: 26px;
-  margin: calc((40px - 26px) / 2);
+  width: 16px;
+  margin: calc((26px - 16px) / 2);
   border-radius: inherit;
   color: var(--idee-color-primary);
 }
 
 .m-rotate-help-button {
   position: absolute;
-  top: 50%;
+  top: 12px;
   right: 0;
   transform: translateY(-50%);
   background-color: var(--idee-color-primary);
@@ -118,13 +105,13 @@ div.m-control.m-rotate-container {
   font-weight: bold;
   border: 2px solid white;
   cursor: pointer;
-  width: 30px;
-  height: 30px;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  height: 19px;
+  width: 19px;
+  border-radius: 50%;
   text-align: center;
   font-family: 'Muli', 'sans-serif';
-  font-size: 18px;
+  font-size: 10px;
+  z-index: 1;
 }
 
 #m-rotate-slider-container {
@@ -155,15 +142,16 @@ div.m-control.m-rotate-container {
 }
 
 .m-rotate-help-button:hover {
-  background-color: var(--idee-color-primary);
+  background-color: var(--idee-color-links);
 }
 
 .m-rotate-rotation-maker {
   position: absolute;
-  width: 99px;
-  height: 99px;
-  fill: var(--idee-color-primary);
+  width: 88px;
+  height: 80px;
+  fill: var(--idee-color-links);
   display: none;
+  overflow: hidden;
 }
 
 .m-rotate-help-container {
