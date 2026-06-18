@@ -8,6 +8,8 @@ import { PREVIEW_MAP_ORIENTATION } from '../../constants';
 const ID_TEMPLATE_ORIENTATION = 'input[name="map-orientation"]';
 const ID_TEMPLATE_LAYOUT = '#template-layout';
 const ID_TEMPLATE_SCALE = '#template-scale';
+const SCALE_LINE_CONTROL_NAME = 'scaleline';
+const ID_TEMPLATE_SCALE_LINE = '#template-scale-line';
 const ID_TEMPLATE_DPI = '#template-dpi';
 const ID_TEMPLATE_INPUT_SRS = '#epsg-selected';
 const ID_TEMPLATE_SRS_SELECTOR = '#m-customize-template-srs-selector';
@@ -155,8 +157,15 @@ export default class TemplateCustomizer extends IDEE.Control {
      * Escala inicial del mapa de previsualización
      * @private
      * @type {number|null}
-     */
+    */
     this.scale = null;
+
+    /**
+     * DPI seleccionado por defecto
+     * @private
+     * @type {number}
+     */
+    this.dpi = this.dpiOptions_[0];
 
     /**
      * Conjunto de elementos principales que tiene la plantilla
@@ -222,6 +231,7 @@ export default class TemplateCustomizer extends IDEE.Control {
           horizontal: getValue('horizontal'),
           layout: getValue('layout'),
           scale: getValue('scale'),
+          scaleLine: getValue('scaleLine'),
           epsg: getValue('projection'),
           select_srs: getValue('select_srs'),
           choose_create_epsg: getValue('choose_create_epsg'),
@@ -294,6 +304,7 @@ export default class TemplateCustomizer extends IDEE.Control {
     this.setupMapOrientationControl(ID_TEMPLATE_ORIENTATION);
     this.setupLayoutControl(ID_TEMPLATE_LAYOUT);
     this.setupScaleControl(ID_TEMPLATE_SCALE);
+    this.setupScaleLineControl(ID_TEMPLATE_SCALE_LINE);
     this.setupDpiControl(ID_TEMPLATE_DPI);
     this.setupInputSelectorControl(ID_TEMPLATE_INPUT_SRS, ID_TEMPLATE_SRS_SELECTOR);
   }
@@ -327,6 +338,7 @@ export default class TemplateCustomizer extends IDEE.Control {
     this.templateElementsContainer_ = previewContainer;
     this.stylesApplied_ = false;
     this.setupViewScaleListener();
+    this.setupScaleLineInput();
     this.setupMapChangeListener();
     this.applyTemplateStyles();
     this.applyTemplateScripts();
@@ -352,6 +364,11 @@ export default class TemplateCustomizer extends IDEE.Control {
       scaleEl.value = `1:${scale}`;
       this.scale = scale;
     }
+  }
+
+  setupScaleLineInput() {
+    const { checked } = document.querySelector(ID_TEMPLATE_SCALE_LINE);
+    if (checked) this.previewMap.addControls(SCALE_LINE_CONTROL_NAME);
   }
 
   /**
@@ -699,6 +716,22 @@ export default class TemplateCustomizer extends IDEE.Control {
         e.target.blur();
         this.zoomToInputScale(e);
       }
+    });
+  }
+
+  /**
+   * Configura el control de escala lineal
+   * @param {string} scaleLineElementId - ID del elemento de entrada de escala lineal
+   */
+  setupScaleLineControl(scaleLineElementId) {
+    /**
+     * @type {HTMLInputElement}
+     */
+    const scaleElement = document.querySelector(scaleLineElementId);
+    scaleElement.addEventListener('click', (e) => {
+      const { checked } = e.target;
+      if (checked) this.previewMap.addControls(SCALE_LINE_CONTROL_NAME);
+      else this.previewMap.removeControls(SCALE_LINE_CONTROL_NAME);
     });
   }
 
