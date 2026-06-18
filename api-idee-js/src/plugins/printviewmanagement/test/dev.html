@@ -38,8 +38,7 @@
                 <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
             </div>
             <div>
-                <label for="inputTooltip"
-                    title="Texto que se muestra al dejar el ratón encima del plugin.">Título
+                <label for="inputTooltip" title="Texto que se muestra al dejar el ratón encima del plugin.">Título
                     de la herramienta "tooltip"</label>
                 <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug">
                 <datalist id="tooltipSug">
@@ -48,7 +47,8 @@
             </div>
             <div>
                 <label for="inputDefaultOpenControl"
-                    title="Índice del modo de impresión que aparecerá abierto al inicio: 0=ninguno, 1=printermap, 2=georefImage, 3=georefImageEpsg. Por defecto: 0">Modo por defecto "defaultOpenControl"</label>
+                    title="Índice del modo de impresión que aparecerá abierto al inicio: 0=ninguno, 1=printermap, 2=georefImage, 3=georefImageEpsg. Por defecto: 0">Modo
+                    por defecto "defaultOpenControl"</label>
                 <input type="number" id="inputDefaultOpenControl" value="0" min="0" max="3" step="1">
             </div>
             <div>
@@ -57,7 +57,9 @@
                     "georefImageEpsg"</label>
                 <input type="text" id="inputGeorefImageEpsg" list="georefImageEpsgSug">
                 <datalist id="georefImageEpsgSug">
-                    <option value='{"tooltip":"Georeferenciar imagen predefinida","layers":[{"url":"http://www.ign.es/wms-inspire/mapa-raster?","name":"mtn_rasterizado","format":"image/jpeg","legend":"Mapa ETRS89 UTM"},{"url":"http://www.ign.es/wms-inspire/pnoa-ma?","name":"OI.OrthoimageCoverage","format":"image/jpeg","legend":"Imagen (PNOA) ETRS89 UTM"}],"defaultDpiOptions":[96,150,300]}'></option>
+                    <option
+                        value='{"tooltip":"Georeferenciar imagen predefinida","layers":[{"url":"http://www.ign.es/wms-inspire/mapa-raster?","name":"mtn_rasterizado","format":"image/jpeg","legend":"Mapa ETRS89 UTM"},{"url":"http://www.ign.es/wms-inspire/pnoa-ma?","name":"OI.OrthoimageCoverage","format":"image/jpeg","legend":"Imagen (PNOA) ETRS89 UTM"}],"defaultDpiOptions":[96,150,300]}'>
+                    </option>
                 </datalist>
             </div>
             <div>
@@ -75,7 +77,9 @@
                     "printermap"</label>
                 <input type="text" id="inputPrintermap" list="printermapSug">
                 <datalist id="printermapSug">
-                    <option value='{"tooltip":"Impresión del mapa","filterTemplates":["${api-idee.static_resources.url}/plantillas/html/mapaConMarco.html","${api-idee.static_resources.url}/plantillas/html/mapaConCabeceraYMarco.html","${api-idee.static_resources.url}/plantillas/html/mapaConPieYMarco.html"],"showDefaultTemplate":false,"defaultDpiOptions":[96,150,300],"layoutsRestraintFromDpi":["screensize","A0","A1","A2"]}'></option>
+                    <option
+                        value='{"tooltip":"Impresión del mapa","filterTemplates":["${api-idee.static_resources.url}/plantillas/html/mapaConMarco.html","${api-idee.static_resources.url}/plantillas/html/mapaConCabeceraYMarco.html","${api-idee.static_resources.url}/plantillas/html/mapaConPieYMarco.html"],"showDefaultTemplate":false,"defaultDpiOptions":[96,150,300],"layoutsRestraintFromDpi":["screensize","A0","A1","A2"]}'>
+                    </option>
                 </datalist>
             </div>
         </div>

@@ -25,7 +25,6 @@
     justify-content: flex-start;
 }
 
-
 #plugin-panel-printviewmanagement .button-container {
     width: 100%;
     display: flex;
@@ -214,8 +213,6 @@
     position: relative;
     overflow: auto;
     min-height: 300px;
-    /* display: flex; */
-    /* flex-grow: 1; */
 }
 
 .m-templateCustomizer-map-preview {
