@@ -87,7 +87,7 @@
                                 maxZoom: 20,
                                 minZoom: 4,
                                 center: [-467062.8225, 4683459.6216],
-                                controls: ['location']
+                                controls: ['implementationswitcher']
                             });
 
                             const layerinicial = new IDEE.layer.WMS({

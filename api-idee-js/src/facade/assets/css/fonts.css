@@ -337,5 +337,14 @@
         -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/pinterest.svg');
         mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/pinterest.svg');
     }
-
+    
+    .g-cartografia-exterior::before {
+        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/rotate-exterior.svg');
+        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/rotate-exterior.svg');
+    }
+    
+    .g-cartografia-giroscopio::before {
+        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/rotate-giroscopio.svg');
+        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/rotate-giroscopio.svg');
+    }
 }
