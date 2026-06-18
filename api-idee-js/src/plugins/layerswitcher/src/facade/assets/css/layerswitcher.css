@@ -499,7 +499,8 @@ input[type=range].layerswitcher-transparency {
 /**************************
     ADDSERVICESRESULTS.HTML
 **************************/
-.m-layerswitcher-show-capabilities {
+.m-layerswitcher-show-capabilities,
+.m-layerswitcher-show-capabilities-wfs {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -508,7 +509,8 @@ input[type=range].layerswitcher-transparency {
     font-size: 12px;
 }
 
-.m-layerswitcher-show-capabilities:hover {
+.m-layerswitcher-show-capabilities:hover,
+.m-layerswitcher-show-capabilities-wfs:hover {
     color: var(--idee-color-links);
 }
 
