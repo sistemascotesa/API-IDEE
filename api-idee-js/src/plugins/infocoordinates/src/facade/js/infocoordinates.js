@@ -71,6 +71,21 @@ export default class Infocoordinates extends IDEE.Plugin {
     this.outputDownloadFormat_ = options.outputDownloadFormat || 'txt';
 
     /**
+     * EPSG codes to display simultaneously. Accepts "EPSG:4326" or "4326" format.
+     * When null, single-EPSG mode is used with the selector.
+     * @private
+     * @type {string[]|null}
+     */
+    this.epsgResults_ = options.epsgResults
+      ? (Array.isArray(options.epsgResults) ? options.epsgResults : String(options.epsgResults).split(','))
+        .map((code) => {
+          const str = String(code).trim();
+          return str.startsWith('EPSG:') ? str : `EPSG:${str}`;
+        })
+        .filter((code) => code !== 'EPSG:')
+      : null;
+
+    /**
      * Plugin parameters
      * @public
      * @type {object}
@@ -136,6 +151,7 @@ export default class Infocoordinates extends IDEE.Plugin {
       helpUrl: this.helpUrl_,
       order: this.order,
       outputDownloadFormat: this.outputDownloadFormat_,
+      epsgResults: this.epsgResults_,
     });
 
     this.controls.push(this.control_);
@@ -186,7 +202,7 @@ export default class Infocoordinates extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed_}*${this.order}*${this.tooltip}*${this.decimalGEOcoord_}*${this.decimalUTMcoord_}*${this.helpUrl_}*${this.outputDownloadFormat_}`;
+    return `${this.name}=${this.position}*${this.collapsed_}*${this.order}*${this.tooltip}*${this.decimalGEOcoord_}*${this.decimalUTMcoord_}*${this.helpUrl_}*${this.outputDownloadFormat_}*${this.epsgResults_}`;
   }
 
   /**

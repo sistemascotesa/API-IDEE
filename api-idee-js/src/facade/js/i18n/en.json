@@ -290,6 +290,7 @@
     "getprojection_method": "The implementation used does not have the getProjection method.",
     "no_projection": "You have not specified any projection.",
     "setprojection_method": "The used implementation does not have the setProjection method.",
+    "no_valid_projection": "The following EPSG code is incorrect or does not exist",
     "no_plugins": "You have not specified any plugins.",
     "no_add_plugin_to_map": "The plugin can not be added to the map.",
     "plugin_already_added": "The plugin is already added to the map.",

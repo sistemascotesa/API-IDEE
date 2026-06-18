@@ -37,6 +37,7 @@ const inputHelpUrl = document.getElementById('inputHelpUrl');
 const inputDecimalGEOcoord = document.getElementById('inputDecimalGEOcoord');
 const inputDecimalUTMcoord = document.getElementById('inputDecimalUTMcoord');
 const selectOutputDownloadFormat = document.getElementById('selectOutputDownloadFormat');
+const inputEpsgResults = document.getElementById('inputEpsgResults');
 
 const updatePlugin = () => {
   const options = {};
@@ -48,6 +49,7 @@ const updatePlugin = () => {
   options.decimalGEOcoord = Number(inputDecimalGEOcoord.value);
   options.decimalUTMcoord = Number(inputDecimalUTMcoord.value);
   options.outputDownloadFormat = selectOutputDownloadFormat.options[selectOutputDownloadFormat.selectedIndex].value;
+  options.epsgResults = inputEpsgResults.value;
 
   removePlugin();
   createPlugin(options);
@@ -62,6 +64,7 @@ const updatePlugin = () => {
   inputDecimalGEOcoord,
   inputDecimalUTMcoord,
   selectOutputDownloadFormat,
+  inputEpsgResults,
 ].forEach((ctrl) => {
   ctrl.addEventListener('change', updatePlugin);
 });

@@ -80,14 +80,17 @@ export default class InfocoordinatesControl extends IDEE.impl.Control {
   }
 
   datumCalc(srs) {
-    return IDEE.impl.ol.js.projections.getSupportedProjs()
-      .find((p) => p.codes.includes(srs))
-      .datum;
+    const proj = IDEE.impl.ol.js.projections.getSupportedProjs()
+      .find((p) => p.codes.includes(srs));
+    return proj ? proj.datum : srs;
   }
 
   isProjGeographic(srs) {
-    return IDEE.impl.ol.js.projections.getSupportedProjs()
-      .find((p) => p.codes.includes(srs)).units === 'd';
+    const proj = IDEE.impl.ol.js.projections.getSupportedProjs()
+      .find((p) => p.codes.includes(srs));
+    if (proj) return proj.units === 'd';
+    const olProj = ol.proj.get(srs);
+    return olProj ? olProj.getUnits() === 'degrees' : false;
   }
 
   readAltitudeFromElevationProcess(coordinates, srcMapa) {

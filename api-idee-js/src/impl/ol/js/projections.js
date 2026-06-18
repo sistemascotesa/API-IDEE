@@ -6,6 +6,8 @@ import proj4 from 'proj4';
 import OLProjection from 'ol/proj/Projection';
 import { register } from 'ol/proj/proj4';
 import { addEquivalentProjections, get as getProj } from 'ol/proj';
+import { getValue } from 'IDEE/i18n/language';
+import Exception from 'IDEE/exception/exception';
 import { parseCRSWKTtoJSON } from '../../../facade/js/util/Utils';
 
 /**
@@ -665,7 +667,7 @@ const refactorUnits = (units) => {
 const getDefProjection = async (code) => {
   const response = await fetch(`https://epsg.io/${code}.proj4`);
   if (!response.ok) {
-    throw new Error(`EPSG code ${code} not found`);
+    Exception(`${getValue('exception').no_valid_projection}: ${code}`);
   }
   return response.text();
 };
@@ -691,7 +693,7 @@ const setNewProjection = async (projection) => {
 
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`No se pudo obtener la definición WKT de EPSG:${code}`);
+    Exception(`${getValue('exception').no_valid_projection}: ${code}`);
   }
 
   const wktResponse = await response.text();
@@ -740,8 +742,6 @@ addProjections(projections, false);
  * @api stable
  */
 export default {
-  addProjections,
   getSupportedProjs,
-  setNewProjection,
   ensureProjection,
 };

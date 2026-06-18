@@ -47,6 +47,11 @@
         "type": "simple",
         "name": "outputDownloadFormat",
         "position": 7
+      },
+      {
+        "type": "simple",
+        "name": "epsgResults",
+        "position": 8
       }
     ]
   }],
