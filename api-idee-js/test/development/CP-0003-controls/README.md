@@ -14,13 +14,13 @@ CP-005
 Control getfeatureinfo*false
 
 CP-006
-Control location*true*false
+Control rotate
 
 CP-007
-Control location*false*true
+Control location
 
 CP-008
-Control rotation (se prueba añadiéndolo en un Plugin para el verificado de que los contenedores se guardan correctamente)
+Control rotate (se prueba añadiéndolo en un Plugin para el verificado de que los contenedores se guardan correctamente)
 
 CP-009
 Control attributions
