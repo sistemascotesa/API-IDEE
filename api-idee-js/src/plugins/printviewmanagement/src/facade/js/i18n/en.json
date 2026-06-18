@@ -92,6 +92,7 @@
   "vertical": "Vertical",
   "horizontal": "Horizontal",
   "scale": "Scale",
+  "scaleLine": "Scale Line",
   "dpi": "DPI (dots per inches)",
   "defaultText": "Enter text",
   "select_srs": "Select a reference system",
