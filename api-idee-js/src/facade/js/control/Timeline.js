@@ -236,6 +236,7 @@ class Timeline extends Control {
         });
       } else {
         this.intervals = options.intervals;
+        this.intervalsGrouped = this.buildGroupIntervals(this.intervals);
       }
     }
 
@@ -292,17 +293,23 @@ class Timeline extends Control {
         success(this.getElement());
       } else {
         const intervals = [];
-        this.intervals.forEach((interval, k) => {
-          const layer = this.transformToLayers(interval[2]);
-          const copy = this.getMapLayer(layer);
-          if (copy !== undefined) {
-            this.map.removeLayers(copy);
-          }
-          this.map.addLayers(layer);
+        Object.entries(this.intervalsGrouped).forEach(([key, intervalsByYear], k) => {
+          const interval = intervalsByYear.find((iByYear) => iByYear.selected);
+          let layer;
+          intervalsByYear.forEach((iByYear, i) => {
+            const layerByYear = this.transformToLayers(iByYear.service);
+            if (i === 0) layer = layerByYear;
+            const copy = this.getMapLayer(layerByYear);
+            if (copy !== undefined) {
+              this.map.removeLayers(copy);
+            }
+            this.intervalsGrouped[key][i].layer = layerByYear;
+            this.map.addLayers(layerByYear);
+          });
           const iv = {
             number: k,
-            name: interval[0],
-            tag: interval[1],
+            name: interval.name,
+            tag: interval.year,
             service: layer,
           };
           intervals.push(iv);
@@ -313,6 +320,7 @@ class Timeline extends Control {
           const tag = document.createElement('div');
           if (k !== 0 && k !== this.intervals.length - 1 && k
             !== parseInt(this.intervals.length / 2, 10)) {
+            tag.dataset.tag = '';
             tag.dataset.tag = '';
           } else {
             tag.dataset.tag = interval.tag;
@@ -350,7 +358,6 @@ class Timeline extends Control {
     if (!this.timelineType || !typesTimeline.includes(this.timelineType)) {
       throw new Error('Add correct typesTimeline, (absoluteSimple', 'absolute', 'relative)');
     }
-
     if (this.timelineType === 'absolute' || this.timelineType === 'relative') {
       this.intervals = this.intervals.filter(({ layer }) => {
         if (typeof layer === 'string') {
@@ -369,6 +376,83 @@ class Timeline extends Control {
       });
     }
     super.addTo(map);
+  }
+
+  /**
+  * Agrupa las capas por año.
+  *
+  * @private
+  * @param {Array} intervals
+  * @returns {Object}
+  */
+  buildGroupIntervals(intervals = []) {
+    const intervalsGrouped = {};
+
+    intervals.forEach((interval, i) => {
+      const [name, year, service] = interval;
+
+      if (isNullOrEmpty(intervalsGrouped[year])) intervalsGrouped[year] = [];
+
+      intervalsGrouped[year].push({
+        id: `${name}_${i}`,
+        name,
+        year,
+        service,
+        selected: intervalsGrouped[year].length === 0,
+        originalInterval: interval,
+      });
+    });
+
+    return intervalsGrouped;
+  }
+
+  /**
+  * Renderiza las opciones del selector de capas dependiendo del paso
+  *
+  * @param {object} interval Intervalo afectado
+  * @param {number} intervalIndex Índice del intervalo
+  * @param {string} selectorClass Nombre de la clase del selector al que se apunta
+  * @returns {void}
+  */
+  renderLayerSelector(
+    interval,
+    intervalIndex,
+    selectorClass,
+  ) {
+    const year = interval.tag;
+    /** @type {HTMLSelectElement} */
+    const selector = this.getElement().querySelector(selectorClass);
+    selector.innerHTML = '';
+    if (this.animation || interval.name !== '') {
+      selector.style.display = 'block';
+      selector.style.visibility = 'visible';
+    }
+    this.intervalsGrouped[year].forEach((intervalGroup) => {
+      const option = document.createElement('option');
+      option.value = intervalGroup.id;
+      option.textContent = intervalGroup.name;
+      option.selected = intervalGroup.selected;
+      selector.appendChild(option);
+    });
+    selector.disabled = typeof this.running === 'boolean' && this.running;
+
+    selector.onchange = (evt) => {
+      const { value: intervalGroupId } = evt.target;
+      const intervalsByYear = this.intervalsGrouped[year];
+      intervalsByYear.forEach((intervalByYear, layerIndex) => {
+        const mapLayer = this.getMapLayer(intervalByYear.layer);
+        const isSelected = intervalByYear.id === intervalGroupId;
+        mapLayer.setVisible(isSelected);
+        if (isSelected) {
+          this.intervals[intervalIndex] = {
+            ...this.intervals[intervalIndex],
+            service: intervalByYear.layer,
+            name: intervalByYear.name,
+          };
+        }
+        this.intervalsGrouped[year][layerIndex].selected = isSelected;
+      });
+    };
   }
 
   /**
@@ -398,18 +482,19 @@ class Timeline extends Control {
    */
   transformToLayers(layer) {
     let newLayer = null;
-    if (!(layer instanceof Object)) {
-      if (layer.indexOf('*') >= 0) {
-        const urlLayer = layer.split('*');
-        if (urlLayer[0].toUpperCase() === 'WMS') {
+    if (typeof layer === 'string') {
+      if (layer.includes('*')) {
+        // eslint-disable-next-line no-unused-vars
+        const [serviceLayer, layerName, urlLayer, layerNameInternal] = layer.split('*');
+        if (serviceLayer.toUpperCase() === 'WMS') {
           newLayer = new WMS({
-            url: urlLayer[2],
-            name: urlLayer[3],
+            url: urlLayer,
+            name: layerNameInternal,
           });
-        } else if (urlLayer[0].toUpperCase() === 'WMTS') {
+        } else if (serviceLayer.toUpperCase() === 'WMTS') {
           newLayer = new WMTS({
-            url: urlLayer[2],
-            name: urlLayer[3],
+            url: urlLayer,
+            name: layerNameInternal,
           });
         }
       } else {
@@ -438,21 +523,23 @@ class Timeline extends Control {
     document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '0');
     const left = (((elem.value - elem.min) / (elem.max - elem.min)) * ((256 - 20) - 5));
     document.querySelector('.div-m-timeline-slider').style.setProperty('--left', `${left}px`);
-    if (this.animation || this.intervals[0].name !== '') {
-      document.querySelector('.m-timeline-names').style.display = 'block';
-    }
     if (this.animation) {
       document.querySelector('.m-timeline-button').style.display = 'block';
+      document.querySelector('.m-timeline-button').style.visibility = 'visible';
     }
     const step = parseFloat(elem.value);
     this.intervals.forEach((interval) => {
       this.getMapLayer(interval.service).setVisible(false);
-      document.querySelector('.m-timeline-names').innerHTML = '';
     });
+    const entireStep = parseInt(step, 10);
+    const entireInterval = this.intervals[entireStep];
+    const entirreIntervalNextStep = entireStep + 1;
+    const entireIntervalNext = this.intervals[entireStep + 1];
+    this.getElement().querySelector('.m-timeline-names-next').style.display = 'none';
+    this.renderLayerSelector(entireInterval, entireStep, '.m-timeline-names');
     if (step % 1 === 0) {
       document.querySelector('.div-m-timeline-slider').style.setProperty('--left', `${left + 20}px`);
       this.getMapLayer(this.intervals[step].service).setVisible(true);
-      document.querySelector('.m-timeline-names').innerHTML = this.intervals[step].name;
       document.querySelector('.div-m-timeline-panel').style.setProperty('--valor', `"${this.intervals[step].tag}"`);
       if (this.intervals[step].tag !== '') {
         document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '1');
@@ -460,20 +547,20 @@ class Timeline extends Control {
         document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '0');
       }
     } else {
-      this.getMapLayer(this.intervals[parseInt(step, 10)].service).setVisible(true);
-      this.getMapLayer(this.intervals[parseInt(step, 10) + 1].service).setVisible(true);
-      if (this.intervals[parseInt(step, 10)].tag !== '' && this.intervals[parseInt(step, 10) + 1].tag !== '') {
+      this.getMapLayer(entireInterval.service).setVisible(true);
+      this.getMapLayer(entireIntervalNext.service).setVisible(true);
+      if (entireInterval.tag !== '' && entireIntervalNext.tag !== '') {
         document.querySelector('.div-m-timeline-slider').style.setProperty('--left', `${left}px`);
         document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '1');
-        document.querySelector('.div-m-timeline-panel').style.setProperty('--valor', `"${this.intervals[parseInt(step, 10)].tag} - ${this.intervals[parseInt(step, 10) + 1].tag}"`);
-        document.querySelector('.m-timeline-names').innerHTML = `${this.intervals[parseInt(step, 10)].name} y ${this.intervals[parseInt(step, 10) + 1].name}`;
-      } else if (this.intervals[parseInt(step, 10)].tag === '' && this.intervals[parseInt(step, 10) + 1].tag === '') {
+        document.querySelector('.div-m-timeline-panel').style.setProperty('--valor', `"${entireInterval.tag} - ${entireIntervalNext.tag}"`);
+        this.renderLayerSelector(entireIntervalNext, entirreIntervalNextStep, '.m-timeline-names-next');
+      } else if (entireInterval.tag === '' && entireIntervalNext.tag === '') {
         document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '0');
       } else {
         document.querySelector('.div-m-timeline-slider').style.setProperty('--left', `${left + 20}px`);
         document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '10');
-        document.querySelector('.m-timeline-names').innerHTML = this.intervals[parseInt(step, 10)].name + this.intervals[parseInt(step, 10) + 1].name;
-        document.querySelector('.div-m-timeline-panel').style.setProperty('--valor', `"${this.intervals[parseInt(step, 10)].tag}${this.intervals[parseInt(step, 10) + 1].tag}"`);
+        document.querySelector('.div-m-timeline-panel').style.setProperty('--valor', `"${entireInterval.tag}${entireIntervalNext.tag}"`);
+        this.renderLayerSelector(entireIntervalNext, entirreIntervalNextStep, '.m-timeline-names-next');
       }
     }
   }

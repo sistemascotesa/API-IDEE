@@ -120,8 +120,19 @@
     width: 210px;
 }
 
-.m-control-panel.m-control-timeline.opened .m-timeline-names {
-    display: hidden;
+.m-timeline-controls .m-timeline-layer-selectors {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    row-gap: 0.25rem;
+}
+
+.m-control-panel.m-control-timeline.opened [class^="m-timeline-names"] {
+    display: none;
+    font-size: 14px;
+    height: 1.5rem;
+    width: 100%;
 }
 
 .m-control-panel.m-control-timeline.opened .div-m-timeline-slider {
