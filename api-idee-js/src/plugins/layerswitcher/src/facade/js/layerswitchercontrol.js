@@ -1320,7 +1320,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     const hasPrecharged = (precharged.groups !== undefined && precharged.groups.length > 0)
       || (precharged.services !== undefined && precharged.services.length > 0);
     const codsiActive = this.codsiActive;
-    const accept = ['.kml', '.zip', '.gpx', '.geojson', '.gml', '.json', '.gpkg', '.tif', '.tiff'];
+    const accept = ['.kml', '.zip', '.gpx', '.geojson', '.gml', '.json', '.gpkg', '.tif', '.tiff', '.dxf', '.dgn'];
     const addServices = IDEE.template.compileSync(addServicesTemplate, {
       jsonp: true,
       parseToHtml: false,
@@ -1468,7 +1468,7 @@ export default class LayerswitcherControl extends IDEE.Control {
           url,
           fileName,
         );
-      } else if (['zip', 'kml', 'gpx', 'geojson', 'gml', 'json', 'gpkg'].includes(extension)) {
+      } else if (['zip', 'kml', 'gpx', 'geojson', 'gml', 'json', 'gpkg', 'dxf', 'dgn'].includes(extension)) {
         if (extension === 'zip') {
           this.downloadShp(url, fileName);
         } else {
