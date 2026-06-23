@@ -26,6 +26,12 @@ export default class ModalControl extends IDEE.Control {
     impl.setTemplates(templateES, templateEN);
     super('Modal', impl, {});
 
+    const modalClosedByWindow = impl.modalClosedByWindow;
+    impl.modalClosedByWindow = () => {
+      modalClosedByWindow.call(impl);
+      this.modalClosedByWindow();
+    };
+
     /**
      * Help documentation link.
      * @private
@@ -78,6 +84,19 @@ export default class ModalControl extends IDEE.Control {
       });
     }
   }
+
+  /**
+   * Cierra el modal actual
+   */
+  closeModal() {
+    this.getImpl().toggleModal(false);
+  }
+
+  /**
+   * Metodo disparador usado por otras clases para lanzar la señal de cerrado por la ventana
+   * gráfica
+   */
+  modalClosedByWindow() {}
 
   /**
    * This function compares controls
