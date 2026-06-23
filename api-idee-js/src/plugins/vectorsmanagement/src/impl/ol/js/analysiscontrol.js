@@ -355,7 +355,9 @@ export default class Analysiscontrol extends IDEE.impl.Control {
      * @api
      */
   getFeatureArea(feature) {
-    return feature.getImpl().getFeature().getGeometry().getArea();
+    const codeProj = this.facadeMap_.getProjection().code;
+    const geometry = feature.getImpl().getFeature().getGeometry();
+    return ol.sphere.getArea(geometry, { projection: codeProj });
   }
 
   getGeometryLength(geometry) {
@@ -432,13 +434,13 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     return features.map((featureFacade) => {
       const feature = featureFacade.getImpl().getFeature();
 
-      const area = ol.sphere.getArea(feature.getGeometry());
+      const area = ol.sphere.getArea(feature.getGeometry(), { projection: src });
       feature.getGeometry().transform(src, 'EPSG:3857');
       const featureJSON = geoFormat.writeFeatureObject(feature);
       featureJSON.properties = {
         area: {
-          km: area / (10 ** 6),
-          m: area,
+          km2: area / (10 ** 6),
+          m2: area,
         },
       };
 

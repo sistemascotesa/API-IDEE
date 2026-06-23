@@ -131,6 +131,7 @@
         const inputDecimalGEOcoord = document.getElementById('inputDecimalGEOcoord');
         const inputDecimalUTMcoord = document.getElementById('inputDecimalUTMcoord');
         const selectOutputDownloadFormat = document.getElementById('selectOutputDownloadFormat');
+        const inputEpsgResults = document.getElementById('inputEpsgResults');
         const botonEliminar = document.getElementById('botonEliminar');
 
         [
@@ -142,6 +143,7 @@
             inputDecimalGEOcoord,
             inputDecimalUTMcoord,
             selectOutputDownloadFormat,
+            inputEpsgResults,
         ].forEach((ctrl) => ctrl.addEventListener('change', cambiarTest));
 
         botonEliminar.addEventListener('click', function () {
@@ -158,7 +160,7 @@
             objeto.decimalGEOcoord = Number(inputDecimalGEOcoord.value);
             objeto.decimalUTMcoord = Number(inputDecimalUTMcoord.value);
             objeto.outputDownloadFormat = selectOutputDownloadFormat.options[selectOutputDownloadFormat.selectedIndex].value;
-            options.epsgResults = inputEpsgResults.value;
+            objeto.epsgResults = inputEpsgResults.value;
 
             if (mp !== null) map.removePlugins(mp);
             crearPlugin(objeto);
