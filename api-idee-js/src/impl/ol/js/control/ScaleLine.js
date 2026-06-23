@@ -245,7 +245,9 @@ class ScaleLine extends OLControlScaleLine {
       i += 1;
     }
 
-    const html = count.toString().concat(' ').concat(suffix);
+    const html = this.scaleBar_
+      ? this.createScaleBar(width, count, suffix)
+      : count.toString().concat(' ').concat(suffix);
     if (this.renderedHTML_ !== html) {
       this.innerElement_.innerHTML = html;
       this.renderedHTML_ = html;

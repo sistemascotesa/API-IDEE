@@ -66,6 +66,18 @@
           {{/each}}
         </select>
       </fieldset>
+
+      <fieldset class="m-templateCustomizer-option template-border-width">
+        <legend>{{translations.borderWidth}}</legend>
+        <input type="number" id="template-border-width" name="template-border-width" min="1" max="10" step="1"
+          value="{{defaultBorderWidth}}">
+      </fieldset>
+
+      <fieldset class="m-templateCustomizer-option template-margin">
+        <legend>{{translations.margin}}</legend>
+        <input type="number" id="template-margin" name="template-margin" min="0" max="50" step="1"
+          value="{{defaultMargin}}">
+      </fieldset>
     </form>
     <button id="m-templateCustomizer-download-button" class="templateDownload">{{translations.apply}}</button>
   </div>

@@ -11,6 +11,8 @@ const ID_TEMPLATE_SCALE = '#template-scale';
 const SCALE_LINE_CONTROL_NAME = 'scaleline';
 const ID_TEMPLATE_SCALE_LINE = '#template-scale-line';
 const ID_TEMPLATE_DPI = '#template-dpi';
+const ID_TEMPLATE_BORDER_WIDTH = '#template-border-width';
+const ID_TEMPLATE_MARGIN = '#template-margin';
 const ID_TEMPLATE_INPUT_SRS = '#epsg-selected';
 const ID_TEMPLATE_SRS_SELECTOR = '#m-customize-template-srs-selector';
 const ID_MAP_CONTAINER_TEMPLATE = '#imagen-mascara';
@@ -168,6 +170,21 @@ export default class TemplateCustomizer extends IDEE.Control {
     this.dpi = this.dpiOptions_[0];
 
     /**
+     * Ancho del borde de la plantilla, en píxeles
+     * @private
+     * @type {number}
+     */
+    this.borderWidth = 1;
+
+    /**
+     * Margen de la plantilla, en píxeles. Se utiliza al generar el archivo final
+     * (por ejemplo, al posicionar la imagen dentro del PDF)
+     * @private
+     * @type {number}
+     */
+    this.margin = 10;
+
+    /**
      * Conjunto de elementos principales que tiene la plantilla
      * @private
      * @type {Array<Object>}
@@ -220,6 +237,8 @@ export default class TemplateCustomizer extends IDEE.Control {
         defaultProjection: currentProjection,
         projectionsOptions: this.projectionsOptions_,
         defaultScale: this.map.getImpl().getScale(),
+        defaultBorderWidth: this.borderWidth,
+        defaultMargin: this.margin,
         translations: {
           mapElements: getValue('mapElements'),
           mapTitle: getValue('mapTitle'),
@@ -236,6 +255,8 @@ export default class TemplateCustomizer extends IDEE.Control {
           select_srs: getValue('select_srs'),
           choose_create_epsg: getValue('choose_create_epsg'),
           dpi: getValue('dpi'),
+          borderWidth: getValue('borderWidth'),
+          margin: getValue('margin'),
           apply: getValue('apply'),
           close: getValue('close'),
         },
@@ -306,6 +327,8 @@ export default class TemplateCustomizer extends IDEE.Control {
     this.setupScaleControl(ID_TEMPLATE_SCALE);
     this.setupScaleLineControl(ID_TEMPLATE_SCALE_LINE);
     this.setupDpiControl(ID_TEMPLATE_DPI);
+    this.setupBorderWidthControl(ID_TEMPLATE_BORDER_WIDTH);
+    this.setupMarginControl(ID_TEMPLATE_MARGIN);
     this.setupInputSelectorControl(ID_TEMPLATE_INPUT_SRS, ID_TEMPLATE_SRS_SELECTOR);
   }
 
@@ -368,7 +391,13 @@ export default class TemplateCustomizer extends IDEE.Control {
 
   setupScaleLineInput() {
     const { checked } = document.querySelector(ID_TEMPLATE_SCALE_LINE);
-    if (checked) this.previewMap.addControls(SCALE_LINE_CONTROL_NAME);
+    if (checked) {
+      this.previewMap.addControls(this.getScaleLineControl({
+        vendorOptions: {
+          text: checked,
+        },
+      }));
+    }
   }
 
   /**
@@ -441,7 +470,9 @@ export default class TemplateCustomizer extends IDEE.Control {
     const day = String(today.getDate());
     const month = String(today.getMonth() + 1);
     const year = today.getFullYear();
-    const formattedDate = `${day}/${month}/${year}`;
+    const hours = String(today.getHours()).padStart(2, '0');
+    const minutes = String(today.getMinutes()).padStart(2, '0');
+    const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
     epsgTemplate.textContent = this.projection;
     dateTemplate.textContent = formattedDate;
   }
@@ -724,14 +755,20 @@ export default class TemplateCustomizer extends IDEE.Control {
    * @param {string} scaleLineElementId - ID del elemento de entrada de escala lineal
    */
   setupScaleLineControl(scaleLineElementId) {
-    /**
-     * @type {HTMLInputElement}
-     */
     const scaleElement = document.querySelector(scaleLineElementId);
     scaleElement.addEventListener('click', (e) => {
-      const { checked } = e.target;
-      if (checked) this.previewMap.addControls(SCALE_LINE_CONTROL_NAME);
-      else this.previewMap.removeControls(SCALE_LINE_CONTROL_NAME);
+      if (this.previewMap.hasControl(SCALE_LINE_CONTROL_NAME)) {
+        this.previewMap.removeControls(SCALE_LINE_CONTROL_NAME);
+      }
+      const checked = e.target.checked;
+      this.previewMap.addControls(
+        this.getScaleLineControl({
+          vendorOptions: {
+            bar: true,
+            text: checked,
+          },
+        }),
+      );
     });
   }
 
@@ -758,10 +795,7 @@ export default class TemplateCustomizer extends IDEE.Control {
     if (!scale || Number.isNaN(scale)) return;
 
     const view = this.previewMap.getMapImpl().getView();
-    const dpi = this.dpi;
-    const inchesPerMeter = 39.3701;
-
-    const resolution = (scale * 1) / (dpi * inchesPerMeter);
+    const resolution = IDEE.impl.utils.getCurrentScale(view, `${scale}`, IDEE.config.DPI_OGC);
     view.setResolution(resolution);
 
     const scaleElement = document.querySelector(ID_TEMPLATE_SCALE);
@@ -821,6 +855,44 @@ export default class TemplateCustomizer extends IDEE.Control {
     const dpiSelect = document.querySelector(dpiElementId);
     dpiSelect.addEventListener('change', (e) => {
       this.dpi = e.target.value;
+    });
+  }
+
+  /**
+   * Configura el control de ancho del borde de la plantilla.
+   * Actualiza la previsualización en caliente con cada cambio del input.
+   * @param {string} borderWidthElementId - ID del elemento de entrada del ancho de borde
+   */
+  setupBorderWidthControl(borderWidthElementId) {
+    const borderWidthElement = document.querySelector(borderWidthElementId);
+    borderWidthElement.addEventListener('input', (e) => {
+      this.borderWidth = Math.min(10, Math.max(1, Number(e.target.value)));
+      this.updateTemplateBorderWidth();
+    });
+  }
+
+  /**
+   * Aplica el ancho de borde actual a los elementos con borde de la plantilla
+   * de previsualización
+   */
+  updateTemplateBorderWidth() {
+    const container = document.querySelector(ID_CONTAINER_DEFAULT_TEMPLATE);
+    if (!container) return;
+    container.querySelectorAll('.interior-container, .inferior-container, .cell').forEach((el) => {
+      // eslint-disable-next-line no-param-reassign
+      el.style.borderWidth = `${this.borderWidth}px`;
+    });
+  }
+
+  /**
+   * Configura el control de margen de la plantilla. Este valor no se aplica
+   * en la previsualización, sino al generar el archivo final (por ejemplo, el PDF)
+   * @param {string} marginElementId - ID del elemento de entrada del margen
+   */
+  setupMarginControl(marginElementId) {
+    const marginElement = document.querySelector(marginElementId);
+    marginElement.addEventListener('input', (e) => {
+      this.margin = Math.min(50, Math.max(0, Number(e.target.value)));
     });
   }
 
@@ -1186,6 +1258,7 @@ export default class TemplateCustomizer extends IDEE.Control {
           imagePreviewMap: templateImage64,
           layout: this.layout,
           orientation: this.mapOrientation,
+          margin: this.margin,
         });
       }
       if (this.loadingOverlay_) {
@@ -1215,5 +1288,23 @@ export default class TemplateCustomizer extends IDEE.Control {
     const mapPanel = containerId.querySelector('#mapPanel');
     mapPanel.innerHTML = '';
     mapPanel.appendChild(img);
+  }
+
+  /**
+   * Obtiene la instancia del control ScaleLine
+   * @param {Object} options opciones parametrizables del control
+   * @returns {IDEE.control.ScaleLine} instancia del control Scaleline
+   */
+  getScaleLineControl(options = {}) {
+    return new IDEE.control.ScaleLine({
+      ...options,
+      vendorOptions: {
+        bar: true,
+        text: false,
+        minWidth: 140,
+        // eslint-disable-next-line no-prototype-builtins
+        ...(options.hasOwnProperty('vendorOptions') ? options.vendorOptions : {}),
+      },
+    });
   }
 }

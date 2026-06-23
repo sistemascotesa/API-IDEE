@@ -282,6 +282,7 @@ export default class PrinterMapControl extends IDEE.Control {
    * @param {string} options.imageType - Tipo de imagen ('PNG' o 'JPEG')
    * @param {string} options.title - Título del documento
    * @param {Object} options.layout - Dimensiones del PDF
+   * @param {number} options.margin - Margen, en mm, aplicado alrededor de la imagen en el PDF
    * @param {Function} options.errorCallback - Función a ejecutar en caso de error
    * @param {Function} options.finallyCallback - Función a ejecutar al finalizar
    */
@@ -291,6 +292,7 @@ export default class PrinterMapControl extends IDEE.Control {
     title = 'map',
     layout = 'a4',
     orientation = 'horizontal',
+    margin = 10,
     errorCallback = () => {},
     finallyCallback = () => {},
   }) {
@@ -305,7 +307,7 @@ export default class PrinterMapControl extends IDEE.Control {
       unit: 'mm',
       format: dimensions,
     });
-    const marginPdf = 10;
+    const marginPdf = margin;
     const availableWidth = dimensions[1] - marginPdf * 2;
     const availableHeight = dimensions[0] - marginPdf * 2;
     try {
@@ -364,6 +366,7 @@ export default class PrinterMapControl extends IDEE.Control {
         title: title.value,
         layout: (config && config.layout) ? config.layout : 'a4',
         orientation: (config && config.orientation) ? config.orientation : 'horizontal',
+        margin: (config && config.margin !== undefined) ? config.margin : 10,
         errorCallback: (error) => {
           IDEE.toast.error(error.message, null, 6000);
         },

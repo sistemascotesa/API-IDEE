@@ -42,7 +42,14 @@
     }
 
     .m-api-idee-container .ol-scale-bar {
+        position: absolute;
+        bottom: 8px;
+        left: 8px;
         z-index: 2;
+    }
+
+    .m-api-idee-container .ol-scale-bar-inner {
+        display: flex;
     }
 
     .m-api-idee-container .ol-scale-step-marker {
@@ -54,6 +61,8 @@
     }
 
     .m-api-idee-container .ol-scale-step-text {
+        position: absolute;
+        bottom: -5px;
         z-Index: 11;
         color: #000000;
         text-shadow: -2px 0 #FFFFFF, 0 2px #FFFFFF, 2px 0 #FFFFFF, 0 -2px #FFFFFF;
@@ -73,6 +82,14 @@
         height: 10px;
         z-Index: 9;
         border: 1px solid black;
+    }
+
+    .m-api-idee-container .ol-scale-singlebar-even {
+        background-color: var(--idee-color-neutral-80);
+    }
+
+    .m-api-idee-container .ol-scale-singlebar-odd {
+        background-color: var(--idee-color-white);
     }
 
     /* ScaleLine ends */
