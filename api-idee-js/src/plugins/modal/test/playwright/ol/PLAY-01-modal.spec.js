@@ -7,7 +7,7 @@ test('Test Modal', async ({ page }) => {
       container: 'mapjs',
     });
     window.mp = new IDEE.plugin.Modal({
-      position: 'TL',
+      position: 'left',
     });
     window.mapjs.addPlugin(window.mp);
   });
