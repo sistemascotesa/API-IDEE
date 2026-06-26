@@ -48,18 +48,62 @@
                 </datalist>
             </div>
             <div>
-                <label for="selectCollapsible">Selector collapsible</label>
+                <label for="selectCollapsible">Selector "collapsible"</label>
                 <select name="collapsibleValue" id="selectCollapsible">
                     <option value=true selected>true</option>
                     <option value=false>false</option>
                 </select>
             </div>
             <div>
-                <label for="buttonIconInput">Selector button icon</label>
+                <label for="buttonIconInput">Icono de botón "svgPath"</label>
                 <input type="text" name="buttonIcon" id="buttonIconInput" list="buttonIconSug">
                 <datalist id="buttonIconSug">
                     <option value="https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_modal.svg" selected></option>
                     <option value="https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mapStan.svg"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="htmlContent">Contenido "content"</label>
+                <textarea id="htmlContent" name="htmlContent" rows="10" cols="40" style="height: fit-content;" list="htmlContentSug"></textarea>
+                <!-- <textarea id="htmlContent" name="htmlContent" rows="10" cols="40" style="height: fit-content;" list="htmlContentSug">
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Document</title>
+                        <style>
+                            html,body {
+                                height: 100%;
+                                width: 100%;
+                                margin: 0;
+                            }
+                            body {
+                                display: flex;
+                                flex-direction: column;
+                                overflow: auto;
+                                position: relative;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <header>Header del modal</header>
+                        <main style="flex-grow: 1;">
+                            <p>Contenido del modal</p>
+                        </main>
+                        <footer>
+                            Pie de nuestro Modal
+                        </footer>
+                    </body>
+                    </html>
+                </textarea> -->
+            </div>
+            <div>
+                <label for="urlInput">Cargar url "url_es"</label>
+                <input type="text" name="urlEsp" id="urlInput" list="urlInputSug">
+                <datalist id="urlInputSug">
+                    <option value="https://www.cnig.es/home"></option>
+                    <option value="https://www.coruna.gal/hacienda/es/tramites-y-gestiones/pic?argIdioma=es"></option>
                 </datalist>
             </div>
         </div>

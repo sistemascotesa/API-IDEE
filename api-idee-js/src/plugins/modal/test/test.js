@@ -36,6 +36,8 @@ const selectCollapsible = document.getElementById('selectCollapsible');
 const inputOrder = document.getElementById('inputOrder');
 const inputTooltip = document.getElementById('inputTooltip');
 const inputButtonIcon = document.getElementById('buttonIconInput');
+const textAreaHtmlContent = document.getElementById('htmlContent');
+const urlEspInput = document.getElementById('urlInput');
 
 const recreatePlugin = () => {
   removePlugin();
@@ -50,6 +52,12 @@ const recreatePlugin = () => {
   if (inputButtonIcon.value !== '' && inputButtonIcon.value) {
     options.svgPath = inputButtonIcon.value;
   }
+  if (textAreaHtmlContent.value !== '' && textAreaHtmlContent.value) {
+    options.content = textAreaHtmlContent.value;
+  }
+  if (urlEspInput.value !== '' && urlEspInput.value) {
+    options.url_es = urlEspInput.value;
+  }
   createControl(options);
 };
 
@@ -60,6 +68,8 @@ const recreatePlugin = () => {
   inputOrder,
   inputTooltip,
   inputButtonIcon,
+  textAreaHtmlContent,
+  urlEspInput,
 ].forEach((field) => {
   field.addEventListener('change', recreatePlugin);
 });

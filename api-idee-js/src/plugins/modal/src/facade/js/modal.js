@@ -63,12 +63,28 @@ export default class Modal extends IDEE.Plugin {
      * @private
      * @type {String}
      */
-    if (options.helpLink && Object.keys(options.helpLink).length > 0) {
-      this.url_ = options.helpLink[`${IDEE.language.getLang()}`];
-    } else if (IDEE.language.getLang() === 'en') {
-      this.url_ = options.url_en || 'template_en';
+    this.url_ = null;
+
+    /**
+    * Raw HTML string or plain text to inject directly into the modal,
+    * instead of loading from a URL.
+    * @private
+    * @type {null | string}
+    */
+    this.content_ = null;
+
+    if (!IDEE.utils.isUndefined(options.content)) {
+      this.content_ = options.content;
+    } else if (
+      !IDEE.utils.isUndefined(options.url_es) && !IDEE.utils.isUndefined(options.url_en)
+    ) {
+      this.url_ = IDEE.language.getLang() === 'es'
+        ? options.url_es
+        : options.url_en;
     } else {
-      this.url_ = options.url_es || 'template_es';
+      this.url_ = IDEE.language.getLang() === 'es'
+        ? 'template_es'
+        : 'template_en';
     }
 
     /**
@@ -112,7 +128,9 @@ export default class Modal extends IDEE.Plugin {
   addTo(map) {
     this.map_ = map;
 
-    this.control_ = new ModalControl(this.url_);
+    this.control_ = new ModalControl(this.url_, {
+      content: this.content_,
+    });
     this.controls_.push(this.control_);
 
     if (this.collapsible !== false) {
