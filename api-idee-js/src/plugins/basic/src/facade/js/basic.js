@@ -28,13 +28,6 @@ export default class Basic extends IDEE.Plugin {
     });
 
     /**
-     * Nombre de clase de la vista html
-     * @public
-     * @type {String}
-     */
-    this.className = 'm-plugin-basic';
-
-    /**
      * Atributo colapsado del panel
      * @public
      * @type {Boolean}
@@ -42,11 +35,25 @@ export default class Basic extends IDEE.Plugin {
     this.collapsed = IDEE.utils.isBoolean(options.collapsed) ? options.collapsed : true;
 
     /**
+     * Anchura mínima del panel
+     * @public
+     * @type {Number}
+     */
+    this.minPanelWidth = options.minWidthPanel;
+
+    /**
+     * Anchura máxima del panel
+     * @public
+     * @type {Number}
+     */
+    this.maxPanelWidth = options.maxWidthPanel;
+
+    /**
      * Contenido personalizado del plugin
      * @public
-     * @type {Object}
+     * @type {String}
      */
-    this.pluginContent = options.pluginContent;
+    this.content = options.content;
 
     /**
      * Parámetros del plugin
@@ -86,7 +93,7 @@ export default class Basic extends IDEE.Plugin {
       order: this.order,
     });
 
-    this.controls.push(new BasicControl(this.pluginContent));
+    this.controls.push(new BasicControl(this.content));
     this.panel.addControls(this.controls);
     this.button.panel = this.panel;
     this.panel.button = this.button;
