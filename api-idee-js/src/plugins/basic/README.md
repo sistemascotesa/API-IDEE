@@ -41,7 +41,12 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - 'left': (top left) - Arriba a la izquierda.
   - 'right': (top right) - Arriba a la derecha (por defecto).
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
-- **tooltip**. Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: 'Plantilla plugin'
+- **order**: Indica en qué posición del panel debe aparecer en el conjunto de controles o plugins.
+- **tooltip**. Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: 'Plantilla plugin'.
+- **svgPath**: URL al SVG que se usará como icono del botón del plugin.
+- **minPanelWidth**: Anchura mínima del panel del plugin. El valor debe de estar comprendido entre 270px y 600px. Por defecto 270px.
+- **maxPanelWidth**: Anchura máxima del panel del plugin. El valor debe de estar comprendido entre 270px y 600px. Por defecto 600px.
+- **content**: Contenido HTML crudo o una URL que contenga contenido HTML a incrustar en el panel del plugin.
 
 # API-REST
 
@@ -66,8 +71,33 @@ URL_API?basic=position*collapsed*tooltip
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
+    <td>order</td>
+    <td>Posición del plugin en el sistema de paneles</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
     <td>tooltip</td>
     <td>Valor a usar para mostrar en el tooltip del plugin</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>svgPath</td>
+    <td>URL del path del icono svg</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>minWidthPanel</td>
+    <td>Anchura mínima del panel</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>maxWidthPanel</td>
+    <td>Anchura máxima del panel</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>content</td>
+    <td>Contenido del plugin</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
 </table>
