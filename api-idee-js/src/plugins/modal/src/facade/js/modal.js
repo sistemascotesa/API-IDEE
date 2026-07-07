@@ -28,6 +28,7 @@ export default class Modal extends IDEE.Plugin {
       position: options.position ?? Position.LEFT,
       tooltip: options.tooltip ?? getValue('tooltip'),
       order: options.order,
+      svgPath: options.svgPath || 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_modal.svg',
     });
     /**
      * Facade of the map
@@ -62,12 +63,28 @@ export default class Modal extends IDEE.Plugin {
      * @private
      * @type {String}
      */
-    if (options.helpLink && Object.keys(options.helpLink).length > 0) {
-      this.url_ = options.helpLink[`${IDEE.language.getLang()}`];
-    } else if (IDEE.language.getLang() === 'en') {
-      this.url_ = options.url_en || 'template_en';
+    this.url_ = null;
+
+    /**
+    * Raw HTML string or plain text to inject directly into the modal,
+    * instead of loading from a URL.
+    * @private
+    * @type {null | string}
+    */
+    this.content_ = null;
+
+    if (!IDEE.utils.isUndefined(options.content)) {
+      this.content_ = options.content;
+    } else if (
+      !IDEE.utils.isUndefined(options.url_es) && !IDEE.utils.isUndefined(options.url_en)
+    ) {
+      this.url_ = IDEE.language.getLang() === 'es'
+        ? options.url_es
+        : options.url_en;
     } else {
-      this.url_ = options.url_es || 'template_es';
+      this.url_ = IDEE.language.getLang() === 'es'
+        ? 'template_es'
+        : 'template_en';
     }
 
     /**
@@ -111,32 +128,40 @@ export default class Modal extends IDEE.Plugin {
   addTo(map) {
     this.map_ = map;
 
-    this.control_ = new ModalControl(this.url_);
+    this.control_ = new ModalControl(this.url_, {
+      content: this.content_,
+    });
     this.controls_.push(this.control_);
 
-    this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
-      position: this.position,
-      tooltip: this.tooltip,
-      svgPath: `plugins/${this.name}/images/icon.svg`,
-      order: this.order,
-    });
-    // map.addButtons(this.button);
-
-    this.button.openPanel = () => {
-      this.control_.triggerModal();
-      this.button.pressed = false;
-    };
-
-    this.button.closePanel = () => {};
-
     if (this.collapsible !== false) {
+      this.button = new IDEE.ui.buttons.OverviewMapButton(this.name, {
+        position: this.position,
+        tooltip: this.tooltip,
+        svgPath: this.svgPath,
+        order: this.order,
+      });
+      const activate = this.button.activate;
+      this.button.activate = () => {
+        activate.call(this.button);
+        this.control_.triggerModal();
+      };
+      const deactivate = this.button.deactivate;
+      this.button.deactivate = () => {
+        deactivate.call(this.button);
+        this.control_.closeModal();
+      };
+      const modalClosedByWindow = this.control_.modalClosedByWindow;
+      this.control_.modalClosedByWindow = () => {
+        modalClosedByWindow.call(this.control_);
+        deactivate.call(this.button);
+      };
       map.addButtons(this.button);
     }
+
     map.addControls(this.controls_);
 
     if (this.collapsed === false || this.collapsible === false) {
       setTimeout(() => {
-        // triggerModal para asegurar la apertura
         this.control_.triggerModal();
       }, 300);
     }

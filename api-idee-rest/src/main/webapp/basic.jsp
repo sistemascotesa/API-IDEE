@@ -68,10 +68,20 @@
                             </datalist>
                         </div>
                         <div>
-                            <label for="inputPluginContent" title='Objeto JSON con las claves "html", "css" y "js" a incrustar en el panel'>Contenido del panel "pluginContent"</label>
+                            <label for="inputMinWidthPanel"
+                                title="Define la anchura mínima del panel del plugin. Mínimo 270px y máximo 600px">Anchura mínima panel "minWidthPanel"</label>
+                            <input type="number" name="minWidthPanel" id="inputMinWidthPanel" min="270" max="600">
+                        </div>
+                        <div>
+                            <label for="inputMaxWidthPanel"
+                                title="Define la anchura máxima del panel del plugin. Mínimo 270px y máximo 600px">Anchura máxima panel "maxWidthPanel"</label>
+                            <input type="number" name="maxWidthPanel" id="inputMaxWidthPanel" min="270" max="600">
+                        </div>
+                        <div>
+                            <label for="inputPluginContent" title='Una URL válida o el contenido de un fichero HTML a incrustar en el panel'>Contenido del panel "content"</label>
                             <input type="text" id="inputPluginContent" list="pluginContentSug">
                             <datalist id="pluginContentSug">
-                                <option value='{"html": "<p>Contenido personalizado del plugin que se despliega en el panel. Se permite definir contenido HTML, CSS y JavaScript.</p>", "css": "p { color: red; }", "js": "console.log(\"Contenido del plugin implementado en el panel\")"}'></option>
+                                <option value="<p>Contenido personalizado del plugin que se despliega en el panel.</p>"></option>
                             </datalist>
                         </div>
                         <input type="hidden" id="buttonAPI" value="API Rest" />
@@ -106,6 +116,8 @@
                             const inputOrder = document.getElementById('inputOrder');
                             const inputTooltip = document.getElementById('inputTooltip');
                             const inputSvgPath = document.getElementById('inputSvgPath');
+                            const inputMinWidthPanel = document.getElementById('inputMinWidthPanel');
+                            const inputMaxWidthPanel = document.getElementById('inputMaxWidthPanel');
                             const inputPluginContent = document.getElementById('inputPluginContent');
                             const botonEliminar = document.getElementById('botonEliminar');
 
@@ -132,10 +144,10 @@
                                 options.order = Number(inputOrder.value);
                                 options.tooltip = inputTooltip.value;
                                 options.svgPath = inputSvgPath.value.trim();
-                                const pluginContentRaw = inputPluginContent.value.trim();
-                                if (pluginContentRaw) {
-                                    try { options.pluginContent = JSON.parse(pluginContentRaw); } catch (e) { /* JSON inválido, se ignora */ }
-                                }
+                                options.minWidthPanel = Number(inputMinWidthPanel.value);
+                                options.maxWidthPanel = Number(inputMaxWidthPanel.value);
+                                options.content = inputPluginContent.value.trim();
+
                                 removePlugin();
                                 createPlugin(options);
                             };
@@ -146,6 +158,8 @@
                                 inputOrder,
                                 inputTooltip,
                                 inputSvgPath,
+                                inputMinWidthPanel,
+                                inputMaxWidthPanel,
                                 inputPluginContent,
                             ].forEach((ctrl) => {
                                 ctrl.addEventListener('change', updatePlugin);

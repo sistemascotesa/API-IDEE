@@ -79,5 +79,12 @@ export default class ModalControl extends IDEE.impl.Control {
     if (this.modalElement) {
       this.modalElement.classList.toggle('hidden', !visible);
     }
+    if (!visible) this.modalClosedByWindow();
   }
+
+  /**
+   * Metodo disparador usado por otras clases para lanzar la señal de cerrado por la ventana
+   * gráfica
+   */
+  modalClosedByWindow() {}
 }

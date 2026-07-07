@@ -15,7 +15,7 @@ export default class BasicControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api stable
    */
-  constructor(pluginContent) {
+  constructor(content) {
     // 1. Comprueba si la implementación puede crear el control
     if (IDEE.utils.isUndefined(BasicImplControl)
       || (IDEE.utils.isObject(BasicImplControl)
@@ -25,7 +25,7 @@ export default class BasicControl extends IDEE.Control {
     // 2. Crea la implementación del control
     const impl = new BasicImplControl();
     super('Basic', impl);
-    this.pluginContent = pluginContent;
+    this.content = IDEE.utils.isString(content) ? content : undefined;
   }
 
   /**
@@ -38,26 +38,27 @@ export default class BasicControl extends IDEE.Control {
    */
   createView(map) {
     return new Promise((success, fail) => {
-      const html = IDEE.template.compileSync(template, {
-        vars: {
-          text: getValue('text'),
-        },
-      });
+      const html = IDEE.template.compileSync(template, {});
 
-      if (this.pluginContent?.html) {
-        html.querySelector('.m-plugin-basic-default-content').style.display = 'none';
-        html.querySelector('.m-plugin-basic-custom-content').innerHTML = this.pluginContent.html;
-      }
+      if (this.content) {
+        const insertContent = (htmlContent) => {
+          const iframe = document.createElement('iframe');
+          iframe.classList.add('m-basic-iframe');
+          iframe.srcdoc = htmlContent;
+          html.appendChild(iframe);
+        };
 
-      if (this.pluginContent?.css) {
-        const style = document.createElement('style');
-        style.textContent = this.pluginContent.css;
-        document.head.appendChild(style);
-      }
-
-      if (this.pluginContent?.js) {
-        // eslint-disable-next-line no-new-func
-        setTimeout(() => new Function(this.pluginContent.js)(), 0);
+        if (IDEE.utils.isUrl(this.content)) {
+          fetch(this.content)
+            .then((response) => {
+              if (!response.ok) throw new Error(response.statusText);
+              return response.text();
+            })
+            .then(insertContent)
+            .catch(() => IDEE.dialog.error(getValue('exception.invalidContent')));
+        } else {
+          insertContent(this.content);
+        }
       }
 
       success(html);

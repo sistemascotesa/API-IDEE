@@ -1,8 +1,6 @@
 /* Images container */
-
-.m-side-panel.m-selectionzoom>div#m-selectionzoom-previews {
+.m-plugin-panel-content.m-selectionzoom>div#m-selectionzoom-previews {
     height: fit-content;
-    /* flex-grow: 1; */
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -12,7 +10,7 @@
     padding: .5rem;
 }
 
-.m-side-panel.m-selectionzoom>div#m-selectionzoom-previews>div[id^="m-selectionzoom-lyr-"] {
+.m-plugin-panel-content.m-selectionzoom>div#m-selectionzoom-previews>div[id^="m-selectionzoom-lyr-"] {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -23,7 +21,7 @@
     gap: 8px;
 }
 
-.m-side-paneldiv[id^="m-selectionzoom-lyr-"]>.lyr-img-frame {
+.m-plugin-panel-content.m-selectionzoom div[id^="m-selectionzoom-lyr-"]>.lyr-img-frame {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -33,16 +31,12 @@
     transition: all 0.3s ease;
 }
 
-.m-side-paneldiv[id^="m-selectionzoom-lyr-"]>.lyr-img-frame>img {
-    width: 4.5rem;
+.m-plugin-panel-content.m-selectionzoom div[id^="m-selectionzoom-lyr-"]>.lyr-img-frame>img {
+    width: 5.5rem;
     aspect-ratio: 1;
 }
 
-.m-side-paneldiv[id^="m-selectionzoom-lyr-"]>.lyr-img-frame>img {
-    width: 5.5rem;
-}
-
-.m-side-paneldiv[id^="m-selectionzoom-lyr-"]>span {
+.m-plugin-panel-content.m-selectionzoom div[id^="m-selectionzoom-lyr-"]>span {
     color: var(--idee-color-neutral-70);
     height: 20px;
     margin-top: 0;
@@ -54,21 +48,21 @@
 }
 
 /** HOVER CARD EFFECT */
-.m-side-paneldiv[id^="m-selectionzoom-lyr-"]>.lyr-img-frame:hover {
+.m-plugin-panel-content.m-selectionzoom div[id^="m-selectionzoom-lyr-"]>.lyr-img-frame:hover {
     border-color: var(--idee-color-links);
 }
 
-.m-side-paneldiv[id^="m-selectionzoom-lyr-"]:hover>span {
+.m-plugin-panel-content.m-selectionzoom div[id^="m-selectionzoom-lyr-"]:hover>span {
     font-weight: bold;
     color: var(--idee-color-links);
 }
 
 /* SELECTED */
-.m-selectionzoom .activeSelectionZoomDiv>span {
+.m-plugin-panel-content.m-selectionzoom .activeSelectionZoomDiv>span {
     font-weight: bold;
     color: var(--idee-color-primary-dark) !important;
 }
 
-.m-selectionzoom .activeSelectionZoomDiv>.lyr-img-frame {
+.m-plugin-panel-content.m-selectionzoom .activeSelectionZoomDiv>.lyr-img-frame {
     border-color: var(--idee-color-primary-dark) !important;
 }
