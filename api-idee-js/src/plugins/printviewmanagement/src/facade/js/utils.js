@@ -58,6 +58,23 @@ export function generateTitle(titulo = '') {
   return titulo;
 }
 
+// Format a template name
+export function formatTemplateLabel(name) {
+  const words = name
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+    .split(' ');
+
+  return words.map((word, index) => {
+    const isAcronym = word.length > 1 && word === word.toUpperCase();
+    if (isAcronym) {
+      return word;
+    }
+    const lowerWord = word.toLowerCase();
+    return index === 0 ? lowerWord.charAt(0).toUpperCase() + lowerWord.slice(1) : lowerWord;
+  }).join(' ');
+}
+
 // Get base64 image
 export function getBase64Image(imgUrl, format) {
   const formatType = format || 'jpeg';

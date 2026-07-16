@@ -8,7 +8,7 @@ import printermapHTML from '../../templates/printermap';
 import { getValue } from './i18n/language';
 import TemplateCustomizer from './templateCustomizer';
 import {
-  createZipFile, generateTitle, getBase64Image, formatImageBase64,
+  createZipFile, generateTitle, getBase64Image, formatImageBase64, formatTemplateLabel,
 } from './utils';
 import {
   DPI_OPTIONS,
@@ -656,8 +656,7 @@ export default class PrinterMapControl extends IDEE.Control {
     this.uploadedTemplates.forEach((template) => {
       const option = document.createElement('option');
       option.value = template.name;
-      const label = template.name.replace(/([A-Z])/g, ' $1').toLowerCase();
-      option.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+      option.textContent = formatTemplateLabel(template.name);
       selectElement.appendChild(option);
     });
 

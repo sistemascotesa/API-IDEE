@@ -104,6 +104,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
           `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/mapaConMarco.html`,
           `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/mapaConCabeceraYMarco.html`,
           `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/mapaConPieYMarco.html`,
+          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/PlantillaAMB.html`,
         ],
         showDefaultTemplate: true,
         defaultDpiOptions: [96, 150, 300],
