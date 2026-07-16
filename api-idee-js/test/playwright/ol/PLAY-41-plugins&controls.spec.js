@@ -1,20 +1,24 @@
 import { test, expect } from '@playwright/test';
 
 const REFACTOR_PLUGINS = [
-  'backimglayer',
+  'vectormanagement',
+  'incicarto',
+  'printviewmanagement',
+  'infocoordinates',
+  'selectionzoom',
+  'modal',
   'comparators',
   'contactlink',
-  'incicarto',
-  'infocoordinates',
-  'layerswitcher',
-  'locator',
-  'mousesrs',
-  'printviewmanagement',
-  'selectionzoom',
   'storymap',
-  'stylemanager',
-  'vectorsmanagement',
+  'mousesrs',
+  'locatorscn',
+  'sharemap',
+  'backimglayer',
   'viewmanagement',
+  'basic',
+  'locator',
+  'layerswitcher',
+  'stylemanager',
 ];
 
 test('Probamos añadir controles y plugins desde API 2.0', async ({ page }) => {

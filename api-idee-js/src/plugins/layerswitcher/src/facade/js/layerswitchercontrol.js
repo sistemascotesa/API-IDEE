@@ -1320,7 +1320,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     const hasPrecharged = (precharged.groups !== undefined && precharged.groups.length > 0)
       || (precharged.services !== undefined && precharged.services.length > 0);
     const codsiActive = this.codsiActive;
-    const accept = ['.kml', '.zip', '.gpx', '.geojson', '.gml', '.json', '.gpkg', '.tif', '.tiff'];
+    const accept = ['.kml', '.zip', '.gpx', '.geojson', '.gml', '.json', '.gpkg', '.tif', '.tiff', '.dxf', '.dgn'];
     const addServices = IDEE.template.compileSync(addServicesTemplate, {
       jsonp: true,
       parseToHtml: false,
@@ -1468,7 +1468,7 @@ export default class LayerswitcherControl extends IDEE.Control {
           url,
           fileName,
         );
-      } else if (['zip', 'kml', 'gpx', 'geojson', 'gml', 'json', 'gpkg'].includes(extension)) {
+      } else if (['zip', 'kml', 'gpx', 'geojson', 'gml', 'json', 'gpkg', 'dxf', 'dgn'].includes(extension)) {
         if (extension === 'zip') {
           this.downloadShp(url, fileName);
         } else {
@@ -1996,7 +1996,9 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   addLayersWFS(elmSelWFS) {
-    const url = document.querySelector(SEARCH_INPUT).value.trim();
+    const rawInput = document.querySelector(SEARCH_INPUT).value.trim();
+    const url = rawInput.split('?')[0];
+    const vendor = this.getWFSExtraParams_(rawInput);
     elmSelWFS.forEach((elm) => {
       const id = elm.id.split(':');
       const format = elm.getAttribute('format');
@@ -2009,6 +2011,7 @@ export default class LayerswitcherControl extends IDEE.Control {
           legend: name,
           extact: true,
           format: format || 'application/json',
+          vendor,
         };
         if (IDEE.utils.isUndefined(name)) {
           obj.name = namespace;
@@ -2019,6 +2022,34 @@ export default class LayerswitcherControl extends IDEE.Control {
         this.addLayer(obj);
       }
     });
+  }
+
+  getWFSExtraParams_(rawInput) {
+    const RESERVED_WFS_PARAMS = [
+      'service',
+      'version',
+      'request',
+      'typename',
+      'typenames',
+      'outputformat',
+      'srsname',
+      'bbox',
+      'featureid',
+      'cql_filter',
+    ];
+    const vendor = {};
+    const queryString = rawInput.split('?')[1];
+    if (!IDEE.utils.isNullOrEmpty(queryString)) {
+      queryString.split('&').forEach((pair) => {
+        if (IDEE.utils.isNullOrEmpty(pair)) return;
+        const [rawKey, rawValue = ''] = pair.split('=');
+        const key = decodeURIComponent(rawKey);
+        if (!IDEE.utils.isNullOrEmpty(key) && !RESERVED_WFS_PARAMS.includes(key.toLowerCase())) {
+          vendor[key] = decodeURIComponent(rawValue);
+        }
+      });
+    }
+    return vendor;
   }
 
   // Añade capas
@@ -2231,6 +2262,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     OGCAPIFeatures,
     namespace,
     existingLayer,
+    vendor,
   }) {
     let layer = null;
 
@@ -2331,6 +2363,10 @@ export default class LayerswitcherControl extends IDEE.Control {
       }, {
         describeFeatureTypeOutputFormat: 'geojson',
         getFeatureOutputFormat: format,
+        vendor: IDEE.utils.isNullOrEmpty(vendor) ? undefined : {
+          getFeature: vendor,
+          describeFeatureType: vendor,
+        },
       });
     } else if (existingLayer) {
       layer = existingLayer;

@@ -78,26 +78,19 @@ class GML {
    * @api stable
    */
   returnFormatOl_(gmlVersion) {
-    const formatGmlVersion = gmlVersion.replaceAll('"', '');
-    if (formatGmlVersion === 'text/xml; subtype=gml/3.1.1') {
-      return new OLFormatGML(); // GML y GML3
-    }
-    if (formatGmlVersion === 'text/xml; subtype=gml/2.1.2') {
-      return new OLFormatGML2(); // GML2
-    }
-    if (formatGmlVersion === 'text/xml; subtype=gml/3.2.1') {
-      return new OLFormatGML32(); // GML32
-    }
-    if (formatGmlVersion === 'gml3') {
-      return new OLFormatGML(); // GML3 (OLD import name OLFormatGML3)
-    }
-    if (formatGmlVersion === 'gml32') {
-      return new OLFormatGML32(); // GML32
-    }
-    if (formatGmlVersion === 'GML2') {
-      return new OLFormatGML2(); // GML2
-    }
-    return new OLFormatGML(); // Default GML
+    const formatGmlVersion = gmlVersion.replaceAll('"', '').trim().toLowerCase();
+
+    const isGML2 = formatGmlVersion === 'text/xml; subtype=gml/2.1.2' || formatGmlVersion === 'gml2';
+    const isGML32 = formatGmlVersion === 'text/xml; subtype=gml/3.2.1'
+      || formatGmlVersion === 'gml32'
+      || formatGmlVersion.includes('gml/3.2')
+      || formatGmlVersion.includes('version=3.2');
+    const isGML31 = formatGmlVersion === 'text/xml; subtype=gml/3.1.1' || formatGmlVersion === 'gml3';
+
+    if (isGML2) return new OLFormatGML2();
+    if (isGML32) return new OLFormatGML32();
+    if (isGML31) return new OLFormatGML();
+    return new OLFormatGML();
   }
 }
 

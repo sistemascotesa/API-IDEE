@@ -9,9 +9,14 @@ let gdalPromise;
 
 const gdalWorker = false;
 
+/** CRS que se asume para formatos CAD sin CRS embebido (DXF, DGN) */
+const CAD_DEFAULT_SRS = 'EPSG:25830';
+
 /** extensiones soportadas por GDAL */
 export const extensionFiles = [
   'gpkg',
+  'dxf',
+  'dgn',
   // 'shp', 'geojson', 'json', 'kml', 'gml', 'jpg', 'png', 'img', 'vrt',
 ];
 
@@ -72,9 +77,14 @@ export const processFile = async (file, projectionCode) => {
         newDataset.info.layers.forEach((layer) => {
           const layerName = layer.name;
           if (typeof layerName === 'string') {
+            const hasCrs = Array.isArray(layer.geometryFields)
+              && layer.geometryFields.some((geometryField) => !!geometryField.coordinateSystem);
             const options = [
               '-f', 'GeoJSON',
-              '-t_srs', projectionCode,
+              ...(hasCrs
+                ? ['-t_srs', projectionCode]
+                : ['-s_srs', CAD_DEFAULT_SRS, '-t_srs', projectionCode]),
+              // ...(hasCrs ? ['-t_srs', projectionCode] : ['-a_srs', projectionCode]),
               '-sql', `SELECT * from ${layerName}`,
             ];
             const outputName = `gjson_${groupLayerName}_${layerName}`;

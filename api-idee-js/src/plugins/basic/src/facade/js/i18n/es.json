@@ -1,12 +1,12 @@
 {
   "exception": {
-    "impl": "La implementación no puede crear controles de Basic."
+    "impl": "La implementación no puede crear controles de Basic.",
+    "invalidContent": "El contenido del plugin no es válido. Debe ser una URL o el contenido de un fichero HTML."
   },
   "textHelp": {
     "help1": "Texto de ejemplo 1.",
     "help2": "Texto de ejemplo 2",
     "help3": "Texto de ejemplo 3"
   },
-  "tooltip": "Plantilla plugin",
-  "text": "Contenido del plugin de ejemplo"
+  "tooltip": "Título del plugin"
 }

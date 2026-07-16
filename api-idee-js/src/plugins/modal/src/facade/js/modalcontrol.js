@@ -26,12 +26,26 @@ export default class ModalControl extends IDEE.Control {
     impl.setTemplates(templateES, templateEN);
     super('Modal', impl, {});
 
+    const modalClosedByWindow = impl.modalClosedByWindow;
+    impl.modalClosedByWindow = () => {
+      modalClosedByWindow.call(impl);
+      this.modalClosedByWindow();
+    };
+
     /**
      * Help documentation link.
      * @private
      * @type {String}
      */
     this.url_ = url;
+
+    /**
+    * Raw HTML string or plain text to inject directly into the modal,
+    * instead of loading from a URL.
+    * @private
+    * @type {String}
+    */
+    this.content_ = IDEE.utils.isUndefined(options.content) ? null : options.content;
   }
 
   /**
@@ -56,18 +70,110 @@ export default class ModalControl extends IDEE.Control {
   }
 
   /**
+  * Detecta si es un documento HTML completo.
+  */
+  isFullHtmlDocument(content) {
+    if (typeof content !== 'string') {
+      return false;
+    }
+
+    return (
+      /<html[\s>]/i.test(content)
+      || /<!doctype\s+html/i.test(content)
+    );
+  }
+
+  /**
+   * Detecta si contiene etiquetas HTML.
+   */
+  isHtmlFragment(content) {
+    const parser = new DOMParser();
+
+    const doc = parser.parseFromString(content, 'text/html');
+
+    return Array.from(doc.body.childNodes).some(
+      (node) => node.nodeType === window.Node.ELEMENT_NODE,
+    );
+  }
+
+  escapeText(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  buildContent(content) {
+    if (this.isFullHtmlDocument(content)) {
+      return this.createDocumentIframe(content);
+    }
+
+    if (this.isHtmlFragment(content)) {
+      return content;
+    }
+
+    return `<pre>${this.escapeText(content)}</pre>`;
+  }
+
+  /**
+   * Parea y construye el contenido del modal si se trata de un string que contiene una plantilla
+   * html
+   * @param {string} content que representa el contenido del modal
+   * @returns {string} que representa un iframe con su contenido
+   */
+  createDocumentIframe(content) {
+    const parser = new DOMParser();
+
+    const doc = parser.parseFromString(
+      content,
+      'text/html',
+    );
+
+    const script = doc.createElement('script');
+
+    script.textContent = 'window.IDEE = window.parent.IDEE;';
+
+    doc.head.appendChild(script);
+
+    const finalDocument = `<!DOCTYPE html>${doc.documentElement.outerHTML}`;
+
+    const srcdoc = finalDocument
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;');
+
+    return `
+    <iframe
+      class="m-modal-document"
+      style="width:100%;height:100%;border:none;"
+      srcdoc="${srcdoc}">
+    </iframe>
+  `;
+  }
+
+  /**
    * Método llamado por el botón oficial
    */
   async triggerModal() {
-    let content = '';
+    let bodyContent = '';
 
-    if (this.url_ !== 'template_es' && this.url_ !== 'template_en') {
-      content = `<iframe src="${this.url_}" class="m-modal-iframe" frameborder="0"></iframe>`;
+    if (this.content_) {
+      bodyContent = this.buildContent(this.content_);
+    } else if (
+      this.url_ !== 'template_es'
+      && this.url_ !== 'template_en'
+    ) {
+      bodyContent = `
+      <iframe
+        src="${this.url_}"
+        style="width:100%;min-height:90vh;border:none;">
+      </iframe>
+    `;
     } else {
-      content = IDEE.language.getLang() === 'en' ? templateEN : templateES;
+      bodyContent = IDEE.language.getLang() === 'en'
+        ? templateEN
+        : templateES;
     }
 
-    this.getImpl().showModal(content);
+    this.getImpl().showModal(bodyContent);
 
     const modalBody = this.getImpl().modalElement.querySelector('.m-modal-body');
     if (modalBody) {
@@ -78,6 +184,19 @@ export default class ModalControl extends IDEE.Control {
       });
     }
   }
+
+  /**
+   * Cierra el modal actual
+   */
+  closeModal() {
+    this.getImpl().toggleModal(false);
+  }
+
+  /**
+   * Metodo disparador usado por otras clases para lanzar la señal de cerrado por la ventana
+   * gráfica
+   */
+  modalClosedByWindow() { }
 
   /**
    * This function compares controls

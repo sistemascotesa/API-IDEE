@@ -174,6 +174,8 @@ export const addFileToMap = (map, file) => {
     // Formatos compatibles con la librería de gdal
     const gdalFormats = [
       'gpkg',
+      'dxf',
+      'dgn',
     ];
 
     // Raster formats

@@ -114,7 +114,7 @@ URL_API?infocoordinates=position*collapsed*collapsible*tooltip*decimalGEOcoord*d
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
-    <td>outputDownloadFormat</td>
+    <td>epsgResults</td>
     <td>Array de códigos EPSG</td>
     <td>Base64 ✔️ | Separador ❌</td>
   </tr>
