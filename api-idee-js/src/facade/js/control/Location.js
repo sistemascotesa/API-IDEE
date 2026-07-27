@@ -246,7 +246,6 @@ class Location extends ControlBase {
   }
 
   /**
-   * @override
    * Destroys facade implementacion of this control
    */
   destroy() {
