@@ -222,12 +222,16 @@ class Timeline extends Control {
      * @property {String} intervals
      */
     this.intervals = [];
-    if (isString(options.intervals)) {
-      this.intervals = JSON.parse(options.intervals.replace(/!!/g, '[').replace(/¡¡/g, ']'));
-    } else if (isArray(options.intervals)) {
+    let rawIntervals = options.intervals;
+    if (isString(rawIntervals)) {
+      rawIntervals = JSON.parse(
+        rawIntervals.replace(/!!/g, '[').replace(/¡¡/g, ']').replace(/\u00a0/g, ' '),
+      );
+    }
+    if (isArray(rawIntervals)) {
       // Dinamic TimeLine
       if (['absolute', 'relative'].includes(this.timelineType)) {
-        this.intervals = Object.entries(options.intervals).map(([key, values]) => {
+        this.intervals = Object.entries(rawIntervals).map(([key, values]) => {
           const valuesNew = values;
           const [init, end] = this.transformTime_NumbToDate(valuesNew.init, valuesNew.end);
           valuesNew.init = init;
@@ -235,7 +239,7 @@ class Timeline extends Control {
           return valuesNew;
         });
       } else {
-        this.intervals = options.intervals;
+        this.intervals = rawIntervals;
         this.intervalsGrouped = this.buildGroupIntervals(this.intervals);
       }
     }

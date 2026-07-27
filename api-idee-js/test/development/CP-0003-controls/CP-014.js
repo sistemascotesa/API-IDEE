@@ -83,6 +83,7 @@ const title = inputTooltip.value;
 
 // Type
 const typeTimeLine = document.getElementById('typeTimeLine');
+
 if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
   create({
     timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,

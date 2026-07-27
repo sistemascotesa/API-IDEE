@@ -51,7 +51,8 @@
                         <div>
                             <label for="inputTooltip" title="Título ilustrativo que aporta información adicional">Título
                                 "tooltip"</label>
-                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
+                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug"
+                                value="Series Temporales">
                         </div>
                         <div>
                             <label for="selectCollapsed">Panel colapsado "collapsed"</label>
@@ -242,6 +243,7 @@
                             const formatValue = 'logarithmic';
                             const sizeWidthDinamic = 'sizeWidthDinamic_medium';
                             const formatMove = 'continuous';
+                            const title = inputTooltip.value;
 
                             // Type
                             const typeTimeLine = document.getElementById('typeTimeLine');
@@ -255,12 +257,14 @@
                                     formatMove,
                                     formatValue,
                                     sizeWidthDinamic,
+                                    title,
                                 });
                             } else {
                                 create({
                                     timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
                                     position,
                                     intervals,
+                                    title,
                                 });
                             }
 
