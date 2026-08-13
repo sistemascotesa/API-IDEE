@@ -22,6 +22,7 @@ import * as Position from '../ui/position';
 import { compileSync } from '../util/Template';
 
 const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
+const EMPTY_LAYER_ID = '__timeline_empty_layer__';
 
 /**
  * @typedef {Object} module:IDEE/control/Timeline~Options
@@ -431,6 +432,13 @@ class Timeline extends Control {
       selector.style.display = 'block';
       selector.style.visibility = 'visible';
     }
+
+    const emptyOption = document.createElement('option');
+    emptyOption.value = EMPTY_LAYER_ID;
+    emptyOption.textContent = this.translation.none;
+    emptyOption.selected = interval.service === null;
+    selector.appendChild(emptyOption);
+
     this.intervalsGrouped[year].forEach((intervalGroup) => {
       const option = document.createElement('option');
       option.value = intervalGroup.id;
@@ -443,10 +451,36 @@ class Timeline extends Control {
     selector.onchange = (evt) => {
       const { value: intervalGroupId } = evt.target;
       const intervalsByYear = this.intervalsGrouped[year];
+
+      if (intervalGroupId === EMPTY_LAYER_ID) {
+        intervalsByYear.forEach((intervalByYear) => {
+          const mapLayer = this.getMapLayer(intervalByYear.layer);
+
+          if (mapLayer) {
+            mapLayer.setVisible(false);
+          }
+
+          // eslint-disable-next-line no-param-reassign
+          intervalByYear.selected = false;
+        });
+
+        this.intervals[intervalIndex] = {
+          ...this.intervals[intervalIndex],
+          service: null,
+          name: '',
+        };
+
+        return;
+      }
+
       intervalsByYear.forEach((intervalByYear, layerIndex) => {
         const mapLayer = this.getMapLayer(intervalByYear.layer);
         const isSelected = intervalByYear.id === intervalGroupId;
-        mapLayer.setVisible(isSelected);
+
+        if (mapLayer) {
+          mapLayer.setVisible(isSelected);
+        }
+
         if (isSelected) {
           this.intervals[intervalIndex] = {
             ...this.intervals[intervalIndex],
@@ -454,6 +488,7 @@ class Timeline extends Control {
             name: intervalByYear.name,
           };
         }
+
         this.intervalsGrouped[year][layerIndex].selected = isSelected;
       });
     };
@@ -517,6 +552,15 @@ class Timeline extends Control {
     this.map.removeLayers(layer);
   }
 
+  setIntervalLayerVisible(interval, visible) {
+    if (interval?.service) {
+      const layer = this.getMapLayer(interval.service);
+      if (layer) {
+        layer.setVisible(visible);
+      }
+    }
+  }
+
   /** This function change layers and show layer name when slider moves
    *
    * @public
@@ -533,7 +577,7 @@ class Timeline extends Control {
     }
     const step = parseFloat(elem.value);
     this.intervals.forEach((interval) => {
-      this.getMapLayer(interval.service).setVisible(false);
+      this.setIntervalLayerVisible(interval, false);
     });
     const entireStep = parseInt(step, 10);
     const entireInterval = this.intervals[entireStep];
@@ -551,8 +595,8 @@ class Timeline extends Control {
         document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '0');
       }
     } else {
-      this.getMapLayer(entireInterval.service).setVisible(true);
-      this.getMapLayer(entireIntervalNext.service).setVisible(true);
+      this.setIntervalLayerVisible(entireInterval, true);
+      this.setIntervalLayerVisible(entireIntervalNext, true);
       if (entireInterval.tag !== '' && entireIntervalNext.tag !== '') {
         document.querySelector('.div-m-timeline-slider').style.setProperty('--left', `${left}px`);
         document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '1');
@@ -577,8 +621,8 @@ class Timeline extends Control {
    * @return {object}
    */
   getMapLayer(layerSearch) {
-    return this.map.getLayers()
-      .find((layer) => layer.getImpl().legend === layerSearch.getImpl().legend);
+    return layerSearch ? this.map.getLayers()
+      .find((layer) => layer.getImpl().legend === layerSearch.getImpl().legend) : undefined;
   }
 
   /** Returns the play button element used to init timeline process
