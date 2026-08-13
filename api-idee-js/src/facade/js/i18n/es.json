@@ -85,6 +85,7 @@
     "title": "Línea de tiempo",
     "play": "Iniciar",
     "pause": "Parar",
+    "none": "Ninguna",
     "excepcion": "La implementación usada no puede crear controles TimelineControl",
     "intervals_error": "Los intervalos no fueron definidos correctamente",
     "initValue": "Valor inicio",
