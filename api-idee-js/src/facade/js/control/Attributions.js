@@ -43,6 +43,9 @@ import * as Position from '../ui/position';
  * @property {String} [defaultAttribution] Atribución por defecto.
  * @property {String} [defaultURL] URL por defecto.
  * @property {Array.<String>} [collectionsAttributions] Colección de atribuciones.
+ * @property {Boolean} [inlineText] Indica si las atribuciones se muestran en una única línea.
+ * @property {Boolean} [translucentPanel] Establece el panel de atribuciones translucido
+ * para poder ver elementos que colisionen con el.
  * @property {Object} [vendorOptions] Opciones específicas para la implementación.
  */
 
@@ -68,6 +71,10 @@ import * as Position from '../ui/position';
  * @property {String} [defaultURL_='https://www.ign.es/'] URL por defecto.
  * @property {Array.<String>} [collectionsAttributions_=[]] Colección de atribuciones,
  * se especificarán como una colección de textos.
+ * @property {Boolean} [inlineText=false] Indica si las atribuciones se muestran
+ * en una única línea.
+ * @property {Boolean} [translucentPanel=false] Establece el panel de atribuciones translucido
+ * para poder ver elementos que colisionen con el.
  *
  * @extends {IDEE.Control}
  * @api
@@ -133,6 +140,10 @@ class Attributions extends Control {
       }
       return attr;
     });
+
+    this.inlineText = isBoolean(options.inlineText) ? options.inlineText : false;
+
+    this.translucentPanel = isBoolean(options.translucentPanel) ? options.translucentPanel : false;
 
     this.on(EventType.ADDED_TO_MAP, this.onAddedToMap.bind(this));
   }
@@ -423,6 +434,7 @@ class Attributions extends Control {
       link.setAttribute('tabindex', this.order);
       const text = attrOpt.description ? attrOpt.description : `${attrOpt.name}, ${this.urlAttribute}`;
       link.innerHTML = text || '';
+      link.setAttribute('title', text || '');
       return link;
     });
     const div = document.createElement('div');

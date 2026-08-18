@@ -52,6 +52,8 @@ const selectCollapsible = document.getElementById('selectCollapsible');
 const inputOrder = document.getElementById('inputOrder');
 const inputTooltip = document.getElementById('inputTooltip');
 const inputTitle = document.getElementById('inputTitle');
+const selectInlineText = document.getElementById('selectInlineText');
+const selectTranslucentPanel = document.getElementById('selectTranslucentPanel');
 
 const create = (options) => {
   if (!map.hasControl(Attributions.NAME)) map.addControls(new Attributions(options));
@@ -81,6 +83,13 @@ const recreate = () => {
 
   if (inputTitle.value !== '') options.title = inputTitle.value;
 
+  const inlineText = selectInlineText.options[selectInlineText.selectedIndex].value;
+  if (inlineText !== '') options.inlineText = (inlineText === 'true');
+
+  const translucentPanel = selectTranslucentPanel
+    .options[selectTranslucentPanel.selectedIndex].value;
+  if (translucentPanel !== '') options.translucentPanel = (translucentPanel === 'true');
+
   create(options);
 };
 
@@ -91,6 +100,8 @@ const recreate = () => {
   inputOrder,
   inputTooltip,
   inputTitle,
+  selectInlineText,
+  selectTranslucentPanel,
 ].forEach((ctrl) => {
   ctrl.addEventListener('change', recreate);
 });
