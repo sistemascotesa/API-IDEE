@@ -74,6 +74,22 @@
                                 Título del panel del control "title"</label>
                             <input type="text" name="tooltip" id="inputTitle" list="tooltipSug" value="">
                         </div>
+                        <div>
+                            <label for="selectTranslucentPanel">Panel colapsado "translucentPanel"</label>
+                            <select name="translucentPanel" id="selectTranslucentPanel">
+                                <option value=''></option>
+                                <option value="true">true</option>
+                                <option value="false" selected="selected">false</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="selectInlineText">Panel colapsado "inlineText"</label>
+                            <select name="inlineText" id="selectInlineText">
+                                <option value=''></option>
+                                <option value="true">true</option>
+                                <option value="false" selected="selected">false</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="m-test-buttons">
                         <button name="remove control" class="m-test-button" id="removeButton">Eliminar Control</button>
@@ -140,6 +156,8 @@
                             const inputTooltip = document.getElementById('inputTooltip');
                             const inputOrder = document.getElementById('inputOrder');
                             const inputTitle = document.getElementById('inputTitle');
+                            const selectInlineText = document.getElementById('selectInlineText');
+                            const selectTranslucentPanel = document.getElementById('selectTranslucentPanel');
 
                             const create = (options) => {
                                 if (!map.hasControl(IDEE.control.Attributions.NAME))
@@ -170,6 +188,13 @@
 
                                 if (inputTitle.value !== '') options.title = inputTitle.value;
 
+                                const inlineText = selectInlineText.options[selectInlineText.selectedIndex].value;
+                                if (inlineText !== '') options.inlineText = (inlineText === 'true');
+
+                                const translucentPanel = selectTranslucentPanel
+                                    .options[selectTranslucentPanel.selectedIndex].value;
+                                if (translucentPanel !== '') options.translucentPanel = (translucentPanel === 'true');
+
                                 create(options);
                             };
 
@@ -180,6 +205,8 @@
                                 inputOrder,
                                 inputTooltip,
                                 inputTitle,
+                                selectInlineText,
+                                selectTranslucentPanel,
                             ].forEach((ctrl) => {
                                 ctrl.addEventListener('change', recreate);
                             });

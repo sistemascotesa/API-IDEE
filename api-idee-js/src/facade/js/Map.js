@@ -523,10 +523,14 @@ class Map extends Base {
         }),
         order,
       });
+      const panelClassName = [
+        'm-attributions',
+        atribucionControl.inlineText ? 'm-attributions-inline' : '',
+      ].filter(Boolean).join(' ');
       const panel = new CollapsiblePanel(Attributions.NAME, {
         collapsible: true,
         position: Position[position] || Position.LEFT,
-        className: 'm-attributions',
+        className: panelClassName,
         collapsedButtonClass: 'g-cartografia-comentarios',
         tooltip: tooltip || getValue(Attributions.NAME).title,
         order,

@@ -19,21 +19,9 @@
     gap: 10px;
 }
 
-.m-control-panel.m-attributions.opened a,
-.m-control-panel.m-attributions.opened p {
-    font-size: 12px;
-    color: #000;
-    white-space: nowrap;
-    text-decoration: none;
-    margin: 0;
-    padding: 0;
-    max-width: 500px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
+.m-control-panel.m-attributions.opened p,
 .m-control-panel.m-attributions.opened header {
+    margin: 0;
     padding: 0;
 }
 
@@ -58,6 +46,51 @@
     align-items: flex-start;
     justify-content: space-between;
     row-gap: 1rem;
+}
+
+.m-control-panel.m-attributions-translucent>.m-controls-panel {
+    background-color: color-mix(in srgb, var(--idee-color-white) 65%, transparent);
+}
+
+.m-control-panel.m-attributions-inline.opened>.m-controls-panel {
+    overflow: auto;
+}
+
+.m-control-panel.m-attributions-inline.opened>.m-controls-panel>#m-attributions-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0.25rem;
+}
+
+.m-control-panel.m-attributions-inline.opened .attributionElements {
+    display: inline;
+    white-space: nowrap;
+}
+
+.m-control-panel.m-attributions-inline.opened header>h1 {
+    display: none;
+}
+
+.m-control-panel.m-attributions-inline.opened header,
+.m-control-panel.m-attributions-inline.opened .attributionElements {
+    font-size: x-small;
+    width: fit-content;
+}
+
+.m-control-panel.m-attributions-inline.opened .attributionElements>a,
+.m-control-panel.m-attributions-inline.opened .attributionElements>p {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 500px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0 10px 0 0;
+    padding: 0;
 }
 
 .m-control-panel.m-attributions.opened .attributionElements a,
