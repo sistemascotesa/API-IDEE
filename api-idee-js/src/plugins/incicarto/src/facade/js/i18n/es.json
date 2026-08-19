@@ -84,7 +84,7 @@
   "query": "Consultar",
   "clean": "Limpiar búsqueda",
   "select_service": "Selecciona una capa",
-  "select" : "Seleccionar",
+  "select": "Seleccionar",
   "loading": "Cargando",
   "cancel": "Cancelar",
   "reload_from_view": "Recargar desde la vista",

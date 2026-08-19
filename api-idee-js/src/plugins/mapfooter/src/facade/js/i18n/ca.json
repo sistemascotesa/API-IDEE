@@ -1,0 +1,20 @@
+{
+  "exception": {
+    "impl": "La implementació usada no pot crear controls MapfooterControl"
+  },
+  "hidefooter": "Amagar peu de pàgina",
+  "showfooter": "Mostrar peu de pàgina",
+  "hide": " Amagar ",
+  "show": " Mostrar ",
+  "textHelp": {
+    "squemaTitle": "mapfooter",
+    "title": "MAPFOOTER",
+    "paragraph1": "El plugin mapfooter inserta un peu HTML sota el visor (panell inferior esquerre per defecte) amb contingut configurable (htmlCode) i fulles d'estil opcionals (cssList), habitual per avisos legals, enllaços o crèdits.",
+    "screenshot1Alt": "Visor amb el peu de pàgina plegat; el mapa aprofita l'alçada inferior",
+    "screenshot1Caption": "help-01.png",
+    "screenshot1Description": "Exemple amb el peu retingut: l'àrea cartogràfica arriba al límit inferior i el botó del panell permet mostrar-lo de nou («Mostrar peu de pàgina»).",
+    "screenshot2Alt": "Visor amb el peu de pàgina desplegat mostrant l'HTML configurat",
+    "screenshot2Caption": "help-02.png",
+    "screenshot2Description": "Amb el peu desplegat es mostra el contingut HTML i estils configurats. Useu «Amagar peu de pàgina» per ocultar el peu de pàgina."
+  }
+}

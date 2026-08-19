@@ -1,0 +1,30 @@
+{
+    "exception": {
+        "impl": "La implementació usada no pot crear controls ViewManagementControl.",
+        "impl_zoomextent": "La implementació usada no pot crear controls ZoomExtentControl.",
+        "impl_viewhistory": "La implementació usada no pot crear controls ViewHistoryControl.",
+        "impl_zoompanel": "La implementació usada no pot crear controls ZoomPanelControl.",
+        "impl_predefinedzoom": "La implementació usada no pot crear controls PredefinedZoomControl.",
+        "no_controls": "El plugin ViewManagement necessita activar com a mínim un control."
+    },
+    "textHelp": {
+        "help1": "L'extensió de gestió de la vista permet interactuar mitjançant un panell amb els controls de la vista.",
+        "help2": "L'extensió és personalitzable, pode variar entre visualitzadors.",
+        "help3": "El panell de l'extensió té diversos controls, cadascun amb les seves eines.",
+        "help4": "El primer és el control de vistes predefinides, que per defecte permet tornar a una vista per defecte",
+        "help5": "El control d'acostar la vista per rectangle. Habilita el dibuix d'un rectangle amb dos punts que fa zoom al mateix.",
+        "help6": "El control d'històric permet anar endavant i endarrera entre les diferents vistes emmagatzemades.",
+        "help7": "El control de acercar/alejar permet amb dos botons fer 'zoom in' o 'zoom out' al visualitzador.",
+        "help8": "La informació rellevant a l'extensió i la seva possible parametrització està documentada a",
+        "help9": "L'exemple d'ús dels seus paràmetres pot comprovar-se a"
+    },
+    "tooltip": "Gestió de la vista",
+    "viewhistory": "Historial",
+    "nextView": "Vista següent",
+    "previousView": "Vista anterior",
+    "predefinedzoom": "Zoom predefinit",
+    "zoomextent": "Zoom al rectangle",
+    "zoompanel": "Eines de zoom",
+    "zoomin": "Augmentar zoom",
+    "zoomout": "Disminuir zoom"
+}

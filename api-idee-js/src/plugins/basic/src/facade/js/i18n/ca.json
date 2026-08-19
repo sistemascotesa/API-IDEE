@@ -1,0 +1,12 @@
+{
+    "exception": {
+        "impl": "La implementació no pot crear controls de Basic.",
+        "invalidContent": "El contingut del plugin no és vàlid. Ha de ser una URL o el contingut d'un fitxer HTML."
+    },
+    "textHelp": {
+        "help1": "Text d'exemple 1.",
+        "help2": "Text d'exemple 2",
+        "help3": "Text d'exemple 3"
+    },
+    "tooltip": "Títol del plugin"
+}

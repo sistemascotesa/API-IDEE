@@ -23,7 +23,6 @@ const searchStates = async searchText =>{
   }
 
   outputHTMLBootstrap(matches);
-
 }
 
 
@@ -78,6 +77,7 @@ const outputHTMLBootstrap = matches =>{
               <div class="btn-group">
                 <a href="${match.url_es}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="${api-idee.static_resources.url}/imagenes/logos/spain-flag.svg"></a>
                 <a href="${match.url_en}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="${api-idee.static_resources.url}/imagenes/logos/uk-flag.svg"></a>
+                <a href="${match.url_ca}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="${api-idee.static_resources.url}/imagenes/logos/catalonia-flag.svg"></a>
                 <a href="${match.url_git}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="${api-idee.static_resources.url}/imagenes/logos/logo-github.svg"></a>
               </div>
               <small class="text-muted">${pluginVersion}</small>

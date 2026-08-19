@@ -7,6 +7,7 @@ import template from 'templates/lyrcompare';
 import { getValue } from './i18n/language';
 import dicAccesibilityButtonES from './i18n/accessibility_es';
 import dicAccesibilityButtonEN from './i18n/accessibility_en';
+import dicAccesibilityButtonCA from './i18n/accessibility_ca';
 import { transformToLayers } from './utils';
 
 // eslint-disable-next-line no-extend-native
@@ -220,7 +221,14 @@ export default class LyrCompareControl extends IDEE.Control {
       */
     this.interface = values.interface === undefined ? true : values.interface;
 
-    this.dicAccesibilityButton = (IDEE.language.getLang() === 'es') ? dicAccesibilityButtonES : dicAccesibilityButtonEN;
+    const accesibilityButton = {
+      es: dicAccesibilityButtonES,
+      en: dicAccesibilityButtonEN,
+      ca: dicAccesibilityButtonCA,
+    };
+
+    this.dicAccesibilityButton = accesibilityButton[IDEE.language.getLang()]
+      ?? dicAccesibilityButtonEN;
 
     this.fatherControl_ = fatherControl;
   }
