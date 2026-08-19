@@ -6,6 +6,7 @@ import template from 'templates/mirrorpanel';
 import { getValue } from './i18n/language';
 import dicAccesibilityButtonES from './i18n/accessibility_es';
 import dicAccesibilityButtonEN from './i18n/accessibility_en';
+import dicAccesibilityButtonCA from './i18n/accessibility_ca';
 import { getNameString } from './utils';
 
 export default class MirrorpanelControl extends IDEE.Control {
@@ -139,7 +140,14 @@ export default class MirrorpanelControl extends IDEE.Control {
     this.lyrSelectorIds = ['mapLASelect', 'mapLBSelect', 'mapLCSelect', 'mapLDSelect'];
     this.maps = ['A', 'B', 'C', 'D'];
 
-    this.dicAccesibilityButton = (IDEE.language.getLang() === 'es') ? dicAccesibilityButtonES : dicAccesibilityButtonEN;
+    const accesibilityButton = {
+      es: dicAccesibilityButtonES,
+      en: dicAccesibilityButtonEN,
+      ca: dicAccesibilityButtonCA,
+    };
+
+    this.dicAccesibilityButton = accesibilityButton[IDEE.language.getLang()]
+      ?? dicAccesibilityButtonEN;
 
     /**
      * Enabled key functions

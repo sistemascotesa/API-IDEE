@@ -1,0 +1,20 @@
+{
+    "exception": {
+        "impl": "La implementació usada no pot crear controls StereoscopicControl"
+    },
+    "generate_3d_view": "Mode estèreo (3D)",
+    "magnify": "Magnificació:",
+    "mode_3d": "Mode estèreo (3D)",
+    "optimized": "Optimitzat",
+    "normal": "Normal",
+    "middle": "Intermedi",
+    "gray": "Groc",
+    "between": "Entrelacat",
+    "generate_3d": "Generar 3D",
+    "photograph": "Fotograma",
+    "loading": "Creant mapa 3D, si us plau esperi",
+    "noLayersAvailable": "Actualment no es detecta cap capa disponible per activar la vista 3D",
+    "activate3d": "Activar estèreo (3D)",
+    "disable3d": "Desactivar estèreo (3D)",
+    "linkGlass": "Ullera d'anaglifo"
+}

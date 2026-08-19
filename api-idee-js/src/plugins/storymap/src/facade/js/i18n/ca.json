@@ -1,0 +1,27 @@
+{
+    "exception": {
+        "impl": "La implementació no pot crear controls de StoryMap.",
+        "cobertura": "Comprovant cobertura a la zona...",
+        "nocobertura": "Aquesta capa no té cobertura en aquesta zona"
+    },
+    "textHelp": {
+        "help1": "L'extensió 'storyMap' permet interactuar mitjançant un panell de text amb el mapa d'un visualitzador",
+        "help2": "El panell de text es divideix en índex, capítols i passos de cada capítol.",
+        "help3": "La part de l'índex fa un resum dels capítols en què està dividit el 'storyMap':",
+        "help4": "Un cop entrat en un capítol, podem anar passant pels diferents passos del capítol:",
+        "help5": "Hi ha tres formes d'interactuar amb el panell del 'storyMap'.",
+        "help6": "La primera és fent 'scroll' cap avall al panell de text, això farà que es vagi passant de pas en pas:",
+        "help7": "La segona, és mitjançant els controls de 'play', pausa i velocitat. Això farà que el 'storyMap' avanci automàticament:",
+        "help8": "I la tercera és des del control de capítols i passos, els cercles més a la dreta marquen els diferents capítols i els de la dreta marquen els passos que té cada capítol:",
+        "help9": "La informació rellevant a l'extensió i la seva possible parametrització està documentada a",
+        "help10": "L'exemple d'ús dels seus paràmetres es pot comprovar a"
+    },
+    "tooltip": "Storymap",
+    "warning": "AVÍS",
+    "instructions": "Navega prement o amb el ratolí pels capítols i les seccions de l'esquerra per descobrir tot el contingut.",
+    "play": "Reproduir",
+    "pause": "Pausar",
+    "delay": "Velocitat de reproducció",
+    "chapter": "Capítol",
+    "step": "Pas"
+}

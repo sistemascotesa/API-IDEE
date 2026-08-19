@@ -35,7 +35,12 @@
       "type": "simple",
       "name": "url_en",
       "position": 6
-    }]
+    }, {
+      "type": "simple",
+      "name": "url_ca",
+      "position": 7
+    }
+  ]
   }],
   "files": {
     "ol": {

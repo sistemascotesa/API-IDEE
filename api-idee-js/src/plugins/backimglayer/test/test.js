@@ -2,8 +2,9 @@
 /* eslint-disable no-unused-vars,max-len */
 import BackImgLayer from 'facade/backimglayer';
 
-IDEE.language.setLang('es');
-// IDEE.language.setLang('en');
+const urlParams = new URLSearchParams(window.location.search);
+const language = urlParams.get('language') ?? 'es';
+IDEE.language.setLang(language);
 
 // const wmstTestLayer0 = new IDEE.layer.WMTS({url: 'https://www.ign.es/wmts/pnoa-ma?', name: 'OI.OrthoimageCoverage', matrixSet: 'GoogleMapsCompatible', legend: 'Imagen', isBase: false, displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/jpeg', minZoom: 5, maxZoom: 10}); // NO BASE
 // const wmstTestLayer0 = new IDEE.layer.WMTS({url: 'https://www.ign.es/wmts/pnoa-ma?', name: 'OI.OrthoimageCoverage', matrixSet: 'GoogleMapsCompatible', legend: 'Imagen', isBase: true, displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/jpeg', minZoom: 5, maxZoom: 10}); // BASE

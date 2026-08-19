@@ -1,0 +1,18 @@
+{
+    "textHelp": {
+        "help1": "Mapes i cartografia de l'Institut Geogràfic Nacional i el Sistema Cartogràfic Nacional utilitzats com a capes de fons.",
+        "help2": "Mostra una sèrie de capes preconfigurades. Es tracta de serveis WMTS amb molt bon rendiment en la visualització i que estan disponibles com a capa base per a tot el territori nacional.",
+        "help3": "Mapa. Servei Mapa Ràster del Sistema Cartogràfic Nacional (Mapa d'Espanya(ME) 1:2.000.000, ME 1:1.250.000, ME500 1:500.000, Mapa Provincial 1:200.000 (MP200), Mapa Topogràfic Nacional 1:50.000 (MTN50), MTN25 1:25.000).",
+        "help4": "Imatge. Servei Ortofotos màxima actualitat PNOA del Sistema Cartogràfic Nacional (Sentinel 2, Ortofotos PNOA).",
+        "help5": "Carrer. Servei Mapa Base del Sistema Cartogràfic Nacional (Carrerero Cartociudad).",
+        "help6": "Híbrid. Combinació Servei Ortofotos màxima actualitat del PNOA i Servei Mapa Base del Sistema Cartogràfic Nacional.",
+        "help7": "LiDAR. (Relleu) Servei LiDAR del Sistema Cartogràfic Nacional.",
+        "help8": "Ocupació del sòl. Servei Ocupació del sòl del Sistema Cartogràfic Nacional (SIOSE).",
+        "help9": "Mapes Històrics Cartografia corresponent a les primeres edicions del Mapa Topogràfic Nacional escala 1:50.000",
+        "help10": "La capa activa es mostra amb un requadre blau fosc. Per deixar la zona de mapa sense cap capa de fons feu clic sobre la capa activa, això farà que deixi de mostrar-se el requadre blau fosc i la capa al mapa. També podeu utilitzar l'opció 'Cap'.",
+        "help11": "Només és possible visualitzar una única capa a la vegada. Si voleu combinar més d'una d'aquestes capes, ha de carregar-se des de l'eina Capes, afegint la URL del servei o seleccionant-la entre les capes preconfigurades (s'ha disposat un apartat a tal efecte amb el nom 'Capas de Fondo'). Podeu consultar les URL per a aquests serveis, i d'altres més, al portal web de la IDEE a l'apartat",
+        "help12": "Directori de Serveis."
+    },
+    "tooltip": "Capes de fons",
+    "none": "Cap"
+}

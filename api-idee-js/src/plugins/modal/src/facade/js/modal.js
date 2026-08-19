@@ -76,15 +76,22 @@ export default class Modal extends IDEE.Plugin {
     if (!IDEE.utils.isUndefined(options.content)) {
       this.content_ = options.content;
     } else if (
-      !IDEE.utils.isUndefined(options.url_es) && !IDEE.utils.isUndefined(options.url_en)
+      !IDEE.utils.isUndefined(options.url_es)
+      && !IDEE.utils.isUndefined(options.url_en)
+      && !IDEE.utils.isUndefined(options.url_ca)
     ) {
-      this.url_ = IDEE.language.getLang() === 'es'
-        ? options.url_es
-        : options.url_en;
+      const urlMap = {
+        es: options.url_es,
+        en: options.url_en,
+      };
+      this.url_ = urlMap[IDEE.language.getLang()] ?? options.url_ca;
     } else {
-      this.url_ = IDEE.language.getLang() === 'es'
-        ? 'template_es'
-        : 'template_en';
+      const templateMap = {
+        es: 'template_es',
+        en: 'template_en',
+        ca: 'template_ca',
+      };
+      this.url_ = templateMap[IDEE.language.getLang()] ?? 'template_ca';
     }
 
     /**
@@ -176,8 +183,9 @@ export default class Modal extends IDEE.Plugin {
    */
   getAPIRest() {
     const URL = (this.options.helpLink && Object.keys(this.options.helpLink).length > 0)
-      ? [this.options.helpLink.es, this.options.helpLink.en] : [this.url_en, this.url_es];
-    return `${this.name}=${this.position_}*${this.collapsed}*${this.collapsible}*${URL[0]}*${URL[1]}`;
+      ? [this.options.helpLink.es, this.options.helpLink.en, this.options.helpLink.ca]
+      : [this.url_en, this.url_es, this.url_ca];
+    return `${this.name}=${this.position_}*${this.collapsed}*${this.collapsible}*${URL[0]}*${URL[1]}*${URL[2]}`;
   }
 
   /**

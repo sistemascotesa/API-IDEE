@@ -4,6 +4,7 @@
 
 import templateEN from 'templates/modal_en';
 import templateES from 'templates/modal_es';
+import templateCA from 'templates/modal_ca';
 import ModalImplControl from 'impl/modalcontrol';
 import { getValue } from './i18n/language';
 
@@ -160,6 +161,7 @@ export default class ModalControl extends IDEE.Control {
     } else if (
       this.url_ !== 'template_es'
       && this.url_ !== 'template_en'
+      && this.url_ !== 'template_ca'
     ) {
       bodyContent = `
       <iframe
@@ -168,9 +170,12 @@ export default class ModalControl extends IDEE.Control {
       </iframe>
     `;
     } else {
-      bodyContent = IDEE.language.getLang() === 'en'
-        ? templateEN
-        : templateES;
+      const bodyContentMap = {
+        en: templateEN,
+        es: templateES,
+        ca: templateCA,
+      };
+      bodyContent = bodyContentMap[IDEE.language.getLang()] ?? templateES;
     }
 
     this.getImpl().showModal(bodyContent);

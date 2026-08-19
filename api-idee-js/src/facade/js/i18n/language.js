@@ -1,14 +1,16 @@
+/* eslint-disable max-len */
 /**
  * @module IDEE/language
  */
 import en from './en';
 import es from './es';
+import ca from './ca';
 import Exception from '../exception/exception';
 
 import pluginsLanguage from './plugins';
 
 /**
- * Opciones de idiomas por defecto, (español, "es.json" o inglés, "en.json").
+ * Opciones de idiomas por defecto, (español, "es.json", en inglés "en.json" o en catalán "ca.json").
  * @public
  * @const
  * @type {object}
@@ -18,6 +20,7 @@ export const configuration = {
   translations: {
     en,
     es,
+    ca,
   },
   lang: 'es',
 };
@@ -36,6 +39,7 @@ export const addTranslation = (lang, json) => {
 
 /**
  * Esta función te devuelve todas las traducciones disponibles
+ * para acceder a los lenguages se usa el operador por ejemplo esBackimglayer
  * en la API-IDEE.
  *
  * @public
@@ -47,74 +51,32 @@ export const addTranslation = (lang, json) => {
  * @api
  */
 export const getTranslation = (lang) => {
-  if (lang === 'es') {
-    configuration.translations[lang].backimglayer = pluginsLanguage.backimglayer.esBackimglayer;
-    configuration.translations[lang].comparators = pluginsLanguage.comparators.esComparators;
-    configuration.translations[lang].contactlink = pluginsLanguage.contactlink.esContactlink;
-    configuration.translations[lang].help = pluginsLanguage.help.esHelp;
-    configuration.translations[lang].incicarto = pluginsLanguage.incicarto.esIncicarto;
-    configuration.translations[lang].infocoordinates = pluginsLanguage.infocoordinates
-      .esInfocoordinates;
-    configuration.translations[lang].information = pluginsLanguage.information.esInformation;
-    configuration.translations[lang].layerswitcher = pluginsLanguage.layerswitcher.esLayerswitcher;
-    configuration.translations[lang].mousesrs = pluginsLanguage.mousesrs.esMousesrs;
-    configuration.translations[lang].printviewmanagement = pluginsLanguage.printviewmanagement
-      .esPrintviewmanagement;
-    configuration.translations[lang].queryattributes = pluginsLanguage.queryattributes
-      .esQueryattributes;
-    // configuration.translations[lang].querydatabase = pluginsLanguage
-    // .querydatabase.esQuerydatabase;
-    configuration.translations[lang].selectionzoom = pluginsLanguage.selectionzoom.esSelectionzoom;
-    configuration.translations[lang].sharemap = pluginsLanguage.sharemap.esSharemap;
-    configuration.translations[lang].stylemanager = pluginsLanguage.stylemanager.esStylemanager;
-    configuration.translations[lang].viewmanagement = pluginsLanguage.viewmanagement
-      .esViewmanagement;
-    configuration.translations[lang].locator = pluginsLanguage.locator.esLocator;
-    configuration.translations[lang].locatorscn = pluginsLanguage.locatorscn.esLocatorscn;
-    configuration.translations[lang].vectorsmanagement = pluginsLanguage.vectorsmanagement
-      .esVectorsmanagement;
-    configuration.translations[lang].filteredsearch = pluginsLanguage.filteredsearch
-      .esFilteredsearch;
-    configuration.translations[lang].maxextzoom = pluginsLanguage.maxextzoom.esMaxextzoom;
-    configuration.translations[lang].wfstcontrols = pluginsLanguage.wfstcontrols.esWfstcontrols;
-    configuration.translations[lang].mapheader = pluginsLanguage.mapheader.esMapheader;
-    configuration.translations[lang].mapfooter = pluginsLanguage.mapfooter.esMapfooter;
-    configuration.translations[lang].magnify = pluginsLanguage.magnify.esMagnify;
-  } else if (lang === 'en') {
-    configuration.translations[lang].backimglayer = pluginsLanguage.backimglayer.enBackimglayer;
-    configuration.translations[lang].comparators = pluginsLanguage.comparators.enComparators;
-    configuration.translations[lang].contactlink = pluginsLanguage.contactlink.enContactlink;
-    configuration.translations[lang].help = pluginsLanguage.help.enHelp;
-    configuration.translations[lang].incicarto = pluginsLanguage.incicarto.enIncicarto;
-    configuration.translations[lang].infocoordinates = pluginsLanguage.infocoordinates
-      .enInfocoordinates;
-    configuration.translations[lang].information = pluginsLanguage.information.enInformation;
-    configuration.translations[lang].layerswitcher = pluginsLanguage.layerswitcher.enLayerswitcher;
-    configuration.translations[lang].mousesrs = pluginsLanguage.mousesrs.enMousesrs;
-    configuration.translations[lang].printviewmanagement = pluginsLanguage.printviewmanagement
-      .enPrintviewmanagement;
-    configuration.translations[lang].printviewmanagement = pluginsLanguage.printviewmanagement
-      .enPrintviewmanagement;
-    // configuration.translations[lang].querydatabase = pluginsLanguage
-    // .querydatabase.enQuerydatabase;
-    configuration.translations[lang].queryattributes = pluginsLanguage.queryattributes
-      .enQueryattributes;
-    configuration.translations[lang].selectionzoom = pluginsLanguage.selectionzoom.enSelectionzoom;
-    configuration.translations[lang].sharemap = pluginsLanguage.sharemap.enSharemap;
-    configuration.translations[lang].stylemanager = pluginsLanguage.stylemanager.enStylemanager;
-    configuration.translations[lang].viewmanagement = pluginsLanguage.viewmanagement
-      .enViewmanagement;
-    configuration.translations[lang].locator = pluginsLanguage.locator.enLocator;
-    configuration.translations[lang].locatorscn = pluginsLanguage.locatorscn.enLocatorscn;
-    configuration.translations[lang].vectorsmanagement = pluginsLanguage.vectorsmanagement
-      .enVectorsmanagement;
-    configuration.translations[lang].filteredsearch = pluginsLanguage.filteredsearch
-      .enFilteredsearch;
-    configuration.translations[lang].maxextzoom = pluginsLanguage.maxextzoom.enMaxextzoom;
-    configuration.translations[lang].wfstcontrols = pluginsLanguage.wfstcontrols.enWfstcontrols;
-    configuration.translations[lang].mapheader = pluginsLanguage.mapheader.enMapheader;
-    configuration.translations[lang].mapfooter = pluginsLanguage.mapfooter.enMapfooter;
-    configuration.translations[lang].magnify = pluginsLanguage.magnify.enMagnify;
+  if (lang in configuration.translations) {
+    configuration.translations[lang].backimglayer = pluginsLanguage.backimglayer[`${lang}Backimglayer`];
+    configuration.translations[lang].comparators = pluginsLanguage.comparators[`${lang}Comparators`];
+    configuration.translations[lang].contactlink = pluginsLanguage.contactlink[`${lang}Contactlink`];
+    configuration.translations[lang].help = pluginsLanguage.help[`${lang}Help`];
+    configuration.translations[lang].incicarto = pluginsLanguage.incicarto[`${lang}Incicarto`];
+    configuration.translations[lang].infocoordinates = pluginsLanguage.infocoordinates[`${lang}Infocoordinates`];
+    configuration.translations[lang].information = pluginsLanguage.information[`${lang}Information`];
+    configuration.translations[lang].layerswitcher = pluginsLanguage.layerswitcher[`${lang}Layerswitcher`];
+    configuration.translations[lang].mousesrs = pluginsLanguage.mousesrs[`${lang}Mousesrs`];
+    configuration.translations[lang].printviewmanagement = pluginsLanguage.printviewmanagement[`${lang}Printviewmanagement`];
+    configuration.translations[lang].queryattributes = pluginsLanguage.queryattributes[`${lang}Queryattributes`];
+    // configuration.translations[lang].querydatabase = pluginsLanguage.querydatabase[`${lang}Querydatabase`];
+    configuration.translations[lang].selectionzoom = pluginsLanguage.selectionzoom[`${lang}Selectionzoom`];
+    configuration.translations[lang].sharemap = pluginsLanguage.sharemap[`${lang}Sharemap`];
+    configuration.translations[lang].stylemanager = pluginsLanguage.stylemanager[`${lang}Stylemanager`];
+    configuration.translations[lang].viewmanagement = pluginsLanguage.viewmanagement[`${lang}Viewmanagement`];
+    configuration.translations[lang].locator = pluginsLanguage.locator[`${lang}Locator`];
+    configuration.translations[lang].locatorscn = pluginsLanguage.locatorscn[`${lang}Locatorscn`];
+    configuration.translations[lang].vectorsmanagement = pluginsLanguage.vectorsmanagement[`${lang}Vectorsmanagement`];
+    configuration.translations[lang].filteredsearch = pluginsLanguage.filteredsearch[`${lang}Filteredsearch`];
+    configuration.translations[lang].maxextzoom = pluginsLanguage.maxextzoom[`${lang}Maxextzoom`];
+    configuration.translations[lang].wfstcontrols = pluginsLanguage.wfstcontrols[`${lang}Wfstcontrols`];
+    configuration.translations[lang].mapheader = pluginsLanguage.mapheader[`${lang}Mapheader`];
+    configuration.translations[lang].mapfooter = pluginsLanguage.mapfooter[`${lang}Mapfooter`];
+    configuration.translations[lang].magnify = pluginsLanguage.magnify[`${lang}Magnify`];
   }
   return configuration.translations[lang];
 };

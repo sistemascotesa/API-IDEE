@@ -1,0 +1,31 @@
+{
+  "exception": {
+    "impl": "La implementació no pot crear controls de Attribution."
+  },
+  "textHelp": {
+    "help1": "A la part superior trobareu enllaços a altres visualitzadors especialitzats de l'IGN que poden ser del vostre interès.",
+    "help2": "Descàrregues CNIG.",
+    "help3": "Eina per la descàrrega gratuïta de fitxers digitals de caràcter geogràfic generats per la Direcció General de l'Institut Geogràfic Nacional (IGN).",
+    "help4": "Comparador PNOA.",
+    "help5": "Permet consultar i comparar les ortofotos de diferents anys, des de 2004 fins a l'actualitat, així com comparar aquesta informació amb altres fonts.",
+    "help6": "Visualitzador 3D.",
+    "help7": "Servei capaç de mostrar el relleu mitjançant anàglifs en 3D. Es necessiten unes ulleres anàglifos amb colors vermell i blau.",
+    "help8": "Fototeca.",
+    "help9": "Visualitzar, imprimir (en PDF) i sol·licitar certificats de fotogrames originals de vols fotogramètrics realitzats sobre Espanya.",
+    "help10": "A la part inferior hi ha un enllaç directe a les xarxes socials de l'IGN i al correu electrònic consulta@cnig.es a través del qual us podeu mantenir al dia de l'actualitat de l'IGN i contactar-nos directament.",
+    "help11": "La informació rellevant a l'extensió i la seva possible parametrització està documentada a",
+    "help12": "L'exemple d'ús dels seus paràmetres es pot comprovar a"
+  },
+  "tooltip": "Enllaços i contacte IGN",
+  "title": "Enllaços i contacte",
+  "links": {
+    "downloads": "Descàrregues CNIG",
+    "compare": "Comparador PNOA",
+    "3d": "Visualitzador 3D",
+    "photo": "Fototeca"
+  },
+  "accessibility": {
+    "webLinks": "Enllaços a pàgines web de l'IGN",
+    "socialMedia": "Enllaços a xarxes socials de l'IGN"
+  }
+}

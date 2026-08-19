@@ -116,6 +116,7 @@
             objeto.position = selectPosicion.options[selectPosicion.selectedIndex].value;
             (inputUrl_es.value != "") ? objeto.url_es = inputUrl_es.value: "https://www.ign.es/iberpix/ayuda/es.html";
             (inputUrl_en.value != "") ? objeto.url_en = inputUrl_en.value: "https://www.ign.es/iberpix/ayuda/en.html";
+            (inputUrl_en.value != "") ? objeto.url_ca = inputUrl_en.value: "https://www.ign.es/iberpix/ayuda/ca.html";
             (inputTooltip.value != "") ? objeto.tooltip = inputTooltip.value: "Más información";
             collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
             collapsed != '' ? objeto.collapsed = (collapsed === "true") : '';
@@ -132,7 +133,7 @@
 
         let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
-            position: "TR",
+            position: "right",
         });
         map.addPlugin(mp2);
 

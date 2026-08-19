@@ -37,8 +37,8 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - 'TR': (top right) - Arriba a la derecha (por defecto).
   - 'BL': (bottom left) - Abajo a la izquierda.
   - 'BR': (bottom right) - Abajo a la derecha.
-- **helpLink**: Enlace al manual de uso. Objeto formado por los atributos en y es. Por defecto: template_en y template_es.
-  - Este parámetro se puede definir también con url_en y url_es directamente. Por defecto: template_en y template_es.
+- **helpLink**: Enlace al manual de uso. Objeto formado por los atributos en y es. Por defecto: template_en, template_es o template_ca.
+  - Este parámetro se puede definir también con url_en y url_es directamente. Por defecto: template_en, template_es o template_ca.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
 - **tooltip**. Tooltip que se muestra sobre el plugin. Por defecto: Más información.

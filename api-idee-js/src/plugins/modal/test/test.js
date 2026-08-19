@@ -15,6 +15,7 @@ const createControl = (options) => {
     // eslint-disable-next-line object-property-newline
     url_en: 'template_en',
     url_es: 'template_es',
+    url_ca: 'template_ca',
     // url_en: 'https://www.ign.es/iberpix/ayuda/en.html', url_es: 'https://www.ign.es/iberpix/ayuda/es.html',
     // helpLink: { en: 'https://www.ign.es/iberpix/ayuda/en.html', es: 'https://www.ign.es/iberpix/ayuda/es.html'},
     ...options,
