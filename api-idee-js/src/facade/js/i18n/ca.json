@@ -72,7 +72,7 @@
     }
   },
   "getfeatureinfo": {
-    "title": "Consultar capa",
+    "title": "Consulteu capa",
     "info": "Informació",
     "no_info": "No hi ha informació associada",
     "info_of": "Informació de",
