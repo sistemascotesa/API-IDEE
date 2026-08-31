@@ -109,6 +109,7 @@
                         <div class="origin">
                             <label for="selectSnapMode">Modo de ajuste de acercamiento "snapMode"</label>
                             <select name="snapMode" id="selectSnapMode">
+                                <option value="" selected="selected"></option>
                                 <option value="bySpep">bySpep</option>
                                 <option value="byStepIntersection" selected="selected">byStepIntersection</option>
                             </select>
@@ -340,12 +341,12 @@
                                 options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
 
                                 if (typeTimeLine.value === 'absoluteSimple') {
-                                    if (snapMode !== '') options.snapMode = snapMode;
                                     options.intervals = inputIntervals.value !== '' ? inputIntervals.value : intervals;
                                     const animation = selectAnimation.options[selectAnimation.selectedIndex].value;
                                     if (animation !== '') options.animation = animation === 'true';
                                     if (inputSpeed.value !== '') options.speed = Number(inputSpeed.value);
                                     const snapMode = selectSnapMode.options[selectSnapMode.selectedIndex].value;
+                                    if (snapMode !== '') options.snapMode = snapMode;
                                 } else {
                                     options.intervals = elementTime.value !== '' ? elementTime.value : time;
                                     options.speedDate = elementSpeedDate.value >= 1 ? Number(elementSpeedDate.value) : 1;

@@ -176,7 +176,7 @@ const typeTimeLine = document.getElementById('typeTimeLine');
 if (typeTimeLine.value === 'absoluteSimple') {
   create({
     timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
-    snapMode: selectSnapMode.options[selectSnapMode.selectedIndex].value,
+    // snapMode: selectSnapMode.options[selectSnapMode.selectedIndex].value,
     position,
     intervals,
     title,
@@ -258,12 +258,12 @@ function changeTest() {
   options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
 
   if (typeTimeLine.value === 'absoluteSimple') {
-    if (snapMode !== '') options.snapMode = snapMode;
     options.intervals = inputIntervals.value !== '' ? inputIntervals.value : intervals;
     const animation = selectAnimation.options[selectAnimation.selectedIndex].value;
     if (animation !== '') options.animation = animation === 'true';
     if (inputSpeed.value !== '') options.speed = Number(inputSpeed.value);
     const snapMode = selectSnapMode.options[selectSnapMode.selectedIndex].value;
+    if (snapMode !== '') options.snapMode = snapMode;
   } else {
     options.intervals = elementTime.value !== '' ? elementTime.value : time;
     options.speedDate = elementSpeedDate.value >= 1 ? Number(elementSpeedDate.value) : 1;
