@@ -61,8 +61,28 @@ const EMPTY_LAYER_ID = '__timeline_empty_layer__';
  * momentos en el tiempo.
  * Soporta diferentes tipos de timeline: absoluteSimple, absolute y relative.
  *
- * @property {Array|String} intervals Intervalos de tiempo. Puede ser un array de objetos
- * con atributos [name, tag, service] o una cadena JSON parseada.
+ * @property {Array|String} intervals Intervalos temporales.
+ * Se admiten dos formatos:
+ * Formato clásico:
+ * [
+ *   [name, tag, service]
+ * ]
+ *
+ * Formato extendido:
+ * [
+ *   {
+ *     id,
+ *     init,
+ *     end,
+ *     layer,
+ *     attributeParam,
+ *     grupo,
+ *     equalsTimeLine
+ *   }
+ * ]
+ *
+ * El formato extendido puede utilizarse para cualquier timelineType.
+ * Se mantiene compatibilidad completa con el formato clásico.
  * @property {String} [position='left'] Posición del control en el mapa.
  * @property {Boolean} [collapsible=true] Indica si el control puede colapsarse.
  * @property {Boolean} [collapsed=true] Indica si el control está colapsado.
@@ -223,24 +243,37 @@ class Timeline extends Control {
      * @property {String} intervals
      */
     this.intervals = [];
+    this.intervalsGrouped = {};
+
     let rawIntervals = options.intervals;
+
     if (isString(rawIntervals)) {
       rawIntervals = JSON.parse(
-        rawIntervals.replace(/!!/g, '[').replace(/¡¡/g, ']').replace(/\u00a0/g, ' '),
+        rawIntervals
+          .replace(/!!/g, '[')
+          .replace(/¡¡/g, ']')
+          .replace(/\u00a0/g, ' '),
       );
     }
+
     if (isArray(rawIntervals)) {
-      // Dinamic TimeLine
-      if (['absolute', 'relative'].includes(this.timelineType)) {
-        this.intervals = Object.entries(rawIntervals).map(([key, values]) => {
-          const valuesNew = values;
-          const [init, end] = this.transformTime_NumbToDate(valuesNew.init, valuesNew.end);
-          valuesNew.init = init;
-          valuesNew.end = end;
-          return valuesNew;
+      this.intervals = this.normalizeIntervals(rawIntervals);
+
+      if (this.isDynamicTimeline()) {
+        this.intervals = this.intervals.map((interval) => {
+          const normalizedInterval = { ...interval };
+
+          const [init, end] = this.transformTime_NumbToDate(
+            normalizedInterval.init,
+            normalizedInterval.end,
+          );
+
+          normalizedInterval.init = init;
+          normalizedInterval.end = end;
+
+          return normalizedInterval;
         });
       } else {
-        this.intervals = rawIntervals;
         this.intervalsGrouped = this.buildGroupIntervals(this.intervals);
       }
     }
@@ -279,7 +312,7 @@ class Timeline extends Control {
   */
   createView(map) {
     return new Promise((success, fail) => {
-      const isType = ['absolute', 'relative'].includes(this.timelineType);
+      const isType = this.isDynamicTimeline();
       const template = compileSync((isType) ? timelineDinamicTemplate : timelineTemplate, {
         vars: {
           translations: {
@@ -381,6 +414,188 @@ class Timeline extends Control {
       });
     }
     super.addTo(map);
+  }
+
+  /**
+  * Indica si el timeline actual es dinámico.
+  *
+  * @private
+  * @returns {Boolean}
+  */
+  isDynamicTimeline() {
+    return ['absolute', 'relative'].includes(this.timelineType);
+  }
+
+  /**
+  * Normaliza un intervalo para timelines dinámicos.
+  *
+  * @private
+  * @param {Array|Object} interval Intervalo.
+  * @param {Number} index Índice del intervalo.
+  * @returns {Object}
+  */
+  normalizeDynamicInterval(interval, index) {
+    if (isArray(interval)) {
+      const [name, tag, service] = interval;
+
+      return {
+        id: `${index}`,
+        init: this.normalizeInitDate(tag),
+        end: this.normalizeEndDate(tag),
+        layer: service,
+        name,
+      };
+    }
+
+    if (isObject(interval)) {
+      return {
+        ...interval,
+        id: interval.id ?? `${index}`,
+      };
+    }
+
+    return interval;
+  }
+
+  /**
+  * Normaliza una fecha inicial.
+  *
+  * @private
+  * @param {String|Number} value Valor temporal.
+  * @returns {String|Number}
+  */
+  normalizeInitDate(value) {
+    if (typeof value === 'number') {
+      return new Date(value).toISOString();
+    }
+
+    if (typeof value === 'string' && /^\d{4}$/.test(value)) {
+      return `${value}-01-01T00:00:00.000Z`;
+    }
+
+    return value;
+  }
+
+  /**
+   * Normaliza una fecha final.
+   *
+   * @private
+   * @param {String|Number} value Valor temporal.
+   * @returns {String|Number}
+   */
+  normalizeEndDate(value) {
+    if (typeof value === 'number') {
+      return new Date(value).toISOString();
+    }
+
+    if (typeof value === 'string' && /^\d{4}$/.test(value)) {
+      return `${value}-12-31T23:59:59.999Z`;
+    }
+
+    return value;
+  }
+
+  /**
+  * Normaliza un intervalo para timelines simples.
+  *
+  * @private
+  * @param {Array|Object} interval Intervalo.
+  * @param {Number} index Índice del intervalo.
+  * @returns {Array}
+  */
+  normalizeSimpleInterval(interval, index) {
+    let normalizedInterval = interval;
+    if (!isArray(interval) && isObject(interval)) {
+      const {
+        id,
+        init,
+        end,
+        layer,
+        name,
+        tag,
+      } = interval;
+      normalizedInterval = [
+        name ?? this.getLayerName(layer, id ?? `${index}`),
+        tag ?? this.getIntervalTag(init, end),
+        layer,
+      ];
+    }
+
+    return normalizedInterval;
+  }
+
+  /**
+  * Normaliza los intervalos recibidos manteniendo compatibilidad
+  * con los formatos históricos y permitiendo el formato extendido
+  * para todos los tipos de Timeline.
+  *
+  * @private
+  * @param {Array} intervals Intervalos originales.
+  * @returns {Array} Intervalos normalizados.
+  */
+  normalizeIntervals(intervals = []) {
+    let normalizedInterval = [];
+    if (isArray(intervals)) {
+      if (this.isDynamicTimeline()) {
+        normalizedInterval = intervals
+          .map((interval, index) => this.normalizeDynamicInterval(interval, index));
+      } else {
+        normalizedInterval = intervals
+          .map((interval, index) => this.normalizeSimpleInterval(interval, index));
+      }
+    }
+    return normalizedInterval;
+  }
+
+  /**
+  * Obtiene un nombre representativo para una capa.
+  *
+  * @private
+  * @param {Object|String} layer Capa.
+  * @param {String} fallback Valor alternativo.
+  * @returns {String}
+  */
+  getLayerName(layer, fallback = '') {
+    if (typeof layer === 'string') {
+      if (layer.includes('*')) {
+        const [, legend] = layer.split('*');
+        return legend || fallback;
+      }
+
+      return layer;
+    }
+
+    return layer?.legend
+      ?? layer?.name
+      ?? layer?.getImpl?.()?.legend
+      ?? fallback;
+  }
+
+  /**
+  * Obtiene la etiqueta temporal de un intervalo.
+  *
+  * Para compatibilidad con absoluteSimple se utiliza preferentemente
+  * el año final del intervalo.
+  *
+  * @private
+  * @param {String|Number} init Fecha inicial.
+  * @param {String|Number} end Fecha final.
+  * @returns {String}
+  */
+  getIntervalTag(init, end) {
+    const date = end ?? init;
+
+    if (!date) {
+      return '';
+    }
+
+    const parsedDate = new Date(date);
+
+    if (!Number.isNaN(parsedDate.getTime())) {
+      return `${parsedDate.getUTCFullYear()}`;
+    }
+
+    return `${date}`;
   }
 
   /**
@@ -541,15 +756,25 @@ class Timeline extends Control {
         newLayer = this.isValidLayer(layerByName) ? layerByName : null;
       }
     } else if (layer instanceof Object) {
-      const layerByObject = this.map.getLayers().find((l) => layer.name.includes(l.name));
-      newLayer = this.isValidLayer(layerByObject) ? layerByObject : null;
+      if (this.isValidLayer(layer)) {
+        newLayer = layer;
+      } else {
+        const layerByObject = this.map.getLayers().find((l) => (
+          l === layer
+          || l.name === layer.name
+          || l.legend === layer.legend
+        ));
+
+        newLayer = this.isValidLayer(layerByObject)
+          ? layerByObject
+          : null;
+      }
     }
     if (newLayer !== null) {
       newLayer.displayInLayerSwitcher = false;
       newLayer.setVisible(false);
-      return newLayer;
     }
-    this.map.removeLayers(layer);
+    return newLayer;
   }
 
   setIntervalLayerVisible(interval, visible) {
@@ -693,7 +918,6 @@ class Timeline extends Control {
     });
   }
 
-  // ++ timeLineDinamic
   /**
    * Create TimeLine Dinamic
    *
@@ -813,12 +1037,12 @@ class Timeline extends Control {
       }
     });
 
-    [this.getElement().querySelector('#m-timelineDinamic-back'),
-      this.getElement().querySelector('#m-timelineDinamic-before')].forEach((l) => {
-      l.addEventListener('click', ({ target }) => {
-        this.evtFormatMove(target.id);
+    [this.getElement().querySelector('#m-timelineDinamic-back'), this.getElement().querySelector('#m-timelineDinamic-before')]
+      .forEach((l) => {
+        l.addEventListener('click', ({ target }) => {
+          this.evtFormatMove(target.id);
+        });
       });
-    });
   }
 
   /**
@@ -951,24 +1175,23 @@ class Timeline extends Control {
   }
 
   /**
+   * Get Layers used on TimeLine
+   *
+   * @private
+   * @function
+  */
+  getLayers() {
+    return this.map.getLayers().filter((l) => l.layerTimeLine === true);
+  }
+
+  /**
    * Remove Layer TimeLine Dinamic
    *
    * @private
    * @function
   */
   removeLayers() {
-    const removeLayers = this.map.getLayers().filter((l) => l.layerTimeLine === true);
-    this.map.removeLayers(removeLayers);
-  }
-
-  /**
-   * Get Layers TimeLine Dinamic
-   *
-   * @private
-   * @function
-  */
-  getLayerTimeLine() {
-    return this.map.getLayers().filter((l) => l.layerTimeLine === true);
+    this.map.removeLayers(this.getLayers());
   }
 
   /**
@@ -1074,7 +1297,7 @@ class Timeline extends Control {
     const initValue = Number(init);
     const endValue = Number(end);
 
-    const layersTimeLine = this.getLayerTimeLine();
+    const layersTimeLine = this.getLayers();
     this.removeLayers();
 
     layersTimeLine.forEach((l) => {
@@ -1481,7 +1704,7 @@ class Timeline extends Control {
    */
   destroy() {
     super.destroy();
-    if (['absolute', 'relative'].includes(this.timelineType)) {
+    if (this.isDynamicTimeline()) {
       this.removeLayers();
     } else {
       this.removeTimelineLayers();
