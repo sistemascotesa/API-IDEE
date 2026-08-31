@@ -1,7 +1,7 @@
 import changeNameTemplate from 'templates/changename';
-import { getValue } from './i18n/language';
-import { fiendLayerInGroup } from './groupLayers';
 import configTemplate from '../../templates/config';
+import { fiendLayerInGroup } from './groupLayers';
+import { getValue } from './i18n/language';
 import { focusModal } from './utils';
 
 /* CHANGE NAME */
@@ -112,7 +112,15 @@ export const showHideLayersEye = (evt, layer, self) => {
 
   if (evt.target.className.indexOf('m-layerswitcher-check') > -1 && selectLayer === 'eye') {
     if (evt.target.classList.contains(CLASS_CHECK)) {
-      if (layer.isBase === false || !layer.isVisible()) {
+      if (layer instanceof IDEE.layer.Section) {
+        const sectionLayers = layer.getAllLayers();
+        let isVisible = false;
+        if (sectionLayers.length > 0) {
+          isVisible = sectionLayers.some((l) => l.isVisible() === true);
+        }
+        layer.setVisible(!isVisible);
+        self.render();
+      } else if (layer.isBase === false || !layer.isVisible()) {
         layer.setVisible(!layer.isVisible());
         self.render();
       }
@@ -262,20 +270,22 @@ const showLayers = (layer) => {
 
 const showHideLayersInLayerGroup = (layer, map) => {
   const group = fiendLayerInGroup(layer, map);
-
-  if (!document.querySelector(`[data-layer-id="${group.idLayer}"]`).checked) {
-    document.querySelector(`[data-layer-id="${group.idLayer}"]`).click();
+  if (!group) {
+    return;
   }
 
-  if (group) {
-    group.getLayers().forEach((subLayer) => {
-      if (subLayer.idLayer === layer.idLayer) {
-        showLayers(subLayer);
-      } else {
-        hideLayers(subLayer);
-      }
-    });
+  const groupInput = document.querySelector(`[data-layer-id="${group.idLayer}"]`);
+  if (groupInput && !groupInput.checked) {
+    groupInput.click();
   }
+
+  group.getLayers().forEach((subLayer) => {
+    if (subLayer.idLayer === layer.idLayer) {
+      showLayers(subLayer);
+    } else {
+      hideLayers(subLayer);
+    }
+  });
 };
 
 export const showHideLayersRadio = (layer, map, target) => {

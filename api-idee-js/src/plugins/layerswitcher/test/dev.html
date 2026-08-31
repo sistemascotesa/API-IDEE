@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="idee" content="yes">
-    <title>Layerswitcher TEST</title>
+    <title>Layerswitcher TEST — Section vs Group z-order</title>
     <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
     <link href="https://componentes-desarrollo.idee.es/api-idee/plugins/information/information.ol.min.css" rel="stylesheet" />
     <link href="https://componentes-desarrollo.idee.es/api-idee/plugins/vectors/vectors.ol.min.css" rel="stylesheet" />
@@ -15,17 +15,37 @@
     <link href="http://localhost:8080/api-idee/plugins/vectors/vectors.ol.min.css" rel="stylesheet" /> -->
     <style rel="stylesheet">
         html,
-        body {
+        body,
+        #mapjs {
             margin: 0;
             padding: 0;
+            width: 100%;
             height: 100%;
             overflow: hidden;
+        }
+
+        .ls-test-hint {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            z-index: 9999;
+            max-width: 340px;
+            padding: 8px 10px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font: 12px/1.4 sans-serif;
         }
     </style>
 
 </head>
 
 <body>
+    <div class="ls-test-hint">
+        Prueba de orden: <strong>Sección externa</strong> (Provincias amarillas + Red viaria)
+        y <strong>Grupo externo</strong> (Provincias azules + Red hidrográfica).
+        Reordena capas, sección y grupo en el layerswitcher para comprobar delante/detrás.
+    </div>
     <div id="mapjs" class="container"></div>
     <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>
