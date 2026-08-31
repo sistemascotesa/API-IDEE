@@ -89,6 +89,13 @@
                 <label for="inputSpeed">Velocidad de animacion (s) "speed"</label>
                 <input type="number" min="0.2" max="5" step="0.1" name="speed" step="any" id="inputSpeed">
             </div>
+            <div class="origin">
+                <label for="selectSnapMode">Modo de ajuste de acercamiento "snapMode"</label>
+                <select name="snapMode" id="selectSnapMode">
+                    <option value="bySpep">bySpep</option>
+                    <option value="byStepIntersection" selected="selected">byStepIntersection</option>
+                </select>
+            </div>
             <div class="dynamic">
                 <label for="time">Capas disponibles "intervals"</label>
                 <input type="text" name="time" id="time">

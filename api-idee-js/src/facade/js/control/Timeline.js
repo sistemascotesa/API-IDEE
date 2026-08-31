@@ -43,6 +43,9 @@ const EMPTY_LAYER_ID = '__timeline_empty_layer__';
  * @property {String} [paramsDate] Unidad de tiempo para los pasos (posibles valores:
  * 'sec', 'min', 'hrs', 'day', 'mos', 'yr').
  * @property {Number} [stepValue] Valor del paso para la navegación temporal.
+ * @property {String} [snapMode] Activa el modo "snap" aproximación de la barra
+ * de deslizamiento en caso de ser definido, puede tener los siguientes valores
+ * 'bySpep', 'byStepIntersection'
  * @property {String} [sizeWidthDinamic] Ancho dinámico para el control.
  * Posibles valores: '', 'sizeWidthDinamic_medium' or 'sizeWidthDinamic_big'.
  * @property {String} [formatMove] Formato de movimiento: 'discrete' o 'continuous'.
@@ -101,6 +104,9 @@ const EMPTY_LAYER_ID = '__timeline_empty_layer__';
  * (posibles valores: 'sec', 'min', 'hrs', 'day', 'mos', 'yr').
  * @property {Number} [stepValue=1] Valor del paso para la navegación temporal,
  * determina el incremento en cada paso.
+ * @property {String} [snapMode] Activa el modo "snap" aproximación de la barra
+ * de deslizamiento en caso de ser definido, puede tener los siguientes valores
+ * 'bySpep', 'byStepIntersection'
  * @property {String} [sizeWidthDinamic=''] Ancho dinámico para el control,
  * permite ajustar el tamaño basado en el contenido.
  * @property {String} [formatMove='continuous'] Formato de movimiento de la animación:
@@ -218,6 +224,13 @@ class Timeline extends Control {
     this.stepValue = (options.stepValue) ? options.stepValue : 1;
 
     /**
+     *@type {'bySpep' | 'byStepIntersection'}
+     */
+    this.snapMode = options.snapMode === 'bySpep' || options.snapMode === 'byStepIntersection'
+      ? options.snapMode
+      : undefined;
+
+    /**
      *@type { String }
      */
     this.sizeWidthDinamic = (options.sizeWidthDinamic) ? options.sizeWidthDinamic : '';
@@ -313,6 +326,12 @@ class Timeline extends Control {
   createView(map) {
     return new Promise((success, fail) => {
       const isType = this.isDynamicTimeline();
+      let step = 'any';
+      if (this.snapMode === 'bySpep') {
+        step = 1;
+      } else if (this.snapMode === 'byStepIntersection') {
+        step = 0.5;
+      }
       const template = compileSync((isType) ? timelineDinamicTemplate : timelineTemplate, {
         vars: {
           translations: {
@@ -322,6 +341,9 @@ class Timeline extends Control {
             endValue: this.translation.endValue,
           },
           sizeWidthDinamic: this.sizeWidthDinamic,
+          inputRange: {
+            step,
+          },
         },
       });
       this.setElement(template);
