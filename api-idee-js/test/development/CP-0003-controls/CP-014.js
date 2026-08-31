@@ -40,6 +40,7 @@ const selectAnimation = document.getElementById('selectAnimation');
 const inputSpeed = document.getElementById('inputSpeed');
 const selectPosicion = document.getElementById('selectPosicion');
 const position = selectPosicion.options[selectPosicion.selectedIndex].value;
+const selectSnapMode = document.getElementById('selectSnapMode');
 
 const inputTooltip = document.getElementById('inputTooltip');
 const selectCollapsible = document.getElementById('selectCollapsible');
@@ -172,7 +173,15 @@ const title = inputTooltip.value;
 // Type
 const typeTimeLine = document.getElementById('typeTimeLine');
 
-if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
+if (typeTimeLine.value === 'absoluteSimple') {
+  create({
+    timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
+    // snapMode: selectSnapMode.options[selectSnapMode.selectedIndex].value,
+    position,
+    intervals,
+    title,
+  });
+} else {
   create({
     timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
     intervals: time,
@@ -184,17 +193,10 @@ if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
     sizeWidthDinamic,
     title,
   });
-} else {
-  create({
-    timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
-    position,
-    intervals,
-    title,
-  });
 }
 
 const changeTestFormsDisplay = (formValue = typeTimeLine) => {
-  const isDynamic = formValue.value === 'absolute' || formValue.value === 'relative';
+  const isDynamic = formValue.value !== 'absoluteSimple';
 
   document.querySelectorAll('.dynamic').forEach((el) => {
     el.style.display = isDynamic ? 'flex' : 'none';
@@ -219,6 +221,7 @@ const elementFormatMove = document.getElementById('formatMove');
   elementTime, elementSpeedDate, elementParamsDate, elementStepValue,
   elementSizeWidth, elementFormatValue, elementFormatMove,
   inputTooltip, selectCollapsible, selectCollapsed, inputOrder,
+  selectSnapMode,
 ].forEach((el) => { el.addEventListener('change', changeTest); });
 
 selectIntervals.addEventListener('change', () => {
@@ -252,8 +255,16 @@ function changeTest() {
 
   if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
 
-  if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
-    options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
+  options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
+
+  if (typeTimeLine.value === 'absoluteSimple') {
+    options.intervals = inputIntervals.value !== '' ? inputIntervals.value : intervals;
+    const animation = selectAnimation.options[selectAnimation.selectedIndex].value;
+    if (animation !== '') options.animation = animation === 'true';
+    if (inputSpeed.value !== '') options.speed = Number(inputSpeed.value);
+    const snapMode = selectSnapMode.options[selectSnapMode.selectedIndex].value;
+    if (snapMode !== '') options.snapMode = snapMode;
+  } else {
     options.intervals = elementTime.value !== '' ? elementTime.value : time;
     options.speedDate = elementSpeedDate.value >= 1 ? Number(elementSpeedDate.value) : 1;
     options.paramsDate = elementParamsDate.options[elementParamsDate.selectedIndex].value;
@@ -261,12 +272,6 @@ function changeTest() {
     options.sizeWidthDinamic = elementSizeWidth.options[elementSizeWidth.selectedIndex].value;
     options.formatValue = elementFormatValue.options[elementFormatValue.selectedIndex].value;
     options.formatMove = elementFormatMove.options[elementFormatMove.selectedIndex].value;
-  } else {
-    options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
-    options.intervals = inputIntervals.value !== '' ? inputIntervals.value : intervals;
-    const animation = selectAnimation.options[selectAnimation.selectedIndex].value;
-    if (animation !== '') options.animation = animation === 'true';
-    if (inputSpeed.value !== '') options.speed = Number(inputSpeed.value);
   }
   create(options);
 }
