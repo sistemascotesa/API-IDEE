@@ -1,6 +1,6 @@
 package es.api_idee.api;
 
-  // Log4J
+// Log4J
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,7 +26,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet; 
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -59,10 +59,10 @@ public class Proxy {
 	public ServletContext context_ = null;
 	private static ResourceBundle configProperties = ResourceBundle.getBundle("configuration");
 	private static final String THEME_URL = configProperties.getString("api-idee.theme.url");
-  private static final String LEGEND_ERROR = "${api-idee.static_resources.url}/imagenes/leyenda/legend-error.png";
+	private static final String LEGEND_ERROR = "${api-idee.static_resources.url}/imagenes/leyenda/legend-error.png";
 	private static final int IMAGE_MAX_BYTE_SIZE = Integer.parseInt(configProperties.getString("max.image.size"));
 
-  // Log4J
+	// Log4J
 	private static final Log LOG = LogFactory.getLog(Proxy.class);
 
 	/**
@@ -78,9 +78,9 @@ public class Proxy {
 	 */
 	@GET
 	public String proxy(@QueryParam("url") String url,
-	                    @QueryParam("ticket") String ticket,
-	                    @DefaultValue("GET") @QueryParam("method") String method,
-	                    @QueryParam("callback") String callbackFn) {
+			@QueryParam("ticket") String ticket,
+			@DefaultValue("GET") @QueryParam("method") String method,
+			@QueryParam("callback") String callbackFn) {
 		String response;
 		ProxyResponse proxyResponse;
 		try {
@@ -166,11 +166,11 @@ public class Proxy {
 		String proxPort = configProperties.getString("proxy.port");
 		String host = System.getProperty("https.proxyHost");
 		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-		
+
 		if (proxyHost.length() > 0 && proxPort.length() > 0) {
 			HttpHost proxy = new HttpHost(proxyHost, Integer.parseInt(proxPort));
 			clientBuilder = HttpClients.custom();
-  			clientBuilder.setProxy(proxy);
+			clientBuilder.setProxy(proxy);
 		} else if (host != null) {
 			Integer port = Integer.parseInt(System.getProperty("https.proxyPort"));
 			clientBuilder.useSystemProperties();
@@ -186,8 +186,7 @@ public class Proxy {
 		}
 
 		HttpClient client = clientBuilder.build();
-		String decodedUrl = URLDecoder.decode(url, "UTF-8");
-		HttpGet httpget = new HttpGet(decodedUrl);
+		HttpGet httpget = new HttpGet(url);
 
 		// sets ticket if the user specified one
 		if (ticketParameter != null) {
@@ -324,7 +323,6 @@ public class Proxy {
 		LOG.error(exception.getLocalizedMessage());
 		return error(url, exception.getLocalizedMessage());
 	}
-
 
 	/**
 	 * Gets the encoding of a response
