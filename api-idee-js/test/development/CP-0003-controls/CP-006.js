@@ -4,8 +4,7 @@ import Location from 'IDEE/control/Location';
 const map = Mmap({
   container: 'map',
   projection: 'EPSG:3857',
-  controls: ['rotate'],
-  // controls: ['location*true*false'],
+  controls: ['location', 'implementationswitcher'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
 });

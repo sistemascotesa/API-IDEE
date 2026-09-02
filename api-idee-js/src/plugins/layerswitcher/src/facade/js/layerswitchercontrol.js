@@ -1057,6 +1057,8 @@ export default class LayerswitcherControl extends IDEE.Control {
     addSuggestions.style.display = 'none';
     const url = searchInput.value.trim().split('?')[0];
     this.removeContains(evt);
+    this.capabilities = undefined;
+    this.serviceCapabilities = undefined;
     if (!IDEE.utils.isNullOrEmpty(url)) {
       if (IDEE.utils.isUrl(url)) {
         if (this.http && !this.https) {
@@ -1141,7 +1143,12 @@ export default class LayerswitcherControl extends IDEE.Control {
           } else if (url.indexOf('{z}/{x}/{y}') >= 0) {
             this.printLayerModal(url, 'xyz');
           } else {
-            const promise = new Promise((success, reject) => {
+            const urlLower = url.toLowerCase();
+            const fullUrlLower = searchInput.value.trim().toLowerCase();
+            const isWFSPath = urlLower.endsWith('/wfs') || urlLower.endsWith('/wfsserver') || fullUrlLower.includes('service=wfs');
+            const isWMSPath = urlLower.endsWith('/wms') || urlLower.endsWith('/wmsserver') || fullUrlLower.includes('service=wms');
+
+            const promise = (isWFSPath || isWMSPath) ? Promise.resolve({ text: '' }) : new Promise((success, reject) => {
               const id = setTimeout(() => reject(), 15000);
               // IDEE.proxy(this.useProxy);
               IDEE.remote.get(IDEE.utils.getWMTSGetCapabilitiesUrl(url)).then((response) => {
@@ -1164,10 +1171,6 @@ export default class LayerswitcherControl extends IDEE.Control {
                 this.capabilities = this.filterResults(layers);
                 this.showResults();
               } else {
-                const urlLower = url.toLowerCase();
-                const isWFSPath = urlLower.endsWith('/wfs') || urlLower.includes('service=wfs');
-                const isWMSPath = urlLower.endsWith('/wms') || urlLower.includes('service=wms');
-
                 const promise2 = (isWFSPath) ? Promise.resolve({ text: '' }) : new Promise((success, reject) => {
                   const id = setTimeout(() => reject(), 15000);
                   IDEE.remote.get(IDEE.utils.getWMSGetCapabilitiesUrl(url, '1.3.0')).then((response2) => {
@@ -1317,7 +1320,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     const hasPrecharged = (precharged.groups !== undefined && precharged.groups.length > 0)
       || (precharged.services !== undefined && precharged.services.length > 0);
     const codsiActive = this.codsiActive;
-    const accept = ['.kml', '.zip', '.gpx', '.geojson', '.gml', '.json', '.gpkg', '.tif', '.tiff'];
+    const accept = ['.kml', '.zip', '.gpx', '.geojson', '.gml', '.json', '.gpkg', '.tif', '.tiff', '.dxf', '.dgn'];
     const addServices = IDEE.template.compileSync(addServicesTemplate, {
       jsonp: true,
       parseToHtml: false,
@@ -1465,7 +1468,7 @@ export default class LayerswitcherControl extends IDEE.Control {
           url,
           fileName,
         );
-      } else if (['zip', 'kml', 'gpx', 'geojson', 'gml', 'json', 'gpkg'].includes(extension)) {
+      } else if (['zip', 'kml', 'gpx', 'geojson', 'gml', 'json', 'gpkg', 'dxf', 'dgn'].includes(extension)) {
         if (extension === 'zip') {
           this.downloadShp(url, fileName);
         } else {
@@ -1553,7 +1556,9 @@ export default class LayerswitcherControl extends IDEE.Control {
     const services = [];
     const formatDefault = [];
 
-    const operation = response.text.split('<ows:Operation name="GetFeature">')[1].split('</ows:Operation>')[0];
+    const text = this.normalizeWFSNamespace_(response.text);
+
+    const operation = text.split('<ows:Operation name="GetFeature">')[1].split('</ows:Operation>')[0];
     const outputFormat = operation.split('<ows:Parameter name="outputFormat">')[1].split('</ows:Parameter>')[0];
     let allowedValues = '';
     if (outputFormat.indexOf('<ows:AllowedValues>') > -1) {
@@ -1571,9 +1576,10 @@ export default class LayerswitcherControl extends IDEE.Control {
       });
     }
 
-    const defaultFormatGetFeature = formatDefault.includes('json') ? 'application/json' : formatDefault[0];
+    const jsonFormat = formatDefault.find((f) => /json/i.test(f) && !/^esri/i.test(f));
+    const defaultFormatGetFeature = jsonFormat || formatDefault[0];
 
-    const prenode = response.text.split('<FeatureTypeList>')[1].split('</FeatureTypeList>')[0];
+    const prenode = text.split('<FeatureTypeList>')[1].split('</FeatureTypeList>')[0];
     if (prenode.indexOf('<FeatureType>') > -1) {
       const nodes = prenode.split('<FeatureType>');
       nodes.forEach((node) => {
@@ -1585,10 +1591,12 @@ export default class LayerswitcherControl extends IDEE.Control {
             formats = formatNode.split('<Format>').slice(1).map((format) => format.split('</Format>')[0].trim());
           }
 
+          const finalFormats = formats.length === 0 ? [defaultFormatGetFeature] : formats;
           services.push({
             name: node.split('</Name>')[0].split('>')[1].trim(),
             title: node.split('</Title>')[0].split('<Title>')[1].trim(),
-            formats: formats.length === 0 ? [defaultFormatGetFeature] : formats,
+            formats: finalFormats,
+            format: finalFormats[0],
           });
         }
       });
@@ -1603,10 +1611,12 @@ export default class LayerswitcherControl extends IDEE.Control {
             formats = formatNode.split('<Format>').slice(1).map((format) => format.split('</Format>')[0].trim());
           }
 
+          const finalFormats = formats.length === 0 ? [defaultFormatGetFeature] : formats;
           services.push({
-            name: node.split('</Name>')[0].split('<Name>')[1].trim(),
+            name: node.split('</Name>')[0].split('>')[1].trim(),
             title: node.split('</Title>')[0].split('<Title>')[1].trim(),
-            formats: formats.length === 0 ? [defaultFormatGetFeature] : formats,
+            formats: finalFormats,
+            format: finalFormats[0],
           });
         }
       });
@@ -1615,21 +1625,21 @@ export default class LayerswitcherControl extends IDEE.Control {
     const capabilities = {};
     let hasCapabilities = false;
     try {
-      capabilities.title = response.text.split('<ows:Title>')[1].split('</ows:Title>')[0];
+      capabilities.title = text.split('<ows:Title>')[1].split('</ows:Title>')[0];
       hasCapabilities = true;
     } catch (err) {
       hasCapabilities = hasCapabilities || false;
     }
 
     try {
-      capabilities.abstract = response.text.split('<ows:Abstract>')[1].split('</ows:Abstract>')[0];
+      capabilities.abstract = text.split('<ows:Abstract>')[1].split('</ows:Abstract>')[0];
       hasCapabilities = true;
     } catch (err) {
       hasCapabilities = hasCapabilities || false;
     }
 
     try {
-      capabilities.accessConstraints = response.text.split('<ows:AccessConstraints>')[1].split('</ows:AccessConstraints>')[0];
+      capabilities.accessConstraints = text.split('<ows:AccessConstraints>')[1].split('</ows:AccessConstraints>')[0];
       hasCapabilities = true;
     } catch (err) {
       hasCapabilities = hasCapabilities || false;
@@ -1986,7 +1996,9 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   addLayersWFS(elmSelWFS) {
-    const url = document.querySelector(SEARCH_INPUT).value.trim();
+    const rawInput = document.querySelector(SEARCH_INPUT).value.trim();
+    const url = rawInput.split('?')[0];
+    const vendor = this.getWFSExtraParams_(rawInput);
     elmSelWFS.forEach((elm) => {
       const id = elm.id.split(':');
       const format = elm.getAttribute('format');
@@ -1999,6 +2011,7 @@ export default class LayerswitcherControl extends IDEE.Control {
           legend: name,
           extact: true,
           format: format || 'application/json',
+          vendor,
         };
         if (IDEE.utils.isUndefined(name)) {
           obj.name = namespace;
@@ -2009,6 +2022,34 @@ export default class LayerswitcherControl extends IDEE.Control {
         this.addLayer(obj);
       }
     });
+  }
+
+  getWFSExtraParams_(rawInput) {
+    const RESERVED_WFS_PARAMS = [
+      'service',
+      'version',
+      'request',
+      'typename',
+      'typenames',
+      'outputformat',
+      'srsname',
+      'bbox',
+      'featureid',
+      'cql_filter',
+    ];
+    const vendor = {};
+    const queryString = rawInput.split('?')[1];
+    if (!IDEE.utils.isNullOrEmpty(queryString)) {
+      queryString.split('&').forEach((pair) => {
+        if (IDEE.utils.isNullOrEmpty(pair)) return;
+        const [rawKey, rawValue = ''] = pair.split('=');
+        const key = decodeURIComponent(rawKey);
+        if (!IDEE.utils.isNullOrEmpty(key) && !RESERVED_WFS_PARAMS.includes(key.toLowerCase())) {
+          vendor[key] = decodeURIComponent(rawValue);
+        }
+      });
+    }
+    return vendor;
   }
 
   // Añade capas
@@ -2221,6 +2262,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     OGCAPIFeatures,
     namespace,
     existingLayer,
+    vendor,
   }) {
     let layer = null;
 
@@ -2321,6 +2363,10 @@ export default class LayerswitcherControl extends IDEE.Control {
       }, {
         describeFeatureTypeOutputFormat: 'geojson',
         getFeatureOutputFormat: format,
+        vendor: IDEE.utils.isNullOrEmpty(vendor) ? undefined : {
+          getFeature: vendor,
+          describeFeatureType: vendor,
+        },
       });
     } else if (existingLayer) {
       layer = existingLayer;
@@ -3112,6 +3158,14 @@ export default class LayerswitcherControl extends IDEE.Control {
       document.querySelector('#m-layerswitcher-ogcCContainer').style.display = 'none';
     }
     this.loadCODSIResults(this.select_codsi);
+  }
+
+  normalizeWFSNamespace_(xml) {
+    const taggedElements = ['FeatureTypeList', 'FeatureType', 'Name', 'Title'];
+
+    return taggedElements.reduce((normalizedXml, tagName) => normalizedXml
+      .replace(new RegExp(`<wfs:${tagName}(\\s|>)`, 'g'), `<${tagName}$1`)
+      .replace(new RegExp(`</wfs:${tagName}>`, 'g'), `</${tagName}>`), xml);
   }
 
   accessibilityTab(html) {

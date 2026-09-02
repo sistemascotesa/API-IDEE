@@ -61,8 +61,19 @@ export const getDefaultPanelOptions = (control, params) => ({
  * @api stable
  */
 export const getAttributionsPanel = (control, map, params = {}) => {
+  const className = [`m-${control.name}`];
+
+  if (control.inlineText) {
+    className.push('m-attributions-inline');
+  }
+
+  if (control.translucentPanel) {
+    className.push('m-attributions-translucent');
+  }
+
   return new CollapsiblePanel(Attributions.NAME, {
     ...getDefaultPanelOptions(control, params),
+    className: className.join(' '),
     collapsedButtonClass: 'g-cartografia-comments-simple',
   });
 };

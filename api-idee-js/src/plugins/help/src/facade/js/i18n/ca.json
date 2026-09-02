@@ -1,0 +1,32 @@
+{
+  "exception": {
+    "impl": "La implementació usada no pot crear controls HelpControl."
+  },
+  "textHelp": {
+    "help1": "Aquesta eina permet crear sobre la marxa una pàgina HTML amb l'ajuda dels plugins i controls que tinguin implementat el mètode 'getHelp' per obtenir l'ajuda de cadascun d'ells.",
+    "help2": "A més permet mostrar a l'ajuda contingut extra que afegeixi l'usuari."
+  },
+  "tooltip": "Ajuda",
+  "help": "Ajuda",
+  "short_title": "Ajuda API-IDEE",
+  "long_title": "Ajuda API-IDEE",
+  "tools": "Eines",
+  "welcome0": "Visualitzador realitzat amb l'API-IDEE",
+  "welcome1": "API CNIG és una eina que permet integrar de forma molt senzilla un visualitzador de mapes interactiu en qualsevol pàgina web i configurar-lo consumint fitxers WMC, serveis WMS, serveis WFS, fitxers KML, etc. A més, proveeix la capacitat d'afegir una gran quantitat d'eines i controls.",
+  "welcome2": "Codi API-IDEE",
+  "welcome3": "Enllaç al repositori",
+  "welcome4": "Galeria de plugins",
+  "welcome5": "Enllaç a la galeria de plugins",
+  "welcome6": "Enllaç a la Wiki de API-IDEE",
+  "welcome7": "Galeria d'exemples",
+  "welcome8": "Enllaç a la galeria d'exemples",
+  "welcome9": "Recursos Formatius",
+  "welcome10": "Enllaç als recursos formatius",
+  "tools1": "L'API-IDEE disposa d'un seguit d'eines que permeten interactuar amb la informació que s'ofereix al visualitzador:",
+  "tools2": "Els controls són les eines que inclou el mapa i que permeten treballar amb ell. Per exemple, podem tenir un control que dibuixi l'escala al mapa, un altre que ofereixi una selecció de capes base de fons del mapa, un altre que vagi mostrant les coordenades del cursor, etc.",
+  "tools3": "Els plugins o extensions són funcionalitats que ofereixen utilitats específiques que, a diferència dels controls bàsics, solen usar-se en escenaris concrets, per la qual cosa es separen del core o nucli principal de l'API per no penalitzar amb la seva descàrrega a qui no els necessiti.",
+  "tools4": "Per exemple, s'agruparien en un mateix plugin aquells controls que, encara que ofereixin funcionalitats atòmiques diferents, funcionin en grup sobre una mateixa capa vectorial. D'aquesta manera, s'optimitza la gestió de la informació i els elements comuns que comparteixen.",
+  "write": "Escriu aquí",
+  "search": "Buscar",
+  "pdf": "Descarregar en pdf"
+}

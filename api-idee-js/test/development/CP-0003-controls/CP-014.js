@@ -4,12 +4,13 @@
 /* eslint-disable no-use-before-define */
 import { map as Mmap } from 'IDEE/api-idee';
 import Timeline from 'IDEE/control/Timeline';
+import WMS from 'IDEE/layer/WMS';
 import { setLang } from '../../../src/facade/js/i18n/language';
 
-const intervals64 = 'W1siTkFDSU9OQUwgMTk4MS0xOTg2IiwiMTk4NiIsIldNUypOQUNJT05BTF8xOTgxLTE5ODYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypOQUNJT05BTF8xOTgxLTE5ODYiXSxbIk9MSVNUQVQiLCIxOTk4IiwiV01TKk9MSVNUQVQqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypPTElTVEFUIl0sWyJTSUdQQUMiLCIyMDAzIiwiV01TKlNJR1BBQypodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKlNJR1BBQyJdLFsiUE5PQSAyMDA0IiwiMjAwNCIsIldNUypwbm9hMjAwNCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDA0Il0sWyJQTk9BIDIwMDUiLCIyMDA1IiwiV01TKnBub2EyMDA1Kmh0dHBzOi8vd3d3Lmlnbi5lcy93bXMvcG5vYS1oaXN0b3JpY28qcG5vYTIwMDUiXSxbIlBOT0EgMjAwNiIsIjIwMDYiLCJXTVMqcG5vYTIwMDYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3Rvcmljbypwbm9hMjAwNiJdLFsiUE5PQSAyMDEwIiwiMjAxMCIsIldNUypwbm9hMjAxMCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDEwIl1d';
+// const intervals64 = 'W1siTkFDSU9OQUwgMTk4MS0xOTg2IiwiMTk4NiIsIldNUypOQUNJT05BTF8xOTgxLTE5ODYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypOQUNJT05BTF8xOTgxLTE5ODYiXSxbIk9MSVNUQVQiLCIxOTk4IiwiV01TKk9MSVNUQVQqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypPTElTVEFUIl0sWyJTSUdQQUMiLCIyMDAzIiwiV01TKlNJR1BBQypodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKlNJR1BBQyJdLFsiUE5PQSAyMDA0IiwiMjAwNCIsIldNUypwbm9hMjAwNCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDA0Il0sWyJQTk9BIDIwMDUiLCIyMDA1IiwiV01TKnBub2EyMDA1Kmh0dHBzOi8vd3d3Lmlnbi5lcy93bXMvcG5vYS1oaXN0b3JpY28qcG5vYTIwMDUiXSxbIlBOT0EgMjAwNiIsIjIwMDYiLCJXTVMqcG5vYTIwMDYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3Rvcmljbypwbm9hMjAwNiJdLFsiUE5PQSAyMDEwIiwiMjAxMCIsIldNUypwbm9hMjAxMCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDEwIl1d';
 
 const urlParams = new URLSearchParams(window.location.search);
-setLang('en');
+setLang(urlParams.get('language') || 'es');
 
 const map = Mmap({
   container: 'map',
@@ -39,21 +40,110 @@ const selectAnimation = document.getElementById('selectAnimation');
 const inputSpeed = document.getElementById('inputSpeed');
 const selectPosicion = document.getElementById('selectPosicion');
 const position = selectPosicion.options[selectPosicion.selectedIndex].value;
+const selectSnapMode = document.getElementById('selectSnapMode');
 
 const inputTooltip = document.getElementById('inputTooltip');
 const selectCollapsible = document.getElementById('selectCollapsible');
 const selectCollapsed = document.getElementById('selectCollapsed');
 const inputOrder = document.getElementById('inputOrder');
 
+// const intervals = [
+//   ['NACIONAL 1981-1986', '1986', 'WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986'],
+//   ['OLISTAT', '1998', 'WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT'],
+//   ['SIGPAC', '1998', 'WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC'],
+//   // ['SIGPAC', '2003', 'WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC'],
+//   ['PNOA 2004', '2004', 'WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004'],
+//   ['PNOA 2005', '2005', 'WMS*pnoa2005*https://www.ign.es/wms/pnoa-historico*pnoa2005'],
+//   ['PNOA 2006', '2006', 'WMS*pnoa2006*https://www.ign.es/wms/pnoa-historico*pnoa2006'],
+//   ['PNOA 2010', '2010', 'WMS*pnoa2010*https://www.ign.es/wms/pnoa-historico*pnoa2010'],
+// ];
+const nacional1981Layer = new WMS({
+  name: 'NACIONAL_1981-1986',
+  legend: 'NACIONAL 1981-1986',
+  url: 'https://www.ign.es/wms/pnoa-historico',
+});
+
+const olistatLayer = new WMS({
+  name: 'OLISTAT',
+  legend: 'OLISTAT',
+  url: 'https://www.ign.es/wms/pnoa-historico',
+});
+
+const sigpacLayer = new WMS({
+  name: 'SIGPAC',
+  legend: 'SIGPAC',
+  url: 'https://www.ign.es/wms/pnoa-historico',
+});
+
+const pnoa2004Layer = new WMS({
+  name: 'pnoa2004',
+  legend: 'PNOA 2004',
+  url: 'https://www.ign.es/wms/pnoa-historico',
+});
+
+const pnoa2005Layer = new WMS({
+  name: 'pnoa2005',
+  legend: 'PNOA 2005',
+  url: 'https://www.ign.es/wms/pnoa-historico',
+});
+
+const pnoa2006Layer = new WMS({
+  name: 'pnoa2006',
+  legend: 'PNOA 2006',
+  url: 'https://www.ign.es/wms/pnoa-historico',
+});
+
+const pnoa2010Layer = new WMS({
+  name: 'pnoa2010',
+  legend: 'PNOA 2010',
+  url: 'https://www.ign.es/wms/pnoa-historico',
+});
+
 const intervals = [
-  ['NACIONAL 1981-1986', '1986', 'WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986'],
-  ['OLISTAT', '1998', 'WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT'],
-  ['SIGPAC', '2003', 'WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC'],
-  ['PNOA 2004', '2004', 'WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004'],
-  ['PNOA 2005', '2005', 'WMS*pnoa2005*https://www.ign.es/wms/pnoa-historico*pnoa2005'],
-  ['PNOA 2006', '2006', 'WMS*pnoa2006*https://www.ign.es/wms/pnoa-historico*pnoa2006'],
-  ['PNOA 2010', '2010', 'WMS*pnoa2010*https://www.ign.es/wms/pnoa-historico*pnoa2010'],
+  {
+    id: '1',
+    init: '1981-01-01T00:00:00.000Z',
+    end: '1986-12-31T23:59:59.999Z',
+    layer: nacional1981Layer,
+  },
+  {
+    id: '2',
+    init: '1998-01-01T00:00:00.000Z',
+    end: '1998-12-31T23:59:59.999Z',
+    layer: olistatLayer,
+  },
+  {
+    id: '3',
+    init: '1998-01-01T00:00:00.000Z',
+    end: '1998-12-31T23:59:59.999Z',
+    layer: sigpacLayer,
+  },
+  {
+    id: '4',
+    init: '2004-01-01T00:00:00.000Z',
+    end: '2004-12-31T23:59:59.999Z',
+    layer: pnoa2004Layer,
+  },
+  {
+    id: '5',
+    init: '2005-01-01T00:00:00.000Z',
+    end: '2005-12-31T23:59:59.999Z',
+    layer: pnoa2005Layer,
+  },
+  {
+    id: '6',
+    init: '2006-01-01T00:00:00.000Z',
+    end: '2006-12-31T23:59:59.999Z',
+    layer: pnoa2006Layer,
+  },
+  {
+    id: '7',
+    init: '2010-01-01T00:00:00.000Z',
+    end: '2010-12-31T23:59:59.999Z',
+    layer: pnoa2010Layer,
+  },
 ];
+
 const time = [
   {
     id: '1',
@@ -78,10 +168,20 @@ const stepValue = 5;
 const formatValue = 'logarithmic';
 const sizeWidthDinamic = 'sizeWidthDinamic_medium';
 const formatMove = 'continuous';
+const title = inputTooltip.value;
 
 // Type
 const typeTimeLine = document.getElementById('typeTimeLine');
-if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
+
+if (typeTimeLine.value === 'absoluteSimple') {
+  create({
+    timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
+    // snapMode: selectSnapMode.options[selectSnapMode.selectedIndex].value,
+    position,
+    intervals,
+    title,
+  });
+} else {
   create({
     timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
     intervals: time,
@@ -91,17 +191,12 @@ if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
     formatMove,
     formatValue,
     sizeWidthDinamic,
-  });
-} else {
-  create({
-    timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
-    position,
-    intervals,
+    title,
   });
 }
 
 const changeTestFormsDisplay = (formValue = typeTimeLine) => {
-  const isDynamic = formValue.value === 'absolute' || formValue.value === 'relative';
+  const isDynamic = formValue.value !== 'absoluteSimple';
 
   document.querySelectorAll('.dynamic').forEach((el) => {
     el.style.display = isDynamic ? 'flex' : 'none';
@@ -126,6 +221,7 @@ const elementFormatMove = document.getElementById('formatMove');
   elementTime, elementSpeedDate, elementParamsDate, elementStepValue,
   elementSizeWidth, elementFormatValue, elementFormatMove,
   inputTooltip, selectCollapsible, selectCollapsed, inputOrder,
+  selectSnapMode,
 ].forEach((el) => { el.addEventListener('change', changeTest); });
 
 selectIntervals.addEventListener('change', () => {
@@ -159,8 +255,16 @@ function changeTest() {
 
   if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
 
-  if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
-    options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
+  options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
+
+  if (typeTimeLine.value === 'absoluteSimple') {
+    options.intervals = inputIntervals.value !== '' ? inputIntervals.value : intervals;
+    const animation = selectAnimation.options[selectAnimation.selectedIndex].value;
+    if (animation !== '') options.animation = animation === 'true';
+    if (inputSpeed.value !== '') options.speed = Number(inputSpeed.value);
+    const snapMode = selectSnapMode.options[selectSnapMode.selectedIndex].value;
+    if (snapMode !== '') options.snapMode = snapMode;
+  } else {
     options.intervals = elementTime.value !== '' ? elementTime.value : time;
     options.speedDate = elementSpeedDate.value >= 1 ? Number(elementSpeedDate.value) : 1;
     options.paramsDate = elementParamsDate.options[elementParamsDate.selectedIndex].value;
@@ -168,12 +272,6 @@ function changeTest() {
     options.sizeWidthDinamic = elementSizeWidth.options[elementSizeWidth.selectedIndex].value;
     options.formatValue = elementFormatValue.options[elementFormatValue.selectedIndex].value;
     options.formatMove = elementFormatMove.options[elementFormatMove.selectedIndex].value;
-  } else {
-    options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
-    options.intervals = inputIntervals.value !== '' ? inputIntervals.value : intervals;
-    const animation = selectAnimation.options[selectAnimation.selectedIndex].value;
-    if (animation !== '') options.animation = animation === 'true';
-    if (inputSpeed.value !== '') options.speed = Number(inputSpeed.value);
   }
   create(options);
 }

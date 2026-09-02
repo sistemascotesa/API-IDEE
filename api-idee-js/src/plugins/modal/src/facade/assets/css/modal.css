@@ -1,217 +1,204 @@
-.m-panel-modal.collapsed {
-    height: 40px;
-    width: 40px;
-}
-
-.m-modal::after,
-.m-modal::before {
-    content: none;
-}
-
-/* Help content */
-
-.m-areas>div.m-area>div.m-panel.m-panel-modal.opened div#popup-box {
-    margin: 30px 0 20px 0;
-    padding: 0 20px;
-    overflow-y: auto;
-    width: 460px;
-    max-height: 460px;
-}
-
-.m-panel-modal.opened #popup-box>div>p.popup-title {
-    background-color: #71a7d3;
-    border-radius: 5px;
-    color: white;
-    padding: 7px 10px 5px 10px;
-    font-weight: bold;
-}
-
-.m-panel-modal.opened #popup-box>div>a {
-    background-color: #b5b6b8;
-    border-radius: 5px;
-    color: white;
-    display: block;
-    margin: auto;
-    padding: 10px;
-    text-align: center;
-    text-decoration: none;
-    width: 60px;
-    font-weight: bold;
-}
-
-
-.m-areas>div.m-area>div.m-panel-modal.opened>div.m-panel-controls>div {
-    width: auto;
-    height: auto;
-}
-
-/* Icon font */
-
-@font-face {
-    font-family: 'modal';
-    src: url('../fonts/modal.eot?55776326');
-    src: url('../fonts/modal.eot?55776326#iefix') format('embedded-opentype'),
-        url('../fonts/modal.woff2?55776326') format('woff2'),
-        url('../fonts/modal.woff?55776326') format('woff'),
-        url('../fonts/modal.ttf?55776326') format('truetype'),
-        url('../fonts/modal.svg?55776326#modal') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-.m-panel-modal [class^="icon-"]:before,
-.m-panel-modal [class*=" icon-"]:before {
-    font-family: "modal";
-    font-style: normal;
-    font-weight: normal;
-    speak: none;
-    display: inline-block;
-    text-decoration: inherit;
-    width: 1em;
-    margin-right: .2em;
-    text-align: center;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1em;
-    margin-left: .2em;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-.m-panel-modal .icon-help:before {
-    content: '\e800';
-}
-
-/* modal panel */
-
-.m-modal {
-    border: 0 !important;
-}
-
-div#popup-box {
-    max-height: calc(100vh - 175px) !important;
-}
-
-/******/
-.m-modal-overlay {
-    position: absolute; /* Flota sobre el canvas */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;  
-}
-
-.m-modal-window {
-    background: #fff;
-    width: 650px;
-    max-width: 90%;
-    max-height: 85%;
-    border-radius: 4px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
-.m-modal-close {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 40px;
-    font-weight: bold;
-    color: #333;
-    cursor: pointer;
-    line-height: 1;
-    transition: color 0.2s ease;
-    user-select: none;
-}
-
-.m-modal-body {
-    padding: 26px;
-    overflow-y: auto;
-    max-height: 80vh;
-    display: flex;
-    flex-direction: column;
-}
-
-.m-modal-body:has(.m-modal-iframe) {
-    overflow: hidden;
-    padding: 6px;
-}
-
-.m-modal-iframe {
-    width: 100%;
-    height: 70vh;
-    border: none;
-    display: block;
-}
-
-.m-modal-overlay.hidden {
-    display: none;
-}
-
-#popup-box {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.popup-section {
-    border-bottom: 1px solid #eee;
-    padding-bottom: 15px;
-}
-
-.popup-section:last-child {
-    border-bottom: none;
-}
-
-.popup-section h3 {
-    color: var(--idee-color-primary-dark);
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-family: 'Roboto';
-    font-weight: 500;
-    background-color: transparent !important;
-}
-
-.popup-section p.popup-title {
-    color: black;
-    font-weight: bold;
-    font-size: 1.05rem;
-    margin-bottom: 5px;
-}
-
-.popup-section p {
-    font-size: 0.95rem;
-    line-height: 1.5;
-    color: #444;
-    margin: 5px 0;
-}
-
-.popup-section a {
-    color: var(--idee-color-links);
-    text-decoration: none;
-    transition: opacity 0.2s ease;
-}
-
-.popup-section a:hover {
-    text-decoration: underline;
-    opacity: 0.8;
-}
-
-.popup-section a:hover {
-    text-decoration: underline;
-}
-
-.m-modal-window button:hover {
-    filter: brightness(1.1);
-}
-
-.m-overviewmap-button {
-    cursor: pointer;
+@layer base {
+    .m-api-idee-map-panel .m-panel-modal.collapsed {
+        height: 40px;
+        width: 40px;
+    }
+    
+    .m-api-idee-map-panel .m-modal::after,
+    .m-api-idee-map-panel .m-modal::before {
+        content: none;
+    }
+    
+    /* Help content */
+    
+    .m-api-idee-map-panel .m-panel.m-panel-modal.opened div#popup-box {
+        margin: 30px 0 20px 0;
+        padding: 0 20px;
+        overflow-y: auto;
+        width: 460px;
+        max-height: 460px;
+    }
+    
+    .m-api-idee-map-panel .m-panel-modal.opened #popup-box>div>p.popup-title {
+        background-color: #71a7d3;
+        border-radius: 5px;
+        color: white;
+        padding: 7px 10px 5px 10px;
+        font-weight: bold;
+    }
+    
+    .m-api-idee-map-panel .m-panel-modal.opened #popup-box>div>a {
+        background-color: #b5b6b8;
+        border-radius: 5px;
+        color: white;
+        display: block;
+        margin: auto;
+        padding: 10px;
+        text-align: center;
+        text-decoration: none;
+        width: 60px;
+        font-weight: bold;
+    }
+    
+    .m-api-idee-map-panel div.m-panel-modal.opened>div.m-panel-controls>div {
+        width: auto;
+        height: auto;
+    }
+    
+    /* Icon font */
+    
+    .m-api-idee-map-panel .m-panel-modal [class^="icon-"]:before,
+    .m-api-idee-map-panel .m-panel-modal [class*=" icon-"]:before {
+        font-family: var(--idee-font-family);
+        font-style: normal;
+        font-weight: normal;
+        display: inline-block;
+        text-decoration: inherit;
+        width: 1em;
+        margin-right: .2em;
+        text-align: center;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1em;
+        margin-left: .2em;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    
+    .m-api-idee-map-panel .m-panel-modal .icon-help:before {
+        content: '\e800';
+    }
+    
+    /* modal panel */
+    
+    .m-api-idee-map-panel .m-modal {
+        border: 0 !important;
+    }
+    
+    .m-api-idee-map-panel div#popup-box {
+        max-height: calc(100vh - 175px) !important;
+    }
+    
+    .m-api-idee-map-panel .m-modal-overlay {
+        position: absolute; /* Flota sobre el canvas */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;  
+    }
+    
+    .m-api-idee-map-panel .m-modal-window {
+        background: #fff;
+        width: 650px;
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 4px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    
+    .m-api-idee-map-panel .m-modal-close {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 40px;
+        font-weight: bold;
+        color: #333;
+        cursor: pointer;
+        line-height: 1;
+        transition: color 0.2s ease;
+        user-select: none;
+    }
+    
+    .m-api-idee-map-panel .m-modal-body {
+        padding: 26px;
+        overflow-y: auto;
+        max-height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .m-api-idee-map-panel .m-modal-body:has(.m-modal-iframe) {
+        overflow: hidden;
+        padding: 6px;
+    }
+    
+    .m-api-idee-map-panel .m-modal-iframe {
+        width: 100%;
+        height: 70vh;
+        border: none;
+        display: block;
+    }
+    
+    .m-api-idee-map-panel .m-modal-overlay.hidden {
+        display: none;
+    }
+    
+    .m-api-idee-map-panel #popup-box {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .m-api-idee-map-panel .popup-section {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+    }
+    
+    .m-api-idee-map-panel .popup-section:last-child {
+        border-bottom: none;
+    }
+    
+    .m-api-idee-map-panel .popup-section h3 {
+        color: var(--idee-color-primary-dark);
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-family: 'Roboto';
+        font-weight: 500;
+        background-color: transparent !important;
+    }
+    
+    .m-api-idee-map-panel .popup-section p.popup-title {
+        color: black;
+        font-weight: bold;
+        font-size: 1.05rem;
+        margin-bottom: 5px;
+    }
+    
+    .m-api-idee-map-panel .popup-section p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: #444;
+        margin: 5px 0;
+    }
+    
+    .m-api-idee-map-panel .popup-section a {
+        color: var(--idee-color-links);
+        text-decoration: none;
+        transition: opacity 0.2s ease;
+    }
+    
+    .m-api-idee-map-panel .popup-section a:hover {
+        text-decoration: underline;
+        opacity: 0.8;
+    }
+    
+    .m-api-idee-map-panel .popup-section a:hover {
+        text-decoration: underline;
+    }
+    
+    .m-api-idee-map-panel .m-modal-window button:hover {
+        filter: brightness(1.1);
+    }
+    
+    .m-api-idee-map-panel .m-overviewmap-button {
+        cursor: pointer;
+    }
 }

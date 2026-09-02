@@ -1,0 +1,10 @@
+{
+  "tooltip": "Més informació",
+  "exception_modalcontrol": "La implementació usada no pot crear controls ModalControl",
+  "textHelp": {
+    "help1": "L'extensió modal obre una finestra dins d'un visualitzador mostrant informació rellevant al propi visualitzador.",
+    "help2": "El contingut de la finestra és personalitzable, per la qual cosa pot variar segons visualitzador. Per defecte, mostra informació sobre l'API-IDEE.",
+    "help3": "La informació rellevant a l'extensió i la seva possible parametrització està documentada a",
+    "help4": "L'exemple d'ús dels seus paràmetres es pot comprovar a"
+  }
+}

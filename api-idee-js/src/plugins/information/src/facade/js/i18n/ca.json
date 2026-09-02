@@ -1,0 +1,21 @@
+{
+    "exception": {
+        "impl": "La implementació usada no pot crear controls InformationControl."
+    },
+    "textHelp": {
+        "help1": "Proporciona informació addicional sobre els elements de les capes, sempre que el servei permeti l'operació de consulta.",
+        "help2": "S'executa per una petició d'informació al servei de mapes mitjançant l'operació getFeatureInfo. També és possible demanar informació a fitxers vectorials com .geojson o .kml",
+        "help3": "Seleccioneu l'eina i feu clic sobre l'element del qual voleu conèixer més informació. Al panel apareixeran les capes que tinguin informació al punt.",
+        "help4": "Utilitzeu la fletxa per desplegar tota la informació disponible de cada capa.",
+        "help5": "Si no hi ha capes consultables, en fer clic al mapa apareix el següent missatge informatiu.",
+        "help6": "La informació rellevant a l'extensió i la seva possible parametrització està documentada a",
+        "help7": "L'exemple d'ús dels seus paràmetres pot comprobar a"
+    },
+    "tooltip": "Consultar capes",
+    "title": "Informació",
+    "not_queryable": "No existeixen capes consultables",
+    "querying": "Obtenint informació...",
+    "unsupported_format": "Format no suportat",
+    "no_info": "No existeix informació associada",
+    "info_of": "Informació de"
+}

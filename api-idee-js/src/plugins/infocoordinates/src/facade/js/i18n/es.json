@@ -2,7 +2,8 @@
   "exception": {
     "impl": "La implementación no puede crear controles de Infocoordinates",
     "query_profile": "No se han podido consultar los datos de altitud para este punto.",
-    "srs": "El código EPSG introducido no es válido. Se usará por defecto: "
+    "srs": "El código EPSG introducido no es válido. Se usará por defecto: ",
+    "epsgResultsInvalid": "El siguiente código EPSG del parámetro 'epsgResults no es válido:"
   },
   "textHelp": {
     "help1": "Haga clic en el mapa para obtener las coordenadas de un punto en el sistema de referencia seleccionado.",

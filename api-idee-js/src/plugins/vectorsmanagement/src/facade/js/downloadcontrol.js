@@ -97,12 +97,24 @@ export default class DownloadControl extends IDEE.Control {
    * @api
    */
   downloadLayer() {
-    const noTextLayer = this.newNoTextLayer();
-    if (noTextLayer.getFeatures().length > 0) {
-      noTextLayer.setVisible(false);
-      this.map_.addLayers(noTextLayer);
-      const geojsonLayer = noTextLayer.toGeoJSON();
-      this.map_.removeLayers(noTextLayer);
+    const featuresGeoJson = [];
+    const textFeatures = [];
+    this.layer_.getFeatures().forEach((feature) => {
+      const style = feature.getStyle();
+      if (!style || style.get('label') === undefined) {
+        featuresGeoJson.push(feature.getGeoJSON());
+      } else {
+        textFeatures.push(feature);
+      }
+    });
+
+    if (featuresGeoJson.length > 0 || textFeatures.length > 0) {
+      const nonTextConverted = IDEE.impl.utils.geojsonTo4326(
+        featuresGeoJson,
+        this.map_.getProjection().code,
+      );
+      const textConverted = this.getTextFeaturesGeoJSON(textFeatures);
+      const geojsonLayer = { type: 'FeatureCollection', features: [...nonTextConverted, ...textConverted] };
       this.download(geojsonLayer);
     } else {
       IDEE.dialog.info(getValue('exception.emptylayer'));
@@ -119,17 +131,46 @@ export default class DownloadControl extends IDEE.Control {
     const features = this.managementControl_.getSelectedFeatures();
     if (features.length > 0) {
       const featuresGeoJson = [];
+      const textFeatures = [];
       features.forEach((f) => {
         const style = f.getStyle();
         if (!style || style.get('label') === undefined) {
           featuresGeoJson.push(f.getGeoJSON());
+        } else {
+          textFeatures.push(f);
         }
       });
-      const geojsonLayer = { type: 'FeatureCollection', features: IDEE.impl.utils.geojsonTo4326(featuresGeoJson, this.map_.getProjection().code) };
+      const nonTextConverted = IDEE.impl.utils.geojsonTo4326(
+        featuresGeoJson,
+        this.map_.getProjection().code,
+      );
+      const textConverted = this.getTextFeaturesGeoJSON(textFeatures);
+      const geojsonLayer = { type: 'FeatureCollection', features: [...nonTextConverted, ...textConverted] };
       this.download(geojsonLayer);
     } else {
       IDEE.dialog.info(getValue('exception.featuresel'));
     }
+  }
+
+  /**
+   * Converts text features to GeoJSON Point features with label properties.
+   * @public
+   * @function
+   * @api
+   * @param {Array<IDEE.Feature>} features
+   * @returns {Array}
+   */
+  getTextFeaturesGeoJSON(features) {
+    const textFeaturesGeoJson = features.map((feature) => {
+      const featureGeoJson = feature.getGeoJSON();
+      const style = feature.getStyle();
+      featureGeoJson.properties = featureGeoJson.properties || {};
+      featureGeoJson.properties.lbl_txt = style.get('label.text') || '';
+      featureGeoJson.properties.lbl_font = style.get('label.font') || '';
+      featureGeoJson.properties.lbl_clr = style.get('label.color') || '';
+      return featureGeoJson;
+    });
+    return IDEE.impl.utils.geojsonTo4326(textFeaturesGeoJson, this.map_.getProjection().code);
   }
 
   /**
@@ -191,22 +232,6 @@ export default class DownloadControl extends IDEE.Control {
     }
 
     this.managementControl_.deactive(document, 'm-vectorsmanagement-download');
-  }
-
-  /**
-   * Creates vector layer copy of selectedLayer excluding text features.
-   * @public
-   * @function
-   * @api
-   * @returns {IDEE.layer.Vector}
-   */
-  newNoTextLayer() {
-    const newLayer = new IDEE.layer.Vector({ name: 'copia' });
-    const noTextFeatures = this.layer_.getFeatures().filter((feature) => {
-      return feature.getStyle() === null || feature.getStyle().get('label') === undefined;
-    });
-    newLayer.addFeatures(noTextFeatures, false, true);
-    return newLayer;
   }
 
   /**

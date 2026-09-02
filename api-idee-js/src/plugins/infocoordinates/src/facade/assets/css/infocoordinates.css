@@ -95,7 +95,7 @@
 
 .grid-row--3col {
     display: grid;
-    grid-template-columns: 74px 74px 36px;
+    grid-template-columns: 74px 74px 40px;
     column-gap: 8px;
     align-items: center;
 }

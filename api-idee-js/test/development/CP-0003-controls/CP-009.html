@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="idee" content="yes">
-
+    <link rel="stylesheet" href="./token-vars.css">
     <title>PRUEBA DESARROLLO</title>
 </head>
 
@@ -54,8 +54,24 @@
                     Título del panel del control "title"</label>
                 <input type="text" name="tooltip" id="inputTitle" list="tooltipSug" value="">
             </div>
+            <div>
+                <label for="selectTranslucentPanel">Panel colapsado "translucentPanel"</label>
+                <select name="translucentPanel" id="selectTranslucentPanel">
+                    <option value=''></option>
+                    <option value="true">true</option>
+                    <option value="false" selected="selected">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectInlineText">Panel colapsado "inlineText"</label>
+                <select name="inlineText" id="selectInlineText">
+                    <option value=''></option>
+                    <option value="true">true</option>
+                    <option value="false" selected="selected">false</option>
+                </select>
+            </div>
         </div>
-        <div class="m-test-buttons" style="background-color: rgb(89, 114, 104);">
+        <div class="m-test-buttons">
             <button name="remove control" class="m-test-button" id="removeButton">Eliminar Control</button>
             <button name="remove osm" class="m-test-button" id="removeLayerOSM">Eliminar Capa OSM</button>
             <button name="add OSM" class="m-test-button" id="addLayerOSM">Añadir Capa OSM</button>

@@ -32,6 +32,21 @@
         "type": "simple",
         "name": "svgPath",
         "position": 4
+      },
+      {
+        "type": "number",
+        "name": "minWidthPanel",
+        "position": 5
+      },
+      {
+        "type": "number",
+        "name": "maxWidthPanel",
+        "position": 6
+      },
+      {
+        "type": "simple",
+        "name": "content",
+        "position": 7
       }
     ]
   }],

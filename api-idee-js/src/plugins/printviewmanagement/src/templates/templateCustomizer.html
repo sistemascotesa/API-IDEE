@@ -4,10 +4,10 @@
       <fieldset class="m-templateCustomizer-option template-option">
         <legend>{{translations.mapElements}}</legend>
         {{#each templateElements}}
-          <label class="d-flex">
-            <input type="checkbox" id="m-show-{{this.id}}" name="m-show-{{this.id}}" checked>
-            <span>{{this.label}}</span>
-          </label>
+        <label class="d-flex">
+          <input type="checkbox" id="m-show-{{this.id}}" name="m-show-{{this.id}}" checked>
+          <span>{{this.label}}</span>
+        </label>
         {{/each}}
       </fieldset>
 
@@ -27,7 +27,7 @@
         <legend>{{translations.layout}}</legend>
         <select id="template-layout">
           {{#each layoutOptions}}
-            <option value="{{this.value}}" {{#if default}} selected{{/if}}>{{this.label}}</option>
+          <option value="{{this.value}}" {{#if default}} selected{{/if}}>{{this.label}}</option>
           {{/each}}
         </select>
       </fieldset>
@@ -35,27 +35,24 @@
       <fieldset class="m-templateCustomizer-option template-scale">
         <legend>{{translations.scale}}</legend>
         <input type="text" id="template-scale" value="1:{{defaultScale}}">
+
+        <label class="d-flex template-scale-line">
+          <input type="checkbox" id="template-scale-line" name="m-show-scale-line" checked>
+          <span>{{translations.scaleLine}}</span>
+        </label>
       </fieldset>
-      
+
       <fieldset class="m-templateCustomizer-option template-epsg">
         <legend>{{translations.epsg}}</legend>
         <div class="m-customize-template-option m-customize-template-select-editable">
-          <input
-            type="text"
-            id="epsg-selected"
-            class="m-templateCustomizer-input-srs"
-            name="epsg-selected"
-            value="{{defaultProjection}}"
-            aria-label="{{translations.select_srs}}"
-            title="{{translations.select_srs}}"
-            tabindex="{{order}}"
-            autocomplete="off"
-            readonly="readonly"
-          />
-          <ul title="{{translations.select_srs}}" id="m-customize-template-srs-selector" class="m-templateCustomizer-srs-list">
+          <input type="text" id="epsg-selected" class="m-templateCustomizer-input-srs" name="epsg-selected"
+            value="{{defaultProjection}}" aria-label="{{translations.select_srs}}" title="{{translations.select_srs}}"
+            tabindex="{{order}}" autocomplete="off" readonly="readonly" />
+          <ul title="{{translations.select_srs}}" id="m-customize-template-srs-selector"
+            class="m-templateCustomizer-srs-list">
             <li><a href="#" value="default" tabindex="-1" disabled>{{translations.choose_create_epsg}}</a></li>
             {{#each projectionsOptions}}
-              <li><a href="#" value="{{this.codes.[0]}}">{{this.codes.[0]}}</a></li>
+            <li><a href="#" value="{{this.codes.[0]}}">{{this.codes.[0]}}</a></li>
             {{/each}}
           </ul>
         </div>
@@ -65,9 +62,21 @@
         <legend>{{translations.dpi}}</legend>
         <select id="template-dpi">
           {{#each dpiOptions}}
-            <option value="{{this}}" {{#if default}} selected{{/if}}>{{this}}</option>
+          <option value="{{this}}" {{#if default}} selected{{/if}}>{{this}}</option>
           {{/each}}
         </select>
+      </fieldset>
+
+      <fieldset class="m-templateCustomizer-option template-border-width">
+        <legend>{{translations.borderWidth}}</legend>
+        <input type="number" id="template-border-width" name="template-border-width" min="1" max="10" step="1"
+          value="{{defaultBorderWidth}}">
+      </fieldset>
+
+      <fieldset class="m-templateCustomizer-option template-margin">
+        <legend>{{translations.margin}}</legend>
+        <input type="number" id="template-margin" name="template-margin" min="0" max="50" step="1"
+          value="{{defaultMargin}}">
       </fieldset>
     </form>
     <button id="m-templateCustomizer-download-button" class="templateDownload">{{translations.apply}}</button>

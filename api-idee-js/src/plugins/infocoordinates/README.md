@@ -54,11 +54,12 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **decimalUTMcoord**: Indica el número de decimales de las coordenadas proyectadas en UTM. Por defecto: 2
 - **helpUrl**: URL a la ayuda para el icono. Por defecto: 'https://www.ign.es/'
 - **outputDownloadFormat**: Indica el formato de salida del documento que se va a descargar. Se puede elegir entre 'txt' o 'csv'. Por defecto: txt.
+- **epsgResults**: Códigos EPSG para mostrar simultáneamente las coordenadas, pero ocultará el selector CRS. Si es nulo se utilizará solamente la proyección usada en el mapa en ese momento y se habilitará el selector CRS.
 
 # API-REST
 
 ```javascript
-URL_API?infocoordinates=position*collapsed*collapsible*tooltip*decimalGEOcoord*decimalUTMcoord*helpUrl*outputDownloadFormat
+URL_API?infocoordinates=position*collapsed*collapsible*tooltip*decimalGEOcoord*decimalUTMcoord*helpUrl*outputDownloadFormat*epsgResults
 ```
 
 <table>
@@ -112,6 +113,11 @@ URL_API?infocoordinates=position*collapsed*collapsible*tooltip*decimalGEOcoord*d
     <td>txt/csv</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
+  <tr>
+    <td>epsgResults</td>
+    <td>Array de códigos EPSG</td>
+    <td>Base64 ✔️ | Separador ❌</td>
+  </tr>
 </table>
 
 
@@ -141,6 +147,7 @@ Ejemplo del constructor:
   decimalGEOcoord: 4,
   decimalUTMcoord: 4,
   helpUrl: "https://www.ign.es/",
+  epsgResults: [25831,4326,4258,3857],
 }
 ```
 
@@ -162,7 +169,8 @@ const mp = new IDEE.plugin.Infocoordinates({
   order: 0,
   tooltip: 'Información coordenadas',
   decimalGEOcoord: 4,
-  decimalUTMcoord: 2
+  decimalUTMcoord: 2,
+  epsgResults: [25831,4326,4258,3857],
 });
 
 map.addPlugin(mp);

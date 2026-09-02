@@ -1,0 +1,31 @@
+{
+  "exception": {
+    "impl": "La implementació usada no pot crear controls QueryAttributesControl.",
+    "no_data": "No hi ha dades per exportar."
+  },
+  "textHelp": {
+    "help1": "L'extensió taula d'atributs permet visualitzar les dades temàtiques d'una font de dades espacial.",
+    "help2": "A més, permet fer cerques en un atribut per un valor introduït per l'usuari, cerques per vista, per àrea, netejar els filtres i exportar les dades.",
+    "help3": "La informació rellevant a l'extensió i la seva possible parametrització està documentada a",
+    "help4": "L'exemple d'ús dels seus paràmetres pot comprovar-se a"
+  },
+  "tooltip": "Taula d'atributs",
+  "values": "Valors",
+  "attribute_table": "Taula d'atributs",
+  "clean_filters": "Netejar filtres aplicats",
+  "export": "Exportar dades",
+  "not_attributes": "No s'han trobat atributs.",
+  "close": "Tancar",
+  "filters": "Filtres",
+  "bbox": "Per vista",
+  "area": "Per àrea",
+  "csv": "CSV (només atributs)",
+  "download": "Descarregar",
+  "loading": "Carregant dades...",
+  "search": "Buscar",
+  "filter_by_bbox": "Filtrar resultats per vista actual",
+  "filter_by_area": "Filtrar resultats dibuixant geometria",
+  "show_hide": "Ocultar / Mostrar",
+  "information": "Informació",
+  "search_all_fields": "Cerca en tots els camps"
+}

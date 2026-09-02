@@ -1,0 +1,24 @@
+{
+    "exception": {
+        "impl": "La implementació usada no pot crear controls MouseSRSControl.",
+        "srs": "El codi EPSG introduït no és vàlid. S'utilitzarà per defecte: "
+    },
+    "textHelp": {
+        "help1": "Per seleccionar el sistema de coordenades, feu clic en qualsevol punt de la barra.",
+        "help2": "Els valors disponibles són:",
+        "help3": "Unitats: graus",
+        "help4": "Unitats: metres",
+        "help5": "Més informació sobre sistemes de referència a:",
+        "help6": "Segons el sistema de coordenades triat mostrarem coordenades geogràfiques en graus en format decimal o projectades en metres. També es mostra l'altura aproximada sobre el nivell del mar a Alacant.",
+        "help7": "La informació rellevant a l'extensió i la seva possible parametrització està documentada a",
+        "help8": "L'exemple d'ús dels seus paràmetres es pot comprovar a"
+    },
+    "tooltip": "Coordenades",
+    "select_srs": "Selecciona un sistema de referència",
+    "choose_create_epsg": "Afegir EPSG",
+    "placeholder_custom_epsg": "Escriu el teu EPSG",
+    "close": "Tancar",
+    "accessibility": {
+        "src": "Clic o Enter per modificar l'EPSG"
+    }
+}

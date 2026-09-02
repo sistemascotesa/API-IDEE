@@ -1,0 +1,39 @@
+{
+    "exception": {
+        "impl_clear": "La implementació usada no pot crear controls ClearFeature",
+        "impl_delete": "La implementació usada no pot crear controls DeleteFeature",
+        "impl_draw": "La implementació usada no pot crear controls DrawFeature",
+        "impl_edit": "La implementació usada no pot crear controls EditAttribute",
+        "impl_modify": "La implementació usada no pot crear controls ModifyFeature",
+        "impl_save": "La implementació usada no pot crear controls SaveFeature",
+        "WFSlayernotfound": "S'ha produït un error en carregar el plugin: No s'ha trobat cap capa WFS",
+        "errorgeometryparameter": "S'ha produït un error en carregar el plugin: No s'ha pogut assignar la geometria de la capa automàticament; cal fer-ho manualment amb el paràmetre geometry.",
+        "errorloadingplugin": "S'ha produït un error en carregar el plugin: No s'ha pogut assignar la geometria de la capa de forma manual.",
+        "noWFSlayerloaded": "Els controls ",
+        "noWFSlayerloaded1": " no es poden afegir al mapa perquè no existeix una capa WFS carregada",
+        "noloadedWFSlayer": "La capa ",
+        "noloadedWFSlayer1": " no és una capa WFS carregada",
+        "save_element_before": "Ha de desar l'element prèviament",
+        "save_element_error": "S'ha produït un error en desar: ",
+        "save_error_unauthorized": "S'ha produït un error en desar: Usuari no autoritzat"
+    },
+    "tooltip": "Eines d'edició",
+    "clear": "Netejar",
+    "delete": "Eliminar",
+    "draw": "Dibuixar",
+    "save": "Desar",
+    "edit": "Editar",
+    "modify": "Modificar",
+    "save_element_successfully": "S'ha desat correctament l'element",
+    "save_successfully": "S'ha desat correctament",
+    "textHelp": {
+        "squemaTitle": "wfstcontrols",
+        "title": "WFSTCONTROLS",
+        "paragraph1": "Aquest plugin agrupa accions d'edició transaccional sobre una capa WFS carregada al mapa: dibuixar, modificar o eliminar geometries, editar atributs, netejar canvis locals i desar al servei (segons controls configurats). Requereix capa WFS compatible i, si escau, el paràmetre geometry o detecció automàtica de tipus.",
+        "screenshot1Alt": "Icona de wfstcontrols al mapa",
+        "screenshot1Caption": "help-01.png",
+        "screenshot2Alt": "Detall del panell amb dibuixar, modificar, desar i altres accions d'edició",
+        "screenshot2Caption": "help-02.png",
+        "screenshot2Description": "Utilitzeu dibuixar o modificar sobre el mapa, editeu atributs si està actiu, premeu Desar per enviar els canvis al servei o Netejar per descartar edicions locals no desades."
+    }
+}

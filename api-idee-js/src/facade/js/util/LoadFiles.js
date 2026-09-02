@@ -28,6 +28,32 @@ export const loadFeaturesLoadFilesImpl = (map, layerName, features) => {
     const layer = new Vector({ name: layerName, legend: layerName, extract: true });
     layer.addFeatures(features);
     map.addLayers(layer);
+    features.forEach((feature) => {
+      let labelText = feature.getAttribute('lbl_txt');
+      let labelFont = feature.getAttribute('lbl_font');
+      let labelColor = feature.getAttribute('lbl_clr');
+      if (!labelText) {
+        const desc = feature.getAttribute('desc');
+        if (desc && desc.includes('lbl_txt=')) {
+          desc.split('\n').forEach((pair) => {
+            const sep = pair.indexOf('=');
+            if (sep > 0) {
+              const key = pair.substring(0, sep);
+              const val = pair.substring(sep + 1);
+              if (key === 'lbl_txt') labelText = val;
+              else if (key === 'lbl_font') labelFont = val;
+              else if (key === 'lbl_clr') labelColor = val;
+            }
+          });
+        }
+      }
+      if (labelText) {
+        feature.setStyle(new IDEE.style.Point({
+          radius: 0,
+          label: { text: labelText, font: labelFont, color: labelColor },
+        }));
+      }
+    });
     LoadFilesImpl.centerFeatures(features, map);
   }
 };
@@ -148,6 +174,8 @@ export const addFileToMap = (map, file) => {
     // Formatos compatibles con la librería de gdal
     const gdalFormats = [
       'gpkg',
+      'dxf',
+      'dgn',
     ];
 
     // Raster formats

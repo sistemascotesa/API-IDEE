@@ -14,6 +14,50 @@
                         <span id="m-infocoordinates-point" class="grid-value">--</span>
                         <button id="m-infocoordinates-buttonRemovePoint" class="secondary g-cartografia-btn-infocoordinates-removePoint" title="{{translations.removePoint}}"></button>
                     </div>
+
+                    {{#if hasEpsgResults}}
+
+                    <div class="grid-row grid-row--2col">
+                        <span class="grid-label">{{translations.altitude}}</span>
+                        <span id="m-infocoordinates-altitude" class="grid-value">--</span>
+                    </div>
+                    <div class="grid-row grid-row--2col">
+                        <input id="m-infocoordinates-buttonConversorFormat" type="checkbox" disabled>
+                        <label for="m-infocoordinates-buttonConversorFormat">{{translations.formatCoordinates}}</label>
+                    </div>
+
+                    {{#each epsgResultsTemplate}}
+                    <div class="m-infocoordinates-epsg-block">
+                        <div class="grid-row has-background m-infocoordinates-epsg-header grid-row--2col">
+                            <span class="grid-label m-infocoordinates-epsg-label">{{this.code}}</span>
+                            <span id="m-infocoordinates-datum-{{this.safeCode}}" class="grid-value">--</span>
+                        </div>
+                        {{#if this.isGeo}}
+                        <div class="grid-row grid-row--3col">
+                            <span class="grid-label">{{../translations.latitude}}</span>
+                            <span id="m-infocoordinates-latitude-{{this.safeCode}}" class="grid-value">--</span>
+                            <button class="secondary g-cartografia-btn-infocoordinates-copylatlon m-infocoordinates-copylatlon-btn" data-epsg="{{this.code}}" title="{{../translations.copyLatLon}}"></button>
+                        </div>
+                        <div class="grid-row grid-row--2col">
+                            <span class="grid-label">{{../translations.longitude}}</span>
+                            <span id="m-infocoordinates-longitude-{{this.safeCode}}" class="grid-value">--</span>
+                        </div>
+                        {{else}}
+                        <div class="grid-row grid-row--3col">
+                            <span class="grid-label">{{../translations.coordX}}</span>
+                            <span id="m-infocoordinates-coordX-{{this.safeCode}}" class="grid-value">--</span>
+                            <button class="secondary g-cartografia-btn-infocoordinates-copyxy m-infocoordinates-copyxy-btn" data-epsg="{{this.code}}" title="{{../translations.copyxy}}"></button>
+                        </div>
+                        <div class="grid-row grid-row--2col">
+                            <span class="grid-label">{{../translations.coordY}}</span>
+                            <span id="m-infocoordinates-coordY-{{this.safeCode}}" class="grid-value">--</span>
+                        </div>
+                        {{/if}}
+                    </div>
+                    {{/each}}
+
+                    {{else}}
+
                     <div class="grid-row has-background grid-row--2col">
                         <span class="grid-label">{{translations.datum}}</span>
                         <span id="m-infocoordinates-datum" class="grid-value">ETRS89</span>
@@ -82,6 +126,8 @@
                             </ul>
                         </div>
                     </div>
+
+                    {{/if}}
 
                 </div>
             </div>

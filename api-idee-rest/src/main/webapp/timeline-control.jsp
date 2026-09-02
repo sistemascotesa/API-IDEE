@@ -51,7 +51,8 @@
                         <div>
                             <label for="inputTooltip" title="Título ilustrativo que aporta información adicional">Título
                                 "tooltip"</label>
-                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
+                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug"
+                                value="Series Temporales">
                         </div>
                         <div>
                             <label for="selectCollapsed">Panel colapsado "collapsed"</label>
@@ -104,6 +105,14 @@
                         <div class="origin">
                             <label for="inputSpeed">Velocidad de animacion (s) "speed"</label>
                             <input type="number" min="0.2" max="5" step="0.1" name="speed" step="any" id="inputSpeed">
+                        </div>
+                        <div class="origin">
+                            <label for="selectSnapMode">Modo de ajuste de acercamiento "snapMode"</label>
+                            <select name="snapMode" id="selectSnapMode">
+                                <option value="" selected="selected"></option>
+                                <option value="bySpep">bySpep</option>
+                                <option value="byStepIntersection" selected="selected">byStepIntersection</option>
+                            </select>
                         </div>
                         <div class="dynamic">
                             <label for="time">Capas disponibles "intervals"</label>
@@ -207,11 +216,13 @@
                             const selectCollapsible = document.getElementById('selectCollapsible');
                             const selectCollapsed = document.getElementById('selectCollapsed');
                             const inputOrder = document.getElementById('inputOrder');
+                            const selectSnapMode = document.getElementById('selectSnapMode');
 
                             const intervals = [
                                 ['NACIONAL 1981-1986', '1986', 'WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986'],
                                 ['OLISTAT', '1998', 'WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT'],
-                                ['SIGPAC', '2003', 'WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC'],
+                                ['SIGPAC', '1998', 'WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC'],
+                                // ['SIGPAC', '2003', 'WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC'],
                                 ['PNOA 2004', '2004', 'WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004'],
                                 ['PNOA 2005', '2005', 'WMS*pnoa2005*https://www.ign.es/wms/pnoa-historico*pnoa2005'],
                                 ['PNOA 2006', '2006', 'WMS*pnoa2006*https://www.ign.es/wms/pnoa-historico*pnoa2006'],
@@ -241,10 +252,19 @@
                             const formatValue = 'logarithmic';
                             const sizeWidthDinamic = 'sizeWidthDinamic_medium';
                             const formatMove = 'continuous';
+                            const title = inputTooltip.value;
 
                             // Type
                             const typeTimeLine = document.getElementById('typeTimeLine');
-                            if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
+                            if (typeTimeLine.value === 'absoluteSimple') {
+                                create({
+                                    timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
+                                    snapMode: selectSnapMode.options[selectSnapMode.selectedIndex].value,
+                                    position,
+                                    intervals,
+                                    title,
+                                });
+                            } else {
                                 create({
                                     timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
                                     intervals: time,
@@ -254,12 +274,7 @@
                                     formatMove,
                                     formatValue,
                                     sizeWidthDinamic,
-                                });
-                            } else {
-                                create({
-                                    timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
-                                    position,
-                                    intervals,
+                                    title,
                                 });
                             }
 
@@ -289,6 +304,7 @@
                                 elementTime, elementSpeedDate, elementParamsDate, elementStepValue,
                                 elementSizeWidth, elementFormatValue, elementFormatMove,
                                 inputTooltip, selectCollapsible, selectCollapsed, inputOrder,
+                                selectSnapMode,
                             ].forEach((el) => { el.addEventListener('change', changeTest); });
 
                             selectIntervals.addEventListener('change', () => {
@@ -322,8 +338,16 @@
 
                                 if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
 
-                                if (typeTimeLine.value === 'absolute' || typeTimeLine.value === 'relative') {
-                                    options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
+                                options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
+
+                                if (typeTimeLine.value === 'absoluteSimple') {
+                                    options.intervals = inputIntervals.value !== '' ? inputIntervals.value : intervals;
+                                    const animation = selectAnimation.options[selectAnimation.selectedIndex].value;
+                                    if (animation !== '') options.animation = animation === 'true';
+                                    if (inputSpeed.value !== '') options.speed = Number(inputSpeed.value);
+                                    const snapMode = selectSnapMode.options[selectSnapMode.selectedIndex].value;
+                                    if (snapMode !== '') options.snapMode = snapMode;
+                                } else {
                                     options.intervals = elementTime.value !== '' ? elementTime.value : time;
                                     options.speedDate = elementSpeedDate.value >= 1 ? Number(elementSpeedDate.value) : 1;
                                     options.paramsDate = elementParamsDate.options[elementParamsDate.selectedIndex].value;
@@ -331,12 +355,6 @@
                                     options.sizeWidthDinamic = elementSizeWidth.options[elementSizeWidth.selectedIndex].value;
                                     options.formatValue = elementFormatValue.options[elementFormatValue.selectedIndex].value;
                                     options.formatMove = elementFormatMove.options[elementFormatMove.selectedIndex].value;
-                                } else {
-                                    options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
-                                    options.intervals = inputIntervals.value !== '' ? inputIntervals.value : intervals;
-                                    const animation = selectAnimation.options[selectAnimation.selectedIndex].value;
-                                    if (animation !== '') options.animation = animation === 'true';
-                                    if (inputSpeed.value !== '') options.speed = Number(inputSpeed.value);
                                 }
                                 create(options);
                             }

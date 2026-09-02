@@ -54,7 +54,7 @@
                         <div>
                             <label for="inputTooltip"
                                 title="Texto que se muestra al pasar el ratón sobre el botón del plugin.">Título de la herramienta "tooltip"</label>
-                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Enlaces y contacto IGN">
+                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
                             <datalist id="tooltipSug">
                                 <option value="Enlaces y contacto IGN"></option>
                             </datalist>

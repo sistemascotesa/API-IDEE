@@ -81,7 +81,7 @@ const mp = new VectorsManagement({
   // Herramientas
   help: true,
   addlayer: true,
-  selection: false, // Automaticamente desactiva "edition" y "analysis"
+  selection: true, // Si es false automaticamente desactiva "edition" y "analysis"
   creation: true,
   edition: true,
   style: true,

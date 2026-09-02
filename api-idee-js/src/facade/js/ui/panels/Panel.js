@@ -334,14 +334,13 @@ class Panel extends MObject {
   /**
    * Este método elimina los controles del panel.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
-   * @public
+   * @private
    * @function
    * @param {array<IDEE.Control>} controls Control.
    * @api
    */
   _removeControl(controlsParam) {
-    const controls = this.map.controls(controlsParam);
-    controls.forEach((control) => {
+    this.map.controls(controlsParam).forEach((control) => {
       const index = this.controls.indexOf(control);
       if (index !== -1) {
         this.controls.splice(index, 1);

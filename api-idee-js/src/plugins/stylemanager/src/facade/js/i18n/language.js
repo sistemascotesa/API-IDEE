@@ -1,5 +1,6 @@
 import en from './en';
 import es from './es';
+import ca from './ca';
 
 /**
  * Default object with es and en translate.
@@ -10,6 +11,7 @@ import es from './es';
 const translations = {
   en,
   es,
+  ca,
 };
 
 const getLang = () => {
@@ -41,10 +43,11 @@ export const addTranslation = (lang, json) => {
  * @api
  */
 export const getTranslation = (lang) => {
-  if (lang === 'es' || lang === 'en') {
+  if (lang in translations) {
     return translations[lang];
   }
-  return IDEE.language.getTranslation(lang).fulltoc;
+  const translationLang = IDEE.language.getTranslation(lang);
+  return translationLang.fulltoc ?? translationLang.stylemanager;
 };
 
 /**

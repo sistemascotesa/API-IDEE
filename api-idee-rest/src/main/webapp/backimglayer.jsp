@@ -38,8 +38,7 @@
                         </div>
                         <div>
                             <label for="inputTooltip">Título de la Herramienta "tooltip"</label>
-                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug"
-                                value="Capas de fondo">
+                            <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="">
                             <datalist id="tooltipSug">
                                 <option value="Capas de fondo"></option>
                             </datalist>
@@ -148,7 +147,7 @@
                     <% } %>
                         <script type="text/javascript">
                             const urlParams = new URLSearchParams(window.location.search);
-                            IDEE.language.setLang(urlParams.get('language') || 'es');
+                            IDEE.language.setLang(urlParams.get('language') ?? 'es');
                             const map = IDEE.map({
                                 container: 'mapjs',
                                 controls: ['rotate'],

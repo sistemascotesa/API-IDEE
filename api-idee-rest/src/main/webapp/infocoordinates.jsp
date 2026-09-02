@@ -81,6 +81,13 @@
                     <option value="csv">csv</option>
                 </select>
             </div>
+            <div>
+                <label for="inputEpsgResults" title="Códigos EPSG separados por comas para mostrar simultáneamente. Si es nulo se utiliza por defecto el EPSG del mapa y se muestra el selector CRS. Por defecto nulo">Resultados multi-EPSG "epsgResults"</label>
+                <input type="text" name="epsgResults" id="inputEpsgResults" list="epsgResultsSug">
+                <datalist id="epsgResultsSug">
+                    <option value="25831,4326,4258,3857"></option>
+                </datalist>
+            </div>
         </div>
         <div class="m-test-buttons">
             <button name="eliminar" class="m-test-button" id="botonEliminar">Eliminar Plugin</button>
@@ -124,6 +131,7 @@
         const inputDecimalGEOcoord = document.getElementById('inputDecimalGEOcoord');
         const inputDecimalUTMcoord = document.getElementById('inputDecimalUTMcoord');
         const selectOutputDownloadFormat = document.getElementById('selectOutputDownloadFormat');
+        const inputEpsgResults = document.getElementById('inputEpsgResults');
         const botonEliminar = document.getElementById('botonEliminar');
 
         [
@@ -135,6 +143,7 @@
             inputDecimalGEOcoord,
             inputDecimalUTMcoord,
             selectOutputDownloadFormat,
+            inputEpsgResults,
         ].forEach((ctrl) => ctrl.addEventListener('change', cambiarTest));
 
         botonEliminar.addEventListener('click', function () {
@@ -151,6 +160,7 @@
             objeto.decimalGEOcoord = Number(inputDecimalGEOcoord.value);
             objeto.decimalUTMcoord = Number(inputDecimalUTMcoord.value);
             objeto.outputDownloadFormat = selectOutputDownloadFormat.options[selectOutputDownloadFormat.selectedIndex].value;
+            objeto.epsgResults = inputEpsgResults.value;
 
             if (mp !== null) map.removePlugins(mp);
             crearPlugin(objeto);

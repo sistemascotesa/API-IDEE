@@ -2,7 +2,8 @@
   "exception": {
     "impl": "The implementation used cannot create Infocoordinates controls.",
     "query_profile": "The altitude data for this point could not be queried.",
-    "srs": "The EPSG code entered is not valid. Default will be used: "
+    "srs": "The EPSG code entered is not valid. Default will be used: ",
+    "epsgResultsInvalid": "The following EPSG code for the 'epsgResults' parameter is invalid:"
   },
   "textHelp": {
     "help1": "Click on the map to obtain the coordinates of a point in the selected reference system.",

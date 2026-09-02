@@ -1,0 +1,14 @@
+{
+    "exception": {
+        "impl": "El programa no pot utilitzar els controls de SelectionZoom.",
+        "formatMRE": "No s'ha especificat cap valor per als paràmetres bbox o zoom i centre.",
+        "parameterizationDeprecated": "Advertiment IDEE.plugin.selectionzoom: la definició de paràmetres establerts al plugin ha quedat obsoleta. Reviseu la nova definició: https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/",
+        "formatBBoxAndZoom": "No s'ha especificat cap valor per als paràmetres bbox o zoom."
+    },
+    "textHelp": {
+        "help1": "Permet desplaçar el mapa d'una manera ràpida a les vistes predefinides: Península, Canàries, Balears, Ceuta o Melilla.",
+        "help2": "La informació rellevant a l'extensió i la seva possible parametrització està documentada a",
+        "help3": "L'exemple d'ús dels vostres paràmetres es pot comprovar a"
+    },
+    "tooltip": "Vistes predefinides"
+}

@@ -22,6 +22,7 @@ import * as Position from '../ui/position';
 import { compileSync } from '../util/Template';
 
 const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
+const EMPTY_LAYER_ID = '__timeline_empty_layer__';
 
 /**
  * @typedef {Object} module:IDEE/control/Timeline~Options
@@ -42,6 +43,9 @@ const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
  * @property {String} [paramsDate] Unidad de tiempo para los pasos (posibles valores:
  * 'sec', 'min', 'hrs', 'day', 'mos', 'yr').
  * @property {Number} [stepValue] Valor del paso para la navegación temporal.
+ * @property {String} [snapMode] Activa el modo "snap" aproximación de la barra
+ * de deslizamiento en caso de ser definido, puede tener los siguientes valores
+ * 'bySpep', 'byStepIntersection'
  * @property {String} [sizeWidthDinamic] Ancho dinámico para el control.
  * Posibles valores: '', 'sizeWidthDinamic_medium' or 'sizeWidthDinamic_big'.
  * @property {String} [formatMove] Formato de movimiento: 'discrete' o 'continuous'.
@@ -60,8 +64,28 @@ const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
  * momentos en el tiempo.
  * Soporta diferentes tipos de timeline: absoluteSimple, absolute y relative.
  *
- * @property {Array|String} intervals Intervalos de tiempo. Puede ser un array de objetos
- * con atributos [name, tag, service] o una cadena JSON parseada.
+ * @property {Array|String} intervals Intervalos temporales.
+ * Se admiten dos formatos:
+ * Formato clásico:
+ * [
+ *   [name, tag, service]
+ * ]
+ *
+ * Formato extendido:
+ * [
+ *   {
+ *     id,
+ *     init,
+ *     end,
+ *     layer,
+ *     attributeParam,
+ *     grupo,
+ *     equalsTimeLine
+ *   }
+ * ]
+ *
+ * El formato extendido puede utilizarse para cualquier timelineType.
+ * Se mantiene compatibilidad completa con el formato clásico.
  * @property {String} [position='left'] Posición del control en el mapa.
  * @property {Boolean} [collapsible=true] Indica si el control puede colapsarse.
  * @property {Boolean} [collapsed=true] Indica si el control está colapsado.
@@ -80,6 +104,9 @@ const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
  * (posibles valores: 'sec', 'min', 'hrs', 'day', 'mos', 'yr').
  * @property {Number} [stepValue=1] Valor del paso para la navegación temporal,
  * determina el incremento en cada paso.
+ * @property {String} [snapMode] Activa el modo "snap" aproximación de la barra
+ * de deslizamiento en caso de ser definido, puede tener los siguientes valores
+ * 'bySpep', 'byStepIntersection'
  * @property {String} [sizeWidthDinamic=''] Ancho dinámico para el control,
  * permite ajustar el tamaño basado en el contenido.
  * @property {String} [formatMove='continuous'] Formato de movimiento de la animación:
@@ -197,6 +224,13 @@ class Timeline extends Control {
     this.stepValue = (options.stepValue) ? options.stepValue : 1;
 
     /**
+     *@type {'bySpep' | 'byStepIntersection'}
+     */
+    this.snapMode = options.snapMode === 'bySpep' || options.snapMode === 'byStepIntersection'
+      ? options.snapMode
+      : undefined;
+
+    /**
      *@type { String }
      */
     this.sizeWidthDinamic = (options.sizeWidthDinamic) ? options.sizeWidthDinamic : '';
@@ -222,20 +256,38 @@ class Timeline extends Control {
      * @property {String} intervals
      */
     this.intervals = [];
-    if (isString(options.intervals)) {
-      this.intervals = JSON.parse(options.intervals.replace(/!!/g, '[').replace(/¡¡/g, ']'));
-    } else if (isArray(options.intervals)) {
-      // Dinamic TimeLine
-      if (['absolute', 'relative'].includes(this.timelineType)) {
-        this.intervals = Object.entries(options.intervals).map(([key, values]) => {
-          const valuesNew = values;
-          const [init, end] = this.transformTime_NumbToDate(valuesNew.init, valuesNew.end);
-          valuesNew.init = init;
-          valuesNew.end = end;
-          return valuesNew;
+    this.intervalsGrouped = {};
+
+    let rawIntervals = options.intervals;
+
+    if (isString(rawIntervals)) {
+      rawIntervals = JSON.parse(
+        rawIntervals
+          .replace(/!!/g, '[')
+          .replace(/¡¡/g, ']')
+          .replace(/\u00a0/g, ' '),
+      );
+    }
+
+    if (isArray(rawIntervals)) {
+      this.intervals = this.normalizeIntervals(rawIntervals);
+
+      if (this.isDynamicTimeline()) {
+        this.intervals = this.intervals.map((interval) => {
+          const normalizedInterval = { ...interval };
+
+          const [init, end] = this.transformTime_NumbToDate(
+            normalizedInterval.init,
+            normalizedInterval.end,
+          );
+
+          normalizedInterval.init = init;
+          normalizedInterval.end = end;
+
+          return normalizedInterval;
         });
       } else {
-        this.intervals = options.intervals;
+        this.intervalsGrouped = this.buildGroupIntervals(this.intervals);
       }
     }
 
@@ -273,7 +325,13 @@ class Timeline extends Control {
   */
   createView(map) {
     return new Promise((success, fail) => {
-      const isType = ['absolute', 'relative'].includes(this.timelineType);
+      const isType = this.isDynamicTimeline();
+      let step = 'any';
+      if (this.snapMode === 'bySpep') {
+        step = 1;
+      } else if (this.snapMode === 'byStepIntersection') {
+        step = 0.5;
+      }
       const template = compileSync((isType) ? timelineDinamicTemplate : timelineTemplate, {
         vars: {
           translations: {
@@ -283,6 +341,9 @@ class Timeline extends Control {
             endValue: this.translation.endValue,
           },
           sizeWidthDinamic: this.sizeWidthDinamic,
+          inputRange: {
+            step,
+          },
         },
       });
       this.setElement(template);
@@ -292,17 +353,23 @@ class Timeline extends Control {
         success(this.getElement());
       } else {
         const intervals = [];
-        this.intervals.forEach((interval, k) => {
-          const layer = this.transformToLayers(interval[2]);
-          const copy = this.getMapLayer(layer);
-          if (copy !== undefined) {
-            this.map.removeLayers(copy);
-          }
-          this.map.addLayers(layer);
+        Object.entries(this.intervalsGrouped).forEach(([key, intervalsByYear], k) => {
+          const interval = intervalsByYear.find((iByYear) => iByYear.selected);
+          let layer;
+          intervalsByYear.forEach((iByYear, i) => {
+            const layerByYear = this.transformToLayers(iByYear.service);
+            if (i === 0) layer = layerByYear;
+            const copy = this.getMapLayer(layerByYear);
+            if (copy !== undefined) {
+              this.map.removeLayers(copy);
+            }
+            this.intervalsGrouped[key][i].layer = layerByYear;
+            this.map.addLayers(layerByYear);
+          });
           const iv = {
             number: k,
-            name: interval[0],
-            tag: interval[1],
+            name: interval.name,
+            tag: interval.year,
             service: layer,
           };
           intervals.push(iv);
@@ -313,6 +380,7 @@ class Timeline extends Control {
           const tag = document.createElement('div');
           if (k !== 0 && k !== this.intervals.length - 1 && k
             !== parseInt(this.intervals.length / 2, 10)) {
+            tag.dataset.tag = '';
             tag.dataset.tag = '';
           } else {
             tag.dataset.tag = interval.tag;
@@ -350,7 +418,6 @@ class Timeline extends Control {
     if (!this.timelineType || !typesTimeline.includes(this.timelineType)) {
       throw new Error('Add correct typesTimeline, (absoluteSimple', 'absolute', 'relative)');
     }
-
     if (this.timelineType === 'absolute' || this.timelineType === 'relative') {
       this.intervals = this.intervals.filter(({ layer }) => {
         if (typeof layer === 'string') {
@@ -369,6 +436,299 @@ class Timeline extends Control {
       });
     }
     super.addTo(map);
+  }
+
+  /**
+  * Indica si el timeline actual es dinámico.
+  *
+  * @private
+  * @returns {Boolean}
+  */
+  isDynamicTimeline() {
+    return ['absolute', 'relative'].includes(this.timelineType);
+  }
+
+  /**
+  * Normaliza un intervalo para timelines dinámicos.
+  *
+  * @private
+  * @param {Array|Object} interval Intervalo.
+  * @param {Number} index Índice del intervalo.
+  * @returns {Object}
+  */
+  normalizeDynamicInterval(interval, index) {
+    if (isArray(interval)) {
+      const [name, tag, service] = interval;
+
+      return {
+        id: `${index}`,
+        init: this.normalizeInitDate(tag),
+        end: this.normalizeEndDate(tag),
+        layer: service,
+        name,
+      };
+    }
+
+    if (isObject(interval)) {
+      return {
+        ...interval,
+        id: interval.id ?? `${index}`,
+      };
+    }
+
+    return interval;
+  }
+
+  /**
+  * Normaliza una fecha inicial.
+  *
+  * @private
+  * @param {String|Number} value Valor temporal.
+  * @returns {String|Number}
+  */
+  normalizeInitDate(value) {
+    if (typeof value === 'number') {
+      return new Date(value).toISOString();
+    }
+
+    if (typeof value === 'string' && /^\d{4}$/.test(value)) {
+      return `${value}-01-01T00:00:00.000Z`;
+    }
+
+    return value;
+  }
+
+  /**
+   * Normaliza una fecha final.
+   *
+   * @private
+   * @param {String|Number} value Valor temporal.
+   * @returns {String|Number}
+   */
+  normalizeEndDate(value) {
+    if (typeof value === 'number') {
+      return new Date(value).toISOString();
+    }
+
+    if (typeof value === 'string' && /^\d{4}$/.test(value)) {
+      return `${value}-12-31T23:59:59.999Z`;
+    }
+
+    return value;
+  }
+
+  /**
+  * Normaliza un intervalo para timelines simples.
+  *
+  * @private
+  * @param {Array|Object} interval Intervalo.
+  * @param {Number} index Índice del intervalo.
+  * @returns {Array}
+  */
+  normalizeSimpleInterval(interval, index) {
+    let normalizedInterval = interval;
+    if (!isArray(interval) && isObject(interval)) {
+      const {
+        id,
+        init,
+        end,
+        layer,
+        name,
+        tag,
+      } = interval;
+      normalizedInterval = [
+        name ?? this.getLayerName(layer, id ?? `${index}`),
+        tag ?? this.getIntervalTag(init, end),
+        layer,
+      ];
+    }
+
+    return normalizedInterval;
+  }
+
+  /**
+  * Normaliza los intervalos recibidos manteniendo compatibilidad
+  * con los formatos históricos y permitiendo el formato extendido
+  * para todos los tipos de Timeline.
+  *
+  * @private
+  * @param {Array} intervals Intervalos originales.
+  * @returns {Array} Intervalos normalizados.
+  */
+  normalizeIntervals(intervals = []) {
+    let normalizedInterval = [];
+    if (isArray(intervals)) {
+      if (this.isDynamicTimeline()) {
+        normalizedInterval = intervals
+          .map((interval, index) => this.normalizeDynamicInterval(interval, index));
+      } else {
+        normalizedInterval = intervals
+          .map((interval, index) => this.normalizeSimpleInterval(interval, index));
+      }
+    }
+    return normalizedInterval;
+  }
+
+  /**
+  * Obtiene un nombre representativo para una capa.
+  *
+  * @private
+  * @param {Object|String} layer Capa.
+  * @param {String} fallback Valor alternativo.
+  * @returns {String}
+  */
+  getLayerName(layer, fallback = '') {
+    if (typeof layer === 'string') {
+      if (layer.includes('*')) {
+        const [, legend] = layer.split('*');
+        return legend || fallback;
+      }
+
+      return layer;
+    }
+
+    return layer?.legend
+      ?? layer?.name
+      ?? layer?.getImpl?.()?.legend
+      ?? fallback;
+  }
+
+  /**
+  * Obtiene la etiqueta temporal de un intervalo.
+  *
+  * Para compatibilidad con absoluteSimple se utiliza preferentemente
+  * el año final del intervalo.
+  *
+  * @private
+  * @param {String|Number} init Fecha inicial.
+  * @param {String|Number} end Fecha final.
+  * @returns {String}
+  */
+  getIntervalTag(init, end) {
+    const date = end ?? init;
+
+    if (!date) {
+      return '';
+    }
+
+    const parsedDate = new Date(date);
+
+    if (!Number.isNaN(parsedDate.getTime())) {
+      return `${parsedDate.getUTCFullYear()}`;
+    }
+
+    return `${date}`;
+  }
+
+  /**
+  * Agrupa las capas por año.
+  *
+  * @private
+  * @param {Array} intervals
+  * @returns {Object}
+  */
+  buildGroupIntervals(intervals = []) {
+    const intervalsGrouped = {};
+
+    intervals.forEach((interval, i) => {
+      const [name, year, service] = interval;
+
+      if (isNullOrEmpty(intervalsGrouped[year])) intervalsGrouped[year] = [];
+
+      intervalsGrouped[year].push({
+        id: `${name}_${i}`,
+        name,
+        year,
+        service,
+        selected: intervalsGrouped[year].length === 0,
+        originalInterval: interval,
+      });
+    });
+
+    return intervalsGrouped;
+  }
+
+  /**
+  * Renderiza las opciones del selector de capas dependiendo del paso
+  *
+  * @param {object} interval Intervalo afectado
+  * @param {number} intervalIndex Índice del intervalo
+  * @param {string} selectorClass Nombre de la clase del selector al que se apunta
+  * @returns {void}
+  */
+  renderLayerSelector(
+    interval,
+    intervalIndex,
+    selectorClass,
+  ) {
+    const year = interval.tag;
+    /** @type {HTMLSelectElement} */
+    const selector = this.getElement().querySelector(selectorClass);
+    selector.innerHTML = '';
+    if (this.animation || interval.name !== '') {
+      selector.style.display = 'block';
+      selector.style.visibility = 'visible';
+    }
+
+    const emptyOption = document.createElement('option');
+    emptyOption.value = EMPTY_LAYER_ID;
+    emptyOption.textContent = this.translation.none;
+    emptyOption.selected = interval.service === null;
+    selector.appendChild(emptyOption);
+
+    this.intervalsGrouped[year].forEach((intervalGroup) => {
+      const option = document.createElement('option');
+      option.value = intervalGroup.id;
+      option.textContent = intervalGroup.name;
+      option.selected = intervalGroup.selected;
+      selector.appendChild(option);
+    });
+    selector.disabled = typeof this.running === 'boolean' && this.running;
+
+    selector.onchange = (evt) => {
+      const { value: intervalGroupId } = evt.target;
+      const intervalsByYear = this.intervalsGrouped[year];
+
+      if (intervalGroupId === EMPTY_LAYER_ID) {
+        intervalsByYear.forEach((intervalByYear) => {
+          const mapLayer = this.getMapLayer(intervalByYear.layer);
+
+          if (mapLayer) {
+            mapLayer.setVisible(false);
+          }
+
+          // eslint-disable-next-line no-param-reassign
+          intervalByYear.selected = false;
+        });
+
+        this.intervals[intervalIndex] = {
+          ...this.intervals[intervalIndex],
+          service: null,
+          name: '',
+        };
+
+        return;
+      }
+
+      intervalsByYear.forEach((intervalByYear, layerIndex) => {
+        const mapLayer = this.getMapLayer(intervalByYear.layer);
+        const isSelected = intervalByYear.id === intervalGroupId;
+
+        if (mapLayer) {
+          mapLayer.setVisible(isSelected);
+        }
+
+        if (isSelected) {
+          this.intervals[intervalIndex] = {
+            ...this.intervals[intervalIndex],
+            service: intervalByYear.layer,
+            name: intervalByYear.name,
+          };
+        }
+
+        this.intervalsGrouped[year][layerIndex].selected = isSelected;
+      });
+    };
   }
 
   /**
@@ -398,18 +758,19 @@ class Timeline extends Control {
    */
   transformToLayers(layer) {
     let newLayer = null;
-    if (!(layer instanceof Object)) {
-      if (layer.indexOf('*') >= 0) {
-        const urlLayer = layer.split('*');
-        if (urlLayer[0].toUpperCase() === 'WMS') {
+    if (typeof layer === 'string') {
+      if (layer.includes('*')) {
+        // eslint-disable-next-line no-unused-vars
+        const [serviceLayer, layerName, urlLayer, layerNameInternal] = layer.split('*');
+        if (serviceLayer.toUpperCase() === 'WMS') {
           newLayer = new WMS({
-            url: urlLayer[2],
-            name: urlLayer[3],
+            url: urlLayer,
+            name: layerNameInternal,
           });
-        } else if (urlLayer[0].toUpperCase() === 'WMTS') {
+        } else if (serviceLayer.toUpperCase() === 'WMTS') {
           newLayer = new WMTS({
-            url: urlLayer[2],
-            name: urlLayer[3],
+            url: urlLayer,
+            name: layerNameInternal,
           });
         }
       } else {
@@ -417,15 +778,34 @@ class Timeline extends Control {
         newLayer = this.isValidLayer(layerByName) ? layerByName : null;
       }
     } else if (layer instanceof Object) {
-      const layerByObject = this.map.getLayers().find((l) => layer.name.includes(l.name));
-      newLayer = this.isValidLayer(layerByObject) ? layerByObject : null;
+      if (this.isValidLayer(layer)) {
+        newLayer = layer;
+      } else {
+        const layerByObject = this.map.getLayers().find((l) => (
+          l === layer
+          || l.name === layer.name
+          || l.legend === layer.legend
+        ));
+
+        newLayer = this.isValidLayer(layerByObject)
+          ? layerByObject
+          : null;
+      }
     }
     if (newLayer !== null) {
       newLayer.displayInLayerSwitcher = false;
       newLayer.setVisible(false);
-      return newLayer;
     }
-    this.map.removeLayers(layer);
+    return newLayer;
+  }
+
+  setIntervalLayerVisible(interval, visible) {
+    if (interval?.service) {
+      const layer = this.getMapLayer(interval.service);
+      if (layer) {
+        layer.setVisible(visible);
+      }
+    }
   }
 
   /** This function change layers and show layer name when slider moves
@@ -438,21 +818,23 @@ class Timeline extends Control {
     document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '0');
     const left = (((elem.value - elem.min) / (elem.max - elem.min)) * ((256 - 20) - 5));
     document.querySelector('.div-m-timeline-slider').style.setProperty('--left', `${left}px`);
-    if (this.animation || this.intervals[0].name !== '') {
-      document.querySelector('.m-timeline-names').style.display = 'block';
-    }
     if (this.animation) {
       document.querySelector('.m-timeline-button').style.display = 'block';
+      document.querySelector('.m-timeline-button').style.visibility = 'visible';
     }
     const step = parseFloat(elem.value);
     this.intervals.forEach((interval) => {
-      this.getMapLayer(interval.service).setVisible(false);
-      document.querySelector('.m-timeline-names').innerHTML = '';
+      this.setIntervalLayerVisible(interval, false);
     });
+    const entireStep = parseInt(step, 10);
+    const entireInterval = this.intervals[entireStep];
+    const entirreIntervalNextStep = entireStep + 1;
+    const entireIntervalNext = this.intervals[entireStep + 1];
+    this.getElement().querySelector('.m-timeline-names-next').style.display = 'none';
+    this.renderLayerSelector(entireInterval, entireStep, '.m-timeline-names');
     if (step % 1 === 0) {
       document.querySelector('.div-m-timeline-slider').style.setProperty('--left', `${left + 20}px`);
       this.getMapLayer(this.intervals[step].service).setVisible(true);
-      document.querySelector('.m-timeline-names').innerHTML = this.intervals[step].name;
       document.querySelector('.div-m-timeline-panel').style.setProperty('--valor', `"${this.intervals[step].tag}"`);
       if (this.intervals[step].tag !== '') {
         document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '1');
@@ -460,20 +842,20 @@ class Timeline extends Control {
         document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '0');
       }
     } else {
-      this.getMapLayer(this.intervals[parseInt(step, 10)].service).setVisible(true);
-      this.getMapLayer(this.intervals[parseInt(step, 10) + 1].service).setVisible(true);
-      if (this.intervals[parseInt(step, 10)].tag !== '' && this.intervals[parseInt(step, 10) + 1].tag !== '') {
+      this.setIntervalLayerVisible(entireInterval, true);
+      this.setIntervalLayerVisible(entireIntervalNext, true);
+      if (entireInterval.tag !== '' && entireIntervalNext.tag !== '') {
         document.querySelector('.div-m-timeline-slider').style.setProperty('--left', `${left}px`);
         document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '1');
-        document.querySelector('.div-m-timeline-panel').style.setProperty('--valor', `"${this.intervals[parseInt(step, 10)].tag} - ${this.intervals[parseInt(step, 10) + 1].tag}"`);
-        document.querySelector('.m-timeline-names').innerHTML = `${this.intervals[parseInt(step, 10)].name} y ${this.intervals[parseInt(step, 10) + 1].name}`;
-      } else if (this.intervals[parseInt(step, 10)].tag === '' && this.intervals[parseInt(step, 10) + 1].tag === '') {
+        document.querySelector('.div-m-timeline-panel').style.setProperty('--valor', `"${entireInterval.tag} - ${entireIntervalNext.tag}"`);
+        this.renderLayerSelector(entireIntervalNext, entirreIntervalNextStep, '.m-timeline-names-next');
+      } else if (entireInterval.tag === '' && entireIntervalNext.tag === '') {
         document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '0');
       } else {
         document.querySelector('.div-m-timeline-slider').style.setProperty('--left', `${left + 20}px`);
         document.querySelector('.div-m-timeline-slider').style.setProperty('--opacity', '10');
-        document.querySelector('.m-timeline-names').innerHTML = this.intervals[parseInt(step, 10)].name + this.intervals[parseInt(step, 10) + 1].name;
-        document.querySelector('.div-m-timeline-panel').style.setProperty('--valor', `"${this.intervals[parseInt(step, 10)].tag}${this.intervals[parseInt(step, 10) + 1].tag}"`);
+        document.querySelector('.div-m-timeline-panel').style.setProperty('--valor', `"${entireInterval.tag}${entireIntervalNext.tag}"`);
+        this.renderLayerSelector(entireIntervalNext, entirreIntervalNextStep, '.m-timeline-names-next');
       }
     }
   }
@@ -486,8 +868,8 @@ class Timeline extends Control {
    * @return {object}
    */
   getMapLayer(layerSearch) {
-    return this.map.getLayers()
-      .find((layer) => layer.getImpl().legend === layerSearch.getImpl().legend);
+    return layerSearch ? this.map.getLayers()
+      .find((layer) => layer.getImpl().legend === layerSearch.getImpl().legend) : undefined;
   }
 
   /** Returns the play button element used to init timeline process
@@ -558,7 +940,6 @@ class Timeline extends Control {
     });
   }
 
-  // ++ timeLineDinamic
   /**
    * Create TimeLine Dinamic
    *
@@ -678,12 +1059,12 @@ class Timeline extends Control {
       }
     });
 
-    [this.getElement().querySelector('#m-timelineDinamic-back'),
-      this.getElement().querySelector('#m-timelineDinamic-before')].forEach((l) => {
-      l.addEventListener('click', ({ target }) => {
-        this.evtFormatMove(target.id);
+    [this.getElement().querySelector('#m-timelineDinamic-back'), this.getElement().querySelector('#m-timelineDinamic-before')]
+      .forEach((l) => {
+        l.addEventListener('click', ({ target }) => {
+          this.evtFormatMove(target.id);
+        });
       });
-    });
   }
 
   /**
@@ -816,24 +1197,23 @@ class Timeline extends Control {
   }
 
   /**
+   * Get Layers used on TimeLine
+   *
+   * @private
+   * @function
+  */
+  getLayers() {
+    return this.map.getLayers().filter((l) => l.layerTimeLine === true);
+  }
+
+  /**
    * Remove Layer TimeLine Dinamic
    *
    * @private
    * @function
   */
   removeLayers() {
-    const removeLayers = this.map.getLayers().filter((l) => l.layerTimeLine === true);
-    this.map.removeLayers(removeLayers);
-  }
-
-  /**
-   * Get Layers TimeLine Dinamic
-   *
-   * @private
-   * @function
-  */
-  getLayerTimeLine() {
-    return this.map.getLayers().filter((l) => l.layerTimeLine === true);
+    this.map.removeLayers(this.getLayers());
   }
 
   /**
@@ -939,7 +1319,7 @@ class Timeline extends Control {
     const initValue = Number(init);
     const endValue = Number(end);
 
-    const layersTimeLine = this.getLayerTimeLine();
+    const layersTimeLine = this.getLayers();
     this.removeLayers();
 
     layersTimeLine.forEach((l) => {
@@ -1346,7 +1726,7 @@ class Timeline extends Control {
    */
   destroy() {
     super.destroy();
-    if (['absolute', 'relative'].includes(this.timelineType)) {
+    if (this.isDynamicTimeline()) {
       this.removeLayers();
     } else {
       this.removeTimelineLayers();

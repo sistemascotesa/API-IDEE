@@ -1,15 +1,17 @@
 import { map as Mmap } from 'IDEE/api-idee';
-import Plugin from 'IDEE/Plugin';
 // import Control from 'IDEE/control/Control';
 import Rotate from 'IDEE/control/Rotate';
 import * as Position from 'IDEE/ui/position';
 
 const map = Mmap({
   container: 'map',
-  projection: 'EPSG:3857',
   controls: ['rotate'],
-  center: [-443273.10081370454, 4757481.749296248],
-  zoom: 6,
+  projection: 'EPSG:4326',
+  zoom: 8,
+  center: [
+    -7.68,
+    43.084999999999994,
+  ],
 });
 
 const rotate = new Rotate({

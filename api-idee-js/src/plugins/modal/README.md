@@ -45,8 +45,8 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **position**:  Ubicación del plugin sobre el mapa.
   - 'left' (LEFT) - A la izquierda.
   - 'right' (RIGHT) - A la derecha.
-- **helpLink**: Enlace al manual de uso. Objeto formado por los atributos en y es. Por defecto: template_en y template_es.
-  - Este parámetro se puede definir también con url_en y url_es directamente. Por defecto: template_en y template_es.
+- **helpLink**: Enlace al manual de uso. Objeto formado por los atributos en y es. Por defecto: template_en, template_es o template_ca.
+  - Este parámetro se puede definir también con url_en y url_es directamente. Por defecto: template_en, template_es o template_ca.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). Por defecto: true.
 - **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
@@ -169,6 +169,7 @@ Ejemplo de constructor:
   order: 1,
   url_es: 'https://componentes.cnig.es/ayudaIberpix/es.html',
   url_en: 'https://componentes.cnig.es/ayudaIberpix/en.html',
+  url_ca: 'https://componentes.cnig.es/ayudaIberpix/ca.html',
   tooltip: 'Ayuda',
 }
 ```
