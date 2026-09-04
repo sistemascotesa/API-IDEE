@@ -49,6 +49,11 @@
         mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_infoCoor.svg');
     }
     
+    .g-cartografia-info-pointer:before {
+        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_infoPointer.svg');
+        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_infoPointer.svg');
+    }
+    
     .g-cartografia-papelera:before {
         -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');
         mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');

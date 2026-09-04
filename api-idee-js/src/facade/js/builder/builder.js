@@ -236,7 +236,7 @@ export const getGetFeatureInfo = (control, map, params = {}) => {
   return new CollapsiblePanel(GetFeatureInfo.NAME, {
     ...getDefaultPanelOptions(control, params),
     collapsible: false,
-    collapsedButtonClass: 'g-cartografia-featureInfo',
+    collapsedButtonClass: 'g-cartografia-info-pointer',
   });
 };
 
