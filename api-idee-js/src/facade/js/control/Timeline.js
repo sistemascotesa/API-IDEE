@@ -28,6 +28,8 @@ const EMPTY_LAYER_ID = '__timeline_empty_layer__';
  * @typedef {Object} module:IDEE/control/Timeline~Options
  * @api
  * @property {Array|String} intervals Intervalos de tiempo. (obligatorio)
+ * Puede ser un array de objetos con atributos [name, tag, service] o una cadena JSON.
+ * Por defecto se utilizan intervalos de ejemplo con capas WMS del IGN.
  * @property {String} [position] Posición del control en el mapa.
  * @property {String} [tooltip] Texto del tooltip para el control.
  * @property {String} [title] Texto del título para el panel de este control.
@@ -35,8 +37,6 @@ const EMPTY_LAYER_ID = '__timeline_empty_layer__';
  * @property {Number} [order] Accesibilidad, z-index del control.
  * @property {Boolean} [collapsible] Indica si el control puede colapsarse.
  * @property {Boolean} [collapsed] Indica si el control está colapsado.
- * Puede ser un array de objetos con atributos [name, tag, service] o una cadena JSON.
- * Por defecto se utilizan intervalos de ejemplo con capas WMS del IGN.
  * @property {Boolean} [animation] Indica si la línea de tiempo se anima automáticamente.
  * @property {Number} [speed] Velocidad de la animación en segundos (rango: 1-100).
  * @property {Number} [speedDate] Velocidad de la animación para timelines dinámicos.
