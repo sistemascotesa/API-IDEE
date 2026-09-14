@@ -281,6 +281,7 @@ class LayerGroup extends Layer {
 
       if (!this.layers.includes(layer)) {
         const impl = layer.getImpl();
+        layer.inheritAutoRefresh(this.facadeLayer_);
         this.setOLLayerToLayer_(layer);
         impl.rootGroup = this;
 
@@ -325,6 +326,7 @@ class LayerGroup extends Layer {
    * @api
    */
   removeLayer(layer) {
+    if (this.layers.includes(layer)) layer.stopAutoRefresh();
     this.removeLayers_(layer);
     this.layersCollection.remove(layer.getImpl().getLayer());
   }
@@ -419,6 +421,7 @@ class LayerGroup extends Layer {
    * @api
    */
   destroy() {
+    this.layers.forEach((layer) => layer.stopAutoRefresh());
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
       olMap.removeLayer(this.olLayer);
@@ -447,6 +450,16 @@ class LayerGroup extends Layer {
     }
 
     return equals;
+  }
+
+  /**
+   * El contenedor transmite el intervalo a sus fuentes hijas.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  isAutoRefreshContainer() {
+    return true;
   }
 }
 

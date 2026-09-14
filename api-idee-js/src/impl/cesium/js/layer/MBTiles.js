@@ -1,7 +1,8 @@
 /**
  * @module IDEE/impl/layer/MBTiles
  */
-import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import { addParameters, isNullOrEmpty, extend } from 'IDEE/util/Utils';
+
 import {
   getValue,
 } from 'IDEE/i18n/language';
@@ -82,6 +83,7 @@ class MBTiles extends Layer {
      * MBTiles source: Fuente de la capa.
      */
     this.source_ = userParameters.source;
+    this.autoRefreshRemote_ = !userParameters.source && !userParameters.tileLoadFunction;
 
     /**
      * MBTiles maxExtent: Máxima extensión de la capa.
@@ -309,6 +311,26 @@ class MBTiles extends Layer {
       equals = (this.name === obj.name);
     }
     return equals;
+  }
+
+  /**
+   * Recarga la fuente manteniendo la capa y sus opciones de representación.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  async refreshSource(isCurrent = () => true) {
+    const layer = this.cesiumLayer;
+    if (!layer || !this.autoRefreshRemote_
+      || !this.isAutoRefreshRemoteURL(this.url)) return;
+    const response = await fetch(addParameters(this.url, { _ideeRefresh: Date.now() }));
+    if (!response.ok) throw new Error(`MBTiles: HTTP ${response.status}`);
+    const provider = new MBTileImageryProvider({
+      source: response,
+    }, { url: this.url, tileWidth: this.tileSize_, tileHeight: this.tileSize_ });
+    await provider.getExtent();
+    if (isCurrent() && this.cesiumLayer === layer) this.replaceAutoRefreshProvider(provider);
+    else provider.dispose();
   }
 }
 export default MBTiles;

@@ -394,7 +394,7 @@ class WMS extends LayerBase {
       console.warn(getValue('exception').no_notiled);
     }
 
-    const cesiumSource = new WebMapServiceImageryProvider({
+    const cesiumSource = this.createAutoRefreshProvider(WebMapServiceImageryProvider, {
       url: this.url,
       layers: this.name,
       parameters: layerParams,

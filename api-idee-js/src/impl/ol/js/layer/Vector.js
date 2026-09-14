@@ -243,6 +243,7 @@ class Vector extends Layer {
    */
   addFeatures(features, update) {
     this.features_.push(...features);
+    this.facadeVector_.initializeAutoRefresh();
 
     if (update) {
       this.updateLayer_();
@@ -489,6 +490,39 @@ class Vector extends Layer {
         });
       }
     });
+  }
+
+  /**
+   * Recarga los datos con el cargador de cada formato, conservando las ediciones locales.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  async refreshSource(isCurrent = () => true) {
+    const layer = this.olLayer;
+    const facade = this.facadeVector_;
+    if (!layer || !this.loaded_ || !facade || this.source || this.vendorOptions_.source
+      || !this.loader_?.loadForRefresh || !this.isAutoRefreshRemoteURL(this.url)) return;
+    if (facade.isAutoRefreshPaused()) return;
+    const projection = getProj(this.map.getProjection().code);
+    const response = await this.loader_.loadForRefresh(
+      projection,
+      this.scaleLabel,
+      this.layers,
+      this.removeFolderChildren,
+      this.label_,
+      this.clampToGround,
+    );
+    if (!isCurrent() || this.olLayer !== layer || facade.isAutoRefreshPaused()) return;
+    // Mantiene el filtro y estilo de la fachada; la sustitución solo ocurre tras cargar bien.
+    facade.removeFeatures(facade.getFeatures(true));
+    this.addFeatures(response.features);
+    facade.resumeAutoRefresh();
+    this.fire(EventType.LOAD, [response.features]);
+    if (response.screenOverlay) {
+      const overlay = ImplUtils.addOverlayImage(response.screenOverlay, this.map);
+      this.setScreenOverlayImg(overlay);
+    }
   }
 
   /**

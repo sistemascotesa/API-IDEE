@@ -1316,6 +1316,7 @@ class Map extends MObject {
     layers.forEach((layer) => {
       if (includes(this.layers_, layer)) {
         this.layers_ = this.layers_.filter((layer2) => !layer2.equals(layer));
+        layer.stopAutoRefresh();
         layer.getImpl().destroy();
       }
     });

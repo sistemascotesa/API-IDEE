@@ -209,6 +209,19 @@ class Tile {
       return zoomLevel;
     });
   }
+
+  /**
+   * Libera la base de datos del proveedor sustituido por el autorefresco.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  dispose() {
+    if (this.db_) {
+      this.db_.close();
+      this.db_ = null;
+    }
+  }
 }
 
 export default Tile;

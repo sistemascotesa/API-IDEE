@@ -11,6 +11,9 @@ import {
 import { getValue } from '../i18n/language';
 import * as EventType from '../event/eventtype';
 
+// No copia estado a diferencia de Base.clone()
+const autoRefreshTimers = new WeakMap();
+
 /**
  * @classdesc
  * De esta clase heredadan todas las capas base.
@@ -47,6 +50,9 @@ class LayerBase extends Base {
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
    * - url: url del servicio.
+   * - refresh: Activa el autorefresco de la fuente de la capa si es true.
+   * - refreshInterval: Intervalo en milisegundos. Debe acompañar a refresh y ser
+   *   un entero positivo no superior a 2147483647. Sin ambos no hay autorefresco.
    * @param {Object} impl Implementación.
    * @api
    */
@@ -150,6 +156,15 @@ class LayerBase extends Base {
      * @api
      */
     this.section_ = null;
+
+    // El parámetro refresh no sobreecribe el método público refresh().
+    this.hasAutoRefreshParameters_ = parameter.refresh !== undefined
+      || parameter.refreshInterval !== undefined;
+    this.autoRefreshEnabled_ = parameter.refresh === true;
+    this.refreshInterval_ = parameter.refreshInterval;
+    if (this.isAutoRefreshEnabled()) {
+      this.on(EventType.REMOVED_FROM_MAP, this.stopAutoRefresh, this);
+    }
   }
 
   /**
@@ -515,7 +530,88 @@ class LayerBase extends Base {
    * @export
    */
   setMap(map) {
+    if (this.map_ !== map) {
+      this.stopAutoRefresh();
+    }
     this.map_ = map;
+    if (map && this.isAutoRefreshEnabled() && !autoRefreshTimers.has(this)
+      && !this.getImpl().isAutoRefreshContainer?.()) {
+      const state = { pending: false };
+      state.timer = setInterval(() => {
+        const impl = this.getImpl();
+        if (!impl.getMap()) {
+          this.stopAutoRefresh();
+        } else if (!state.pending) {
+          state.pending = true;
+          const isCurrent = () => autoRefreshTimers.get(this) === state && !!impl.getMap();
+          Promise.resolve().then(() => {
+            if (isCurrent()) return impl.refreshSource(isCurrent);
+            return undefined;
+          }).catch((error) => {
+            // eslint-disable-next-line no-console
+            console.warn('No se ha podido autorefrescar la capa', this.name, error);
+          }).finally(() => { state.pending = false; });
+        }
+      }, this.refreshInterval_);
+      autoRefreshTimers.set(this, state);
+    }
+  }
+
+  /**
+   * Comprueba si una URL permite consultar datos remotos, incluyendo rutas relativas.
+   * @param {String} url URL del origen.
+   * @returns {Boolean} Verdadero para HTTP o HTTPS.
+   * @public
+   * @function
+   */
+  static isAutoRefreshRemoteURL(url) {
+    if (!isString(url) || !url.trim()) return false;
+    try {
+      return /^https?:$/.test(new URL(url, window.location.href).protocol);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Indica si la configuración permite autorefrescar esta capa.
+   * @returns {Boolean} Configuración completa y válida.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  isAutoRefreshEnabled() {
+    return this.autoRefreshEnabled_
+      && Number.isInteger(this.refreshInterval_)
+      && this.refreshInterval_ > 0 && this.refreshInterval_ <= 2147483647;
+  }
+
+  /**
+   * Detiene el autorefresco al retirar o destruir la capa.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  stopAutoRefresh() {
+    const impl = this.getImpl();
+    const state = autoRefreshTimers.get(this);
+    if (state !== undefined) {
+      clearInterval(state.timer);
+      autoRefreshTimers.delete(this);
+      impl?.disposeAutoRefresh();
+    }
+    if (impl?.isAutoRefreshContainer?.()) {
+      impl.getLayers().forEach((layer) => layer.stopAutoRefresh());
+    }
+  }
+
+  /**
+   * Detiene la programación antes de destruir la implementación.
+   * @api
+   */
+  destroy() {
+    this.stopAutoRefresh();
+    super.destroy();
   }
 
   /**
@@ -826,6 +922,22 @@ class LayerBase extends Base {
    */
   generateName_() {
     this.name = generateRandom('layer_', '_'.concat(this.type));
+  }
+
+  /**
+   * Uso interno del autorefresco de la fuente.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  inheritAutoRefresh(parent) {
+    if (!this.hasAutoRefreshParameters_ && parent.isAutoRefreshEnabled()) {
+      this.autoRefreshEnabled_ = true;
+      // eslint-disable-next-line no-underscore-dangle
+      this.refreshInterval_ = parent.refreshInterval_;
+      this.hasAutoRefreshParameters_ = true;
+      this.on(EventType.REMOVED_FROM_MAP, this.stopAutoRefresh, this);
+    }
   }
 }
 

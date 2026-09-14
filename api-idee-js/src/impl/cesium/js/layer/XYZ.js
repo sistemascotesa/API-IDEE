@@ -184,7 +184,7 @@ class XYZ extends Layer {
    */
   addProvider_() {
     const url = this.url;
-    return new UrlTemplateImageryProvider({
+    return this.createAutoRefreshProvider(UrlTemplateImageryProvider, {
       url,
       tileWidth: this.getTileSize(),
       tileHeight: this.getTileSize(),

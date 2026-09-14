@@ -7,8 +7,10 @@ import MObject from 'IDEE/Object';
 import { isNullOrEmpty, isString } from 'IDEE/util/Utils';
 import FacadeLayer from 'IDEE/layer/Layer';
 import { getValue } from 'IDEE/i18n/language';
-import { ImageryLayer } from 'cesium';
+import { ImageryLayer, Resource } from 'cesium';
 import ImplUtils from '../util/Utils';
+
+const autoRefreshProviders = new WeakMap();
 
 /**
  * @classdesc
@@ -96,6 +98,110 @@ class LayerBase extends MObject {
     this.maxZoom = this.options.maxZoom || Number.POSITIVE_INFINITY;
 
     this.userMaxExtent = options.maxExtent;
+  }
+
+  /**
+   * Construye el proveedor habitual y conserva su fábrica solo para autorefresco.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  createAutoRefreshProvider(Provider, options) {
+    const provider = new Provider(options);
+    if (this.facadeLayer_.isAutoRefreshEnabled()
+      && this.isAutoRefreshRemoteURL(options.url?.url || options.url)) {
+      const state = { pending: 0 };
+      const track = (source) => {
+        const trackedSource = source;
+        const requestImage = trackedSource.requestImage.bind(trackedSource);
+        trackedSource.requestImage = (...args) => {
+          const request = requestImage(...args);
+          if (!request || typeof request.then !== 'function') return request;
+          state.pending += 1;
+          return Promise.resolve(request).finally(() => { state.pending -= 1; });
+        };
+        return source;
+      };
+      state.create = () => {
+        const url = Resource.createIfNeeded(options.url);
+        url.setQueryParameters({ _ideeRefresh: Date.now() });
+        const next = new Provider({ ...options, url });
+        if (typeof this.activatePickFeatures === 'function') this.activatePickFeatures(next);
+        return track(next);
+      };
+      track(provider);
+      autoRefreshProviders.set(this, state);
+    }
+    return provider;
+  }
+
+  /**
+   * Comprueba el origen remoto sin depender de la referencia a una fachada concreta.
+   * @param {String} url URL del origen.
+   * @returns {Boolean} Verdadero para HTTP o HTTPS.
+   * @public
+   * @function
+   */
+  isAutoRefreshRemoteURL(url) {
+    return FacadeLayer.isAutoRefreshRemoteURL(url);
+  }
+
+  /**
+   * Renueva el proveedor y su caché de imágenes conservando orden y apariencia.
+   * Solo lo invoca la fachada con autorefresco habilitado.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  refreshSource() {
+    const state = autoRefreshProviders.get(this);
+    const previous = this.cesiumLayer;
+    if (!state || state.pending > 0 || !previous || !this.map) return;
+    this.replaceAutoRefreshProvider(state.create());
+  }
+
+  /**
+   * Recarga la fuente manteniendo la capa y sus opciones de representación.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  replaceAutoRefreshProvider(provider) {
+    const previous = this.cesiumLayer;
+    const viewer = this.map.getMapImpl();
+    const layers = viewer.imageryLayers;
+    const index = layers.indexOf(previous);
+    if (index < 0) return;
+
+    const options = {
+      minimumTerrainLevel: this.minZoom,
+      maximumTerrainLevel: this.maxZoom - 1,
+      ...this.vendorOptions_,
+      rectangle: previous.rectangle,
+    };
+    ['alpha', 'dayAlpha', 'nightAlpha', 'brightness', 'contrast', 'hue', 'saturation',
+      'gamma', 'splitDirection', 'minificationFilter', 'magnificationFilter', 'show',
+      'cutoutRectangle', 'colorToAlpha', 'colorToAlphaThreshold'].forEach((key) => {
+      options[key] = previous[key];
+    });
+    const next = new ImageryLayer(provider, options);
+    layers.remove(previous, false);
+    layers.add(next, index);
+    this.cesiumLayer = next;
+    const oldProvider = previous.imageryProvider;
+    previous.destroy();
+    if (provider !== oldProvider && oldProvider.dispose) oldProvider.dispose();
+    viewer.scene.requestRender();
+  }
+
+  /**
+   * Libera el estado
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  disposeAutoRefresh() {
+    autoRefreshProviders.delete(this);
   }
 
   /**

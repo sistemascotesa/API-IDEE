@@ -205,6 +205,19 @@ class MBTileImageryProvider extends TileMapServiceImageryProvider {
       return zoomLevel;
     });
   }
+
+  /**
+   * Libera la base de datos del proveedor sustituido por el autorefresco.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  dispose() {
+    if (this.db) {
+      this.db.close();
+      this.db = null;
+    }
+  }
 }
 
 export default MBTileImageryProvider;

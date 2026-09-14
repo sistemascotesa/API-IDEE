@@ -1,6 +1,9 @@
 /**
  * @module IDEE/impl/layer/GenericVector
  */
+import {
+  Resource, Color, KmlDataSource, PointGraphics,
+} from 'cesium';
 import ClusteredFeature from 'IDEE/feature/Clustered';
 import * as EventType from 'IDEE/event/eventtype';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
@@ -10,7 +13,7 @@ import {
   isUndefined,
 } from 'IDEE/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
-import { Color, KmlDataSource, PointGraphics } from 'cesium';
+
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import Vector from './Vector';
 import Feature from '../feature/Feature';
@@ -412,6 +415,39 @@ class GenericVector extends Vector {
     }
 
     return equals;
+  }
+
+  /**
+   * Uso interno del autorefresco de la fuente.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  setAutoRefreshURL(url) {
+    this.autoRefreshURL_ = url;
+  }
+
+  /**
+   * Recarga exclusivamente la URL interna configurada para autorefresco.
+   * @public
+   */
+  async refreshSource(isCurrent = () => true) {
+    const layer = this.cesiumLayer;
+    const facade = this.facadeVector_;
+    if (!layer || layer.isLoading || !facade || facade.isAutoRefreshPaused()) return;
+    if (!this.isAutoRefreshRemoteURL(this.autoRefreshURL_) || typeof layer.constructor.load !== 'function') return;
+    const url = Resource.createIfNeeded(this.autoRefreshURL_);
+    url.setQueryParameters({ _ideeRefresh: Date.now() });
+    const viewer = this.map.getMapImpl();
+    const candidate = await layer.constructor.load(url, {
+      camera: viewer.camera, canvas: viewer.scene.canvas, clampToGround: this.clampToGround,
+    });
+    if (!isCurrent() || this.cesiumLayer !== layer || facade.isAutoRefreshPaused()) return;
+    const features = candidate.entities.values.map((feature) => Feature.feature2Facade(feature));
+    candidate.entities.removeAll();
+    facade.removeFeatures(facade.getFeatures(true));
+    await this.addFeatures_(features, true, true);
+    if (isCurrent()) facade.resumeAutoRefresh();
   }
 }
 

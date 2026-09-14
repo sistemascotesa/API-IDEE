@@ -4,7 +4,9 @@
 import FacadeOSM from 'IDEE/layer/OSM';
 import * as EventType from 'IDEE/event/eventtype';
 import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
-import { OpenStreetMapImageryProvider, ImageryLayer, Rectangle } from 'cesium';
+import {
+  OpenStreetMapImageryProvider, UrlTemplateImageryProvider, ImageryLayer, Rectangle,
+} from 'cesium';
 import Layer from './Layer';
 
 /**
@@ -190,17 +192,34 @@ class OSM extends Layer {
    */
   updateSource_(resolutions) {
     let fileExtension;
-    if (this.url) {
-      const indexExtension = this.url.trim().indexOf('}.');
-      fileExtension = this.url.substring(indexExtension + 2);
-      const index = this.url.trim().indexOf('/{');
-      this.url = this.url.substring(0, index);
+    const autoRefresh = this.facadeLayer_.isAutoRefreshEnabled();
+    // Guarda la plantilla aparte para mantener la normalización pública de URL.
+    if (autoRefresh && (!this.autoRefreshOSMURL_ || this.url?.includes('/{'))) {
+      this.autoRefreshOSMURL_ = this.url;
     }
-    const newSource = new OpenStreetMapImageryProvider({
-      url: this.url,
-      fileExtension,
+    let url = autoRefresh ? this.autoRefreshOSMURL_ : this.url;
+    if (url) {
+      const indexExtension = url.trim().indexOf('}.');
+      fileExtension = url.substring(indexExtension + 2);
+      const index = url.trim().indexOf('/{');
+      url = url.substring(0, index);
+      this.url = url;
+    }
+    const source = new OpenStreetMapImageryProvider({ url, fileExtension });
+    if (!autoRefresh) return source;
+
+    // OSM construye la plantilla completa sobre UrlTemplateImageryProvider.
+    // El parámetro de refresco se añade después de esa ruta, no a la URL base.
+    return this.createAutoRefreshProvider(UrlTemplateImageryProvider, {
+      url: source.url,
+      credit: source.credit,
+      tilingScheme: source.tilingScheme,
+      tileWidth: source.tileWidth,
+      tileHeight: source.tileHeight,
+      minimumLevel: source.minimumLevel,
+      maximumLevel: source.maximumLevel,
+      rectangle: source.rectangle,
     });
-    return newSource;
   }
 
   /**
