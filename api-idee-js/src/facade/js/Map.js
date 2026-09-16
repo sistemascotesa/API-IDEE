@@ -95,6 +95,7 @@ class Map extends Base {
    * - minZoom: Zoom mínimo del mapa.
    * - projection: Proyección del mapa.
    * - resolutions: Resoluciones del mapa.
+   * - refreshInterval: Intervalo en milisegundos que prevalece en todas sus capas.
    * - viewExtent: Extensión de la vista.
    * - zoom: Zoom del mapa.
    * - zoomConstrains: Restricciones de zoom.
@@ -133,6 +134,8 @@ class Map extends Base {
 
     const impl = new MapImpl(mapContainerElement, this, dpi, opts, viewVendorOptions);
     this.setImpl(impl);
+
+    this.refreshInterval_ = params.refreshInterval;
 
     // checks if the param is null or empty
     if (isNullOrEmpty(userParameters)) {
@@ -696,6 +699,19 @@ class Map extends Base {
    */
   getFeatureHandler() {
     return this.featuresHandler_;
+  }
+
+  /**
+   * Obtiene el intervalo válido configurado al construir el mapa.
+   * Las capas lo consultan al incorporarse, incluidas las añadidas posteriormente.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @returns {Number|undefined} Intervalo en milisegundos o ausencia de autorefresco global.
+   * @public
+   * @function
+   */
+  getAutoRefreshInterval() {
+    return Layer.isValidAutoRefreshInterval(this.refreshInterval_)
+      ? this.refreshInterval_ : undefined;
   }
 
   /**

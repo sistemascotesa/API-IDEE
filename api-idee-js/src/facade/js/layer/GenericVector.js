@@ -129,7 +129,7 @@ class GenericVector extends Vector {
     }
 
     // La URL de autorefresco no modifica el contrato público de URL del motor.
-    if (this.isAutoRefreshEnabled() && isFunction(impl.setAutoRefreshURL)) {
+    if (isFunction(impl.setAutoRefreshURL)) {
       impl.setAutoRefreshURL(params.url);
     }
 

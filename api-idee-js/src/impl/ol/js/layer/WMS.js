@@ -437,11 +437,8 @@ class WMS extends LayerBase {
           version: layer.version,
           tiled: this.tiled,
           useCapabilities: this.useCapabilities,
-          ...(this.facadeLayer_.isAutoRefreshEnabled() ? {
-            refresh: true,
-            refreshInterval: this.facadeLayer_.constructorParameters.userParameters.refreshInterval,
-          } : {}),
         }, this.vendorOptions_);
+        wmsLayer.inheritAutoRefresh(this.facadeLayer_);
         this.layers.push(wmsLayer);
       });
 

@@ -5288,9 +5288,6 @@ export const layer = (userParameters, forcedType) => {
         layerObj.attribution = userParam.attribution;
       }
 
-      if (!isNullOrEmpty(userParam.refresh)) {
-        layerObj.refresh = userParam.refresh;
-      }
       if (!isNullOrEmpty(userParam.refreshInterval)) {
         layerObj.refreshInterval = userParam.refreshInterval;
       }

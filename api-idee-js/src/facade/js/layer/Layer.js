@@ -157,14 +157,8 @@ class LayerBase extends Base {
      */
     this.section_ = null;
 
-    // El parámetro refresh no sobreecribe el método público refresh().
-    this.hasAutoRefreshParameters_ = parameter.refresh !== undefined
-      || parameter.refreshInterval !== undefined;
-    this.autoRefreshEnabled_ = parameter.refresh === true;
+    // El intervalo del constructor se conserva aunque el mapa imponga otro.
     this.refreshInterval_ = parameter.refreshInterval;
-    if (this.isAutoRefreshEnabled()) {
-      this.on(EventType.REMOVED_FROM_MAP, this.stopAutoRefresh, this);
-    }
   }
 
   /**
@@ -534,6 +528,10 @@ class LayerBase extends Base {
       this.stopAutoRefresh();
     }
     this.map_ = map;
+    if (map && this.isAutoRefreshEnabled() && !this.autoRefreshListener_) {
+      this.on(EventType.REMOVED_FROM_MAP, this.stopAutoRefresh, this);
+      this.autoRefreshListener_ = true;
+    }
     if (map && this.isAutoRefreshEnabled() && !autoRefreshTimers.has(this)
       && !this.getImpl().isAutoRefreshContainer?.()) {
       const state = { pending: false };
@@ -552,7 +550,7 @@ class LayerBase extends Base {
             console.warn('No se ha podido autorefrescar la capa', this.name, error);
           }).finally(() => { state.pending = false; });
         }
-      }, this.refreshInterval_);
+      }, this.getAutoRefreshInterval());
       autoRefreshTimers.set(this, state);
     }
   }
@@ -574,6 +572,29 @@ class LayerBase extends Base {
   }
 
   /**
+   * Valida un intervalo de construcción en milisegundos.
+   * @param {Number} interval Intervalo.
+   * @returns {Boolean} Verdadero para un entero positivo admitido por setInterval.
+   * @public
+   * @function
+   */
+  static isValidAutoRefreshInterval(interval) {
+    return Number.isInteger(interval) && interval > 0 && interval <= 2147483647;
+  }
+
+  /**
+   * Obtiene el intervalo efectivo. El mapa tiene prioridad sobre la capa y su grupo.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @returns {Number|undefined} Intervalo en milisegundos.
+   * @public
+   * @function
+   */
+  getAutoRefreshInterval() {
+    return this.map_?.getAutoRefreshInterval?.()
+      ?? this.refreshInterval_ ?? this.inheritedRefreshInterval_;
+  }
+
+  /**
    * Indica si la configuración permite autorefrescar esta capa.
    * @returns {Boolean} Configuración completa y válida.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
@@ -581,9 +602,7 @@ class LayerBase extends Base {
    * @function
    */
   isAutoRefreshEnabled() {
-    return this.autoRefreshEnabled_
-      && Number.isInteger(this.refreshInterval_)
-      && this.refreshInterval_ > 0 && this.refreshInterval_ <= 2147483647;
+    return LayerBase.isValidAutoRefreshInterval(this.getAutoRefreshInterval());
   }
 
   /**
@@ -931,13 +950,9 @@ class LayerBase extends Base {
    * @function
    */
   inheritAutoRefresh(parent) {
-    if (!this.hasAutoRefreshParameters_ && parent.isAutoRefreshEnabled()) {
-      this.autoRefreshEnabled_ = true;
-      // eslint-disable-next-line no-underscore-dangle
-      this.refreshInterval_ = parent.refreshInterval_;
-      this.hasAutoRefreshParameters_ = true;
-      this.on(EventType.REMOVED_FROM_MAP, this.stopAutoRefresh, this);
-    }
+    // El intervalo del mapa se consulta al asociar la capa, no se copia al constructor.
+    // eslint-disable-next-line no-underscore-dangle
+    this.inheritedRefreshInterval_ = parent.refreshInterval_ ?? parent.inheritedRefreshInterval_;
   }
 }
 
