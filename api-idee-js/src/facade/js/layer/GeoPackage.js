@@ -8,6 +8,7 @@ import GeoPackageTile from './GeoPackageTile';
 import GeoJSON from './GeoJSON';
 import { generateRandom, extend } from '../util/Utils';
 import * as EventType from '../event/eventtype';
+import * as Dialog from '../dialog';
 
 /**
  * @classdesc
@@ -31,8 +32,12 @@ class GeoPackage extends MObject {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @param {Response|File|Unit8Array} data Fichero que contiene la información
-   * de geopackage (.gkpg).
+   * @param {Response|File|ArrayBuffer|Uint8Array|Object} data Fichero GeoPackage o parámetros.
+   * - source: Fuente binaria. No se puede combinar con url.
+   * - url: URL del fichero completo, descargado y procesado en el navegador.
+   * - name: Nombre del paquete.
+   * - legend: Leyenda del paquete.
+   * La forma histórica con el fichero como primer argumento sigue siendo válida.
    * @param {Object} options Parámetros opcionales proporcionados por el usuario
    * para las capas vectoriales o ráster contenidas en el GeoPackage.
    * <pre><code>
@@ -58,9 +63,23 @@ class GeoPackage extends MObject {
     this.constructorParameters = { data, options };
 
     /**
+     * Distingue los parámetros normalizados de la firma histórica con datos binarios.
+     * @private
+     * @type {Boolean}
+     */
+    this.legacyParameters_ = !data || Object.getPrototypeOf(data) !== Object.prototype;
+    const parameters = this.legacyParameters_ ? { source: data } : { ...data };
+
+    /**
      * Id de la capa.
      */
-    this.idLayer = generateRandom(LayerType.GeoPackage, options.name).replace(/[^a-zA-Z0-9\-_]/g, '');
+    this.idLayer = generateRandom(LayerType.GeoPackage, parameters.name || options.name).replace(/[^a-zA-Z0-9\-_]/g, '');
+
+    /** Nombre, leyenda y origen del paquete, independientes de sus tablas. */
+    this.name = parameters.name || options.name || this.idLayer;
+    this.legend = parameters.legend === undefined ? this.name : parameters.legend;
+    this.source = parameters.source;
+    this.url = parameters.url;
 
     /**
      * Capas
@@ -70,7 +89,7 @@ class GeoPackage extends MObject {
     /**
      * Conector
      */
-    this.connector_ = new GeoPackageProvider(data, options);
+    this.connector_ = new GeoPackageProvider(parameters, options);
 
     /**
      * Opciones
@@ -116,11 +135,12 @@ class GeoPackage extends MObject {
    *
    * @function
    * @param {M/Map} map
+   * @returns {Promise} Finalización de la creación y adición de las capas.
    * @api
    */
   addTo(map, addLayer = true) {
     this.map_ = map;
-    this.connector_.getVectorProviders().then((vectorProviders) => {
+    const vectorLayers = this.connector_.getVectorProviders().then((vectorProviders) => {
       vectorProviders.forEach((vectorProvider) => {
         const geojson = vectorProvider.getGeoJSON();
         const tableName = vectorProvider.getTableName();
@@ -142,7 +162,7 @@ class GeoPackage extends MObject {
       }
     });
 
-    this.connector_.getTileProviders().then((tileProviders) => {
+    const tileLayers = this.connector_.getTileProviders().then((tileProviders) => {
       tileProviders.forEach((tileProvider) => {
         const tableName = tileProvider.getTableName();
         const optsExt = extend(this.options[tableName] || {}, {
@@ -164,6 +184,9 @@ class GeoPackage extends MObject {
     });
 
     this.fire(EventType.ADDED_TO_MAP);
+    const loading = Promise.all([vectorLayers, tileLayers]);
+    loading.catch((error) => Dialog.error(String(error)));
+    return loading;
   }
 
   /**
