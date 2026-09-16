@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="idee" content="yes"><title>CP-028 — refreshInterval del mapa</title>
+<style>html,body{margin:0;height:100%;font:15px sans-serif}body{display:flex;flex-direction:column}
+main{padding:12px}form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#map{flex:1;min-height:300px}pre,code{white-space:pre-wrap;overflow-wrap:anywhere}
+button,input,select{font:inherit}pre{max-height:160px;overflow:auto}</style></head><body><main>
+<h1>CP-028: intervalo del mapa</h1>
+<form><label for="mode">Mapa</label><select id="mode" name="mode"><option value="on">Con intervalo</option>
+<option value="none">Sin intervalo</option><option value="invalid">Intervalo 0 (inválido)</option></select>
+<label for="interval">Intervalo del mapa (ms)</label><input id="interval" name="interval" type="number" value="5000" min="1" max="2147483647">
+<label for="own">Intervalo propio de WMS/XYZ (ms)</label><input id="own" name="own" type="number" value="1000" min="1" max="2147483647">
+<label for="data">Datos de prueba</label><input id="data" name="data" type="url" size="40">
+<button type="submit">Crear nuevo mapa</button></form>
+<p>El intervalo válido del mapa prevalece en todas sus capas. GeoJSON no tiene intervalo propio.
+Sin intervalo de mapa, WMS usa el suyo y GeoJSON no se autorefresca.</p><code id="params"></code>
+<p><button id="add">Añadir XYZ después</button> <button id="group">Añadir grupo (OL)</button>
+<button id="remove">Retirar última</button> <button id="reinsert">Reinsertar última</button>
+<button id="edit">Editar GeoJSON</button> <button id="resume">Descartar edición y reanudar</button>
+<button id="destroy">Destruir mapa</button></p>
+<p>Arranca servidor-autorefresco.py en 8083. En Red filtra por <code>_ideeRefresh</code>.
+Al editar GeoJSON se pausa solo esa capa. El mapa conserva el mismo contenedor.
+Consola: <code>mapa</code>, <code>capas</code>, <code>capaVector</code>.</p>
+<pre id="status" aria-live="polite"></pre></main><div id="map" class="map"></div>
+<script src="/config.js" charset="utf-8"></script><script src="/CP-0002-layers/CP-028.js" charset="utf-8"></script>
+</body></html>

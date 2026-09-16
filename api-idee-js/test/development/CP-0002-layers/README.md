@@ -76,3 +76,30 @@ Mapa básico con Capas WMC y una WMS.
 CP-026
 Mapa básico con capa GeoPackage.
 
+CP-027
+Pruebas de refreshInterval en los tipos de capa soportados por OpenLayers y Cesium.
+
+CP-028
+Pruebas de refreshInterval en el mapa, su prioridad y las capas añadidas posteriormente.
+
+Para ejecutar CP-027 y CP-028, iniciar primero los datos sintéticos desde `api-idee-js`:
+
+~~~sh
+python3 test/development/CP-0002-layers/servidor-autorefresco.py --port 8083
+~~~
+
+En otra terminal, iniciar el caso con OpenLayers:
+
+~~~sh
+npm start -- --name=CP-0002-layers/CP-027 --port 8082 --no-open
+npm start -- --name=CP-0002-layers/CP-028 --port 8082 --no-open
+~~~
+
+Solo debe ejecutarse un caso cada vez. Abrir respectivamente:
+
+- http://localhost:8082/test/development/CP-0002-layers/CP-027.html
+- http://localhost:8082/test/development/CP-0002-layers/CP-028.html
+
+Para probar con Cesium, sustituir `npm start` por `npm run start:cesium`. El propio
+caso indica el motor activo. En las herramientas de desarrollo del navegador se
+pueden filtrar las peticiones por `_ideeRefresh`.
