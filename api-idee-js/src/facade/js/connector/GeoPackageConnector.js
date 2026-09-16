@@ -81,8 +81,7 @@ class GeoPackageConnector {
    *
    * @function
    * @public
-   * @param {ArrayBuffer} data Uint8Array que representa un archivo
-   * de base de datos.
+   * @param {File|Response|ArrayBuffer|Uint8Array|Object} data Fuente binaria o parámetros.
    * @returns {Promise<Object>} Proveedores del paquete o rechazo de la carga.
    * @api
    */

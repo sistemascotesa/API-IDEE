@@ -6,7 +6,7 @@ import MObject from '../Object';
 import * as LayerType from './Type';
 import GeoPackageTile from './GeoPackageTile';
 import GeoJSON from './GeoJSON';
-import { generateRandom } from '../util/Utils';
+import { generateRandom, escapeXSS } from '../util/Utils';
 import * as EventType from '../event/eventtype';
 import * as Dialog from '../dialog';
 
@@ -17,6 +17,10 @@ import * as Dialog from '../dialog';
  * en un contenedor SQLite.
  *
  * @property {String} idLayer Identificador de la capa.
+ * @property {String} name Nombre del paquete.
+ * @property {String} legend Leyenda del paquete.
+ * @property {String} url URL del fichero completo, si se ha proporcionado.
+ * @property {File|Response|ArrayBuffer|Uint8Array} source Fuente binaria, si se ha proporcionado.
  * @property {IDEE.layer.GeoPackageTile|IDEE.layer.GeoJSON} layers_ Capas de GeoPackage.
  * @property {IDEE.GeoPackageConnector} connector_ Conector.
  * @property {Object} options Opciones de la capa.
@@ -113,6 +117,21 @@ class GeoPackage extends MObject {
      * Determina si las capas teseladas están cargadas.
      */
     this.loadedTileLayers_ = false;
+
+    /**
+     * Inicialización única de los proveedores y de las capas, independiente del mapa.
+     * @private
+     * @type {Promise<GeoPackage>}
+     */
+    this.readyPromise_ = Promise.all([
+      this.connector_.getVectorProviders(),
+      this.connector_.getTileProviders(),
+    ]).then(([vectorProviders, tileProviders]) => {
+      this.createLayers_(vectorProviders, tileProviders);
+      return this;
+    });
+    // Permite consultar whenReady después de un fallo sin generar rechazos no gestionados.
+    this.readyPromise_.catch(() => undefined);
   }
 
   /**
@@ -179,58 +198,65 @@ class GeoPackage extends MObject {
   }
 
   /**
+   * Construye todas las capas antes de publicar la colección del paquete.
+   * @private
+   * @param {Array} vectorProviders Proveedores vectoriales.
+   * @param {Array} tileProviders Proveedores ráster.
+   */
+  createLayers_(vectorProviders, tileProviders) {
+    const layers = Object.create(null);
+    vectorProviders.forEach((vectorProvider) => {
+      const tableName = vectorProvider.getTableName();
+      const options = this.getTableOptions_(tableName);
+      layers[tableName] = new GeoJSON({
+        ...options,
+        source: vectorProvider.getGeoJSON(),
+      }, this.copyOptions_(options));
+    });
+    tileProviders.forEach((tileProvider) => {
+      const tableName = tileProvider.getTableName();
+      layers[tableName] = new GeoPackageTile(this.getTableOptions_(tableName, true), tileProvider);
+    });
+    this.layers_ = layers;
+    this.loadedVectorLayers_ = true;
+    this.loadedTileLayers_ = true;
+  }
+
+  /**
+   * Espera a que los proveedores y las capas hijas estén construidos.
+   * No añade capas al mapa ni espera al renderizado de entidades o imágenes.
+   * Devuelve siempre la misma promesa; los errores de lectura y construcción se propagan.
+   * @public
+   * @returns {Promise<GeoPackage>} Este paquete inicializado.
+   * @api
+   */
+  whenReady() {
+    return this.readyPromise_;
+  }
+
+  /**
    * Este método agrega la capa al mapa.
    *
    * @function
    * @param {M/Map} map
-   * @returns {Promise} Finalización de la creación y adición de las capas.
+   * @param {Boolean} addLayer Añade las capas al mapa; falso cuando las gestiona un grupo.
+   * @returns {Promise<GeoPackage>} Finalización de la adición, o rechazo de la carga.
    * @api
    */
   addTo(map, addLayer = true) {
     this.map_ = map;
-    const vectorLayers = this.connector_.getVectorProviders().then((vectorProviders) => {
-      vectorProviders.forEach((vectorProvider) => {
-        const geojson = vectorProvider.getGeoJSON();
-        const tableName = vectorProvider.getTableName();
-        const optsExt = this.getTableOptions_(tableName);
-        const vectorLayer = new GeoJSON({
-          ...optsExt,
-          source: geojson,
-        }, this.copyOptions_(optsExt));
-
-        this.layers_[tableName] = vectorLayer;
-        if (addLayer) {
-          map.addLayers(vectorLayer);
-        }
-      });
-
-      this.loadedVectorLayers_ = true;
-      if (this.loadedTileLayers_) {
-        this.fire(EventType.LOAD_LAYERS, [this.layers_]);
+    const loading = this.whenReady().then(() => {
+      if (addLayer) {
+        this.getLayers().forEach((layer) => map.addLayers(layer));
       }
+      this.fire(EventType.LOAD_LAYERS, [this.layers_]);
+      return this;
     });
-
-    const tileLayers = this.connector_.getTileProviders().then((tileProviders) => {
-      tileProviders.forEach((tileProvider) => {
-        const tableName = tileProvider.getTableName();
-        const optsExt = this.getTableOptions_(tableName, true);
-        const tileLayer = new GeoPackageTile(optsExt, tileProvider);
-
-        this.layers_[tableName] = tileLayer;
-        if (addLayer) {
-          map.addLayers(tileLayer);
-        }
-      });
-      this.loadedTileLayers_ = true;
-
-      if (this.loadedVectorLayers_) {
-        this.fire(EventType.LOAD_LAYERS, [this.layers_]);
-      }
+    loading.catch((error) => {
+      // Los grupos gestionan su propia promesa y muestran los errores de sus hijos.
+      if (map && addLayer) Dialog.error(escapeXSS(String(error)));
     });
-
     this.fire(EventType.ADDED_TO_MAP);
-    const loading = Promise.all([vectorLayers, tileLayers]);
-    loading.catch((error) => Dialog.error(String(error)));
     return loading;
   }
 
