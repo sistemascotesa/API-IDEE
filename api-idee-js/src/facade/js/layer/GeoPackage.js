@@ -6,7 +6,7 @@ import MObject from '../Object';
 import * as LayerType from './Type';
 import GeoPackageTile from './GeoPackageTile';
 import GeoJSON from './GeoJSON';
-import { generateRandom, extend } from '../util/Utils';
+import { generateRandom } from '../util/Utils';
 import * as EventType from '../event/eventtype';
 import * as Dialog from '../dialog';
 
@@ -40,6 +40,11 @@ class GeoPackage extends MObject {
    * La forma histórica con el fichero como primer argumento sigue siendo válida.
    * @param {Object} options Parámetros opcionales proporcionados por el usuario
    * para las capas vectoriales o ráster contenidas en el GeoPackage.
+   * En la nueva firma contiene opciones comunes (style, opacity, visibility, etc.) y
+   * tables, cuyas claves son los nombres de tabla y cuyos valores sobrescriben las comunes.
+   * tile y vector mantienen las opciones de los proveedores, indexadas por tabla.
+   * No se modifican los objetos del llamador. Las instancias de estilo se conservan.
+   * La firma histórica mantiene las opciones de tabla directamente en el segundo argumento:
    * <pre><code>
    * {
    *  id_capa_vectorial_en_geopackage: {
@@ -84,17 +89,20 @@ class GeoPackage extends MObject {
     /**
      * Capas
      */
-    this.layers_ = {};
+    this.layers_ = Object.create(null);
+
+    /** Opciones propias del paquete, sin compartir objetos de configuración mutables. */
+    this.options = this.copyOptions_(options);
+    const {
+      tables = {}, tile, vector, ...commonOptions
+    } = this.options;
+    this.tableOptions_ = this.legacyParameters_ ? this.options : tables;
+    this.commonOptions_ = this.legacyParameters_ ? {} : commonOptions;
 
     /**
      * Conector
      */
-    this.connector_ = new GeoPackageProvider(parameters, options);
-
-    /**
-     * Opciones
-     */
-    this.options = options;
+    this.connector_ = new GeoPackageProvider(parameters, { tile, vector });
 
     /**
      * Determina si las capas vectoriales están cargadas.
@@ -131,6 +139,46 @@ class GeoPackage extends MObject {
   }
 
   /**
+   * Copia registros y arrays de configuración, conservando instancias de estilos y fuentes.
+   * @private
+   * @param {*} value Valor de configuración.
+   * @returns {*} Copia del valor o la instancia original si no es un registro/array.
+   */
+  copyOptions_(value) {
+    if (Array.isArray(value)) {
+      return value.map((item) => this.copyOptions_(item));
+    }
+    if (value && (Object.getPrototypeOf(value) === Object.prototype
+      || Object.getPrototypeOf(value) === null)) {
+      return Object.fromEntries(Object.entries(value)
+        .map(([key, item]) => [key, this.copyOptions_(item)]));
+    }
+    return value;
+  }
+
+  /**
+   * Combina opciones comunes y específicas sin modificar ninguna de las dos.
+   * @private
+   * @param {String} tableName Nombre original de la tabla.
+   * @param {Boolean} raster Indica si se trata de una tabla de teselas.
+   * @returns {Object} Opciones independientes para la capa hija.
+   */
+  getTableOptions_(tableName, raster = false) {
+    const options = this.copyOptions_({
+      ...this.commonOptions_,
+      ...(Object.prototype.hasOwnProperty.call(this.tableOptions_, tableName)
+        ? this.tableOptions_[tableName] : {}),
+    });
+    if (options.name === undefined) {
+      options.name = this.legacyParameters_ ? tableName : `${this.name}:${tableName}`;
+    }
+    if (options.legend === undefined && (raster || !this.legacyParameters_)) {
+      options.legend = tableName;
+    }
+    return options;
+  }
+
+  /**
    * Este método agrega la capa al mapa.
    *
    * @function
@@ -144,11 +192,11 @@ class GeoPackage extends MObject {
       vectorProviders.forEach((vectorProvider) => {
         const geojson = vectorProvider.getGeoJSON();
         const tableName = vectorProvider.getTableName();
-        const optsExt = extend(this.options[tableName] || {}, { name: tableName });
+        const optsExt = this.getTableOptions_(tableName);
         const vectorLayer = new GeoJSON({
           ...optsExt,
           source: geojson,
-        });
+        }, this.copyOptions_(optsExt));
 
         this.layers_[tableName] = vectorLayer;
         if (addLayer) {
@@ -165,10 +213,7 @@ class GeoPackage extends MObject {
     const tileLayers = this.connector_.getTileProviders().then((tileProviders) => {
       tileProviders.forEach((tileProvider) => {
         const tableName = tileProvider.getTableName();
-        const optsExt = extend(this.options[tableName] || {}, {
-          name: tableName,
-          legend: tableName,
-        });
+        const optsExt = this.getTableOptions_(tableName, true);
         const tileLayer = new GeoPackageTile(optsExt, tileProvider);
 
         this.layers_[tableName] = tileLayer;
