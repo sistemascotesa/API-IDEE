@@ -7,6 +7,7 @@ import GeoPackageTile from '../provider/TileProvider';
 import GeoPackageVector from '../provider/VectorProvider';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
+import { linearizeGeoPackage } from '../util/Gdal';
 
 /**
  * @classdesc
@@ -99,6 +100,26 @@ class GeoPackageConnector {
           .map((name) => new GeoPackageTile(this.gpkg_, name, this.tileOpts_[name]));
         this.vectorProviders_ = features
           .map((name) => new GeoPackageVector(this.gpkg_, name, this.vectorOpts_[name]));
+        const curvedTables = features.filter((name) => {
+          const type = this.gpkg_.getFeatureDao(name).geometryColumns.geometry_type_name;
+          return ['CIRCULARSTRING', 'COMPOUNDCURVE'].includes(type.toUpperCase());
+        });
+        if (curvedTables.length > 0) {
+          const tables = curvedTables.map((name) => {
+            const dao = this.gpkg_.getFeatureDao(name);
+            return {
+              name,
+              idColumn: dao.table.getIdColumn().name,
+              geometryColumn: dao.geometryColumns.column_name,
+            };
+          });
+          const geometries = await linearizeGeoPackage(uint8Array, tables);
+          this.vectorProviders_.forEach((provider) => {
+            if (geometries.has(provider.getTableName())) {
+              provider.setLinearGeometries(geometries.get(provider.getTableName()));
+            }
+          });
+        }
         return {
           tileProviders: this.tileProviders_,
           vectorProviders: this.vectorProviders_,

@@ -40,7 +40,7 @@ export const createGeoPackage = async (kind = 'mixed') => {
       PRIMARY KEY (table_name, zoom_level)
     );
   `);
-  if (kind === 'mixed' || kind === 'vector') {
+  if (['mixed', 'vector', 'curves'].includes(kind)) {
     db.run(`
       CREATE TABLE places (id INTEGER PRIMARY KEY, geom BLOB, title TEXT);
       INSERT INTO gpkg_contents VALUES
@@ -50,7 +50,7 @@ export const createGeoPackage = async (kind = 'mixed') => {
         (1, X'47500001E6100000010100000000000000000000000000000000000000', 'Origen');
     `);
   }
-  if (kind === 'mixed' || kind === 'raster') {
+  if (['mixed', 'raster', 'curves'].includes(kind)) {
     db.run(`
       CREATE TABLE imagery (
         id INTEGER PRIMARY KEY, zoom_level INTEGER NOT NULL, tile_column INTEGER NOT NULL,
@@ -68,6 +68,38 @@ export const createGeoPackage = async (kind = 'mixed') => {
     `);
     const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aV1kAAAAASUVORK5CYII=', 'base64');
     db.run('INSERT INTO imagery VALUES (1, 0, 0, 0, ?)', [png]);
+  }
+  if (kind === 'curves') {
+    const header = Buffer.from('47500001E6100000', 'hex');
+    const arc = Buffer.alloc(9 + 3 * 16);
+    arc.writeUInt8(1, 0);
+    arc.writeUInt32LE(8, 1);
+    arc.writeUInt32LE(3, 5);
+    [[1, 0], [0, 1], [-1, 0]].forEach(([x, y], index) => {
+      arc.writeDoubleLE(x, 9 + index * 16);
+      arc.writeDoubleLE(y, 17 + index * 16);
+    });
+    const compound = Buffer.from('010900000001000000', 'hex');
+    db.run(`
+      CREATE TABLE gpkg_extensions (
+        table_name TEXT, column_name TEXT, extension_name TEXT,
+        definition TEXT, scope TEXT
+      );
+      CREATE TABLE "curve labels" (feature_id INTEGER PRIMARY KEY, shape COMPOUNDCURVE, title TEXT);
+      CREATE TABLE arcs (feature_id INTEGER PRIMARY KEY, shape CIRCULARSTRING, title TEXT);
+    `);
+    [['curve labels', 'COMPOUNDCURVE', Buffer.concat([header, compound, arc])],
+      ['arcs', 'CIRCULARSTRING', Buffer.concat([header, arc])]].forEach(([table, type, geom]) => {
+      db.run(`INSERT INTO gpkg_contents VALUES
+        (?, 'features', ?, '', '2020-01-01T00:00:00.000Z', -1, 0, 1, 1, 4326)`, [table, table]);
+      db.run('INSERT INTO gpkg_geometry_columns VALUES (?, ?, ?, 4326, 0, 0)', [table, 'shape', type]);
+      db.run(
+        'INSERT INTO gpkg_extensions VALUES (?, ?, ?, ?, ?)',
+        [table, 'shape', `gpkg_geom_${type}`, 'http://www.geopackage.org/spec/#extension_geometry_types', 'read-write'],
+      );
+      const quoted = table.replace(/"/g, '""');
+      db.run(`INSERT INTO "${quoted}" VALUES (7, ?, ?)`, [geom, 'Arco de prueba']);
+    });
   }
   const bytes = Buffer.from(db.export());
   db.close();

@@ -400,6 +400,7 @@
     "simple_deprecated": "Los estilos simples (IDEE.style.Point, IDEE.style.Polygon y IDEE.style.Line) han quedado obsoletos, se recomienda usar en su lugar los estilos genericos (IDEE.style.Generic)",
     "geopackage_source": "GeoPackage requiere una única fuente: un fichero, Response, ArrayBuffer, Uint8Array o una URL no vacía.",
     "geopackage_response": "No se ha podido descargar el fichero GeoPackage",
+    "geopackage_geometry": "No se ha podido leer la geometría del GeoPackage",
     "geopackagetile_method": "La implementación usada no puede crear capas GeoPackageTile.",
     "addgeopackagetile_method": "La implementación usada no posee el método addGeoPackageTile.",
     "getgeopackagetile_method": "La implementación usada no posee el método getGeoPackageTile.",
