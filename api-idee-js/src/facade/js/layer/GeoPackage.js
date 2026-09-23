@@ -15,6 +15,16 @@ import * as Dialog from '../dialog';
  *
  * El formato Geopackage permite agrupar múltiples capas, tanto vectoriales como raster,
  * en un contenedor SQLite.
+ * También puede declararse dentro de la propiedad layers de la configuración del mapa:
+ * <pre><code>
+ * {
+ *   type: 'GeoPackage',
+ *   url: '/data/reference.gpkg',
+ *   name: 'reference',
+ *   style: { point: { radius: 5 } },
+ *   tables: { places: { visibility: false } },
+ * }
+ * </code></pre>
  *
  * @property {String} idLayer Identificador de la capa.
  * @property {String} name Nombre del paquete.

@@ -47,6 +47,7 @@ import Panel from './ui/panels/Panel';
 import CollapsiblePanel from './ui/panels/CollapsiblePanel';
 import * as Position from './ui/position';
 import GeoJSON from './layer/GeoJSON';
+import GeoPackage from './layer/GeoPackage';
 import GeoTIFF from './layer/GeoTIFF';
 import MapLibre from './layer/MapLibre';
 import StyleGeneric from './style/Generic';
@@ -744,7 +745,7 @@ class Map extends Base {
           }
         }
         try {
-          if (layerParam instanceof Layer) {
+          if (layerParam instanceof Layer || layerParam instanceof GeoPackage) {
             layer = layerParam;
           } else {
             // try {
@@ -760,7 +761,7 @@ class Map extends Base {
           console.warn(err);
         }
 
-        if (!isNullOrEmpty(layer)) {
+        if (!isNullOrEmpty(layer) && !(layer instanceof GeoPackage)) {
           // gets the capabilities of the layers
           this.collectorCapabilities_(layer);
 
@@ -779,7 +780,13 @@ class Map extends Base {
       });
 
       // adds the layers
-      this.getImpl().addLayers(layers.filter((element) => !isNullOrEmpty(element)));
+      const geoPackages = layers.filter((layer) => layer instanceof GeoPackage);
+      const mapLayers = layers.filter((layer) => !isNullOrEmpty(layer)
+        && !(layer instanceof GeoPackage));
+      this.getImpl().addLayers(mapLayers);
+      if (geoPackages.length > 0) {
+        this.addGeoPackage(geoPackages);
+      }
     }
     return this;
   }
@@ -801,6 +808,18 @@ class Map extends Base {
         case 'GeoJSON':
           layer = new GeoJSON(parameterVariable, { style: parameterVariable.style });
           break;
+        case 'GeoPackage': {
+          const {
+            type, source, url, name, legend, options = {}, ...layerOptions
+          } = parameterVariable;
+          layer = new GeoPackage({
+            type, source, url, name, legend,
+          }, {
+            ...layerOptions,
+            ...options,
+          });
+          break;
+        }
         case 'GeoTIFF':
           layer = new GeoTIFF(layerParam);
           break;
