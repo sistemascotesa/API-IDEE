@@ -76,3 +76,8 @@ Mapa básico con Capas WMC y una WMS.
 CP-026
 Mapa básico con capa GeoPackage.
 
+CP-027
+Prueba manual de GeoPackage mediante el constructor estándar, con archivo local, URL y opciones por tabla.
+
+CP-028
+Prueba manual de carga de GeoPackage desde archivo local o URL mediante el plugin LayerSwitcher.
