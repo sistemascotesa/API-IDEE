@@ -810,10 +810,10 @@ class Map extends Base {
           break;
         case 'GeoPackage': {
           const {
-            type, source, url, name, legend, options = {}, ...layerOptions
+            type, source, url, name, legend, metadata, properties, options = {}, ...layerOptions
           } = parameterVariable;
           layer = new GeoPackage({
-            type, source, url, name, legend,
+            type, source, url, name, legend, metadata, properties,
           }, {
             ...layerOptions,
             ...options,

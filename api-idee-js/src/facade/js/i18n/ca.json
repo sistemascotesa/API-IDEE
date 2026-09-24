@@ -401,6 +401,7 @@
     "geopackage_source": "GeoPackage requereix una única font: un fitxer, Response, ArrayBuffer, Uint8Array o una URL no buida.",
     "geopackage_response": "No s'ha pogut descarregar el fitxer GeoPackage",
     "geopackage_geometry": "No s'ha pogut llegir la geometria del GeoPackage",
+    "geopackage_not_ready": "El GeoPackage encara no està preparat. Espereu que la capa estigui disponible.",
     "geopackagetile_method": "La implementació usada no pot crear capes GeoPackageTile.",
     "addgeopackagetile_method": "La implementació usada no posseeix el mètode addGeoPackageTile.",
     "getgeopackagetile_method": "La implementació usada no posseeix el mètode getGeoPackageTile.",

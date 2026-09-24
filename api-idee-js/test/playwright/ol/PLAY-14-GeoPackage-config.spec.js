@@ -102,3 +102,263 @@ test('GeoPackage: admite opciones anidadas al crearse con addLayers', async ({ p
 
   expect(result).toEqual({ opacity: 0, visible: false, radius: 3 });
 });
+
+test('GeoPackage: expone metadatos estructurados sin compartir el estado interno', async ({ page }) => {
+  const result = await page.evaluate(async () => {
+    const gpkg = new IDEE.layer.GeoPackage({
+      url: '/fixtures/geopackage/metadata.gpkg',
+      name: 'metadata-demo',
+    });
+    let pendingError;
+    try {
+      gpkg.getMetadata();
+    } catch (error) {
+      pendingError = String(error);
+    }
+    await gpkg.whenReady();
+    const metadata = gpkg.getMetadata();
+    metadata.featureTables.push('changed');
+    metadata.tables.places.description = 'changed';
+    const current = gpkg.getMetadata();
+    return {
+      pendingError,
+      publicProperty: gpkg.metadata,
+      properties: gpkg.properties,
+      featureTables: current.featureTables,
+      tileTables: current.tileTables,
+      attributeTables: current.attributeTables,
+      feature: current.tables.places,
+      tile: current.tables.imagery,
+      attribute: current.tables.details,
+      extensions: current.extensions,
+      metadata: current.metadata,
+      references: current.metadataReferences,
+    };
+  });
+
+  expect(result.pendingError).toContain('capa');
+  expect(result.publicProperty.featureTables).toEqual(['places']);
+  expect(result.properties.tables.places).toMatchObject({
+    type: 'features',
+    data: {
+      type: 'FeatureCollection',
+      features: [{ properties: { id: 1, title: 'Origen' } }],
+    },
+  });
+  expect(result.properties.tables.imagery).toMatchObject({ type: 'tiles' });
+  expect(result.properties.tables.imagery.data).toBeUndefined();
+  expect(result.properties.tables.details).toMatchObject({ type: 'attributes' });
+  expect(result.featureTables).toEqual(['places']);
+  expect(result.tileTables).toEqual(['imagery']);
+  expect(result.attributeTables).toEqual(['details']);
+  expect(result.feature).toMatchObject({
+    tableName: 'places',
+    type: 'features',
+    identifier: 'places',
+    count: 1,
+    bounds: [0, 0, 0, 0],
+    srs: { organization: 'EPSG', id: 4326 },
+    geometry: {
+      column: 'geom', type: 'POINT', z: 0, m: 0,
+    },
+  });
+  expect(result.feature.columns.map(({ name, dataType }) => ({ name, dataType }))).toEqual([
+    { name: 'id', dataType: 'INTEGER' },
+    { name: 'geom', dataType: 'BLOB' },
+    { name: 'title', dataType: 'TEXT' },
+  ]);
+  expect(result.tile).toMatchObject({
+    tableName: 'imagery',
+    type: 'tiles',
+    count: 1,
+    tileMatrixSet: {
+      srsId: 3857,
+      bounds: [-20037508.342789244, -20037508.342789244,
+        20037508.342789244, 20037508.342789244],
+    },
+    tileMatrices: [{
+      zoomLevel: 0,
+      matrixWidth: 1,
+      matrixHeight: 1,
+      tileWidth: 1,
+      tileHeight: 1,
+      pixelXSize: 40075016.68557849,
+      pixelYSize: 40075016.68557849,
+    }],
+  });
+  expect(result.attribute).toMatchObject({
+    tableName: 'details', type: 'attributes', identifier: 'Details', count: 1, srs: null,
+  });
+  expect(result.extensions).toEqual([{
+    tableName: 'places',
+    columnName: 'geom',
+    name: 'example_geometry',
+    definition: 'https://example.test/geometry',
+    scope: 'read-write',
+  }]);
+  expect(result.metadata).toEqual([{
+    id: 1,
+    scope: 'dataset',
+    standardUri: 'https://example.test/standard',
+    mimeType: 'application/json',
+    value: '{"title":"Demo"}',
+  }]);
+  expect(result.references).toEqual([{
+    scope: 'table',
+    tableName: 'places',
+    columnName: null,
+    rowId: null,
+    timestamp: '2020-01-03T00:00:00.000Z',
+    metadataId: 1,
+    parentMetadataId: null,
+  }]);
+});
+
+test('GeoPackage: toJSON permite reconstruir una instancia desde una URL', async ({ page }) => {
+  const result = await page.evaluate(async () => {
+    const style = new IDEE.style.Generic({
+      point: { radius: 6, fill: { color: '#ff0000' } },
+    });
+    const original = new IDEE.layer.GeoPackage({
+      url: '/fixtures/geopackage/mixed.gpkg',
+      name: 'reference',
+      legend: 'Reference data',
+    }, {
+      opacity: 0,
+      visibility: false,
+      style,
+      tables: { places: { legend: 'Places' } },
+    });
+    let pendingError;
+    try {
+      original.toJSON();
+    } catch (error) {
+      pendingError = String(error);
+    }
+    await original.whenReady();
+    const config = original.toJSON();
+    const parsed = JSON.parse(JSON.stringify(config));
+    const restored = new IDEE.layer.GeoPackage(parsed);
+    await restored.whenReady();
+    return {
+      pendingError,
+      config,
+      restored: {
+        name: restored.name,
+        legend: restored.legend,
+        opacity: restored.getLayer('places').getOpacity(),
+        visibility: restored.getLayer('places').isVisible(),
+        tableLegend: restored.getLayer('places').legend,
+        style: restored.getLayer('places').options.style,
+        tables: restored.getMetadata().featureTables,
+        metadataOption: restored.options.metadata,
+        propertiesOption: restored.options.properties,
+      },
+    };
+  });
+
+  expect(result.pendingError).toContain('capa');
+  expect(result.config).toMatchObject({
+    type: 'GeoPackage',
+    url: '/fixtures/geopackage/mixed.gpkg',
+    name: 'reference',
+    legend: 'Reference data',
+    options: {
+      opacity: 0,
+      visibility: false,
+      tables: { places: { legend: 'Places' } },
+    },
+    metadata: { featureTables: ['places'], tileTables: ['imagery'] },
+    properties: {
+      tables: {
+        places: {
+          type: 'features',
+          data: {
+            type: 'FeatureCollection',
+            features: [{ properties: { id: 1, title: 'Origen' } }],
+          },
+        },
+        imagery: { type: 'tiles' },
+      },
+    },
+  });
+  expect(typeof result.config.options.style).toBe('string');
+  expect(result.restored).toMatchObject({
+    name: 'reference',
+    legend: 'Reference data',
+    opacity: 0,
+    visibility: false,
+    tableLegend: 'Places',
+    tables: ['places'],
+  });
+  expect(typeof result.restored.style).toBe('string');
+  expect(result.restored.metadataOption).toBeUndefined();
+  expect(result.restored.propertiesOption).toBeUndefined();
+});
+
+test('GeoPackage: toJSON conserva la referencia de una fuente binaria', async ({ page }) => {
+  const result = await page.evaluate(async () => {
+    const source = new Uint8Array(await (await fetch('/fixtures/geopackage/vector.gpkg')).arrayBuffer());
+    const original = new IDEE.layer.GeoPackage({ source, name: 'local' });
+    await original.whenReady();
+    const config = original.toJSON();
+    const restored = new IDEE.layer.GeoPackage(config);
+    await restored.whenReady();
+    return {
+      sameSource: config.source === source,
+      name: restored.name,
+      tables: restored.getMetadata().featureTables,
+    };
+  });
+
+  expect(result).toEqual({ sameSource: true, name: 'local', tables: ['places'] });
+});
+
+test('GeoPackage: toGeoJSON exporta únicamente las tablas vectoriales', async ({ page }) => {
+  const result = await page.evaluate(async () => {
+    const gpkg = new IDEE.layer.GeoPackage({
+      url: '/fixtures/geopackage/mixed.gpkg',
+      name: 'mixed',
+    });
+    let pendingError;
+    try {
+      gpkg.toGeoJSON();
+    } catch (error) {
+      pendingError = String(error);
+    }
+    await gpkg.whenReady();
+    const geojson = gpkg.toGeoJSON();
+    geojson.features[0].properties.title = 'Modificado';
+    return {
+      pendingError,
+      geojson,
+      currentTitle: gpkg.toGeoJSON().features[0].properties.title,
+    };
+  });
+
+  expect(result.pendingError).toContain('capa');
+  expect(result.geojson).toEqual({
+    type: 'FeatureCollection',
+    crs: {
+      type: 'name',
+      properties: { name: 'EPSG:4326' },
+    },
+    features: [{
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [0, 0] },
+      properties: { id: 1, title: 'Modificado' },
+      tableName: 'places',
+    }],
+  });
+  expect(result.currentTitle).toBe('Origen');
+});
+
+test('GeoPackage: toGeoJSON devuelve una colección vacía si no hay tablas vectoriales', async ({ page }) => {
+  const result = await page.evaluate(async () => {
+    const gpkg = new IDEE.layer.GeoPackage({ url: '/fixtures/geopackage/raster.gpkg' });
+    await gpkg.whenReady();
+    return gpkg.toGeoJSON();
+  });
+
+  expect(result).toEqual({ type: 'FeatureCollection', features: [] });
+});

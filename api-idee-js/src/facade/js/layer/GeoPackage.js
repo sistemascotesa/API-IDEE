@@ -9,6 +9,9 @@ import GeoJSON from './GeoJSON';
 import { generateRandom, escapeXSS } from '../util/Utils';
 import * as EventType from '../event/eventtype';
 import * as Dialog from '../dialog';
+import Style from '../style/Style';
+import Exception from '../exception/exception';
+import { getValue } from '../i18n/language';
 
 /**
  * @classdesc
@@ -34,6 +37,8 @@ import * as Dialog from '../dialog';
  * @property {IDEE.layer.GeoPackageTile|IDEE.layer.GeoJSON} layers_ Capas de GeoPackage.
  * @property {IDEE.GeoPackageConnector} connector_ Conector.
  * @property {Object} options Opciones de la capa.
+ * @property {Object|null} metadata Metadatos estructurados del GeoPackage.
+ * @property {Object|null} properties Información estructurada y datos vectoriales del paquete.
  * @property {Boolean} loadedVectorLayers_ Determina si las capas vectoriales están cargadas.
  * @property {Boolean} loadedTileLayers_ Determina si las capas teseladas están cargadas.
  *
@@ -77,9 +82,9 @@ class GeoPackage extends MObject {
    * @extends {IDEE.Object}
    * @api
    */
-  constructor(data, options = {}) {
+  constructor(data, options) {
     super({});
-    this.constructorParameters = { data, options };
+    const receivedOptions = options || {};
 
     /**
      * Distingue los parámetros normalizados de la firma histórica con datos binarios.
@@ -88,17 +93,38 @@ class GeoPackage extends MObject {
      */
     this.legacyParameters_ = !data || Object.getPrototypeOf(data) !== Object.prototype;
     const parameters = this.legacyParameters_ ? { source: data } : { ...data };
+    const {
+      source, url, name, legend, metadata, properties, options: nestedOptions = {},
+    } = parameters;
+    const flatOptions = { ...parameters };
+    ['type', 'source', 'url', 'name', 'legend', 'metadata', 'properties', 'options']
+      .forEach((property) => delete flatOptions[property]);
+    const normalizedOptions = this.legacyParameters_ ? receivedOptions : {
+      ...flatOptions,
+      ...nestedOptions,
+      ...receivedOptions,
+    };
+    const sourceParameters = {
+      source, url, name, legend,
+    };
+    this.constructorParameters = { data, options };
 
     /**
      * Id de la capa.
      */
-    this.idLayer = generateRandom(LayerType.GeoPackage, parameters.name || options.name).replace(/[^a-zA-Z0-9\-_]/g, '');
+    this.idLayer = generateRandom(LayerType.GeoPackage, name || normalizedOptions.name).replace(/[^a-zA-Z0-9\-_]/g, '');
 
     /** Nombre, leyenda y origen del paquete, independientes de sus tablas. */
-    this.name = parameters.name || options.name || this.idLayer;
-    this.legend = parameters.legend === undefined ? this.name : parameters.legend;
-    this.source = parameters.source;
-    this.url = parameters.url;
+    this.name = name || normalizedOptions.name || this.idLayer;
+    this.legend = legend === undefined ? this.name : legend;
+    this.source = source;
+    this.url = url;
+
+    /** Metadatos estructurados disponibles tras completar whenReady(). */
+    this.metadata = metadata ? this.copyOptions_(metadata) : null;
+
+    /** Información de las tablas, incluyendo los datos de las tablas vectoriales. */
+    this.properties = properties ? this.copyOptions_(properties) : null;
 
     /**
      * Capas
@@ -106,7 +132,7 @@ class GeoPackage extends MObject {
     this.layers_ = Object.create(null);
 
     /** Opciones propias del paquete, sin compartir objetos de configuración mutables. */
-    this.options = this.copyOptions_(options);
+    this.options = this.copyOptions_(normalizedOptions);
     const {
       tables = {}, tile, vector, ...commonOptions
     } = this.options;
@@ -116,7 +142,7 @@ class GeoPackage extends MObject {
     /**
      * Conector
      */
-    this.connector_ = new GeoPackageProvider(parameters, { tile, vector });
+    this.connector_ = new GeoPackageProvider(sourceParameters, { tile, vector });
 
     /**
      * Determina si las capas vectoriales están cargadas.
@@ -136,8 +162,10 @@ class GeoPackage extends MObject {
     this.readyPromise_ = Promise.all([
       this.connector_.getVectorProviders(),
       this.connector_.getTileProviders(),
-    ]).then(([vectorProviders, tileProviders]) => {
-      this.createLayers_(vectorProviders, tileProviders);
+      this.connector_.getMetadata(),
+    ]).then(([vectorProviders, tileProviders, packageMetadata]) => {
+      this.createLayers_(vectorProviders, tileProviders, packageMetadata);
+      this.metadata = this.copyOptions_(packageMetadata);
       return this;
     });
     // Permite consultar whenReady después de un fallo sin generar rechazos no gestionados.
@@ -212,22 +240,41 @@ class GeoPackage extends MObject {
    * @private
    * @param {Array} vectorProviders Proveedores vectoriales.
    * @param {Array} tileProviders Proveedores ráster.
+   * @param {Object} metadata Metadatos estructurados del GeoPackage.
    */
-  createLayers_(vectorProviders, tileProviders) {
+  createLayers_(vectorProviders, tileProviders, metadata) {
     const layers = Object.create(null);
+    const tables = Object.create(null);
     vectorProviders.forEach((vectorProvider) => {
       const tableName = vectorProvider.getTableName();
       const options = this.getTableOptions_(tableName);
+      const source = vectorProvider.getGeoJSON();
       layers[tableName] = new GeoJSON({
         ...options,
-        source: vectorProvider.getGeoJSON(),
+        source,
       }, this.copyOptions_(options));
+      tables[tableName] = {
+        type: 'features',
+        metadata: this.copyOptions_(metadata.tables[tableName]),
+        data: source,
+      };
     });
     tileProviders.forEach((tileProvider) => {
       const tableName = tileProvider.getTableName();
       layers[tableName] = new GeoPackageTile(this.getTableOptions_(tableName, true), tileProvider);
+      tables[tableName] = {
+        type: 'tiles',
+        metadata: this.copyOptions_(metadata.tables[tableName]),
+      };
+    });
+    metadata.attributeTables.forEach((tableName) => {
+      tables[tableName] = {
+        type: 'attributes',
+        metadata: this.copyOptions_(metadata.tables[tableName]),
+      };
     });
     this.layers_ = layers;
+    this.properties = { tables };
     this.loadedVectorLayers_ = true;
     this.loadedTileLayers_ = true;
   }
@@ -242,6 +289,99 @@ class GeoPackage extends MObject {
    */
   whenReady() {
     return this.readyPromise_;
+  }
+
+  /**
+   * Devuelve una copia de los metadatos estructurados del GeoPackage.
+   * Debe invocarse después de que whenReady() haya finalizado.
+   *
+   * @function
+   * @public
+   * @returns {Object} Metadatos del contenedor y de sus tablas.
+   * @api
+   */
+  getMetadata() {
+    if (!this.loadedVectorLayers_ || !this.loadedTileLayers_) {
+      Exception(getValue('exception').geopackage_not_ready);
+    }
+    return this.copyOptions_(this.metadata);
+  }
+
+  /**
+   * Prepara opciones para que las instancias de estilo puedan reconstruirse desde JSON.
+   * @private
+   * @param {*} value Valor de configuración.
+   * @returns {*} Valor serializable y reutilizable por el constructor.
+   */
+  getSerializableOptions_(value) {
+    if (value instanceof Style) {
+      return value.serialize();
+    }
+    if (Array.isArray(value)) {
+      return value.map((item) => this.getSerializableOptions_(item));
+    }
+    if (value && (Object.getPrototypeOf(value) === Object.prototype
+      || Object.getPrototypeOf(value) === null)) {
+      return Object.fromEntries(Object.entries(value)
+        .map(([key, item]) => [key, this.getSerializableOptions_(item)]));
+    }
+    return value;
+  }
+
+  /**
+   * Devuelve una representación GeoJSON con todas las entidades de las tablas vectoriales.
+   * El nombre original de la tabla se conserva en cada entidad mediante el miembro adicional
+   * tableName, sin modificar sus propiedades. El CRS solo se incluye cuando es común a todas
+   * las tablas exportadas.
+   * Debe invocarse después de que whenReady() haya finalizado.
+   *
+   * @function
+   * @public
+   * @returns {Object} Colección GeoJSON con las entidades vectoriales del GeoPackage.
+   * @api
+   */
+  toGeoJSON() {
+    const metadata = this.getMetadata();
+    const collections = metadata.featureTables.map((tableName) => ({
+      tableName,
+      data: this.properties.tables[tableName].data,
+    }));
+    const crs = collections.length > 0 ? collections[0].data.crs : undefined;
+    const commonCrs = crs && collections.every(({ data }) => (
+      JSON.stringify(data.crs) === JSON.stringify(crs)
+    ));
+    return {
+      type: 'FeatureCollection',
+      ...(commonCrs ? { crs: this.copyOptions_(crs) } : {}),
+      features: collections.flatMap(({ tableName, data }) => data.features.map((feature) => ({
+        ...this.copyOptions_(feature),
+        tableName,
+      }))),
+    };
+  }
+
+  /**
+   * Exporta una configuración que puede utilizarse para crear otra instancia.
+   * Conserva la referencia de una fuente binaria; una fuente local no puede persistirse
+   * únicamente mediante JSON.stringify y debe volver a adjuntarse al restaurarla.
+   * Debe invocarse después de que whenReady() haya finalizado.
+   *
+   * @function
+   * @public
+   * @returns {Object} Configuración y metadatos del GeoPackage.
+   * @api
+   */
+  toJSON() {
+    const metadata = this.getMetadata();
+    return {
+      type: LayerType.GeoPackage,
+      ...(this.url === undefined ? { source: this.source } : { url: this.url }),
+      name: this.name,
+      legend: this.legend,
+      options: this.getSerializableOptions_(this.options),
+      metadata,
+      properties: this.copyOptions_(this.properties),
+    };
   }
 
   /**

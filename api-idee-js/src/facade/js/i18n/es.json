@@ -401,6 +401,7 @@
     "geopackage_source": "GeoPackage requiere una única fuente: un fichero, Response, ArrayBuffer, Uint8Array o una URL no vacía.",
     "geopackage_response": "No se ha podido descargar el fichero GeoPackage",
     "geopackage_geometry": "No se ha podido leer la geometría del GeoPackage",
+    "geopackage_not_ready": "El GeoPackage todavía no está preparado. Espere a que la capa esté disponible.",
     "geopackagetile_method": "La implementación usada no puede crear capas GeoPackageTile.",
     "addgeopackagetile_method": "La implementación usada no posee el método addGeoPackageTile.",
     "getgeopackagetile_method": "La implementación usada no posee el método getGeoPackageTile.",

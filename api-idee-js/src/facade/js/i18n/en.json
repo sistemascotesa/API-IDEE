@@ -400,6 +400,7 @@
     "geopackage_source": "GeoPackage requires exactly one source: a file, Response, ArrayBuffer, Uint8Array or a non-empty URL.",
     "geopackage_response": "The GeoPackage file could not be downloaded",
     "geopackage_geometry": "The GeoPackage geometry could not be read",
+    "geopackage_not_ready": "The GeoPackage is not ready yet. Wait until the layer is available.",
     "geopackagetile_method": "The implementation used can not create GeoPackageTile layers.",
     "addgeopackagetile_method": "The implementation used does not have addGeoPackageTile method.",
     "getgeopackagetile_method": "The implementation used does not have getGeoPackageTile method.",

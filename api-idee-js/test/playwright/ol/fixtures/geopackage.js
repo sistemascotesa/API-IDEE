@@ -40,7 +40,7 @@ export const createGeoPackage = async (kind = 'mixed') => {
       PRIMARY KEY (table_name, zoom_level)
     );
   `);
-  if (['mixed', 'vector', 'curves'].includes(kind)) {
+  if (['mixed', 'vector', 'curves', 'metadata'].includes(kind)) {
     db.run(`
       CREATE TABLE places (id INTEGER PRIMARY KEY, geom BLOB, title TEXT);
       INSERT INTO gpkg_contents VALUES
@@ -50,7 +50,7 @@ export const createGeoPackage = async (kind = 'mixed') => {
         (1, X'47500001E6100000010100000000000000000000000000000000000000', 'Origen');
     `);
   }
-  if (['mixed', 'raster', 'curves'].includes(kind)) {
+  if (['mixed', 'raster', 'curves', 'metadata'].includes(kind)) {
     db.run(`
       CREATE TABLE imagery (
         id INTEGER PRIMARY KEY, zoom_level INTEGER NOT NULL, tile_column INTEGER NOT NULL,
@@ -100,6 +100,34 @@ export const createGeoPackage = async (kind = 'mixed') => {
       const quoted = table.replace(/"/g, '""');
       db.run(`INSERT INTO "${quoted}" VALUES (7, ?, ?)`, [geom, 'Arco de prueba']);
     });
+  }
+  if (kind === 'metadata') {
+    db.run(`
+      CREATE TABLE details (id INTEGER PRIMARY KEY, value TEXT NOT NULL);
+      INSERT INTO details VALUES (1, 'Información auxiliar');
+      INSERT INTO gpkg_contents VALUES
+        ('details', 'attributes', 'Details', 'Tabla auxiliar',
+        '2020-01-02T00:00:00.000Z', NULL, NULL, NULL, NULL, NULL);
+      CREATE TABLE gpkg_extensions (
+        table_name TEXT, column_name TEXT, extension_name TEXT,
+        definition TEXT, scope TEXT
+      );
+      INSERT INTO gpkg_extensions VALUES
+        ('places', 'geom', 'example_geometry', 'https://example.test/geometry', 'read-write');
+      CREATE TABLE gpkg_metadata (
+        id INTEGER PRIMARY KEY, md_scope TEXT NOT NULL, md_standard_uri TEXT NOT NULL,
+        mime_type TEXT NOT NULL, metadata TEXT NOT NULL
+      );
+      INSERT INTO gpkg_metadata VALUES
+        (1, 'dataset', 'https://example.test/standard', 'application/json', '{"title":"Demo"}');
+      CREATE TABLE gpkg_metadata_reference (
+        reference_scope TEXT NOT NULL, table_name TEXT, column_name TEXT,
+        row_id_value INTEGER, timestamp DATETIME NOT NULL,
+        md_file_id INTEGER NOT NULL, md_parent_id INTEGER
+      );
+      INSERT INTO gpkg_metadata_reference VALUES
+        ('table', 'places', NULL, NULL, '2020-01-03T00:00:00.000Z', 1, NULL);
+    `);
   }
   const bytes = Buffer.from(db.export());
   db.close();
