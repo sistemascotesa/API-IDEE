@@ -26,13 +26,26 @@
       .instructions h1 { margin: 0 0 8px; font-size: 1.2rem; }
       .instructions p { margin: 6px 0; }
       .instructions code { overflow-wrap: anywhere; }
+      #layerswitcher-add-layer {
+        min-height: 40px;
+        border: 2px solid var(--idee-color-primary, #006699);
+        border-radius: 2px;
+        background: var(--idee-color-primary, #006699);
+        color: #fff;
+        font-weight: 600;
+      }
+      #layerswitcher-add-layer:hover { filter: brightness(0.9); }
+      #layerswitcher-add-layer:focus-visible {
+        outline: 3px solid #ffbf47;
+        outline-offset: 2px;
+      }
     </style>
   </head>
   <body>
-    <main id="map" role="region" aria-label="Mapa de prueba de GeoPackage con LayerSwitcher"></main>
+    <div id="map" role="region" aria-label="Mapa de prueba de GeoPackage con LayerSwitcher"></div>
     <aside class="instructions" aria-label="Instrucciones de la prueba">
       <h1>GeoPackage con LayerSwitcher</h1>
-      <p>Abre <strong>Gestor de capas</strong>, pulsa <strong>Cargar capas</strong> y selecciona un archivo <code>.gpkg</code> o introduce su URL.</p>
+      <p>Abre <strong>Gestor de capas</strong>, pulsa el botón azul <strong>Cargar capas</strong> situado en la parte superior del panel y selecciona un archivo <code>.gpkg</code> o introduce su URL.</p>
       <p>Al finalizar, las tablas vectoriales y ráster deben aparecer tanto en el mapa como en el listado del gestor.</p>
     </aside>
     <script src="/dist/js/apiidee.ol.min.js" charset="utf-8"></script>
