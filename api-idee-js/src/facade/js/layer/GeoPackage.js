@@ -24,6 +24,7 @@ import { getValue } from '../i18n/language';
  *   type: 'GeoPackage',
  *   url: '/data/reference.gpkg',
  *   name: 'reference',
+ *   tiled: true,
  *   style: { point: { radius: 5 } },
  *   tables: { places: { visibility: false } },
  * }
@@ -37,6 +38,7 @@ import { getValue } from '../i18n/language';
  * @property {IDEE.layer.GeoPackageTile|IDEE.layer.GeoJSON} layers_ Capas de GeoPackage.
  * @property {IDEE.GeoPackageConnector} connector_ Conector.
  * @property {Object} options Opciones de la capa.
+ * @property {Boolean} tiled Activa la carga vectorial por extensión visible.
  * @property {Object|null} metadata Metadatos estructurados del GeoPackage.
  * @property {Object|null} properties Información estructurada y datos vectoriales del paquete.
  * @property {Boolean} loadedVectorLayers_ Determina si las capas vectoriales están cargadas.
@@ -61,6 +63,7 @@ class GeoPackage extends MObject {
    * para las capas vectoriales o ráster contenidas en el GeoPackage.
    * En la nueva firma contiene opciones comunes (style, opacity, visibility, etc.) y
    * tables, cuyas claves son los nombres de tabla y cuyos valores sobrescriben las comunes.
+   * tiled activa la consulta de las tablas vectoriales según la extensión visible en OpenLayers.
    * tile y vector mantienen las opciones de los proveedores, indexadas por tabla.
    * No se modifican los objetos del llamador. Las instancias de estilo se conservan.
    * La firma histórica mantiene las opciones de tabla directamente en el segundo argumento:
@@ -131,8 +134,12 @@ class GeoPackage extends MObject {
      */
     this.layers_ = Object.create(null);
 
+    /** Proveedores vectoriales, indexados por el nombre original de tabla. */
+    this.vectorProviders_ = Object.create(null);
+
     /** Opciones propias del paquete, sin compartir objetos de configuración mutables. */
     this.options = this.copyOptions_(normalizedOptions);
+    this.tiled = this.options.tiled === true;
     const {
       tables = {}, tile, vector, ...commonOptions
     } = this.options;
@@ -163,7 +170,11 @@ class GeoPackage extends MObject {
       this.connector_.getVectorProviders(),
       this.connector_.getTileProviders(),
       this.connector_.getMetadata(),
-    ]).then(([vectorProviders, tileProviders, packageMetadata]) => {
+    ]).then(async ([vectorProviders, tileProviders, packageMetadata]) => {
+      await Promise.all(vectorProviders.map((provider) => (
+        this.getTableOptions_(provider.getTableName()).tiled === true
+          ? provider.prepareForBoundingBox() : undefined
+      )));
       this.createLayers_(vectorProviders, tileProviders, packageMetadata);
       this.metadata = this.copyOptions_(packageMetadata);
       return this;
@@ -248,10 +259,18 @@ class GeoPackage extends MObject {
     vectorProviders.forEach((vectorProvider) => {
       const tableName = vectorProvider.getTableName();
       const options = this.getTableOptions_(tableName);
-      const source = vectorProvider.getGeoJSON();
+      const tiled = options.tiled === true;
+      const source = tiled ? vectorProvider.getEmptyGeoJSON() : vectorProvider.getGeoJSON();
+      this.vectorProviders_[tableName] = vectorProvider;
       layers[tableName] = new GeoJSON({
         ...options,
         source,
+        ...(tiled ? {
+          bboxLoader: (extent, projection) => (
+            vectorProvider.getGeoJSONByBoundingBox(extent, projection)
+          ),
+          fullLoader: () => vectorProvider.getGeoJSON(),
+        } : {}),
       }, this.copyOptions_(options));
       tables[tableName] = {
         type: 'features',
@@ -344,7 +363,7 @@ class GeoPackage extends MObject {
     const metadata = this.getMetadata();
     const collections = metadata.featureTables.map((tableName) => ({
       tableName,
-      data: this.properties.tables[tableName].data,
+      data: this.vectorProviders_[tableName].getGeoJSON(),
     }));
     const crs = collections.length > 0 ? collections[0].data.crs : undefined;
     const commonCrs = crs && collections.every(({ data }) => (

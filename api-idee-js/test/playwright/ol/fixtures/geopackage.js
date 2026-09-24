@@ -40,7 +40,7 @@ export const createGeoPackage = async (kind = 'mixed') => {
       PRIMARY KEY (table_name, zoom_level)
     );
   `);
-  if (['mixed', 'vector', 'curves', 'metadata'].includes(kind)) {
+  if (['mixed', 'vector', 'curves', 'metadata', 'bbox'].includes(kind)) {
     db.run(`
       CREATE TABLE places (id INTEGER PRIMARY KEY, geom BLOB, title TEXT);
       INSERT INTO gpkg_contents VALUES
@@ -49,6 +49,22 @@ export const createGeoPackage = async (kind = 'mixed') => {
       INSERT INTO places VALUES
         (1, X'47500001E6100000010100000000000000000000000000000000000000', 'Origen');
     `);
+  }
+  if (kind === 'bbox') {
+    const createPoint = (x, y) => {
+      const geometry = Buffer.alloc(8 + 1 + 4 + 16);
+      Buffer.from('47500001E6100000', 'hex').copy(geometry);
+      geometry.writeUInt8(1, 8);
+      geometry.writeUInt32LE(1, 9);
+      geometry.writeDoubleLE(x, 13);
+      geometry.writeDoubleLE(y, 21);
+      return geometry;
+    };
+    db.run(`UPDATE gpkg_contents
+      SET min_x = -100, min_y = 0, max_x = 100, max_y = 0
+      WHERE table_name = 'places'`);
+    db.run('INSERT INTO places VALUES (2, ?, ?)', [createPoint(100, 0), 'Este']);
+    db.run('INSERT INTO places VALUES (3, ?, ?)', [createPoint(-100, 0), 'Oeste']);
   }
   if (['mixed', 'raster', 'curves', 'metadata'].includes(kind)) {
     db.run(`

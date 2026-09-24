@@ -362,3 +362,69 @@ test('GeoPackage: toGeoJSON devuelve una colección vacía si no hay tablas vect
 
   expect(result).toEqual({ type: 'FeatureCollection', features: [] });
 });
+
+test('GeoPackage: tiled consulta el índice espacial por la extensión solicitada', async ({ page }) => {
+  const result = await page.evaluate(async () => {
+    const gpkg = new IDEE.layer.GeoPackage({
+      url: '/fixtures/geopackage/bbox.gpkg',
+      tiled: true,
+    });
+    await gpkg.whenReady();
+    const { bboxLoader } = gpkg.getLayer('places').constructorParameters.parameters;
+    return {
+      center: bboxLoader([-1000000, -1000000, 1000000, 1000000], 'EPSG:3857'),
+      east: bboxLoader([
+        10000000, -1000000, 12000000, 1000000,
+      ], 'EPSG:3857'),
+      tiled: gpkg.tiled,
+      initialData: gpkg.properties.tables.places.data.features.length,
+      serialized: gpkg.toJSON().options.tiled,
+      exported: gpkg.toGeoJSON().features.length,
+    };
+  });
+
+  expect(result.center.features.map(({ properties }) => properties.title)).toEqual(['Origen']);
+  expect(result.east.features.map(({ properties }) => properties.title)).toEqual(['Este']);
+  expect(result.tiled).toBe(true);
+  expect(result.initialData).toBe(0);
+  expect(result.serialized).toBe(true);
+  expect(result.exported).toBe(3);
+});
+
+test('GeoPackage: tiled carga nuevas entidades al cambiar el BBOX visible', async ({ page }) => {
+  const result = await page.evaluate(async () => {
+    const map = IDEE.map({
+      container: 'map', layers: [], controls: [], center: [0, 0], zoom: 5,
+    });
+    const gpkg = new IDEE.layer.GeoPackage({
+      url: '/fixtures/geopackage/bbox.gpkg',
+      tiled: true,
+    });
+    await gpkg.whenReady();
+    const layer = gpkg.getLayer('places');
+    const waitForTitle = (title) => new Promise((resolve) => {
+      const check = () => {
+        if (layer.getFeatures().some((feature) => feature.getAttribute('title') === title)) {
+          resolve();
+        } else {
+          layer.once(IDEE.evt.LOAD, check);
+        }
+      };
+      check();
+    });
+    const initialLoad = waitForTitle('Origen');
+    await gpkg.addTo(map);
+    await initialLoad;
+    const initial = layer.getFeatures().map((feature) => feature.getAttribute('title')).sort();
+    const eastLoad = waitForTitle('Este');
+    map.getImpl().getMapImpl().getView().setCenter([11131949.079327358, 0]);
+    await eastLoad;
+    return {
+      initial,
+      loaded: layer.getFeatures().map((feature) => feature.getAttribute('title')).sort(),
+    };
+  });
+
+  expect(result.initial).toEqual(['Origen']);
+  expect(result.loaded).toEqual(['Este', 'Origen']);
+});
