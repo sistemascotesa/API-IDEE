@@ -1282,7 +1282,7 @@ export default class LayerswitcherControl extends IDEE.Control {
                               });
                             } else if (response3.text.replaceAll('\r\n', '').replaceAll(' ', '').indexOf('"type":"FeatureCollection"') >= 0) {
                               this.printLayerModal(url, 'geojson');
-                            } else if (response3.text.indexOf('<kml ') >= 0) {
+                            } else if (/<kml(?:\s|>)/i.test(response3.text)) {
                               const parser = new DOMParser();
                               const xmlDoc = parser.parseFromString(response3.text, 'text/xml');
                               const folders = xmlDoc.getElementsByTagName('Folder');
@@ -1532,7 +1532,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         } else {
           IDEE.remote.get(url).then((response) => {
             const source = response.text;
-            IDEE.utils.loadFeaturesFromSource(this.map_, source, fileName, extension);
+            IDEE.loadFiles.loadFeaturesFromSource(this.map_, source, fileName, extension);
             const buttonClose = document.querySelector('div.m-dialog.info div.m-button > button');
             buttonClose.click();
           });
@@ -1586,7 +1586,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       }).then((blob) => {
         if (blob) {
           blob.arrayBuffer().then((buffer) => {
-            IDEE.utils.loadFeaturesFromSource(this.map_, buffer, fileName, 'zip');
+            IDEE.loadFiles.loadFeaturesFromSource(this.map_, buffer, fileName, 'zip');
             const buttonClose = document.querySelector('div.m-dialog.info div.m-button > button');
             buttonClose.click();
           });

@@ -29,6 +29,18 @@ import { getValue } from '../i18n/language';
  */
 class LayerGroup extends LayerBase {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({
+      display: this.display,
+      layers: this.getLayers().map((layer) => layer.getRestLayer()),
+    });
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa LayerGroup
    * con parámetros especificados por el usuario.
    *
@@ -90,7 +102,7 @@ class LayerGroup extends LayerBase {
 
     this.layers = impl.layers;
 
-    this.display = parameters.display || true;
+    this.display = parameters.display !== undefined ? parameters.display : true;
   }
 
   /**

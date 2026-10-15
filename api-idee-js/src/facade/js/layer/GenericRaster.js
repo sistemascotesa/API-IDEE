@@ -30,6 +30,16 @@ import * as LayerType from './Type';
  */
 class GenericRaster extends LayerBase {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    const { type, ...parameters } = this.getImpl().getRestParameters();
+    return this.formatRestLayer_(parameters, type);
+  }
+
+  /**
    * Constructor principal de la clase.
    * @constructor
    * @param {string|Mx.parameters.GenericRaster} userParameters Parámetros para la

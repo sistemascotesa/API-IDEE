@@ -2,6 +2,7 @@
  * @module IDEE/layer/GeoPackage
  */
 import GeoPackageProvider from '../connector/GeoPackageConnector';
+import * as RestLayer from '../util/RestLayer';
 import MObject from '../Object';
 import Layer from './Layer';
 import * as LayerType from './Type';
@@ -49,6 +50,51 @@ import { getValue } from '../i18n/language';
  * @extends {IDEE.Object}
  */
 class GeoPackage extends MObject {
+  /**
+   * Comparte el paquete remoto con el estado actual de sus tablas.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    if (!RestLayer.isRemote(this.url)) {
+      const layers = Object.values(this.layers_);
+      if (!layers.length) throw new Error('REST_LAYER_LOCAL_BINARY');
+      return RestLayer.serialize('LayerGroup', {
+        name: this.name,
+        legend: this.legend,
+        layers: layers.map((layer) => layer.getRestLayer()),
+      });
+    }
+    return this.getRestLayerForTables(Object.keys(this.layers_));
+  }
+
+  /**
+   * Conserva solo las tablas compartidas, sin duplicar sus datos vectoriales.
+   * @param {Array<String>} tableNames Tablas seleccionadas.
+   * @returns {String} Cadena REST del contenedor.
+   * @private
+   */
+  getRestLayerForTables(tableNames) {
+    const url = RestLayer.remoteURL(this.url);
+    const tables = { ...this.getSerializableOptions_(this.tableOptions_) };
+    tableNames.forEach((name) => {
+      const layer = this.layers_[name];
+      if (layer) {
+        const parameters = RestLayer.getParameters(layer);
+        tables[name] = { ...parameters.options, ...parameters };
+        delete tables[name].url;
+        delete tables[name].options;
+      }
+    });
+    return RestLayer.serialize(this.type, {
+      url,
+      name: this.name,
+      legend: this.legend,
+      tableNames: tableNames.length ? tableNames : undefined,
+      options: { ...this.getSerializableOptions_(this.options), tables },
+    });
+  }
+
   /**
    * Constructor principal de la clase. Crea una capa GeoPackage
    * con parámetros especificados por el usuario.
@@ -146,8 +192,9 @@ class GeoPackage extends MObject {
     this.options = this.copyOptions_(normalizedOptions);
     this.tiled = this.options.tiled === true;
     const {
-      tables = {}, tile, vector, ...commonOptions
+      tables = {}, tile, vector, tableNames, ...commonOptions
     } = this.options;
+    this.restTableNames_ = Array.isArray(tableNames) ? tableNames : null;
     this.tableOptions_ = this.legacyParameters_ ? this.options : tables;
     this.commonOptions_ = this.legacyParameters_ ? {} : commonOptions;
 
@@ -261,7 +308,8 @@ class GeoPackage extends MObject {
   createLayers_(vectorProviders, tileProviders, metadata) {
     const layers = Object.create(null);
     const tables = Object.create(null);
-    vectorProviders.forEach((vectorProvider) => {
+    vectorProviders.filter((provider) => !this.restTableNames_
+      || this.restTableNames_.includes(provider.getTableName())).forEach((vectorProvider) => {
       const tableName = vectorProvider.getTableName();
       const options = this.getTableOptions_(tableName);
       const tiled = options.tiled === true;
@@ -286,7 +334,8 @@ class GeoPackage extends MObject {
         data: source,
       };
     });
-    tileProviders.forEach((tileProvider) => {
+    tileProviders.filter((provider) => !this.restTableNames_
+      || this.restTableNames_.includes(provider.getTableName())).forEach((tileProvider) => {
       const tableName = tileProvider.getTableName();
       layers[tableName] = new GeoPackageTile({
         ...this.getTableOptions_(tableName, true),
@@ -303,7 +352,10 @@ class GeoPackage extends MObject {
         metadata: this.copyOptions_(metadata.tables[tableName]),
       };
     });
-    Object.keys(layers).forEach((name) => this.tableConnectors_.set(name, this.connector_));
+    Object.keys(layers).forEach((name) => {
+      this.tableConnectors_.set(name, this.connector_);
+      RestLayer.setOrigin(layers[name], this, name);
+    });
     this.layers_ = layers;
     this.properties = { tables };
     this.loadedVectorLayers_ = true;

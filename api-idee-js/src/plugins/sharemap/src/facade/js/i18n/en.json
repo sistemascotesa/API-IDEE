@@ -1,7 +1,10 @@
 {
   "exception": {
     "impl": "The implementation used cannot create Attributions controls.",
-    "baseUrl": "The implementation used cannot obtain the base URL of the application."
+    "baseUrl": "The implementation used cannot obtain the base URL of the application.",
+    "localBinary": "“{layer}” will not be shared: the file only exists in this browser. Load it from an accessible URL to share it.",
+    "unsupportedLayer": "“{layer}” could not be shared: its source or configuration cannot be restored through REST.",
+    "urlTooLong": "The map link is still too long to share. Select fewer layers or load the data from an accessible URL."
   },
   "textHelp": {
     "help1": "Allows you to share the map view with the loaded information layers through a Web link. It also provides the HTML code in case you want to embed the viewer in another Web portal.",

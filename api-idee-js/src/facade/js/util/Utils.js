@@ -6,6 +6,7 @@
 import { get as remoteGet } from 'IDEE/util/Remote';
 import chroma from 'chroma-js';
 import Draggabilly from 'draggabilly';
+import pako from 'pako';
 import reproj from 'impl/util/reprojection';
 import getImplWMTSCapabilities from 'impl/util/GetCapabilities';
 import { getValue } from '../i18n/language';
@@ -2122,10 +2123,13 @@ export function decodeBase64Utf8(base64) {
 const parseValueByType = (rawValue, paramKey, objectName) => {
   if (!rawValue) return rawValue;
   const value = rawValue.trim();
-  if (value.startsWith('base64~')) {
+  if (value.startsWith('base64~') || value.startsWith('deflate~')) {
     try {
-      const encoded = value.substring(7);
-      const decoded = decodeBase64Utf8(encoded);
+      const compressed = value.startsWith('deflate~');
+      const encoded = value.substring(compressed ? 8 : 7).replace(/-/g, '+').replace(/_/g, '/');
+      const decoded = compressed
+        ? pako.inflate(Uint8Array.from(atob(encoded), (byte) => byte.charCodeAt(0)), { to: 'string' })
+        : decodeBase64Utf8(encoded);
       return parseValueByType(decoded, paramKey, objectName);
     } catch (e) {
       dialog.error(getValue('exception').parseParamError
@@ -2176,7 +2180,7 @@ const parseValueByType = (rawValue, paramKey, objectName) => {
  * No longer requires allowedAttributes - intelligently detects types from values.
  * Supports: boolean (true/false), numbers, JSON (objects/arrays),
  * base64-encoded values, and strings.
- * Base64 encoding is indicated by 'base64~' prefix.
+ * Base64 encoding is indicated by 'base64~'; compressed values use 'deflate~'.
  *
  * Default separators: semicolon (;) for fields, equals (=) for key-value pairs.
  * These separators are chosen to minimize conflicts with JSON syntax.
@@ -2194,7 +2198,9 @@ export const parseUrlParams = (stringToParse, objectName, fieldSeparator = ';', 
 
   const fields = stringToParse.split(fieldSeparator);
   fields.forEach((field) => {
-    const parts = field.split(keyValueSeparator, 2);
+    const separatorIndex = field.indexOf(keyValueSeparator);
+    const parts = separatorIndex < 0 ? [] : [field.substring(0, separatorIndex),
+      field.substring(separatorIndex + keyValueSeparator.length)];
     if (parts.length === 2) {
       const [key, rawValue] = parts;
       if (key && rawValue) {

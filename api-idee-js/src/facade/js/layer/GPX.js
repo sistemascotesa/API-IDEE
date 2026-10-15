@@ -15,6 +15,16 @@ import { getValue } from '../i18n/language';
  */
 class GPX extends Vector {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    if (!this.url || /^(blob:|data:)/i.test(this.url)) return super.getRestLayer();
+    return this.formatRestLayer_({});
+  }
+
+  /**
    * @param {Object|String} parameters Parámetros de la capa.
    * - url: URL del fichero GPX. No se combina con source.
    * - source: Contenido XML o File seleccionado por el usuario.

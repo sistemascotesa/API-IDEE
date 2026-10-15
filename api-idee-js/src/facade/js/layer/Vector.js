@@ -53,6 +53,17 @@ const featureSnapshot = (layer) => {
  */
 class Vector extends LayerBase {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    const source = this.toGeoJSON();
+    source.crs = { type: 'name', properties: { name: 'EPSG:4326' } };
+    return this.formatRestLayer_({ url: undefined, source }, 'GeoJSON');
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa vectorial
    * con parámetros especificados por el usuario.
    *

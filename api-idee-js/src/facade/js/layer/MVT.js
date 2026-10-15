@@ -45,6 +45,19 @@ export const mode = {
  */
 class MVT extends Vector {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    const projection = this.getProjection();
+    return this.formatRestLayer_({
+      projection: projection?.getCode?.() || projection,
+      mode: this.mode,
+    });
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa MVT
    * con parámetros especificados por el usuario.
    *

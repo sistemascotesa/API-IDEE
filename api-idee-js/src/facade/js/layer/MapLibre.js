@@ -39,6 +39,20 @@ import { getValue } from '../i18n/language';
  */
 class MapLibre extends LayerBase {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({
+      // La implementación carga el estilo desde url cuando existe. Su copia
+      // descargada no debe volver a incrustarse en el enlace compartido.
+      maplibrestyle: this.url ? undefined : this.maplibrestyle,
+      disableBackgroundColor: this.disableBackgroundColor,
+    });
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa MapLibre
    * con parámetros especificados por el usuario.
    *

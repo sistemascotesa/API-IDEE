@@ -87,7 +87,7 @@
                 </datalist>
             </div>
             <div>
-                <label for="selectShareLayer" title="Solo actúa cuando urlAPI es false. Incluye en el enlace todas las capas presentes en el mapa (true) o ninguna (false). Por defecto: false">Compartir capas "shareLayer"</label>
+                <label for="selectShareLayer" title="Incluye las capas compartibles del mapa (true) o las indicadas en filterLayers (false). Por defecto: false">Compartir capas "shareLayer"</label>
                 <select name="shareLayer" id="selectShareLayer">
                     <option value=""></option>
                     <option value="true">true</option>
@@ -97,10 +97,7 @@
             <div>
                 <label for="inputFilterLayers" title="Lista de nombres de capas (separados por coma) que se incluirán en el enlace. Solo aplica cuando shareLayer es false o no está definido">Filtro de capas "filterLayers"</label>
                 <input type="text" id="inputFilterLayers" list="filterLayersSug">
-                <datalist id="filterLayersSug">
-                    <option value="AU.AdministrativeBoundary"></option>
-                    <option value="AU.AdministrativeBoundary,AU.AdministrativeUnit"></option>
-                </datalist>
+                <datalist id="filterLayersSug"></datalist>
             </div>
             <div>
                 <label for="inputBtn" title="Texto del botón que cierra el panel del plugin">Texto del botón cerrar "btn"</label>
@@ -187,19 +184,23 @@
             controls: ['scale*true', 'location', 'backgroundlayers'],
         });
 
-        const layerinicial = new IDEE.layer.WMS({
-            url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
-            name: 'AU.AdministrativeBoundary',
-            legend: 'Limite administrativo',
-        }, {});
+        // Este visualizador incorpora las capas de la URL solo a su mapa principal.
+        map.addLayers(IDEE.config.MAP_VIEWER_LAYERS || []);
+        if (!urlParams.has('layers')) {
+            const layerinicial = new IDEE.layer.WMS({
+                url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
+                name: 'AU.AdministrativeBoundary',
+                legend: 'Limite administrativo',
+            }, {});
 
-        const layerUA = new IDEE.layer.WMS({
-            url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
-            name: 'AU.AdministrativeUnit',
-            legend: 'Unidad administrativa'
-        }, {});
+            const layerUA = new IDEE.layer.WMS({
+                url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
+                name: 'AU.AdministrativeUnit',
+                legend: 'Unidad administrativa'
+            }, {});
 
-        map.addLayers([layerinicial, layerUA]);
+            map.addLayers([layerinicial, layerUA]);
+        }
 
         let mp = null;
 
@@ -211,6 +212,7 @@
         const selectMinimize = document.getElementById('selectMinimize');
         const selectShareLayer = document.getElementById('selectShareLayer');
         const inputFilterLayers = document.getElementById('inputFilterLayers');
+        const filterLayersSug = document.getElementById('filterLayersSug');
         const selectOverwriteStyles = document.getElementById('selectOverwriteStyles');
         const inputPrimaryColor = document.getElementById('inputPrimaryColor');
         const inputSecondaryColor = document.getElementById('inputSecondaryColor');
@@ -221,6 +223,26 @@
         const inputCopyBtnHtml = document.getElementById('inputCopyBtnHtml');
         const inputTooltipCopy = document.getElementById('inputTooltipCopy');
         const botonEliminar = document.getElementById('botonEliminar');
+
+        function actualizarFiltroCapas() {
+            const names = [...new Set(map.getLayers()
+                .filter((layer) => layer.name && layer.name !== '__draw__'
+                    && layer.name !== 'selectionLayer' && layer.isBase !== true
+                    && layer.displayInLayerSwitcher !== false)
+                .map((layer) => layer.name))];
+            const suggestions = names.length > 1 ? names.concat(names.join(',')) : names;
+            filterLayersSug.textContent = '';
+            suggestions.forEach((name) => {
+                const option = document.createElement('option');
+                option.value = name;
+                filterLayersSug.appendChild(option);
+            });
+        }
+
+        map.on(IDEE.evt.ADDED_LAYER, actualizarFiltroCapas);
+        map.on(IDEE.evt.REMOVED_LAYER, actualizarFiltroCapas);
+        inputFilterLayers.addEventListener('focus', actualizarFiltroCapas);
+        actualizarFiltroCapas();
 
         const parseBool = (val) => {
             if (val === 'true') return true;

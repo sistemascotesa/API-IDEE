@@ -13,6 +13,8 @@ const map = IDEE.map({
   controls: ['scale*true', 'location', 'backgroundlayers'],
 });
 window.map = map;
+// La URL pertenece a este visualizador, no a otros mapas creados en la página.
+map.addLayers(IDEE.config.MAP_VIEWER_LAYERS || []);
 
 const geoJSON = new IDEE.layer.GeoJSON({
   name: 'cosas1_poligono',
@@ -31,7 +33,9 @@ const geoJSON = new IDEE.layer.GeoJSON({
     ],
   },
 });
-map.addLayers(geoJSON);
+if (!new URLSearchParams(window.location.search).has('layers')) {
+  map.addLayers(geoJSON);
+}
 
 let mp;
 
@@ -56,6 +60,7 @@ const selectUrlAPI = document.getElementById('selectUrlAPI');
 const selectMinimize = document.getElementById('selectMinimize');
 const selectShareLayer = document.getElementById('selectShareLayer');
 const inputFilterLayers = document.getElementById('inputFilterLayers');
+const filterLayersSug = document.getElementById('filterLayersSug');
 const selectOverwriteStyles = document.getElementById('selectOverwriteStyles');
 const inputPrimaryColor = document.getElementById('inputPrimaryColor');
 const inputSecondaryColor = document.getElementById('inputSecondaryColor');
@@ -65,6 +70,26 @@ const inputBtn = document.getElementById('inputBtn');
 const inputCopyBtn = document.getElementById('inputCopyBtn');
 const inputCopyBtnHtml = document.getElementById('inputCopyBtnHtml');
 const inputTooltipCopy = document.getElementById('inputTooltipCopy');
+
+const updateFilterLayerSuggestions = () => {
+  const names = [...new Set(map.getLayers()
+    .filter((layer) => layer.name && layer.name !== '__draw__'
+      && layer.name !== 'selectionLayer' && layer.isBase !== true
+      && layer.displayInLayerSwitcher !== false)
+    .map((layer) => layer.name))];
+  const suggestions = names.length > 1 ? names.concat(names.join(',')) : names;
+  filterLayersSug.textContent = '';
+  suggestions.forEach((name) => {
+    const option = document.createElement('option');
+    option.value = name;
+    filterLayersSug.appendChild(option);
+  });
+};
+
+map.on(IDEE.evt.ADDED_LAYER, updateFilterLayerSuggestions);
+map.on(IDEE.evt.REMOVED_LAYER, updateFilterLayerSuggestions);
+inputFilterLayers.addEventListener('focus', updateFilterLayerSuggestions);
+updateFilterLayerSuggestions();
 
 const parseBool = (val) => {
   if (val === 'true') return true;

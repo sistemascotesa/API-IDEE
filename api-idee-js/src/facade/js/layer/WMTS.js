@@ -36,6 +36,20 @@ import { getValue } from '../i18n/language';
  */
 class WMTS extends LayerBase {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({
+      matrixSet: this.matrixSet,
+      format: this.options.format,
+      queryable: this.isQueryable(),
+      useCapabilities: this.useCapabilities,
+    });
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa WMTS
    * con parámetros especificados por el usuario.
    * @constructor

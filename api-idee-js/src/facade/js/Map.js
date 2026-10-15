@@ -839,94 +839,104 @@ class Map extends Base {
     return this;
   }
 
-  getLayerByString(layerParam) {
+  getLayerByString(layerParameter) {
+    const layerParam = buildLayer(layerParameter);
     let layer = null;
     const parameterVariable = parameter.layer(layerParam);
+    // Los constructores reciben las opciones de representación en el segundo argumento.
+    // Copia options para no modificar el objeto de entrada al completar esos campos.
+    const layerOptions = { ...parameterVariable.options };
+    ['style', 'visibility', 'opacity', 'displayInLayerSwitcher', 'crossOrigin',
+      'minZoom', 'maxZoom', 'format', 'disableBackgroundColor'].forEach((key) => {
+      if (parameterVariable[key] !== undefined) layerOptions[key] = parameterVariable[key];
+    });
     if (!isNullOrEmpty(parameterVariable.type)) {
       switch (parameterVariable.type) {
         case 'WFS':
-          layer = new WFS(layerParam, { style: parameterVariable.style });
+          layer = new WFS(layerParam, layerOptions);
           break;
         case 'WMC':
-          layer = new WMC(layerParam);
+          layer = new WMC(layerParam, layerOptions);
           break;
         case 'WMS':
-          layer = new WMS(layerParam);
+          layer = new WMS(layerParam, layerOptions, { cql: parameterVariable.cql });
           break;
         case 'GeoJSON':
-          layer = new GeoJSON(parameterVariable, { style: parameterVariable.style });
+          layer = new GeoJSON(parameterVariable, layerOptions);
           break;
         case 'GPX':
-          layer = new GPX(parameterVariable);
+          layer = new GPX(parameterVariable, layerOptions);
           break;
         case 'GeoPackage': {
           const {
-            type, source, url, name, legend, metadata, properties, options = {}, ...layerOptions
+            type, source, url, name, legend, metadata, properties, options = {}, ...packageOptions
           } = parameterVariable;
           layer = new GeoPackage({
             type, source, url, name, legend, metadata, properties,
           }, {
-            ...layerOptions,
+            ...packageOptions,
             ...options,
           });
           break;
         }
         case 'GeoTIFF':
-          layer = new GeoTIFF(layerParam);
+          layer = new GeoTIFF(layerParam, layerOptions);
           break;
         case 'KMZ':
-          layer = new KMZ(layerParam);
+          layer = new KMZ(layerParam, layerOptions);
           break;
         case 'KML':
-          layer = new KML(layerParam);
+          layer = new KML(layerParam, layerOptions);
           break;
         case 'Vector':
-          layer = new Vector(layerParam);
+          layer = new Vector(layerParam, layerOptions);
           break;
         case 'WMTS':
-          layer = new WMTS(layerParam);
+          layer = new WMTS(layerParam, layerOptions);
           break;
         case 'MVT':
-          layer = new MVT(layerParam);
+          layer = new MVT(layerParam, layerOptions);
           break;
         case 'MBTiles':
-          layer = new MBTiles(parameterVariable);
+          layer = new MBTiles(parameterVariable, layerOptions);
           break;
         case 'MBTilesVector':
-          layer = new MBTilesVector(parameterVariable, { style: parameterVariable.style });
+          layer = new MBTilesVector(parameterVariable, layerOptions);
           break;
         case 'XYZ':
-          layer = new XYZ(parameterVariable);
+          layer = new XYZ(parameterVariable, layerOptions);
           break;
         case 'TMS':
-          layer = new TMS(parameterVariable, { crossOrigin: parameterVariable.crossOrigin });
+          layer = new TMS(parameterVariable, layerOptions);
           break;
         case 'OSM':
-          layer = new OSM(layerParam);
+          layer = new OSM(layerParam, layerOptions);
           break;
         case 'OGCAPIFeatures':
-          layer = new OGCAPIFeatures(layerParam, { style: parameterVariable.style });
+          layer = new OGCAPIFeatures(layerParam, layerOptions);
           break;
         case 'DataIDEE':
-          layer = new DataIDEE(layerParam, { style: parameterVariable.style });
+          layer = new DataIDEE(layerParam, layerOptions, {
+            cql: layerParam.cql, filter: layerParam.filter, filterLang: layerParam.filterLang,
+          });
           break;
         case 'GenericRaster':
-          layer = new GenericRaster(layerParam);
+          layer = new GenericRaster(layerParam, layerOptions);
           break;
         case 'GenericVector':
-          layer = new GenericVector(layerParam);
+          layer = new GenericVector(layerParam, layerOptions);
           break;
         case 'MapLibre':
-          layer = new MapLibre(layerParam);
+          layer = new MapLibre(layerParam, layerOptions);
           break;
         case 'LayerGroup':
-          layer = new LayerGroup(layerParam);
+          layer = new LayerGroup(layerParam, layerOptions);
           break;
         case 'Tiles3D':
-          layer = new Tiles3D(parameterVariable);
+          layer = new Tiles3D(parameterVariable, layerOptions);
           break;
         case 'Terrain':
-          layer = new Terrain(parameterVariable);
+          layer = new Terrain(parameterVariable, layerOptions);
           break;
         default:
           Dialog.error(getValue('dialog').invalid_type_layer);
@@ -935,6 +945,14 @@ class Map extends Base {
       Dialog.error(getValue('dialog').invalid_type_layer);
     }
 
+    if (layer instanceof Layer) {
+      if (parameterVariable.zIndex !== undefined && layer.type !== 'Terrain') {
+        layer.setZIndex(parameterVariable.zIndex);
+      }
+      if (parameterVariable.selected !== undefined && layer.type === 'WMC') {
+        layer.selected = parameterVariable.selected;
+      }
+    }
     return layer;
   }
 

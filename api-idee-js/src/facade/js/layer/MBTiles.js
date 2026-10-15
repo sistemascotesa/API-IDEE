@@ -32,6 +32,15 @@ import * as parameter from '../parameter/parameter';
  */
 class MBTiles extends LayerBase {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({ url: this.getRestRemoteURL_() });
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa MBTiles
    * con parámetros especificados por el usuario.
    *

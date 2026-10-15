@@ -37,6 +37,24 @@ import { getValue } from '../i18n/language';
  */
 class WMS extends LayerBase {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    const impl = this.getImpl();
+    return this.formatRestLayer_({
+      tiled: this.tiled,
+      version: this.version,
+      styles: impl.getStyles ? impl.getStyles() : impl.styles,
+      sldVersion: impl.getSldVersion ? impl.getSldVersion() : impl.options.sldVersion,
+      cql: this.cql,
+      queryable: this.isQueryable(),
+      useCapabilities: this.useCapabilities,
+    });
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa WMS
    * con parámetros especificados por el usuario.
    * @constructor

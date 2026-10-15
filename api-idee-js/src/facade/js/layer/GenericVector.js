@@ -35,6 +35,15 @@ import Generic from '../style/Generic';
  */
 class GenericVector extends Vector {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    return super.getRestLayer();
+  }
+
+  /**
    * Constructor principal de la clase.
    * @constructor
    * @param {string|Mx.parameters.WMS} userParameters Parámetros para la construcción de la capa.

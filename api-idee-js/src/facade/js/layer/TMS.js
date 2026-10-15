@@ -46,6 +46,18 @@ import { getValue } from '../i18n/language';
  */
 class TMS extends LayerBase {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({
+      tileGridMaxZoom: this.tileGridMaxZoom,
+      crossOrigin: this.options.crossOrigin,
+    });
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa TMS
    * con parámetros especificados por el usuario.
    *

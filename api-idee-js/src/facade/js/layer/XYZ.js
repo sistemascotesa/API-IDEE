@@ -39,6 +39,15 @@ import { getValue } from '../i18n/language';
  */
 class XYZ extends LayerBase {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({ tileGridMaxZoom: this.tileGridMaxZoom });
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa XYZ
    * con parámetros especificados por el usuario.
    *

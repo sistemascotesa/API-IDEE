@@ -2,6 +2,7 @@
  * @module IDEE/Layer
  */
 import Exception from '../exception/exception';
+import * as RestLayer from '../util/RestLayer';
 import * as parserParameter from '../parameter/parameter';
 import Base from '../Base';
 import {
@@ -513,6 +514,45 @@ class LayerBase extends Base {
       }
       this.isReset_ = false;
     });
+  }
+
+  /**
+   * Devuelve la cadena de carga REST de la capa en formato de parámetros nombrados.
+   * @returns {String} Entrada TYPE*key=value;key=value para el parámetro layers.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({});
+  }
+
+  /**
+   * Resuelve la URL pública de una fuente binaria.
+   * @returns {String} URL absoluta.
+   * @private
+   */
+  getRestRemoteURL_() {
+    return RestLayer.remoteURL(this.url);
+  }
+
+  /**
+   * Añade el estado común actual a los parámetros específicos de cada fachada.
+   * @param {Object} parameters Parámetros propios del tipo.
+   * @param {String} type Tipo de reconstrucción.
+   * @returns {String} Entrada REST.
+   * @private
+   */
+  formatRestLayer_(parameters, type = this.type) {
+    const origin = RestLayer.getOrigin(this);
+    if (origin && RestLayer.isRemote(origin.container.url)) {
+      return origin.container.getRestLayerForTables([origin.table]);
+    }
+    const common = RestLayer.getParameters(this);
+    const values = { ...common, ...parameters };
+    if (parameters.options) values.options = { ...common.options, ...parameters.options };
+    if (values.url !== undefined && values.url !== null) {
+      values.url = RestLayer.remoteURL(values.url);
+    }
+    return RestLayer.serialize(type, values);
   }
 
   /**

@@ -12,6 +12,15 @@ import * as LayerType from './Type';
  */
 class KMZ extends KML {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    return super.getRestLayer();
+  }
+
+  /**
    * @param {string|Object} userParameters URL, nombre y opciones de la capa KMZ.
    * @param {Object} options Opciones de KML, incluidos estilos, etiquetas y carpetas.
    * @param {Object} vendorOptions Opciones del motor.

@@ -32,6 +32,15 @@ import * as EventType from '../event/eventtype';
  */
 class WMC extends LayerBase {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({ selected: this.selected });
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa WMC con parámetros
    * especificados por el usuario.
    *

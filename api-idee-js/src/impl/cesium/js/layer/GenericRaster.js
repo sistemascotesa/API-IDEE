@@ -12,6 +12,7 @@ import {
 import {
   WebMapServiceImageryProvider,
   WebMapTileServiceImageryProvider,
+  UrlTemplateImageryProvider,
 } from 'cesium';
 import { get as getRemote } from 'IDEE/util/Remote';
 
@@ -30,6 +31,31 @@ import ImplUtils from '../util/Utils';
  * @extends {IDEE.impl.layer.Layer}
  */
 class GenericRaster extends LayerBase {
+  /**
+   * Describe proveedores estándar mediante las fachadas públicas.
+   * @returns {Object} Parámetros REST.
+   */
+  getRestParameters() {
+    const provider = this.cesiumLayer.imageryProvider;
+    if (provider instanceof WebMapServiceImageryProvider) {
+      return { type: 'WMS', url: provider.url, name: provider.layers };
+    }
+    if (provider instanceof WebMapTileServiceImageryProvider) {
+      return {
+        type: 'WMTS',
+        url: provider.url,
+        // Cesium no expone getters públicos para estos dos identificadores.
+        name: provider._layer, // eslint-disable-line no-underscore-dangle
+        matrixSet: provider._tileMatrixSetID, // eslint-disable-line no-underscore-dangle
+        format: provider.format,
+      };
+    }
+    if (provider instanceof UrlTemplateImageryProvider) {
+      return { type: 'XYZ', url: provider.url };
+    }
+    throw new Error('REST_LAYER_UNSUPPORTED_SOURCE');
+  }
+
   /**
    * Constructor principal de la clase.
    *

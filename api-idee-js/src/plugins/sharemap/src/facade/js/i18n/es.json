@@ -1,7 +1,10 @@
 {
   "exception": {
     "impl": "La implementación no puede crear controles de Attribution.",
-    "baseUrl": "La implementación no puede obtener la URL base de la aplicación."
+    "baseUrl": "La implementación no puede obtener la URL base de la aplicación.",
+    "localBinary": "No se compartirá «{layer}»: el archivo solo existe en este navegador. Cárgalo mediante una URL accesible para compartirlo.",
+    "unsupportedLayer": "No se ha podido compartir «{layer}»: su fuente o configuración no se puede reconstruir mediante REST.",
+    "urlTooLong": "El enlace del mapa sigue siendo demasiado largo para compartirlo. Selecciona menos capas o carga los datos mediante una URL accesible."
   },
   "textHelp": {
     "help1": "Permite compartir la vista de mapa con las capas de información cargadas a través de un enlace Web. También proporciona el código HTML por si se quiere embeber el visualizador en otro portal Web.",

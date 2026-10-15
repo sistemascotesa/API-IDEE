@@ -43,7 +43,7 @@
     css: 'assets/css/apiidee.cesium.min.css',
   }];
 
-  const params = window.location.search.split('&');
+  const params = window.location.search.substring(1).split('&');
   let center = '';
   let zoom = '';
   let srs = '';
@@ -51,23 +51,33 @@
   let zoomConstrains = '';
   let extentConstrains = '';
   params.forEach((param) => {
-    if (param.indexOf('center') > -1) {
+    const key = param.split('=')[0];
+    if (key === 'center') {
       const values = param.split('=')[1].split(',');
       center = [parseFloat(values[0]), parseFloat(values[1])];
-    } else if (param.indexOf('zoomConstrains') > -1) {
+    } else if (key === 'zoomConstrains') {
       const value = param.split('=')[1];
       zoomConstrains = value;
-    } else if (param.indexOf('extentConstrains') > -1) {
+    } else if (key === 'extentConstrains') {
       const value = param.split('=')[1];
       extentConstrains = value;
-    } else if (param.indexOf('zoom') > -1) {
+    } else if (key === 'zoom') {
       const value = param.split('=')[1];
       zoom = parseInt(value, 10);
-    } else if (param.indexOf('srs') > -1) {
+    } else if (key === 'srs') {
       const value = param.split('=')[1];
       srs = value;
-    } else if (param.indexOf('layers') > -1) {
-      let value = param.substring(param.indexOf('=') + 1, param.length);
+    } else if (key === 'layers') {
+      let value = param.substring(param.indexOf('=') + 1);
+      // Solo decodifica el contenedor cuando la propia sintaxis REST está codificada.
+      // En enlaces antiguos, + y %2C pueden pertenecer al contenido de una capa.
+      if (/^[\w]+(?:%2A|\*\w+%3D)/i.test(value)) {
+        try {
+          value = decodeURIComponent(value);
+        } catch (error) {
+          // Conserva la entrada original si contiene una secuencia URI incompleta.
+        }
+      }
   
       let layerGroups = [];
       const regex = /LayerGroup\*.*?!/g;

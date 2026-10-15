@@ -43,6 +43,16 @@ import { getValue } from '../i18n/language';
  */
 class GeoJSON extends LayerVector {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    if (!this.url || /^(blob:|data:)/i.test(this.url)) return super.getRestLayer();
+    return this.formatRestLayer_({});
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa GeoJSON
    * con parámetros especificados por el usuario.
    *

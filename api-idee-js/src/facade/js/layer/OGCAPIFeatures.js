@@ -52,6 +52,22 @@ import { getValue } from '../i18n/language';
  */
 class OGCAPIFeatures extends Vector {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({
+      limit: this.limit,
+      bbox: this.bbox,
+      id: this.id,
+      offset: this.offset,
+      format: this.format,
+      conditional: this.conditional,
+    });
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa OGCAPIFeatures
    * con parámetros especificados por el usuario.
    * @constructor

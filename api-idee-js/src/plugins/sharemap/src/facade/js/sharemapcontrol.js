@@ -50,6 +50,8 @@ export default class ShareMapControl extends IDEE.Control {
   constructor(options) {
     const impl = new IDEE.impl.Control();
     super('sharemap', impl);
+    this.restWarnings_ = new WeakSet();
+    this.urlSizeWarning_ = false;
     /**
      * Base url of the shared map
      *
@@ -334,6 +336,8 @@ export default class ShareMapControl extends IDEE.Control {
    * @function
    */
   buildURL(html) {
+    this.restWarnings_ = new WeakSet();
+    this.urlSizeWarning_ = false;
     const input = html.querySelector('input');
     const twitter = html.querySelector('#twitter');
     const facebook = html.querySelector('#facebook');
@@ -363,9 +367,10 @@ export default class ShareMapControl extends IDEE.Control {
           shareURL = shareURL.concat(`&controls=${newControls}`).concat('&plugins=layerswitcher,mousesrs');
         }
 
-        shareURL = this.getLayers().length > 0 ? shareURL.concat(`&layers=${this.getLayers()}`) : shareURL.concat('');
+        const layerParam = this.getLayers();
+        shareURL = layerParam.length > 0 ? shareURL.concat(`&layers=${layerParam}`) : shareURL;
         shareURL = shareURL.concat(`&projection=${code}*${units}`);
-        input.value = shareURL;
+        if (this.map_.getMapImpl().scene) shareURL = shareURL.concat('&implementation=cesium');
       } else {
         const { x, y } = this.map_.getCenter();
         const bgColorContainer = this.map_.getBGColorContainer();
@@ -381,30 +386,40 @@ export default class ShareMapControl extends IDEE.Control {
         }
 
         shareURL = layers.length > 0 ? shareURL.concat(`&layers=${layers}`) : shareURL.concat('');
-        if (!IDEE.utils.isNullOrEmpty(IDEE.config.MAP_VIEWER_LAYERS)) {
-          if (layers.length > 0) {
-            let includes = '';
-            IDEE.config.MAP_VIEWER_LAYERS.forEach((elm) => {
-              if (layers.indexOf(elm) === -1) {
-                includes = includes.concat(`,${elm}`);
-              }
-            });
-            if (IDEE.utils.isNullOrEmpty(includes)) {
-              shareURL = `${shareURL},${IDEE.config.MAP_VIEWER_LAYERS}`;
-            }
-          } else {
-            shareURL = `${shareURL}&layers=${IDEE.config.MAP_VIEWER_LAYERS}`;
-          }
-        }
-        input.value = shareURL;
       }
-      shareURL = encodeURI(shareURL);
-      IDEE.remote.get(`http://tinyurl.com/api-create.php?url=${shareURL}`).then((response) => {
+      shareURL = this.prepareShareURL_(shareURL);
+      input.value = shareURL || '';
+      const copyButton = html.querySelector('#m-plugin-sharemap-copybutton');
+      if (copyButton) copyButton.disabled = !shareURL;
+      [facebook, twitter, pinterest].forEach((button) => {
+        if (button) button.toggleAttribute('disabled', !shareURL);
+      });
+      if (!shareURL) return;
+      IDEE.remote.get(`http://tinyurl.com/api-create.php?url=${encodeURIComponent(shareURL)}`).then((response) => {
         facebook.addEventListener('click', () => window.open(`http://www.facebook.com/sharer.php?u=${response.text}`, '_blank'));
         twitter.addEventListener('click', () => window.open(`https://twitter.com/intent/tweet?url=${response.text}`, '_blank'));
         pinterest.addEventListener('click', () => window.open(`https://www.pinterest.es/pin/create/button/?url=${response.text}`, '_blank'));
       });
     });
+  }
+
+  /**
+   * Codifica la URL de salida y evita publicar peticiones que excedan el límite habitual.
+   * Reserva margen para las cabeceras HTTP adicionales del navegador.
+   * @param {String} url URL construida.
+   * @returns {String|null} URL utilizable o null cuando es demasiado larga.
+   * @private
+   */
+  prepareShareURL_(url) {
+    const encoded = encodeURI(url).replace(/%25([0-9a-f]{2})/gi, '%$1').replace(/\+/g, '%2B');
+    if (new TextEncoder().encode(encoded).length > 7000) {
+      if (!this.urlSizeWarning_) {
+        this.urlSizeWarning_ = true;
+        IDEE.toast.error(getValue('exception.urlTooLong'));
+      }
+      return null;
+    }
+    return encoded;
   }
 
   /**
@@ -444,6 +459,7 @@ export default class ShareMapControl extends IDEE.Control {
         const layerParam = this.getLayers();
         shareURL = layerParam.length > 0 ? shareURL.concat(`&layers=${layerParam}`) : shareURL.concat('');
         shareURL = shareURL.concat(`&projection=${code}*${units}`);
+        if (this.map_.getMapImpl().scene) shareURL = shareURL.concat('&implementation=cesium');
       } else {
         const { x, y } = this.map_.getCenter();
         const bgColorContainer = this.map_.getBGColorContainer();
@@ -459,25 +475,11 @@ export default class ShareMapControl extends IDEE.Control {
         }
 
         shareURL = layers.length > 0 ? shareURL.concat(`&layers=${layers}`) : shareURL.concat('');
-        if (!IDEE.utils.isNullOrEmpty(IDEE.config.MAP_VIEWER_LAYERS)) {
-          if (layers.length > 0) {
-            let includes = '';
-            IDEE.config.MAP_VIEWER_LAYERS.forEach((elm) => {
-              if (layers.indexOf(elm) === -1) {
-                includes = includes.concat(`,${elm}`);
-              }
-            });
-            if (IDEE.utils.isNullOrEmpty(includes)) {
-              shareURL = `${shareURL},${IDEE.config.MAP_VIEWER_LAYERS}`;
-            }
-          } else {
-            shareURL = `${shareURL}&layers=${IDEE.config.MAP_VIEWER_LAYERS}`;
-          }
-        }
-        input.value = shareURL;
       }
-      const embeddedHtml = `<iframe width="800" height="600" frameborder="0" style="border:0" src="${shareURL}"></iframe>`;
-      input.value = embeddedHtml;
+      shareURL = this.prepareShareURL_(shareURL);
+      input.value = shareURL ? `<iframe width="800" height="600" frameborder="0" style="border:0" src="${shareURL}"></iframe>` : '';
+      const copyButton = html.querySelector('#m-plugin-sharemap-copybuttonhtml');
+      if (copyButton) copyButton.disabled = !shareURL;
     });
   }
 
@@ -585,221 +587,22 @@ export default class ShareMapControl extends IDEE.Control {
    * @public
    * @function
    */
-  layerToParam(layer, parent = true) {
-    let param;
-    if (layer.name === 'osm') {
-      param = layer.name;
-    } else if (layer.type === 'WMS') {
-      param = this.getWMS(layer);
-    } else if (layer.type === 'WMTS') {
-      param = this.getWMTS(layer);
-    } else if (layer.type === 'GPX') {
-      // Las fuentes locales se comparten como datos vectoriales, igual que Vector.
-      if (layer.url) {
-        const style = layer.getStyle()?.serialize() || '';
-        param = `GPX*${layer.name}*${encodeURIComponent(layer.url)}*${layer.extract}*${layer.isVisible()}*${style}`;
-      } else {
-        param = this.getVector(layer);
-      }
-    } else if (layer.type === 'KML' || layer.type === 'KMZ') {
-      param = this.getKML(layer);
-    } else if (layer.type === 'WFS') {
-      param = this.getWFS(layer);
-    } else if (layer.type === 'GeoJSON') {
-      param = this.getGeoJSON(layer);
-    } else if (layer.type === 'Vector') {
-      param = this.getVector(layer);
-    } else if (layer.type === 'MVT') {
-      param = this.getMVT(layer);
-    } else if (layer.type === 'OGCAPIFeatures') {
-      param = this.getOGCAPIFeatures(layer);
-    } else if (layer.type === 'GeoTIFF') {
-      param = this.getGeoTIFF(layer);
-    } else if (layer.type === 'MapLibre') {
-      param = this.getMapLibre(layer);
-    } else if (layer.type === 'LayerGroup') {
-      param = this.getLayerGroup(layer, parent);
-    }
-    return param;
-  }
-
-  /**
-   * This methods gets the kml url parameters
-   *
-   * @public
-   * @function
-   */
-  getKML(layer) {
-    // Los archivos locales se comparten como datos, igual que el KML importado.
-    if (layer.type === 'KMZ' && /^blob:/i.test(layer.url)) return this.getVector(layer);
-    return `${layer.type === 'KMZ' ? 'KMZ' : 'KML'}*${layer.name}*${layer.url}*${layer.extract}*${layer.label}*${layer.isVisible()}`;
-  }
-
-  /**
-   * This method gets the geojson url parameter
-   *
-   * @public
-   * @function
-   */
-  getGeoJSON(layer) {
-    const source = !IDEE.utils.isUndefined(layer.source)
-      ? layer.serialize()
-      : encodeURIComponent(layer.url);
-    const style = (layer.getStyle()) ? layer.getStyle().serialize() : '';
-    return `GeoJSON*${layer.name}*${source}*${layer.extract}*${style}`;
-  }
-
-  /**
-   * This method gets the ogcApiFeatures url parameter
-   *
-   * @public
-   * @function
-   */
-  getOGCAPIFeatures(layer) {
-    const style = (layer.getStyle()) ? layer.getStyle().serialize() : '';
-    return `OGCAPIFeatures*${layer.legend || layer.name}*${layer.url}*${layer.name}*${layer.limit || ''}*${layer.bbox || ''}*${layer.id || ''}*${layer.offset || ''}*${layer.format || ''}*${style}*${layer.extract || ''}`;
-  }
-
-  /**
-   * This method gets the MapLibre url parameter
-   *
-   * @public
-   * @function
-   */
-  getMapLibre(layer) {
-    return `MapLibre*${layer.legend}*${layer.url}*${layer.name}*${layer.transparent || ''}*${layer.extract || ''}*${layer.visibility || ''}*${layer.displayInLayerSwitcher || ''}*${layer.disableBackgroundColor || ''}`;
-  }
-
-  /**
-   * This method gets the geojson url parameter
-   *
-   * @public
-   * @function
-   */
-  getVector(layer) {
-    let source = Object.assign(layer.toGeoJSON());
-    source.crs = {
-      properties: {
-        name: 'EPSG:4326',
-      },
-      type: 'name',
-    };
-    source = window.btoa(unescape(encodeURIComponent(JSON.stringify(source))));
-    const style = (layer.getStyle()) ? layer.getStyle().serialize() : '';
-    return `GeoJSON*${layer.name}*${source}**${style}`;
-  }
-
-  /**
-   * This method gets the mvt url parameter
-   *
-   * @public
-   * @function
-   */
-  getMVT(layer) {
-    return `MVT*${layer.url}*${layer.name}*${layer.getProjection()}`;
-  }
-
-  /**
-   * This method gets the wms url parameter
-   *
-   * @public
-   * @function
-   */
-  getWMS(layer) {
-    return `WMS*${this.normalizeString(layer.legend || layer.name)}*${layer.url}*${layer.name}*${layer.transparent}*${layer.tiled}*${layer.userMaxExtent || ''}*${layer.version}*${layer.displayInLayerSwitcher}*${layer.isQueryable()}*${layer.isVisible()}`;
-  }
-
-  /**
-   * This method gets the geotiff url parameter
-   *
-   * @public
-   * @function
-   */
-  getGeoTIFF(layer) {
-    return `GeoTIFF*${layer.legend}*${layer.url}*${layer.name}*${layer.transparent}*${layer.projection || ''}*${layer.displayInLayerSwitcher}*${layer.isVisible()}`;
-  }
-
-  /**
-   * This method gets the wfs url parameter
-   *
-   * @public
-   * @function
-   */
-  getWFS(layer) {
-    const style = layer.getStyle().serialize();
-    return `WFS*${this.normalizeString(layer.legend || layer.name)}*${layer.url}*${layer.namespace}:${layer.name}:*${layer.geometry || ''}*${layer.ids || ''}*${layer.cql || ''}*${style || ''}`;
-  }
-
-  /**
-   * This method gets the wmts url parameter
-   *
-   * @public
-   * @function
-   */
-  getWMTS(layer) {
-    const { code } = this.map_.getProjection();
-    let legend = null;
+  layerToParam(layer) {
     try {
-      legend = layer.getLegend();
-    } catch (err) {
-      legend = layer.legend;
-    }
-    return `WMTS*${layer.url}*${layer.name}*${layer.matrixSet || code}*${this.normalizeString(legend)}*${layer.transparent}*${layer.options.format || 'image/png'}*${layer.displayInLayerSwitcher}*${layer.isQueryable()}*${layer.isVisible()}`;
-  }
-
-  getLayerGroup(group, parent) {
-    let layers = group.getLayers();
-    layers = layers.map((layer) => {
-      if (this.layerToParam(layer, false) === undefined) {
-        return null;
+      if (typeof layer.getRestLayer !== 'function') {
+        throw new Error('REST_LAYER_UNSUPPORTED');
       }
-      return `${this.layerToParam(layer, false)}`;
-    })
-      .filter((param) => param != null);
-    return `LayerGroup*${group.name}*${this.normalizeString(group.legend)}*${group.isVisible()}*${group.transparent}*[${layers}]${parent ? '!' : ''}`;
+      return layer.getRestLayer();
+    } catch (error) {
+      const key = error.message === 'REST_LAYER_LOCAL_BINARY' ? 'localBinary' : 'unsupportedLayer';
+      if (!this.restWarnings_.has(layer)) {
+        this.restWarnings_.add(layer);
+        const name = IDEE.utils.escapeXSS(layer.legend || layer.name || layer.type);
+        IDEE.toast.error(getValue(`exception.${key}`).replace('{layer}', name));
+      }
+      return undefined;
+    }
   }
-
-  // TO-DO
-  // getGeneric(layer) {
-  //   const ol3 = layer.getImpl().getLayer();
-  //   const ol3Source = ol3.getSource();
-  //   const typeSource = layer.getImpl().getSourceType();
-  //   const typeLayer = layer.getImpl().getLayerType();
-  //   const typeFormat = layer.getImpl().getFormatType ? layer.getImpl().getFormatType() : false;
-
-  //   const properties = ol3.getProperties();
-  //   delete properties.source;
-
-  //   const vendorOptions = `
-  //     new ol.layer.${typeLayer}({
-  //        source: new ol.source.${typeSource}({
-  //         ${ol3Source.getParams ? `params:${JSON.stringify(ol3Source.getParams())},` : ''}
-  //         url: ${ol3Source.getUrl ? ol3Source.getUrl() : ol3Source.getUrls()[0]},
-  //         ${ol3Source.getLayer ? `layer: ${ol3Source.getLayer()},` : ''}
-  //         ${ol3Source.getMatrixSet ? `matrixSet: ${ol3Source.getMatrixSet()},` : ''}
-  //         ${ol3Source.getFormat ? `format: ${JSON.stringify(ol3Source.getFormat())},` : ''}
-  //         ${ol3Source.getProjection ? `projection: ${ol3Source.getProjection()},` : ''}
-  //         ${ol3Source.getTileGrid ? `tileGrid: ${ol3Source.getTileGrid()},` : ''}
-  //         ${ol3Source.getStyle ? `style: ${ol3Source.getStyle()},` : ''}
-  //         ${typeFormat ? `format: new ${typeFormat}(),` : ''}
-  //        }),
-  //        properties: ${JSON.stringify(properties)},
-  //     })
-  //   `;
-
-  //   const {
-  //     name = '',
-  //     legend = '',
-  //     transparent,
-  //     minZoom,
-  //     maxZoom,
-  //     displayInLayerSwitcher = true,
-  //     visibility = true,
-  //   } = layer;
-
-  //   return `Generic*${IDEE.utils.encodeBase64(vendorOptions)}*${name}*${legend}
-  // *${transparent}*${minZoom}*${maxZoom}*${displayInLayerSwitcher}*${visibility}`;
-  // }
 
   /**
    * This method gets the plugins url parameter
@@ -808,7 +611,12 @@ export default class ShareMapControl extends IDEE.Control {
     return this.map_.getPlugins().map((plugin) => {
       let newCurrent = '';
       if (IDEE.utils.isFunction(plugin.getAPIRest)) {
-        newCurrent = plugin.getAPIRest();
+        const parameter = plugin.getAPIRest();
+        if (typeof parameter === 'string') {
+          const separator = parameter.indexOf('=');
+          newCurrent = separator === -1 ? parameter
+            : `${parameter.substring(0, separator)}=${encodeURIComponent(parameter.substring(separator + 1))}`;
+        }
       }
       return newCurrent;
     }).join('&');
@@ -824,12 +632,6 @@ export default class ShareMapControl extends IDEE.Control {
    */
   equals(control) {
     return control instanceof ShareMapControl;
-  }
-
-  normalizeString(text) {
-    let newText = text.replace(/,/g, '');
-    newText = newText.replace(/\*/g, '');
-    return newText;
   }
 
   accessibilityTab(html) {

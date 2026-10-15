@@ -392,7 +392,7 @@ class Tiles3D extends Layer {
    * @api
    */
   getStyle() {
-    return this.cesiumLayer.style._style;
+    return this.cesiumLayer?.style?._style || this.style;
   }
 
   /**

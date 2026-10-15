@@ -42,6 +42,15 @@ export const mode = {
  */
 class MBTilesVector extends Vector {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({ url: this.getRestRemoteURL_(), mode: this.mode });
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa MBTilesVector
    * con parámetros especificados por el usuario.
    *

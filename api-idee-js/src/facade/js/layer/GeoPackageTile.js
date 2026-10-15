@@ -2,6 +2,7 @@
  * @module IDEE/layer/GeoPackageTile
  */
 import GeoPackageTileImpl from 'impl/layer/GeoPackageTile';
+import * as RestLayer from '../util/RestLayer';
 import LayerBase from './Layer';
 import * as LayerType from './Type';
 import {
@@ -33,6 +34,17 @@ import { getValue } from '../i18n/language';
  * @extends {IDEE.layer}
  */
 class GeoPackageTile extends LayerBase {
+  /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    const origin = RestLayer.getOrigin(this);
+    if (!origin) throw new Error('REST_LAYER_LOCAL_BINARY');
+    return origin.container.getRestLayerForTables([origin.table]);
+  }
+
   /**
    * Constructor principal de la clase. Crea una capa GeoPackageTile
    * con parámetros especificados por el usuario.

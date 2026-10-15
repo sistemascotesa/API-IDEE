@@ -9,6 +9,7 @@ import * as LayerType from 'IDEE/layer/Type';
 import { getValue } from 'IDEE/i18n/language';
 
 import TileWMS from 'ol/source/TileWMS';
+import XYZ from 'ol/source/XYZ';
 import ImageWMS from 'ol/source/ImageWMS';
 import OLSourceWMTS from 'ol/source/WMTS';
 import OLFormatWMTSCapabilities from 'ol/format/WMTSCapabilities';
@@ -30,6 +31,40 @@ import ImplUtils from '../util/Utils';
  * @extends {IDEE.impl.layer.Layer}
  */
 class GenericRaster extends LayerBase {
+  /**
+   * Describe una fuente nativa mediante un tipo público reconstruible.
+   * @returns {Object} Parámetros de carga independientes de instancias OpenLayers.
+   */
+  getRestParameters() {
+    const source = this.olLayer.getSource();
+    if (source instanceof TileWMS || source instanceof ImageWMS) {
+      const params = source.getParams();
+      return {
+        type: 'WMS',
+        url: source.getUrl?.() || source.getUrls?.()[0],
+        name: params.LAYERS,
+        version: params.VERSION,
+        styles: params.STYLES,
+        tiled: source instanceof TileWMS,
+        cql: params.CQL_FILTER,
+        options: { format: params.FORMAT, sldBody: params.SLD_BODY },
+      };
+    }
+    if (source instanceof OLSourceWMTS) {
+      return {
+        type: 'WMTS',
+        url: source.getUrls()[0],
+        name: source.getLayer(),
+        matrixSet: source.getMatrixSet(),
+        format: source.getFormat(),
+      };
+    }
+    if (source instanceof XYZ) {
+      return { type: 'XYZ', url: source.getUrls()[0] };
+    }
+    throw new Error('REST_LAYER_UNSUPPORTED_SOURCE');
+  }
+
   /**
    * Constructor principal de la clase.
    *

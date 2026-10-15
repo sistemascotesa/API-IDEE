@@ -5354,6 +5354,18 @@ export const layer = (userParameters, forcedType) => {
         layerObj = userParam;
       }
 
+      // Conserva los campos adicionales de REST sin sobrescribir la normalización
+      // que ya haya realizado el parser específico de la capa.
+      if (isObject(userParam)) {
+        ['visibility', 'displayInLayerSwitcher', 'opacity', 'zIndex', 'options',
+          'source', 'style', 'tileGridMaxZoom', 'crossOrigin', 'cql',
+          'selected', 'maplibrestyle', 'disableBackgroundColor'].forEach((key) => {
+          if (layerObj[key] === undefined && userParam[key] !== undefined) {
+            layerObj[key] = userParam[key];
+          }
+        });
+      }
+
       if (!isNullOrEmpty(userParam.isBase)) {
         layerObj.transparent = !userParam.isBase;
         layerObj.isBase = userParam.isBase;

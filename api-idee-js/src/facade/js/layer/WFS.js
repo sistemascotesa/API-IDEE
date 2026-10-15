@@ -41,6 +41,26 @@ import { getValue } from '../i18n/language';
  */
 class WFS extends Vector {
   /**
+   * Serializa la capa con los parámetros nombrados de API-REST.
+   * @returns {String} Cadena de carga REST.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({
+      namespace: this.namespace,
+      version: this.version,
+      geometry: this.geometry,
+      ids: this.ids,
+      cql: this.cql,
+      options: {
+        getFeatureOutputFormat: this.options.getFeatureOutputFormat,
+        describeFeatureTypeOutputFormat: this.options.describeFeatureTypeOutputFormat,
+        vendor: this.options.vendor,
+      },
+    });
+  }
+
+  /**
    * Constructor principal de la clase. Crea una capa WFS
    * con parámetros especificados por el usuario.
    * @constructor
