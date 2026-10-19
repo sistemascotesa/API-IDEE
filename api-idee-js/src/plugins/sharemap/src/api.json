@@ -77,6 +77,11 @@
         "type": "object",
         "name": "overwritestyles",
         "position": 13
+      },
+      {
+        "type": "boolean",
+        "name": "shareBaseLayer",
+        "position": 14
       }
    ]
   }],

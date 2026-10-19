@@ -63,7 +63,8 @@ styles: {
 - **text**: Texto del segundo título. (por defecto: 'HTML embebido').
 - **copyBtnHtml**: Título para el segundo botón. (por defecto: 'Copiar').
 - **urlAPI**: URL API o URL Visor (API verdadero o predeterminado, visor falso). Por defecto: false.
-- **shareLayer**: Define si se comparten todas las capas o ninguna, valor de tipo _Boolean_. Para que tenga efecto filterLayers, shareLayer debe estar como false o no definido. Por defecto: false.
+- **shareLayer**: Define si se comparten las capas informativas compartibles (`true`) o las indicadas en `filterLayers` (`false`), valor de tipo _Boolean_. Para que tenga efecto filterLayers, shareLayer debe estar como false o no definido. Por defecto: false.
+- **shareBaseLayer**: Con `true`, conserva el fondo actual mediante el GET general `baselayer`. Con `false` o sin definir, omite ese GET y usa el fondo por defecto del destino. Independiente de `shareLayer`. Por defecto: `false`.
 - **filterLayers**: Selecciona la capa a compartir por el nombre, valor de tipo _Array_.
   - Por defecto: [ ].
   - ```Array<String>```: Los valores serán los nombres de la capa.
@@ -71,7 +72,7 @@ styles: {
 # API-REST
 
 ```javascript
-URL_API?sharemap=position*tooltip*baseUrl*minimize*title*btn*copyBtn*text*copyBtnHtml*urlAPI*shareLayer
+URL_API?sharemap=position*order*tooltip*baseUrl*urlAPI*minimize*title*text*shareLayer*btn*copyBtn*copyBtnHtml*tooltipCopy*overwritestyles*shareBaseLayer
 ```
 
 <table>
@@ -144,6 +145,11 @@ URL_API?sharemap=position*tooltip*baseUrl*minimize*title*btn*copyBtn*text*copyBt
     <td>shareLayer</td>
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>shareBaseLayer</td>
+    <td>true: fondo actual; false o ausente: fondo por defecto del destino</td>
+    <td>Base64 ✔️ | Separador ✔️ (última posición, 14)</td>
   </tr>
   <tr>
     <td>filterLayers</td>

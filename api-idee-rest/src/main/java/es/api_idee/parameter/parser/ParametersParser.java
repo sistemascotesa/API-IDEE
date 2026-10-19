@@ -23,6 +23,7 @@ public abstract class ParametersParser {
       }
       String wmcfiles = queryParams.getFirst("wmcfile");
       String layers = queryParams.getFirst("layers");
+      String baseLayer = queryParams.getFirst("baselayer");
       String controls = queryParams.getFirst("controls");
       String label = queryParams.getFirst("label");
       String getfeatureinfo = queryParams.getFirst("getfeatureinfo");
@@ -41,6 +42,7 @@ public abstract class ParametersParser {
       parameters.addContainer(container);
       parameters.addWmcfiles(wmcfiles);
       parameters.addLayers(layers);
+      parameters.addBaseLayer(baseLayer);  
       parameters.addControls(controls);
       parameters.addLabel(label);
       parameters.addGetFeatureInfo(getfeatureinfo);

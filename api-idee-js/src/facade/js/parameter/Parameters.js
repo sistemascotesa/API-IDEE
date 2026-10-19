@@ -696,6 +696,9 @@ class Parameters {
      */
     this.layers = parseLayers(userParameters);
 
+    /** Fondo REST explícito; undefined conserva el comportamiento previo. @api */
+    this.baseLayer = isObject(userParameters) ? userParameters.baseLayer : undefined;
+
     /**
      * @public
      * @type {Number}

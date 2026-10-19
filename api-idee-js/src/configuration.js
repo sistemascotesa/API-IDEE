@@ -48,6 +48,7 @@
   let zoom = '';
   let srs = '';
   let layers = '';
+  let baseLayer;
   let zoomConstrains = '';
   let extentConstrains = '';
   params.forEach((param) => {
@@ -67,6 +68,8 @@
     } else if (key === 'srs') {
       const value = param.split('=')[1];
       srs = value;
+    } else if (key === 'baselayer') {
+      baseLayer = new URLSearchParams(window.location.search).get('baselayer');
     } else if (key === 'layers') {
       let value = param.substring(param.indexOf('=') + 1);
       // Solo decodifica el contenedor cuando la propia sintaxis REST está codificada.
@@ -348,6 +351,8 @@
    * @type {object}
    */
   IDEE.config('MAP_VIEWER_LAYERS', layers);
+  // Cada visualizador lo entrega explícitamente al mapa principal como baseLayer.
+  if (baseLayer !== undefined) IDEE.config('MAP_VIEWER_BASE_LAYER', baseLayer);
 
   /**
    * MAP Viewer - DPI (Dots per inch)

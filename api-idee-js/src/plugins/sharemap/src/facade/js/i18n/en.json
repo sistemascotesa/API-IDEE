@@ -4,7 +4,8 @@
     "baseUrl": "The implementation used cannot obtain the base URL of the application.",
     "localBinary": "“{layer}” will not be shared: the file only exists in this browser. Load it from an accessible URL to share it.",
     "unsupportedLayer": "“{layer}” could not be shared: its source or configuration cannot be restored through REST.",
-    "urlTooLong": "The map link is still too long to share. Select fewer layers or load the data from an accessible URL."
+    "urlTooLong": "The map link is still too long to share. Select fewer layers or load the data from an accessible URL.",
+    "baseLayer": "The current background cannot be shared. Check that its layers have an accessible source."
   },
   "textHelp": {
     "help1": "Allows you to share the map view with the loaded information layers through a Web link. It also provides the HTML code in case you want to embed the viewer in another Web portal.",
@@ -13,7 +14,8 @@
     "help4": "3. Generate the HTML code necessary to embed the current view in a web page.",
     "help5": "Press 'OK' to close the panel.",
     "help6": "The information relevant to the extension and its possible parameterization is documented in",
-    "help7": "The example of use of its parameters can be checked in"
+    "help7": "The example of use of its parameters can be checked in",
+    "help8": "With shareBaseLayer=true the current background is preserved. With false or when omitted, the destination default background is used. Information layers are selected with shareLayer and filterLayers."
   },
   "modalTitle": "Share map",
   "title": "Share URL",

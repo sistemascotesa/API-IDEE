@@ -45,6 +45,12 @@ public class Parameters {
       }
    }
 
+   public void addBaseLayer (String baseLayer) {
+      if (baseLayer != null) {
+         parameters.put("baseLayer", baseLayer);
+      }
+   }
+
    public void addLabel (String label) {
       if (label != null) {
          parameters.put("label", label);

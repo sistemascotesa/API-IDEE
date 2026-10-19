@@ -176,6 +176,7 @@ class BackgroundLayers extends ControlBase {
    */
   createView(map) {
     this.map = map;
+    const restored = map.prepareBaseLayerSelector(this, getValue('backgroundlayers').shared);
     return new Promise((success, fail) => {
       const html = compileTemplate(template, {
         vars: {
@@ -188,6 +189,11 @@ class BackgroundLayers extends ControlBase {
       // this.uniqueButton = this.html.querySelector('#m-baselayerselector-unique-btn');
       // this.uniqueButton.innerHTML = this.layers[0].title;
       this.on(ADDED_TO_MAP, () => {
+        if (restored) {
+          const selected = this.layers[this.activeLayer];
+          if (selected) html.querySelector(`#m-baselayerselector-${selected.id}`).classList.add('activeBaseLayerButton');
+          return;
+        }
         const visible = this.visible;
         if (this.layerIndex > -1) {
           if (window.innerWidth > IDEE.config.MOBILE_WIDTH) {
@@ -219,9 +225,11 @@ class BackgroundLayers extends ControlBase {
    * @export
    */
   addTo(map) {
-    map.getBaseLayers().forEach((layer) => {
-      layer.once(LOAD, map.removeLayers(layer));
-    });
+    if (!map.hasRestBaseLayer()) {
+      map.getBaseLayers().forEach((layer) => {
+        layer.once(LOAD, map.removeLayers(layer));
+      });
+    }
     super.addTo(map);
   }
 
@@ -332,6 +340,7 @@ class BackgroundLayers extends ControlBase {
     e.target.innerHTML = title;
     e.target.parentElement.querySelector(`#m-baselayerselector-${id}`).classList.add('activeBaseLayerButton');
     this.map.addLayers(layers);
+    this.visible = true;
   }
 
   /**
@@ -341,8 +350,22 @@ class BackgroundLayers extends ControlBase {
    * @api
    */
   removeLayers() {
+    if (this.map.hasRestBaseLayer()) this.map.clearRestBaseLayerSelection(this);
     this.map.removeLayers(this.flattedLayers);
     this.map.removeLayers(this.map.getBaseLayers());
+  }
+
+  /** Componentes de la selección, sin depender del nombre de este control. @api */
+  getSelectedBaseLayers() {
+    return this.layers[this.activeLayer]?.layers || [];
+  }
+
+  /** Sincroniza la vista cuando otro selector sustituye el fondo REST. @api */
+  clearBaseLayerSelection() {
+    this.visible = false;
+    this.html?.querySelectorAll('.activeBaseLayerButton').forEach((button) => {
+      button.classList.remove('activeBaseLayerButton');
+    });
   }
 
   /**

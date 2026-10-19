@@ -16,7 +16,8 @@
     "title": "Selección de capa de fondo",
     "textHelp": {
       "text1": "La herramienta de selector de capas base permite cambiar entre distintas capas base o capas de fondo, configuradas en un visualizador."
-    }
+    },
+    "shared": "Compartida"
   },
   "location": {
     "error": "El control ubicación no acepta http. Debe usar https.",

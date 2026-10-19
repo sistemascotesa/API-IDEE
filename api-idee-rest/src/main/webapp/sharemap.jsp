@@ -95,6 +95,14 @@
                 </select>
             </div>
             <div>
+                <label for="selectShareBaseLayer" title="Con true conserva el fondo actual. Con false o sin definir usa el fondo por defecto del destino">Compartir fondo "shareBaseLayer"</label>
+                <select name="shareBaseLayer" id="selectShareBaseLayer">
+                    <option value=""></option>
+                    <option value="true">true</option>
+                    <option value="false" selected="selected">false</option>
+                </select>
+            </div>
+            <div>
                 <label for="inputFilterLayers" title="Lista de nombres de capas (separados por coma) que se incluirán en el enlace. Solo aplica cuando shareLayer es false o no está definido">Filtro de capas "filterLayers"</label>
                 <input type="text" id="inputFilterLayers" list="filterLayersSug">
                 <datalist id="filterLayersSug"></datalist>
@@ -177,16 +185,18 @@
 
         const map = IDEE.map({
             container: 'mapjs',
-            zoom: 7,
+            baseLayer: IDEE.config.MAP_VIEWER_BASE_LAYER,
+            zoom: urlParams.has('zoom') ? Number(urlParams.get('zoom')) : 7,
             minZoom: 4,
             maxZoom: 20,
-            center: [144112, 4839064],
+            center: urlParams.has('center') ? urlParams.get('center').split(',').map(Number) : [144112, 4839064],
+            projection: urlParams.get('srs') || undefined,
             controls: ['scale*true', 'location', 'backgroundlayers'],
         });
 
         // Este visualizador incorpora las capas de la URL solo a su mapa principal.
         map.addLayers(IDEE.config.MAP_VIEWER_LAYERS || []);
-        if (!urlParams.has('layers')) {
+        if (!urlParams.has('layers') && !urlParams.has('baselayer')) {
             const layerinicial = new IDEE.layer.WMS({
                 url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
                 name: 'AU.AdministrativeBoundary',
@@ -211,6 +221,7 @@
         const selectUrlAPI = document.getElementById('selectUrlAPI');
         const selectMinimize = document.getElementById('selectMinimize');
         const selectShareLayer = document.getElementById('selectShareLayer');
+        const selectShareBaseLayer = document.getElementById('selectShareBaseLayer');
         const inputFilterLayers = document.getElementById('inputFilterLayers');
         const filterLayersSug = document.getElementById('filterLayersSug');
         const selectOverwriteStyles = document.getElementById('selectOverwriteStyles');
@@ -258,6 +269,7 @@
             selectUrlAPI,
             selectMinimize,
             selectShareLayer,
+            selectShareBaseLayer,
             inputFilterLayers,
             selectOverwriteStyles,
             inputPrimaryColor,
@@ -286,6 +298,7 @@
                 urlAPI: parseBool(selectUrlAPI.value),
                 minimize: parseBool(selectMinimize.value),
                 shareLayer: parseBool(selectShareLayer.value),
+                shareBaseLayer: parseBool(selectShareBaseLayer.value),
                 filterLayers: inputFilterLayers.value.trim().split(',').map((l) => l.trim()),
                 overwriteStyles: parseBool(selectOverwriteStyles.value),
                 styles: {

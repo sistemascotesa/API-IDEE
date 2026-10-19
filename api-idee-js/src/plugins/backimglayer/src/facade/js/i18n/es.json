@@ -14,5 +14,6 @@
     "help12": "Directorio de Servicios."
   },
   "tooltip": "Capas de fondo",
-  "none": "Ninguna"
+  "none": "Ninguna",
+  "shared": "Compartida"
 }

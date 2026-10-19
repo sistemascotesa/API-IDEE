@@ -16,7 +16,8 @@
     "title": "Selecció de capa de fons",
     "textHelp": {
       "text1": "L'eina de selector de capes base permet canviar entre diferents capes base o capes de fons, configurades en un visualitzador."
-    }
+    },
+    "shared": "Compartida"
   },
   "location": {
     "error": "El control ubicació no accepta http. Ha d'usar https.",

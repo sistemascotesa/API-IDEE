@@ -14,5 +14,6 @@
     "help12": "Service Directory."
   },
   "tooltip": "Background layers",
-  "none": "None"
+  "none": "None",
+  "shared": "Shared"
 }

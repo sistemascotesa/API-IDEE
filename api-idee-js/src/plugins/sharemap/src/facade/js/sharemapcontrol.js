@@ -211,6 +211,7 @@ export default class ShareMapControl extends IDEE.Control {
       * @type {Boolean}
       */
     this.shareLayer = options.shareLayer;
+    this.shareBaseLayer = options.shareBaseLayer === true;
   }
 
   /**
@@ -387,7 +388,7 @@ export default class ShareMapControl extends IDEE.Control {
 
         shareURL = layers.length > 0 ? shareURL.concat(`&layers=${layers}`) : shareURL.concat('');
       }
-      shareURL = this.prepareShareURL_(shareURL);
+      shareURL = this.prepareShareURLWithBase_(shareURL);
       input.value = shareURL || '';
       const copyButton = html.querySelector('#m-plugin-sharemap-copybutton');
       if (copyButton) copyButton.disabled = !shareURL;
@@ -401,6 +402,26 @@ export default class ShareMapControl extends IDEE.Control {
         pinterest.addEventListener('click', () => window.open(`https://www.pinterest.es/pin/create/button/?url=${response.text}`, '_blank'));
       });
     });
+  }
+
+  /**
+   * Añade el fondo actual a la URL y al iframe antes de validar su longitud.
+   * @param {String} url URL construida.
+   * @returns {String|null} URL utilizable o null si no se puede compartir el fondo.
+   * @private
+   */
+  prepareShareURLWithBase_(url) {
+    if (!this.shareBaseLayer) return this.prepareShareURL_(url);
+    try {
+      const baseLayer = this.map_.getRestBaseLayer();
+      return this.prepareShareURL_(`${url}&baselayer=${encodeURIComponent(baseLayer)}`);
+    } catch (error) {
+      if (!this.restWarnings_.has(this.map_)) {
+        this.restWarnings_.add(this.map_);
+        IDEE.toast.error(getValue('exception.baseLayer'));
+      }
+      return null;
+    }
   }
 
   /**
@@ -465,7 +486,7 @@ export default class ShareMapControl extends IDEE.Control {
         const bgColorContainer = this.map_.getBGColorContainer();
         const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
         const urlBaseVisor = (window.location.search) ? window.location.href.replace(window.location.search, '') : window.location.href;
-        shareURL = `${urlBaseVisor}?center=${x},${y}&zoom=${this.map_.getZoom()}${stringBgColor}`;
+        shareURL = `${urlBaseVisor}?center=${x},${y}&zoom=${this.map_.getZoom()}&srs=${this.map_.getProjection().code}${stringBgColor}`;
         let layers = [];
 
         if (this.shareLayer === true) {
@@ -476,7 +497,7 @@ export default class ShareMapControl extends IDEE.Control {
 
         shareURL = layers.length > 0 ? shareURL.concat(`&layers=${layers}`) : shareURL.concat('');
       }
-      shareURL = this.prepareShareURL_(shareURL);
+      shareURL = this.prepareShareURLWithBase_(shareURL);
       input.value = shareURL ? `<iframe width="800" height="600" frameborder="0" style="border:0" src="${shareURL}"></iframe>` : '';
       const copyButton = html.querySelector('#m-plugin-sharemap-copybuttonhtml');
       if (copyButton) copyButton.disabled = !shareURL;
@@ -490,46 +511,44 @@ export default class ShareMapControl extends IDEE.Control {
    * @function
    */
   getControls() {
-    if (this.controlsPromise_) {
-      return this.controlsPromise_;
+    if (!this.controlsPromise_) {
+      const url = this.baseUrl_.match(/(.*[A-Za-z-0-9])/)[0];
+      this.controlsPromise_ = IDEE.remote.get(`${url}/api/actions/controls`)
+        .then((response) => JSON.parse(response.text)).catch(() => {
+          IDEE.toast.error(getValue('exception.baseUrl'));
+          return [];
+        });
     }
-    const url = this.baseUrl_.match(/(.*[A-Za-z-0-9])/)[0];
-    const controls = this.map_.getControls().map((control) => control.name);
-    this.controlsPromise_ = new Promise((resolve) => {
-      IDEE.remote.get(`${url}/api/actions/controls`).then((response) => {
-        const allowedControls = JSON.parse(response.text);
-        const resolvedControls = controls.filter((control) => allowedControls.includes(control))
-          .filter((c) => c !== 'backgroundlayers');
-        if (resolvedControls.includes('mouse')) {
-          const mouseControl = this.map_.getControls().find((c) => c.name === 'mouse');
-          const { showProj } = mouseControl.getImpl();
-          const index = resolvedControls.indexOf('mouse');
-          resolvedControls[index] = showProj === true ? 'mouse*true' : 'mouse';
+    // Solo se cachea el catálogo del servidor; el estado del mapa se lee en cada apertura.
+    return this.controlsPromise_.then((allowedControls) => {
+      const controls = this.map_.getControls().map((control) => control.name);
+      const resolvedControls = controls.filter((control) => allowedControls.includes(control))
+        .filter((c) => c !== 'backgroundlayers');
+      if (resolvedControls.includes('mouse')) {
+        const mouseControl = this.map_.getControls().find((c) => c.name === 'mouse');
+        const { showProj } = mouseControl.getImpl();
+        const index = resolvedControls.indexOf('mouse');
+        resolvedControls[index] = showProj === true ? 'mouse*true' : 'mouse';
+      }
+      if (resolvedControls.includes('scale')) {
+        const scaleControl = this.map_.getControls().find((c) => c.name === 'scale');
+        const { exactScale } = scaleControl.getImpl();
+        const index = resolvedControls.indexOf('scale');
+        resolvedControls[index] = exactScale === true ? 'scale*true' : 'scale';
+      }
+      const backgroundlayers = this.map_.getControls().find((c) => c.name === 'backgroundlayers');
+      let backgroundlayersAPI;
+      if (!IDEE.utils.isNullOrEmpty(backgroundlayers)) {
+        const { visible, activeLayer } = backgroundlayers;
+        if (this.shareBaseLayer && typeof visible === 'boolean' && typeof activeLayer === 'number') {
+          backgroundlayersAPI = `backgroundlayers*${activeLayer}*${visible}`;
+        } else {
+          backgroundlayersAPI = 'backgroundlayers';
         }
-        if (resolvedControls.includes('scale')) {
-          const scaleControl = this.map_.getControls().find((c) => c.name === 'scale');
-          const { exactScale } = scaleControl.getImpl();
-          const index = resolvedControls.indexOf('scale');
-          resolvedControls[index] = exactScale === true ? 'scale*true' : 'scale';
-        }
-        const backgroundlayers = this.map_.getControls().find((c) => c.name === 'backgroundlayers');
-        let backgroundlayersAPI;
-        if (!IDEE.utils.isNullOrEmpty(backgroundlayers)) {
-          const { visible, activeLayer } = backgroundlayers;
-          if (typeof visible === 'boolean' && typeof activeLayer === 'number') {
-            backgroundlayersAPI = `backgroundlayers*${activeLayer}*${visible}`;
-          } else {
-            backgroundlayersAPI = 'backgroundlayers';
-          }
-        }
-        resolvedControls.push(backgroundlayersAPI);
-        resolve(resolvedControls);
-      }).catch((e) => {
-        IDEE.toast.error(getValue('exception.baseUrl'));
-        resolve([]);
-      });
+      }
+      resolvedControls.push(backgroundlayersAPI);
+      return resolvedControls;
     });
-    return this.controlsPromise_;
   }
 
   /**
@@ -538,11 +557,21 @@ export default class ShareMapControl extends IDEE.Control {
    * @public
    * @function
    */
+  getOverlayCandidates_() {
+    const background = new Set();
+    const collect = (layer) => {
+      background.add(layer);
+      if (layer.type === 'LayerGroup') layer.getLayers().forEach(collect);
+    };
+    this.map_.getBaseLayerSelection().forEach(collect);
+    return this.map_.getLayers().filter((layer) => !layer.isBase && !background.has(layer));
+  }
+
   getLayers() {
     if (this.shareLayer === false) {
       return this.getLayersInfilterLayers();
     }
-    const layers = this.map_.getLayers().filter((layer) => {
+    const layers = this.getOverlayCandidates_().filter((layer) => {
       let res = layer.name !== '__draw__' && layer.name !== 'selectionLayer';
       if (layer.name === 'attributions' && (layer.type === 'KML' || layer.type === 'KMZ')) {
         res = res && false;
@@ -565,7 +594,7 @@ export default class ShareMapControl extends IDEE.Control {
    * @function
    */
   getLayersInLayerswitcher() {
-    const layers = this.map_.getLayers().filter((layer) => {
+    const layers = this.getOverlayCandidates_().filter((layer) => {
       return layer.displayInLayerSwitcher === true && layer.isBase === false;
     });
 
@@ -577,7 +606,8 @@ export default class ShareMapControl extends IDEE.Control {
    * @function
    */
   getLayersInfilterLayers() {
-    const layers = this.map_.getLayers().filter((layer) => this.filterLayers.includes(layer.name));
+    const layers = this.getOverlayCandidates_()
+      .filter((layer) => this.filterLayers.includes(layer.name));
     return layers.map((layer) => this.layerToParam(layer)).filter((param) => param != null);
   }
 
@@ -608,18 +638,22 @@ export default class ShareMapControl extends IDEE.Control {
    * This method gets the plugins url parameter
    */
   getPlugins() {
-    return this.map_.getPlugins().map((plugin) => {
-      let newCurrent = '';
-      if (IDEE.utils.isFunction(plugin.getAPIRest)) {
-        const parameter = plugin.getAPIRest();
-        if (typeof parameter === 'string') {
-          const separator = parameter.indexOf('=');
-          newCurrent = separator === -1 ? parameter
-            : `${parameter.substring(0, separator)}=${encodeURIComponent(parameter.substring(separator + 1))}`;
+    // El selector de origen transporta su elección y su catálogo; al omitir el fondo,
+    // se deja que el visualizador de destino utilice su propia configuración inicial.
+    return this.map_.getPlugins()
+      .filter((plugin) => this.shareBaseLayer || plugin.name !== 'backimglayer')
+      .map((plugin) => {
+        let newCurrent = '';
+        if (IDEE.utils.isFunction(plugin.getAPIRest)) {
+          const parameter = plugin.getAPIRest();
+          if (typeof parameter === 'string') {
+            const separator = parameter.indexOf('=');
+            newCurrent = separator === -1 ? parameter
+              : `${parameter.substring(0, separator)}=${encodeURIComponent(parameter.substring(separator + 1))}`;
+          }
         }
-      }
-      return newCurrent;
-    }).join('&');
+        return newCurrent;
+      }).join('&');
   }
 
   /**

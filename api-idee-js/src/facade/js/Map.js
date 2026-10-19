@@ -21,6 +21,7 @@ import {
   generateResolutionsFromExtent,
 } from './util/Utils';
 import { addFileToMap } from './util/LoadFiles';
+import * as BaseLayerState from './util/BaseLayerState';
 import { getValue } from './i18n/language';
 import Exception from './exception/exception';
 import Label from './Label';
@@ -94,6 +95,7 @@ class Map extends Base {
    * - container: Contenedor del mapa.
    * - controls: Controles del mapa.
    * - label: Etiqueta del mapa.
+   * - baseLayer: Fondo REST explícito; "none" para un mapa sin fondo.
    * - layers: Capas del mapa.
    * - maxExtent: Extensión máxima del mapa.
    * - maxZoom: Zoom máximo del mapa.
@@ -372,13 +374,17 @@ class Map extends Base {
       this.addKMZ(params.kmz);
     }
 
+    // Un fondo REST explícito tiene prioridad sobre los valores iniciales de los selectores.
+    if (params.baseLayer !== undefined) BaseLayerState.restore(this, params.baseLayer);
+
     // controls
     if (!isNullOrEmpty(params.controls)) {
       this.addControls(params.controls);
     }
 
     // default TMS
-    if (isNullOrEmpty(params.layers) && !isArray(params.layers) && isNullOrEmpty(params.wmc)) {
+    if (params.baseLayer === undefined && isNullOrEmpty(params.layers)
+      && !isArray(params.layers) && isNullOrEmpty(params.wmc)) {
       this.addLayers(IDEE.config.baseLayer);
     }
 
@@ -698,6 +704,49 @@ class Map extends Base {
     }
 
     return this.getImpl().getBaseLayers();
+  }
+
+  /**
+   * Componentes del fondo activo, incluidos los aportados por un selector.
+   * @returns {Array<IDEE.Layer>} Capas raíz de la selección.
+   * @api
+   */
+  getBaseLayerSelection() {
+    return BaseLayerState.getSelection(this);
+  }
+
+  /**
+   * Representación REST del fondo activo o "none".
+   * @returns {String} Valor del GET baselayer y del parámetro de constructor baseLayer.
+   * @api
+   */
+  getRestBaseLayer() {
+    return BaseLayerState.getRestBaseLayer(this);
+  }
+
+  /** @returns {Boolean} Si se recibió un fondo REST explícito. @api */
+  hasRestBaseLayer() {
+    return BaseLayerState.hasRestoredBaseLayer(this);
+  }
+
+  /**
+   * Integra el fondo restaurado en el catálogo de un selector antes de generar su vista.
+   * @param {Object} selector Selector de fondo.
+   * @param {String} sharedTitle Título traducido para una entrada externa al catálogo.
+   * @returns {Boolean} Si el selector debe respetar la selección restaurada.
+   * @api
+   */
+  prepareBaseLayerSelector(selector, sharedTitle) {
+    return BaseLayerState.prepareSelector(this, selector, sharedTitle);
+  }
+
+  /** Retira una selección REST, incluidas sus piezas no base. @api */
+  clearRestBaseLayerSelection(selector) {
+    if (!this.hasRestBaseLayer()) return;
+    this.removeLayers(this.getBaseLayerSelection());
+    this.getControls().filter((control) => control !== selector
+      && typeof control.clearBaseLayerSelection === 'function')
+      .forEach((control) => control.clearBaseLayerSelection());
   }
 
   /**

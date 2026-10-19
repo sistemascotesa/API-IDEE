@@ -215,7 +215,9 @@ public class JSBuilder {
 
 	public static String createPlugin(PluginAPI plugin, String paramValue) {
 		// New star format: value is "key=val;key=val" — delegate to Map-based approach
-		if (!StringUtils.isEmpty(paramValue) && paramValue.matches("\\w+=.*")) {
+		// base64= es el formato reservado anterior, no una opción nombrada del plugin.
+		if (!StringUtils.isEmpty(paramValue) && !paramValue.startsWith("base64=")
+				&& paramValue.matches("\\w+=.*")) {
 			Map<String, String> params = new java.util.LinkedHashMap<>();
 			for (String pair : paramValue.split(";")) {
 				int eqIdx = pair.indexOf('=');

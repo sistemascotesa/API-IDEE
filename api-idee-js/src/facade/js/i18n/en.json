@@ -16,7 +16,8 @@
     "title": "Background layer selection",
     "textHelp": {
       "text1": "The base layer selector tool allows you to switch between different base layers or background layers, configured in a viewer."
-    }
+    },
+    "shared": "Shared"
   },
   "location": {
     "title": "Get current location",
