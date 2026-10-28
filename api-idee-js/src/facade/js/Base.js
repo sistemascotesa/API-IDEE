@@ -156,6 +156,12 @@ class Base extends MObject {
         return clonedSet;
       }
 
+      // Los elementos del DOM (p. ej. el canvas de la leyenda de un estilo) no
+      // admiten copia por propiedades: sus métodos nativos fallan en la copia.
+      if (typeof window.Node !== 'undefined' && obj instanceof window.Node) {
+        return obj.cloneNode(true);
+      }
+
       if (obj instanceof ArrayBuffer) {
         return obj.slice(0);
       }
