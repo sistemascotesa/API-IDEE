@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Puntos WebGL</name>
+    <Style id="rojo">
+      <IconStyle>
+        <color>ff0000ff</color>
+        <scale>1.2</scale>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <Placemark>
+      <name>Madrid</name>
+      <description>Punto KML con estilo propio</description>
+      <styleUrl>#rojo</styleUrl>
+      <Point><coordinates>-3.70,40.42,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Sevilla</name>
+      <description>Punto KML con estilo propio</description>
+      <styleUrl>#rojo</styleUrl>
+      <Point><coordinates>-5.98,37.39,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Tramo</name>
+      <LineString><coordinates>-3.70,40.42,0 -4.78,37.88,0 -5.98,37.39,0</coordinates></LineString>
+    </Placemark>
+  </Document>
+</kml>

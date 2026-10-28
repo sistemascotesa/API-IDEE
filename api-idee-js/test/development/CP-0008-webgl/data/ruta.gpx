@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="API IDEE" xmlns="http://www.topografix.com/GPX/1/1">
+  <wpt lat="41.65" lon="-0.88"><name>Zaragoza</name></wpt>
+  <wpt lat="39.47" lon="-0.38"><name>Valencia</name></wpt>
+  <trk>
+    <name>Ruta de prueba</name>
+    <trkseg>
+      <trkpt lat="41.65" lon="-0.88"></trkpt>
+      <trkpt lat="40.96" lon="-0.70"></trkpt>
+      <trkpt lat="40.34" lon="-0.52"></trkpt>
+      <trkpt lat="39.47" lon="-0.38"></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

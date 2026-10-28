@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="idee" content="yes">
+
+    <title>Revisión WebGL</title>
+    <style rel="stylesheet">
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        #map-wrap {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 440px;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        #review-panel {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 440px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            padding: 8px 10px;
+            background: #f7f7f9;
+            border-left: 1px solid #ccc;
+            font-size: 13px;
+            z-index: 10000;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map-wrap">
+        <div id="map" class="map"></div>
+    </div>
+    <div id="review-panel">Cargando…</div>
+    <!-- La API y los plugins se cargan desde dist en CP-001.js según la sección elegida -->
+    <script src="/CP-0008-webgl/CP-001.js" charset="utf-8"></script>
+</body>
+
+</html>

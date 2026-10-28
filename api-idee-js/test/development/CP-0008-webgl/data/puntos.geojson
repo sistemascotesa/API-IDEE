@@ -1,0 +1,69 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "g0",
+      "properties": {
+        "nombre": "Madrid",
+        "tipo": "a",
+        "valor": 10
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -3.7,
+          40.42
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "g1",
+      "properties": {
+        "nombre": "Sevilla",
+        "tipo": "b",
+        "valor": 40
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -5.98,
+          37.39
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "g2",
+      "properties": {
+        "nombre": "Barcelona",
+        "tipo": "c",
+        "valor": 70
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.17,
+          41.39
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "g3",
+      "properties": {
+        "nombre": "Valencia",
+        "tipo": "d",
+        "valor": 90
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.38,
+          39.47
+        ]
+      }
+    }
+  ]
+}
