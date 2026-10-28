@@ -80,6 +80,14 @@ class Cluster extends Style {
     this.oldLayer_ = null;
 
     /**
+     * Estilo Canvas equivalente de la capa original cuando es WebGL
+     * (una capa WebGL no tiene función de estilo).
+     * @private
+     * @type {Function|null}
+     */
+    this.oldLayerStyle_ = null;
+
+    /**
      *
      * @private
      * @type {Object}
@@ -187,6 +195,8 @@ class Cluster extends Style {
     const ol3Layer = this.layer_.getImpl().getLayer();
     if (!(ol3Layer instanceof AnimatedCluster)) {
       this.oldLayer_ = ol3Layer;
+      const layerImpl = this.layer_.getImpl();
+      this.oldLayerStyle_ = layerImpl.isWebGL?.() ? layerImpl.getCanvasStyle() : null;
     }
     this.clusterLayer_.setMaxResolution(this.oldLayer_.getMaxResolution());
     this.clusterLayer_.setMinResolution(this.oldLayer_.getMinResolution());
@@ -486,7 +496,7 @@ class Cluster extends Style {
     } else if (numFeatures === 1) {
       let clusterOlFeatureStyle = clusterOlFeatures[0].getStyle();
       if (!clusterOlFeatureStyle) {
-        clusterOlFeatureStyle = this.oldLayer_.getStyle();
+        clusterOlFeatureStyle = this.oldLayerStyle_ || this.oldLayer_.getStyle();
       }
       olStyle = clusterOlFeatureStyle(clusterOlFeatures[0], resolution);
       if (!isArray(olStyle)) {
