@@ -924,6 +924,19 @@ class LayerBase extends Base {
     this.getImpl().setOpacity(opacity);
   }
 
+  /**
+   * Este método obtiene el renderer efectivo de la capa.
+   * Se solicita con la opción 'renderer' de la capa o con IDEE.config.WEBGL.
+   *
+   * @function
+   * @returns {string|undefined} Renderer de la capa ('canvas' | 'webgl'), o
+   * indefinido si la implementación no lo gestiona.
+   * @api
+   */
+  getRenderer() {
+    return isUndefined(this.getImpl().getRenderer) ? undefined : this.getImpl().getRenderer();
+  }
+
   getAttribution() {
     return this.attribution;
   }

@@ -356,6 +356,15 @@
   IDEE.config('DPI_OGC', 25.4 / 0.28);
 
   /**
+   * MAP Viewer - Renderizado WebGL por defecto de las capas compatibles.
+   * Cada capa puede sobrescribirlo con la opción 'renderer' ('canvas' | 'webgl').
+   *
+   * @private
+   * @type {Boolean}
+   */
+  IDEE.config('WEBGL', false);
+
+  /**
    * Mueve el mapa cuando se hace clic sobre un objeto
    * geográfico, (extract = true) o no (extract = false)
    *
