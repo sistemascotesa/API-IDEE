@@ -28,7 +28,9 @@ export default class DrawFeature extends WFSTBase {
         }),
       });
     } else {
-      olStyle = olLayer.getStyle()(olLayer.getSource().getFeatures()[0])[0];
+      // Estilo Canvas (ol/style), también si la capa se renderiza con WebGL.
+      const canvasStyle = layerImpl.getCanvasStyle?.() ?? olLayer.getStyle();
+      olStyle = canvasStyle(featureAux)[0];
     }
     const [olFill, olStroke] = [olStyle.getFill(), olStyle.getStroke()];
     let circleFill = olFill;
