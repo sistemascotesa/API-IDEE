@@ -233,12 +233,12 @@ export default class Creationcontrol extends IDEE.impl.Control {
    * @param {Array} coordinates
    * @param {Integer} srs
    */
-  drawPointFeature(coordinates, srs) {
+  drawPointFeature(coordinates, srs, addToLayer = true) {
     const mapSRS = this.facadeMap_.getProjection().code;
     const finalCoordinates = ol.proj.transform(coordinates, srs, mapSRS);
     const feature = new ol.Feature({ geometry: new ol.geom.Point(finalCoordinates) });
     const mfeature = this.convertToMFeatures(feature);
-    this.facadeControl.getLayer().addFeatures([mfeature]);
+    if (addToLayer) this.facadeControl.getLayer().addFeatures([mfeature]);
     this.facadeMap_.setCenter(finalCoordinates);
     return mfeature;
   }

@@ -71,6 +71,7 @@ export default class Selectioncontrol extends IDEE.impl.Control {
         style: null,
         toggleCondition: ol.events.condition.platformModifierKeyOnly,
       });
+      this.select.getFeatures().extend(this.facadeControl.getSelectedOLFeatures());
 
       this.select.on('select', (e) => {
         if (e.target.getFeatures().getArray().length > 0) {

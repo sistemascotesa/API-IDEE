@@ -8,6 +8,7 @@ import editiontableTemplate from '../../templates/editiontable';
 
 import { getValue } from './i18n/language';
 import { renderSnapOptions, getToolSnapOptions } from './snapoptions';
+import renderDataIDEEAttributeForm from './dataideeattributeform';
 
 export default class EditionControl extends IDEE.Control {
   /**
@@ -249,6 +250,8 @@ export default class EditionControl extends IDEE.Control {
    * @param {String} tool - clicked button tool type
    */
   editionBtnClick(tool) {
+    const button = this.template.querySelector(`#${tool}`);
+    if (!button || button.hidden || button.disabled) return;
     switch (tool) {
       case 'edit':
         this.activationManager('isEditActive', tool);
@@ -710,6 +713,15 @@ export default class EditionControl extends IDEE.Control {
    * @api stable
    */
   showFeatureAttributes() {
+    if (this.managementControl_.hasActiveEditingSession()) {
+      const selected = this.managementControl_.getSelectedFeatures();
+      if (selected.length !== 1) {
+        IDEE.dialog.info(getValue('dataidee_form.multiple_selection'));
+        return;
+      }
+      this.openDataIDEEAttributeForm(selected[0]);
+      return;
+    }
     let features = this.managementControl_.getSelectedFeatures();
     if (features.length === 0) {
       features = this.layer_.getFeatures();
@@ -726,6 +738,164 @@ export default class EditionControl extends IDEE.Control {
     } else {
       IDEE.dialog.info(getValue('exception.emptylayer'));
     }
+  }
+
+  openDataIDEEAttributeForm(feature, mode = 'update', onApplied = () => {}, onCancelled = () => {}) {
+    const session = this.managementControl_.getActiveEditingSession();
+    if (!session || !session.isSupportedForm()) {
+      IDEE.dialog.info(this.managementControl_.getEditingCapabilities()?.form?.reason
+        || 'The DataIDEE collection schema is unavailable.');
+      return false;
+    }
+    let definition;
+    try {
+      definition = session.getAttributeForm(feature, { mode });
+    } catch (error) {
+      IDEE.dialog.info(error.message);
+      return false;
+    }
+    const strings = {
+      required: getValue('dataidee_form.required'),
+      addItem: getValue('dataidee_form.add_item'),
+      removeItem: getValue('dataidee_form.remove_item'),
+      item: getValue('dataidee_form.item'),
+      trueValue: getValue('dataidee_form.true_value'),
+      falseValue: getValue('dataidee_form.false_value'),
+      unsupported: getValue('dataidee_form.unsupported'),
+      unsetValue: getValue('dataidee_form.unset_value'),
+      dateTimeHint: getValue('dataidee_form.datetime_hint'),
+      storedValue: getValue('dataidee_form.stored_value'),
+      secondaryGeometry: getValue('dataidee_form.secondary_geometry'),
+    };
+    const title = mode === 'create'
+      ? getValue('dataidee_form.create_title')
+      : `${getValue('dataidee_form.title')} · ${definition.identifier}`;
+    const content = '<div class="m-vectorsmanagement-dataidee-form">'
+      + '<p class="m-vectorsmanagement-dataidee-identity"></p>'
+      + '<div class="m-vectorsmanagement-dataidee-errors" role="alert" aria-live="polite"></div>'
+      + '<form class="m-vectorsmanagement-dataidee-fields"></form></div>';
+    const previousFocus = document.activeElement;
+    const modal = IDEE.dialog.info(content, title);
+    const formContainer = modal.querySelector('.m-vectorsmanagement-dataidee-fields');
+    const errorSummary = modal.querySelector('.m-vectorsmanagement-dataidee-errors');
+    const identity = modal.querySelector('.m-vectorsmanagement-dataidee-identity');
+    identity.textContent = definition.mode === 'create'
+      ? definition.collection : `${definition.collection} · ${definition.identifier}`;
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', title);
+    const form = renderDataIDEEAttributeForm(formContainer, definition, definition.values, strings);
+    const initialFormValues = JSON.stringify(form.collect());
+    errorSummary.addEventListener('click', (event) => this.onDataIDEEIssueSelected(event, modal));
+    const closeModal = () => {
+      IDEE.dialog.removeElement(modal);
+      this.isEditAttributeActive = false;
+      this.template?.querySelector('#editattribute')?.classList.remove('activated');
+      if (previousFocus?.isConnected) previousFocus.focus();
+    };
+    let isApplied = false;
+    const closeButton = modal.querySelector('.m-button > button');
+    IDEE.dialog.addAction({
+      id: 'm-vectorsmanagement-dataidee-cancel',
+      label: getValue('dataidee_form.cancel'),
+      onClick: () => {
+        if (JSON.stringify(form.collect()) !== initialFormValues
+          && !window.confirm(getValue('dataidee_form.confirm_close'))) return;
+        onCancelled(feature);
+        closeModal();
+      },
+    }, modal);
+    IDEE.dialog.addAction({
+      id: 'm-vectorsmanagement-dataidee-apply',
+      label: getValue('dataidee_form.apply'),
+      onClick: () => {
+        const values = form.collect();
+        const issues = session.validateAttributes(feature, values, { mode });
+        form.setIssues(issues);
+        if (issues.length) {
+          this.renderDataIDEEIssueSummary(errorSummary, issues);
+          this.focusDataIDEEIssue(modal, issues[0]);
+          return;
+        }
+        try {
+          if (mode === 'create') {
+            session.prepareFeature(feature, values, { applyDefaults: false });
+          } else session.applyAttributes(feature, values);
+          isApplied = true;
+          onApplied(feature);
+          if (mode === 'create') this.layer_.addFeatures(feature);
+          closeModal();
+        } catch (error) {
+          const caughtIssues = error.issues || [{ path: '', message: error.message }];
+          form.setIssues(caughtIssues);
+          this.renderDataIDEEIssueSummary(errorSummary, caughtIssues);
+          this.focusDataIDEEIssue(modal, caughtIssues[0]);
+        }
+      },
+    }, modal);
+    closeButton.remove();
+    formContainer.addEventListener('submit', (event) => event.preventDefault());
+    modal.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        const dirty = JSON.stringify(form.collect()) !== initialFormValues;
+        if (!dirty || window.confirm(getValue('dataidee_form.confirm_close'))) {
+          if (!isApplied) onCancelled(feature);
+          closeModal();
+        }
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusable = [...modal.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])')];
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+    modal.querySelector('input,select,button')?.focus();
+    return true;
+  }
+
+  renderDataIDEEIssueSummary(container, issues) {
+    container.replaceChildren();
+    const details = document.createElement('details');
+    details.open = true;
+    const heading = document.createElement('summary');
+    heading.textContent = getValue('dataidee_form.invalid_title');
+    details.appendChild(heading);
+    const list = document.createElement('ul');
+    issues.forEach((issue) => {
+      const item = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.issuePath = issue.path;
+      button.textContent = issue.path ? `${issue.path}: ${issue.message}` : issue.message;
+      item.appendChild(button);
+      list.appendChild(item);
+    });
+    details.appendChild(list);
+    container.appendChild(details);
+  }
+
+  focusDataIDEEIssue(modal, issue) {
+    const field = [...modal.querySelectorAll('[data-field-path]')]
+      .find((element) => element.dataset.fieldPath === issue.path);
+    (field?.querySelector('input,select,button') || modal.querySelector('#m-vectorsmanagement-dataidee-apply'))
+      ?.focus();
+  }
+
+  onDataIDEEIssueSelected(event, modal) {
+    const button = event.target.closest('button[data-issue-path]');
+    if (!button) return;
+    this.focusDataIDEEIssue(modal, {
+      path: button.dataset.issuePath,
+    });
   }
 
   /**

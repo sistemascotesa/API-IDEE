@@ -1277,7 +1277,9 @@ div#popup-box {
 }
 
 .m-vectorsmanagement-editing[hidden],
-.m-vectorsmanagement-editing button[hidden] {
+.m-vectorsmanagement-editing button[hidden],
+#plugin-panel-vectorsmanagement #creationBtns > button[hidden],
+#plugin-panel-vectorsmanagement #editionBtns > button[hidden] {
   display: none;
 }
 
@@ -1439,4 +1441,70 @@ div#popup-box {
 .m-vectorsmanagement-turf-result td {
     padding: .25rem .5rem;
     text-align: left;
+}
+.m-vectorsmanagement-dataidee-form {
+  max-height: min(70vh, 42rem);
+  min-width: min(28rem, 78vw);
+  overflow: auto;
+  padding: 0.5rem;
+}
+
+.m-vectorsmanagement-dataidee-fields {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.m-vectorsmanagement-dataidee-field {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  border: 0;
+  padding: 0.55rem 0;
+}
+
+.m-vectorsmanagement-dataidee-field.is-object {
+  border-left: 2px solid #b7c6d1;
+  padding-left: 0.75rem;
+}
+
+.m-vectorsmanagement-dataidee-field label,
+.m-vectorsmanagement-dataidee-field legend {
+  font-weight: 600;
+}
+
+.m-vectorsmanagement-dataidee-field input,
+.m-vectorsmanagement-dataidee-field select {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 2.25rem;
+  width: 100%;
+}
+
+.m-vectorsmanagement-dataidee-description {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.9em;
+}
+
+.m-vectorsmanagement-dataidee-error,
+.m-vectorsmanagement-dataidee-errors {
+  color: #a12622;
+  font-weight: 600;
+}
+
+.m-vectorsmanagement-dataidee-stored-value {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 12rem;
+  overflow: auto;
+  text-align: left;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 600px) {
+  .m-vectorsmanagement-dataidee-form {
+    max-height: 65vh;
+    min-width: 0;
+    width: min(88vw, 32rem);
+  }
 }

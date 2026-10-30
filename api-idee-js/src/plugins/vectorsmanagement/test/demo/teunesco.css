@@ -1,0 +1,46 @@
+html, body { width: 100%; height: 100%; margin: 0; }
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--idee-color-neutral-90, #333);
+  font-family: var(--idee-font-family, Roboto), sans-serif;
+}
+.teunesco-header {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid var(--idee-color-neutral-30, #ddd);
+  background: var(--idee-color-white, white);
+  max-height: 45vh;
+  overflow-y: auto;
+}
+.teunesco-heading { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1.25rem; }
+.teunesco-heading h1 { margin: 0; font-size: 1.15rem; flex: 1 1 auto; }
+.teunesco-header a { color: var(--idee-color-links, #005b8f); }
+#teunesco-status { margin: .4rem 0; font-size: .9rem; }
+.teunesco-guide { font-size: .9rem; line-height: 1.5; }
+.teunesco-guide summary { cursor: pointer; width: fit-content; }
+.teunesco-guide ol { padding-left: 1.4rem; margin: .6rem 0; }
+.teunesco-guide p { margin: .6rem 0; }
+#teunesco-access { max-width: 55rem; }
+.teunesco-access-controls { display: flex; flex-wrap: wrap; gap: .5rem; margin: .3rem 0; }
+.teunesco-access-controls input { flex: 1 1 15rem; min-width: 0; }
+.teunesco-access-controls input, .teunesco-access-controls button {
+  font: inherit;
+  padding: .45rem .6rem;
+  border: 1px solid var(--idee-color-neutral-40, #aaa);
+  border-radius: 4px;
+}
+.teunesco-access-controls button {
+  color: var(--idee-color-primary-dark, #005b8f);
+  background: var(--idee-color-white, white);
+  cursor: pointer;
+}
+.teunesco-header :focus-visible { outline: 2px solid var(--idee-color-primary, #007f95); outline-offset: 2px; }
+#teunesco-access-status { display: block; margin-top: .25rem; }
+#map { flex: 1 1 auto; min-height: 0; width: 100%; }
+@media (max-width: 480px) {
+  .teunesco-header { padding: .5rem .75rem; }
+  .teunesco-heading h1 { flex-basis: 100%; font-size: 1rem; }
+}

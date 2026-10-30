@@ -451,12 +451,12 @@ class DataIDEE extends OGCAPIFeatures {
     return this.transactions_;
   }
 
-  createFeature(feature) { return this.getTransactions_().create(feature); }
+  createFeature(feature, options = {}) { return this.getTransactions_().create(feature, options); }
 
   getEditingFeature(id) { return this.getTransactions_().getFeature(id); }
 
-  updateFeature(id, feature, method, etag) {
-    return this.getTransactions_().update(id, feature, etag, method);
+  updateFeature(id, feature, method, etag, options = {}) {
+    return this.getTransactions_().update(id, feature, etag, method, options);
   }
 
   deleteFeature(id, etag) { return this.getTransactions_().delete(id, etag); }

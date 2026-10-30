@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TEUNESCO · Edición de todos los tipos</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/assets/apiidee.css">
+    <link rel="stylesheet" href="/assets/vectorsmanagement.css">
+    <link rel="stylesheet" href="/teunesco.css">
+  </head>
+  <body>
+    <header class="teunesco-header">
+      <div class="teunesco-heading">
+        <h1>TEUNESCO · Todos los tipos</h1>
+        <a href="/">Demo local</a>
+        <a href="https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos"
+           target="_blank" rel="noopener noreferrer">Ver colección</a>
+      </div>
+      <p id="teunesco-status" role="status" aria-live="polite">Cargando los municipios de TEUNESCO…</p>
+      <details class="teunesco-guide">
+        <summary>Cómo editar y configurar el acceso</summary>
+        <ol>
+          <li>Selecciona <strong>Todos los tipos · TEUNESCO</strong> en VectorsManagement y pulsa <strong>Iniciar edición</strong>. Se editarán las entidades de la zona visible.</li>
+          <li>Activa <strong>Selección</strong> y pulsa un municipio. En <strong>Edición</strong>, usa <strong>Mover</strong> para desplazar el punto o <strong>Atributos</strong> para completar el formulario.</li>
+          <li><strong>Aplicar</strong> prepara los atributos localmente. <strong>Guardar</strong> envía geometría y atributos al servicio real. <strong>Descartar</strong> recupera los valores anteriores.</li>
+          <li>Para crear una entidad, usa <strong>Creación → Punto</strong>, dibuja en el mapa y completa los campos obligatorios del formulario.</li>
+        </ol>
+        <p>La geometría principal es <code>punto</code>. Las geometrías secundarias se conservan al editar los atributos; su edición no está disponible en este formulario.</p>
+        <form id="teunesco-access" autocomplete="off">
+          <label for="teunesco-token">Token de acceso (si tu sesión lo requiere)</label>
+          <div class="teunesco-access-controls">
+            <input id="teunesco-token" type="password" autocomplete="off" spellcheck="false"
+                   placeholder="Token de la sesión DataIDEE" aria-describedby="teunesco-token-help">
+            <button type="submit">Usar token</button>
+            <button id="teunesco-clear-token" type="button">Quitar token</button>
+          </div>
+          <small id="teunesco-token-help">Se envía como Authorization: Bearer y se conserva solo en memoria hasta recargar la página.</small>
+          <span id="teunesco-access-status" role="status" aria-live="polite"></span>
+        </form>
+      </details>
+    </header>
+    <div id="map" role="main" aria-label="Mapa de edición de la colección Todos los tipos"></div>
+    <script src="/assets/apiidee.js"></script>
+    <script src="/assets/configuration.js"></script>
+    <script src="/assets/vectorsmanagement.js"></script>
+    <script src="/teunesco.js"></script>
+  </body>
+</html>

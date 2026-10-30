@@ -1,7 +1,23 @@
+import { normalizeDataIDEESchema } from './DataIDEEFormSchema';
+
 /** DataIDEE-only OGC API Features transaction client. */
 const normalizedPath = (pathname) => pathname.split('/').map((part) => {
   try { return decodeURIComponent(part); } catch (error) { return part; }
 }).join('/').replace(/\/$/, '');
+const isMissing = (error) => error?.status === 404;
+
+function advertisedLink(links, rel, fallback, baseUrl, allowedOrigin) {
+  const link = (links || []).find((candidate) => candidate.rel === rel
+    || candidate.rel === `http://www.opengis.net/def/rel/ogc/1.0/${rel}`);
+  const url = new URL(link?.href || fallback, baseUrl);
+  if (url.origin !== allowedOrigin) throw new Error(`DataIDEE ${rel} link escaped the configured origin.`);
+  return url.href;
+}
+
+function operationContent(operation) {
+  return new Set(Object.keys(operation?.requestBody?.content || {})
+    .map((type) => type.toLowerCase()));
+}
 
 export default class DataIDEETransactions {
   constructor({
@@ -64,15 +80,24 @@ export default class DataIDEETransactions {
   }
 
   async capabilities() {
-    const [conformanceResponse, collectionResponse, queryables] = await Promise.all([
-      this.request(`${this.collectionUrl_.split('/collections/')[0]}/conformance`),
-      this.request(this.collectionUrl_),
-      this.queryables(),
+    const collectionResponse = await this.request(this.collectionUrl_);
+    const collection = await collectionResponse.json();
+    const root = `${this.collectionUrl_.split('/collections/')[0]}/`;
+    const collectionLinks = collection.links || [];
+    const queryablesUrl = advertisedLink(collectionLinks, 'queryables', `${this.collectionUrl_}/queryables`, this.collectionUrl_, new URL(this.collectionUrl_).origin);
+    const schemaUrl = advertisedLink(collectionLinks, 'schema', `${this.collectionUrl_}/schema`, this.collectionUrl_, new URL(this.collectionUrl_).origin);
+    const optionalJson = async (url) => {
+      try {
+        return await (await this.request(url)).json();
+      } catch (error) {
+        if (isMissing(error) || error instanceof SyntaxError) return null;
+        throw error;
+      }
+    };
+    const [conformance, queryables, schema] = await Promise.all([
+      optionalJson(`${root}conformance`), optionalJson(queryablesUrl), optionalJson(schemaUrl),
     ]);
-    const [conformance, collection] = await Promise.all([
-      conformanceResponse.json(), collectionResponse.json(),
-    ]);
-    const conformanceValues = conformance.conformsTo || conformance.conforms || [];
+    const conformanceValues = conformance?.conformsTo || conformance?.conforms || [];
     const conforms = conformanceValues.join(' ').toLowerCase();
     const writable = collection.writable !== false;
     const collectionBase = new URL(this.collectionUrl_);
@@ -117,17 +142,29 @@ export default class DataIDEETransactions {
       .map((method) => method.toUpperCase()));
     const featureMethods = new Set(Object.keys(operations?.feature || {})
       .map((method) => method.toUpperCase()));
-    const queryablesResponse = queryables;
-    let schemaResponse = null;
-    try {
-      schemaResponse = await this.request(`${this.collectionUrl_}/schema`);
-    } catch (error) {
-      if (error.status !== 404) throw error;
-    }
-    const schema = schemaResponse ? await schemaResponse.json() : null;
     const writableFromApi = operations !== null;
+    let form = { available: false, reason: 'The collection schema is unavailable.' };
+    if (schema) {
+      try {
+        const normalized = normalizeDataIDEESchema(schema);
+        const unsupportedRoot = ['allOf', 'anyOf', 'oneOf', 'not', 'if', 'then', 'else']
+          .filter((key) => Object.hasOwn(normalized.schema, key));
+        form = {
+          available: unsupportedRoot.length === 0,
+          ...(unsupportedRoot.length ? { reason: `Unsupported collection schema keywords: ${unsupportedRoot.join(', ')}` } : {}),
+          ...normalized,
+          defaults: Object.fromEntries(normalized.properties
+            .filter((field) => field.default !== undefined)
+            .map((field) => [field.name, field.default])),
+        };
+      } catch (error) {
+        form.reason = `The collection schema cannot be used for editing: ${error.message}`;
+      }
+    }
     const capability = (method, standard) => writable && (writableFromApi
       ? methods.has(method) : new RegExp(standard).test(conforms));
+    let updateMethod = featureMethods.has('PATCH') || /patch/.test(conforms) ? 'PATCH' : 'PUT';
+    if (operationContent(operations?.feature?.put).has('application/geo+json')) updateMethod = 'PUT';
     return {
       create: capability('POST', 'create|transactions'),
       update: writable && (operations !== null
@@ -135,10 +172,18 @@ export default class DataIDEETransactions {
         : /update|replace|transactions/.test(conforms)),
       delete: writable && (operations !== null
         ? featureMethods.has('DELETE') : /delete|transactions/.test(conforms)),
-      updateMethod: featureMethods.has('PATCH') || /patch/.test(conforms) ? 'PATCH' : 'PUT',
+      updateMethod,
+      updateMethods: {
+        patchAvailable: operations === null ? undefined : featureMethods.has('PATCH'),
+        patch: featureMethods.has('PATCH') ? [...operationContent(operations?.feature?.patch)] : [],
+        put: featureMethods.has('PUT') ? [...operationContent(operations?.feature?.put)] : [],
+      },
       collection,
-      queryables: queryablesResponse,
+      queryables,
       schema,
+      form,
+      schemaUrl,
+      queryablesUrl,
       geometryTypes: schema?.['x-ogc-geometry-types'] || (schema
         ? Object.values(schema.properties || {})
           .filter((property) => property['x-ogc-role'] === 'primary-geometry')
@@ -151,20 +196,17 @@ export default class DataIDEETransactions {
           type: property.type || 'string',
           required: (schema.required || []).includes(name),
         })) : [],
-      clientAssignedId: schema?.properties?.id?.readOnly !== true
-        && schema?.properties?.id !== undefined,
-      idType: schema?.properties?.id?.type || null,
+      clientAssignedId: Boolean(Object.values(schema?.properties || {}).find((property) => {
+        const types = Array.isArray(property.type) ? property.type : [property.type];
+        return property['x-ogc-role'] === 'id' && property.readOnly !== true
+          && types.some((type) => type === 'integer' || type === 'string');
+      })),
+      idType: (() => {
+        const property = Object.values(schema?.properties || {})
+          .find((item) => item['x-ogc-role'] === 'id');
+        return Array.isArray(property?.type) ? property.type.find((type) => type !== 'null') : property?.type || null;
+      })(),
     };
-  }
-
-  async queryables() {
-    try {
-      const response = await this.request(`${this.collectionUrl_}/queryables`);
-      return response.json();
-    } catch (error) {
-      if (error.status === 404) return null;
-      throw error;
-    }
   }
 
   getItemsUrl() { return `${this.collectionUrl_}/items`; }
@@ -174,11 +216,10 @@ export default class DataIDEETransactions {
     return { feature: await response.json(), etag: response.headers.get('ETag') };
   }
 
-  async create(feature) {
-    const properties = { ...this.defaultProperties_, ...(feature.properties || {}) };
-    Object.keys(properties).forEach((key) => {
-      if (properties[key] === '') delete properties[key];
-    });
+  async create(feature, { applyDefaults = true } = {}) {
+    const properties = {
+      ...(applyDefaults ? this.defaultProperties_ : {}), ...(feature.properties || {}),
+    };
     const payload = { ...feature, properties };
     const response = await this.request(`${this.collectionUrl_}/items`, {
       method: 'POST', headers: { 'Content-Type': 'application/geo+json' }, body: JSON.stringify(payload),
@@ -199,9 +240,12 @@ export default class DataIDEETransactions {
     return { feature: created, location };
   }
 
-  async update(id, feature, etag, method) {
+  async update(id, feature, etag, method, options = {}) {
     const updateMethod = method || 'PATCH';
-    const body = updateMethod === 'PATCH' ? { geometry: feature.geometry } : feature;
+    const body = updateMethod === 'PATCH' ? {
+      ...(options.geometryChanged === false ? {} : { geometry: feature.geometry }),
+      ...(options.propertiesPatch ? { properties: options.propertiesPatch } : {}),
+    } : (options.putFeature || feature);
     const headers = { 'Content-Type': 'application/merge-patch+json' };
     if (updateMethod === 'PUT') headers['Content-Type'] = 'application/geo+json';
     if (etag && !/^W\//i.test(etag)) headers['If-Match'] = etag;

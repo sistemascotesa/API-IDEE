@@ -1,4 +1,26 @@
 {
+  "dataidee_form": {
+    "title": "Feature attributes",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "required": "Required",
+    "add_item": "Add item",
+    "remove_item": "Remove item",
+    "item": "Item",
+    "stored_value": "View stored value",
+    "secondary_geometry": "Secondary geometry. Preserved when editing attributes and displayed for reference only.",
+    "true_value": "Yes",
+    "false_value": "No",
+    "unsupported": "This schema branch is not supported for editing.",
+    "invalid_title": "Review these fields",
+    "multiple_selection": "Select a single feature to edit its attributes.",
+    "confirm_close": "Discard the unapplied form changes?",
+    "create_title": "New feature attributes",
+    "unset_value": "Not set",
+    "datetime_hint": "Date and time in UTC.",
+    "editing_not_started": "Start a DataIDEE editing session before opening the form.",
+    "collection_readonly": "This collection does not allow attribute updates."
+  },
   "exception": {
     "impl_addlayercontrol": "The implementation used cannot create AddLayer controls.",
     "impl_creationcontrol": "The implementation used cannot create Creation controls.",

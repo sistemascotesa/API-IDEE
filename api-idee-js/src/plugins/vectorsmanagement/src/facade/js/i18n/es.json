@@ -1,4 +1,26 @@
 {
+  "dataidee_form": {
+    "title": "Atributos de entidad",
+    "apply": "Aplicar",
+    "cancel": "Cancelar",
+    "required": "Obligatorio",
+    "add_item": "Añadir elemento",
+    "remove_item": "Eliminar elemento",
+    "item": "Elemento",
+    "stored_value": "Ver valor almacenado",
+    "secondary_geometry": "Geometría secundaria. Se conserva al editar los atributos y se muestra solo para consulta.",
+    "true_value": "Sí",
+    "false_value": "No",
+    "unsupported": "Este campo utiliza una parte del esquema que no se puede editar.",
+    "invalid_title": "Revisa estos campos",
+    "multiple_selection": "Selecciona una sola entidad para editar sus atributos.",
+    "confirm_close": "¿Descartar los cambios del formulario que aún no se han aplicado?",
+    "create_title": "Atributos de entidad nueva",
+    "unset_value": "Sin definir",
+    "datetime_hint": "Fecha y hora en UTC.",
+    "editing_not_started": "Inicia una sesión de edición DataIDEE para abrir el formulario.",
+    "collection_readonly": "Esta colección no permite actualizar atributos."
+  },
   "exception": {
     "impl_addlayercontrol": "La implementación no puede crear controles de AddLayer.",
     "impl_creationcontrol": "La implementación no puede crear controles de Creation.",

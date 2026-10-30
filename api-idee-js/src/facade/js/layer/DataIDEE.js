@@ -16,7 +16,7 @@ import RequestManager from '../../../impl/common/RequestManager';
 
 /**
  * @classdesc
- * Capa DataIDEE de solo lectura para consultar entidades GeoJSON mediante OGC API Features.
+ * Capa DataIDEE para consultar y editar entidades GeoJSON mediante OGC API Features.
  * Admite filtros CQL2 en texto o JSON a través de las opciones del proveedor.
  *
  * @property {String} idLayer Identificador de la capa.
@@ -113,7 +113,8 @@ class DataIDEE extends Vector {
    *   y maxBytes; por defecto 250, 1000, 100000 y 10485760.
    * - transactionParameters / transactionHeaders: valores para escrituras y
    *   comprobaciones de conflicto, independientes de los parámetros de lectura.
-   * - dataideeDefaultProperties: propiedades no vacías que se añaden a las altas.
+   * - dataideeDefaultProperties: valores iniciales de atributos en el formulario de altas.
+   *   Se aplican tras los valores predeterminados del esquema y antes de lo que escriba el usuario.
    * @param {Object} vendorOpts Opciones para la biblioteca base.
    * - filter: Expresión CQL2 en texto o un objeto CQL2 JSON. Una cadena usa
    *   cql2-text por defecto y un objeto usa cql2-json.
@@ -514,8 +515,8 @@ class DataIDEE extends Vector {
   }
 
   /** Creates a GeoJSON feature in the configured collection. */
-  createFeature(feature) {
-    return this.getEditingImpl_().createFeature(feature);
+  createFeature(feature, options = {}) {
+    return this.getEditingImpl_().createFeature(feature, options);
   }
 
   /** Reads one feature for optimistic conflict detection during an explicit save. */
@@ -524,8 +525,8 @@ class DataIDEE extends Vector {
   }
 
   /** Updates a GeoJSON feature, preserving the caller's properties. */
-  updateFeature(id, feature, method, etag) {
-    return this.getEditingImpl_().updateFeature(id, feature, method, etag);
+  updateFeature(id, feature, method, etag, options = {}) {
+    return this.getEditingImpl_().updateFeature(id, feature, method, etag, options);
   }
 
   /** Deletes one feature by its server identifier. */

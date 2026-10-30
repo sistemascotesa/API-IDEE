@@ -196,6 +196,7 @@ export default class SelectionControl extends IDEE.Control {
       this.emphasizeSelectedFeature();
     });
     this.managementControl_.refreshSelection();
+    this.managementControl_.updateEditingAvailability();
 
     if (this.selectedFeatures_.length === 1 && document.querySelector('.m-vectorsmanagement-analysis') !== null) {
       this.managementControl_.analysisControl.showFeatureInfo(this.selectedFeatures_[0]);

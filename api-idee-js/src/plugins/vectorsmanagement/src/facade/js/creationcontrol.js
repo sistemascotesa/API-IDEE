@@ -54,6 +54,7 @@ export default class CreationControl extends IDEE.Control {
      * Selected layer
      */
     this.layer_ = null;
+    this.dataideePreviewLayer_ = null;
 
     /**
      * Checks if point drawing tool is active.
@@ -220,17 +221,22 @@ export default class CreationControl extends IDEE.Control {
     this.template.querySelector('#figuresSelector').addEventListener('change', (e) => this.getImpl().changeFigure(e));
   }
 
+  getMultipleGeometryType() { return this.multipleGeometryType_; }
+
   startMultipleGeometry(multipleType, drawType) {
-    this.deactivateDrawing();
-    this.multipleGeometryType_ = multipleType;
-    this.multipleCoordinates_ = [];
-    this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_start_status');
-    this.template.querySelector('#finishmultipledrawing').hidden = false;
     const drawing = {
       Point: { flag: 'isPointActive', button: 'multipointdrawing' },
       LineString: { flag: 'isLineActive', button: 'multilinedrawing' },
       Polygon: { flag: 'isPolygonActive', button: 'multipolygondrawing' },
     }[drawType];
+    const button = this.template.querySelector(`#${drawing.button}`);
+    if (button.hidden || button.disabled) return;
+    this.deactivateDrawing();
+    this.setDrawingSourceForCurrentMode_();
+    this.multipleGeometryType_ = multipleType;
+    this.multipleCoordinates_ = [];
+    this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_start_status');
+    this.managementControl_.updateEditingAvailability();
     this[drawing.flag] = true;
     this.geometry = drawType;
     this.template.querySelector(`#${drawing.button}`).classList.add('activated');
@@ -259,21 +265,82 @@ export default class CreationControl extends IDEE.Control {
     const geometry = new Geometry(this.multipleCoordinates_);
     this.feature = IDEE.impl.Feature.feature2Facade(new ol.Feature({ geometry }));
     this.geometry = this.multipleGeometryType_;
-    this.addAttributesToFeature();
     if (this.managementControl_.hasActiveEditingSession()) {
-      const values = {};
-      this.managementControl_.getEditingFields()
-        .querySelectorAll('#m-vectorsmanagement-editing-fields input').forEach((input) => {
-          values[input.name] = input.value;
-        });
-      if (!this.managementControl_.prepareNewFeature(this.feature, values)) return;
+      const feature = this.feature;
+      this.getImpl().getVectorSource().addFeature(feature.getImpl().getFeature());
+      this.openDataIDEECreationForm_(feature, () => this.finishMultipleGeometryAfterApply_());
+      return;
     }
+    this.addAttributesToFeature();
     this.layer_.addFeatures(this.feature);
     this.getImpl().getVectorSource().clear(true);
     this.multipleGeometryType_ = null;
     this.multipleCoordinates_ = [];
     this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_done');
     this.template.querySelector('#finishmultipledrawing').hidden = true;
+    this.deactivateDrawing();
+  }
+
+  suspendDrawingForAttributeForm_() {
+    if (this.isFigureActive) this.getImpl().removeFigureDrawInteraction();
+    else this.getImpl().removeDrawInteraction();
+    this.template.querySelectorAll('.activated').forEach((button) => button.classList.remove('activated'));
+    this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
+    this.managementControl_.removeSelectedFeatures();
+    this.isPointActive = false;
+    this.isLocatedPointActive = false;
+    this.isLineActive = false;
+    this.isPolygonActive = false;
+    this.isTextActive = false;
+    this.isFigureActive = false;
+  }
+
+  setDrawingSourceForCurrentMode_() {
+    if (!this.managementControl_.hasActiveEditingSession()) {
+      this.getImpl().setVectorSource(this.layer_.getImpl().getLayer().getSource());
+      return;
+    }
+    if (!this.dataideePreviewLayer_) {
+      this.dataideePreviewLayer_ = new IDEE.layer.Vector({
+        extract: false,
+        name: 'dataidee-creation-preview',
+      }, { displayInLayerSwitcher: false });
+      this.map_.addLayers(this.dataideePreviewLayer_);
+      this.dataideePreviewLayer_.setZIndex(1044);
+    }
+    this.getImpl().setVectorSource(this.dataideePreviewLayer_.getImpl().getLayer().getSource());
+  }
+
+  clearDataIDEEPreview_() {
+    if (this.dataideePreviewLayer_) {
+      this.dataideePreviewLayer_.getImpl().getLayer().getSource().clear(true);
+    }
+    this.setDrawingSourceForCurrentMode_();
+  }
+
+  openDataIDEECreationForm_(feature, onApplied = () => {}) {
+    this.suspendDrawingForAttributeForm_();
+    const opened = this.managementControl_.editionControl.openDataIDEEAttributeForm(
+      feature,
+      'create',
+      () => {
+        this.clearDataIDEEPreview_();
+        onApplied(feature);
+      },
+      () => this.clearDataIDEEPreview_(),
+    );
+    if (!opened) this.clearDataIDEEPreview_();
+  }
+
+  finishMultipleGeometryAfterApply_(feature) {
+    this.multipleGeometryType_ = null;
+    this.multipleCoordinates_ = [];
+    this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_done');
+    this.template.querySelector('#finishmultipledrawing').hidden = true;
+    this.deactivateDrawing();
+  }
+
+  finishMultipleGeometryAfterCancel_() {
     this.deactivateDrawing();
   }
 
@@ -332,7 +399,14 @@ export default class CreationControl extends IDEE.Control {
       const parsedY = parseFloat(y);
       if (!Number.isNaN(parsedX) && !Number.isNaN(parsedY)) {
         const coordinates = [parsedX, parsedY];
-        this.feature = this.getImpl().drawPointFeature(coordinates, srs);
+        const isDataIDEEEditing = this.managementControl_.hasActiveEditingSession();
+        if (isDataIDEEEditing) this.setDrawingSourceForCurrentMode_();
+        this.feature = this.getImpl().drawPointFeature(coordinates, srs, !isDataIDEEEditing);
+        if (isDataIDEEEditing) {
+          this.getImpl().getVectorSource().addFeature(this.feature.getImpl().getFeature());
+          this.geometry = 'Point';
+          this.openDataIDEECreationForm_(this.feature);
+        }
         // this.setFeatureStyle(this.feature, 'Point');
       } else {
         IDEE.dialog.error(getValue('exception.formatocoord'));
@@ -474,6 +548,16 @@ export default class CreationControl extends IDEE.Control {
    * @param {String} geometry - clicked button geometry type
    */
   geometryBtnClick(geometry) {
+    const buttonId = {
+      Point: 'pointdrawing',
+      LocatedPoint: 'pointlocateddrawing',
+      LineString: 'linedrawing',
+      Polygon: 'polygondrawing',
+      Figure: 'figuredrawing',
+      Text: 'textdrawing',
+    }[geometry];
+    const button = this.template.querySelector(`#${buttonId}`);
+    if (!button || button.hidden || button.disabled) return;
     switch (geometry) {
       case 'Point':
         this.activationManager('isPointActive', 'pointdrawing', geometry);
@@ -494,6 +578,11 @@ export default class CreationControl extends IDEE.Control {
         this.activationManager('isTextActive', 'textdrawing', 'Point');
         break;
       default:
+    }
+
+    if (this.isPointActive || this.isLocatedPointActive || this.isLineActive
+      || this.isPolygonActive || this.isFigureActive || this.isTextActive) {
+      this.setDrawingSourceForCurrentMode_();
     }
 
     const tool = this.isFigureActive ? 'Figure' : this.geometry;
@@ -551,7 +640,10 @@ export default class CreationControl extends IDEE.Control {
    */
   setLayer(layer) {
     this.layer_ = layer;
-    this.getImpl().setVectorSource(this.layer_.getImpl().getLayer().getSource());
+    if (this.dataideePreviewLayer_) {
+      this.dataideePreviewLayer_.getImpl().getLayer().getSource().clear(true);
+    }
+    this.setDrawingSourceForCurrentMode_();
   }
 
   /**
@@ -601,18 +693,11 @@ export default class CreationControl extends IDEE.Control {
     } /* else {
       this.setFeatureStyle(this.feature, this.geometry);
     } */
-    this.addAttributesToFeature();
     if (this.managementControl_.hasActiveEditingSession()) {
-      const values = {};
-      this.managementControl_.getEditingFields()
-        .querySelectorAll('#m-vectorsmanagement-editing-fields input').forEach((input) => {
-          values[input.name] = input.value;
-        });
-      if (!this.managementControl_.prepareNewFeature(this.feature, values)) {
-        this.deactivateDrawing();
-        return;
-      }
+      this.openDataIDEECreationForm_(this.feature);
+      return;
     }
+    this.addAttributesToFeature();
     this.layer_.addFeatures(this.feature);
 
     this.emphasizeSelectedFeature();
@@ -646,6 +731,10 @@ export default class CreationControl extends IDEE.Control {
   onDrawFigure(event) {
     this.feature = this.getImpl().convertToMFeatures(event.feature);
     this.geometry = this.feature.getGeometry().type;
+    if (this.managementControl_.hasActiveEditingSession()) {
+      this.openDataIDEECreationForm_(this.feature);
+      return;
+    }
     this.addAttributesToFeature();
     this.layer_.addFeatures(this.feature);
 
@@ -817,7 +906,13 @@ export default class CreationControl extends IDEE.Control {
    * @function
    * @api stable
    */
-  destroy() {}
+  destroy() {
+    if (this.dataideePreviewLayer_) {
+      this.dataideePreviewLayer_.getImpl().getLayer().getSource().clear(true);
+      this.map_.getMapImpl().removeLayer(this.dataideePreviewLayer_.getImpl().getLayer());
+      this.dataideePreviewLayer_ = null;
+    }
+  }
 
   /**
    * This function is called on the control activation

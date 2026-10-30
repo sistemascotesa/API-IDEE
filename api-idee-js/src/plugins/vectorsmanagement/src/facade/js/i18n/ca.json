@@ -1,5 +1,27 @@
 {
-    "exception": {
+  "dataidee_form": {
+    "title": "Atributs de l'entitat",
+    "apply": "Aplica",
+    "cancel": "Cancel·la",
+    "required": "Obligatori",
+    "add_item": "Afegeix un element",
+    "remove_item": "Elimina l'element",
+    "item": "Element",
+    "stored_value": "Veure el valor desat",
+    "secondary_geometry": "Geometria secundària. Es conserva en editar els atributs i es mostra només per a consulta.",
+    "true_value": "Sí",
+    "false_value": "No",
+    "unsupported": "Aquest camp utilitza una part de l'esquema que no es pot editar.",
+    "invalid_title": "Revisa aquests camps",
+    "multiple_selection": "Selecciona una sola entitat per editar-ne els atributs.",
+    "confirm_close": "Vols descartar els canvis del formulari que encara no s'han aplicat?",
+    "create_title": "Atributs de l'entitat nova",
+    "unset_value": "Sense definir",
+    "datetime_hint": "Data i hora en UTC.",
+    "editing_not_started": "Inicia una sessió d'edició DataIDEE per obrir el formulari.",
+    "collection_readonly": "Aquesta col·lecció no permet actualitzar atributs."
+  },
+  "exception": {
         "impl_addlayercontrol": "La implementació no pot crear controls d'AddLayer.",
         "impl_creationcontrol": "La implementació no pot crear controls de creació.",
         "impl_downloadcontrol": "La implementació no pot crear controls de descàrrega.",

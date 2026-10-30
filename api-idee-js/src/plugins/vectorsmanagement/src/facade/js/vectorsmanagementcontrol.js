@@ -412,6 +412,10 @@ export default class VectorsManagementControl extends IDEE.Control {
     return this.editingSession_;
   }
 
+  getEditingCapabilities() {
+    return this.editingCapabilities_;
+  }
+
   getEditingFields() {
     return this.editingPanel_;
   }
@@ -429,15 +433,18 @@ export default class VectorsManagementControl extends IDEE.Control {
   updateEditingAvailability() {
     const isEditing = this.isSessionLayer_(this.selectedLayer)
       && this.map_.getImplementation() === 'ol';
+    const attributeFormAvailable = Boolean(this.editingCapabilities_?.form?.available);
     this.editingPanel_.hidden = !isEditing;
     const isEditable = !isEditing || Boolean(this.editingSession_);
+    const geometryTypes = this.editingCapabilities_?.geometryTypes;
+    const acceptsGeometry = (type) => !isEditing || !geometryTypes?.length
+      || geometryTypes.includes(type);
     ['creation', 'edition'].forEach((id) => {
       const button = this.html.querySelector(`#m-vectorsmanagement-${id}`);
       if (button) button.disabled = !isEditable;
     });
     const creationTemplate = this.creationControl?.template;
     if (creationTemplate) {
-      const geometryTypes = this.editingCapabilities_?.geometryTypes;
       const geometryButtons = {
         pointdrawing: 'point',
         pointlocateddrawing: 'point',
@@ -451,26 +458,26 @@ export default class VectorsManagementControl extends IDEE.Control {
       Object.entries(geometryButtons).forEach(([id, type]) => {
         const button = creationTemplate.querySelector(`#${id}`);
         if (button) {
+          button.hidden = !acceptsGeometry(type)
+            || (type.startsWith('multi') && (!isEditing || !this.editingSession_));
           button.disabled = isEditing
-            && (!this.editingSession_ || !this.editingCapabilities_?.create);
-          if (geometryTypes?.length) button.hidden = isEditing && !geometryTypes.includes(type);
+            && (!this.editingSession_ || !this.editingCapabilities_?.create
+              || !attributeFormAvailable || button.hidden);
         }
       });
       const textButton = creationTemplate.querySelector('#textdrawing');
-      if (textButton) textButton.disabled = isEditing || !isEditable;
-      [
-        'multipointdrawing',
-        'multilinedrawing',
-        'multipolygondrawing',
-        'finishmultipledrawing',
-      ].forEach((id) => {
-        const button = creationTemplate.querySelector(`#${id}`);
-        if (button) {
-          button.hidden = !isEditing || !this.editingSession_;
-          button.disabled = isEditing
-            && (!this.editingSession_ || !this.editingCapabilities_?.create);
-        }
-      });
+      if (textButton) {
+        textButton.hidden = isEditing;
+        textButton.disabled = isEditing || !isEditable;
+      }
+      const finishMultiple = creationTemplate.querySelector('#finishmultipledrawing');
+      if (finishMultiple) {
+        const multipleType = this.creationControl.getMultipleGeometryType()?.toLowerCase();
+        finishMultiple.hidden = !isEditing || !this.editingSession_
+          || !multipleType || !acceptsGeometry(multipleType);
+        finishMultiple.disabled = finishMultiple.hidden
+          || !this.editingCapabilities_?.create || !attributeFormAvailable;
+      }
     }
     const editionTemplate = this.editionControl?.template;
     if (editionTemplate) {
@@ -487,7 +494,17 @@ export default class VectorsManagementControl extends IDEE.Control {
         'movedrawing',
       ].forEach((id) => {
         const button = editionTemplate.querySelector(`#${id}`);
-        if (button) button.disabled = !updateAllowed;
+        if (button) {
+          let compatible = true;
+          if (id === 'holedrawing') {
+            compatible = acceptsGeometry('polygon') || acceptsGeometry('multipolygon');
+          } else if (id === 'rotatedrawing' || id === 'scaledrawing') {
+            compatible = !isEditing || !geometryTypes?.length
+              || geometryTypes.some((type) => type !== 'point');
+          }
+          button.hidden = !compatible;
+          button.disabled = !updateAllowed || !compatible;
+        }
       });
       ['cleanAll', 'm-vectorsmanagement-deletegeom-btn'].forEach((id) => {
         const button = editionTemplate.querySelector(`#${id}`);
@@ -497,43 +514,31 @@ export default class VectorsManagementControl extends IDEE.Control {
         }
       });
       const attributes = editionTemplate.querySelector('#editattribute');
-      if (attributes) attributes.hidden = isEditing;
+      if (attributes) {
+        attributes.hidden = false;
+        const selectedCount = this.getSelectedFeatures().length;
+        const formAvailable = attributeFormAvailable;
+        attributes.disabled = isEditing && (!this.editingSession_
+          || !this.editingCapabilities_?.update || !formAvailable || selectedCount !== 1);
+        attributes.title = getValue('attributes');
+        if (isEditing && selectedCount !== 1) {
+          attributes.title = getValue('dataidee_form.multiple_selection');
+        } else if (isEditing && !this.editingSession_) {
+          attributes.title = getValue('dataidee_form.editing_not_started');
+        } else if (isEditing && !this.editingCapabilities_?.update) {
+          attributes.title = getValue('dataidee_form.collection_readonly');
+        } else if (isEditing && !formAvailable) {
+          attributes.title = this.editingCapabilities_?.form?.reason
+            || getValue('dataidee_form.unsupported');
+        }
+      }
     }
     const fields = this.editingPanel_.querySelector(
       '#m-vectorsmanagement-editing-fields',
     );
     if (fields) {
-      const previousValues = new Map(
-        [...fields.querySelectorAll('input')].map((input) => [
-          input.name,
-          input.value,
-        ]),
-      );
       fields.replaceChildren();
-      if (this.editingSession_) {
-        const creationFields = [
-          ...(this.editingCapabilities_?.creationFields || []),
-        ];
-        if (this.editingCapabilities_?.clientAssignedId) {
-          creationFields.unshift({
-            name: 'id',
-            type: this.editingCapabilities_.idType || 'string',
-            required: true,
-          });
-        }
-        creationFields.forEach((field) => {
-          const label = document.createElement('label');
-          label.textContent = field.name;
-          const input = document.createElement('input');
-          input.name = field.name;
-          input.type = field.type === 'integer' ? 'number' : 'text';
-          if (field.type === 'integer') input.step = '1';
-          input.required = field.required;
-          if (previousValues.has(field.name)) input.value = previousValues.get(field.name);
-          label.appendChild(input);
-          fields.appendChild(label);
-        });
-      }
+      fields.hidden = true;
     }
     if (!isEditing || this.editingSession_) return;
     const targetLayer = this.selectedLayer;
@@ -849,7 +854,7 @@ export default class VectorsManagementControl extends IDEE.Control {
           this.selectionControl
           && $selection.classList.contains('activated')
         ) {
-          this.selectionControl.deactivate();
+          this.selectionControl.hideSelectionLayer();
           $selection.classList.remove('activated');
         }
 
