@@ -64,7 +64,8 @@ styles: {
 - **copyBtnHtml**: Título para el segundo botón. (por defecto: 'Copiar').
 - **urlAPI**: URL API o URL Visor (API verdadero o predeterminado, visor falso). Por defecto: false.
 - **shareLayer**: Define si se comparten las capas informativas compartibles (`true`) o las indicadas en `filterLayers` (`false`), valor de tipo _Boolean_. Para que tenga efecto filterLayers, shareLayer debe estar como false o no definido. Por defecto: false.
-- **shareBaseLayer**: Con `true`, conserva el fondo actual mediante el GET general `baselayer`. Con `false` o sin definir, omite ese GET y usa el fondo por defecto del destino. Independiente de `shareLayer`. Por defecto: `false`.
+- **shareBaseLayer**: Con `true`, conserva el fondo activo mediante el GET general `baselayer`. Si no hay fondo activo, o con `false` o sin definir, omite ese GET y usa el fondo por defecto del destino. Independiente de `shareLayer`. Por defecto: `false`.
+- **qrLogo**: URL del logo incluido en el QR. Si se omite o está vacía, hereda `IDEE.config.metadata.logoURL`. El proyecto puede configurar ese valor después de cargar la configuración de API-IDEE. Una URL explícita que no se pueda cargar muestra un aviso, sin sustituirla por otra marca.
 - **filterLayers**: Selecciona la capa a compartir por el nombre, valor de tipo _Array_.
   - Por defecto: [ ].
   - ```Array<String>```: Los valores serán los nombres de la capa.
@@ -72,7 +73,7 @@ styles: {
 # API-REST
 
 ```javascript
-URL_API?sharemap=position*order*tooltip*baseUrl*urlAPI*minimize*title*text*shareLayer*btn*copyBtn*copyBtnHtml*tooltipCopy*overwritestyles*shareBaseLayer
+URL_API?sharemap=position*order*tooltip*baseUrl*urlAPI*minimize*title*text*shareLayer*btn*copyBtn*copyBtnHtml*tooltipCopy*overwritestyles*shareBaseLayer*qrLogo
 ```
 
 <table>
@@ -149,7 +150,12 @@ URL_API?sharemap=position*order*tooltip*baseUrl*urlAPI*minimize*title*text*share
   <tr>
     <td>shareBaseLayer</td>
     <td>true: fondo actual; false o ausente: fondo por defecto del destino</td>
-    <td>Base64 ✔️ | Separador ✔️ (última posición, 14)</td>
+    <td>Base64 ✔️ | Separador ✔️ (posición 14)</td>
+  </tr>
+  <tr>
+    <td>qrLogo</td>
+    <td>URL del logo; vacío hereda metadata.logoURL</td>
+    <td>Base64 ✔️ | Separador ✔️ (posición 15)</td>
   </tr>
   <tr>
     <td>filterLayers</td>
@@ -240,6 +246,31 @@ const mp = new ShareMap({
 
 map.addPlugin(mp);
 ```
+
+# Código QR con el logo del proyecto
+
+Al abrir Compartir, el QR abre el mapa de la URL mostrada en el modal, con las mismas opciones de capas, fondo y encuadre. Se genera en el navegador mediante `qrcode`, incluido en el bundle; no utiliza un servicio externo de generación de imágenes QR.
+
+```javascript
+// Después de cargar configuration.js, antes de abrir ShareMap:
+IDEE.config.set('metadata.logoURL', '/mi-proyecto/assets/logo.png');
+map.addPlugin(new IDEE.plugin.ShareMap({ shareBaseLayer: true }));
+
+// Alternativa: logo exclusivo de esta instancia de ShareMap.
+map.addPlugin(new IDEE.plugin.ShareMap({ qrLogo: '/otra-marca/logo.png' }));
+```
+
+El logo debe ser una imagen accesible. Si está en otro origen, su servidor debe permitir CORS para componer la imagen del QR. La carga dispone de un límite de 10 segundos. Si falta el logo o no se puede cargar, el modal muestra un aviso y conserva el enlace y el HTML válidos.
+
+El botón **Descargar QR (PNG)** guarda `mapa-qr.png`, con el mismo QR y logo que se muestran en el modal y a su resolución original. Permite adjuntar la imagen a un correo o mensaje e insertarla en documentos. Se habilita cuando el QR está listo; durante la generación o ante un error permanece desactivado. La descarga utiliza la imagen ya generada y no hace peticiones adicionales.
+
+Primero se aplica la validación habitual de ShareMap. Si el enlace se rechaza, tampoco se genera el QR. Si la URL válida cabe, se codifica directamente. Si supera la capacidad del QR, se reutiliza la misma petición a TinyURL que utiliza ShareMap para las redes sociales, mediante HTTPS y el proxy configurado en API-IDEE. El enlace corto redirige a la URL completa, sin eliminar parámetros. La URL y el HTML que se pueden copiar siguen conservando el enlace completo.
+
+El acortamiento necesita conexión y disponibilidad del servicio. TinyURL no permite peticiones directas desde otros orígenes: ShareMap utiliza el proxy configurado para esta petición y lee su respuesta JSON, aunque el proxy global esté desactivado. Esto no cambia el modo de proxy del mapa ni de los demás plugins. Si falla, responde con un valor inválido o tarda más de 10 segundos, se muestra un aviso y se conserva la copia del enlace largo. Los QR de enlaces que caben directamente funcionan aunque el acortador falle. El QR mantiene corrección de errores H, margen blanco y un logo pequeño. `minimize` no es un acortador de URLs.
+
+Con un `qrLogo` explícito, `getAPIRest()` usa el formato Base64 existente para preservar caracteres como `*`, `&` o `=` de la URL del logo y conservar los filtros. El logo heredado permanece en la configuración del proyecto y no se incorpora al enlace. Los enlaces REST anteriores sin `qrLogo` siguen siendo válidos.
+
+Prueba manual: abrir el modal, escanear el QR y comparar la URL de destino con el campo Compartir URL. Para enlaces largos, comprobar la redirección del enlace corto al mismo mapa. Repetir con logo heredado, explícito, ausente y con URL de imagen incorrecta. Las pruebas automatizadas verifican la imagen final contra la matriz del QR esperado usando `qrcode`, sin otra dependencia de lectura. Para abrir un mapa local desde un teléfono, el enlace debe utilizar una dirección accesible desde el teléfono; `localhost` apuntaría al propio teléfono.
 
 # 👨‍💻 Desarrollo
 

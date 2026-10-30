@@ -5,7 +5,12 @@
     "localBinary": "“{layer}” will not be shared: the file only exists in this browser. Load it from an accessible URL to share it.",
     "unsupportedLayer": "“{layer}” could not be shared: its source or configuration cannot be restored through REST.",
     "urlTooLong": "The map link is still too long to share. Select fewer layers or load the data from an accessible URL.",
-    "baseLayer": "The current background cannot be shared. Check that its layers have an accessible source."
+    "baseLayer": "The current background cannot be shared. Check that its layers have an accessible source.",
+    "qrUnavailable": "The QR code is unavailable because a valid link could not be generated.",
+    "qrGeneration": "The QR code could not be generated. You can copy the URL.",
+    "qrShortening": "The link could not be shortened to generate the QR code. Check your connection and the URL shortening service. You can copy the URL.",
+    "qrLogoMissing": "No project logo is configured to generate the QR code. You can copy the URL.",
+    "qrLogo": "The project logo could not be loaded to generate the QR code. You can copy the URL."
   },
   "textHelp": {
     "help1": "Allows you to share the map view with the loaded information layers through a Web link. It also provides the HTML code in case you want to embed the viewer in another Web portal.",
@@ -15,7 +20,8 @@
     "help5": "Press 'OK' to close the panel.",
     "help6": "The information relevant to the extension and its possible parameterization is documented in",
     "help7": "The example of use of its parameters can be checked in",
-    "help8": "With shareBaseLayer=true the current background is preserved. With false or when omitted, the destination default background is used. Information layers are selected with shareLayer and filterLayers."
+    "help8": "With shareBaseLayer=true the active background is preserved. If no background is active, or with false or when omitted, the destination default background is used. Information layers are selected with shareLayer and filterLayers.",
+    "help9": "Scan the QR code to open the same shared map. Download it as a PNG image with the logo to save, send or insert it into a document. If the full link does not fit, the social network URL shortener is used. The logo comes from qrLogo or the project metadata.logoURL. A message appears if the logo or the shortener fails."
   },
   "modalTitle": "Share map",
   "title": "Share URL",
@@ -23,5 +29,8 @@
   "accept": "Accept",
   "copy": "Copy",
   "tooltip": "Share",
-  "tooltipCopy": "Copied!"
+  "tooltipCopy": "Copied!",
+  "qrTitle": "Map QR code",
+  "qrLoading": "Generating QR code…",
+  "qrDownload": "Download QR (PNG)"
 }

@@ -87,6 +87,7 @@
                             const BackgroundLayers = IDEE.control.BackgroundLayers;
                             const map = IDEE.map({
                                 container: 'mapjs',
+                                baseLayer: IDEE.config.MAP_VIEWER_BASE_LAYER,
                                 controls: ['scale'],
                                 zoom: 5,
                                 maxZoom: 20,

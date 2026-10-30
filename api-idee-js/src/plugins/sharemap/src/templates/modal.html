@@ -20,6 +20,12 @@
                     <button type="button" tabindex="0" aria-label="Compartir en Pinterest" id="pinterest" class="m-plugin-sharemap-icon g-cartografia-sharemap-pinterest"></button>
                 </div>
             </div>
+            <div class="m-plugin-sharemap-section m-plugin-sharemap-qr">
+                <span>{{qrTitle}}</span>
+                <img hidden alt="{{qrTitle}}" />
+                <p role="status" aria-live="polite">{{qrLoading}}</p>
+                <button type="button" tabindex="0" class="m-plugin-sharemap-downloadqr" disabled>{{qrDownload}}</button>
+            </div>
             <div class="m-plugin-sharemap-section m-plugin-sharemap-separator">
                 <div role="heading" id="m-plugin-sharemap-text" class="m-plugin-sharemap-text">
                     <span role="text" tabindex="0">{{{text}}}</span>

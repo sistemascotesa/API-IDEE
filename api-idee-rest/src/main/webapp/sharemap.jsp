@@ -103,6 +103,10 @@
                 </select>
             </div>
             <div>
+                <label for="inputQrLogo" title="Vacío: usa metadata.logoURL del proyecto">Logo del QR "qrLogo"</label>
+                <input type="text" id="inputQrLogo" placeholder="URL del logo del proyecto">
+            </div>
+            <div>
                 <label for="inputFilterLayers" title="Lista de nombres de capas (separados por coma) que se incluirán en el enlace. Solo aplica cuando shareLayer es false o no está definido">Filtro de capas "filterLayers"</label>
                 <input type="text" id="inputFilterLayers" list="filterLayersSug">
                 <datalist id="filterLayersSug"></datalist>
@@ -222,6 +226,7 @@
         const selectMinimize = document.getElementById('selectMinimize');
         const selectShareLayer = document.getElementById('selectShareLayer');
         const selectShareBaseLayer = document.getElementById('selectShareBaseLayer');
+        const inputQrLogo = document.getElementById('inputQrLogo');
         const inputFilterLayers = document.getElementById('inputFilterLayers');
         const filterLayersSug = document.getElementById('filterLayersSug');
         const selectOverwriteStyles = document.getElementById('selectOverwriteStyles');
@@ -270,6 +275,7 @@
             selectMinimize,
             selectShareLayer,
             selectShareBaseLayer,
+            inputQrLogo,
             inputFilterLayers,
             selectOverwriteStyles,
             inputPrimaryColor,
@@ -299,6 +305,7 @@
                 minimize: parseBool(selectMinimize.value),
                 shareLayer: parseBool(selectShareLayer.value),
                 shareBaseLayer: parseBool(selectShareBaseLayer.value),
+                qrLogo: inputQrLogo.value.trim(),
                 filterLayers: inputFilterLayers.value.trim().split(',').map((l) => l.trim()),
                 overwriteStyles: parseBool(selectOverwriteStyles.value),
                 styles: {

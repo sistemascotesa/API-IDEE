@@ -41,7 +41,7 @@ export default class BackImgLayerControl extends IDEE.Control {
     const impl = new IDEE.impl.Control();
     super('BackImgLayer', impl);
 
-    if (!map.hasRestBaseLayer()) {
+    if (IDEE.util.RestBaseLayerStore.getRestBaseLayers(map) === undefined) {
       map.getBaseLayers().forEach((layer) => {
         layer.on(IDEE.evt.LOAD, map.removeLayers(layer));
       });
@@ -106,7 +106,10 @@ export default class BackImgLayerControl extends IDEE.Control {
    */
   createView(map) {
     this.map = map;
-    const restored = map.prepareBaseLayerSelector(this, getValue('shared'));
+    const hasExplicitBaseLayer = IDEE.util.RestBaseLayerStore.getRestBaseLayers(map) !== undefined;
+    if (hasExplicitBaseLayer) {
+      IDEE.control.BackgroundLayers.syncRestBaseLayer(this, getValue('shared'));
+    }
     return new Promise((success, fail) => {
       const html = IDEE.template.compileSync(template, {
         vars: {
@@ -123,10 +126,10 @@ export default class BackImgLayerControl extends IDEE.Control {
       this.html = html;
       this.listen(html);
       this.on(IDEE.evt.ADDED_TO_MAP, () => {
-        if (restored) {
-          const selected = this.layers[this.activeLayer];
-          const id = selected ? selected.id : 'empty';
-          html.querySelector(`#backimglayer-layer-${id}`)?.classList.add('m-backimglayer-active');
+        if (hasExplicitBaseLayer) {
+          this.updateBaseLayerSelection();
+          map.on(IDEE.evt.ADDED_LAYER, this.updateBaseLayerSelection, this);
+          map.on(IDEE.evt.REMOVED_LAYER, this.updateBaseLayerSelection, this);
           this.fire('backimglayer:activeChanges', [{ activeLayerId: this.activeLayer }]);
           return;
         }
@@ -172,12 +175,13 @@ export default class BackImgLayerControl extends IDEE.Control {
    * @param {} i
    */
   showBaseLayer(e, layersInfo, i) {
-    this.removeLayers();
-    this.visible = false;
-    const { layers } = layersInfo;
+    // Guarda la selección antes de que REMOVED_LAYER actualice los botones.
     const isActivated = e.currentTarget.parentElement
       .querySelector(`#backimglayer-layer-${layersInfo.id}`)
       .classList.contains('m-backimglayer-active');
+    this.removeLayers();
+    this.visible = false;
+    const { layers } = layersInfo;
 
     layers.forEach((layer, index) => {
       let sumIndex = index;
@@ -227,7 +231,9 @@ export default class BackImgLayerControl extends IDEE.Control {
    * @api
    */
   removeLayers() {
-    if (this.map.hasRestBaseLayer()) this.map.clearRestBaseLayerSelection(this);
+    if (IDEE.util.RestBaseLayerStore.getRestBaseLayers(this.map) !== undefined) {
+      this.map.removeLayers(this.map.getActiveBaseLayers());
+    }
     try {
       this.map.removeLayers(this.flattedLayers);
     } catch (err) { /* Continue */ }
@@ -237,18 +243,26 @@ export default class BackImgLayerControl extends IDEE.Control {
     } catch (err) { /* Continue */ }
   }
 
-  /** Componentes de la selección; Map comprueba su presencia y visibilidad real. @api */
+  /** Componentes de la selección para la coordinación interna de fondos. @private */
   getSelectedBaseLayers() {
     return this.layers[this.activeLayer]?.layers || [];
   }
 
-  /** Sincroniza la vista cuando otro selector sustituye el fondo REST. @api */
-  clearBaseLayerSelection() {
-    this.visible = false;
-    this.html?.querySelectorAll('.m-backimglayer-active').forEach((button) => {
+  /** Los eventos solo actualizan la selección visual; no vuelven a cargar capas. @private */
+  updateBaseLayerSelection() {
+    IDEE.control.BackgroundLayers.updateBaseLayerState(this);
+    this.html.querySelectorAll('.m-backimglayer-active').forEach((button) => {
       button.classList.remove('m-backimglayer-active');
     });
-    if (this.empty) this.html?.querySelector('#backimglayer-layer-empty')?.classList.add('m-backimglayer-active');
+    const id = this.visible ? this.layers[this.activeLayer].id : 'empty';
+    this.html.querySelector(`#backimglayer-layer-${id}`)?.classList.add('m-backimglayer-active');
+  }
+
+  /** Retira únicamente los listeners añadidos para sincronizar el fondo REST. */
+  destroy() {
+    this.map.un(IDEE.evt.ADDED_LAYER, this.updateBaseLayerSelection, this);
+    this.map.un(IDEE.evt.REMOVED_LAYER, this.updateBaseLayerSelection, this);
+    super.destroy();
   }
 
   /**

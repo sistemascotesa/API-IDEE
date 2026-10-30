@@ -3,13 +3,18 @@ import ShareMap from 'facade/sharemap';
 window.IDEE.plugin.ShareMap = ShareMap;
 
 IDEE.language.setLang('es');
+const urlParams = new URLSearchParams(window.location.search);
 
 const map = IDEE.map({
   container: 'mapjs',
-  zoom: 7,
+  // baseLayer: IDEE.config.MAP_VIEWER_BASE_LAYER,
+  baseLayer: IDEE.getQuickLayers('RelieveSombreado_TMS'),
+  // baseLayer: IDEE.getQuickLayers('BASE_PNOA_MA_TMS').getRestLayer(),
+  zoom: urlParams.has('zoom') ? Number(urlParams.get('zoom')) : 7,
   minZoom: 4,
   maxZoom: 20,
-  center: [144112, 4839064],
+  center: urlParams.has('center') ? urlParams.get('center').split(',').map(Number) : [144112, 4839064],
+  projection: urlParams.get('srs') || undefined,
   controls: ['scale*true', 'location', 'backgroundlayers'],
 });
 window.map = map;
@@ -33,7 +38,8 @@ const geoJSON = new IDEE.layer.GeoJSON({
     ],
   },
 });
-if (!new URLSearchParams(window.location.search).has('layers')) {
+if (!new URLSearchParams(window.location.search).has('layers')
+  && !new URLSearchParams(window.location.search).has('baselayer')) {
   map.addLayers(geoJSON);
 }
 
@@ -59,6 +65,8 @@ const inputBaseUrl = document.getElementById('inputBaseUrl');
 const selectUrlAPI = document.getElementById('selectUrlAPI');
 const selectMinimize = document.getElementById('selectMinimize');
 const selectShareLayer = document.getElementById('selectShareLayer');
+const selectShareBaseLayer = document.getElementById('selectShareBaseLayer');
+const inputQrLogo = document.getElementById('inputQrLogo');
 const inputFilterLayers = document.getElementById('inputFilterLayers');
 const filterLayersSug = document.getElementById('filterLayersSug');
 const selectOverwriteStyles = document.getElementById('selectOverwriteStyles');
@@ -107,6 +115,8 @@ const updatePlugin = () => {
   options.urlAPI = parseBool(selectUrlAPI.value);
   options.minimize = parseBool(selectMinimize.value);
   options.shareLayer = parseBool(selectShareLayer.value);
+  options.shareBaseLayer = parseBool(selectShareBaseLayer.value);
+  options.qrLogo = inputQrLogo.value.trim();
   options.filterLayers = inputFilterLayers.value.trim().split(',').map((l) => l.trim());
   options.overwriteStyles = parseBool(selectOverwriteStyles.value);
   options.styles = {};
@@ -131,6 +141,8 @@ const updatePlugin = () => {
   selectUrlAPI,
   selectMinimize,
   selectShareLayer,
+  selectShareBaseLayer,
+  inputQrLogo,
   inputFilterLayers,
   selectOverwriteStyles,
   inputPrimaryColor,

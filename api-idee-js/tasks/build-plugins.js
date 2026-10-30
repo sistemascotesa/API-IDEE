@@ -68,9 +68,8 @@ const compilePlugin = async (folder) => {
 const copyPlugin = async (entry) => {
   const dist = path.resolve(entry.pathFolder, 'dist');
   const dirPlugins = path.resolve(__dirname, '..', 'dist', 'plugins', entry.name);
-  fs.ensureDir(dirPlugins, () => {
-    fs.copy(dist, dirPlugins);
-  });
+  await fs.ensureDir(dirPlugins);
+  await fs.copy(dist, dirPlugins);
 };
 
 /**
@@ -81,14 +80,21 @@ const main = async (entries) => {
   if (entries.length > 0) {
     const entry = entries.pop();
     await installDeps(entry.pathFolder);
-    compilePlugin(entry.pathFolder).then(async () => {
-      await copyPlugin(entry);
-      main(entries);
-    }).catch((err) => {
-      throw err;
-    });
+    await compilePlugin(entry.pathFolder);
+    await copyPlugin(entry);
+    await main(entries);
   }
 };
 
 const entrypoints = generateEntryPoints(inputPath);
-main(entrypoints);
+// Sin argumentos se conserva la compilación completa. Los nombres permiten
+// actualizar únicamente los plugins afectados antes de empaquetar el WAR.
+const requested = process.argv.slice(2);
+const missing = requested.filter((name) => !entrypoints.some((entry) => entry.name === name));
+if (missing.length) throw new Error(`Unknown plugins: ${missing.join(', ')}`);
+const selected = requested.length
+  ? entrypoints.filter((entry) => requested.includes(entry.name)) : entrypoints;
+main(selected).catch((error) => {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+});

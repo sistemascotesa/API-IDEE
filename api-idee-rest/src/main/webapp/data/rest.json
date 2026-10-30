@@ -1,5 +1,10 @@
 [
     {
+        "name": "Fondo compartido",
+        "description": "baselayer carga el fondo recibido y lo incorpora al selector de capas base.",
+        "url": "/api-idee/?baselayer=OSM*name=osm;isBase=true;visibility=true&controls=backgroundlayers"
+    },
+    {
       "name": "Actions disponibles",
       "description": "Invocación de las distintas actions disponibles.",
       "url": "/api-idee/api/actions" 

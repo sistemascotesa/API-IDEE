@@ -5,7 +5,12 @@
     "localBinary": "No es compartirà «{layer}»: el fitxer només existeix en aquest navegador. Carrega’l mitjançant una URL accessible per compartir-lo.",
     "unsupportedLayer": "No s’ha pogut compartir «{layer}»: la font o configuració no es pot reconstruir mitjançant REST.",
     "urlTooLong": "L’enllaç del mapa encara és massa llarg per compartir-lo. Selecciona menys capes o carrega les dades mitjançant una URL accessible.",
-    "baseLayer": "No es pot compartir el fons actual. Comprova que les capes tenen un origen accessible."
+    "baseLayer": "No es pot compartir el fons actual. Comprova que les capes tenen un origen accessible.",
+    "qrUnavailable": "El QR no està disponible perquè no es pot generar un enllaç vàlid.",
+    "qrGeneration": "No s’ha pogut generar el QR. Pots copiar la URL.",
+    "qrShortening": "No s’ha pogut escurçar l’enllaç per generar el QR. Comprova la connexió i el servei d’escurçament. Pots copiar la URL.",
+    "qrLogoMissing": "No hi ha cap logotip del projecte configurat per generar el QR. Pots copiar la URL.",
+    "qrLogo": "No es pot carregar el logotip del projecte per generar el QR. Pots copiar la URL."
   },
   "textHelp": {
     "help1": "Permet compartir la vista de mapa amb les capes d'informació carregades a través d'un enllaç web. També proporciona el codi HTML per si es vol incrustar el visualitzador en un altre portal web.",
@@ -15,7 +20,8 @@
     "help5": "Premeu 'Accepta' per tancar el panell.",
     "help6": "La informació rellevant a l'extensió i la seva possible parametrització està documentada a",
     "help7": "L'exemple d'ús dels seus paràmetres es pot comprovar a",
-    "help8": "Amb shareBaseLayer=true es conserva el fons actual. Amb false o sense definir s’utilitza el fons per defecte del destí. Les capes d’informació es trien amb shareLayer i filterLayers."
+    "help8": "Amb shareBaseLayer=true es conserva el fons actiu. Si no hi ha cap fons actiu, o amb false o sense definir, s’utilitza el fons per defecte del destí. Les capes d’informació es trien amb shareLayer i filterLayers.",
+    "help9": "Escaneja el QR per obrir el mateix mapa compartit. Descarrega’l com a imatge PNG amb el logotip per desar-lo, enviar-lo o inserir-lo en un document. Si l’enllaç complet no hi cap, s’utilitza el servei d’escurçament de les xarxes socials. El logotip prové de qrLogo o de metadata.logoURL del projecte. Si falla el logotip o el servei d’escurçament, es mostra un avís."
   },
   "modalTitle": "Compartir mapa",
   "title": "Compartir URL",
@@ -23,5 +29,8 @@
   "accept": "Acceptar",
   "copy": "Copiar",
   "tooltip": "Compartir",
-  "tooltipCopy": "Copiat!"
+  "tooltipCopy": "Copiat!",
+  "qrTitle": "Codi QR del mapa",
+  "qrLoading": "Generant el codi QR…",
+  "qrDownload": "Descarregar QR (PNG)"
 }

@@ -288,6 +288,7 @@ export default class BackImgLayer extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
+    this.map.removeControls(this.controls);
     this.map.removeButton(this.button);
     this.map.removePanel(this.panel);
   }

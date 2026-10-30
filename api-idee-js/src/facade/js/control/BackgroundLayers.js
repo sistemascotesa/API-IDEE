@@ -11,11 +11,20 @@ import TMS from 'IDEE/layer/TMS';
 import { getQuickLayers } from '../api-idee';
 import ControlBase from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
-import { LOAD, ADDED_TO_MAP } from '../event/eventtype';
+import {
+  LOAD, ADDED_TO_MAP, ADDED_LAYER, REMOVED_LAYER,
+} from '../event/eventtype';
 import { getValue } from '../i18n/language';
-import { isBoolean, isNumber, isString } from '../util/Utils';
+import {
+  isBoolean, isNumber, isString, parseUrlParams,
+} from '../util/Utils';
 import * as Position from '../ui/position';
+import { getRestBaseLayers } from '../util/RestBaseLayerStore';
 
+// El aspecto de una entrada no cambia la identidad del recurso que representa.
+const visualProperties = new Set([
+  'legend', 'visibility', 'displayInLayerSwitcher', 'opacity', 'zIndex', 'isBase', 'queryable',
+]);
 /**
  * @typedef {Object} module:IDEE/control/BackgroundLayers~Options
  * @api
@@ -176,7 +185,8 @@ class BackgroundLayers extends ControlBase {
    */
   createView(map) {
     this.map = map;
-    const restored = map.prepareBaseLayerSelector(this, getValue('backgroundlayers').shared);
+    const hasExplicitBaseLayer = getRestBaseLayers(map) !== undefined;
+    if (hasExplicitBaseLayer) BackgroundLayers.syncRestBaseLayer(this, getValue('backgroundlayers').shared);
     return new Promise((success, fail) => {
       const html = compileTemplate(template, {
         vars: {
@@ -189,9 +199,10 @@ class BackgroundLayers extends ControlBase {
       // this.uniqueButton = this.html.querySelector('#m-baselayerselector-unique-btn');
       // this.uniqueButton.innerHTML = this.layers[0].title;
       this.on(ADDED_TO_MAP, () => {
-        if (restored) {
-          const selected = this.layers[this.activeLayer];
-          if (selected) html.querySelector(`#m-baselayerselector-${selected.id}`).classList.add('activeBaseLayerButton');
+        if (hasExplicitBaseLayer) {
+          this.updateBaseLayerSelection();
+          map.on(ADDED_LAYER, this.updateBaseLayerSelection, this);
+          map.on(REMOVED_LAYER, this.updateBaseLayerSelection, this);
           return;
         }
         const visible = this.visible;
@@ -225,7 +236,7 @@ class BackgroundLayers extends ControlBase {
    * @export
    */
   addTo(map) {
-    if (!map.hasRestBaseLayer()) {
+    if (getRestBaseLayers(map) === undefined) {
       map.getBaseLayers().forEach((layer) => {
         layer.once(LOAD, map.removeLayers(layer));
       });
@@ -293,13 +304,13 @@ class BackgroundLayers extends ControlBase {
    * @api
    */
   handlerClickDesktop(e, layersInfo, i) {
-    this.removeLayers();
-    this.visible = false;
-    // const { layers, title } = layersInfo;
-    const { layers } = layersInfo;
+    // Guarda la selección antes de que REMOVED_LAYER actualice los botones.
     const isActived = e.target.parentElement
       .querySelector(`#m-baselayerselector-${layersInfo.id}`)
       .classList.contains('activeBaseLayerButton');
+    this.removeLayers();
+    this.visible = false;
+    const { layers } = layersInfo;
     layers.forEach((layer, index, array) => layer.setZIndex(index - array.length));
 
     e.target.parentElement.querySelectorAll('button[id^="m-baselayerselector-"]').forEach((button) => {
@@ -350,22 +361,123 @@ class BackgroundLayers extends ControlBase {
    * @api
    */
   removeLayers() {
-    if (this.map.hasRestBaseLayer()) this.map.clearRestBaseLayerSelection(this);
+    if (getRestBaseLayers(this.map) !== undefined) {
+      this.map.removeLayers(this.map.getActiveBaseLayers());
+    }
     this.map.removeLayers(this.flattedLayers);
     this.map.removeLayers(this.map.getBaseLayers());
   }
 
-  /** Componentes de la selección, sin depender del nombre de este control. @api */
+  /** Componentes de la selección para la coordinación interna de fondos. @private */
   getSelectedBaseLayers() {
     return this.layers[this.activeLayer]?.layers || [];
   }
 
-  /** Sincroniza la vista cuando otro selector sustituye el fondo REST. @api */
-  clearBaseLayerSelection() {
-    this.visible = false;
-    this.html?.querySelectorAll('.activeBaseLayerButton').forEach((button) => {
+  /** Normaliza los parámetros del recurso sin modificar el objeto original. @private */
+  static resource(value) {
+    if (Array.isArray(value)) return value.map(BackgroundLayers.resource);
+    if (!value || typeof value !== 'object') return value;
+    return Object.fromEntries(Object.keys(value).sort().filter((key) => !visualProperties.has(key))
+      .map((key) => [key, BackgroundLayers.resource(value[key])]));
+  }
+
+  /**
+   * Clave de comparación REST para los catálogos de selectores, sin modificar sus entradas.
+   * @param {IDEE.Map} map Mapa que interpreta las definiciones del catálogo.
+   * @param {Array<IDEE.Layer|String>} layers Componentes de una entrada.
+   * @returns {String} Identidad normalizada de sus recursos.
+   * @private
+   */
+  static getBaseLayerResourceKey(map, layers) {
+    const resources = (values) => values.flatMap((value) => {
+      const layer = typeof value === 'string' ? map.getLayerByString(value) : value;
+      if (layer.type === 'LayerGroup') {
+        const children = layer.getLayers();
+        return resources(children.length ? children
+          : layer.constructorParameters.userParameters.layers);
+      }
+      const [type, parameters] = layer.getRestLayer().split('*');
+      return [BackgroundLayers.resource({ type, ...parseUrlParams(parameters, type) })];
+    });
+    return JSON.stringify(resources(layers));
+  }
+
+  /**
+   * Busca una entrada equivalente en el catálogo de cualquiera de los dos selectores.
+   * @param {IDEE.Control} selector Selector de fondos.
+   * @param {Array<IDEE.Layer>} layers Componentes del fondo actual.
+   * @returns {Number} Índice de la entrada o -1.
+   * @private
+   */
+  static findBaseLayer(selector, layers) {
+    const key = BackgroundLayers.getBaseLayerResourceKey(selector.map, layers);
+    return selector.layers.findIndex((entry) => {
+      try {
+        return BackgroundLayers.getBaseLayerResourceKey(selector.map, entry.layers) === key;
+      } catch (error) {
+        return false;
+      }
+    });
+  }
+
+  /**
+   * Integra el fondo actual en una copia del catálogo antes de generar la vista.
+   * @param {IDEE.Control} selector Selector de fondos.
+   * @param {String} fallbackTitle Título traducido si las capas no tienen nombre ni leyenda.
+   * @private
+   */
+  static syncRestBaseLayer(selector, fallbackTitle) {
+    const control = selector;
+    const layers = control.map.getActiveBaseLayers();
+    if (!layers.length) return;
+    let index = BackgroundLayers.findBaseLayer(control, layers);
+    control.layers = control.layers.map((entry) => ({ ...entry }));
+    if (index < 0) {
+      const title = layers.flatMap((layer) => (layer.type === 'LayerGroup' && layer.name === 'shared-base'
+        ? layer.getLayers() : [layer]))
+        .map((layer) => layer.legend || layer.name).filter(Boolean).join(' + ') || fallbackTitle;
+      index = control.layers.length;
+      control.layers.push({
+        id: 'rest-shared-base', title, tooltip: title, preview: '', layers,
+      });
+    } else {
+      control.layers[index].layers = layers;
+    }
+    control.flattedLayers = control.layers.flatMap((entry) => entry.layers);
+    control.activeLayer = index;
+  }
+
+  /**
+   * Actualiza el índice y la visibilidad del selector según las capas presentes.
+   * @param {IDEE.Control} selector Selector de fondos.
+   * @private
+   */
+  static updateBaseLayerState(selector) {
+    const control = selector;
+    const present = new Set(control.map.getLayers().filter((layer) => layer.isVisible()));
+    const index = control.layers.findIndex((entry) => entry.layers.length
+      && entry.layers.every((layer) => present.has(layer)));
+    control.visible = index >= 0;
+    if (control.visible) control.activeLayer = index;
+  }
+
+  /** Los eventos solo actualizan la selección visual; no vuelven a cargar capas. @private */
+  updateBaseLayerSelection() {
+    BackgroundLayers.updateBaseLayerState(this);
+    this.html.querySelectorAll('.activeBaseLayerButton').forEach((button) => {
       button.classList.remove('activeBaseLayerButton');
     });
+    if (this.visible) {
+      this.html.querySelector(`#m-baselayerselector-${this.layers[this.activeLayer].id}`)
+        .classList.add('activeBaseLayerButton');
+    }
+  }
+
+  /** Retira únicamente los listeners añadidos para sincronizar el fondo REST. */
+  destroy() {
+    this.map.un(ADDED_LAYER, this.updateBaseLayerSelection, this);
+    this.map.un(REMOVED_LAYER, this.updateBaseLayerSelection, this);
+    super.destroy();
   }
 
   /**

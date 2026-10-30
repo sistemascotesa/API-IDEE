@@ -82,7 +82,7 @@
             </div>
             <div>
                 <label for="selectShareLayer"
-                    title="Solo actúa cuando urlAPI es false. Incluye en el enlace todas las capas presentes en el mapa (true) o ninguna (false). Por defecto: false">Compartir
+                    title="Incluye las capas compartibles del mapa (true) o las indicadas en filterLayers (false). Por defecto: false">Compartir
                     capas "shareLayer"</label>
                 <select name="shareLayer" id="selectShareLayer">
                     <option value=""></option>
@@ -91,14 +91,23 @@
                 </select>
             </div>
             <div>
+                <label for="selectShareBaseLayer" title="Con true conserva el fondo actual. Con false o sin definir usa el fondo por defecto del destino">Compartir fondo "shareBaseLayer"</label>
+                <select name="shareBaseLayer" id="selectShareBaseLayer">
+                    <option value=""></option>
+                    <option value="true">true</option>
+                    <option value="false" selected="selected">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputQrLogo" title="Vacío: usa metadata.logoURL del proyecto">Logo del QR "qrLogo"</label>
+                <input type="text" id="inputQrLogo" placeholder="URL del logo del proyecto">
+            </div>
+            <div>
                 <label for="inputFilterLayers"
                     title="Lista de nombres de capas (separados por coma) que se incluirán en el enlace. Solo aplica cuando shareLayer es false o no está definido">Filtro
                     de capas "filterLayers"</label>
                 <input type="text" id="inputFilterLayers" list="filterLayersSug">
-                <datalist id="filterLayersSug">
-                    <option value="cosas1_poligono"></option>
-                    <option value="cosas1_poligono,Capa KML"></option>
-                </datalist>
+                <datalist id="filterLayersSug"></datalist>
             </div>
             <div>
                 <label for="inputBtn"

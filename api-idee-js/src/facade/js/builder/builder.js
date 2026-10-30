@@ -511,6 +511,32 @@ export const buildLayer = (layerParam) => {
 };
 
 /**
+ * Construye el fondo REST sin añadirlo al mapa ni modificar los selectores.
+ * Cesium utiliza capas raíz porque no implementa LayerGroup.
+ * @param {IDEE.Map} map Mapa de destino.
+ * @param {String} value Definición REST.
+ * @returns {Array<IDEE.Layer>} Componentes del fondo.
+ */
+export const buildBaseLayers = (map, value) => {
+  const readLayers = (rest) => {
+    const definition = buildLayer(rest);
+    if (map.getImplementation() === 'cesium' && definition.type === 'LayerGroup') {
+      return definition.layers.flatMap(readLayers);
+    }
+    return [map.getLayerByString(rest)];
+  };
+  const layers = readLayers(value);
+  if (layers.some((layer) => !layer)) throw new Error('Invalid baseLayer');
+  layers.forEach((selectedLayer, index) => {
+    const layer = selectedLayer;
+    layer.isBase = index === 0;
+    layer.displayInLayerSwitcher = false;
+    layer.setZIndex(index - layers.length);
+  });
+  return layers;
+};
+
+/**
  * Este comentario no se verá, es necesario incluir
  * una exportación por defecto para que el compilador
  * muestre las funciones.

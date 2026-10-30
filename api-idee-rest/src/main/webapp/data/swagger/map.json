@@ -1,0 +1,25 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "API-IDEE: fondo del mapa", "version": "2.0" },
+  "servers": [{ "url": "/api-idee" }],
+  "paths": {
+    "/api/js": {
+      "get": {
+        "summary": "Crear un mapa con un fondo compartido",
+        "description": "baselayer es independiente de layers. Si se omite, se mantiene el comportamiento anterior. En JavaScript equivale a baseLayer; map.getRestBaseLayer() obtiene su valor sin depender de ShareMap. Los selectores respetan el fondo recibido hasta que el usuario lo cambia. ShareMap genera este GET solo con la opción shareBaseLayer=true; con false o sin definir usa el fondo por defecto del destino.",
+        "parameters": [
+          {
+            "name": "baselayer", "in": "query", "required": false,
+            "description": "Cadena REST de una capa o composición LayerGroup, generada mediante getRestBaseLayer(). Si no hay fondo activo, el método devuelve undefined y se omite el parámetro para usar el fondo habitual del destino. Codificar el valor completo con encodeURIComponent al construir la URL manualmente.",
+            "schema": { "type": "string" },
+            "examples": {
+              "osm": { "summary": "OpenStreetMap", "value": "OSM*name=osm;isBase=true;visibility=true" }
+            }
+          },
+          { "name": "container", "in": "query", "schema": { "type": "string", "default": "map" } }
+        ],
+        "responses": { "200": { "description": "JavaScript que construye el mapa", "content": { "text/plain": { "schema": { "type": "string" } } } } }
+      }
+    }
+  }
+}

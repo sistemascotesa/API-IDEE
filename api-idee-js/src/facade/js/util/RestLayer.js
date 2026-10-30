@@ -47,6 +47,19 @@ export const serialize = (type, parameters) => {
   return `${type}*${fields.map(([key, value]) => `${key}=${encodeValue(value)}`).join(';')}`;
 };
 
+/** Serializa un fondo simple o compuesto sin modificar sus capas. */
+export const serializeBaseLayers = (layers) => {
+  if (!layers.length) return undefined;
+  if (layers.length === 1) return layers[0].getRestLayer();
+  return serialize('LayerGroup', {
+    name: 'shared-base',
+    isBase: true,
+    visibility: true,
+    displayInLayerSwitcher: false,
+    layers: layers.map((layer) => layer.getRestLayer()),
+  });
+};
+
 /**
  * Obtiene la configuración común actual sin copiar instancias del motor ni credenciales.
  * @param {IDEE.Layer} layer Capa.

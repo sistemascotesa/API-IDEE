@@ -195,6 +195,7 @@
     "msg": "Porta'm allà"
   },
   "exception": {
+    "invalid_base_layer_type": "El tipus del paràmetre baseLayer no és vàlid: {type}",
     "addgeojson_method": "La implementació usada no posseeix el mètode addGeoJSON.",
     "removegeojson_method": "La implementació usada no posseeix el mètode removeGeoJSON.",
     "getgpx_method": "La implementació usada no disposa del mètode getGPX",

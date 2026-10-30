@@ -19,7 +19,8 @@ import en from './i18n/en';
  * @property {string} [copyBtn='Copiar']? The button text which copy the url of shared map.
  * @property {StyleOptions} [styles={}]? The object with the information about primary color
  * and secondary color.
- * @property {boolean} [shareBaseLayer=false] Preserve the current background in the shared URL.
+ * @property {boolean} [shareBaseLayer=false] Share the active background when available.
+ * @property {string} [qrLogo] QR logo URL; defaults to IDEE.config.metadata.logoURL.
  * @property {bool} [overwriteStyles=false]? This flag allows to overwrite the colors of the plugin
  * with a custom css.
  * @property {string} [tooltip='¡Copiado!']? The text what is shown when the shared map url
@@ -203,6 +204,9 @@ export default class ShareMap extends IDEE.Plugin {
     /** Preserve the current background; otherwise use the destination default. @type {Boolean} */
     this.shareBaseLayer = options.shareBaseLayer === true;
 
+    /** Logo del QR; vacío hereda los metadatos del proyecto. @type {String} */
+    this.qrLogo_ = typeof options.qrLogo === 'string' ? options.qrLogo.trim() : '';
+
     /**
      * Plugin parameters
      *
@@ -262,6 +266,7 @@ export default class ShareMap extends IDEE.Plugin {
       filterLayers: this.filterLayers,
       shareLayer: this.shareLayer,
       shareBaseLayer: this.shareBaseLayer,
+      qrLogo: this.qrLogo_,
     }));
     // eslint-disable-next-line no-underscore-dangle
     this.controls[0].map_ = map;
@@ -299,6 +304,15 @@ export default class ShareMap extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
+    // Base64 preserva los delimitadores que pueda contener la URL del logo.
+    if (this.qrLogo_) {
+      // Conserva el origen del logo aunque el visualizador de destino sea otro.
+      const logoURL = document.createElement('a');
+      logoURL.href = this.qrLogo_;
+      return `${this.name}=base64=${IDEE.utils.encodeBase64({
+        ...this.options, filterLayers: this.filterLayers, qrLogo: logoURL.href,
+      })}`;
+    }
     return `${this.name}=${this.position}*${this.order}*${this.tooltip}*${this.baseUrl_}*${this.urlAPI_}*${this.minimize_}*${this.title_}*${this.text_}*${this.shareLayer}*${this.btn_}*${this.copyBtn_}*${this.copyBtnHtml_}*${this.tooltipCopy_}*${this.overwriteStyles_}*${this.shareBaseLayer}`;
   }
 
@@ -336,6 +350,7 @@ export default class ShareMap extends IDEE.Plugin {
               help6: getValue('textHelp.help6'),
               help7: getValue('textHelp.help7'),
               help8: getValue('textHelp.help8'),
+              help9: getValue('textHelp.help9'),
             },
           },
         });

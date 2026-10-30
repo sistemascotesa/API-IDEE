@@ -5,7 +5,12 @@
     "localBinary": "No se compartirá «{layer}»: el archivo solo existe en este navegador. Cárgalo mediante una URL accesible para compartirlo.",
     "unsupportedLayer": "No se ha podido compartir «{layer}»: su fuente o configuración no se puede reconstruir mediante REST.",
     "urlTooLong": "El enlace del mapa sigue siendo demasiado largo para compartirlo. Selecciona menos capas o carga los datos mediante una URL accesible.",
-    "baseLayer": "No se puede compartir el fondo actual. Comprueba que sus capas tienen un origen accesible."
+    "baseLayer": "No se puede compartir el fondo actual. Comprueba que sus capas tienen un origen accesible.",
+    "qrUnavailable": "El QR no está disponible porque no se ha podido generar un enlace válido.",
+    "qrGeneration": "No se ha podido generar el QR. Puedes copiar la URL.",
+    "qrShortening": "No se ha podido acortar el enlace para generar el QR. Comprueba la conexión y el servicio de acortamiento. Puedes copiar la URL.",
+    "qrLogoMissing": "No hay un logo del proyecto configurado para generar el QR. Puedes copiar la URL.",
+    "qrLogo": "No se ha podido cargar el logo del proyecto para generar el QR. Puedes copiar la URL."
   },
   "textHelp": {
     "help1": "Permite compartir la vista de mapa con las capas de información cargadas a través de un enlace Web. También proporciona el código HTML por si se quiere embeber el visualizador en otro portal Web.",
@@ -15,7 +20,8 @@
     "help5": "Pulse 'Aceptar' para cerrar el panel.",
     "help6": "La información relevante a la extensión y su posible parametrización está documentada en",
     "help7": "El ejemplo de uso de sus parámetros puede comprobarse en",
-    "help8": "Con shareBaseLayer=true se conserva el fondo actual. Con false o sin definir se utiliza el fondo por defecto del destino. Las capas informativas se eligen con shareLayer y filterLayers."
+    "help8": "Con shareBaseLayer=true se conserva el fondo activo. Si no hay fondo activo, o con false o sin definir, se utiliza el fondo por defecto del destino. Las capas informativas se eligen con shareLayer y filterLayers.",
+    "help9": "Escanea el QR para abrir el mismo mapa compartido. Descárgalo como imagen PNG con el logo para guardarlo, enviarlo o insertarlo en un documento. Si el enlace completo no cabe, se utiliza el acortador de las redes sociales. El logo se toma de qrLogo o de metadata.logoURL del proyecto. Si falla el logo o el acortador, se muestra un aviso."
   },
   "modalTitle": "Compartir mapa",
   "title": "Compartir URL",
@@ -23,5 +29,8 @@
   "accept": "Aceptar",
   "copy": "Copiar",
   "tooltip": "Compartir",
-  "tooltipCopy": "¡Copiado!"
+  "tooltipCopy": "¡Copiado!",
+  "qrTitle": "Código QR del mapa",
+  "qrLoading": "Generando código QR…",
+  "qrDownload": "Descargar QR (PNG)"
 }

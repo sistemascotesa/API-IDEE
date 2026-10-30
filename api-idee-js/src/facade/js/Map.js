@@ -21,7 +21,8 @@ import {
   generateResolutionsFromExtent,
 } from './util/Utils';
 import { addFileToMap } from './util/LoadFiles';
-import * as BaseLayerState from './util/BaseLayerState';
+import * as RestBaseLayerStore from './util/RestBaseLayerStore';
+import { serializeBaseLayers } from './util/RestLayer';
 import { getValue } from './i18n/language';
 import Exception from './exception/exception';
 import Label from './Label';
@@ -66,7 +67,9 @@ import Tiles3D from './layer/Tiles3D';
 import Terrain from './layer/Terrain';
 import WMC from './layer/WMC';
 import Attributions from './control/Attributions';
-import { buildControl, buildLayer, getPanelForControl } from './builder/builder';
+import {
+  buildControl, buildLayer, buildBaseLayers, getPanelForControl,
+} from './builder/builder';
 import applyDesignTokenCssVariables from './theme/tokens';
 // eslint-disable-next-line no-unused-vars
 import Plugin from './Plugin';
@@ -95,7 +98,7 @@ class Map extends Base {
    * - container: Contenedor del mapa.
    * - controls: Controles del mapa.
    * - label: Etiqueta del mapa.
-   * - baseLayer: Fondo REST explícito; "none" para un mapa sin fondo.
+   * - baseLayer: Cadena REST del fondo explícito; omitir para usar la configuración habitual.
    * - layers: Capas del mapa.
    * - maxExtent: Extensión máxima del mapa.
    * - maxZoom: Zoom máximo del mapa.
@@ -375,7 +378,11 @@ class Map extends Base {
     }
 
     // Un fondo REST explícito tiene prioridad sobre los valores iniciales de los selectores.
-    if (params.baseLayer !== undefined) BaseLayerState.restore(this, params.baseLayer);
+    if (!isNullOrEmpty(params.baseLayer)) {
+      RestBaseLayerStore.setRestBaseLayers(this, buildBaseLayers(this, params.baseLayer));
+      this.removeLayers(this.getBaseLayers());
+      this.addLayers(RestBaseLayerStore.getRestBaseLayers(this));
+    }
 
     // controls
     if (!isNullOrEmpty(params.controls)) {
@@ -383,7 +390,7 @@ class Map extends Base {
     }
 
     // default TMS
-    if (params.baseLayer === undefined && isNullOrEmpty(params.layers)
+    if (isNullOrEmpty(params.baseLayer) && isNullOrEmpty(params.layers)
       && !isArray(params.layers) && isNullOrEmpty(params.wmc)) {
       this.addLayers(IDEE.config.baseLayer);
     }
@@ -711,42 +718,24 @@ class Map extends Base {
    * @returns {Array<IDEE.Layer>} Capas raíz de la selección.
    * @api
    */
-  getBaseLayerSelection() {
-    return BaseLayerState.getSelection(this);
+  getActiveBaseLayers() {
+    const present = new Set(this.getLayers());
+    const selected = this.getControls()
+      .filter((control) => typeof control.getSelectedBaseLayers === 'function')
+      .flatMap((control) => control.getSelectedBaseLayers())
+      .concat(RestBaseLayerStore.getRestBaseLayers(this) || [])
+      .filter((layer) => present.has(layer) && layer.isVisible());
+    return [...new Set(selected.length ? selected
+      : this.getRootLayers().filter((layer) => layer.isBase && layer.isVisible()))];
   }
 
   /**
-   * Representación REST del fondo activo o "none".
-   * @returns {String} Valor del GET baselayer y del parámetro de constructor baseLayer.
+   * Representación REST del fondo activo; undefined si no hay fondo visible.
+   * @returns {String|undefined} Valor del GET baselayer y del parámetro de constructor baseLayer.
    * @api
    */
   getRestBaseLayer() {
-    return BaseLayerState.getRestBaseLayer(this);
-  }
-
-  /** @returns {Boolean} Si se recibió un fondo REST explícito. @api */
-  hasRestBaseLayer() {
-    return BaseLayerState.hasRestoredBaseLayer(this);
-  }
-
-  /**
-   * Integra el fondo restaurado en el catálogo de un selector antes de generar su vista.
-   * @param {Object} selector Selector de fondo.
-   * @param {String} sharedTitle Título traducido para una entrada externa al catálogo.
-   * @returns {Boolean} Si el selector debe respetar la selección restaurada.
-   * @api
-   */
-  prepareBaseLayerSelector(selector, sharedTitle) {
-    return BaseLayerState.prepareSelector(this, selector, sharedTitle);
-  }
-
-  /** Retira una selección REST, incluidas sus piezas no base. @api */
-  clearRestBaseLayerSelection(selector) {
-    if (!this.hasRestBaseLayer()) return;
-    this.removeLayers(this.getBaseLayerSelection());
-    this.getControls().filter((control) => control !== selector
-      && typeof control.clearBaseLayerSelection === 'function')
-      .forEach((control) => control.clearBaseLayerSelection());
+    return serializeBaseLayers(this.getActiveBaseLayers());
   }
 
   /**

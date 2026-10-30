@@ -1,0 +1,20 @@
+{
+  "version": 8,
+  "sources": {
+    "demo": {
+      "type": "geojson",
+      "data": "/api-idee/test-data/sharemap/puntos.geojson"
+    }
+  },
+  "layers": [
+    {
+      "id": "puntos",
+      "type": "circle",
+      "source": "demo",
+      "paint": {
+        "circle-radius": 10,
+        "circle-color": "#ff5500"
+      }
+    }
+  ]
+}

@@ -194,6 +194,7 @@
     "msg": "Take me there"
   },
   "exception": {
+    "invalid_base_layer_type": "Invalid type for the baseLayer parameter: {type}",
     "addgeojson_method": "The used implementation does not have the addGeoJSON method.",
     "removegeojson_method": "The used implementation does not have the removeGeoJSON method.",
     "getgpx_method": "The implementation does not provide the getGPX method",

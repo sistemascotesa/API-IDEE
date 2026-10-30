@@ -195,6 +195,7 @@
     "msg": "Llévame allí"
   },
   "exception": {
+    "invalid_base_layer_type": "El tipo del parámetro baseLayer no es válido: {type}",
     "addgeojson_method": "La implementación usada no posee el método addGeoJSON.",
     "removegeojson_method": "La implementación usada no posee el método removeGeoJSON.",
     "getgpx_method": "La implementación usada no posee el método getGPX",

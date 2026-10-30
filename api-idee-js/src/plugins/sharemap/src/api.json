@@ -82,6 +82,11 @@
         "type": "boolean",
         "name": "shareBaseLayer",
         "position": 14
+      },
+      {
+        "type": "simple",
+        "name": "qrLogo",
+        "position": 15
       }
    ]
   }],

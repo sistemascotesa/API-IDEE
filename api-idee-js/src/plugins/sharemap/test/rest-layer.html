@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShareMap: prueba de getRestLayer</title>
+  <link href="/dist/assets/css/apiidee.ol.min.css" rel="stylesheet">
+  <link href="../dist/sharemap.ol.min.css" rel="stylesheet">
+  <style>
+    html, body { height: 100%; margin: 0; font-family: sans-serif; }
+    body { display: flex; flex-direction: column; }
+    header { padding: 12px; background: #f4f4f4; }
+    h1 { font-size: 18px; margin: 0 0 8px; }
+    form { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    #status { white-space: pre-wrap; margin: 8px 0 0; font-size: 13px; }
+    #mapjs { flex: 1; min-height: 250px; position: relative; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ShareMap: núcleo y plugin locales</h1>
+    <form id="options">
+      <label>urlAPI
+        <select id="urlAPI"><option value="false">false: este visualizador</option><option value="true">true: REST de Tomcat</option></select>
+      </label>
+      <label>shareLayer
+        <select id="shareLayer"><option value="true">true: compartir capas</option><option value="false">false: aplicar filtro</option></select>
+      </label>
+      <label>shareBaseLayer
+        <select id="shareBaseLayer"><option value="false">false: fondo del destino</option><option value="true">true: fondo actual</option></select>
+      </label>
+      <label>filterLayers <input id="filterLayers" placeholder="puntos-locales"></label>
+      <button type="submit">Aplicar opciones</button>
+    </form>
+    <p>Abre el botón de compartir del mapa. Las variables mapjs, mp y ctrl están disponibles en la consola.
+      Con urlAPI=true, abrir el destino requiere actualizar el WAR de Tomcat.</p>
+    <pre id="status" aria-live="polite"></pre>
+  </header>
+  <div id="mapjs" class="container"></div>
+  <script src="/dist/js/apiidee.ol.min.js"></script>
+  <script src="/test/configuration_filtered.js"></script>
+  <script src="../dist/sharemap.ol.min.js"></script>
+  <script>
+    IDEE.language.setLang('es');
+    const params = new URLSearchParams(window.location.search);
+    // Esta página consume layers explícitamente; la configuración filtrada no los lee.
+    IDEE.config.MAP_VIEWER_LAYERS = [];
+    const layers = params.has('layers') ? params.get('layers').split(',').filter(Boolean) : ['OSM'];
+    const center = params.has('center') ? params.get('center').split(',').map(Number) : [-333958, 4865942];
+    window.mapjs = IDEE.map({
+      container: 'mapjs', layers, center, zoom: Number(params.get('zoom') || 7), controls: [],
+      baseLayer: params.has('baselayer') ? params.get('baselayer') : undefined,
+    });
+    if (!params.has('layers') && !params.has('baselayer')) {
+      const vector = new IDEE.layer.Vector({ name: 'puntos-locales', legend: 'Puntos locales', displayInLayerSwitcher: true });
+      mapjs.addLayers(vector);
+      vector.addFeatures(new IDEE.Feature('p1', {
+        type: 'Feature', geometry: { type: 'Point', coordinates: [-333958, 4865942] },
+        properties: { nombre: 'España; punto local' },
+      }));
+      vector.setStyle(new IDEE.style.Point({ radius: 9, fill: { color: '#d62728' } }));
+    }
+    window.mp = null;
+    function applyOptions(event) {
+      if (event) event.preventDefault();
+      if (mp) mapjs.removePlugins(mp);
+      window.mp = new IDEE.plugin.ShareMap({
+        baseUrl: 'http://localhost:8080/api-idee/',
+        urlAPI: document.getElementById('urlAPI').value === 'true',
+        shareLayer: document.getElementById('shareLayer').value === 'true',
+        shareBaseLayer: document.getElementById('shareBaseLayer').value === 'true',
+        filterLayers: document.getElementById('filterLayers').value.split(',').map((name) => name.trim()).filter(Boolean),
+      });
+      mapjs.addPlugin(mp);
+      window.ctrl = mp.getControls()[0];
+      document.getElementById('status').textContent = JSON.stringify({
+        urlAPI: ctrl.urlAPI_, shareLayer: ctrl.shareLayer, shareBaseLayer: ctrl.shareBaseLayer,
+        filterLayers: ctrl.filterLayers,
+        pluginNuevo: ctrl.layerToParam.toString().includes('getRestLayer'),
+        capas: mapjs.getLayers().filter((layer) => layer.name !== '__draw__').map((layer) => ({
+          name: layer.name, type: layer.type, getRestLayer: typeof layer.getRestLayer,
+        })),
+      }, null, 2);
+    }
+    document.getElementById('options').addEventListener('submit', applyOptions);
+    applyOptions();
+  </script>
+</body>
+</html>

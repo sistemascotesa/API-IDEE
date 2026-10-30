@@ -150,6 +150,7 @@
                             IDEE.language.setLang(urlParams.get('language') ?? 'es');
                             const map = IDEE.map({
                                 container: 'mapjs',
+                                baseLayer: IDEE.config.MAP_VIEWER_BASE_LAYER,
                                 controls: ['rotate'],
                                 // layers: ['OSM'],
                                 zoom: 5,

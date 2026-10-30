@@ -2,7 +2,7 @@
  * @module IDEE/Parameters
  */
 import {
-  isUndefined, isArray, isNullOrEmpty, isObject, isString, getParameterValue,
+  isUndefined, isNull, isArray, isNullOrEmpty, isObject, isString, getParameterValue,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
@@ -698,6 +698,9 @@ class Parameters {
 
     /** Fondo REST explícito; undefined conserva el comportamiento previo. @api */
     this.baseLayer = isObject(userParameters) ? userParameters.baseLayer : undefined;
+    if (!isNull(this.baseLayer) && !isString(this.baseLayer)) {
+      Exception(getValue('exception').invalid_base_layer_type.replace('{type}', typeof this.baseLayer));
+    }
 
     /**
      * @public
