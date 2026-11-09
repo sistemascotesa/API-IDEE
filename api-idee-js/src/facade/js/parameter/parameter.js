@@ -4,7 +4,6 @@
  */
 import {
   isUndefined, isNull, isArray, isNullOrEmpty, isFunction, isObject, isString, isUrl, normalize,
-  resolveXyzExtract,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import * as LayerType from '../layer/Type';
@@ -3328,11 +3327,8 @@ export const xyz = (userParamer) => {
     // gets the legend
     layerObj.legend = getExtraParameter(userParam, layerObj.name, 3, 'legend') || layerObj.name;
 
-    // gets the extract (MDT IDEE raster-dem en XYZ: true por defecto; resto: false)
-    layerObj.extract = resolveXyzExtract(
-      layerObj.url,
-      getExtraParameter(userParam, undefined, 4, 'extract'),
-    );
+    // gets the extract
+    layerObj.extract = getExtraParameter(userParam, undefined, 4, 'extract');
 
     return layerObj;
   });
@@ -3446,9 +3442,6 @@ export const tms = (userParamer) => {
 
     // TMS: extract solo si viene en parámetros; por defecto false
     layerObj.extract = getExtraParameter(userParam, undefined, 7, 'extract');
-    if (isUndefined(layerObj.extract)) {
-      layerObj.extract = false;
-    }
 
     return layerObj;
   });
@@ -4724,6 +4717,39 @@ const generic = (userParameters, type) => {
     displayInLayerSwitcher: urlParams[7] || undefined,
     visibility: urlParams[8] || undefined,
   };
+};
+
+/**
+ * Genera la cadena REST posicional que interpreta "generic" para una capa genérica
+ * creada a partir de otra cadena REST.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {IDEE.layer.GenericRaster|IDEE.layer.GenericVector} layer Capa genérica.
+ * @param {String} restLayer Cadena REST con la que se creó la capa.
+ * @returns {String} Cadena REST de la capa.
+ */
+export const genericRestLayer = (layer, restLayer) => {
+  const text = (value) => (isNullOrEmpty(value) ? '' : String(value).replace(/[*,]/g, ''));
+  const zoomLevel = (value) => (Number.isFinite(value) ? value : '');
+  let visibility = '';
+  try {
+    visibility = layer.isVisible();
+  } catch (error) {
+    visibility = '';
+  }
+  return [
+    layer.type,
+    restLayer.split('*')[1],
+    text(layer.name),
+    text(layer.legend),
+    !layer.isBase,
+    zoomLevel(layer.minZoom),
+    zoomLevel(layer.maxZoom),
+    layer.displayInLayerSwitcher !== false,
+    visibility,
+  ].join('*');
 };
 
 const genericvector = (userParameters) => {

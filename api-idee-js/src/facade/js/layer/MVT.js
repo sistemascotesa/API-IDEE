@@ -54,6 +54,7 @@ class MVT extends Vector {
    * - name: Nombre de la capa, debe ser único en el mapa.
    * - projection: SRS usado por la capa.
    * - opacity: Opacidad de la capa (0-1), por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - visibility: Verdadero si la capa es visible, falso si queremos que no lo sea.
    *   En este caso la capa sería detectado por los plugins de tablas de
    *   contenidos y aparecería como no visible.
@@ -331,6 +332,21 @@ class MVT extends Vector {
    * @api
    */
   toGeoJSON() {}
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({
+      ...this.getRestVectorParameters_(),
+      projection: this.getProjection(),
+      mode: this.mode !== mode.RENDER ? this.mode : undefined,
+    });
+  }
 }
 
 /**

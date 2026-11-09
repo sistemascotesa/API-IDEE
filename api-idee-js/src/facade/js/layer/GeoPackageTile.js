@@ -47,6 +47,7 @@ class GeoPackageTile extends LayerBase {
    * - legend: Nombre asociado en el árbol de contenidos, si usamos uno.
    * - tileLoadFunction: Función de carga de tiles.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - minZoom: Zoom mínimo aplicable a la capa.
@@ -141,6 +142,19 @@ class GeoPackageTile extends LayerBase {
       equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
+  }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa: la del GeoPackage del
+   * que procede, limitada a esta tabla. Las teselas de un fichero local no pueden
+   * cargarse desde otra sesión.
+   *
+   * @function
+   * @returns {String|null} Cadena REST; null si el GeoPackage no tiene URL remota.
+   * @api
+   */
+  getRestLayer() {
+    return this.getContainerRestLayer_();
   }
 }
 

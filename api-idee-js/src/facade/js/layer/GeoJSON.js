@@ -70,6 +70,7 @@ class GeoJSON extends LayerVector {
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - style: Define el estilo de la capa.
    * - predefinedStyles: Estilos predefinidos para la capa.
    * - height: Define la altura del objeto geográfico. Puede ser un número o una propiedad.
@@ -296,6 +297,21 @@ class GeoJSON extends LayerVector {
   deserialize(encodedSerialized) {
     const source = JSON.parse(decodeURIComponent(escape(window.atob(encodedSerialized.replace(' ', '+')))));
     return source;
+  }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa. Con URL remota se
+   * comparte la referencia al servicio; en otro caso, sus objetos geográficos.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    if (!LayerVector.isAutoRefreshRemoteURL(this.url)) {
+      return super.getRestLayer();
+    }
+    return this.formatRestLayer_(this.getRestVectorParameters_());
   }
 }
 

@@ -47,6 +47,7 @@ class OSM extends LayerBase {
    * - maxZoom: Zoom máximo aplicable a la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán
    * a la implementación de la capa.
    * - animated: Activa la animación para capas base o parámetros animados.
@@ -196,6 +197,21 @@ class OSM extends LayerBase {
   destroy() {
     // eslint-disable-next-line no-console
     console.log('si me destruyo');
+  }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa. La atribución de
+   * OpenStreetMap la genera la propia capa, por lo que solo se comparte la del usuario.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    const { userParametersVar } = this.constructorParameters;
+    return this.formatRestLayer_({
+      attribution: isObject(userParametersVar) ? userParametersVar.attribution : undefined,
+    });
   }
 }
 

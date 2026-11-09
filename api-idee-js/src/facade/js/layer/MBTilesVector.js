@@ -65,6 +65,7 @@ class MBTilesVector extends Vector {
    * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a la implementación.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - style: Define el estilo de la capa.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - predefinedStyles: Estilos predefinidos para la capa.
@@ -265,6 +266,23 @@ class MBTilesVector extends Vector {
    * @api
    */
   toGeoJSON() {}
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST; null si el fichero no tiene URL remota.
+   * @api
+   */
+  getRestLayer() {
+    if (!Vector.isAutoRefreshRemoteURL(this.url)) {
+      return null;
+    }
+    return this.formatRestLayer_({
+      ...this.getRestVectorParameters_(),
+      tileSize: this.constructorParameters.userParameters?.tileSize,
+    });
+  }
 }
 
 /**

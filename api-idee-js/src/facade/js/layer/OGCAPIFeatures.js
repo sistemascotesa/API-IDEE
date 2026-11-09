@@ -88,6 +88,7 @@ class OGCAPIFeatures extends Vector {
    * - minScale: Escala mínima.
    * - maxScale: Escala máxima.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - height: Define la altura del objeto geográfico. Puede ser un número o una propiedad.
    *   Si se define la altura será constante para todos los puntos del objeto geográfico.
    *   Disponible para gemetrías poligonales.
@@ -478,6 +479,25 @@ class OGCAPIFeatures extends Vector {
       equals = equals && (this.template === obj.template);
     }
     return equals;
+  }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({
+      ...this.getRestVectorParameters_(),
+      limit: this.limit,
+      bbox: this.bbox,
+      id: this.id,
+      offset: this.offset,
+      format: this.format,
+      conditional: this.conditional,
+    });
   }
 }
 

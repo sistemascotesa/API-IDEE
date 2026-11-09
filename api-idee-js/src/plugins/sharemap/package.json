@@ -40,7 +40,6 @@
     "eslint-plugin-react": "7.37.4",
     "eslint-webpack-plugin": "^4.0.1",
     "fs-extra": "11.2.0",
-    "handlebars": "^4.1.2",
     "html-loader": "^0.5.5",
     "live-server": "^1.2.1",
     "mini-css-extract-plugin": "2.7.6",
@@ -54,7 +53,8 @@
   },
   "dependencies": {
     "jss": "^9.8.7",
-    "jss-preset-default": "^4.5.0"
+    "jss-preset-default": "^4.5.0",
+    "qrcode": "1.5.4"
   },
   "overrides": {
     "webpack": "5.88.2",

@@ -68,6 +68,7 @@ class TMS extends LayerBase {
    * - extract: Activa la consulta con GetFeatureInfo (color de píxel). Por defecto falso.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
    * - minScale: Escala mínima.
@@ -226,6 +227,23 @@ class TMS extends LayerBase {
       return null;
     }
     return impl.getData(pixel);
+  }
+
+  /**
+   * Devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    const { userParameters } = this.constructorParameters;
+    return this.formatRestLayer_({
+      tileGridMaxZoom: this.tileGridMaxZoom,
+      tileSize: isObject(userParameters) ? userParameters.tileSize : undefined,
+      crossOrigin: this.options?.crossOrigin,
+      extract: this.extract === true ? true : undefined,
+    });
   }
 }
 export default TMS;

@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import VectorsManagement from 'facade/vectorsmanagement';
+import { TURF_SAMPLES, addSampleLayers } from './turfsamples';
 
 IDEE.language.setLang('es');
 // IDEE.language.setLang('en');
@@ -13,7 +14,11 @@ const map = IDEE.map({
 });
 window.map = map;
 
-// map.addPlugin(new IDEE.plugin.Layerswitcher({ collapsed: true, position: 'TR' }));
+map.addPlugin(new IDEE.plugin.Layerswitcher({ collapsed: true, position: 'TL' }));
+
+// Capas de ejemplo de los geoprocesos de Turf (ver turfsamples.js)
+window.turfSamples = TURF_SAMPLES;
+window.sampleLayers = addSampleLayers(TURF_SAMPLES);
 
 /* / Capa Vector
 map.addLayers(new IDEE.layer.Vector({
@@ -100,6 +105,7 @@ const selectHelp = document.getElementById('selectHelp');
 const selectStyle = document.getElementById('selectStyle');
 const selectTurf = document.getElementById('selectTurf');
 const inputSnapping = document.getElementById('inputSnapping');
+const selectProfileGraphs = document.getElementById('selectProfileGraphs');
 
 const boolVal = (select, defaultVal = true) => {
   const v = select.options[select.selectedIndex].value;
@@ -110,7 +116,8 @@ const boolVal = (select, defaultVal = true) => {
 const updatePlugin = () => {
   const options = {};
   options.position = selectPosition.options[selectPosition.selectedIndex].value || 'right';
-  options.collapsed = boolVal(selectCollapsed, false);
+  const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
+  if (collapsed !== '') options.collapsed = collapsed === 'true';
   options.order = Number(inputOrder.value);
   // Si selection es false automaticamente desactiva "edition" y "analysis"
   options.selection = boolVal(selectSelection);
@@ -122,8 +129,8 @@ const updatePlugin = () => {
   options.help = boolVal(selectHelp);
   options.style = boolVal(selectStyle);
   options.turf = boolVal(selectTurf);
-  // true, false, JSON o base64 (lo valida el plugin)
   options.snapping = inputSnapping.value.trim() || undefined;
+  options.profileGraphs = selectProfileGraphs.value || undefined;
 
   removePlugin();
   createPlugin(options);
@@ -143,6 +150,7 @@ const updatePlugin = () => {
   selectStyle,
   selectTurf,
   inputSnapping,
+  selectProfileGraphs,
 ].forEach((ctrl) => {
   ctrl.addEventListener('change', updatePlugin);
 });

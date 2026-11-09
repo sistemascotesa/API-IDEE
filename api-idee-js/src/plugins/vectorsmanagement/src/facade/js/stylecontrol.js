@@ -1,7 +1,6 @@
 /**
  * @module IDEE/control/StyleControl
  */
-import StyleImplControl from 'impl/stylecontrol';
 import template from '../../templates/style';
 import { getValue } from './i18n/language';
 
@@ -16,16 +15,8 @@ export default class StyleControl extends IDEE.Control {
    * @api stable
    */
   constructor(map, managementControl) {
-    // 1. checks if the implementation can create PluginControl
-    if (IDEE.utils.isUndefined(StyleImplControl) || (IDEE.utils.isObject(StyleImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(StyleImplControl)))) {
-      IDEE.exception(getValue('exception.impl_stylecontrol'));
-    }
-
-    // 2. implementation of this control
-    const impl = new StyleImplControl();
+    const impl = new IDEE.impl.Control();
     super('Style', impl);
-    impl.facadeControl = this;
 
     this.map_ = map;
 
@@ -224,10 +215,9 @@ export default class StyleControl extends IDEE.Control {
    */
   setStyle(options, type) {
     if (options) {
-      // Relleno
       const colorInputFill = this.template.querySelector('#colorSelectorFill');
       const opacityInput = this.template.querySelector('#opacity');
-      if (colorInputFill) {
+      if (colorInputFill && options.fill) {
         if (options.fill.opacity) {
           opacityInput.value = options.fill.opacity;
         } else {

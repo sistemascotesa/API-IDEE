@@ -7,11 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="idee" content="yes">
     <title>VectorsManagement TEST</title>
-    <link href="https://componentes-beta.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes-beta.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes-beta.idee.es/api-idee/plugins/printviewmanagement/printviewmanagement.ol.min.css"
+    <link href="http://localhost:8080/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <link href="http://localhost:8080/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
+    <link href="http://localhost:8080/api-idee/plugins/printviewmanagement/printviewmanagement.ol.min.css"
         rel="stylesheet" />
-    <link href="https://componentes-beta.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
     <style rel="stylesheet">
         html,
         body {
@@ -127,6 +126,15 @@
                     <option value='{"vertex":true,"edge":false,"intersection":true,"allLayers":true,"guides":true,"pixelTolerance":15}' label="Configuración completa"></option>
                 </datalist>
             </div>
+            <div>
+                <label for="selectProfileGraphs" title="Gráficas del perfil topográfico de la herramienta de análisis. Por defecto: profile">Gráficas del perfil "profileGraphs"</label>
+                <select name="profileGraphs" id="selectProfileGraphs">
+                    <option value="" selected="selected"></option>
+                    <option value="profile">profile</option>
+                    <option value="elevationGain">elevationGain</option>
+                    <option value="profile,elevationGain">profile,elevationGain</option>
+                </select>
+            </div>
         </div>
         <div class="m-test-buttons">
             <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
@@ -134,16 +142,12 @@
     </div>
 
     <div id="mapjs" class="container"></div>
-    <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/api-idee/js/apiidee.ol.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/api-idee/js/configuration.js"></script>
     <script type="text/javascript"
-        src="https://componentes-beta.idee.es/api-idee/plugins/vectorsmanagement/vectorsmanagement.ol.min.js"></script>
+        src="http://localhost:8080/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js"></script>
     <script type="text/javascript"
-        src="https://componentes-beta.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js"></script>
-    <script type="text/javascript"
-        src="https://componentes-beta.idee.es/api-idee/plugins/printviewmanagement/printviewmanagement.ol.min.js"></script>
-    <script type="text/javascript"
-        src="https://componentes-beta.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js"></script>
+        src="http://localhost:8080/api-idee/plugins/printviewmanagement/printviewmanagement.ol.min.js"></script>
     <script type="text/javascript" src="/main.js"></script>
 </body>
 

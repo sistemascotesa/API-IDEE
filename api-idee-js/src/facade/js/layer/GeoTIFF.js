@@ -332,8 +332,8 @@ class GeoTIFF extends LayerBase {
    * @function
    * @public
    * @param {Array<number>} pixel Coordenadas de píxel [x, y] del mapa.
-   * @returns {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null}
-   * Datos por banda en ese píxel, o null si no hay dato.
+   * @returns {Uint8ClampedArray|Uint8Array|Float32Array|null}
+   * Datos por banda espectral en ese píxel (sin la banda alpha de nodata de OpenLayers), o null.
    * @api
    */
   getData(pixel) {
@@ -396,6 +396,25 @@ class GeoTIFF extends LayerBase {
     }
 
     return equals;
+  }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST; null si el fichero no tiene URL remota.
+   * @api
+   */
+  getRestLayer() {
+    if (!GeoTIFF.isAutoRefreshRemoteURL(this.url)) {
+      return null;
+    }
+    const options = this.options || {};
+    return this.formatRestLayer_({
+      projection: options.projection,
+      normalize: options.normalize,
+      extract: this.extract === false ? false : undefined,
+    });
   }
 }
 

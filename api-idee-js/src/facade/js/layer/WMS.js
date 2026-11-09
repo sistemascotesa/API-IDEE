@@ -64,6 +64,8 @@ class WMS extends LayerBase {
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'), solo en modo teselado.
+   * Por defecto IDEE.config.WEBGL.
    * - singleTile: Indica si la tesela es única o no.
    * - animated: Define si la capa está animada,
    * el valor predeterminado es falso.
@@ -613,6 +615,36 @@ class WMS extends LayerBase {
     }
 
     return equals;
+  }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa o, si procede de un WMC,
+   * la del WMC, que es quien la reconstruye.
+   * @api
+   */
+  getRestLayer() {
+    if (!isNullOrEmpty(this.getWMCParent())) {
+      return this.getWMCParent().getRestLayer();
+    }
+    const options = this.options || {};
+    let queryable;
+    try {
+      queryable = this.isQueryable();
+    } catch (error) {
+      queryable = undefined;
+    }
+    return this.formatRestLayer_({
+      tiled: this.tiled,
+      version: this.version,
+      queryable,
+      useCapabilities: this.useCapabilities === false ? false : undefined,
+      styles: options.styles,
+      sldVersion: options.sldVersion !== '1.1.0' ? options.sldVersion : undefined,
+      cql: this.cql,
+    });
   }
 }
 

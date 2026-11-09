@@ -51,6 +51,7 @@ class MBTiles extends LayerBase {
    * - tileSize: Tamaño de la tesela, por defecto 256.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - isBase: Indica si la capa es base.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a la implementación.
    * Están proporcionados por el usuario.
@@ -175,6 +176,24 @@ class MBTiles extends LayerBase {
       equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
+  }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST; null si el fichero no tiene URL remota.
+   * @api
+   */
+  getRestLayer() {
+    if (!MBTiles.isAutoRefreshRemoteURL(this.url)) {
+      return null;
+    }
+    const { userParameters } = this.constructorParameters;
+    return this.formatRestLayer_({
+      maxZoomLevel: isObject(userParameters) ? userParameters.maxZoomLevel : undefined,
+      tileSize: isObject(userParameters) ? userParameters.tileSize : undefined,
+    });
   }
 }
 export default MBTiles;
