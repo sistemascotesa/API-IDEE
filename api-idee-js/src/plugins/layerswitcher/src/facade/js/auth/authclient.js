@@ -8,6 +8,8 @@
  *   - GET  {root}/auth-api/auth/refresh  + Authorization: Bearer <token actual> → { token }
  *   - POST {root}/auth-api/auth/logout   + Authorization: Bearer <token actual>
  *   - GET  {root}/auth-api/auth/me       + Authorization: Bearer <token>: comprueba un token
+ * - La misma API en {base}/auth, solo para servicios cuya raíz es {base}/ogc:
+ *   las rutas de "auth-api" pasan a ser {root}/../auth/*
  * - Contrato anterior:
  *   - POST {root}/auth/login    { username, password }
  *   - POST {root}/auth/refresh  { refresh_token } + Authorization: Bearer <token actual>
@@ -28,6 +30,16 @@ const CONTRACTS = [
     logout: 'auth-api/auth/logout',
     // Comprobación de un token introducido por el usuario
     verify: 'auth-api/auth/me',
+    identifiesDataIDEE: true,
+  },
+  {
+    onlyFor: /\/ogc$/i,
+    detect: { path: '../auth/me', isAvailable: (code) => code === 200 || code === 401 },
+    login: '../auth/login',
+    refresh: { path: '../auth/refresh', method: 'get' },
+    logout: '../auth/logout',
+    verify: '../auth/me',
+    identifiesDataIDEE: true,
   },
   {
     // Cualquier respuesta salvo 404 (405, 400, 401...) indica que el endpoint existe
@@ -103,7 +115,8 @@ export default class AuthClient {
    */
   getContract(root) {
     if (!(root in this.contracts_)) {
-      this.contracts_[root] = CONTRACTS.reduce((previous, contract) => previous
+      const contracts = CONTRACTS.filter(({ onlyFor }) => !onlyFor || onlyFor.test(root));
+      this.contracts_[root] = contracts.reduce((previous, contract) => previous
         .then((found) => found || IDEE.remote.get(`${root}/${contract.detect.path}`, null, DIRECT)
           .then((response) => (response.code !== 0 && contract.detect.isAvailable(response.code)
             ? contract : null))

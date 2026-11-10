@@ -90,6 +90,17 @@ export default class DataIDEEAuthManager {
   }
 
   /**
+   * @param {String} root Raíz del servicio.
+   * @returns {Promise<Boolean>} Verdadero si el servicio publica la API de autenticación
+   * de DataIDEE. El contrato anterior no cuenta porque cualquier servidor lo cumple si
+   * responde algo distinto de 404 en esa ruta.
+   */
+  isDataIDEEService(root) {
+    return this.client_.getContract(root)
+      .then((contract) => contract?.identifiesDataIDEE === true);
+  }
+
+  /**
    * Inicia sesión y guarda el token.
    * @param {String} root Raíz del servicio.
    * @param {String} username Usuario.

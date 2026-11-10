@@ -79,9 +79,9 @@ El listado de capas aparece al pulsar sobre el botón añadir (Listado de alguna
 Al introducir la URL de un servicio OGC API Features (raíz, `/collections` o `/collections/{id}`), debajo del buscador aparece el selector **Cargar como**:
 
 - **OGC API Features (estándar)**: las capas se añaden como `IDEE.layer.OGCAPIFeatures`. El parámetro `f` se toma del enlace `items` que anuncia el servicio; si el servicio no lo usa, no se envía.
-- **DataIDEE**: las capas se añaden como `IDEE.layer.DataIDEE`. Si el servicio tiene login, aparece un candado para iniciar sesión con usuario y contraseña o pegando directamente un token de acceso (debe ser un JWT sin caducar; con la API de autenticación de DataIDEE se comprueba además con `GET /auth-api/auth/me`). El botón «Guardar» solo se habilita con usuario y contraseña o con un token válido. Se admite la API de autenticación de DataIDEE (`/auth-api/auth/login`, renovación con `GET /auth-api/auth/refresh` y cierre con `/auth-api/auth/logout`; se detecta con `GET /auth-api/auth/me`, que sin token responde 401) y, como alternativa, el contrato anterior (`/auth/login` y `POST /auth/refresh`). El token se guarda en el `localStorage` del navegador, uno por URL de servicio, se renueva antes de caducar y se envía siempre como `Authorization: Bearer <token>`: al listar las colecciones, en las consultas (queryables, recuento, información) y en las capas (`{ getFeature: { token } }`). Las capas también admiten `tokenLocation: 'query'` para enviar el token como `?token=<token>`.
+- **DataIDEE**: las capas se añaden como `IDEE.layer.DataIDEE`. Si el servicio tiene login, aparece un candado para iniciar sesión con usuario y contraseña o pegando directamente un token de acceso (debe ser un JWT sin caducar; con la API de autenticación de DataIDEE se comprueba además con su `GET auth/me`). El botón «Guardar» solo se habilita con usuario y contraseña o con un token válido. Se admite la API de autenticación de DataIDEE (`/auth-api/auth/login`, renovación con `GET /auth-api/auth/refresh` y cierre con `/auth-api/auth/logout`; se detecta con `GET /auth-api/auth/me`, que sin token responde 401), la misma API en `{base}/auth/*` cuando la raíz del servicio es `{base}/ogc` (para `https://servidor/data-idee-api/ogc`, en `https://servidor/data-idee-api/auth/*`) y, como alternativa, el contrato anterior (`/auth/login` y `POST /auth/refresh`). El token se guarda en el `localStorage` del navegador, uno por URL de servicio, se renueva antes de caducar y se envía siempre como `Authorization: Bearer <token>`: al listar las colecciones, en las consultas (queryables, recuento, información) y en las capas (`{ getFeature: { token } }`). Las capas también admiten `tokenLocation: 'query'` para enviar el token como `?token=<token>`.
 
-Se recuerda el último modo usado con cada servicio. Los servicios precargados con `type: 'DataIDEE'` se abren en modo DataIDEE.
+Se recuerda el último modo usado con cada servicio. Si no hay ninguno, se abren en modo DataIDEE los servicios precargados con `type: 'DataIDEE'`, aquellos cuyas colecciones exigen autenticación y los que publican la API de autenticación de DataIDEE.
 El servicio debe permitir CORS (cabeceras `Authorization` y `Content-Type`) para iniciar sesión y para consultar capas con token sin proxy.
 
 # API-REST
@@ -284,7 +284,7 @@ La página de pruebas (`test/dev.html`) usa el núcleo compilado en local, así 
 npm run build:ol-core
 ```
 
-El servidor de desarrollo reenvía `/data-idee-api` al servicio DataIDEE de pruebas (configurable con la variable de entorno `DATAIDEE_PROXY_TARGET`). Así se puede probar aunque el servicio no permita CORS, introduciendo en el buscador `http://localhost:6123/data-idee-api/collections`.
+El servidor de desarrollo reenvía `/data-idee-api` al servicio DataIDEE de pruebas (configurable con la variable de entorno `DATAIDEE_PROXY_TARGET`). Así se puede probar aunque el servicio no permita CORS, introduciendo en el buscador `http://localhost:6123/data-idee-api/ogc/collections`.
 
 ## 📂 Estructura del código / *Code scaffolding*
 

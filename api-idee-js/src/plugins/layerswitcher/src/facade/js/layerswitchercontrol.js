@@ -209,8 +209,9 @@ export default class LayerswitcherControl extends IDEE.Control {
     // Botón de sesión del servicio OGC API abierto
     this.authButton_ = undefined;
 
-    // Servicios OGC API cuyas colecciones exigen autenticación
-    this.protectedOGCServices_ = new Set();
+    // Servicios OGC API identificados como DataIDEE al abrirlos: sus colecciones
+    // exigen autenticación o publican la API de autenticación de DataIDEE
+    this.dataIDEEServices_ = new Set();
 
     // Capas DataIDEE con aviso de no autorizado registrado
     this.watchedDataIDEELayers_ = new WeakSet();
@@ -2271,9 +2272,11 @@ export default class LayerswitcherControl extends IDEE.Control {
    * @returns {Promise<Boolean>} Verdadero si es un servicio OGC API Features.
    */
   openOGCAPIService_(url) {
-    return detectOGCAPIFeatures(url).then((service) => {
+    return detectOGCAPIFeatures(url).then(async (service) => {
       if (!service) return false;
-      if (service.isProtected) this.protectedOGCServices_.add(service.root);
+      if (service.isProtected || await this.authManager_.isDataIDEEService(service.root)) {
+        this.dataIDEEServices_.add(service.root);
+      }
       this.printOGCModal(url);
       return true;
     });
@@ -2767,14 +2770,14 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   // Modo de carga inicial de un servicio OGC API: el último usado con el servicio,
-  // DataIDEE si está precargado así o si sus colecciones exigen autenticación,
+  // DataIDEE si está precargado así o se ha identificado como tal al abrirlo,
   // o el estándar.
   getInitialOGCMode_(root) {
     const storedMode = this.tokenStore_.getMode(root);
     if (this.ogcModes_[storedMode]) return storedMode;
     const isPrechargedDataIDEE = this.getPrechargedServices()
       .some((service) => service.type === 'DataIDEE' && isSameService(service.url, root));
-    return isPrechargedDataIDEE || this.protectedOGCServices_.has(root)
+    return isPrechargedDataIDEE || this.dataIDEEServices_.has(root)
       ? MODE_DATAIDEE : MODE_STANDARD;
   }
 
