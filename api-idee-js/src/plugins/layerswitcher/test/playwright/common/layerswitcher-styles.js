@@ -157,11 +157,16 @@ export const registerStylesTests = (impl) => {
     });
 
     test('ejemplo local: aplica el primer estilo configurado, lista todos y recupera cualquiera', async ({ page }) => {
+      const collectionsRequests = [];
+      page.on('request', (request) => {
+        if (/\/collections(?:[/?#]|$)/.test(request.url())) collectionsRequests.push(request.url());
+      });
       await openMap(page, impl, { precharged: EXAMPLE });
       await waitPrecharged(page, 2, timeout);
       expect(await page.evaluate(() => window.mp.precharged.services.map((s) => s.url)))
         .toEqual([`${EXAMPLES}/zonas.geojson`, `${EXAMPLES}/rutas.geojson`]);
       await addFromCatalog(page, 'Zonas de ejemplo', 'Zonas', timeout);
+      expect(collectionsRequests).toEqual([]);
 
       await expect.poll(() => renderedStyle(page, impl, 'Zonas', 'Zona Centro'), { timeout })
         .toEqual({
@@ -290,6 +295,8 @@ export const registerStylesTests = (impl) => {
         .toEqual([['embalses', ''], ['rios', 'estilo2']]);
       expect((await openStyleSelector(page, 'rios')).options.map((option) => option.value))
         .toEqual(['estilo2', 'estilo1']);
+      await expect(page.locator('#m-layerswitcher-style .m-layerswitcher-style-sld-button'))
+        .toHaveCount(0);
       await page.locator('div.m-dialog.info div.m-button > button').last().click();
       const published = await openStyleSelector(page, 'embalses');
       expect(published.options.map((option) => option.value)).toEqual(['lamina', 'contorno']);
@@ -298,8 +305,12 @@ export const registerStylesTests = (impl) => {
 
       await addSampleLayers(page, { raster: false });
       await expect(layerRow(page, 'puntos')).toHaveCount(1, { timeout });
-      await expect(layerRow(page, 'puntos').locator('.m-layerswitcher-icons-style')).toHaveCount(0);
       expect(await page.evaluate(() => window.puntos.predefinedStyles.length)).toBe(1);
+      const single = await openStyleSelector(page, 'puntos');
+      expect(single.options).toHaveLength(1);
+      await expect(page.locator('#m-layerswitcher-style .m-layerswitcher-style-sld-button'))
+        .toHaveCount(1);
+      await page.locator('div.m-dialog.info div.m-button > button').last().click();
     });
 
     test('WFS y OGC API Features: estilos de cada capa por su identificador en el servicio', async ({ page }) => {
@@ -488,7 +499,7 @@ export const registerStylesTests = (impl) => {
       } else {
         await expect(notice).toBeHidden();
       }
-      await page.locator('#m-layerswitcher-style button').click();
+      await page.locator('#m-layerswitcher-style .m-layerswitcher-style-change-button').click();
       await expect.poll(async () => (await renderedStyle(page, impl, 'Zonas', 'Zona Sur'))?.fill, { timeout })
         .toBe(ROJO);
       expect(await page.evaluate(() => window.mapjs.getLayers().find((l) => l.legend === 'Zonas')
