@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import fixture from './fixtures/teunesco-todos-los-tipos';
+import { openTeunesco } from './dataidee-pages';
 
-const demoUrl = 'http://127.0.0.1:8787/teunesco.html';
 const serviceUrl = 'https://teunescodes.grupotecopy.es/data-idee-api';
 const collectionPath = '/collections/local:todos_los_tipos';
 
@@ -79,8 +79,7 @@ async function mockService(page, geometryType) {
 }
 
 async function openEditor(page, tool = 'edition') {
-  await page.goto(demoUrl);
-  await expect(page.locator('#teunesco-status')).toContainText('3 entidades cargadas');
+  await openTeunesco(page);
   await expect(page.locator('#m-vectorsmanagement-layer-selector-options')).toBeHidden();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
   await page.locator('#m-vectorsmanagement-layer-selector-options span')
@@ -183,8 +182,8 @@ test('TEUNESCO editor stages geometry and typed attributes together and retains 
   });
   expect(features[0].properties.fecha_hora_zona)
     .toBe(fixture.items.features[0].properties.fecha_hora_zona);
-  await page.reload();
-  await expect(page.locator('#teunesco-status')).toContainText('3 entidades cargadas');
+  // The page is opened again over the same mocked service, which keeps the saved feature
+  await openTeunesco(page);
   const saved = await page.evaluate(() => window.teunescoDemo.layer.getFeatures()
     .find((feature) => feature.getId() === 1).getAttributes());
   expect(saved).toMatchObject({
@@ -262,7 +261,9 @@ test('TEUNESCO exposes the complete styled VectorsManagement toolbar', async ({ 
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   const { writes } = await mockService(page);
-  await openEditor(page);
+  // Edition also activates Selection, and Style keeps its panel closed while Selection has
+  // no feature: the session starts from Creation to show the style of the layer
+  await openEditor(page, 'creation');
   await page.locator('#m-vectorsmanagement-style').click();
   await expect(page.locator('.m-vectorsmanagement-style-container')).toBeVisible();
   await page.locator('#m-vectorsmanagement-analysis').click();
@@ -442,8 +443,8 @@ test('TEUNESCO date pickers and unset fields preserve zero, false and untouched 
   delete expectedProperties.fecha_hora;
   expect(writes[1].feature.properties).toEqual(expectedProperties);
   expect(writes[1].headers['if-match']).toBe('"2"');
-  await page.reload();
-  await expect(page.locator('#teunesco-status')).toContainText('3 entidades cargadas');
+  // The page is opened again over the same mocked service, which keeps the saved feature
+  await openTeunesco(page);
   const saved = await page.evaluate(() => window.teunescoDemo.layer.getFeatures()
     .find((feature) => feature.getId() === 1).getAttributes());
   expect(saved).toMatchObject({ entero: 0, booleano: false, fecha_hora_zona: '2026-11-04T15:20:00Z' });
@@ -558,7 +559,9 @@ test('TEUNESCO keeps stored values that break the schema while they stay untouch
   await expect(form.locator('[data-value-path="/fecha"]')).toHaveAttribute('type', 'text');
   await expect(form.locator('[data-value-path="/fecha"]')).toHaveValue('2024-02-31');
   await expect(fieldWarning(form, '/fecha')).toBeVisible();
-  await expect(form.locator('[data-value-path="/fecha_hora"]')).toHaveValue('2026-10-01T07:00:00');
+  // The browser normalizes datetime-local values and may omit zero seconds; the stored
+  // value is still sent untouched (checked below)
+  await expect(form.locator('[data-value-path="/fecha_hora"]')).toHaveValue(/^2026-10-01T07:00(:00)?$/);
   await form.locator('[data-value-path="/nombre"]').fill('Mérida editada');
   await page.locator('#m-vectorsmanagement-dataidee-apply').click();
   await expect(form).toBeHidden();

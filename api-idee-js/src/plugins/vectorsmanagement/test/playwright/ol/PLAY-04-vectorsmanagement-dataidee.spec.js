@@ -1,23 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { openLocalDataIDEE } from './dataidee-pages';
 
-test.describe.configure({ mode: 'serial' });
-
-// Necesita el servidor de demostración, que no arranca la configuración de Playwright
-const DEMO_URL = 'http://127.0.0.1:8787/';
-let demoAvailable = false;
-
-test.beforeAll(async ({ request }) => {
-  demoAvailable = await request.get(DEMO_URL, { timeout: 2000 })
-    .then((response) => response.ok(), () => false);
-});
-
-test.beforeEach(() => {
-  test.skip(!demoAvailable, 'Requiere el servidor de demostración: node src/plugins/vectorsmanagement/test/demo/dataidee-server.js');
-});
-
-test.afterEach(async ({ request }) => {
-  if (demoAvailable) await request.post(`${DEMO_URL}local/reset`);
-});
+// Cada test abre el ejemplo de edición local con su propio servicio DataIDEE en memoria
 
 test('DataIDEE form validates and saves typed nested attributes through OGC feature updates', async ({ page }) => {
   const writes = [];
@@ -31,8 +15,7 @@ test('DataIDEE form validates and saves typed nested attributes through OGC feat
       });
     }
   });
-  await page.request.post(`${DEMO_URL}local/reset`);
-  await page.goto(`${DEMO_URL}?mode=form`);
+  const demo = await openLocalDataIDEE(page, 'form');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 1);
   await page.locator('#vectorsmanagement-button').click();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
@@ -125,7 +108,7 @@ test('DataIDEE form validates and saves typed nested attributes through OGC feat
   });
   expect(JSON.parse(writes[0].body).properties).not.toHaveProperty('internalNote');
   expect(JSON.parse(writes[0].body).properties).not.toHaveProperty('updatedAt');
-  await page.reload();
+  await demo.reload();
   await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 1);
   const saved = await page.evaluate(() => window.dataideeDemo.layer.getFeatures()[0].getAttributes());
   expect(saved.name).toBe('Casa restaurada');
@@ -160,8 +143,7 @@ test('DataIDEE form validates and saves typed nested attributes through OGC feat
 });
 
 test('DataIDEE nested objects and arrays validate live and keep the keyboard focus', async ({ page }) => {
-  await page.request.post(`${DEMO_URL}local/reset`);
-  await page.goto(`${DEMO_URL}?mode=form`);
+  await openLocalDataIDEE(page, 'form');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 1);
   await page.locator('#vectorsmanagement-button').click();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
@@ -214,7 +196,7 @@ test('DataIDEE nested objects and arrays validate live and keep the keyboard foc
 
 test('DataIDEE save reports conflicts and service errors in the editing panel', async ({ page }) => {
   for (const [mode, message] of [['conflict', 'changed on the server'], ['partial', 'HTTP 422']]) {
-    await page.goto(`${DEMO_URL}?mode=${mode}`);
+    await openLocalDataIDEE(page, mode);
     await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
     await page.locator('#vectorsmanagement-button').click();
     await page.locator('#m-vectorsmanagement-layer-selector').click();
@@ -231,7 +213,7 @@ test('DataIDEE save reports conflicts and service errors in the editing panel', 
 });
 
 test('DataIDEE forms discover schema independently from queryables and keep geometry fallback', async ({ page }) => {
-  await page.goto(`${DEMO_URL}?mode=missing-queryables`);
+  await openLocalDataIDEE(page, 'missing-queryables');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   const metadata = await page.evaluate(async () => {
     const capabilities = await window.dataideeDemo.layer.getEditingCapabilities();
@@ -247,7 +229,7 @@ test('DataIDEE forms discover schema independently from queryables and keep geom
   expect(metadata.formFields).not.toContain('calculatedArea');
 
   for (const mode of ['missing-schema', 'malformed-schema']) {
-    await page.goto(`${DEMO_URL}?mode=${mode}`);
+    await openLocalDataIDEE(page, mode);
     await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
     const result = await page.evaluate(async () => {
       const layer = window.dataideeDemo.layer;
@@ -266,7 +248,7 @@ test('DataIDEE forms discover schema independently from queryables and keep geom
     expect(result.pending).toBe(1);
   }
 
-  await page.goto(`${DEMO_URL}?mode=patch-only`);
+  await openLocalDataIDEE(page, 'patch-only');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   const patchOnly = await page.evaluate(async () => {
     const layer = window.dataideeDemo.layer;
@@ -301,8 +283,7 @@ test('local DataIDEE editing uses the shared VectorsManagement controls and pers
   page.on('request', (request) => {
     if (['POST', 'PATCH', 'PUT', 'DELETE'].includes(request.method())) writes.push(request.method());
   });
-  await page.request.post('http://127.0.0.1:8787/local/reset');
-  await page.goto('http://127.0.0.1:8787/');
+  const demo = await openLocalDataIDEE(page);
   await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length >= 5);
   const localGeometryTypes = await page.evaluate(() => window.dataideeDemo.layer.getFeatures()
     .map((feature) => feature.getGeometry().type));
@@ -343,7 +324,7 @@ test('local DataIDEE editing uses the shared VectorsManagement controls and pers
   await expect.poll(async () => page.evaluate(() => (
     window.dataideeDemo.layer.getFeatures().length
   ))).toBe(6);
-  await page.reload();
+  await demo.reload();
   await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 6);
   const savedName = await page.evaluate(() => window.dataideeDemo.layer.getFeatures()
     .map((feature) => feature.getAttributes()?.name).find((name) => name === 'Created in UI'));
@@ -381,7 +362,7 @@ test('local DataIDEE editing uses the shared VectorsManagement controls and pers
   await expect.poll(pendingCount).toBe(1);
   await page.locator('#m-vectorsmanagement-editing-save').click();
   await expect(page.locator('#m-vectorsmanagement-editing-status')).toContainText('Guardadas 1');
-  await page.reload();
+  await demo.reload();
   await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 5);
   const deletedName = await page.evaluate(() => window.dataideeDemo.layer.getFeatures()
     .map((feature) => feature.getAttributes()?.name).find((name) => name === 'Created in UI'));
@@ -393,15 +374,14 @@ test('local DataIDEE editing uses the shared VectorsManagement controls and pers
   const viewport = await page.evaluate(() => ({
     width: window.innerWidth,
     documentWidth: document.documentElement.scrollWidth,
-    mapWidth: document.querySelector('#map').getBoundingClientRect().width,
+    mapWidth: document.querySelector('#mapjs').getBoundingClientRect().width,
   }));
   expect(viewport.documentWidth).toBeLessThanOrEqual(viewport.width);
   expect(viewport.mapWidth).toBeGreaterThan(0);
 });
 
 test('cancelling DataIDEE creation clears its preview without staging a feature', async ({ page }) => {
-  await page.request.post('http://127.0.0.1:8787/local/reset');
-  await page.goto('http://127.0.0.1:8787/');
+  await openLocalDataIDEE(page);
   await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 5);
   await page.locator('#vectorsmanagement-button').click();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
@@ -427,7 +407,7 @@ test('cancelling DataIDEE creation clears its preview without staging a feature'
 });
 
 test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain writes', async ({ page }) => {
-  await page.goto('http://127.0.0.1:8787/?mode=readonly');
+  await openLocalDataIDEE(page, 'readonly');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   await page.locator('#vectorsmanagement-button').click();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
@@ -437,7 +417,7 @@ test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain
   await expect(page.locator('#m-vectorsmanagement-edition'))
     .toHaveAttribute('title', 'La colección no permite esta operación.');
 
-  await page.goto('http://127.0.0.1:8787/?mode=dense');
+  await openLocalDataIDEE(page, 'dense');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   const preparationError = await page.evaluate(async () => {
     // Without a layer limit the whole zone is loaded: its 1001 features exceed the budget
@@ -452,7 +432,7 @@ test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain
   expect(preparationError).toContain('feature limit');
   expect(await page.evaluate(() => window.dataideeDemo.layer.getEditingSession())).toBeNull();
 
-  await page.goto('http://127.0.0.1:8787/?mode=conflict');
+  await openLocalDataIDEE(page, 'conflict');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   const conflict = await page.evaluate(async () => {
     const layer = window.dataideeDemo.layer;
@@ -470,7 +450,7 @@ test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain
   });
   expect(conflict).toContain('changed on the server');
 
-  await page.goto('http://127.0.0.1:8787/?mode=partial');
+  await openLocalDataIDEE(page, 'partial');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   const partial = await page.evaluate(async () => {
     const layer = window.dataideeDemo.layer;
@@ -489,7 +469,7 @@ test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain
   expect(partial.error).toContain('HTTP 422');
   expect(partial.pending).toBe(1);
 
-  await page.goto('http://127.0.0.1:8787/?mode=empty');
+  await openLocalDataIDEE(page, 'empty');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   const duplicateSave = await page.evaluate(async () => {
     const layer = window.dataideeDemo.layer;
@@ -517,7 +497,7 @@ test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain
   expect(duplicateSave.duplicateError).toContain('already in progress');
   expect(duplicateSave.savedId).toBe(0);
 
-  await page.goto('http://127.0.0.1:8787/?mode=uncertain');
+  await openLocalDataIDEE(page, 'uncertain');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   const uncertain = await page.evaluate(async () => {
     const layer = window.dataideeDemo.layer;
@@ -552,7 +532,7 @@ test('DataIDEE editing respects the layer limit and restores the layer query whe
     const url = new URL(request.url());
     if (url.pathname === '/local/collections/dense/items') itemRequests.push(url);
   });
-  await page.goto(`${DEMO_URL}?mode=dense`);
+  await openLocalDataIDEE(page, 'dense');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   itemRequests.length = 0;
   const prepared = await page.evaluate(async () => {
@@ -594,7 +574,7 @@ test('DataIDEE capabilities are requested once per layer and token', async ({ pa
   });
   const expectEach = (times) => expect.poll(() => Object.fromEntries(requested))
     .toEqual(Object.fromEntries(tracked.map((path) => [path, times])));
-  await page.goto(`${DEMO_URL}?mode=form`);
+  await openLocalDataIDEE(page, 'form');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 1);
   await page.locator('#vectorsmanagement-button').click();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
@@ -626,7 +606,7 @@ test('DataIDEE capabilities are requested once per layer and token', async ({ pa
 test('ending DataIDEE editing with pending changes asks in an API dialog', async ({ page }) => {
   const prompts = [];
   page.on('dialog', async (dialog) => { prompts.push(dialog.message()); await dialog.dismiss(); });
-  await page.goto(DEMO_URL);
+  await openLocalDataIDEE(page);
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   await page.locator('#vectorsmanagement-button').click();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
@@ -658,7 +638,7 @@ test('ending DataIDEE editing with pending changes asks in an API dialog', async
 });
 
 test('DataIDEE editing starts with Creation or Edition and survives switching tools', async ({ page }) => {
-  await page.goto(DEMO_URL);
+  await openLocalDataIDEE(page);
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   await page.locator('#vectorsmanagement-button').click();
   await page.locator('#m-vectorsmanagement-layer-selector').click();

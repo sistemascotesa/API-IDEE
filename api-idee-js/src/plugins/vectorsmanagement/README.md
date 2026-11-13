@@ -122,6 +122,12 @@ la ausencia de metadatos. Los modos `readonly`, `dense`, `complex`, `conflict`,
 `partial`, `write-error` y `uncertain` cubren permisos, límites, conflictos,
 éxitos parciales, validación y respuestas de escritura perdidas.
 
+Los tests de Playwright de esta edición (`PLAY-04` y `PLAY-05` en
+`test/playwright/ol`) no necesitan este servidor. Usan la página de prueba del
+plugin y el mismo servicio en memoria (`test/demo/dataidee-fake.js`), con uno
+propio por test. Como el resto de tests de Playwright, necesitan las compilaciones
+del núcleo y del plugin.
+
 Abre `http://127.0.0.1:8787/teunesco.html` para editar la colección real
 [`local:todos_los_tipos`](https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos).
 La demo carga los municipios sobre OpenStreetMap y abre VectorsManagement con
@@ -198,14 +204,14 @@ aviso y se conserva intacto mientras no se modifique; si cambia, el nuevo valor
 debe ser válido. Las fechas y horas se muestran y se escriben en UTC, y las que no
 se editan conservan su zona horaria y su precisión.
 
-La prueba `PLAY-49-vectorsmanagement-teunesco` usa una copia del contrato público
+La prueba `PLAY-05-vectorsmanagement-teunesco` usa una copia del contrato público
 de esta colección e intercepta todas las peticiones a TEUNESCO, incluidas las
 escrituras. Comprueba el desplazamiento de un punto y los atributos tipados en
 un único PUT completo, la conservación de geometrías secundarias y fechas, la
 recarga, la reapertura del formulario y el diálogo en pantalla estrecha:
 
 ```sh
-./node_modules/.bin/playwright test test/playwright/ol/PLAY-49-vectorsmanagement-teunesco.spec.js --config=playwright-config/playwright-ol.config.js --workers=1
+./node_modules/.bin/playwright test src/plugins/vectorsmanagement/test/playwright/ol/PLAY-05-vectorsmanagement-teunesco.spec.js --config=playwright-config/playwright-ol.config.js --workers=1
 ```
 
 Las reglas de validación se comprueban aparte, sin navegador ni servicio, en
