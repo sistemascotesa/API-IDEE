@@ -1,94 +1,134 @@
+import { createFieldControl, readFieldControl } from './dataideefieldcontrols';
+
 const pointerPart = (value) => String(value).replace(/~/g, '~0').replace(/\//g, '~1');
+const decodePointerPart = (value) => value.replace(/~1/g, '/').replace(/~0/g, '~');
 const missingValue = Symbol('missing');
+const clone = (value) => JSON.parse(JSON.stringify(value));
+const keepValue = (value) => (value === undefined ? missingValue : clone(value));
 const isGeometry = (schema) => schema['x-ogc-role'] === 'primary-geometry'
   || schema.format?.startsWith('geometry-');
+const isObjectSchema = (schema) => schema.type === 'object' || schema.properties;
+const isArraySchema = (schema) => schema.type === 'array' || schema.items;
+
+const FOCUSABLE_CONTROL = 'input:not([disabled]),select:not([disabled]),textarea:not([disabled]),button:not([disabled])';
+
+function isNullable(schema) {
+  return schema.nullable === true
+    || (Array.isArray(schema.type) && schema.type.includes('null'))
+    || (Array.isArray(schema.enum) && schema.enum.includes(null));
+}
 
 function emptyValue(schema) {
-  if (schema.default !== undefined) return JSON.parse(JSON.stringify(schema.default));
-  if (schema.const !== undefined) return JSON.parse(JSON.stringify(schema.const));
-  if (schema.type === 'object' || schema.properties) return {};
-  if (schema.type === 'array' || schema.items) return [];
+  if (schema.default !== undefined) return clone(schema.default);
+  if (schema.const !== undefined) return clone(schema.const);
+  if (isObjectSchema(schema)) return {};
+  if (isArraySchema(schema)) return [];
   return '';
 }
 
 function findByPath(container, dataAttribute, path) {
+  const datasetKey = dataAttribute.replace('data-', '').replace(/-([a-z])/g, (m, c) => c.toUpperCase());
   return [...container.querySelectorAll(`[${dataAttribute}]`)]
-    .find((element) => element.dataset[dataAttribute.replace('data-', '').replace(/-([a-z])/g, (m, c) => c.toUpperCase())] === path);
+    .find((element) => element.dataset[datasetKey] === path);
 }
 
-function makePrimitive(path, schema, initialValue, strings) {
-  const value = initialValue;
-  const types = Array.isArray(schema.type)
-    ? schema.type.filter((type) => type !== 'null') : [schema.type];
-  const selectChoices = Array.isArray(schema.enum) || Array.isArray(schema.oneOf);
-  const control = document.createElement(selectChoices || types.includes('boolean') ? 'select' : 'input');
-  control.dataset.valuePath = path;
-  if (control.tagName === 'INPUT') {
-    control.type = types.includes('integer') || types.includes('number') ? 'number' : 'text';
-    if (types.includes('integer')) control.step = '1';
-    if (types.includes('number')) control.step = 'any';
-    if (schema.format === 'date') control.type = 'date';
-    if (schema.format === 'date-time') {
-      control.type = 'datetime-local';
-      control.step = 'any';
-    }
-    if (schema.minimum !== undefined) control.min = String(schema.minimum);
-    if (schema.maximum !== undefined) control.max = String(schema.maximum);
-    if (schema.minLength !== undefined) control.minLength = schema.minLength;
-    if (schema.maxLength !== undefined) control.maxLength = schema.maxLength;
-    if (schema.pattern) control.pattern = schema.pattern;
-    control.value = value === null || value === undefined ? '' : String(value);
-    if (schema.format === 'date-time' && value) {
-      const instant = new Date(value);
-      if (!Number.isNaN(instant.getTime())) {
-        // Display UTC explicitly; preserve the original offset and precision if unedited.
-        control.value = instant.toISOString().slice(0, -1);
-        control.dataset.originalDateTime = value;
-        control.dataset.originalDisplay = control.value;
-      }
-    }
-  } else {
-    const choices = types.includes('boolean')
-      ? [{ const: true, title: strings.trueValue }, { const: false, title: strings.falseValue }]
-      : schema.enum?.map((item) => ({ const: item, title: String(item) }))
-        || schema.oneOf?.map((item) => ({
-          const: item.const, title: item.title || String(item.const),
-        })) || [];
-    const unset = document.createElement('option');
-    unset.value = '';
-    unset.textContent = strings.unsetValue;
-    control.appendChild(unset);
-    choices.filter((item) => item.const !== null && item.const !== '').forEach((item) => {
-      const option = document.createElement('option');
-      option.value = JSON.stringify(item.const);
-      option.textContent = item.title;
-      control.appendChild(option);
-    });
-    control.value = value === undefined || value === null || value === '' ? '' : JSON.stringify(value);
+function createLabel(schema, name, id, required, grouped, strings) {
+  const label = document.createElement(grouped ? 'legend' : 'label');
+  label.textContent = schema.title || name;
+  if (!grouped) label.htmlFor = id;
+  if (required) {
+    const mark = document.createElement('span');
+    mark.className = 'm-vectorsmanagement-dataidee-required';
+    mark.textContent = ' *';
+    mark.setAttribute('aria-hidden', 'true');
+    label.appendChild(mark);
   }
-  return control;
+  if (schema.readOnly === true) {
+    const tag = document.createElement('span');
+    tag.className = 'm-vectorsmanagement-dataidee-tag';
+    tag.textContent = strings.readOnly;
+    label.appendChild(tag);
+  }
+  return label;
+}
+
+function createFeedback() {
+  const feedback = document.createElement('div');
+  feedback.className = 'm-vectorsmanagement-dataidee-feedback';
+  return feedback;
+}
+
+function appendUnsupportedValue(node, value, strings) {
+  if (value === undefined) return;
+  const details = document.createElement('details');
+  const summary = document.createElement('summary');
+  summary.textContent = value?.type || strings.storedValue;
+  const display = document.createElement('pre');
+  display.className = 'm-vectorsmanagement-dataidee-stored-value';
+  display.textContent = JSON.stringify(value, null, 2);
+  details.append(summary, display);
+  node.appendChild(details);
+}
+
+function createArrayButton(action, path, text, ariaLabel) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = `m-vectorsmanagement-dataidee-array-${action}`;
+  button.textContent = text;
+  button.dataset.arrayAction = action;
+  button.dataset.arrayPath = path;
+  button.setAttribute('aria-label', ariaLabel);
+  return button;
+}
+
+function renderPrimitive(node, valueContainer, {
+  id, path, schema, value, required, strings,
+}) {
+  const field = createFieldControl({
+    schema, value, strings, required,
+  });
+  const { control, element, hints } = field;
+  control.id = id;
+  control.dataset.valuePath = path;
+  if (required) control.setAttribute('aria-required', 'true');
+  valueContainer.appendChild(element);
+  if (field.wide) node.classList.add('is-wide');
+  const feedback = createFeedback();
+  if (hints.length) {
+    const hint = document.createElement('p');
+    hint.className = 'm-vectorsmanagement-dataidee-hint';
+    hint.id = `${id}-hint`;
+    hint.textContent = hints.join(' · ');
+    feedback.appendChild(hint);
+  }
+  if (field.counter) {
+    const counter = document.createElement('span');
+    counter.className = 'm-vectorsmanagement-dataidee-counter';
+    counter.id = `${id}-counter`;
+    const refresh = () => { counter.textContent = field.counter(control); };
+    control.addEventListener('input', refresh);
+    refresh();
+    feedback.appendChild(counter);
+  }
+  return feedback;
 }
 
 function renderNode(name, schema, path, value, required, strings, fieldModel = null) {
-  const isObject = schema.type === 'object' || schema.properties;
-  const isArray = schema.type === 'array' || schema.items;
-  const node = document.createElement(isObject ? 'fieldset' : 'div');
+  const isObject = isObjectSchema(schema);
+  const isArray = isArraySchema(schema);
+  const grouped = Boolean(isObject || isArray);
+  const id = `dataidee-field-${encodeURIComponent(path)}`;
+  const node = document.createElement(grouped ? 'fieldset' : 'div');
   node.className = 'm-vectorsmanagement-dataidee-field';
   node.dataset.fieldPath = path;
+  node.dataset.fieldTitle = schema.title || name;
   if (isObject) node.classList.add('is-object');
-  const label = document.createElement(isObject ? 'legend' : 'label');
-  label.textContent = schema.title || name;
-  if (!isObject) label.htmlFor = `dataidee-field-${encodeURIComponent(path)}`;
-  if (required) {
-    const requiredMark = document.createElement('span');
-    requiredMark.textContent = ' *';
-    requiredMark.setAttribute('aria-label', strings.required);
-    label.appendChild(requiredMark);
-  }
-  node.appendChild(label);
+  if (isArray) node.classList.add('is-array');
+  node.appendChild(createLabel(schema, name, id, required, grouped, strings));
   if (schema.description) {
     const description = document.createElement('p');
     description.className = 'm-vectorsmanagement-dataidee-description';
+    description.id = `${id}-description`;
     description.textContent = schema.description;
     node.appendChild(description);
   }
@@ -98,21 +138,13 @@ function renderNode(name, schema, path, value, required, strings, fieldModel = n
     notice.textContent = schema.format?.startsWith('geometry-')
       ? strings.secondaryGeometry : strings.unsupported;
     node.appendChild(notice);
-    if (value !== undefined) {
-      const details = document.createElement('details');
-      const summary = document.createElement('summary');
-      summary.textContent = value?.type || strings.storedValue;
-      const display = document.createElement('pre');
-      display.className = 'm-vectorsmanagement-dataidee-stored-value';
-      display.textContent = JSON.stringify(value, null, 2);
-      details.append(summary, display);
-      node.appendChild(details);
-    }
+    appendUnsupportedValue(node, value, strings);
     return node;
   }
   const valueContainer = document.createElement('div');
   valueContainer.className = 'm-vectorsmanagement-dataidee-value';
   const current = value === undefined || value === null ? emptyValue(schema) : value;
+  let feedback = null;
   if (isObject) {
     Object.entries(schema.properties || {}).forEach(([childName, childSchema]) => {
       const childModel = fieldModel?.properties?.find((field) => field.name === childName) || null;
@@ -128,76 +160,49 @@ function renderNode(name, schema, path, value, required, strings, fieldModel = n
     });
   } else if (isArray) {
     const items = Array.isArray(current) ? current : [];
-    items.forEach((item, index) => valueContainer.appendChild(renderNode(
-      `${schema.items.title || strings.item} ${index + 1}`,
-      schema.items,
-      `${path}/${index}`,
-      item,
-      false,
-      strings,
-      fieldModel?.items || null,
-    )));
-    const add = document.createElement('button');
-    add.type = 'button';
-    add.textContent = strings.addItem;
-    add.dataset.arrayAction = 'add';
-    add.dataset.arrayPath = path;
-    add.dataset.itemSchema = JSON.stringify(schema.items);
-    add.setAttribute('aria-label', `${strings.addItem} ${schema.title || name}`);
-    valueContainer.appendChild(add);
     items.forEach((item, index) => {
-      const remove = document.createElement('button');
-      remove.type = 'button';
-      remove.textContent = strings.removeItem;
-      remove.dataset.arrayAction = 'remove';
-      remove.dataset.arrayPath = path;
-      remove.dataset.arrayIndex = String(index);
-      remove.setAttribute('aria-label', `${strings.removeItem} ${index + 1}`);
-      const row = [...valueContainer.querySelectorAll('[data-field-path]')]
-        .find((element) => element.dataset.fieldPath === `${path}/${index}`);
-      if (row) row.appendChild(remove);
+      const row = renderNode(
+        `${schema.items.title || strings.item} ${index + 1}`,
+        schema.items,
+        `${path}/${index}`,
+        item,
+        false,
+        strings,
+        fieldModel?.items || null,
+      );
+      row.appendChild(createArrayButton('remove', path, strings.removeItem, `${strings.removeItem} ${index + 1}`));
+      row.lastChild.dataset.arrayIndex = String(index);
+      valueContainer.appendChild(row);
     });
+    const add = createArrayButton('add', path, strings.addItem, `${strings.addItem} ${schema.title || name}`);
+    add.dataset.itemSchema = JSON.stringify(schema.items);
+    valueContainer.appendChild(add);
   } else {
-    const control = makePrimitive(path, schema, value, strings);
-    control.id = `dataidee-field-${encodeURIComponent(path)}`;
-    valueContainer.appendChild(control);
-    if (schema.format === 'date-time') {
-      const hint = document.createElement('p');
-      hint.className = 'm-vectorsmanagement-dataidee-description';
-      hint.id = `${control.id}-timezone`;
-      hint.textContent = strings.dateTimeHint;
-      control.setAttribute('aria-describedby', hint.id);
-      valueContainer.appendChild(hint);
-    }
+    feedback = renderPrimitive(node, valueContainer, {
+      id, path, schema, value, required, strings,
+    });
   }
-  if (schema.readOnly === true || schema['x-ogc-role'] === 'id' || fieldModel?.supported === false) {
-    valueContainer.querySelectorAll('input,select,button')
+  if (schema.readOnly === true) {
+    node.classList.add('is-readonly');
+    valueContainer.querySelectorAll('input,select,textarea,button')
       .forEach((control) => control.setAttribute('disabled', ''));
   }
-  if (fieldModel?.supported === false) {
-    const notice = document.createElement('p');
-    notice.className = 'm-vectorsmanagement-dataidee-description';
-    notice.textContent = fieldModel.unsupported || strings.unsupported;
-    node.appendChild(notice);
-  }
   node.appendChild(valueContainer);
+  if (feedback) node.appendChild(feedback);
   return node;
 }
 
-function collectValue(container, schema, path, initialValue, required = false) {
-  const unset = () => {
-    const nullable = schema.nullable === true
-      || (Array.isArray(schema.type) && schema.type.includes('null'));
-    return initialValue === null || (required && nullable) ? null : missingValue;
-  };
-  if (schema.readOnly || isGeometry(schema)) {
-    return initialValue === undefined ? missingValue : JSON.parse(JSON.stringify(initialValue));
-  }
-  if (schema.type === 'object' || schema.properties) {
+function unsetValue(schema, initialValue, required) {
+  return initialValue === null || (required && isNullable(schema)) ? null : missingValue;
+}
+
+function collectValue(state, schema, path, initialValue, required = false) {
+  if (schema.readOnly || isGeometry(schema)) return keepValue(initialValue);
+  if (isObjectSchema(schema)) {
     const value = {};
     Object.entries(schema.properties || {}).forEach(([name, child]) => {
       const childValue = collectValue(
-        container,
+        state,
         child,
         `${path}/${pointerPart(name)}`,
         initialValue?.[name],
@@ -205,39 +210,108 @@ function collectValue(container, schema, path, initialValue, required = false) {
       );
       if (childValue !== missingValue) value[name] = childValue;
     });
-    return Object.keys(value).length || initialValue != null ? value : unset();
+    return Object.keys(value).length || initialValue != null
+      ? value : unsetValue(schema, initialValue, required);
   }
-  if (schema.type === 'array' || schema.items) {
+  if (isArraySchema(schema)) {
     const depth = path.split('/').length + 1;
-    const rows = [...container.querySelectorAll('[data-field-path]')].filter((element) => (
+    const rows = [...state.container.querySelectorAll('[data-field-path]')].filter((element) => (
       element.dataset.fieldPath.startsWith(`${path}/`)
       && element.dataset.fieldPath.split('/').length === depth
     ));
     const values = rows.map((row, index) => (
-      collectValue(container, schema.items, row.dataset.fieldPath, initialValue?.[index])
+      collectValue(state, schema.items, row.dataset.fieldPath, initialValue?.[index])
     )).filter((value) => value !== missingValue);
-    return values.length || initialValue != null ? values : unset();
+    return values.length || initialValue != null
+      ? values : unsetValue(schema, initialValue, required);
   }
-  const control = findByPath(container, 'data-value-path', path);
-  if (!control) {
-    return initialValue === undefined ? missingValue : JSON.parse(JSON.stringify(initialValue));
+  const control = findByPath(state.container, 'data-value-path', path);
+  if (!control) return keepValue(initialValue);
+  const result = readFieldControl(control, { schema, initialValue });
+  if (result.inputIssue) {
+    state.inputIssues.push({ path, code: result.inputIssue, params: {} });
+    return unsetValue(schema, initialValue, required);
   }
-  if (control.value === '') return unset();
-  const types = Array.isArray(schema.type) ? schema.type : [schema.type];
-  if (control.tagName === 'SELECT') return JSON.parse(control.value);
-  if (schema.format === 'date-time') {
-    if (control.value === control.dataset.originalDisplay) return control.dataset.originalDateTime;
-    const seconds = control.value.length === 16 ? ':00' : '';
-    return `${control.value}${seconds}Z`;
-  }
-  if (types.includes('number') || types.includes('integer')) {
-    return Number(control.value);
-  }
-  return control.value;
+  return result.unset ? unsetValue(schema, initialValue, required) : result.value;
 }
 
-export default function renderDataIDEEAttributeForm(container, definition, initialValues, strings) {
-  let currentValues = JSON.parse(JSON.stringify(initialValues || {}));
+function arrayAt(root, parts) {
+  let parent = root;
+  parts.slice(0, -1).forEach((part) => {
+    if (parent[part] === undefined || parent[part] === null) parent[part] = {};
+    parent = parent[part];
+  });
+  const key = parts.at(-1);
+  if (!Array.isArray(parent[key])) parent[key] = [];
+  return parent[key];
+}
+
+function clearFeedback(container) {
+  container.querySelectorAll('.m-vectorsmanagement-dataidee-error,.m-vectorsmanagement-dataidee-warning')
+    .forEach((node) => node.remove());
+  container.querySelectorAll('[aria-invalid]')
+    .forEach((control) => control.removeAttribute('aria-invalid'));
+  container.querySelectorAll('.is-invalid,.is-warning,.is-valid')
+    .forEach((field) => field.classList.remove('is-invalid', 'is-warning', 'is-valid'));
+}
+
+function describedTarget(field) {
+  return field.matches('fieldset') ? field : field.querySelector('[data-value-path]');
+}
+
+/** Rebuilds the description of a field from the help and messages it currently shows. */
+function syncDescription(field) {
+  const target = describedTarget(field);
+  if (!target) return;
+  const ids = [...field.querySelectorAll(
+    ':scope > .m-vectorsmanagement-dataidee-description[id], :scope > .m-vectorsmanagement-dataidee-feedback > [id]',
+  )].map((node) => node.id);
+  if (ids.length) target.setAttribute('aria-describedby', ids.join(' '));
+  else target.removeAttribute('aria-describedby');
+}
+
+function showIssue(field, issue, text) {
+  let feedback = field.querySelector(':scope > .m-vectorsmanagement-dataidee-feedback');
+  if (!feedback) {
+    feedback = createFeedback();
+    field.appendChild(feedback);
+  }
+  const message = document.createElement('p');
+  message.className = `m-vectorsmanagement-dataidee-${issue.preexisting ? 'warning' : 'error'}`;
+  message.id = `dataidee-error-${encodeURIComponent(issue.path)}`;
+  message.textContent = text;
+  feedback.prepend(message);
+  field.classList.add(issue.preexisting ? 'is-warning' : 'is-invalid');
+  if (!issue.preexisting && !field.matches('fieldset')) {
+    field.querySelector('[data-value-path]')?.setAttribute('aria-invalid', 'true');
+  }
+}
+
+function controlHasValue(control) {
+  return control.type === 'checkbox' ? !control.indeterminate : control.value !== '';
+}
+
+/**
+ * Renders the attribute form of a DataIDEE feature.
+ *
+ * @param {HTMLElement} container Form element.
+ * @param {Object} definition Definition returned by the editing session.
+ * @param {Object} initialValues Current values of the feature.
+ * @param {Object} strings Translated texts.
+ * @param {Object} options formatIssue(issue) and onInteraction() callbacks.
+ * @returns {Object} Form operations.
+ */
+export default function renderDataIDEEAttributeForm(
+  container,
+  definition,
+  initialValues,
+  strings,
+  { formatIssue = (issue) => issue.message, onInteraction = () => {} } = {},
+) {
+  let currentValues = clone(initialValues || {});
+  const touched = new Set();
+  const isTouched = (path) => touched.has(path)
+    || [...touched].some((entry) => entry.startsWith(`${path}/`));
   const render = () => {
     container.replaceChildren();
     definition.fields.forEach((field) => {
@@ -254,68 +328,107 @@ export default function renderDataIDEEAttributeForm(container, definition, initi
       ));
     });
   };
-  const collect = () => {
-    const result = {};
+  const read = () => {
+    const state = { container, inputIssues: [] };
+    const values = {};
     definition.fields.forEach((field) => {
       if (isGeometry(field.schema) || field.supported === false || field.readOnly) {
         if (Object.hasOwn(currentValues, field.name)) {
-          result[field.name] = JSON.parse(JSON.stringify(currentValues[field.name]));
+          values[field.name] = clone(currentValues[field.name]);
         }
         return;
       }
       const value = collectValue(
-        container,
+        state,
         field.schema,
         `/${pointerPart(field.name)}`,
         currentValues[field.name],
         field.required,
       );
-      if (value !== missingValue) result[field.name] = value;
+      if (value !== missingValue) values[field.name] = value;
     });
-    return result;
+    return { values, inputIssues: state.inputIssues };
+  };
+  const collect = () => read().values;
+  const focusAfterArrayChange = (action, path, index) => {
+    const row = action === 'add' ? findByPath(container, 'data-field-path', `${path}/${index}`) : null;
+    const target = row?.querySelector(FOCUSABLE_CONTROL)
+      || [...container.querySelectorAll('button[data-array-action="add"]')]
+        .find((button) => button.dataset.arrayPath === path);
+    target?.focus();
+  };
+  const onArrayAction = (button) => {
+    const { arrayAction, arrayPath, arrayIndex } = button.dataset;
+    currentValues = collect();
+    const array = arrayAt(currentValues, arrayPath.split('/').slice(1).map(decodePointerPart));
+    if (arrayAction === 'add') {
+      array.push(emptyValue(JSON.parse(button.dataset.itemSchema)));
+    } else {
+      array.splice(Number(arrayIndex), 1);
+      // Row indexes have shifted, so their interaction state no longer applies.
+      [...touched].filter((entry) => entry.startsWith(`${arrayPath}/`))
+        .forEach((entry) => touched.delete(entry));
+    }
+    touched.add(arrayPath);
+    render();
+    focusAfterArrayChange(arrayAction, arrayPath, array.length - 1);
+    onInteraction();
+  };
+  const onControlEvent = (event) => {
+    const path = event.target.dataset?.valuePath;
+    if (path === undefined) return;
+    touched.add(path);
+    onInteraction();
   };
   render();
   container.addEventListener('click', (event) => {
     const button = event.target.closest('button[data-array-action]');
-    if (!button) return;
-    currentValues = collect();
-    const parts = button.dataset.arrayPath.split('/').slice(1)
-      .map((part) => part.replace(/~1/g, '/').replace(/~0/g, '~'));
-    let array = currentValues;
-    parts.forEach((part) => { array = array?.[part]; });
-    if (!Array.isArray(array)) {
-      let parent = currentValues;
-      parts.slice(0, -1).forEach((part) => { parent = parent?.[part]; });
-      if (parent) {
-        array = [];
-        parent[parts.at(-1)] = array;
-      }
-    }
-    if (button.dataset.arrayAction === 'add') {
-      array.push(emptyValue(JSON.parse(button.dataset.itemSchema)));
-    } else array.splice(Number(button.dataset.arrayIndex), 1);
-    render();
+    if (button) onArrayAction(button);
   });
+  ['input', 'change', 'focusout'].forEach((type) => container.addEventListener(type, onControlEvent));
   return {
     collect,
+    read,
     render,
-    setIssues(issues) {
-      container.querySelectorAll('.m-vectorsmanagement-dataidee-error')
-        .forEach((node) => node.remove());
+    /** Title of a field, including the groups that contain it. */
+    getFieldLabel(path) {
+      const labels = [];
+      let field = findByPath(container, 'data-field-path', path);
+      while (field) {
+        labels.unshift(field.dataset.fieldTitle);
+        field = field.parentElement.closest('[data-field-path]');
+      }
+      return labels.join(' › ');
+    },
+    /**
+     * Shows the issues next to their fields. Calling it again replaces the previous state.
+     *
+     * @param {Array<Object>} issues Validation issues.
+     * @param {Object} options all: also shows issues of fields the user has not touched.
+     * @returns {number} Blocking issues currently on display.
+     */
+    setIssues(issues, { all = false } = {}) {
+      clearFeedback(container);
+      const shown = new Map();
       issues.forEach((issue) => {
-        const field = findByPath(container, 'data-field-path', issue.path);
-        if (!field) return;
-        const error = document.createElement('p');
-        error.className = 'm-vectorsmanagement-dataidee-error';
-        error.id = `dataidee-error-${encodeURIComponent(issue.path)}`;
-        error.textContent = issue.message;
-        field.appendChild(error);
-        const control = field.querySelector('input,select');
-        if (control) {
-          control.setAttribute('aria-invalid', 'true');
-          control.setAttribute('aria-describedby', error.id);
+        if (!all && !issue.preexisting && !isTouched(issue.path)) return;
+        const previous = shown.get(issue.path);
+        if (!previous || (previous.preexisting && !issue.preexisting)) shown.set(issue.path, issue);
+      });
+      shown.forEach((issue, path) => {
+        const field = findByPath(container, 'data-field-path', path);
+        if (field) showIssue(field, issue, formatIssue(issue));
+      });
+      touched.forEach((path) => {
+        const field = findByPath(container, 'data-field-path', path);
+        const control = field && findByPath(field, 'data-value-path', path);
+        if (control && controlHasValue(control)
+          && !field.classList.contains('is-invalid') && !field.classList.contains('is-warning')) {
+          field.classList.add('is-valid');
         }
       });
+      container.querySelectorAll('[data-field-path]').forEach(syncDescription);
+      return [...shown.values()].filter((issue) => !issue.preexisting).length;
     },
   };
 }

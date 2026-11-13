@@ -1,4 +1,8 @@
 <div class="m-vectorsmanagement-edition-container">
+    {{#if editingSession}}
+    <!-- Sesión de edición de la capa (DataIDEE): la rellena editingsession.html -->
+    <section id="m-vectorsmanagement-editing" class="m-vectorsmanagement-editing" aria-label="{{translations.editing_edit}}"></section>
+    {{/if}}
     <div id="editionBtns" class="m-vectorsmanagement-editionBtns">
         <button tabindex="0" id="edit" class="vectorsmanagement-icon-editar2" title="{{translations.editgeometria}}"></button>
         <button tabindex="0" id="holedrawing" class="vectorsmanagement-icon-hole" title="{{translations.hole}}"></button>

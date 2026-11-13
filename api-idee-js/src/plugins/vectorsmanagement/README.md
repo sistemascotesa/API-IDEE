@@ -85,13 +85,24 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 
 ## Edición espacial DataIDEE (OpenLayers)
 
-La edición trabaja con una zona CRS84 fija. Antes de habilitarla carga todas las
-páginas y rechaza una preparación incompleta o que supere los límites
-configurables de la capa: por defecto 250 entidades por página, 1.000
-entidades, 100.000 coordenadas y 10 MiB de GeoJSON. Durante la sesión, navegar
-por el mapa no consulta ni sustituye los datos. Guardar envía cambios
+La edición trabaja con una zona CRS84 fija. Antes de habilitarla carga las
+entidades de la zona hasta el `limit` de la capa: si quedan entidades fuera, la
+zona es incompleta y el estado de edición lo indica. Sin `limit`, o con uno mayor
+que el máximo de entidades, carga todas las páginas. En ambos casos rechaza una
+preparación que supere los límites configurables de la capa: por defecto 1.000
+entidades por página, 1.000 entidades, 100.000 coordenadas y 10 MiB de GeoJSON.
+Durante la sesión, navegar por el mapa no consulta ni sustituye los datos; al
+finalizar, la capa vuelve a cargar su propia consulta. Guardar envía cambios
 secuencialmente; los éxitos parciales permanecen confirmados y el resto puede
 descartarse o revisarse.
+
+La sesión se inicia al abrir **Crear** o **Editar** con una capa DataIDEE: la
+zona fija es la vista del mapa en ese momento. Esos dos botones solo se
+habilitan si la colección permite crear, o modificar o borrar, respectivamente.
+Ambos paneles muestran al principio el estado de la sesión y los botones
+**Guardar**, **Descartar** y **Finalizar edición**. La sesión sigue activa al
+cambiar de herramienta y termina con **Finalizar edición**, al cambiar de capa
+o si se retira la capa del mapa; al terminar se cierra el panel.
 
 Para probar los cambios sin dependencias adicionales, compila el núcleo y el
 plugin, y arranca el servicio local:
@@ -119,7 +130,7 @@ ayuda habilitados. Sirve el núcleo, el plugin y sus estilos desde las mismas
 compilaciones locales que el ejemplo anterior; las peticiones de datos y
 metadatos van directamente al servicio TEUNESCO.
 
-Selecciona **Todos los tipos · TEUNESCO** y pulsa **Iniciar edición**. La
+Selecciona **Todos los tipos · TEUNESCO** y abre **Editar** o **Crear**. La
 geometría principal `punto` se modifica con las herramientas del mapa. El
 editor muestra solo las herramientas compatibles con esa geometría principal:
 en esta colección permite crear puntos (en el mapa o por coordenadas) y editar
@@ -168,6 +179,25 @@ no admitidas se conserva y queda bloqueada para edición. La sesión limita los
 cambios a la extensión visible al iniciarla; guarda, descarta o cancela antes
 de finalizarla o cambiar de capa.
 
+Cada atributo usa el control que corresponde a su esquema: selector nativo de
+fecha o de fecha y hora, casilla para los booleanos, desplegable para `enum`,
+`oneOf` y `const`, campo numérico con incremento y área de texto con contador
+cuando hay límites de longitud. Los campos con `pattern` usan una sola línea. Una
+casilla sin valor se muestra indeterminada; desmarcarla guarda `false` y solo el
+botón **Sin definir** retira el valor de un campo opcional.
+
+Los errores aparecen junto al campo mientras se escribe, y **Aplicar** los resume
+y lleva el foco al primero. Formulario, aplicación y guardado comparten las reglas
+de `DataIDEEFormSchema`, incluidas `minimum`, `maximum`, `exclusiveMinimum`,
+`exclusiveMaximum`, `multipleOf`, `minLength`, `maxLength`, `pattern`, `format` y
+los límites `formatMinimum`, `formatMaximum`, `formatExclusiveMinimum` y
+`formatExclusiveMaximum` de las fechas. **Guardar** vuelve a comprobar todos los
+cambios antes de la primera escritura y no envía nada si alguno es inválido, sea
+cual sea su origen. Un valor almacenado que incumple el esquema se muestra con un
+aviso y se conserva intacto mientras no se modifique; si cambia, el nuevo valor
+debe ser válido. Las fechas y horas se muestran y se escriben en UTC, y las que no
+se editan conservan su zona horaria y su precisión.
+
 La prueba `PLAY-49-vectorsmanagement-teunesco` usa una copia del contrato público
 de esta colección e intercepta todas las peticiones a TEUNESCO, incluidas las
 escrituras. Comprueba el desplazamiento de un punto y los atributos tipados en
@@ -177,6 +207,9 @@ recarga, la reapertura del formulario y el diálogo en pantalla estrecha:
 ```sh
 ./node_modules/.bin/playwright test test/playwright/ol/PLAY-49-vectorsmanagement-teunesco.spec.js --config=playwright-config/playwright-ol.config.js --workers=1
 ```
+
+Las reglas de validación se comprueban aparte, sin navegador ni servicio, en
+`PLAY-51-dataidee-attribute-validation`.
 
 ```javascript
 URL_API?vectorsmanagement=position*!collapsed*!order*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style*!snapping*!turf*!profileGraphs

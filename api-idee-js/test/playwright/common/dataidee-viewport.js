@@ -162,7 +162,8 @@ export default function registerDataIDEEViewportTests(pagePath) {
     await applied(page, ['response-2']);
     await page.evaluate(() => { window.viewportLayer.refresh(); window.viewportLayer.refresh(); });
     await applied(page, ['response-3']);
-    expect(requests[2].searchParams.has('_ideeRefresh')).toBe(true);
+    // Same URL as the zone: DataIDEE rejects unknown query parameters
+    expect(requests[2].searchParams.has('_ideeRefresh')).toBe(false);
     expect(requests[2].searchParams.get('bbox')).toBe(requests[1].searchParams.get('bbox'));
     await page.clock.pauseAt(new Date(Date.now() + 1000));
     expect(await page.evaluate(() => window.viewportLayer.isAutoRefreshPaused())).toBe(false);
@@ -172,7 +173,7 @@ export default function registerDataIDEEViewportTests(pagePath) {
     expect(await page.evaluate(() => window.viewportLayer.isAutoRefreshPaused())).toBe(false);
     await applied(page, ['response-4']);
     await page.evaluate(() => window.viewportLayer.stopAutoRefresh());
-    expect(requests[3].searchParams.has('_ideeRefresh')).toBe(true);
+    expect(requests[3].searchParams.has('_ideeRefresh')).toBe(false);
     await move(page, 0, 0, true);
     await applied(page, ['response-1']);
     await move(page, 1, 0, true);

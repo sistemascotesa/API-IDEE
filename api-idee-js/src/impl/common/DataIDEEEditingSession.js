@@ -1,8 +1,13 @@
 import {
   containsExplicitNullChange,
+  createDataIDEEIssue,
   createMergePatch,
+  readDataIDEEPointer,
   validateDataIDEEValues,
 } from './DataIDEEFormSchema';
+
+const sameJson = (left, right) => JSON.stringify(left) === JSON.stringify(right);
+const blockingIssues = (issues) => issues.filter((issue) => !issue.preexisting);
 
 function mergeFormDefaults(base, override) {
   const result = { ...base };
@@ -195,14 +200,11 @@ export default class DataIDEEEditingSession {
 
   validateAttributes(feature, values, { mode = 'update' } = {}) {
     if (!this.isSupportedForm()) {
-      return [{
-        path: '',
-        message: this.capabilities_.form?.reason || 'The collection schema is unavailable.',
-      }];
+      return [createDataIDEEIssue('', 'schemaUnavailable', { reason: this.capabilities_.form?.reason })];
     }
     const native = feature?.getImpl?.().getFeature?.();
     if (!native || (mode === 'update' && !this.source_.hasFeature(native))) {
-      return [{ path: '', message: 'Select a feature in the active DataIDEE editing area.' }];
+      return [createDataIDEEIssue('', 'noFeature')];
     }
     const unsupported = this.capabilities_.form.unsupportedPaths || [];
     if (mode === 'create') {
@@ -210,26 +212,17 @@ export default class DataIDEEEditingSession {
         unsupported.includes(`/${name}`)
       ));
       if (requiredUnsupported) {
-        return [{
-          path: `/${requiredUnsupported}`,
-          message: 'A required field uses an unsupported schema.',
-        }];
+        return [createDataIDEEIssue(`/${requiredUnsupported}`, 'unsupportedRequired')];
       }
     }
-    const schema = this.capabilities_.form.schema;
+    const { schema } = this.capabilities_.form;
+    const issues = this.validateSchemaValues_(values, mode);
     const idField = mode === 'create' ? this.capabilities_.form.idField : null;
-    const validationSchema = idField ? {
-      ...schema,
-      required: (schema.required || []).filter((name) => name !== idField.name),
-      properties: Object.fromEntries(Object.entries(schema.properties || {})
-        .filter(([name]) => name !== idField.name)),
-    } : schema;
-    const issues = validateDataIDEEValues(values, validationSchema, mode, unsupported);
     if (idField && this.capabilities_.clientAssignedId) {
       const idValue = values[idField.name];
       const idRequired = (schema.required || []).includes(idField.name);
       if (idRequired && (idValue === undefined || idValue === '')) {
-        issues.push({ path: `/${idField.name}`, message: 'An identifier is required.' });
+        issues.push(createDataIDEEIssue(`/${idField.name}`, 'identifierRequired'));
       } else if (idValue !== undefined && idValue !== '') {
         const idIssues = validateDataIDEEValues({ [idField.name]: idValue }, {
           type: 'object', properties: { [idField.name]: idField.schema }, required: [],
@@ -238,22 +231,47 @@ export default class DataIDEEEditingSession {
       }
     }
     if (mode === 'update') {
-      const previous = this.serialize_(feature).properties || {};
+      const baseline = this.original_.get(this.getFeatureKey_(feature))?.properties;
       const readOnlyIssues = this.validateReadOnly_(
         values,
-        previous,
+        baseline || this.serialize_(feature).properties || {},
         schema,
         '',
       );
-      return issues.concat(readOnlyIssues);
+      return this.markPreexisting_(issues.concat(readOnlyIssues), values, baseline);
     }
     return issues;
+  }
+
+  /** Validates values against the schema. The identifier has its own rules on creation. */
+  validateSchemaValues_(values, mode) {
+    const { schema, idField, unsupportedPaths = [] } = this.capabilities_.form;
+    if (mode !== 'create' || !idField) {
+      return validateDataIDEEValues(values, schema, mode, unsupportedPaths);
+    }
+    const withoutId = (entries) => Object.fromEntries(Object.entries(entries || {})
+      .filter(([name]) => name !== idField.name));
+    return validateDataIDEEValues(withoutId(values), {
+      ...schema,
+      required: (schema.required || []).filter((name) => name !== idField.name),
+      properties: withoutId(schema.properties),
+    }, mode, unsupportedPaths);
+  }
+
+  /** Flags issues on stored values this edit has not changed, which must not block it. */
+  markPreexisting_(issues, values, baseline) {
+    if (!baseline) return issues;
+    return issues.map((issue) => {
+      const stored = readDataIDEEPointer(baseline, issue.path);
+      return stored !== undefined && sameJson(stored, readDataIDEEPointer(values, issue.path))
+        ? { ...issue, preexisting: true } : issue;
+    });
   }
 
   validateReadOnly_(values, previous, schema, path) {
     const issues = [];
     if (schema.readOnly && JSON.stringify(values) !== JSON.stringify(previous)) {
-      issues.push({ path, message: 'Read-only values cannot be changed.' });
+      issues.push(createDataIDEEIssue(path, 'readOnly'));
       return issues;
     }
     Object.entries(schema.properties || {}).forEach(([name, child]) => {
@@ -274,7 +292,7 @@ export default class DataIDEEEditingSession {
     if (this.saving_ || this.uncertain_) {
       throw new Error('Attributes cannot be applied while this editing session is locked.');
     }
-    const issues = this.validateAttributes(feature, values);
+    const issues = blockingIssues(this.validateAttributes(feature, values));
     if (issues.length) throw Object.assign(new Error(issues[0].message), { issues });
     const native = feature.getImpl().getFeature();
     const current = this.serialize_(feature);
@@ -352,14 +370,17 @@ export default class DataIDEEEditingSession {
   }
 
   getFeatureKey_(feature) {
-    const localKey = this.localIds_.get(feature);
+    // Local keys are stored by native feature; the facade wrapper is a different object.
+    const native = feature?.getImpl?.().getFeature?.() || feature;
+    const localKey = this.localIds_.get(native);
     if (localKey) return localKey;
-    const id = feature.getId();
+    const id = native.getId();
     return id === undefined || id === null ? null : String(id);
   }
 
-  record(feature) {
+  record(target) {
     if (this.replaying_) return this.pending_.size;
+    const feature = target?.getImpl?.().getFeature?.() || target;
     let key = this.getFeatureKey_(feature);
     if (!key) {
       key = `new:${this.nextLocalId_}`;
@@ -497,11 +518,44 @@ export default class DataIDEEEditingSession {
     }
   }
 
+  /** Issues introduced by a pending change, whichever path produced that change. */
+  validatePendingChange_(key, change) {
+    const properties = change.current.properties || {};
+    if (change.type === 'create') {
+      // Unprepared creations receive these defaults in the write itself.
+      const defaults = this.preparedFeatures_.has(change.feature)
+        ? {} : this.layerImpl_?.options?.dataideeDefaultProperties;
+      return this.validateSchemaValues_({ ...defaults, ...properties }, 'create');
+    }
+    const baseline = this.original_.get(key)?.properties || {};
+    return this.validateSchemaValues_(properties, 'update')
+      .concat(this.validateReadOnly_(properties, baseline, this.capabilities_.form.schema, ''))
+      .filter((issue) => !sameJson(
+        readDataIDEEPointer(baseline, issue.path),
+        readDataIDEEPointer(properties, issue.path),
+      ));
+  }
+
+  /** Rejects the whole save before its first write, so no partial state is produced. */
+  assertPendingChangesValid_() {
+    if (!this.isSupportedForm()) return;
+    this.pending_.forEach((change, key) => {
+      if (change.type === 'delete') return;
+      const issues = this.validatePendingChange_(key, change);
+      if (issues.length) {
+        throw Object.assign(new Error(`DataIDEE feature ${key} has invalid attributes: ${issues[0].message}`), {
+          code: 'VALIDATION', issues, featureKey: key,
+        });
+      }
+    });
+  }
+
   async save() {
     if (this.uncertain_) {
       throw new Error('Una escritura tiene resultado incierto. Recarga y revisa el servidor antes de continuar.');
     }
     if (this.saving_) throw new Error('DataIDEE save already in progress.');
+    this.assertPendingChangesValid_();
     this.saving_ = true;
     const completed = [];
     try {

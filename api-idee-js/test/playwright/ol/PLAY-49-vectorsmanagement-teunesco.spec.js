@@ -75,18 +75,19 @@ async function mockService(page, geometryType) {
     }
     await route.fulfill({ status: body ? 200 : 404, headers, body: JSON.stringify(body || {}) });
   });
-  return { features, writes };
+  return { features, schema, writes };
 }
 
-async function openEditor(page) {
+async function openEditor(page, tool = 'edition') {
   await page.goto(demoUrl);
   await expect(page.locator('#teunesco-status')).toContainText('3 entidades cargadas');
   await expect(page.locator('#m-vectorsmanagement-layer-selector-options')).toBeHidden();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
   await page.locator('#m-vectorsmanagement-layer-selector-options span')
     .filter({ hasText: 'Todos los tipos' }).click();
-  await page.locator('#m-vectorsmanagement-editing-start').click();
-  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeVisible();
+  // Opening Creation or Edition starts the session; Edition also selects features
+  await page.locator(`#m-vectorsmanagement-${tool}`).click();
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
 }
 
 async function featurePixel(page) {
@@ -101,6 +102,22 @@ async function featurePixel(page) {
   });
 }
 
+async function openAttributeForm(page) {
+  await openEditor(page);
+  await page.mouse.click(...await featurePixel(page));
+  await expect.poll(() => page.evaluate(() => (
+    window.teunescoDemo.plugin.controls[0].getSelectedFeatures().length
+  ))).toBe(1);
+  await page.locator('#editattribute').click();
+  return page.locator('.m-vectorsmanagement-dataidee-fields');
+}
+
+const fieldError = (form, path) => form.locator(`[data-field-path="${path}"] .m-vectorsmanagement-dataidee-error`);
+const fieldWarning = (form, path) => form.locator(`[data-field-path="${path}"] .m-vectorsmanagement-dataidee-warning`);
+const pendingChanges = (page) => page.evaluate(() => (
+  window.teunescoDemo.layer.getEditingSession().count
+));
+
 test('TEUNESCO editor stages geometry and typed attributes together and retains secondary geometries', async ({ page }) => {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
@@ -110,13 +127,11 @@ test('TEUNESCO editor stages geometry and typed attributes together and retains 
   await Promise.all(['selection', 'creation', 'edition', 'style', 'analysis', 'turf', 'download', 'help']
     .map((tool) => expect(page.locator(`#m-vectorsmanagement-${tool}`)).toBeVisible()));
   await expect(page.locator('#layerdrawing')).toBeVisible();
-  await page.locator('#m-vectorsmanagement-selection').click();
   const pixel = await featurePixel(page);
   await page.mouse.click(...pixel);
   await expect.poll(() => page.evaluate(() => (
     window.teunescoDemo.plugin.controls[0].getSelectedFeatures().length
   ))).toBe(1);
-  await page.locator('#m-vectorsmanagement-edition').click();
   await page.locator('#movedrawing').click();
   await page.evaluate(() => window.teunescoDemo.map.getMapImpl().renderSync());
   const dragPixel = await featurePixel(page);
@@ -139,7 +154,7 @@ test('TEUNESCO editor stages geometry and typed attributes together and retains 
   await expect(form.locator('[data-value-path="/entero_corto"] option')).toHaveText(['Sin definir', '1', '2', '3']);
   await form.locator('[data-value-path="/nombre"]').fill('Mérida editada');
   await form.locator('[data-value-path="/entero"]').fill('60001');
-  await form.locator('[data-value-path="/booleano"]').selectOption('false');
+  await form.locator('[data-value-path="/booleano"]').uncheck();
   await form.locator('[data-value-path="/entero_corto"]').selectOption('2');
   await page.locator('#m-vectorsmanagement-dataidee-apply').click();
   await expect(form).toBeHidden();
@@ -182,12 +197,10 @@ test('TEUNESCO form opens and cancels without a false dirty prompt, and fits a n
   await mockService(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openEditor(page);
-  await page.locator('#m-vectorsmanagement-selection').click();
   await page.mouse.click(...await featurePixel(page));
   await expect.poll(() => page.evaluate(() => (
     window.teunescoDemo.plugin.controls[0].getSelectedFeatures().length
   ))).toBe(1);
-  await page.locator('#m-vectorsmanagement-edition').click();
   await page.locator('#editattribute').click();
   const prompts = [];
   page.on('dialog', async (dialog) => { prompts.push(dialog.message()); await dialog.dismiss(); });
@@ -208,6 +221,40 @@ test('TEUNESCO form opens and cancels without a false dirty prompt, and fits a n
   await page.locator('[data-value-path="/nombre"]').focus();
   await page.keyboard.press('Escape');
   await expect(modal).toBeHidden();
+  expect(prompts).toEqual([]);
+});
+
+test('TEUNESCO form asks in an API dialog before discarding unapplied changes', async ({ page }) => {
+  await mockService(page);
+  await openEditor(page);
+  await page.mouse.click(...await featurePixel(page));
+  await expect.poll(() => page.evaluate(() => (
+    window.teunescoDemo.plugin.controls[0].getSelectedFeatures().length
+  ))).toBe(1);
+  await page.locator('#editattribute').click();
+  const prompts = [];
+  page.on('dialog', async (dialog) => { prompts.push(dialog.message()); await dialog.dismiss(); });
+  const form = page.getByRole('dialog', { name: /Atributos de entidad/ });
+  const confirm = page.getByRole('alertdialog', { name: 'Cambios sin aplicar' });
+  const name = page.locator('[data-value-path="/nombre"]');
+  await name.fill('Mérida sin aplicar');
+
+  // Cancel with changes asks first; Escape keeps editing and preserves the values
+  await page.locator('#m-vectorsmanagement-dataidee-cancel').click();
+  await expect(confirm).toBeVisible();
+  await expect(confirm.getByRole('button', { name: 'Seguir editando' })).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(confirm).toBeHidden();
+  await expect(form).toBeVisible();
+  await expect(name).toHaveValue('Mérida sin aplicar');
+
+  // Escape on the form also asks; discarding closes it
+  await name.focus();
+  await page.keyboard.press('Escape');
+  await expect(confirm).toBeVisible();
+  await confirm.getByRole('button', { name: 'Descartar cambios' }).click();
+  await expect(confirm).toBeHidden();
+  await expect(form).toBeHidden();
   expect(prompts).toEqual([]);
 });
 
@@ -238,18 +285,95 @@ test('TEUNESCO exposes the complete styled VectorsManagement toolbar', async ({ 
   expect(errors).toEqual([]);
 });
 
+/** Selectors whose button does not look like a plain button of the API in the same state. */
+const buttonsDifferingFromApi = (page, selectors) => page.evaluate((list) => {
+  const properties = ['backgroundColor', 'color', 'borderTopColor', 'borderTopWidth', 'height', 'fontSize', 'cursor'];
+  const styleOf = (element) => JSON.stringify(properties
+    .map((name) => window.getComputedStyle(element)[name]));
+  const container = document.querySelector('.m-api-idee-container');
+  return list.filter((selector) => {
+    const button = document.querySelector(selector);
+    const reference = document.createElement('button');
+    reference.disabled = button.disabled;
+    container.appendChild(reference);
+    const differs = styleOf(button) !== styleOf(reference);
+    reference.remove();
+    return differs;
+  });
+}, selectors);
+
+test('TEUNESCO editing buttons share the API button style', async ({ page }) => {
+  await mockService(page);
+  await openEditor(page);
+  // The pointer may rest on a session button: hover would change its style.
+  await page.mouse.move(0, 0);
+  await expect.poll(() => buttonsDifferingFromApi(page, [
+    '#m-vectorsmanagement-editing-save',
+    '#m-vectorsmanagement-editing-discard',
+    '#m-vectorsmanagement-editing-end',
+  ])).toEqual([]);
+});
+
+test('TEUNESCO form buttons follow the API dialog and button styles', async ({ page }) => {
+  const { features, schema } = await mockService(page);
+  schema.properties.opcional = { title: 'Opcional', type: 'boolean' };
+  schema.properties.lista = { title: 'Lista', type: 'array', items: { type: 'string' } };
+  Object.assign(features[0].properties, { opcional: false, lista: ['a'] });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openAttributeForm(page);
+  await page.mouse.move(0, 0);
+  const primary = await page.evaluate(() => {
+    const probe = document.createElement('span');
+    probe.style.color = 'var(--idee-color-primary)';
+    document.body.appendChild(probe);
+    const { color } = window.getComputedStyle(probe);
+    probe.remove();
+    return color;
+  });
+  const expected = { color: primary, borderTopColor: primary, borderTopWidth: '2px' };
+  await expect.poll(() => page.evaluate(() => ['cancel', 'apply'].map((name) => {
+    const { color, borderTopColor, borderTopWidth } = window.getComputedStyle(
+      document.querySelector(`#m-vectorsmanagement-dataidee-${name}`),
+    );
+    return { color, borderTopColor, borderTopWidth };
+  }))).toEqual([expected, expected]);
+  await expect.poll(() => buttonsDifferingFromApi(page, [
+    '[data-array-path="/lista"][data-array-action="add"]',
+    '[data-array-path="/lista"][data-array-action="remove"]',
+    '[data-field-path="/opcional"] .m-vectorsmanagement-dataidee-boolean-clear',
+  ])).toEqual([]);
+});
+
+test('TEUNESCO creates a feature when the edition tool is not available', async ({ page }) => {
+  await mockService(page);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openEditor(page, 'creation');
+  // Same state as the plugin option edition: false, without another demo page.
+  await page.evaluate(() => { delete window.teunescoDemo.plugin.controls[0].editionControl; });
+  await page.locator('#pointdrawing').click();
+  await page.mouse.click(...await featurePixel(page));
+  const form = page.locator('.m-vectorsmanagement-dataidee-fields');
+  await expect(form).toBeVisible();
+  await form.locator('[data-value-path="/nombre"]').fill('Nueva entidad');
+  await form.locator('[data-value-path="/clave"]').fill('nueva');
+  await form.locator('[data-value-path="/booleano"]').check();
+  await form.locator('[data-value-path="/fecha_hora_zona"]').fill('2026-11-04T15:20');
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(form).toBeHidden();
+  await expect.poll(() => pendingChanges(page)).toBe(1);
+  expect(await page.evaluate(() => window.teunescoDemo.layer.getFeatures().length)).toBe(4);
+});
+
 test('TEUNESCO date pickers and unset fields preserve zero, false and untouched timestamps', async ({ page }) => {
   const { features, writes } = await mockService(page);
   const offsetTimestamp = '2026-10-25T02:30:45.123+02:00';
   features[0].properties.fecha_hora = offsetTimestamp;
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openEditor(page);
-  await page.locator('#m-vectorsmanagement-selection').click();
   await page.mouse.click(...await featurePixel(page));
   await expect.poll(() => page.evaluate(() => (
     window.teunescoDemo.plugin.controls[0].getSelectedFeatures().length
   ))).toBe(1);
-  await page.locator('#m-vectorsmanagement-edition').click();
   await page.locator('#editattribute').click();
   const form = page.locator('.m-vectorsmanagement-dataidee-fields');
   await expect(form.locator('[data-state-path]')).toHaveCount(0);
@@ -261,16 +385,13 @@ test('TEUNESCO date pickers and unset fields preserve zero, false and untouched 
   await expect(form.locator('[data-value-path="/fecha_hora_zona"]'))
     .toHaveAttribute('type', 'datetime-local');
   await form.locator('[data-value-path="/fecha_hora_zona"]').fill('');
-  await form.locator('[data-value-path="/booleano"]').selectOption('');
   await page.locator('#m-vectorsmanagement-dataidee-apply').click();
   await expect(form.locator('[data-field-path="/fecha_hora_zona"] .m-vectorsmanagement-dataidee-error'))
-    .toBeVisible();
-  await expect(form.locator('[data-field-path="/booleano"] .m-vectorsmanagement-dataidee-error'))
     .toBeVisible();
   expect(writes).toHaveLength(0);
   await form.locator('[data-value-path="/fecha_hora_zona"]').fill('2026-11-04T15:20');
   await form.locator('[data-value-path="/fecha"]').fill('2026-11-04');
-  await form.locator('[data-value-path="/booleano"]').selectOption('false');
+  await form.locator('[data-value-path="/booleano"]').uncheck();
   await form.locator('[data-value-path="/entero"]').fill('0');
   await form.locator('[data-value-path="/texto"]').fill('');
   await form.locator('[data-value-path="/decimal_simple"]').fill('');
@@ -331,6 +452,205 @@ test('TEUNESCO date pickers and unset fields preserve zero, false and untouched 
   });
 });
 
+test('TEUNESCO form reports errors while typing and clears them without reopening', async ({ page }) => {
+  await mockService(page);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const form = await openAttributeForm(page);
+  const name = form.locator('[data-value-path="/nombre"]');
+  await expect(name).toHaveJSProperty('tagName', 'TEXTAREA');
+  await name.fill('x');
+  await expect(fieldError(form, '/nombre')).toContainText('2');
+  await expect(name).toHaveAttribute('aria-invalid', 'true');
+  const errorId = await fieldError(form, '/nombre').getAttribute('id');
+  expect(await name.getAttribute('aria-describedby')).toContain(errorId);
+  await expect(page.locator('.m-vectorsmanagement-dataidee-status')).toContainText('1');
+  await name.fill('Mérida');
+  await expect(fieldError(form, '/nombre')).toHaveCount(0);
+  expect(await name.getAttribute('aria-invalid')).toBeNull();
+  expect(await name.getAttribute('aria-describedby') || '').not.toContain(errorId);
+  await expect(page.locator('.m-vectorsmanagement-dataidee-status')).toHaveText('');
+  await expect(form.locator('[data-field-path="/nombre"]')).toHaveClass(/is-valid/);
+});
+
+test('TEUNESCO form cannot apply invalid values and locates the first error', async ({ page }) => {
+  const { writes } = await mockService(page);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const form = await openAttributeForm(page);
+  const population = form.locator('[data-value-path="/entero"]');
+  await population.fill('-1');
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(form).toBeVisible();
+  await expect(population).toBeFocused();
+  const summary = page.locator('.m-vectorsmanagement-dataidee-errors');
+  await expect(summary).toContainText('Población');
+  await expect(summary.locator('button[data-issue-path="/entero"]')).toBeVisible();
+  expect(await pendingChanges(page)).toBe(0);
+  await population.fill('0');
+  await expect(summary).toBeEmpty();
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(form).toBeHidden();
+  await page.locator('#m-vectorsmanagement-editing-save').click();
+  await expect.poll(() => writes.length).toBe(1);
+  expect(writes[0].feature.properties.entero).toBe(0);
+});
+
+test('TEUNESCO form rejects unreadable numbers instead of dropping the attribute', async ({ page }) => {
+  await mockService(page);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const form = await openAttributeForm(page);
+  const population = form.locator('[data-value-path="/entero"]');
+  await population.fill('');
+  await population.pressSequentially('1e');
+  await expect(fieldError(form, '/entero')).toBeVisible();
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(form).toBeVisible();
+  expect(await pendingChanges(page)).toBe(0);
+});
+
+test('TEUNESCO booleans are checkboxes that tell false from not set', async ({ page }) => {
+  const { features, schema, writes } = await mockService(page);
+  delete features[0].properties.booleano;
+  schema.properties.opcional = { title: 'Opcional', type: 'boolean' };
+  features[0].properties.opcional = false;
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const form = await openAttributeForm(page);
+  const required = form.locator('[data-value-path="/booleano"]');
+  await expect(required).toHaveAttribute('type', 'checkbox');
+  await expect(required).toHaveJSProperty('indeterminate', true);
+  await expect(form.locator('[data-field-path="/booleano"] .m-vectorsmanagement-dataidee-boolean-clear')).toHaveCount(0);
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(fieldError(form, '/booleano')).toBeVisible();
+  await required.check();
+  await expect(required).toHaveJSProperty('indeterminate', false);
+  await expect(fieldError(form, '/booleano')).toHaveCount(0);
+  const optional = form.locator('[data-value-path="/opcional"]');
+  await expect(optional).not.toBeChecked();
+  await expect(optional).toHaveJSProperty('indeterminate', false);
+  await expect(form.locator('[data-field-path="/opcional"]')).toContainText('No');
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(form).toBeHidden();
+  await page.locator('#m-vectorsmanagement-editing-save').click();
+  await expect.poll(() => writes.length).toBe(1);
+  expect(writes[0].feature.properties.opcional).toBe(false);
+  expect(writes[0].feature.properties.booleano).toBe(true);
+  await page.locator('#editattribute').click();
+  await form.locator('[data-field-path="/opcional"] .m-vectorsmanagement-dataidee-boolean-clear').click();
+  await expect(form.locator('[data-value-path="/opcional"]')).toHaveJSProperty('indeterminate', true);
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(form).toBeHidden();
+  await page.locator('#m-vectorsmanagement-editing-save').click();
+  await expect.poll(() => writes.length).toBe(2);
+  expect(Object.hasOwn(writes[1].feature.properties, 'opcional')).toBe(false);
+});
+
+test('TEUNESCO keeps stored values that break the schema while they stay untouched', async ({ page }) => {
+  const { features, writes } = await mockService(page);
+  Object.assign(features[0].properties, {
+    entero_corto: 9,
+    fecha: '2024-02-31',
+    fecha_hora: '2026-10-01T07:00:00',
+  });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const form = await openAttributeForm(page);
+  await expect(form.locator('[data-value-path="/entero_corto"]')).toHaveValue('9');
+  await expect(form.locator('[data-value-path="/entero_corto"] option:checked')).toContainText('9');
+  await expect(fieldWarning(form, '/entero_corto')).toBeVisible();
+  await expect(form.locator('[data-value-path="/fecha"]')).toHaveAttribute('type', 'text');
+  await expect(form.locator('[data-value-path="/fecha"]')).toHaveValue('2024-02-31');
+  await expect(fieldWarning(form, '/fecha')).toBeVisible();
+  await expect(form.locator('[data-value-path="/fecha_hora"]')).toHaveValue('2026-10-01T07:00:00');
+  await form.locator('[data-value-path="/nombre"]').fill('Mérida editada');
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(form).toBeHidden();
+  await page.locator('#m-vectorsmanagement-editing-save').click();
+  await expect.poll(() => writes.length).toBe(1);
+  expect(writes[0].feature.properties).toMatchObject({
+    nombre: 'Mérida editada',
+    entero_corto: 9,
+    fecha: '2024-02-31',
+    fecha_hora: '2026-10-01T07:00:00',
+  });
+});
+
+test('TEUNESCO blocks a stored invalid value once the user changes it to another invalid one', async ({ page }) => {
+  const { features } = await mockService(page);
+  features[0].properties.fecha = '2024-02-31';
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const form = await openAttributeForm(page);
+  await form.locator('[data-value-path="/fecha"]').fill('2023-02-29');
+  await expect(fieldError(form, '/fecha')).toBeVisible();
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(form).toBeVisible();
+  expect(await pendingChanges(page)).toBe(0);
+});
+
+test('TEUNESCO text limits count characters without truncating what was typed', async ({ page }) => {
+  const { schema } = await mockService(page);
+  schema.properties.nombre.maxLength = 10;
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const form = await openAttributeForm(page);
+  const name = form.locator('[data-value-path="/nombre"]');
+  const typed = 'Doce letras!';
+  await name.fill(typed);
+  await expect(name).toHaveValue(typed);
+  await expect(form.locator('[data-field-path="/nombre"] .m-vectorsmanagement-dataidee-counter')).toContainText('12/10');
+  await expect(fieldError(form, '/nombre')).toContainText('10');
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(form).toBeVisible();
+  expect(await pendingChanges(page)).toBe(0);
+});
+
+test('TEUNESCO applies date limits from the schema', async ({ page }) => {
+  const { schema } = await mockService(page);
+  schema.properties.fecha.formatMinimum = '2020-01-01';
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const form = await openAttributeForm(page);
+  const date = form.locator('[data-value-path="/fecha"]');
+  await expect(date).toHaveAttribute('min', '2020-01-01');
+  await date.fill('2019-12-31');
+  await expect(fieldError(form, '/fecha')).toContainText('2020-01-01');
+  await date.fill('2020-01-01');
+  await expect(fieldError(form, '/fecha')).toHaveCount(0);
+});
+
+test('TEUNESCO save refuses a value changed outside the form and sends nothing', async ({ page }) => {
+  const { writes } = await mockService(page);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openEditor(page);
+  await page.evaluate(() => {
+    const feature = window.teunescoDemo.layer.getFeatures().find((item) => item.getId() === 1);
+    feature.getImpl().getFeature().set('entero', -5);
+  });
+  await expect.poll(() => pendingChanges(page)).toBe(1);
+  await page.locator('#m-vectorsmanagement-editing-save').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-status')).toContainText('Población');
+  expect(writes).toHaveLength(0);
+  expect(await pendingChanges(page)).toBe(1);
+});
+
+test('TEUNESCO form is labelled, keyboard reachable and adapts to narrow windows', async ({ page }) => {
+  await mockService(page);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const form = await openAttributeForm(page);
+  await expect(page.getByLabel('Descripción')).toHaveAttribute('data-value-path', '/texto');
+  await expect(form.locator('[data-value-path="/nombre"]')).toHaveAttribute('aria-required', 'true');
+  expect(await form.locator('[data-value-path="/texto"]').getAttribute('aria-required')).toBeNull();
+  await expect(page.locator('.m-vectorsmanagement-dataidee-legend')).toContainText('*');
+  await form.locator('[data-value-path="/nombre"]').focus();
+  await page.keyboard.press('Tab');
+  await expect(form.locator('[data-value-path="/clave"]')).toBeFocused();
+  const position = (path) => form.locator(`[data-field-path="${path}"]`).evaluate((node) => node.getBoundingClientRect().left);
+  const fits = () => page.locator('.m-vectorsmanagement-dataidee-form').evaluate((node) => node.scrollWidth <= node.clientWidth);
+  expect(await position('/entero')).not.toBe(await position('/entero_largo'));
+  expect(await fits()).toBe(true);
+  await page.screenshot({ path: test.info().outputPath('teunesco-form-desktop.png') });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await position('/entero')).toBe(await position('/entero_largo'));
+  expect(await fits()).toBe(true);
+  await expect(page.locator('#m-vectorsmanagement-dataidee-apply')).toBeInViewport();
+  await page.screenshot({ path: test.info().outputPath('teunesco-form-mobile.png') });
+});
+
 [
   ['Point', ['pointdrawing', 'pointlocateddrawing']],
   ['LineString', ['linedrawing']],
@@ -342,8 +662,7 @@ test('TEUNESCO date pickers and unset fields preserve zero, false and untouched 
   test(`geometry tools match the collection primary ${geometryType}`, async ({ page }) => {
     const { writes } = await mockService(page, geometryType);
     await page.setViewportSize({ width: 1440, height: 1000 });
-    await openEditor(page);
-    await page.locator('#m-vectorsmanagement-creation').click();
+    await openEditor(page, 'creation');
     const creationButtons = [
       'pointdrawing', 'pointlocateddrawing', 'linedrawing', 'polygondrawing',
       'figuredrawing', 'multipointdrawing', 'multilinedrawing', 'multipolygondrawing',
@@ -405,6 +724,8 @@ test('TEUNESCO date pickers and unset fields preserve zero, false and untouched 
       if (!await page.locator('#creationBtns').isVisible()) {
         await page.locator('#m-vectorsmanagement-creation').click();
       }
+      // A local layer has no editing session
+      await expect(page.locator('#m-vectorsmanagement-editing')).toHaveCount(0);
       await Promise.all(['pointdrawing', 'linedrawing', 'polygondrawing', 'figuredrawing', 'textdrawing']
         .map((id) => expect(page.locator(`#${id}`)).toBeVisible()));
       await page.locator('#m-vectorsmanagement-edition').click();

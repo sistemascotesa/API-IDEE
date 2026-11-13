@@ -26,7 +26,7 @@ const layer = new IDEE.layer.DataIDEE({
   bboxStrategy: false,
   tokenLocation: 'header',
   editingLimits: {
-    pageSize: 250, maxFeatures: 1000, maxCoordinates: 100000, maxBytes: 10 * 1024 * 1024,
+    pageSize: 1000, maxFeatures: 1000, maxCoordinates: 100000, maxBytes: 10 * 1024 * 1024,
   },
   style: new IDEE.style.Generic({
     point: { radius: 9, fill: { color: '#007f95' }, stroke: { color: '#fff', width: 3 } },

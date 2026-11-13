@@ -4,6 +4,7 @@
 import template from '../../templates/creation';
 import { getValue } from './i18n/language';
 import { renderSnapOptions, getToolSnapOptions } from './snapoptions';
+import openDataIDEEFormDialog from './dataideeformdialog';
 import {
   DRAWING,
   SNAPPING,
@@ -128,7 +129,9 @@ export default class CreationControl extends IDEE.Control {
   active(html) {
     this.template = IDEE.template.compileSync(template, {
       vars: {
+        editingSession: this.managementControl_.isEditingLayer(),
         translations: {
+          editing_edit: getValue('editing_edit'),
           creationLayer: getValue('creationLayer'),
           creationPoint: getValue('creationPoint'),
           creationCoordPoint: getValue('creationCoordPoint'),
@@ -155,6 +158,7 @@ export default class CreationControl extends IDEE.Control {
     this.initializeLayers();
     this.addEvents();
     this.managementControl_.accessibilityTab(this.template);
+    this.managementControl_.mountEditingSection(this.template);
     this.managementControl_.updateEditingAvailability();
     this.template.querySelector('#multipointdrawing').addEventListener('click', this.onMultiPointSelected.bind(this));
     this.template.querySelector('#multilinedrawing').addEventListener('click', this.onMultiLineSelected.bind(this));
@@ -247,7 +251,6 @@ export default class CreationControl extends IDEE.Control {
       return;
     }
     this.addAttributesToFeature();
-    if (!this.validateNewFeature_(this.feature)) return;
     const isAddedAndSelected = this.addAndSelectFeature(this.feature);
     this.getImpl().clearVectorSource();
     this.multipleGeometryType_ = null;
@@ -261,7 +264,6 @@ export default class CreationControl extends IDEE.Control {
     if (this.isFigureActive) this.getImpl().removeFigureDrawInteraction();
     else this.getImpl().removeDrawInteraction();
     this.template.querySelectorAll('.activated').forEach((button) => button.classList.remove('activated'));
-    this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
     this.managementControl_.removeSelectedFeatures();
     this.isPointActive = false;
     this.isLocatedPointActive = false;
@@ -296,15 +298,18 @@ export default class CreationControl extends IDEE.Control {
 
   openDataIDEECreationForm_(feature, onApplied = () => {}) {
     this.suspendDrawingForAttributeForm_();
-    const opened = this.managementControl_.editionControl.openDataIDEEAttributeForm(
+    const opened = openDataIDEEFormDialog({
+      session: this.managementControl_.getActiveEditingSession(),
+      unavailableReason: this.managementControl_.getEditingCapabilities()?.form?.reason,
       feature,
-      'create',
-      () => {
+      mode: 'create',
+      onApplied: (applied) => {
         this.clearDataIDEEPreview_();
-        onApplied(feature);
+        onApplied(applied);
+        this.layer_.addFeatures(applied);
       },
-      () => this.clearDataIDEEPreview_(),
-    );
+      onCancelled: () => this.clearDataIDEEPreview_(),
+    });
     if (!opened) this.clearDataIDEEPreview_();
   }
 
@@ -671,28 +676,7 @@ export default class CreationControl extends IDEE.Control {
       return;
     }
     this.addAttributesToFeature();
-    if (!this.validateNewFeature_(this.feature)) {
-      this.deactivateDrawing();
-      return;
-    }
     this.addAndSelectFeature(this.feature);
-  }
-
-  /**
-   * Validates a new feature against the active editing session, if any.
-   * @private
-   * @function
-   * @param {IDEE.Feature} feature
-   * @returns {Boolean} true if there is no session or the feature is valid
-   */
-  validateNewFeature_(feature) {
-    if (!this.managementControl_.hasActiveEditingSession()) return true;
-    const values = {};
-    this.managementControl_.getEditingFields()
-      .querySelectorAll('#m-vectorsmanagement-editing-fields input').forEach((input) => {
-        values[input.name] = input.value;
-      });
-    return this.managementControl_.prepareNewFeature(feature, values);
   }
 
   /**

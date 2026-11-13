@@ -12,6 +12,12 @@ export const MODE_DATAIDEE = 'dataidee';
 const UNAUTHORIZED_CODES = [401, 403];
 const GEOJSON_TYPES = ['application/geo+json', 'application/json'];
 
+/**
+ * Consulta de una capa DataIDEE cuando el usuario no indica límite ni ID. El servicio
+ * puede recortar el límite a su máximo por petición (10.000 en DataIDEE).
+ */
+const DEFAULT_QUERY = Object.freeze({ limit: 10000000, offset: 0 });
+
 const parseJSON = (text) => {
   try {
     return JSON.parse(text);
@@ -28,7 +34,8 @@ const parseJSON = (text) => {
 const toOGCBbox = (bbox) => bbox.split(';').join(',');
 
 /**
- * Lee la respuesta de /items y devuelve el número de objetos geográficos.
+ * Lee la respuesta de /items: número de objetos geográficos devueltos. El recuento no
+ * puede superar el límite pedido.
  * @param {Object} response Respuesta de IDEE.remote.
  * @returns {Number} Número de objetos geográficos.
  */
@@ -74,9 +81,17 @@ class OGCAPIMode {
   /**
    * Obtiene las colecciones del servicio.
    * @param {String} root Raíz del servicio.
+   * @param {Object} [prefetched] /collections leído al detectar el servicio:
+   * { json, authorization } (cabecera Authorization enviada, si la hubo). Se usa en lugar
+   * de pedirlo si esta petición llevaría las mismas credenciales.
    * @returns {Promise<{collections: Array, unauthorized: Boolean}>} Colecciones.
    */
-  getCollections(root) {
+  getCollections(root, prefetched) {
+    const authorization = this.getRequestOptions(root)?.headers?.Authorization;
+    if (Array.isArray(prefetched?.json?.collections)
+      && prefetched.authorization === authorization) {
+      return Promise.resolve({ collections: prefetched.json.collections, unauthorized: false });
+    }
     return IDEE.remote.get(this.getCollectionsUrl(root), null, this.getRequestOptions(root))
       .then((response) => {
         if (UNAUTHORIZED_CODES.includes(response.code)) {
@@ -105,7 +120,7 @@ class OGCAPIMode {
   /**
    * URL de /items con los filtros del formulario.
    * @param {String} root Raíz del servicio.
-   * @param {Object} props Propiedades de la capa (name, id, limit, bbox, conditional).
+   * @param {Object} props Propiedades de la capa (name, id, limit, offset, bbox, conditional).
    * @param {Object} params Parámetros adicionales (p. ej. f).
    * @returns {String} URL de /items.
    */
@@ -117,6 +132,7 @@ class OGCAPIMode {
       url += `/${encodeURIComponent(props.id)}`;
     } else {
       if (!IDEE.utils.isNullOrEmpty(props.limit)) query.limit = props.limit;
+      if (!IDEE.utils.isNullOrEmpty(props.offset)) query.offset = props.offset;
       if (!IDEE.utils.isNullOrEmpty(props.bbox)) query.bbox = toOGCBbox(props.bbox);
       Object.assign(query, props.conditional);
     }
@@ -210,14 +226,27 @@ export class DataIDEEMode extends OGCAPIMode {
     return token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
   }
 
+  /**
+   * Propiedades con la consulta por defecto (DEFAULT_QUERY) si el usuario no ha indicado
+   * límite ni ID: sin limit, el servicio devolvería solo su página por defecto.
+   * @param {Object} props Propiedades de la capa.
+   * @returns {Object} Las mismas propiedades o una copia con la consulta por defecto.
+   */
+  // eslint-disable-next-line class-methods-use-this
+  withDefaultQuery_(props) {
+    const useDefault = IDEE.utils.isNullOrEmpty(props.limit)
+      && IDEE.utils.isNullOrEmpty(props.id);
+    return useDefault ? { ...props, ...DEFAULT_QUERY } : props;
+  }
+
   getItemsUrl(root, props) {
-    return this.buildItemsUrl(root, props);
+    return this.buildItemsUrl(root, this.withDefaultQuery_(props));
   }
 
   createLayer(root, props) {
     const token = this.authManager_.getToken(root);
     return new IDEE.layer.DataIDEE(
-      { ...props, url: root },
+      { ...this.withDefaultQuery_(props), url: root },
       {},
       token ? { getFeature: { token } } : {},
     );

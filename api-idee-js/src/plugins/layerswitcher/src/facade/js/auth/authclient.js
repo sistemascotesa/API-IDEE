@@ -9,7 +9,8 @@
  *   - POST {root}/auth-api/auth/logout   + Authorization: Bearer <token actual>
  *   - GET  {root}/auth-api/auth/me       + Authorization: Bearer <token>: comprueba un token
  * - La misma API en {base}/auth, solo para servicios cuya raíz es {base}/ogc:
- *   las rutas de "auth-api" pasan a ser {root}/../auth/*
+ *   las rutas de "auth-api" pasan a ser {root}/../auth/*. Con esas raíces se prueba
+ *   antes que "auth-api".
  * - Contrato anterior:
  *   - POST {root}/auth/login    { username, password }
  *   - POST {root}/auth/refresh  { refresh_token } + Authorization: Bearer <token actual>
@@ -21,24 +22,26 @@
  * credenciales no pasen por terceros. El servicio debe permitir CORS.
  */
 
+// Se prueban en orden y se usa el primero que responde. El de {base}/auth va primero:
+// en un servicio {base}/ogc es el de DataIDEE y así no se prueba antes auth-api (404).
 const CONTRACTS = [
   {
-    // Un 401 sin token (o un 200) indica que la API de autenticación existe
-    detect: { path: 'auth-api/auth/me', isAvailable: (code) => code === 200 || code === 401 },
-    login: 'auth-api/auth/login',
-    refresh: { path: 'auth-api/auth/refresh', method: 'get' },
-    logout: 'auth-api/auth/logout',
-    // Comprobación de un token introducido por el usuario
-    verify: 'auth-api/auth/me',
-    identifiesDataIDEE: true,
-  },
-  {
     onlyFor: /\/ogc$/i,
+    // Un 401 sin token (o un 200) indica que la API de autenticación existe
     detect: { path: '../auth/me', isAvailable: (code) => code === 200 || code === 401 },
     login: '../auth/login',
     refresh: { path: '../auth/refresh', method: 'get' },
     logout: '../auth/logout',
+    // Comprobación de un token introducido por el usuario
     verify: '../auth/me',
+    identifiesDataIDEE: true,
+  },
+  {
+    detect: { path: 'auth-api/auth/me', isAvailable: (code) => code === 200 || code === 401 },
+    login: 'auth-api/auth/login',
+    refresh: { path: 'auth-api/auth/refresh', method: 'get' },
+    logout: 'auth-api/auth/logout',
+    verify: 'auth-api/auth/me',
     identifiesDataIDEE: true,
   },
   {

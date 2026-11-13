@@ -82,6 +82,12 @@ Al introducir la URL de un servicio OGC API Features (raíz, `/collections` o `/
 - **DataIDEE**: las capas se añaden como `IDEE.layer.DataIDEE`. Si el servicio tiene login, aparece un candado para iniciar sesión con usuario y contraseña o pegando directamente un token de acceso (debe ser un JWT sin caducar; con la API de autenticación de DataIDEE se comprueba además con su `GET auth/me`). El botón «Guardar» solo se habilita con usuario y contraseña o con un token válido. Se admite la API de autenticación de DataIDEE (`/auth-api/auth/login`, renovación con `GET /auth-api/auth/refresh` y cierre con `/auth-api/auth/logout`; se detecta con `GET /auth-api/auth/me`, que sin token responde 401), la misma API en `{base}/auth/*` cuando la raíz del servicio es `{base}/ogc` (para `https://servidor/data-idee-api/ogc`, en `https://servidor/data-idee-api/auth/*`) y, como alternativa, el contrato anterior (`/auth/login` y `POST /auth/refresh`). El token se guarda en el `localStorage` del navegador, uno por URL de servicio, se renueva antes de caducar y se envía siempre como `Authorization: Bearer <token>`: al listar las colecciones, en las consultas (queryables, recuento, información) y en las capas (`{ getFeature: { token } }`). Las capas también admiten `tokenLocation: 'query'` para enviar el token como `?token=<token>`.
 
 Se recuerda el último modo usado con cada servicio. Si no hay ninguno, se abren en modo DataIDEE los servicios precargados con `type: 'DataIDEE'`, aquellos cuyas colecciones exigen autenticación y los que publican la API de autenticación de DataIDEE.
+El número de elementos a obtener está vacío por defecto. Si el usuario no lo indica (ni filtra por ID):
+- **DataIDEE**: la consulta lleva `limit=10000000&offset=0`, además del bbox y los filtros que haya. Es el mismo valor en «Comprobar resultados» y en la capa. El servicio puede recortar el límite a su máximo por petición (DataIDEE devuelve como máximo 10.000 entidades).
+- **Estándar**: no se envía `limit`, y el servicio devuelve su página por defecto.
+
+En modo DataIDEE, «Comprobar resultados» vuelve a pedir antes el listado de colecciones con la sesión actual. Así, tras iniciar sesión, aparecen las colecciones a las que da acceso. El listado también se refresca automáticamente al iniciar o cerrar sesión con el candado. En ambos casos se conservan la colección elegida (si sigue en el listado) y los filtros del formulario.
+
 El servicio debe permitir CORS (cabeceras `Authorization` y `Content-Type`) para iniciar sesión y para consultar capas con token sin proxy.
 
 # API-REST

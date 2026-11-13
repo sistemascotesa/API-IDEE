@@ -37,9 +37,9 @@ test('DataIDEE form validates and saves typed nested attributes through OGC feat
   await page.locator('#vectorsmanagement-button').click();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
   await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
-  await page.locator('#m-vectorsmanagement-editing-start').click();
-  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeVisible();
-  await page.locator('#m-vectorsmanagement-selection').click();
+  // Opening Edition starts the session and selects features
+  await page.locator('#m-vectorsmanagement-edition').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
   const pixel = await page.evaluate(() => {
     const map = window.dataideeDemo.map.getMapImpl();
     const bounds = map.getTargetElement().getBoundingClientRect();
@@ -51,7 +51,6 @@ test('DataIDEE form validates and saves typed nested attributes through OGC feat
   await expect.poll(() => page.evaluate(() => (
     window.dataideeDemo.layer.getEditingSession().count
   ))).toBe(0);
-  await page.locator('#m-vectorsmanagement-edition').click();
   await expect(page.locator('#editattribute')).toBeEnabled();
   await page.locator('#editattribute').click();
   const form = page.locator('.m-vectorsmanagement-dataidee-fields');
@@ -84,7 +83,7 @@ test('DataIDEE form validates and saves typed nested attributes through OGC feat
   await expect(page.locator('.m-vectorsmanagement-dataidee-error')).toContainText('2');
   await form.locator('[data-value-path="/name"]').fill('Casa restaurada');
   await form.locator('[data-value-path="/depth"]').fill('22.75');
-  await form.locator('[data-value-path="/active"]').selectOption('false');
+  await form.locator('[data-value-path="/active"]').uncheck();
   await form.locator('[data-value-path="/address/municipality"]').fill('Burgos');
   await form.locator('[data-value-path="/tags/0"]').fill('municipal renovado');
   await form.locator('[data-value-path="/optionalCode"]').fill('A-17');
@@ -158,6 +157,77 @@ test('DataIDEE form validates and saves typed nested attributes through OGC feat
   });
   expect(JSON.parse(writes[1].body).properties).not.toHaveProperty('internalNote');
   expect(JSON.parse(writes[1].body).properties).not.toHaveProperty('updatedAt');
+});
+
+test('DataIDEE nested objects and arrays validate live and keep the keyboard focus', async ({ page }) => {
+  await page.request.post(`${DEMO_URL}local/reset`);
+  await page.goto(`${DEMO_URL}?mode=form`);
+  await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 1);
+  await page.locator('#vectorsmanagement-button').click();
+  await page.locator('#m-vectorsmanagement-layer-selector').click();
+  await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
+  // Opening Edition starts the session and selects features
+  await page.locator('#m-vectorsmanagement-edition').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
+  const pixel = await page.evaluate(() => {
+    const map = window.dataideeDemo.map.getMapImpl();
+    const bounds = map.getTargetElement().getBoundingClientRect();
+    const feature = window.dataideeDemo.layer.getFeatures()[0].getImpl().getFeature();
+    const point = map.getPixelFromCoordinate(feature.getGeometry().getCoordinates());
+    return [bounds.left + point[0], bounds.top + point[1]];
+  });
+  await page.mouse.click(pixel[0], pixel[1]);
+  await expect(page.locator('#editattribute')).toBeEnabled();
+  await page.locator('#editattribute').click();
+  const form = page.locator('.m-vectorsmanagement-dataidee-fields');
+  const error = (path) => form.locator(`[data-field-path="${path}"] > .m-vectorsmanagement-dataidee-feedback > .m-vectorsmanagement-dataidee-error`);
+  await form.locator('[data-value-path="/address/postalCode"]').fill('abc');
+  await expect(error('/address/postalCode')).toBeVisible();
+  await form.locator('[data-value-path="/address/postalCode"]').fill('47002');
+  await expect(error('/address/postalCode')).toHaveCount(0);
+  const addTag = form.locator('[data-array-path="/tags"][data-array-action="add"]');
+  await addTag.click();
+  await expect(form.locator('[data-value-path="/tags/2"]')).toBeFocused();
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(error('/tags/2')).toBeVisible();
+  await form.locator('[data-value-path="/tags/2"]').fill('cultural');
+  await expect(error('/tags')).toBeVisible();
+  await form.locator('[data-field-path="/tags/2"] [data-array-action="remove"]').click();
+  await expect(addTag).toBeFocused();
+  await expect(error('/tags')).toHaveCount(0);
+  await form.locator('[data-array-path="/inspections"][data-array-action="add"]').click();
+  await form.locator('[data-value-path="/inspections/1/score"]').fill('9');
+  await expect(error('/inspections/1/score')).toBeVisible();
+  await form.locator('[data-value-path="/inspections/1/score"]').fill('5');
+  await expect(error('/inspections/1/score')).toHaveCount(0);
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(error('/inspections/1/date')).toBeVisible();
+  await form.locator('[data-value-path="/inspections/1/date"]').fill('2026-10-28');
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(form).toBeHidden();
+  const staged = await page.evaluate(() => window.dataideeDemo.layer.getFeatures()[0].getAttributes());
+  expect(staged.address.postalCode).toBe('47002');
+  expect(staged.tags).toEqual(['municipal', 'cultural']);
+  expect(staged.inspections[1]).toEqual({ date: '2026-10-28', score: 5 });
+  expect(staged.internalNote).toBe('Preservar este dato aunque no aparezca en el formulario.');
+});
+
+test('DataIDEE save reports conflicts and service errors in the editing panel', async ({ page }) => {
+  for (const [mode, message] of [['conflict', 'changed on the server'], ['partial', 'HTTP 422']]) {
+    await page.goto(`${DEMO_URL}?mode=${mode}`);
+    await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
+    await page.locator('#vectorsmanagement-button').click();
+    await page.locator('#m-vectorsmanagement-layer-selector').click();
+    await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
+    await page.locator('#m-vectorsmanagement-edition').click();
+    await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
+    await page.evaluate(() => window.dataideeDemo.layer.getFeatures().forEach((feature) => {
+      feature.getImpl().getFeature().getGeometry().translate(5, 0);
+    }));
+    await page.locator('#m-vectorsmanagement-editing-save').click();
+    await expect(page.locator('#m-vectorsmanagement-editing-status')).toContainText(message);
+    await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
+  }
 });
 
 test('DataIDEE forms discover schema independently from queryables and keep geometry fallback', async ({ page }) => {
@@ -247,10 +317,11 @@ test('local DataIDEE editing uses the shared VectorsManagement controls and pers
   await expect(page.locator('#m-vectorsmanagement-layer-selector')).toBeVisible();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
   await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
-  await expect(page.locator('#m-vectorsmanagement-editing')).toBeVisible();
-  await page.locator('#m-vectorsmanagement-editing-start').click();
-  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeVisible();
+  // The session section only lives in the Creation and Edition panels
+  await expect(page.locator('#m-vectorsmanagement-editing')).toHaveCount(0);
   await page.locator('#m-vectorsmanagement-creation').click();
+  await expect(page.locator('#m-vectorsmanagement-editing')).toBeVisible();
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
   await page.locator('#pointdrawing').click();
   const pixel = await page.evaluate(() => {
     const map = window.dataideeDemo.map.getMapImpl();
@@ -283,7 +354,7 @@ test('local DataIDEE editing uses the shared VectorsManagement controls and pers
   await page.locator('#vectorsmanagement-button').click();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
   await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
-  await page.locator('#m-vectorsmanagement-editing-start').click();
+  await page.locator('#m-vectorsmanagement-edition').click();
   await expect.poll(() => page.evaluate(() => Boolean(
     window.dataideeDemo.layer.getEditingSession(),
   ))).toBe(true);
@@ -335,7 +406,6 @@ test('cancelling DataIDEE creation clears its preview without staging a feature'
   await page.locator('#vectorsmanagement-button').click();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
   await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
-  await page.locator('#m-vectorsmanagement-editing-start').click();
   await page.locator('#m-vectorsmanagement-creation').click();
   await page.locator('#pointdrawing').click();
   const pixel = await page.evaluate(() => {
@@ -362,11 +432,16 @@ test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain
   await page.locator('#vectorsmanagement-button').click();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
   await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
-  await expect(page.locator('#m-vectorsmanagement-editing-start')).toBeDisabled();
+  await expect(page.locator('#m-vectorsmanagement-creation')).toBeDisabled();
+  await expect(page.locator('#m-vectorsmanagement-edition')).toBeDisabled();
+  await expect(page.locator('#m-vectorsmanagement-edition'))
+    .toHaveAttribute('title', 'La colección no permite esta operación.');
 
   await page.goto('http://127.0.0.1:8787/?mode=dense');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   const preparationError = await page.evaluate(async () => {
+    // Without a layer limit the whole zone is loaded: its 1001 features exceed the budget
+    window.dataideeDemo.layer.getImpl().limit = undefined;
     try {
       await window.dataideeDemo.layer.beginEditing({ bbox: [-2, -2, 2, 2] });
       return '';
@@ -469,4 +544,153 @@ test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain
   });
   expect(uncertain.error).toBeTruthy();
   expect(uncertain.requiresReview).toBe(true);
+});
+
+test('DataIDEE editing respects the layer limit and restores the layer query when it ends', async ({ page }) => {
+  const itemRequests = [];
+  page.on('request', (request) => {
+    const url = new URL(request.url());
+    if (url.pathname === '/local/collections/dense/items') itemRequests.push(url);
+  });
+  await page.goto(`${DEMO_URL}?mode=dense`);
+  await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
+  itemRequests.length = 0;
+  const prepared = await page.evaluate(async () => {
+    const { layer } = window.dataideeDemo;
+    layer.getImpl().limit = 5;
+    const result = await layer.beginEditing({ bbox: [-2, -2, 2, 2] });
+    return {
+      count: result.features.length,
+      complete: result.complete,
+      sessionBudget: result.limits.maxFeatures,
+    };
+  });
+  // The demo pages hold 2 features: 2 + 2 + 1, without following the last next link.
+  // The session budget keeps its own limit so that new features can still be created.
+  expect(prepared).toEqual({ count: 5, complete: false, sessionBudget: 1000 });
+  expect(itemRequests.map((url) => url.searchParams.get('limit'))).toEqual(['2', '2', '2']);
+
+  itemRequests.length = 0;
+  await page.evaluate(() => window.dataideeDemo.layer.endEditing());
+  await expect.poll(() => page.evaluate(() => window.dataideeDemo.layer.getFeatures().length))
+    .toBe(5);
+  expect(itemRequests).toHaveLength(1);
+  expect(itemRequests[0].searchParams.get('limit')).toBe('5');
+  expect(itemRequests[0].searchParams.has('bbox')).toBe(false);
+});
+
+test('DataIDEE capabilities are requested once per layer and token', async ({ page }) => {
+  const tracked = [
+    '/local/', '/local/api', '/local/collections/form',
+    '/local/collections/form/queryables', '/local/collections/form/schema',
+  ];
+  const requested = new Map();
+  let conformanceRequests = 0;
+  page.on('request', (request) => {
+    const { pathname } = new URL(request.url());
+    if (tracked.includes(pathname)) requested.set(pathname, (requested.get(pathname) || 0) + 1);
+    // The service description publishes the collection: conformance is not needed
+    if (pathname === '/local/conformance') conformanceRequests += 1;
+  });
+  const expectEach = (times) => expect.poll(() => Object.fromEntries(requested))
+    .toEqual(Object.fromEntries(tracked.map((path) => [path, times])));
+  await page.goto(`${DEMO_URL}?mode=form`);
+  await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 1);
+  await page.locator('#vectorsmanagement-button').click();
+  await page.locator('#m-vectorsmanagement-layer-selector').click();
+  await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
+  await expectEach(1);
+  // Selecting a feature and starting the editing check the capabilities again
+  await page.locator('#m-vectorsmanagement-selection').click();
+  const pixel = await page.evaluate(() => {
+    const map = window.dataideeDemo.map.getMapImpl();
+    const bounds = map.getTargetElement().getBoundingClientRect();
+    const feature = window.dataideeDemo.layer.getFeatures()[0].getImpl().getFeature();
+    const point = map.getPixelFromCoordinate(feature.getGeometry().getCoordinates());
+    return [bounds.left + point[0], bounds.top + point[1]];
+  });
+  await page.mouse.click(pixel[0], pixel[1]);
+  await page.locator('#m-vectorsmanagement-edition').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
+  await expectEach(1);
+
+  // Another token can change the permissions: they are requested again
+  await page.evaluate(async () => {
+    window.dataideeDemo.layer.setToken('otro-token');
+    await window.dataideeDemo.layer.getEditingCapabilities();
+  });
+  await expectEach(2);
+  expect(conformanceRequests).toBe(0);
+});
+
+test('ending DataIDEE editing with pending changes asks in an API dialog', async ({ page }) => {
+  const prompts = [];
+  page.on('dialog', async (dialog) => { prompts.push(dialog.message()); await dialog.dismiss(); });
+  await page.goto(DEMO_URL);
+  await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
+  await page.locator('#vectorsmanagement-button').click();
+  await page.locator('#m-vectorsmanagement-layer-selector').click();
+  await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
+  await page.locator('#m-vectorsmanagement-edition').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
+  await page.evaluate(() => {
+    window.dataideeDemo.layer.getFeatures()[0].getImpl().getFeature().getGeometry().translate(1, 0);
+  });
+  await expect.poll(() => page.evaluate(() => window.dataideeDemo.layer.getEditingSession().count))
+    .toBe(1);
+  const choice = page.getByRole('alertdialog', { name: 'Finalizar edición' });
+
+  // Cancel is the default and keeps the session with its changes
+  await page.locator('#m-vectorsmanagement-editing-end').click();
+  await expect(choice).toBeVisible();
+  await expect(choice.getByRole('button', { name: 'Cancelar' })).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(choice).toBeHidden();
+  expect(await page.evaluate(() => window.dataideeDemo.layer.getEditingSession()?.count)).toBe(1);
+
+  await page.locator('#m-vectorsmanagement-editing-end').click();
+  await choice.getByRole('button', { name: 'Descartar' }).click();
+  // Ending the session closes its panel: opening it again starts a new one
+  await expect(page.locator('#m-vectorsmanagement-editing')).toHaveCount(0);
+  await expect(page.locator('#m-vectorsmanagement-edition')).not.toHaveClass(/activated/);
+  expect(await page.evaluate(() => window.dataideeDemo.layer.getEditingSession())).toBeNull();
+  expect(prompts).toEqual([]);
+});
+
+test('DataIDEE editing starts with Creation or Edition and survives switching tools', async ({ page }) => {
+  await page.goto(DEMO_URL);
+  await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
+  await page.locator('#vectorsmanagement-button').click();
+  await page.locator('#m-vectorsmanagement-layer-selector').click();
+  await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
+  const section = page.locator('#m-vectorsmanagement-editing');
+  const status = page.locator('#m-vectorsmanagement-editing-status');
+  const sameSession = () => page.evaluate(() => (
+    window.dataideeDemo.layer.getEditingSession() === window.firstEditingSession
+  ));
+  await expect(section).toHaveCount(0);
+
+  await page.locator('#m-vectorsmanagement-creation').click();
+  await expect(section).toBeVisible();
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
+  await expect(status).toContainText('Zona fija');
+  await page.evaluate(() => {
+    window.firstEditingSession = window.dataideeDemo.layer.getEditingSession();
+  });
+
+  // Another tool closes the panel; the session and its message stay
+  await page.locator('#m-vectorsmanagement-selection').click();
+  await expect(section).toHaveCount(0);
+  await page.locator('#m-vectorsmanagement-edition').click();
+  await expect(section).toBeVisible();
+  await expect(status).toContainText('Zona fija');
+  expect(await sameSession()).toBe(true);
+
+  // Without changes, ending closes the panel; opening it again prepares a new session
+  await page.locator('#m-vectorsmanagement-editing-end').click();
+  await expect(section).toHaveCount(0);
+  expect(await page.evaluate(() => window.dataideeDemo.layer.getEditingSession())).toBeNull();
+  await page.locator('#m-vectorsmanagement-creation').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
+  expect(await sameSession()).toBe(false);
 });

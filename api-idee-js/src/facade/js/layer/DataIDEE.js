@@ -111,7 +111,7 @@ class DataIDEE extends Vector {
    *   Durante la espera se conserva solo la última consulta pendiente.
    *   refresh() y refreshInterval descargan datos nuevos y renuevan la caché.
    * - editingLimits: límites de zona con pageSize, maxFeatures, maxCoordinates
-   *   y maxBytes; por defecto 250, 1000, 100000 y 10485760.
+   *   y maxBytes; por defecto 1000, 1000, 100000 y 10485760.
    * - transactionParameters / transactionHeaders: valores para escrituras y
    *   comprobaciones de conflicto, independientes de los parámetros de lectura.
    * - dataideeDefaultProperties: valores iniciales de atributos en el formulario de altas.
@@ -502,7 +502,10 @@ class DataIDEE extends Vector {
     return this.getEditingImpl_().getEditingCapabilities();
   }
 
-  /** Loads a complete, bounded CRS84 work area and pauses DataIDEE refreshes. */
+  /**
+   * Loads a bounded CRS84 work area, up to the layer limit, and pauses DataIDEE refreshes.
+   * The result reports `complete: false` when the limit left features of the area out.
+   */
   beginEditing({ bbox }) {
     return this.getEditingImpl_().beginEditing({ bbox });
   }
@@ -510,7 +513,7 @@ class DataIDEE extends Vector {
   /** Returns the active editing session for generic editing controls. */
   getEditingSession() { return this.getEditingImpl_().getEditingSession(); }
 
-  /** Releases the DataIDEE edit-session refresh lock. */
+  /** Releases the DataIDEE edit-session refresh lock; with refresh, reloads the layer query. */
   endEditing(refresh = true) {
     return this.getEditingImpl_().endEditing(refresh);
   }
