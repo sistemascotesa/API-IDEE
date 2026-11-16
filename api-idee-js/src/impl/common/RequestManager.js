@@ -16,6 +16,7 @@ export class RequestCancelledError extends Error {
 
 /**
  * Internal cache, deduplicator and start-rate limiter, independent of transport and payload.
+ * Identical executions in flight are always shared, even without cache or throttling.
  * Values are shared without copying: consumers must treat them as immutable and perform
  * their own conversions outside the manager. Keys must identify equivalent executions,
  * including their validation and transport context.
@@ -27,7 +28,7 @@ class RequestManager {
     this.cacheBytes = 0;
     this.pending = new Map();
     this.inFlight = new Map();
-    // Includes detached generations and unmanaged executions, so dispose settles all callers.
+    // Includes executions detached by clearCache, so dispose settles all callers.
     this.active = new Set();
     this.timer = null;
     this.lastStartedAt = null;
@@ -78,11 +79,6 @@ class RequestManager {
    */
   request({ key, execute, force = false }) {
     if (this.disposed) return Promise.reject(new RequestCancelledError('disposed'));
-    if (!this.options.cache && this.options.throttleMs === 0) {
-      const operation = this.createOperation_(key, execute, force);
-      this.start_(operation, false);
-      return operation.promise;
-    }
 
     if (this.options.pendingPolicy === 'latest') {
       this.pending.forEach((operation, pendingKey) => {
@@ -155,18 +151,16 @@ class RequestManager {
             return;
           }
           this.pending.delete(operation.key);
-          this.start_(operation, true);
+          this.start_(operation);
         }
       }
     });
   }
 
-  start_(operation, managed) {
+  start_(operation) {
     this.active.add(operation);
-    if (managed) {
-      this.inFlight.set(operation.key, operation);
-      this.lastStartedAt = performance.now();
-    }
+    this.inFlight.set(operation.key, operation);
+    this.lastStartedAt = performance.now();
     Promise.resolve().then(() => {
       if (operation.settled) throw new RequestCancelledError('disposed');
       return operation.execute({ force: operation.force });
@@ -176,7 +170,7 @@ class RequestManager {
           || !Number.isSafeInteger(result.bytes) || result.bytes < 0) {
           throw new TypeError('RequestManager requires a result with cacheable and non-negative integer bytes.');
         }
-        if (managed && operation.generation === this.generation && !this.disposed) {
+        if (operation.generation === this.generation && !this.disposed) {
           this.putCached_(operation.key, result);
         }
       }

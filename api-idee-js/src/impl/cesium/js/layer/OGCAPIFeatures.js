@@ -117,7 +117,8 @@ class OGCAPIFeatures extends Vector {
     this.facadeVector_.userMaxExtent = null;
     this.map = map;
     this.fireAddedToMap_();
-    map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
+    this.projectionListener_ = this.projectionListener_ || this.setProjection_.bind(this);
+    map.on(EventType.CHANGE_PROJ, this.projectionListener_, this);
     this.cesiumLayer = new GeoJsonDataSource(this.name);
     this.updateSource_();
     this.setVisible(this.visibility);
@@ -130,6 +131,7 @@ class OGCAPIFeatures extends Vector {
   /** Retira el escuchador de cambios antes de destruir la capa y detener su intervalo. */
   destroy() {
     this.map?.getImpl().un(EventType.CHANGE, this.refreshOnChange_);
+    this.map?.un(EventType.CHANGE_PROJ, this.projectionListener_, this);
     this.refreshOnChange_ = null;
     super.destroy();
   }

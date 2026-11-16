@@ -58,6 +58,59 @@ function registerRequestManagerTests(pagePath) {
       });
     });
 
+    test('sin caché ni throttle comparte las operaciones idénticas en curso', async ({ page }) => {
+      const result = await page.evaluate(async () => {
+        const manager = window.makeManager({});
+        const started = [];
+        const finishers = {};
+        const run = (key, force = false) => manager.request({
+          key,
+          force,
+          execute: ({ force: fresh }) => new Promise((resolve) => {
+            started.push(`${key}${fresh ? ':fresh' : ''}`);
+            finishers[key] = () => resolve({ value: started.length, cacheable: true, bytes: 1 });
+          }),
+        });
+        const first = run('A');
+        const second = run('A');
+        const other = run('B');
+        await Promise.resolve();
+        await Promise.resolve();
+        const startedBeforeFinish = [...started];
+        const fresh = run('A', true);
+        await Promise.resolve();
+        const startedWhileInFlight = [...started];
+        finishers.A();
+        finishers.B();
+        const [a, b] = await Promise.all([first, second]);
+        await other;
+        await new Promise((resolve) => { setTimeout(resolve, 0); });
+        finishers.A();
+        const freshValue = await fresh;
+        const later = run('A');
+        await Promise.resolve();
+        finishers.A();
+        return {
+          shared: first === second,
+          sameValue: a === b,
+          startedBeforeFinish,
+          startedWhileInFlight,
+          freshValue,
+          notCached: (await later) > freshValue,
+          started,
+        };
+      });
+      expect(result).toEqual({
+        shared: true,
+        sameValue: true,
+        startedBeforeFinish: ['A', 'B'],
+        startedWhileInFlight: ['A', 'B'],
+        freshValue: 3,
+        notCached: true,
+        started: ['A', 'B', 'A:fresh', 'A'],
+      });
+    });
+
     test('usa la clave literal y mantiene cachés independientes por instancia', async ({ page }) => {
       const result = await page.evaluate(async () => {
         const first = window.makeManager({ cache: true });
