@@ -111,7 +111,8 @@ class Vector extends Layer {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
+    this.projectionListener_ = this.projectionListener_ || this.setProjection_.bind(this);
+    map.on(EventType.CHANGE_PROJ, this.projectionListener_, this);
     this.olLayer = createVectorLayer(this.vendorOptions_, this.renderer_);
     this.watchFeatureStyles_();
     this.updateSource_();
@@ -662,6 +663,9 @@ class Vector extends Layer {
   destroy() {
     this.facadeVector_?.stopAutoRefresh();
     this.unwatchFeatureStyles_();
+    if (this.projectionListener_) {
+      this.map.un(EventType.CHANGE_PROJ, this.projectionListener_, this);
+    }
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
       this.disposeWebGLLayer_();

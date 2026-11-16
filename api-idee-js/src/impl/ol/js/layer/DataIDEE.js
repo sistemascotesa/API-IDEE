@@ -6,15 +6,24 @@ import { isNullOrEmpty } from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
 import OLSourceVector from 'ol/source/Vector';
 import { get as getProj, transformExtent } from 'ol/proj';
+import { getIntersection, isEmpty as isEmptyExtent } from 'ol/extent';
 import ServiceDataIDEE from '../service/DataIDEE';
 import LoaderDataIDEE from '../loader/DataIDEE';
 import ImplUtils from '../util/Utils';
 import OGCAPIFeatures from './OGCAPIFeatures';
-import dataIDEEBbox from '../../../common/DataIDEEBbox';
 import RequestManager, { RequestCancelledError } from '../../../common/RequestManager';
 import DataIDEETransactions from '../../../common/DataIDEETransactions';
 import { isUnauthorizedError } from '../../../common/DataIDEERequest';
 import DataIDEEEditingSession from '../../../common/DataIDEEEditingSession';
+import normalizeDataIDEEOptions from '../../../common/DataIDEEOptions';
+import DataIDEEViewport from '../../../common/DataIDEEViewport';
+import exceptionMessage from '../../../common/exceptionMessage';
+
+/**
+ * Puntos por lado al transformar la extensión visible a CRS84: en proyecciones no
+ * cilíndricas los bordes son curvos y las esquinas no bastan para envolver la vista.
+ */
+const EXTENT_STOPS = 8;
 
 /**
  * OGC API Features JSON vector layer implementation.
@@ -24,32 +33,22 @@ import DataIDEEEditingSession from '../../../common/DataIDEEEditingSession';
 class DataIDEE extends OGCAPIFeatures {
   constructor(options = {}, vendorOptions = {}) {
     super(options, vendorOptions);
-    this.requestManagerOptions_ = {
-      cache: options.cache,
-      throttleMs: options.throttleMs,
-      pendingPolicy: 'latest',
-    };
+    const normalized = normalizeDataIDEEOptions(options, vendorOptions);
+    this.requestManagerOptions_ = normalized.requestManager;
     this.requestManager_ = new RequestManager(this.requestManagerOptions_);
     this.requestRevision_ = 0;
-    this.bboxStrategy_ = options.bboxStrategy === true && isNullOrEmpty(vendorOptions.source);
-    this.requestedViewport_ = null;
-    this.removeViewportListeners_ = null;
+    this.bboxStrategy_ = normalized.bboxStrategy;
+    this.viewport_ = this.bboxStrategy_ ? new DataIDEEViewport({
+      getExtent: () => this.getVisibleExtent_(),
+      getProjectionCode: () => this.map?.getProjection().code,
+      listen: (onChange) => this.listenViewport_(onChange),
+    }) : null;
     this.editing_ = false;
     this.preparingEditing_ = false;
     this.destroyed_ = false;
-    this.readThrottleMs_ = options.throttleMs || 0;
+    this.readThrottleMs_ = normalized.requestManager.throttleMs;
     this.pendingReads_ = new Set();
-    this.editingLimits_ = {
-      pageSize: options.editingLimits?.pageSize || 1000,
-      maxFeatures: options.editingLimits?.maxFeatures || 1000,
-      maxCoordinates: options.editingLimits?.maxCoordinates || 100000,
-      maxBytes: options.editingLimits?.maxBytes || 10 * 1024 * 1024,
-    };
-    Object.entries(this.editingLimits_).forEach(([key, value]) => {
-      if (!Number.isInteger(value) || value <= 0) {
-        throw new TypeError(`DataIDEE editing limit '${key}' must be a positive integer.`);
-      }
-    });
+    this.editingLimits_ = normalized.editingLimits;
     this.transactions_ = null;
     this.transactionCollectionUrl_ = null;
   }
@@ -94,9 +93,8 @@ class DataIDEE extends OGCAPIFeatures {
     this.requestRevision_ += 1;
     const revision = this.requestRevision_;
 
-    const bbox = this.bboxStrategy_ ? this.getVisibleBbox_() : this.bbox;
-    const viewport = this.bboxStrategy_ ? this.viewportKey_(bbox) : null;
-    this.requestedViewport_ = viewport;
+    const { bbox, key: zone } = this.bboxStrategy_ ? this.viewport_.request() : { bbox: this.bbox };
+    const isZoneCurrent = () => !this.bboxStrategy_ || this.viewport_.isCurrent(zone);
     if (this.bboxStrategy_ && !bbox) return Promise.resolve();
 
     this.service_ = new ServiceDataIDEE({
@@ -125,7 +123,7 @@ class DataIDEE extends OGCAPIFeatures {
       () => {
         if (this.editing_) return false;
         return !this.bboxStrategy_ || (this.map && this.olLayer === requestedLayer
-        && viewport === this.viewportKey_(this.getVisibleBbox_()));
+          && isZoneCurrent());
       },
       this.getToken() !== undefined,
       this.service_.getRequestHeaders(),
@@ -139,8 +137,8 @@ class DataIDEE extends OGCAPIFeatures {
     return this.requestFeatures_(force).then((features) => {
       if (!this.map || this.olLayer !== requestedLayer
         || revision !== this.requestRevision_ || !isCurrent()) return;
-      if (this.bboxStrategy_ && viewport !== this.viewportKey_(this.getVisibleBbox_())) {
-        this.requestedViewport_ = null;
+      if (!isZoneCurrent()) {
+        this.viewport_.invalidate();
         return;
       }
       if (this.bboxStrategy_) {
@@ -172,13 +170,16 @@ class DataIDEE extends OGCAPIFeatures {
         this.facadeVector_.redraw();
       }
     }).catch((error) => {
-      if (revision === this.requestRevision_) this.requestedViewport_ = null;
-      if (!(error instanceof RequestCancelledError)
-        && this.map && this.olLayer === requestedLayer
-        && revision === this.requestRevision_ && isCurrent()
-        && (!this.bboxStrategy_ || viewport === this.viewportKey_(this.getVisibleBbox_()))) {
+      const current = this.map && this.olLayer === requestedLayer
+        && revision === this.requestRevision_ && isCurrent() && isZoneCurrent();
+      if (current && error instanceof RequestCancelledError && error.reason === 'invalidated') {
+        return this.updateSource_(forceNewSource, force, isCurrent);
+      }
+      if (revision === this.requestRevision_) this.viewport_?.invalidate();
+      if (current && !(error instanceof RequestCancelledError)) {
         this.facadeVector_.fire(EventType.LOAD_ERROR, [error]);
       }
+      return undefined;
     });
   }
 
@@ -237,7 +238,7 @@ class DataIDEE extends OGCAPIFeatures {
 
   clearCache() {
     this.requestManager_.clearCache();
-    this.requestedViewport_ = null;
+    this.viewport_?.invalidate();
   }
 
   getEditingCapabilities() {
@@ -251,14 +252,14 @@ class DataIDEE extends OGCAPIFeatures {
 
   async beginEditing({ bbox }) {
     if (this.editing_ || this.preparingEditing_) {
-      throw new Error('DataIDEE editing is already active or being prepared.');
+      throw new Error(exceptionMessage('dataidee_editing_active'));
     }
     if (!Array.isArray(bbox) || bbox.length !== 4 || !bbox.every(Number.isFinite)) {
-      throw new TypeError('A valid CRS84 bbox is required to edit DataIDEE.');
+      throw new TypeError(exceptionMessage('dataidee_edit_bbox_required'));
     }
     if (bbox[0] < -180 || bbox[2] > 180 || bbox[1] < -90 || bbox[3] > 90
       || bbox[0] > bbox[2] || bbox[1] > bbox[3]) {
-      throw new RangeError('The edit bbox must be a valid CRS84 area; zoom in and retry.');
+      throw new RangeError(exceptionMessage('dataidee_edit_bbox_invalid'));
     }
     this.preparingEditing_ = true;
     this.editing_ = true;
@@ -267,14 +268,14 @@ class DataIDEE extends OGCAPIFeatures {
     try {
       capabilities = await this.getEditingCapabilities();
       if (this.destroyed_ || !this.map) {
-        throw new Error('The DataIDEE layer was removed during edit preparation.');
+        throw new Error(exceptionMessage('dataidee_edit_layer_removed'));
       }
       if (!capabilities.create && !capabilities.update && !capabilities.delete) {
-        throw new Error('This DataIDEE collection is read-only.');
+        throw new Error(exceptionMessage('dataidee_read_only'));
       }
     } catch (error) {
       this.editing_ = false;
-      this.requestedViewport_ = null;
+      this.viewport_?.invalidate();
       this.preparingEditing_ = false;
       throw error;
     }
@@ -314,7 +315,7 @@ class DataIDEE extends OGCAPIFeatures {
       // Each validated next link determines the following page, so requests stay sequential.
       // eslint-disable-next-line no-await-in-loop
       while (nextUrl) {
-        if (seen.has(nextUrl.href)) throw new Error('DataIDEE pagination contains a repeated link.');
+        if (seen.has(nextUrl.href)) throw new Error(exceptionMessage('dataidee_pagination_repeated'));
         seen.add(nextUrl.href);
         const expectedCollection = new URL(collectionUrl);
         const normalizedPath = (pathname) => pathname.split('/').map((part) => {
@@ -324,7 +325,7 @@ class DataIDEE extends OGCAPIFeatures {
         const nextPath = normalizedPath(nextUrl.pathname);
         const validPath = nextPath === expectedPath || nextPath.startsWith(`${expectedPath}/`);
         if (nextUrl.origin !== expectedCollection.origin || !validPath) {
-          throw new Error('DataIDEE pagination link escaped the collection.');
+          throw new Error(exceptionMessage('dataidee_pagination_escaped'));
         }
         const pageUrl = new URL(nextUrl.href);
         const ticket = window.IDEE?.config?.TICKET;
@@ -346,16 +347,16 @@ class DataIDEE extends OGCAPIFeatures {
             ...(this.getToken() ? { Authorization: `Bearer ${this.getToken()}` } : {}),
           },
         });
-        if (!response.ok) throw new Error(`DataIDEE preparation failed (HTTP ${response.status}).`);
+        if (!response.ok) throw new Error(exceptionMessage('dataidee_edit_preparation_failed', { status: response.status }));
         // eslint-disable-next-line no-await-in-loop
         const text = await response.text();
         bytes += new Blob([text]).size;
         if (bytes > this.editingLimits_.maxBytes) {
-          throw new Error('DataIDEE edit area exceeds the GeoJSON size limit; reduce the area.');
+          throw new Error(exceptionMessage('dataidee_edit_size_limit'));
         }
         const page = JSON.parse(text);
         if (page.type !== 'FeatureCollection' || !Array.isArray(page.features)) {
-          throw new Error('DataIDEE returned an incomplete page.');
+          throw new Error(exceptionMessage('dataidee_incomplete_page'));
         }
         const next = page.links?.find((link) => link.rel === 'next')?.href;
         const pageFeatures = loadLimit
@@ -367,7 +368,7 @@ class DataIDEE extends OGCAPIFeatures {
         }
         documents.push(...pageFeatures);
         if (documents.length > this.editingLimits_.maxFeatures) {
-          throw new Error('DataIDEE edit area exceeds the feature limit; reduce the area.');
+          throw new Error(exceptionMessage('dataidee_edit_feature_limit'));
         }
         const count = (value) => {
           if (!Array.isArray(value)) return 0;
@@ -378,22 +379,20 @@ class DataIDEE extends OGCAPIFeatures {
           'Point', 'MultiPoint', 'LineString', 'MultiLineString', 'Polygon', 'MultiPolygon',
         ]);
         if (pageFeatures.some((feature) => !supportedGeometry.has(feature.geometry?.type))) {
-          throw new Error('DataIDEE edit area contains an unsupported or missing geometry type.');
+          throw new Error(exceptionMessage('dataidee_edit_geometry_type'));
         }
         const oversizedFeature = pageFeatures.find((feature) => (
           count(feature.geometry?.coordinates) > this.editingLimits_.maxCoordinates
           || new Blob([JSON.stringify(feature)]).size > this.editingLimits_.maxBytes
         ));
         if (oversizedFeature) {
-          throw new Error('One DataIDEE feature exceeds the edit budget. Zooming in will not '
-            + 'reduce its vertex count; edit a simpler feature or ask for a larger limit.');
+          throw new Error(exceptionMessage('dataidee_edit_feature_budget'));
         }
         coordinates += pageFeatures.reduce((sum, feature) => (
           sum + count(feature.geometry?.coordinates)
         ), 0);
         if (coordinates > this.editingLimits_.maxCoordinates) {
-          throw new Error('DataIDEE edit area exceeds the coordinate limit; reduce the area '
-            + 'or use simpler geometries.');
+          throw new Error(exceptionMessage('dataidee_edit_coordinate_limit'));
         }
         if (next && !reachedLimit) {
           nextUrl = new URL(next, nextUrl);
@@ -408,7 +407,7 @@ class DataIDEE extends OGCAPIFeatures {
         featureProjection: getProj(this.map.getProjection().code),
       });
       if (features.some((feature) => feature.getId() === undefined || feature.getId() === null)) {
-        throw new Error('DataIDEE returned an entity without a server identifier.');
+        throw new Error(exceptionMessage('dataidee_missing_identifier'));
       }
       this.facadeVector_.removeFeatures(this.facadeVector_.getFeatures(true));
       this.facadeVector_.addFeatures(features);
@@ -434,7 +433,7 @@ class DataIDEE extends OGCAPIFeatures {
       };
     } catch (error) {
       this.editing_ = false;
-      this.requestedViewport_ = null;
+      this.viewport_?.invalidate();
       throw error;
     }
   }
@@ -443,7 +442,7 @@ class DataIDEE extends OGCAPIFeatures {
     this.editingSession_?.destroy();
     this.editingSession_ = null;
     this.editing_ = false;
-    this.requestedViewport_ = null;
+    this.viewport_?.invalidate();
     this.requestRevision_ += 1;
     if (!refresh || !this.map) return Promise.resolve();
     // The edit zone replaced the layer features: reload the layer's own query.
@@ -479,26 +478,52 @@ class DataIDEE extends OGCAPIFeatures {
 
   deleteFeature(id, etag) { return this.getTransactions_().delete(id, etag); }
 
-  getVisibleBbox_() {
-    if (!this.map) return null;
-    const native = this.map.getMapImpl();
-    const size = native.getSize();
-    if (!size || size[0] <= 0 || size[1] <= 0) return null;
-    const view = native.getView();
-    return dataIDEEBbox(transformExtent(view.calculateExtent(size), view.getProjection(), 'EPSG:4326'));
+  /**
+   * Adaptador OpenLayers del MRE: extensión visible en CRS84 sin normalizar.
+   * @returns {Array<Number>|null} Extensión, o null si la vista no es calculable.
+   * @private
+   */
+  getVisibleExtent_() {
+    const native = this.map?.getMapImpl();
+    const size = native?.getSize();
+    const view = native?.getView();
+    if (!size || size[0] <= 0 || size[1] <= 0 || !view?.isDef()) return null;
+    const projection = view.getProjection();
+    let extent = view.calculateExtent(size);
+    if (!projection.isGlobal() && projection.getUnits() !== 'degrees' && projection.getExtent()) {
+      extent = getIntersection(extent, projection.getExtent());
+      if (isEmptyExtent(extent)) return null;
+    }
+    return transformExtent(extent, projection, 'EPSG:4326', EXTENT_STOPS);
   }
 
-  viewportKey_(bbox) {
-    return JSON.stringify([this.map?.getProjection().code, bbox]);
+  /**
+   * Adaptador OpenLayers de eventos de vista: fin de desplazamiento o zoom y cambio de tamaño.
+   * @param {Function} onChange Función a ejecutar.
+   * @returns {Function} Retira los escuchadores.
+   * @private
+   */
+  listenViewport_(onChange) {
+    const native = this.map.getMapImpl();
+    native.on('moveend', onChange);
+    native.on('change:size', onChange);
+    return () => {
+      native.un('moveend', onChange);
+      native.un('change:size', onChange);
+    };
   }
 
   // Native sources retain covered extents, but this layer replaces its active zone.
   // Let the request manager decide exact reuse instead of skipping contained viewports.
+  // A hidden layer defers the request until it is shown again.
   loadViewport_() {
-    if (this.editing_) return;
-    if (this.map && this.viewportKey_(this.getVisibleBbox_()) !== this.requestedViewport_) {
-      this.updateSource_(false);
-    }
+    if (this.editing_ || !this.map || !this.isVisible()) return;
+    if (this.viewport_.hasChanged()) this.updateSource_(false);
+  }
+
+  setVisible(visibility) {
+    super.setVisible(visibility);
+    if (visibility && this.bboxStrategy_) this.loadViewport_();
   }
 
   addTo(map, addLayer = true) {
@@ -507,16 +532,7 @@ class DataIDEE extends OGCAPIFeatures {
       this.requestManager_ = new RequestManager(this.requestManagerOptions_);
     }
     super.addTo(map, addLayer);
-    if (this.bboxStrategy_) {
-      const native = map.getMapImpl();
-      const onViewChange = () => this.loadViewport_();
-      native.on('moveend', onViewChange);
-      native.on('change:size', onViewChange);
-      this.removeViewportListeners_ = () => {
-        native.un('moveend', onViewChange);
-        native.un('change:size', onViewChange);
-      };
-    }
+    this.viewport_?.attach(() => this.loadViewport_());
   }
 
   destroy() {
@@ -525,9 +541,7 @@ class DataIDEE extends OGCAPIFeatures {
     this.editingSession_ = null;
     this.editing_ = false;
     this.preparingEditing_ = false;
-    this.removeViewportListeners_?.();
-    this.removeViewportListeners_ = null;
-    this.requestedViewport_ = null;
+    this.viewport_?.detach();
     this.requestRevision_ += 1;
     this.requestManager_.dispose();
     super.destroy();

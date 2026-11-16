@@ -4,10 +4,12 @@ import registerRequestManagerTests from '../common/request-manager.spec';
 import registerDataIDEECacheLayerTests from '../common/dataidee-layer-cache';
 import registerDataIDEEViewportTests from '../common/dataidee-viewport';
 import registerDataIDEEAuthTests from '../common/dataidee-auth';
+import registerDataIDEEOptionsTests from '../common/dataidee-options';
 
 registerDataIDEECacheLayerTests('/test/playwright/ol/basic-ol.html');
 registerDataIDEEViewportTests('/test/playwright/ol/basic-ol.html');
 registerDataIDEEAuthTests('/test/playwright/ol/basic-ol.html');
+registerDataIDEEOptionsTests('/test/playwright/ol/basic-ol.html');
 
 const geoJSON = {
   type: 'FeatureCollection',
@@ -278,6 +280,51 @@ test('DataIDEE loads features and supports map add, get and remove methods', asy
     };
   });
   expect(state).toEqual({ featuresLoaded: 1, layerWasFound: true, layersAfterRemoval: 0 });
+});
+
+test('DataIDEE viewport converts a local projected CRS view to a finite CRS84 bbox', async ({ page }) => {
+  const urls = [];
+  await page.route('https://utm.test/**', (route) => {
+    urls.push(route.request().url());
+    return route.fulfill({ json: geoJSON });
+  });
+  await page.goto('/test/playwright/ol/basic-ol.html');
+  await page.evaluate(() => {
+    window.map = IDEE.map({
+      container: 'map', projection: 'EPSG:25830*m', center: [440000, 4474000], zoom: 8,
+    });
+  });
+  await page.waitForFunction(() => window.map.isFinished());
+  await page.evaluate(() => {
+    window.utmLayer = new IDEE.layer.DataIDEE({
+      url: 'https://utm.test/', name: 'places',
+    }, { bboxStrategy: true });
+    window.map.addLayers(window.utmLayer);
+  });
+  const madrid = [-3.7, 40.4];
+  const expectValidBbox = (url) => {
+    const [west, south, east, north] = new URL(url).searchParams.get('bbox').split(',').map(Number);
+    [west, south, east, north].forEach((value) => expect(Number.isFinite(value)).toBe(true));
+    expect(west).toBeGreaterThanOrEqual(-180);
+    expect(east).toBeLessThanOrEqual(180);
+    expect(south).toBeGreaterThanOrEqual(-90);
+    expect(north).toBeLessThanOrEqual(90);
+    expect(west).toBeLessThan(madrid[0]);
+    expect(east).toBeGreaterThan(madrid[0]);
+    expect(south).toBeLessThan(madrid[1]);
+    expect(north).toBeGreaterThan(madrid[1]);
+    return [west, south, east, north];
+  };
+  await expect.poll(() => urls.length).toBe(1);
+  const near = expectValidBbox(urls[0]);
+  await page.evaluate(() => {
+    const native = window.map.getMapImpl();
+    native.getView().setResolution(native.getView().getMaxResolution());
+    native.dispatchEvent('moveend');
+  });
+  await expect.poll(() => urls.length).toBe(2);
+  const far = expectValidBbox(urls[1]);
+  expect(far[2] - far[0]).toBeGreaterThan(near[2] - near[0]);
 });
 
 registerRequestManagerTests('/test/playwright/ol/basic-ol.html');

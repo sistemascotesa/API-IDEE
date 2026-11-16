@@ -204,6 +204,65 @@ export default function registerDataIDEEViewportTests(pagePath) {
     expect(count).toBe(3);
   });
 
+  test('DataIDEE viewport shows one translated toast per load failure until a load succeeds', async ({ page }) => {
+    let count = 0;
+    await page.route('https://viewport.test/**', (route) => {
+      count += 1;
+      if ([2, 3, 6, 7].includes(count)) return route.fulfill({ status: 500, body: 'failed' });
+      if (count === 5) return route.fulfill({ contentType: 'application/geo+json', body: '{ invalid' });
+      return route.fulfill({ json: payload(`response-${count}`) });
+    });
+    await setup(page, { cache: false });
+    await applied(page, ['response-1']);
+    await page.evaluate(() => {
+      window.toastMessages = [];
+      new window.MutationObserver((records) => records.forEach((record) => {
+        record.addedNodes.forEach((node) => {
+          if (node.classList?.contains('m-toast')) {
+            window.toastMessages.push({
+              error: node.classList.contains('error'),
+              text: node.querySelector('.m-toast-message').textContent,
+            });
+          }
+        });
+      })).observe(document.body, { childList: true, subtree: true });
+    });
+    const expectedToast = (key, values = {}) => page.evaluate(({ name, params }) => {
+      const detail = Object.entries(params).reduce(
+        (text, [param, value]) => text.replace(`{${param}}`, value),
+        IDEE.language.getValue('exception')[name],
+      );
+      const layer = window.viewportLayer.legend || window.viewportLayer.name;
+      return IDEE.language.getValue('toast').dataidee_load_error
+        .replace('{layer}', layer).replace('{error}', detail);
+    }, { name: key, params: values });
+    const httpError = { error: true, text: await expectedToast('dataidee_request_failed_http', { status: 500 }) };
+    const invalidGeoJSON = { error: true, text: await expectedToast('dataidee_invalid_geojson') };
+    const toasts = () => page.evaluate(() => window.toastMessages);
+    const errors = () => page.evaluate(() => window.viewportErrors);
+
+    await move(page, 1);
+    await expect.poll(errors).toBe(1);
+    await expect.poll(toasts).toEqual([httpError]);
+    await move(page, 2);
+    await expect.poll(errors).toBe(2);
+    await move(page, 3);
+    await applied(page, ['response-4']);
+    expect(await toasts()).toEqual([httpError]);
+    await move(page, 4);
+    await expect.poll(errors).toBe(3);
+    await expect.poll(toasts).toEqual([httpError, invalidGeoJSON]);
+    await move(page, 5);
+    await expect.poll(errors).toBe(4);
+    await page.evaluate(() => {
+      window.map.removeLayers(window.viewportLayer);
+      window.map.addLayers(window.viewportLayer);
+    });
+    await expect.poll(errors).toBe(5);
+    await expect.poll(toasts).toEqual([httpError, invalidGeoJSON, httpError]);
+    expect(count).toBe(7);
+  });
+
   test('DataIDEE viewport cancels queued work on removal and starts clean on reinsertion', async ({ page }) => {
     let count = 0;
     await page.route('https://viewport.test/**', (route) => {
@@ -221,6 +280,149 @@ export default function registerDataIDEEViewportTests(pagePath) {
     await page.evaluate(() => window.map.addLayers(window.viewportLayer));
     await applied(page, ['response-2']);
     expect(count).toBe(2);
+  });
+
+  const countRequests = async (page, urls) => {
+    await page.route('https://viewport.test/**', (route) => {
+      urls.push(route.request().url());
+      return route.fulfill({ json: payload(`response-${urls.length}`) });
+    });
+  };
+  const bboxOf = (url) => new URL(url).searchParams.get('bbox').split(',').map(Number);
+
+  test('DataIDEE viewport skips view events that keep the same zone', async ({ page }) => {
+    const urls = [];
+    await countRequests(page, urls);
+    await setup(page, { cache: false });
+    await applied(page, ['response-1']);
+    await move(page, 0, 0, true);
+    await move(page, 1, 0, true);
+    await applied(page, ['response-2']);
+    expect(urls).toHaveLength(2);
+  });
+
+  test('DataIDEE viewport defers zone requests while the layer is hidden', async ({ page }) => {
+    const urls = [];
+    await countRequests(page, urls);
+    await setup(page, { cache: false });
+    await applied(page, ['response-1']);
+    await page.evaluate(() => window.viewportLayer.setVisible(false));
+    await move(page, 1, 0, true);
+    await move(page, 2, 0, true);
+    await page.evaluate(() => window.viewportLayer.setVisible(true));
+    await applied(page, ['response-2']);
+    expect(urls).toHaveLength(2);
+    expect(bboxOf(urls[1])).not.toEqual(bboxOf(urls[0]));
+    await page.evaluate(() => window.viewportLayer.setVisible(true));
+    await move(page, 1, 0, true);
+    await applied(page, ['response-3']);
+    expect(urls).toHaveLength(3);
+  });
+
+  test('DataIDEE viewport repeats the current zone when clearCache cancels a queued request', async ({ page }) => {
+    const urls = [];
+    await countRequests(page, urls);
+    await setup(page, { throttleMs: 300 }, true);
+    await applied(page, ['response-1']);
+    await page.clock.pauseAt(new Date(Date.now() + 1000));
+    await page.clock.runFor(300);
+    const before = urls.length;
+    await move(page, 1, 0, true);
+    await expect.poll(() => urls.length).toBe(before + 1);
+    await applied(page, [`response-${before + 1}`]);
+    await move(page, 2, 0, true);
+    await page.evaluate(() => window.viewportLayer.clearCache());
+    await page.clock.runFor(300);
+    await applied(page, [`response-${before + 2}`]);
+    expect(urls).toHaveLength(before + 2);
+    expect(bboxOf(urls[before + 1])).not.toEqual(bboxOf(urls[before]));
+    expect(await page.evaluate(() => window.viewportErrors)).toBe(0);
+  });
+
+  test('DataIDEE viewport keeps antimeridian crossings as west > east', async ({ page }) => {
+    const urls = [];
+    await countRequests(page, urls);
+    await setup(page, { cache: false });
+    await applied(page, ['response-1']);
+    await page.evaluate(() => {
+      const native = window.map.getMapImpl();
+      if (native.getView) {
+        native.getView().setCenter([20037508.342789244, 4495000]);
+        native.getView().setZoom(5);
+        native.dispatchEvent('moveend');
+      } else {
+        const { camera } = native;
+        camera.setView({
+          destination: camera.position.constructor.fromDegrees(180, 37.4, 2000000),
+          orientation: { heading: 0, pitch: -Math.PI / 2, roll: 0 },
+        });
+        camera.moveEnd.raiseEvent();
+      }
+    });
+    await applied(page, ['response-2']);
+    const [west, south, east, north] = bboxOf(urls[1]);
+    expect(west).toBeGreaterThan(east);
+    expect(west).toBeLessThanOrEqual(180);
+    expect(east).toBeGreaterThanOrEqual(-180);
+    expect(west).toBeGreaterThan(90);
+    expect(east).toBeLessThan(-90);
+    expect(south).toBeLessThan(north);
+  });
+
+  if (!cesium) {
+    test('DataIDEE viewport requests the whole world with valid latitudes', async ({ page }) => {
+      const urls = [];
+      await countRequests(page, urls);
+      await setup(page, { cache: false });
+      await applied(page, ['response-1']);
+      await page.evaluate(() => {
+        const native = window.map.getMapImpl();
+        native.getView().setCenter([0, 0]);
+        native.getView().setResolution(156543.03392804097);
+        native.dispatchEvent('moveend');
+      });
+      await applied(page, ['response-2']);
+      const [west, south, east, north] = bboxOf(urls[1]);
+      expect([west, east]).toEqual([-180, 180]);
+      expect(south).toBeGreaterThanOrEqual(-90);
+      expect(north).toBeLessThanOrEqual(90);
+      expect(south).toBeLessThan(north);
+    });
+  }
+
+  test('DataIDEE viewport re-adds without duplicating map or view listeners', async ({ page }) => {
+    const urls = [];
+    await countRequests(page, urls);
+    await setup(page, { cache: false });
+    await applied(page, ['response-1']);
+    const counts = await page.evaluate(() => {
+      const native = window.map.getMapImpl();
+      const impl = window.viewportLayer.getImpl();
+      const viewListeners = () => (native.getListeners
+        ? (native.getListeners('moveend') || []).length
+        : native.camera.moveEnd.numberOfListeners);
+      // eslint-disable-next-line no-underscore-dangle
+      const projectionListeners = () => (window.map.eventsManager_.events_['change:proj'] || [])
+        // eslint-disable-next-line no-underscore-dangle
+        .filter((listener) => listener._scope === impl).length;
+      const added = { view: viewListeners(), projection: projectionListeners() };
+      window.map.removeLayers(window.viewportLayer);
+      const removed = { view: viewListeners(), projection: projectionListeners() };
+      window.map.addLayers(window.viewportLayer);
+      window.map.removeLayers(window.viewportLayer);
+      window.map.addLayers(window.viewportLayer);
+      const readded = { view: viewListeners(), projection: projectionListeners() };
+      return { added, removed, readded };
+    });
+    expect(counts.removed).toEqual({
+      view: counts.added.view - 1, projection: 0,
+    });
+    expect(counts.added.projection).toBe(1);
+    expect(counts.readded).toEqual(counts.added);
+    await applied(page, ['response-2']);
+    await move(page, 1, 0, true);
+    await applied(page, ['response-3']);
+    expect(urls).toHaveLength(3);
   });
 
   test('DataIDEE viewport ignores responses from a removed layer after reinsertion', async ({ page }) => {

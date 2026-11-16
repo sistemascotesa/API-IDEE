@@ -9,9 +9,10 @@ import ServiceDataIDEE from '../service/DataIDEE';
 import JsonLoader from '../loader/DataIDEE';
 import OGCAPIFeatures from './OGCAPIFeatures';
 import ImplUtils from '../util/Utils';
-import dataIDEEBbox from '../../../common/DataIDEEBbox';
 import RequestManager, { RequestCancelledError } from '../../../common/RequestManager';
 import { isUnauthorizedError } from '../../../common/DataIDEERequest';
+import normalizeDataIDEEOptions from '../../../common/DataIDEEOptions';
+import DataIDEEViewport from '../../../common/DataIDEEViewport';
 
 /**
  * OGC API Features JSON vector layer implementation.
@@ -21,16 +22,16 @@ import { isUnauthorizedError } from '../../../common/DataIDEERequest';
 class DataIDEE extends OGCAPIFeatures {
   constructor(options = {}, vendorOptions = {}) {
     super(options, vendorOptions);
-    this.requestManagerOptions_ = {
-      cache: options.cache,
-      throttleMs: options.throttleMs,
-      pendingPolicy: 'latest',
-    };
+    const normalized = normalizeDataIDEEOptions(options, vendorOptions);
+    this.requestManagerOptions_ = normalized.requestManager;
     this.requestManager_ = new RequestManager(this.requestManagerOptions_);
     this.requestRevision_ = 0;
-    this.bboxStrategy_ = options.bboxStrategy === true && isNullOrEmpty(vendorOptions.source);
-    this.requestedViewport_ = null;
-    this.removeViewportListeners_ = null;
+    this.bboxStrategy_ = normalized.bboxStrategy;
+    this.viewport_ = this.bboxStrategy_ ? new DataIDEEViewport({
+      getExtent: () => this.getVisibleExtent_(),
+      getProjectionCode: () => this.map?.getProjection().code,
+      listen: (onChange) => this.listenViewport_(onChange),
+    }) : null;
   }
 
   /**
@@ -72,9 +73,8 @@ class DataIDEE extends OGCAPIFeatures {
     this.requestRevision_ += 1;
     const revision = this.requestRevision_;
 
-    const bbox = this.bboxStrategy_ ? this.getVisibleBbox_() : this.bbox;
-    const viewport = this.bboxStrategy_ ? this.viewportKey_(bbox) : null;
-    this.requestedViewport_ = viewport;
+    const { bbox, key: zone } = this.bboxStrategy_ ? this.viewport_.request() : { bbox: this.bbox };
+    const isZoneCurrent = () => !this.bboxStrategy_ || this.viewport_.isCurrent(zone);
     if (this.bboxStrategy_ && !bbox) return Promise.resolve();
 
     this.service_ = new ServiceDataIDEE({
@@ -102,7 +102,7 @@ class DataIDEE extends OGCAPIFeatures {
       this.formater_,
       this.requestManager_,
       () => !this.bboxStrategy_ || (this.map && this.cesiumLayer === requestedLayer
-        && viewport === this.viewportKey_(this.getVisibleBbox_())),
+        && isZoneCurrent()),
       this.getToken() !== undefined,
       this.service_.getRequestHeaders(),
     );
@@ -114,8 +114,8 @@ class DataIDEE extends OGCAPIFeatures {
     return this.requestFeatures_(force).then(async (features) => {
       if (!this.map || this.cesiumLayer !== requestedLayer
         || revision !== this.requestRevision_ || !isCurrent()) return;
-      if (this.bboxStrategy_ && viewport !== this.viewportKey_(this.getVisibleBbox_())) {
-        this.requestedViewport_ = null;
+      if (!isZoneCurrent()) {
+        this.viewport_.invalidate();
         return;
       }
       if (this.bboxStrategy_) {
@@ -137,13 +137,16 @@ class DataIDEE extends OGCAPIFeatures {
         this.facadeVector_.addFeatures(features);
       }
     }).catch((error) => {
-      if (revision === this.requestRevision_) this.requestedViewport_ = null;
-      if (!(error instanceof RequestCancelledError)
-        && this.map && this.cesiumLayer === requestedLayer
-        && revision === this.requestRevision_ && isCurrent()
-        && (!this.bboxStrategy_ || viewport === this.viewportKey_(this.getVisibleBbox_()))) {
+      const current = this.map && this.cesiumLayer === requestedLayer
+        && revision === this.requestRevision_ && isCurrent() && isZoneCurrent();
+      if (current && error instanceof RequestCancelledError && error.reason === 'invalidated') {
+        return this.updateSource_(forceNewSource, force, isCurrent);
+      }
+      if (revision === this.requestRevision_) this.viewport_?.invalidate();
+      if (current && !(error instanceof RequestCancelledError)) {
         this.facadeVector_.fire(EventType.LOAD_ERROR, [error]);
       }
+      return undefined;
     });
   }
 
@@ -193,30 +196,56 @@ class DataIDEE extends OGCAPIFeatures {
 
   clearCache() {
     this.requestManager_.clearCache();
-    this.requestedViewport_ = null;
+    this.viewport_?.invalidate();
   }
 
-  getVisibleBbox_() {
-    if (!this.map) return null;
-    const native = this.map.getMapImpl();
-    if (!native.canvas.clientWidth || !native.canvas.clientHeight) return null;
+  /**
+   * Adaptador Cesium del MRE: rectángulo visible del globo en CRS84 sin normalizar.
+   * @returns {Array<Number>|null} Extensión, o null si la vista no es calculable.
+   * @private
+   */
+  getVisibleExtent_() {
+    const native = this.map?.getMapImpl();
+    if (!native?.canvas.clientWidth || !native.canvas.clientHeight) return null;
     const rectangle = native.camera.computeViewRectangle(native.scene.globe.ellipsoid);
     if (!rectangle) return null;
-    return dataIDEEBbox([
+    return [
       rectangle.west, rectangle.south, rectangle.east, rectangle.north,
-    ].map((angle) => CesiumMath.toDegrees(angle)));
+    ].map((angle) => CesiumMath.toDegrees(angle));
   }
 
-  viewportKey_(bbox) {
-    return JSON.stringify([this.map?.getProjection().code, bbox]);
+  /**
+   * Adaptador Cesium de eventos de vista: fin de movimiento de cámara y cambio de tamaño.
+   * El tamaño se comprueba tras renderizar, cuando Cesium ya ha ajustado el frustum.
+   * @param {Function} onChange Función a ejecutar.
+   * @returns {Function} Retira los escuchadores.
+   * @private
+   */
+  listenViewport_(onChange) {
+    const native = this.map.getMapImpl();
+    const removeMove = native.camera.moveEnd.addEventListener(onChange);
+    let size = `${native.canvas.clientWidth},${native.canvas.clientHeight}`;
+    const removeResize = native.scene.postRender.addEventListener(() => {
+      const nextSize = `${native.canvas.clientWidth},${native.canvas.clientHeight}`;
+      if (nextSize !== size) {
+        size = nextSize;
+        onChange();
+      }
+    });
+    return () => { removeMove(); removeResize(); };
   }
 
   // Native sources retain covered extents, but this layer replaces its active zone.
   // Let the request manager decide exact reuse instead of skipping contained viewports.
+  // A hidden layer defers the request until it is shown again.
   loadViewport_() {
-    if (this.map && this.viewportKey_(this.getVisibleBbox_()) !== this.requestedViewport_) {
-      this.updateSource_(false);
-    }
+    if (!this.map || !this.isVisible()) return;
+    if (this.viewport_.hasChanged()) this.updateSource_(false);
+  }
+
+  setVisible(visibility) {
+    super.setVisible(visibility);
+    if (visibility && this.bboxStrategy_) this.loadViewport_();
   }
 
   addTo(map, addLayer = true) {
@@ -224,25 +253,11 @@ class DataIDEE extends OGCAPIFeatures {
       this.requestManager_ = new RequestManager(this.requestManagerOptions_);
     }
     super.addTo(map, addLayer);
-    if (this.bboxStrategy_) {
-      const native = map.getMapImpl();
-      const removeMove = native.camera.moveEnd.addEventListener(() => this.loadViewport_());
-      let size = `${native.canvas.clientWidth},${native.canvas.clientHeight}`;
-      const removeResize = native.scene.postRender.addEventListener(() => {
-        const nextSize = `${native.canvas.clientWidth},${native.canvas.clientHeight}`;
-        if (nextSize !== size) {
-          size = nextSize;
-          this.loadViewport_();
-        }
-      });
-      this.removeViewportListeners_ = () => { removeMove(); removeResize(); };
-    }
+    this.viewport_?.attach(() => this.loadViewport_());
   }
 
   destroy() {
-    this.removeViewportListeners_?.();
-    this.removeViewportListeners_ = null;
-    this.requestedViewport_ = null;
+    this.viewport_?.detach();
     this.requestRevision_ += 1;
     this.requestManager_.dispose();
     super.destroy();

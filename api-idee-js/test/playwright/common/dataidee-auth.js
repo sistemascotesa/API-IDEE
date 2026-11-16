@@ -102,6 +102,7 @@ export default function registerDataIDEEAuthTests(pagePath) {
     await expect.poll(() => page.evaluate(() => window.authEvents.errors), LOAD_TIMEOUT).toBe(1);
     expect(await page.evaluate(() => window.authEvents.unauthorized)).toBe(0);
     await expect(page.locator('div.m-dialog.error')).toHaveCount(0);
+    await expect(page.locator('div.m-toast.error')).toHaveCount(1);
   });
 
   authTest('DataIDEE sends getFeature.token as Bearer Authorization by default, also from object literals', async ({ page }) => {
@@ -165,6 +166,7 @@ export default function registerDataIDEEAuthTests(pagePath) {
     expect(await featureIds(page)).toEqual([]);
     expect(await page.evaluate(() => window.authEvents.errors)).toBe(0);
     await expect(page.locator('div.m-dialog.error')).toHaveCount(1);
+    await expect(page.locator('div.m-toast')).toHaveCount(0);
 
     await page.evaluate(() => window.authLayer.refresh());
     await expect.poll(() => unauthorizedEvents(page), LOAD_TIMEOUT).toBe(2);
