@@ -216,8 +216,11 @@ export default class LayerswitcherControl extends IDEE.Control {
     // Botón de sesión del servicio OGC API abierto
     this.authButton_ = undefined;
 
-    // Servicios OGC API cuyas colecciones exigen autenticación
-    this.protectedOGCServices_ = new Set();
+    // Servicios OGC API identificados como DataIDEE al abrirlos: sus colecciones
+    // exigen autenticación o publican la API de autenticación de DataIDEE
+    this.dataIDEEServices_ = new Set();
+    // Colecciones leídas al detectar el último servicio OGC API: { root, json }
+    this.ogcPrefetch_ = null;
 
     // Capas DataIDEE con aviso de no autorizado registrado
     this.watchedDataIDEELayers_ = new WeakSet();
@@ -2283,9 +2286,26 @@ export default class LayerswitcherControl extends IDEE.Control {
    * @returns {Promise<Boolean>} Verdadero si es un servicio OGC API Features.
    */
   openOGCAPIService_(url) {
-    return detectOGCAPIFeatures(url).then((service) => {
+    // Si el servicio se abre en modo DataIDEE con una sesión vigente, la detección ya pide
+    // las colecciones con su token: así sirve también como lista del usuario autenticado
+    const { root } = parseOGCAPIUrl(url);
+    const token = this.getKnownOGCMode_(root) === MODE_DATAIDEE
+      ? this.authManager_.getValidToken(root) : undefined;
+    const authorization = token ? `Bearer ${token}` : undefined;
+    const requestOptions = authorization
+      ? { headers: { Authorization: authorization } } : undefined;
+    return detectOGCAPIFeatures(url, requestOptions).then(async (service) => {
       if (!service) return false;
-      if (service.isProtected) this.protectedOGCServices_.add(service.root);
+      // Detectar el login de DataIDEE solo sirve para elegir el modo inicial: si ya se
+      // conoce, se omite (y con él sus peticiones de prueba)
+      if (service.isProtected || (!this.getKnownOGCMode_(service.root)
+        && await this.authManager_.isDataIDEEService(service.root))) {
+        this.dataIDEEServices_.add(service.root);
+      }
+      // Las colecciones leídas al detectar el servicio evitan pedirlas otra vez, si la
+      // carga las pediría con las mismas credenciales
+      this.ogcPrefetch_ = service.collectionsJson
+        ? { root: service.root, json: service.collectionsJson, authorization } : null;
       this.printOGCModal(url);
       return true;
     });
@@ -2774,15 +2794,21 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   // Modo de carga inicial de un servicio OGC API: el último usado con el servicio,
-  // DataIDEE si está precargado así o si sus colecciones exigen autenticación,
+  // DataIDEE si está precargado así o se ha identificado como tal al abrirlo,
   // o el estándar.
   getInitialOGCMode_(root) {
+    return this.getKnownOGCMode_(root)
+      || (this.dataIDEEServices_.has(root) ? MODE_DATAIDEE : MODE_STANDARD);
+  }
+
+  // Modo del servicio que no depende de detectarlo: el último usado o DataIDEE si está
+  // precargado así. Undefined si no se conoce.
+  getKnownOGCMode_(root) {
     const storedMode = this.tokenStore_.getMode(root);
     if (this.ogcModes_[storedMode]) return storedMode;
     const isPrechargedDataIDEE = this.getPrechargedServices()
       .some((service) => service.type === 'DataIDEE' && isSameService(service.url, root));
-    return isPrechargedDataIDEE || this.protectedOGCServices_.has(root)
-      ? MODE_DATAIDEE : MODE_STANDARD;
+    return isPrechargedDataIDEE ? MODE_DATAIDEE : undefined;
   }
 
   // Muestra, debajo del buscador, el selector del modo de carga del servicio OGC API
@@ -2858,21 +2884,106 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   // Pide las colecciones con el modo activo y pinta el formulario de la capa
-  loadOGCCollections_() {
+  // Con keepForm se conserva lo que el usuario tenía en el formulario (colección elegida,
+  // número de elementos, bbox, tipo de filtro, ID y filtros personalizados).
+  // Resuelve verdadero si se ha pintado la lista del servicio.
+  loadOGCCollections_({ keepForm = false } = {}) {
     this.ogcRequestId_ += 1;
     const requestId = this.ogcRequestId_;
     const { root, mode } = this.ogcState_;
+    const form = keepForm ? this.readOGCForm_() : null;
+    // De un solo uso: las colecciones leídas al detectar este servicio
+    const prefetch = this.ogcPrefetch_?.root === root ? this.ogcPrefetch_ : undefined;
+    this.ogcPrefetch_ = null;
     IDEE.dialog.removeActions(INFO_DIALOG);
     this.showOGCLoading_();
-    this.ogcModes_[mode].getCollections(root).then(({ collections, unauthorized }) => {
-      if (requestId !== this.ogcRequestId_) return;
-      this.removeLoading();
-      if (unauthorized) this.onOGCUnauthorized_(root);
-      this.renderOGCCollections_(collections);
+    return this.ogcModes_[mode].getCollections(root, prefetch)
+      .then(({ collections, unauthorized }) => {
+        if (requestId !== this.ogcRequestId_) return false;
+        this.removeLoading();
+        if (unauthorized) this.onOGCUnauthorized_(root);
+        if (form) this.keepOGCForm_(form, collections);
+        this.renderOGCCollections_(collections);
+        const select = document.querySelector('#m-layerswitcher-ogc-vectors-select');
+        if (form && select !== null) {
+          // La plantilla no marca la colección de índice 0: se elige aquí. Si ya no está
+          // en la lista, el selector queda sin elegir.
+          const kept = collections.some((collection) => collection.id === form.collectionId);
+          select.value = kept ? form.collectionId : '';
+        }
+        return !unauthorized;
+      }).catch(() => {
+        if (requestId !== this.ogcRequestId_) return false;
+        this.removeLoading();
+        IDEE.dialog.error(getValue('exception.error_ogc'), undefined, this.order);
+        return false;
+      });
+  }
+
+  // Lo que el usuario tiene en el formulario OGC, para conservarlo al volver a pintarlo
+  // eslint-disable-next-line class-methods-use-this
+  readOGCForm_() {
+    const select = document.querySelector('#m-layerswitcher-ogc-vectors-select');
+    if (select === null) return null;
+    const others = document.querySelector('input[name="m-layerswitcher-ogc-filter"][value="others"]');
+    return {
+      collectionId: select.value,
+      limitVal: document.querySelector('#m-layerswitcher-ogc-limit-items')?.value,
+      onlyBbox: document.querySelector('#m-layerswitcher-ogc-search-bbox')?.checked === true,
+      filterByOtherFilters: others?.checked === true,
+      prevID: document.querySelector('#m-layerswitcher-ogc-search-form-ID')?.value,
+      // Los filtros personalizados se quitan del formulario al cambiar de colección
+      hasSummary: document.querySelector('#m-layerswitcher-ogc-summary') !== null,
+    };
+  }
+
+  // Guarda en el estado del modal el formulario leído, que renderOGCCollections_ vuelve a
+  // pintar con la lista nueva. Los filtros personalizados solo se conservan si la
+  // colección sigue en la lista.
+  keepOGCForm_(form, collections) {
+    const index = collections.findIndex((collection) => collection.id === form.collectionId);
+    Object.assign(this.ogcState_, {
+      selectedLayer: index >= 0 ? index : undefined,
+      limitVal: form.limitVal,
+      onlyBbox: form.onlyBbox,
+      summary: form.hasSummary && index >= 0 ? this.ogcState_.summary : undefined,
+      filterByID: !form.filterByOtherFilters,
+      filterByOtherFilters: form.filterByOtherFilters,
+      prevID: form.prevID,
+    });
+  }
+
+  // Colección elegida en el formulario OGC. Sin colecciones (p. ej. un servicio DataIDEE
+  // sin sesión) o sin elegir ninguna se avisa y devuelve null.
+  getSelectedOGCCollection_() {
+    const select = document.querySelector('#m-layerswitcher-ogc-vectors-select');
+    const hasCollections = Array.from(select.options).some((option) => option.value !== '');
+    if (!hasCollections) {
+      IDEE.dialog.error(getValue('exception.no_results'), undefined, this.order);
+      return null;
+    }
+    if (select.value === '') {
+      IDEE.dialog.error(getValue('select_service'), undefined, this.order);
+      return null;
+    }
+    return select.value;
+  }
+
+  // Cuenta los objetos geográficos de la colección elegida con los filtros del
+  // formulario y muestra el número en el formulario
+  showOGCResultsCount_(summary) {
+    // getProperties lee la colección elegida del selector
+    const properties = this.getProperties(undefined, summary);
+    return this.countOGCAPIFeatures_(properties).then((numberFeatures) => {
+      const singular = numberFeatures === 1;
+      const results1 = getValue(singular ? 'results_1_singular' : 'results_1_plural');
+      const results2 = getValue(singular ? 'results_2_singular' : 'results_2_plural');
+      const result = document.querySelector('#m-layerswitcher-ogc-check-results');
+      result.style.display = 'block';
+      result.innerHTML = `${results1}${numberFeatures}${results2}`;
+      result.focus();
     }).catch(() => {
-      if (requestId !== this.ogcRequestId_) return;
-      this.removeLoading();
-      IDEE.dialog.error(getValue('exception.error_ogc'), undefined, this.order);
+      IDEE.dialog.error(getValue('no_results'), undefined, this.order);
     });
   }
 
@@ -2889,6 +3000,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   renderOGCCollections_(layers) {
     const {
       url, root, collectionId, limitVal, onlyBbox, summary, filterByID, filterByOtherFilters,
+      prevID,
     } = this.ogcState_;
     let { selectedLayer } = this.ogcState_;
     if (IDEE.utils.isNullOrEmpty(selectedLayer) && !IDEE.utils.isNullOrEmpty(collectionId)) {
@@ -2910,7 +3022,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         summary,
         filterByID,
         filterByOtherFilters,
-        prevID: undefined,
+        prevID,
         translations: {
           select_service: getValue('select_service'),
           amount_results: getValue('amount_results'),
@@ -2952,7 +3064,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     if (!state || state.root !== root || state.mode !== MODE_DATAIDEE
       || document.querySelector(OGC_AUTH) === null) return;
     if (this.authButton_) this.authButton_.setState(token ? AUTH_LOCKED : AUTH_UNLOCKED);
-    this.loadOGCCollections_();
+    this.loadOGCCollections_({ keepForm: true });
   }
 
   // Intenta refrescar el token cuando el servicio rechaza una capa DataIDEE
@@ -3048,21 +3160,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     const btnCheck = document.querySelector('#m-layerswitcher-ogcCContainer #m-layerswitcher-ogc-check-button');
     const btnCustomQuery = document.querySelector('#m-layerswitcher-ogc-custom-query-button');
 
-    // La colección elegida se lee al pulsar. Sin colecciones (p. ej. un servicio
-    // DataIDEE sin sesión) o sin elegir ninguna se avisa en lugar de seguir.
-    const getSelectedCollection = () => {
-      const select = document.querySelector('#m-layerswitcher-ogc-vectors-select');
-      const hasCollections = Array.from(select.options).some((option) => option.value !== '');
-      if (!hasCollections) {
-        IDEE.dialog.error(getValue('exception.no_results'), undefined, this.order);
-        return null;
-      }
-      if (select.value === '') {
-        IDEE.dialog.error(getValue('select_service'), undefined, this.order);
-        return null;
-      }
-      return select.value;
-    };
+    const getSelectedCollection = () => this.getSelectedOGCCollection_();
 
     // "Añadir" va en el pie del diálogo, junto a "Cerrar", solo si hay capas que añadir
     if (layers.length > 0) {
@@ -3086,31 +3184,17 @@ export default class LayerswitcherControl extends IDEE.Control {
     }
 
     btnCheck.addEventListener('click', () => {
-      selectValue = getSelectedCollection();
-      if (selectValue !== null) {
-        properties = this.getProperties(selectValue, summary);
-        this.countOGCAPIFeatures_(properties).then((numberFeatures) => {
-          let results1;
-          let results2;
-          if (numberFeatures === 1) {
-            results1 = getValue('results_1_singular');
-            results2 = getValue('results_2_singular');
-          } else {
-            results1 = getValue('results_1_plural');
-            results2 = getValue('results_2_plural');
+      // En DataIDEE se refresca antes el listado con la sesión actual (p. ej. tras iniciarla),
+      // conservando el formulario, y se cuenta sobre el formulario nuevo
+      if (this.ogcState_.mode === MODE_DATAIDEE) {
+        this.loadOGCCollections_({ keepForm: true }).then((loaded) => {
+          if (loaded && this.getSelectedOGCCollection_() !== null) {
+            this.showOGCResultsCount_(this.ogcState_.summary);
           }
-          const result = document.querySelector('#m-layerswitcher-ogc-check-results');
-          result.style.display = 'block';
-          result.innerHTML = `${results1}${numberFeatures}${results2}`;
-        })
-          .then(() => {
-            document.querySelector('#m-layerswitcher-ogc-check-results').focus();
-          })
-          .catch(() => {
-            IDEE.dialog.error(getValue('no_results'), undefined, this.order);
-          });
-        // IDEE.proxy(this.statusProxy);
+        });
+        return;
       }
+      if (getSelectedCollection() !== null) this.showOGCResultsCount_(summary);
     });
 
     btnCustomQuery.addEventListener('click', () => {
@@ -3261,9 +3345,9 @@ export default class LayerswitcherControl extends IDEE.Control {
   getProperties(selectValue, summary) {
     const selectValueText = document.querySelector('#m-layerswitcher-ogc-vectors-select').selectedOptions[0]?.text;
     selectValue = document.querySelector('#m-layerswitcher-ogc-vectors-select').value;
-    const limit = document.querySelector('#m-layerswitcher-ogc-limit-items').value;
+    // Sin valor no se envía "limit": el servicio aplica su tamaño de página por defecto
+    const limit = document.querySelector('#m-layerswitcher-ogc-limit-items').value.trim();
     const checked = document.querySelector('#m-layerswitcher-ogc-search-bbox').checked;
-    const limitValue = limit;
     let bboxString;
     if (checked) {
       const bbox = this.getImpl().getBbox4326(this.map_);
@@ -3272,7 +3356,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     const properties = {};
     properties.name = selectValue;
     properties.legend = selectValueText;
-    properties.limit = limitValue;
+    if (limit) properties.limit = limit;
     properties.extract = true;
 
     if (this.useAttributions_) {

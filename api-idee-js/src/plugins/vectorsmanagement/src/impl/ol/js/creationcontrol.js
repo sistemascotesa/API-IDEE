@@ -82,6 +82,18 @@ export default class Creationcontrol extends IDEE.impl.Control {
   }
 
   /**
+   * Adds a feature to the drawing vector source
+   *
+   * @public
+   * @function
+   * @param {IDEE.Feature} feature
+   * @api stable
+   */
+  addFeatureToVectorSource(feature) {
+    this.vectorSource_.addFeature(feature.getImpl().getFeature());
+  }
+
+  /**
    * Checks if the drawing vector source contains a feature
    *
    * @public

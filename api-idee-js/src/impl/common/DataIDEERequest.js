@@ -1,9 +1,7 @@
-import { addParameters, isNullOrEmpty } from 'IDEE/util/Utils';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 import { get as getRemote } from 'IDEE/util/Remote';
 import { getValue } from 'IDEE/i18n/language';
 import { RequestCancelledError } from './RequestManager';
-
-let refreshSequence = 0;
 
 /** True when the service rejected the request credentials (HTTP 401/403). */
 export function isUnauthorizedError(error) {
@@ -28,7 +26,10 @@ function validateGeoJSON(response) {
 
 /**
  * Prepare a DataIDEE GET operation. Authentication and projection remain in each loader.
- * The exact URL/context are identified before adding the internal refresh parameter.
+ * The request is identified by its exact URL/context. A forced execution only bypasses the
+ * RequestManager cache and requests the same URL: DataIDEE rejects unknown query
+ * parameters (HTTP 400), so no cache-busting parameter is added, and its responses are
+ * not stored by the browser (Cache-Control: no-store).
  * Validation (including asynchronous consumer validation) completes before caching text.
  */
 export default function createDataIDEERequest({
@@ -37,14 +38,9 @@ export default function createDataIDEERequest({
   return {
     key: JSON.stringify(['GET', url, context]),
     force,
-    execute: async ({ force: fresh }) => {
+    execute: async () => {
       if (!shouldExecute()) throw new RequestCancelledError('obsolete viewport');
-      let requestUrl = url;
-      if (fresh) {
-        refreshSequence += 1;
-        requestUrl = addParameters(url, { _ideeRefresh: `${Date.now()}-${refreshSequence}` });
-      }
-      const response = await getRemote(requestUrl, null, requestOptions);
+      const response = await getRemote(url, null, requestOptions);
       validateGeoJSON(response);
       await validateResponse?.(response.text);
       const cacheControl = Object.entries(response.headers || {})

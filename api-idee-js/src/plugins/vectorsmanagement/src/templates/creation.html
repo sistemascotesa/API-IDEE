@@ -1,4 +1,8 @@
 <div class="m-vectorsmanagement-creation-container">
+    {{#if editingSession}}
+    <!-- Sesión de edición de la capa (DataIDEE): la rellena editingsession.html -->
+    <section id="m-vectorsmanagement-editing" class="m-vectorsmanagement-editing" aria-label="{{translations.editing_edit}}"></section>
+    {{/if}}
     <div id="creationBtns" class="m-vectorsmanagement-creationBtns">
         <button tabindex="0" id="pointdrawing" class="vectorsmanagement-icon-pin" title="{{translations.creationPoint}}"></button>
         <button tabindex="0" id="pointlocateddrawing" class="vectorsmanagement-icon-pin-located" title="{{translations.creationCoordPoint}}"></button>

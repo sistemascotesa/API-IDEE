@@ -4,6 +4,7 @@
 
 import implementationFactory from 'impl/implementationfactory';
 import template from '../../templates/vectorsmanagement';
+import editingSessionTemplate from '../../templates/editingsession';
 import { getValue } from './i18n/language';
 import SelectionControl, { FeatureSelection } from './selectioncontrol';
 import AddLayerControl from './addlayercontrol';
@@ -15,7 +16,16 @@ import HelpControl from './helpcontrol';
 import StyleControl from './stylecontrol';
 import TurfControl from './turfcontrol';
 import { getSnapOptions } from './snapoptions';
+import { formatSaveValidationError } from './dataideeformmessages';
+import askChoice from './choicedialog';
 import { EDITING_AREA, implementsContracts } from './contracts';
+
+/**
+ * Toolbar buttons whose panels show the editing session of the layer.
+ * @const
+ * @type {Array<String>}
+ */
+const EDITING_TOOLS = ['m-vectorsmanagement-creation', 'm-vectorsmanagement-edition'];
 
 /**
  * @classdesc
@@ -166,11 +176,6 @@ export default class VectorsManagementControl extends IDEE.Control {
             style: getValue('style'),
             turf: getValue('turf.title'),
             selectLayerDefault: getValue('selectLayerDefault'),
-            editing_edit: getValue('editing_edit'),
-            editing_start: getValue('editing_start'),
-            editing_save: getValue('editing_save'),
-            editing_discard: getValue('editing_discard'),
-            editing_end: getValue('editing_end'),
           },
         },
       });
@@ -180,7 +185,6 @@ export default class VectorsManagementControl extends IDEE.Control {
         this.createImplementation_('selection'),
         () => this.refreshSelection(),
       );
-      this.initializeEditing(html);
 
       if (this.selection_) {
         this.addSelectionControl(html);
@@ -263,7 +267,7 @@ export default class VectorsManagementControl extends IDEE.Control {
         this.editingPreparing_
         && selected.dataset.value !== this.selectedLayer?.idLayer
       ) {
-        this.editingStatus_.textContent = getValue('editing_prepare_wait');
+        this.setEditingStatus_(getValue('editing_prepare_wait'), true);
         return;
       }
       if (
@@ -402,26 +406,29 @@ export default class VectorsManagementControl extends IDEE.Control {
     if (this.turf_) {
       this.turfControl.setLayer(this.selectedLayer);
     }
+    // Permissions and messages belong to the previous layer. An open Creation panel was built
+    // for it: it closes so that opening it again shows (or hides) the editing section.
+    if (!this.editingSession_) {
+      this.editingCapabilities_ = null;
+      this.editingCapabilityError_ = false;
+      this.editingMessage_ = '';
+    }
+    if (this.isEditingLayer() || this.editingSection_?.isConnected) this.closeEditingTools_();
     this.updateEditingAvailability();
   }
 
-  initializeEditing(html) {
-    this.editingPanel_ = html.querySelector('#m-vectorsmanagement-editing');
-    this.editingStatus_ = html.querySelector(
-      '#m-vectorsmanagement-editing-status',
-    );
-    html
-      .querySelector('#m-vectorsmanagement-editing-start')
-      .addEventListener('click', () => this.startEditing());
-    html
-      .querySelector('#m-vectorsmanagement-editing-save')
-      .addEventListener('click', () => this.saveEditingChanges());
-    html
-      .querySelector('#m-vectorsmanagement-editing-discard')
-      .addEventListener('click', () => this.discardEditingChanges());
-    html
-      .querySelector('#m-vectorsmanagement-editing-end')
-      .addEventListener('click', () => this.requestEndEditing());
+  /**
+   * Indicates whether the selected layer is edited through a session (DataIDEE) that this
+   * platform supports. Its Creation and Edition panels then show the editing section.
+   *
+   * @public
+   * @function
+   * @returns {Boolean} true if the layer is edited through a session
+   * @api
+   */
+  isEditingLayer() {
+    return this.isSessionLayer_(this.selectedLayer)
+      && implementsContracts(this.getImpl(), EDITING_AREA);
   }
 
   isSessionLayer_(layer = this.selectedLayer) {
@@ -441,32 +448,133 @@ export default class VectorsManagementControl extends IDEE.Control {
     return this.editingSession_;
   }
 
-  getEditingFields() {
-    return this.editingPanel_;
+  getEditingCapabilities() {
+    return this.editingCapabilities_;
   }
 
-  prepareNewFeature(feature, values) {
-    try {
-      this.editingSession_.prepareFeature(feature, values);
-      return true;
-    } catch (error) {
-      this.editingStatus_.textContent = error.message;
-      return false;
-    }
+  /**
+   * Fills the editing section of the Creation or Edition panel that has just opened and
+   * starts the session if there is none: its fixed area is the current map view. The
+   * session stays active while the panels close and open.
+   *
+   * @public
+   * @function
+   * @param {HTMLElement} panel Panel template
+   * @api
+   */
+  mountEditingSection(panel) {
+    const section = panel.querySelector('#m-vectorsmanagement-editing');
+    if (!section) return;
+    const content = IDEE.template.compileSync(editingSessionTemplate, {
+      vars: {
+        translations: {
+          editing_save: getValue('editing_save'),
+          editing_discard: getValue('editing_discard'),
+          editing_end: getValue('editing_end'),
+        },
+      },
+    });
+    content
+      .querySelector('#m-vectorsmanagement-editing-save')
+      .addEventListener('click', () => this.saveEditingChanges());
+    content
+      .querySelector('#m-vectorsmanagement-editing-discard')
+      .addEventListener('click', () => this.discardEditingChanges());
+    content
+      .querySelector('#m-vectorsmanagement-editing-end')
+      .addEventListener('click', () => this.requestEndEditing());
+    section.replaceChildren(content);
+    this.accessibilityTab(content);
+    this.editingSection_ = section;
+    this.renderEditingSection_();
+    if (!this.editingSession_ && !this.editingPreparing_) this.startEditing();
   }
 
+  /**
+   * Shows the state of the session in the editing section of the open panel, if any.
+   * @private
+   * @function
+   */
+  renderEditingSection_() {
+    const section = this.editingSection_;
+    if (!section?.isConnected) return;
+    const busy = Boolean(this.editingPreparing_ || this.editingSaving_);
+    const ready = Boolean(this.editingSession_) && !busy;
+    section.setAttribute('aria-busy', String(busy));
+    section.querySelector('#m-vectorsmanagement-editing-status').textContent = this.editingMessage_ || '';
+    section.querySelector('#m-vectorsmanagement-editing-save').disabled = !ready
+      || Boolean(this.editingSession_.requiresReview);
+    section.querySelector('#m-vectorsmanagement-editing-discard').disabled = !ready;
+    section.querySelector('#m-vectorsmanagement-editing-end').disabled = !ready;
+  }
+
+  /**
+   * Sets the message of the editing session, kept while the panels close and open.
+   * @private
+   * @function
+   * @param {String} message Message
+   * @param {Boolean} [notify=false] Shows it in a toast when no open panel shows the session
+   */
+  setEditingStatus_(message, notify = false) {
+    this.editingMessage_ = message;
+    if (this.editingSection_?.isConnected) this.renderEditingSection_();
+    else if (notify && message) IDEE.toast.warning(message, null, 6000);
+  }
+
+  /**
+   * Closes the Creation or Edition panel, if one of them is open.
+   * @private
+   * @function
+   */
+  closeEditingTools_() {
+    const active = this.getControlActive(this.html);
+    if (active && EDITING_TOOLS.includes(active.id)) this.deactive(this.html, '');
+  }
+
+  /**
+   * Enables the tools allowed for the selected layer and, for a session layer without an
+   * active session, requests its editing permissions.
+   *
+   * @public
+   * @function
+   * @api
+   */
   updateEditingAvailability() {
-    const isEditing = this.isSessionLayer_(this.selectedLayer)
-      && implementsContracts(this.getImpl(), EDITING_AREA);
-    this.editingPanel_.hidden = !isEditing;
-    const isEditable = !isEditing || Boolean(this.editingSession_);
-    ['creation', 'edition'].forEach((id) => {
+    this.updateEditingTools_();
+    this.loadEditingCapabilities_();
+  }
+
+  /**
+   * Reason shown on the Creation and Edition buttons of a session layer when they are disabled.
+   * @private
+   * @function
+   * @returns {String} Reason
+   */
+  getEditingBlockedReason_() {
+    if (this.editingCapabilityError_) return getValue('editing_capability_error');
+    return getValue(this.editingCapabilities_ ? 'editing_not_allowed' : 'editing_checking');
+  }
+
+  updateEditingTools_() {
+    const isEditing = this.isEditingLayer();
+    const attributeFormAvailable = Boolean(this.editingCapabilities_?.form?.available);
+    const geometryTypes = this.editingCapabilities_?.geometryTypes;
+    const acceptsGeometry = (type) => !isEditing || !geometryTypes?.length
+      || geometryTypes.includes(type);
+    // Opening Creation or Edition starts the session, so they follow the permissions
+    const permissions = {
+      creation: this.editingCapabilities_?.create,
+      edition: this.editingCapabilities_?.update || this.editingCapabilities_?.delete,
+    };
+    Object.entries(permissions).forEach(([id, allowed]) => {
       const button = this.html.querySelector(`#m-vectorsmanagement-${id}`);
-      if (button) button.disabled = !isEditable;
+      if (!button) return;
+      const blocked = isEditing && !allowed;
+      button.disabled = blocked;
+      button.title = blocked ? this.getEditingBlockedReason_() : getValue(id);
     });
     const creationTemplate = this.creationControl?.template;
     if (creationTemplate) {
-      const geometryTypes = this.editingCapabilities_?.geometryTypes;
       const geometryButtons = {
         pointdrawing: 'point',
         pointlocateddrawing: 'point',
@@ -480,30 +588,32 @@ export default class VectorsManagementControl extends IDEE.Control {
       Object.entries(geometryButtons).forEach(([id, type]) => {
         const button = creationTemplate.querySelector(`#${id}`);
         if (button) {
+          button.hidden = !acceptsGeometry(type)
+            || (type.startsWith('multi') && (!isEditing || !this.editingSession_));
           button.disabled = isEditing
-            && (!this.editingSession_ || !this.editingCapabilities_?.create);
-          if (geometryTypes?.length) button.hidden = isEditing && !geometryTypes.includes(type);
+            && (!this.editingSession_ || !this.editingCapabilities_?.create
+              || !attributeFormAvailable || button.hidden);
         }
       });
       const textButton = creationTemplate.querySelector('#textdrawing');
-      if (textButton) textButton.disabled = isEditing || !isEditable;
-      [
-        'multipointdrawing',
-        'multilinedrawing',
-        'multipolygondrawing',
-        'finishmultipledrawing',
-      ].forEach((id) => {
-        const button = creationTemplate.querySelector(`#${id}`);
-        if (button) {
-          button.hidden = !isEditing || !this.editingSession_;
-          button.disabled = isEditing
-            && (!this.editingSession_ || !this.editingCapabilities_?.create);
-        }
-      });
+      if (textButton) {
+        textButton.hidden = isEditing;
+        textButton.disabled = isEditing;
+      }
+      const finishMultiple = creationTemplate.querySelector('#finishmultipledrawing');
+      if (finishMultiple) {
+        const multipleType = this.creationControl.getMultipleGeometryType()?.toLowerCase();
+        finishMultiple.hidden = !isEditing || !this.editingSession_
+          || !multipleType || !acceptsGeometry(multipleType);
+        finishMultiple.disabled = finishMultiple.hidden
+          || !this.editingCapabilities_?.create || !attributeFormAvailable;
+      }
     }
     const editionTemplate = this.editionControl?.template;
     if (editionTemplate) {
+      // The buttons of the session section follow its own state (renderEditingSection_)
       editionTemplate.querySelectorAll('button').forEach((button) => {
+        if (button.closest('#m-vectorsmanagement-editing')) return;
         button.toggleAttribute('disabled', isEditing && !this.editingSession_);
       });
       const updateAllowed = !isEditing
@@ -516,7 +626,17 @@ export default class VectorsManagementControl extends IDEE.Control {
         'movedrawing',
       ].forEach((id) => {
         const button = editionTemplate.querySelector(`#${id}`);
-        if (button) button.disabled = !updateAllowed;
+        if (button) {
+          let compatible = true;
+          if (id === 'holedrawing') {
+            compatible = acceptsGeometry('polygon') || acceptsGeometry('multipolygon');
+          } else if (id === 'rotatedrawing' || id === 'scaledrawing') {
+            compatible = !isEditing || !geometryTypes?.length
+              || geometryTypes.some((type) => type !== 'point');
+          }
+          button.hidden = !compatible;
+          button.disabled = !updateAllowed || !compatible;
+        }
       });
       ['cleanAll', 'm-vectorsmanagement-deletegeom-btn'].forEach((id) => {
         const button = editionTemplate.querySelector(`#${id}`);
@@ -526,79 +646,54 @@ export default class VectorsManagementControl extends IDEE.Control {
         }
       });
       const attributes = editionTemplate.querySelector('#editattribute');
-      if (attributes) attributes.hidden = isEditing;
-    }
-    const fields = this.editingPanel_.querySelector(
-      '#m-vectorsmanagement-editing-fields',
-    );
-    if (fields) {
-      const previousValues = new Map(
-        [...fields.querySelectorAll('input')].map((input) => [
-          input.name,
-          input.value,
-        ]),
-      );
-      fields.replaceChildren();
-      if (this.editingSession_) {
-        const creationFields = [
-          ...(this.editingCapabilities_?.creationFields || []),
-        ];
-        if (this.editingCapabilities_?.clientAssignedId) {
-          creationFields.unshift({
-            name: 'id',
-            type: this.editingCapabilities_.idType || 'string',
-            required: true,
-          });
+      if (attributes) {
+        attributes.hidden = false;
+        const selectedCount = this.getSelectedFeatures().length;
+        const formAvailable = attributeFormAvailable;
+        attributes.disabled = isEditing && (!this.editingSession_
+          || !this.editingCapabilities_?.update || !formAvailable || selectedCount !== 1);
+        attributes.title = getValue('attributes');
+        if (isEditing && selectedCount !== 1) {
+          attributes.title = getValue('dataidee_form.multiple_selection');
+        } else if (isEditing && !this.editingSession_) {
+          attributes.title = getValue('dataidee_form.editing_not_started');
+        } else if (isEditing && !this.editingCapabilities_?.update) {
+          attributes.title = getValue('dataidee_form.collection_readonly');
+        } else if (isEditing && !formAvailable) {
+          attributes.title = this.editingCapabilities_?.form?.reason
+            || getValue('dataidee_form.unsupported');
         }
-        creationFields.forEach((field) => {
-          const label = document.createElement('label');
-          label.textContent = field.name;
-          const input = document.createElement('input');
-          input.name = field.name;
-          input.type = field.type === 'integer' ? 'number' : 'text';
-          if (field.type === 'integer') input.step = '1';
-          input.required = field.required;
-          if (previousValues.has(field.name)) input.value = previousValues.get(field.name);
-          label.appendChild(input);
-          fields.appendChild(label);
-        });
       }
     }
-    if (!isEditing || this.editingSession_) return;
+  }
+
+  loadEditingCapabilities_() {
+    if (!this.isEditingLayer() || this.editingSession_) return;
     const targetLayer = this.selectedLayer;
     const revision = (this.capabilityRevision_ || 0) + 1;
     this.capabilityRevision_ = revision;
-    this.selectedLayer
+    const isCurrent = () => this.selectedLayer === targetLayer
+      && this.capabilityRevision_ === revision && !this.editingSession_;
+    targetLayer
       .getEditingCapabilities()
       .then((capabilities) => {
-        if (
-          this.selectedLayer !== targetLayer
-          || this.capabilityRevision_ !== revision
-        ) return;
-        this.editingPanel_.querySelector(
-          '#m-vectorsmanagement-editing-start',
-        ).disabled = !(
-          capabilities.create
-          || capabilities.update
-          || capabilities.delete
-        );
+        if (!isCurrent()) return;
         this.editingCapabilities_ = capabilities;
+        this.editingCapabilityError_ = false;
+        this.updateEditingTools_();
       })
       .catch(() => {
-        if (
-          this.selectedLayer !== targetLayer
-          || this.capabilityRevision_ !== revision
-        ) return;
-        this.editingPanel_.querySelector(
-          '#m-vectorsmanagement-editing-start',
-        ).disabled = true;
-        this.editingStatus_.textContent = getValue('editing_capability_error');
+        if (!isCurrent()) return;
+        this.editingCapabilities_ = null;
+        this.editingCapabilityError_ = true;
+        this.updateEditingTools_();
       });
   }
 
   async startEditing() {
-    if (this.editingPreparing_) return;
+    if (this.editingPreparing_ || this.editingSession_) return;
     this.editingPreparing_ = true;
+    this.setEditingStatus_(getValue('editing_preparing'));
     let prepared = null;
     const targetLayer = this.selectedLayer;
     try {
@@ -606,6 +701,7 @@ export default class VectorsManagementControl extends IDEE.Control {
       prepared = await targetLayer.beginEditing({ bbox });
       if (targetLayer !== this.selectedLayer) {
         targetLayer.endEditing(false);
+        this.editingMessage_ = '';
         return;
       }
       this.featureSelection_.clear();
@@ -617,57 +713,47 @@ export default class VectorsManagementControl extends IDEE.Control {
       }
       this.editingCapabilities_ = prepared.capabilities;
       this.editingUnsubscribe_ = this.editingSession_.subscribe((state) => {
-        this.editingStatus_.textContent = state.error?.message
-          || getValue('editing_pending').replace('{count}', String(state.count));
+        this.setEditingStatus_(state.error?.message
+          || getValue('editing_pending').replace('{count}', String(state.count)));
       });
       this.getImpl().addEditingBoundary(bbox);
-      this.editingStatus_.textContent = getValue('editing_fixed_area').replace(
+      // The layer limit may have left features of the zone out of the session.
+      const areaMessage = prepared.complete === false
+        ? 'editing_fixed_area_limited' : 'editing_fixed_area';
+      this.setEditingStatus_(getValue(areaMessage).replace(
         '{count}',
         String(prepared.features.length),
-      );
-      this.toggleEditingActions(true);
-      this.updateEditingAvailability();
+      ));
     } catch (error) {
       if (this.editingSession_) this.finishEditing();
       else if (prepared) {
         targetLayer.endEditing();
         this.featureSelection_.clear();
       }
-      this.editingStatus_.textContent = error.message;
+      this.setEditingStatus_(error.message, true);
     } finally {
       this.editingPreparing_ = false;
+      this.renderEditingSection_();
+      this.updateEditingAvailability();
     }
-  }
-
-  toggleEditingActions(active) {
-    this.editingPanel_.querySelector(
-      '#m-vectorsmanagement-editing-start',
-    ).hidden = active;
-    ['save', 'discard', 'end'].forEach((name) => {
-      this.editingPanel_.querySelector(
-        `#m-vectorsmanagement-editing-${name}`,
-      ).hidden = !active;
-    });
   }
 
   async saveEditingChanges() {
     if (!this.editingSession_ || this.editingSession_.saving) return;
-    const saveButton = this.editingPanel_.querySelector(
-      '#m-vectorsmanagement-editing-save',
-    );
-    saveButton.disabled = true;
+    this.editingSaving_ = true;
+    this.renderEditingSection_();
     try {
       const result = await this.editingSession_.save();
-      this.editingStatus_.textContent = getValue('editing_save_done')
+      this.setEditingStatus_(getValue('editing_save_done')
         .replace('{completed}', String(result.completed.length))
-        .replace('{pending}', String(result.pending));
+        .replace('{pending}', String(result.pending)));
     } catch (error) {
-      this.editingStatus_.textContent = getValue('editing_save_error').replace(
-        '{error}',
-        error.message,
-      );
+      this.setEditingStatus_(error.code === 'VALIDATION'
+        ? formatSaveValidationError(error, this.editingCapabilities_?.form?.fields)
+        : getValue('editing_save_error').replace('{error}', error.message));
     } finally {
-      saveButton.disabled = Boolean(this.editingSession_?.requiresReview);
+      this.editingSaving_ = false;
+      this.renderEditingSection_();
     }
   }
 
@@ -677,27 +763,28 @@ export default class VectorsManagementControl extends IDEE.Control {
     const requiresReview = this.editingSession_.requiresReview;
     this.editingSession_.discard();
     this.featureSelection_.clear();
-    this.editingPanel_.querySelector(
-      '#m-vectorsmanagement-editing-save',
-    ).disabled = requiresReview;
-    this.editingStatus_.textContent = getValue(
+    this.setEditingStatus_(getValue(
       requiresReview ? 'editing_discarded_uncertain' : 'editing_discarded',
-    ).replace('{count}', String(count));
+    ).replace('{count}', String(count)));
   }
 
   async requestEndEditing() {
     if (!this.editingSession_) return true;
     if (this.editingSession_.count > 0) {
-      // Native prompt provides save, discard and cancel without a second UI dependency.
-      // eslint-disable-next-line no-alert
-      const choice = window
-        .prompt(getValue('editing_end_prompt'))
-        ?.trim()
-        .toLowerCase();
-      if (choice === 'guardar' || choice === 'save' || choice === 'desar') {
+      const choice = await askChoice({
+        id: 'm-vectorsmanagement-editing-end-choice',
+        title: getValue('editing_end'),
+        message: getValue('editing_end_prompt'),
+        choices: [
+          { value: 'save', label: getValue('editing_save') },
+          { value: 'discard', label: getValue('editing_discard') },
+        ],
+        cancelLabel: getValue('cancel'),
+      });
+      if (choice === 'save') {
         await this.saveEditingChanges();
         if (this.editingSession_?.count > 0) return false;
-      } else if (choice === 'descartar' || choice === 'discard') this.discardEditingChanges();
+      } else if (choice === 'discard') this.discardEditingChanges();
       else return false;
     }
     this.finishEditing();
@@ -712,9 +799,10 @@ export default class VectorsManagementControl extends IDEE.Control {
     this.selectedLayer.endEditing(refresh);
     this.featureSelection_.clear();
     this.getImpl().removeEditingBoundary();
-    this.toggleEditingActions(false);
+    this.editingMessage_ = '';
+    // Without a session their tools cannot be used: opening them again starts a new one.
+    this.closeEditingTools_();
     this.updateEditingAvailability();
-    this.editingStatus_.textContent = '';
   }
 
   /**
@@ -858,7 +946,7 @@ export default class VectorsManagementControl extends IDEE.Control {
           this.selectionControl
           && $selection.classList.contains('activated')
         ) {
-          this.selectionControl.deactivate();
+          this.selectionControl.hideSelectionLayer();
           $selection.classList.remove('activated');
         }
 

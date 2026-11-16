@@ -85,13 +85,24 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 
 ## Edición espacial DataIDEE (OpenLayers)
 
-La edición trabaja con una zona CRS84 fija. Antes de habilitarla carga todas las
-páginas y rechaza una preparación incompleta o que supere los límites
-configurables de la capa: por defecto 250 entidades por página, 1.000
-entidades, 100.000 coordenadas y 10 MiB de GeoJSON. Durante la sesión, navegar
-por el mapa no consulta ni sustituye los datos. Guardar envía cambios
+La edición trabaja con una zona CRS84 fija. Antes de habilitarla carga las
+entidades de la zona hasta el `limit` de la capa: si quedan entidades fuera, la
+zona es incompleta y el estado de edición lo indica. Sin `limit`, o con uno mayor
+que el máximo de entidades, carga todas las páginas. En ambos casos rechaza una
+preparación que supere los límites configurables de la capa: por defecto 1.000
+entidades por página, 1.000 entidades, 100.000 coordenadas y 10 MiB de GeoJSON.
+Durante la sesión, navegar por el mapa no consulta ni sustituye los datos; al
+finalizar, la capa vuelve a cargar su propia consulta. Guardar envía cambios
 secuencialmente; los éxitos parciales permanecen confirmados y el resto puede
 descartarse o revisarse.
+
+La sesión se inicia al abrir **Crear** o **Editar** con una capa DataIDEE: la
+zona fija es la vista del mapa en ese momento. Esos dos botones solo se
+habilitan si la colección permite crear, o modificar o borrar, respectivamente.
+Ambos paneles muestran al principio el estado de la sesión y los botones
+**Guardar**, **Descartar** y **Finalizar edición**. La sesión sigue activa al
+cambiar de herramienta y termina con **Finalizar edición**, al cambiar de capa
+o si se retira la capa del mapa; al terminar se cierra el panel.
 
 Para probar los cambios sin dependencias adicionales, compila el núcleo y el
 plugin, y arranca el servicio local:
@@ -104,17 +115,107 @@ node src/plugins/vectorsmanagement/test/demo/dataidee-server.js
 
 Abre `http://127.0.0.1:8787` para editar la colección local. Los cambios se
 mantienen mientras el proceso esté activo; restaura la colección con
-`POST /local/reset`. Los modos `readonly`, `dense`, `complex`, `conflict`,
-`partial`, `write-error` y `uncertain` sirven para comprobar permisos, límites,
-conflictos, éxitos parciales, validación y respuestas de escritura perdidas.
+`POST /local/reset`. Los modos `form`, `patch-only`, `missing-queryables`,
+`missing-schema` y `malformed-schema` sirven para probar formularios anidados,
+la independencia entre esquema y queryables, las restricciones de escritura y
+la ausencia de metadatos. Los modos `readonly`, `dense`, `complex`, `conflict`,
+`partial`, `write-error` y `uncertain` cubren permisos, límites, conflictos,
+éxitos parciales, validación y respuestas de escritura perdidas.
 
-Abre `http://127.0.0.1:8787/teunesco.html` para iniciar sesión y editar las
-colecciones `externa:puntos` y `externa:estaciones` directamente. El token se
-mantiene solo en memoria. Usa el selector de capas de VectorsManagement; para
-crear entidades, introduce `nombre` y, en estaciones, un identificador entero.
-Los puntos reciben su identificador del servidor. La sesión limita los cambios
-a la extensión visible al iniciarla; guarda, descarta o cancela antes de
-finalizarla o cambiar de capa.
+Los tests de Playwright de esta edición (`PLAY-04` y `PLAY-05` en
+`test/playwright/ol`) no necesitan este servidor. Usan la página de prueba del
+plugin y el mismo servicio en memoria (`test/demo/dataidee-fake.js`), con uno
+propio por test. Como el resto de tests de Playwright, necesitan las compilaciones
+del núcleo y del plugin.
+
+Abre `http://127.0.0.1:8787/teunesco.html` para editar la colección real
+[`local:todos_los_tipos`](https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos).
+La demo carga los municipios sobre OpenStreetMap y abre VectorsManagement con
+selección, creación, edición, estilos, análisis, Turf, descarga, añadir capa y
+ayuda habilitados. Sirve el núcleo, el plugin y sus estilos desde las mismas
+compilaciones locales que el ejemplo anterior; las peticiones de datos y
+metadatos van directamente al servicio TEUNESCO.
+
+Selecciona **Todos los tipos · TEUNESCO** y abre **Editar** o **Crear**. La
+geometría principal `punto` se modifica con las herramientas del mapa. El
+editor muestra solo las herramientas compatibles con esa geometría principal:
+en esta colección permite crear puntos (en el mapa o por coordenadas) y editar
+su posición. No ofrece líneas, polígonos, geometrías múltiples, huecos, giro ni
+escala. Las geometrías secundarias no amplían los tipos de entidad que se pueden
+crear. Al cambiar de capa, se recalculan las herramientas disponibles. El
+formulario usa `/schema` para los campos de texto, números, booleanos,
+enumeraciones y fechas; `/queryables` no limita los campos editables. Las siete
+geometrías secundarias se conservan al modificar otros campos. Ningún campo
+geométrico se muestra en el formulario. El identificador lo genera el servicio.
+
+Los campos de fecha usan un selector de fecha y los de fecha-hora un selector
+de fecha y hora en UTC, indicado junto al control. Las fechas-hora sin cambios
+conservan su representación original, incluida la zona y la precisión.
+No hay un selector adicional para definir valores: los desplegables incluyen
+**Sin definir** y vaciar un campo de texto, número o fecha lo deja sin valor.
+Los valores `0` y `false` se conservan. Los campos obligatorios siguen sujetos
+a la validación del esquema; un campo obligatorio nullable puede quedar `null`.
+
+Si el servicio requiere autenticación para escribir, abre **Cómo editar y
+configurar el acceso** y aplica el token de tu sesión DataIDEE. La demo utiliza
+`layer.setToken()` y `Authorization: Bearer`; no almacena el token en URL,
+cookies ni almacenamiento del navegador. Recargar la página elimina ese token.
+**Guardar** escribe en la colección real; **Descartar** solo revierte la sesión
+local. El servidor de la demo no actúa como proxy ni modifica CORS del servicio.
+
+Para crear una
+entidad, dibuja primero su geometría y completa después el formulario basado en
+el esquema de la colección. Para editar atributos, selecciona una sola entidad
+y abre **Atributos**. **Aplicar** guarda los valores en la sesión local; el
+control **Guardar** envía la entidad GeoJSON completa mediante PUT cuando el
+servicio anuncia `application/geo+json` para esa operación: geometría y todos los
+atributos conservados, excluidos los campos de solo lectura. Mantiene `If-Match`
+y la comprobación de conflictos. Si PUT no está disponible, mantiene el PATCH
+compatible con las capacidades del servicio. En un PATCH no es necesario repetir
+los campos obligatorios que no cambian; se valida el estado resultante.
+
+El cliente descubre los enlaces de `schema` y `queryables` anunciados por la
+colección, con rutas convencionales como compatibilidad. La ausencia de
+queryables no impide editar atributos; si falta un esquema válido, la edición
+geométrica compatible sigue disponible y el formulario se desactiva. El primer
+formulario admite valores escalares, objetos, arrays homogéneos, referencias
+locales no recursivas, enumeraciones y validaciones comunes de tipos, límites,
+fechas y unicidad. Una rama con referencias externas, recursión o restricciones
+no admitidas se conserva y queda bloqueada para edición. La sesión limita los
+cambios a la extensión visible al iniciarla; guarda, descarta o cancela antes
+de finalizarla o cambiar de capa.
+
+Cada atributo usa el control que corresponde a su esquema: selector nativo de
+fecha o de fecha y hora, casilla para los booleanos, desplegable para `enum`,
+`oneOf` y `const`, campo numérico con incremento y área de texto con contador
+cuando hay límites de longitud. Los campos con `pattern` usan una sola línea. Una
+casilla sin valor se muestra indeterminada; desmarcarla guarda `false` y solo el
+botón **Sin definir** retira el valor de un campo opcional.
+
+Los errores aparecen junto al campo mientras se escribe, y **Aplicar** los resume
+y lleva el foco al primero. Formulario, aplicación y guardado comparten las reglas
+de `DataIDEEFormSchema`, incluidas `minimum`, `maximum`, `exclusiveMinimum`,
+`exclusiveMaximum`, `multipleOf`, `minLength`, `maxLength`, `pattern`, `format` y
+los límites `formatMinimum`, `formatMaximum`, `formatExclusiveMinimum` y
+`formatExclusiveMaximum` de las fechas. **Guardar** vuelve a comprobar todos los
+cambios antes de la primera escritura y no envía nada si alguno es inválido, sea
+cual sea su origen. Un valor almacenado que incumple el esquema se muestra con un
+aviso y se conserva intacto mientras no se modifique; si cambia, el nuevo valor
+debe ser válido. Las fechas y horas se muestran y se escriben en UTC, y las que no
+se editan conservan su zona horaria y su precisión.
+
+La prueba `PLAY-05-vectorsmanagement-teunesco` usa una copia del contrato público
+de esta colección e intercepta todas las peticiones a TEUNESCO, incluidas las
+escrituras. Comprueba el desplazamiento de un punto y los atributos tipados en
+un único PUT completo, la conservación de geometrías secundarias y fechas, la
+recarga, la reapertura del formulario y el diálogo en pantalla estrecha:
+
+```sh
+./node_modules/.bin/playwright test src/plugins/vectorsmanagement/test/playwright/ol/PLAY-05-vectorsmanagement-teunesco.spec.js --config=playwright-config/playwright-ol.config.js --workers=1
+```
+
+Las reglas de validación se comprueban aparte, sin navegador ni servicio, en
+`PLAY-51-dataidee-attribute-validation`.
 
 ```javascript
 URL_API?vectorsmanagement=position*!collapsed*!order*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style*!snapping*!turf*!profileGraphs

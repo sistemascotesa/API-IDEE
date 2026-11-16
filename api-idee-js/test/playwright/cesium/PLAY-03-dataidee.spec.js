@@ -98,9 +98,12 @@ test('DataIDEE caches an exact request, invalidates it, and refreshes from the n
     await window.dataIdee.getImpl().requestFeatures_();
   });
   expect(requestCount).toBe(2);
-  const refreshRequest = page.waitForRequest((request) => request.url().includes('_ideeRefresh='));
+  // A refresh goes to the network with the same URL: DataIDEE rejects unknown parameters
+  const refreshRequest = page.waitForRequest((request) => request.url().startsWith('https://ogc.test/'));
   await page.evaluate(() => window.dataIdee.refresh());
-  await (await refreshRequest).response();
+  const refreshed = await refreshRequest;
+  await refreshed.response();
+  expect(refreshed.url()).not.toContain('_ideeRefresh');
   expect(requestCount).toBe(3);
 });
 

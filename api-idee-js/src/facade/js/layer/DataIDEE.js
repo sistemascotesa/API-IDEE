@@ -16,7 +16,7 @@ import RequestManager from '../../../impl/common/RequestManager';
 
 /**
  * @classdesc
- * Capa DataIDEE de solo lectura para consultar entidades GeoJSON mediante OGC API Features.
+ * Capa DataIDEE para consultar y editar entidades GeoJSON mediante OGC API Features.
  * Admite filtros CQL2 en texto o JSON a través de las opciones del proveedor.
  *
  * @property {String} idLayer Identificador de la capa.
@@ -111,10 +111,11 @@ class DataIDEE extends Vector {
    *   Durante la espera se conserva solo la última consulta pendiente.
    *   refresh() y refreshInterval descargan datos nuevos y renuevan la caché.
    * - editingLimits: límites de zona con pageSize, maxFeatures, maxCoordinates
-   *   y maxBytes; por defecto 250, 1000, 100000 y 10485760.
+   *   y maxBytes; por defecto 1000, 1000, 100000 y 10485760.
    * - transactionParameters / transactionHeaders: valores para escrituras y
    *   comprobaciones de conflicto, independientes de los parámetros de lectura.
-   * - dataideeDefaultProperties: propiedades no vacías que se añaden a las altas.
+   * - dataideeDefaultProperties: valores iniciales de atributos en el formulario de altas.
+   *   Se aplican tras los valores predeterminados del esquema y antes de lo que escriba el usuario.
    * @param {Object} vendorOpts Opciones para la biblioteca base.
    * - filter: Expresión CQL2 en texto o un objeto CQL2 JSON. Una cadena usa
    *   cql2-text por defecto y un objeto usa cql2-json.
@@ -501,7 +502,10 @@ class DataIDEE extends Vector {
     return this.getEditingImpl_().getEditingCapabilities();
   }
 
-  /** Loads a complete, bounded CRS84 work area and pauses DataIDEE refreshes. */
+  /**
+   * Loads a bounded CRS84 work area, up to the layer limit, and pauses DataIDEE refreshes.
+   * The result reports `complete: false` when the limit left features of the area out.
+   */
   beginEditing({ bbox }) {
     return this.getEditingImpl_().beginEditing({ bbox });
   }
@@ -509,14 +513,14 @@ class DataIDEE extends Vector {
   /** Returns the active editing session for generic editing controls. */
   getEditingSession() { return this.getEditingImpl_().getEditingSession(); }
 
-  /** Releases the DataIDEE edit-session refresh lock. */
+  /** Releases the DataIDEE edit-session refresh lock; with refresh, reloads the layer query. */
   endEditing(refresh = true) {
     return this.getEditingImpl_().endEditing(refresh);
   }
 
   /** Creates a GeoJSON feature in the configured collection. */
-  createFeature(feature) {
-    return this.getEditingImpl_().createFeature(feature);
+  createFeature(feature, options = {}) {
+    return this.getEditingImpl_().createFeature(feature, options);
   }
 
   /** Reads one feature for optimistic conflict detection during an explicit save. */
@@ -525,8 +529,8 @@ class DataIDEE extends Vector {
   }
 
   /** Updates a GeoJSON feature, preserving the caller's properties. */
-  updateFeature(id, feature, method, etag) {
-    return this.getEditingImpl_().updateFeature(id, feature, method, etag);
+  updateFeature(id, feature, method, etag, options = {}) {
+    return this.getEditingImpl_().updateFeature(id, feature, method, etag, options);
   }
 
   /** Deletes one feature by its server identifier. */

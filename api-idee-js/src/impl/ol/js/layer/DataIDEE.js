@@ -40,7 +40,7 @@ class DataIDEE extends OGCAPIFeatures {
     this.readThrottleMs_ = options.throttleMs || 0;
     this.pendingReads_ = new Set();
     this.editingLimits_ = {
-      pageSize: options.editingLimits?.pageSize || 250,
+      pageSize: options.editingLimits?.pageSize || 1000,
       maxFeatures: options.editingLimits?.maxFeatures || 1000,
       maxCoordinates: options.editingLimits?.maxCoordinates || 100000,
       maxBytes: options.editingLimits?.maxBytes || 10 * 1024 * 1024,
@@ -281,11 +281,20 @@ class DataIDEE extends OGCAPIFeatures {
     this.preparingEditing_ = false;
     try {
       await Promise.allSettled([...this.pendingReads_]);
+      // The layer limit caps the zone, which may then be incomplete. Without a limit,
+      // or with one above the session budget, the whole zone is loaded and a zone
+      // larger than the budget is rejected.
+      const layerLimit = Number(this.limit);
+      const loadLimit = Number.isInteger(layerLimit) && layerLimit > 0
+        && layerLimit <= this.editingLimits_.maxFeatures ? layerLimit : null;
+      const pageSize = loadLimit
+        ? Math.min(this.editingLimits_.pageSize, loadLimit) : this.editingLimits_.pageSize;
+      let complete = true;
       const readService = new ServiceDataIDEE({
         url: this.url,
         namespace: this.namespace,
         name: this.name,
-        limit: this.editingLimits_.pageSize,
+        limit: pageSize,
         offset: 0,
         format: this.format,
         id: null,
@@ -297,7 +306,7 @@ class DataIDEE extends OGCAPIFeatures {
       const seen = new Set();
       let nextUrl = new URL(collectionUrl, window.location?.href || 'http://localhost/');
       nextUrl.searchParams.set('bbox', bbox.join(','));
-      nextUrl.searchParams.set('limit', String(this.editingLimits_.pageSize));
+      nextUrl.searchParams.set('limit', String(pageSize));
       const documents = [];
       let bytes = 0;
       let coordinates = 0;
@@ -348,7 +357,15 @@ class DataIDEE extends OGCAPIFeatures {
         if (page.type !== 'FeatureCollection' || !Array.isArray(page.features)) {
           throw new Error('DataIDEE returned an incomplete page.');
         }
-        documents.push(...page.features);
+        const next = page.links?.find((link) => link.rel === 'next')?.href;
+        const pageFeatures = loadLimit
+          ? page.features.slice(0, loadLimit - documents.length) : page.features;
+        const reachedLimit = loadLimit !== null
+          && documents.length + pageFeatures.length >= loadLimit;
+        if (reachedLimit && (pageFeatures.length < page.features.length || next)) {
+          complete = false;
+        }
+        documents.push(...pageFeatures);
         if (documents.length > this.editingLimits_.maxFeatures) {
           throw new Error('DataIDEE edit area exceeds the feature limit; reduce the area.');
         }
@@ -360,10 +377,10 @@ class DataIDEE extends OGCAPIFeatures {
         const supportedGeometry = new Set([
           'Point', 'MultiPoint', 'LineString', 'MultiLineString', 'Polygon', 'MultiPolygon',
         ]);
-        if (page.features.some((feature) => !supportedGeometry.has(feature.geometry?.type))) {
+        if (pageFeatures.some((feature) => !supportedGeometry.has(feature.geometry?.type))) {
           throw new Error('DataIDEE edit area contains an unsupported or missing geometry type.');
         }
-        const oversizedFeature = page.features.find((feature) => (
+        const oversizedFeature = pageFeatures.find((feature) => (
           count(feature.geometry?.coordinates) > this.editingLimits_.maxCoordinates
           || new Blob([JSON.stringify(feature)]).size > this.editingLimits_.maxBytes
         ));
@@ -371,15 +388,14 @@ class DataIDEE extends OGCAPIFeatures {
           throw new Error('One DataIDEE feature exceeds the edit budget. Zooming in will not '
             + 'reduce its vertex count; edit a simpler feature or ask for a larger limit.');
         }
-        coordinates += page.features.reduce((sum, feature) => (
+        coordinates += pageFeatures.reduce((sum, feature) => (
           sum + count(feature.geometry?.coordinates)
         ), 0);
         if (coordinates > this.editingLimits_.maxCoordinates) {
           throw new Error('DataIDEE edit area exceeds the coordinate limit; reduce the area '
             + 'or use simpler geometries.');
         }
-        const next = page.links?.find((link) => link.rel === 'next')?.href;
-        if (next) {
+        if (next && !reachedLimit) {
           nextUrl = new URL(next, nextUrl);
           const initialUrl = new URL(collectionUrl);
           const pageTarget = nextUrl;
@@ -414,6 +430,7 @@ class DataIDEE extends OGCAPIFeatures {
         bbox: bbox.slice(),
         limits: { ...this.editingLimits_ },
         session,
+        complete,
       };
     } catch (error) {
       this.editing_ = false;
@@ -428,8 +445,9 @@ class DataIDEE extends OGCAPIFeatures {
     this.editing_ = false;
     this.requestedViewport_ = null;
     this.requestRevision_ += 1;
-    if (refresh && this.bboxStrategy_) return this.updateSource_(false, true);
-    return Promise.resolve();
+    if (!refresh || !this.map) return Promise.resolve();
+    // The edit zone replaced the layer features: reload the layer's own query.
+    return this.bboxStrategy_ ? this.updateSource_(false, true) : this.updateSource_(true, true);
   }
 
   getEditingSession() { return this.editingSession_ || null; }
@@ -451,12 +469,12 @@ class DataIDEE extends OGCAPIFeatures {
     return this.transactions_;
   }
 
-  createFeature(feature) { return this.getTransactions_().create(feature); }
+  createFeature(feature, options = {}) { return this.getTransactions_().create(feature, options); }
 
   getEditingFeature(id) { return this.getTransactions_().getFeature(id); }
 
-  updateFeature(id, feature, method, etag) {
-    return this.getTransactions_().update(id, feature, etag, method);
+  updateFeature(id, feature, method, etag, options = {}) {
+    return this.getTransactions_().update(id, feature, etag, method, options);
   }
 
   deleteFeature(id, etag) { return this.getTransactions_().delete(id, etag); }

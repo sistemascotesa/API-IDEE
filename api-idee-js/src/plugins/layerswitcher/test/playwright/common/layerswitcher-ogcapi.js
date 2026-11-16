@@ -51,10 +51,11 @@ const AUTH_API = '/api/auth-api/auth';
  * el contrato anterior (`/auth/login` → { access_token, refresh_token }, `POST /auth/refresh`).
  * Con `publicCollections: false`, sin sesión no lista ninguna colección (como el servicio real).
  * Con `rejectToken`, `/auth-api/auth/me` rechaza cualquier token introducido por el usuario.
+ * Con `itemsNext` (función, consultada en cada petición), `/items` anuncia otra página.
  */
 const mockService = async (page, {
   login = false, legacy = false, tokens = {}, loginDelay = 0, refreshOk = true, loginGate = null,
-  publicCollections = true, rejectToken = false,
+  publicCollections = true, rejectToken = false, itemsNext = () => false,
 } = {}) => {
   const calls = [];
   const authPath = legacy ? '/api/auth' : AUTH_API;
@@ -104,10 +105,13 @@ const mockService = async (page, {
       if (url.searchParams.has('f') || url.searchParams.has('token')) {
         return json(400, { detail: 'unknown query parameter' });
       }
+      const links = itemsNext()
+        ? [{ rel: 'next', type: 'application/geo+json', href: `${url.origin}${url.pathname}?offset=10` }]
+        : [];
       return route.fulfill({
         status: 200,
         headers: { ...CORS, 'content-type': 'application/geo+json' },
-        body: JSON.stringify(featureCollection),
+        body: JSON.stringify({ ...featureCollection, links }),
       });
     }
     if (url.pathname.startsWith('/api/collections/')) {
@@ -217,6 +221,208 @@ export const registerOGCAPITests = (impl) => {
       await expect.poll(() => itemsCall(calls, 'local:rutas')).toBeTruthy();
       expect(itemsCall(calls, 'local:rutas').url.searchParams.has('f')).toBe(false);
       expect(await page.evaluate(() => window.mapjs.getOGCAPIFeatures().map((l) => l.name))).toEqual(['local:rutas']);
+    });
+
+    test('«Comprobar resultados» muestra solo el número aunque el servicio anuncie otra página', async ({ page }) => {
+      await mockService(page, { itemsNext: () => true });
+      await openService(page, impl, `${ROOT}/collections/local:rutas`);
+      await page.click('#m-layerswitcher-ogcCContainer #m-layerswitcher-ogc-check-button');
+      await expect(page.locator('#m-layerswitcher-ogc-check-results')).toHaveText('Se ha encontrado 1 elemento');
+    });
+
+    test('DataIDEE sin límite: «Comprobar» y la capa piden limit=10000000&offset=0', async ({ page }) => {
+      const calls = await mockService(page, { login: false, itemsNext: () => true });
+      await openService(page, impl, `${ROOT}/collections`);
+      await page.selectOption(MODE_SELECT, 'dataidee');
+      await expect(page.locator(`${LAYER_SELECT} option[value]:not([value=""])`)).toHaveCount(2);
+      await page.selectOption(LAYER_SELECT, 'local:farmacias');
+      const items = () => calls.filter((c) => c.path.startsWith('/api/collections/local:farmacias/items'));
+      const check = page.locator('#m-layerswitcher-ogcCContainer #m-layerswitcher-ogc-check-button');
+      const results = page.locator('#m-layerswitcher-ogc-check-results');
+      const limit = page.locator('#m-layerswitcher-ogc-limit-items');
+
+      // Aunque el servicio anuncie otra página, el mensaje es solo el número
+      await check.click();
+      await expect(results).toHaveText('Se ha encontrado 1 elemento');
+      expect(items()[0].url.search).toBe('?limit=10000000&offset=0');
+
+      // Con límite, solo ese límite
+      await page.click('#m-layerswitcher-ogcCContainer input[name="m-layerswitcher-ogc-filter"][value="others"]');
+      await limit.fill('5');
+      await check.click();
+      await expect.poll(() => items().length).toBe(2);
+      await expect(results).toHaveText('Se ha encontrado 1 elemento');
+      expect(items()[1].url.search).toBe('?limit=5');
+
+      // La capa usa la misma consulta por defecto
+      await limit.fill('');
+      await page.click(ADD_BUTTON);
+      await expect.poll(() => items().length).toBeGreaterThanOrEqual(3);
+      expect(items()[2].url.search).toBe('?limit=10000000&offset=0');
+    });
+
+    test('DataIDEE con filtro por ID: no se añade la consulta por defecto', async ({ page }) => {
+      const calls = await mockService(page, { login: false });
+      await openService(page, impl, `${ROOT}/collections`, { [ROOT]: { mode: 'dataidee' } });
+      await expect(page.locator(`${LAYER_SELECT} option[value]:not([value=""])`)).toHaveCount(2);
+      await page.selectOption(LAYER_SELECT, 'local:farmacias');
+      await page.fill('#m-layerswitcher-ogc-search-form-ID', '1');
+      await page.click('#m-layerswitcher-ogcCContainer #m-layerswitcher-ogc-check-button');
+      await expect.poll(() => calls.find((c) => c.path === '/api/collections/local:farmacias/items/1')).toBeTruthy();
+      expect(calls.find((c) => c.path === '/api/collections/local:farmacias/items/1').url.search).toBe('');
+    });
+
+    test('Estándar guardado: una sola petición a /collections y ninguna de login', async ({ page }) => {
+      const calls = await mockService(page, { login: true });
+      await openService(page, impl, `${ROOT}/collections`, { [ROOT]: { mode: 'ogcapifeatures' } });
+      await expect(page.locator(`${LAYER_SELECT} option[value]:not([value=""])`)).toHaveCount(2);
+      expect(calls.filter((c) => c.path === '/api/collections')).toHaveLength(1);
+      expect(calls.filter((c) => c.path.includes('/auth'))).toEqual([]);
+    });
+
+    test('DataIDEE sin sesión: reutiliza el /collections leído al detectar el servicio', async ({ page }) => {
+      const calls = await mockService(page, { login: false });
+      await openService(page, impl, `${ROOT}/collections`, { [ROOT]: { mode: 'dataidee' } });
+      await expect(page.locator(`${LAYER_SELECT} option[value]:not([value=""])`)).toHaveCount(2);
+      expect(calls.filter((c) => c.path === '/api/collections')).toHaveLength(1);
+    });
+
+    test('DataIDEE con sesión: la detección ya pide /collections con el token', async ({ page }) => {
+      const token = jwt(3600);
+      const calls = await mockService(page, { login: true });
+      await openService(page, impl, `${ROOT}/collections`, {
+        [ROOT]: { mode: 'dataidee', session: { accessToken: token } },
+      });
+      // Con el token se listan también las colecciones privadas
+      await expect(page.locator(`${LAYER_SELECT} option[value]:not([value=""])`)).toHaveCount(3);
+      expect(calls.filter((c) => c.path === '/api/collections').map((c) => c.authorization))
+        .toEqual([`Bearer ${token}`]);
+    });
+
+    // Sesión guardada sin pasar por el candado: no actúa el refresco automático del listado
+    const storeSession = (page, token) => page.evaluate(({ key, root, accessToken }) => {
+      const stored = JSON.parse(window.localStorage.getItem(key) || '{}');
+      stored[root] = { ...stored[root], session: { accessToken } };
+      window.localStorage.setItem(key, JSON.stringify(stored));
+    }, { key: STORAGE_KEY, root: ROOT, accessToken: token });
+    const OTHERS_RADIO = '#m-layerswitcher-ogcCContainer input[name="m-layerswitcher-ogc-filter"][value="others"]';
+    const CHECK_BUTTON = '#m-layerswitcher-ogcCContainer #m-layerswitcher-ogc-check-button';
+
+    test('DataIDEE: «Comprobar resultados» refresca el listado con la sesión y conserva el formulario', async ({ page }) => {
+      const token = jwt(3600);
+      const calls = await mockService(page, { login: true });
+      await openService(page, impl, `${ROOT}/collections`, { [ROOT]: { mode: 'dataidee' } });
+      const options = page.locator(`${LAYER_SELECT} option[value]:not([value=""])`);
+      await expect(options).toHaveCount(2);
+      await page.selectOption(LAYER_SELECT, 'local:farmacias');
+      await page.click(OTHERS_RADIO);
+      await page.locator('#m-layerswitcher-ogc-limit-items').fill('5');
+
+      await storeSession(page, token);
+      await page.click(CHECK_BUTTON);
+      // La colección privada aparece y lo elegido se conserva
+      await expect(options).toHaveCount(3);
+      await expect(page.locator(LAYER_SELECT)).toHaveValue('local:farmacias');
+      await expect(page.locator('#m-layerswitcher-ogc-limit-items')).toHaveValue('5');
+      await expect(page.locator('#m-layerswitcher-ogc-check-results')).toHaveText('Se ha encontrado 1 elemento');
+      const last = (path) => calls.filter((c) => c.path === path).pop();
+      expect(last('/api/collections').authorization).toBe(`Bearer ${token}`);
+      const items = last('/api/collections/local:farmacias/items');
+      expect(items.authorization).toBe(`Bearer ${token}`);
+      expect(items.url.search).toBe('?limit=5');
+    });
+
+    test('DataIDEE sin colecciones públicas: «Comprobar resultados» rellena el listado con la sesión', async ({ page }) => {
+      await mockService(page, { login: true, publicCollections: false });
+      await openService(page, impl, `${ROOT}/collections`, { [ROOT]: { mode: 'dataidee' } });
+      await expect(page.locator(CHECK_BUTTON)).toBeVisible();
+      const options = page.locator(`${LAYER_SELECT} option[value]:not([value=""])`);
+      await expect(options).toHaveCount(0);
+
+      await storeSession(page, jwt(3600));
+      await page.click(CHECK_BUTTON);
+      await expect(options).toHaveCount(3);
+      // No había ninguna elegida: se pide elegir una
+      await expect(page.locator('div.m-dialog.error')).toBeVisible();
+    });
+
+    test('DataIDEE: al iniciar sesión con el candado el listado se refresca conservando el formulario', async ({ page }) => {
+      await mockService(page, { login: true, tokens: { login: jwt(3600) } });
+      await openService(page, impl, `${ROOT}/collections`, { [ROOT]: { mode: 'dataidee' } });
+      const options = page.locator(`${LAYER_SELECT} option[value]:not([value=""])`);
+      await expect(options).toHaveCount(2);
+      await page.selectOption(LAYER_SELECT, 'local:farmacias');
+      await page.click(OTHERS_RADIO);
+      await page.locator('#m-layerswitcher-ogc-limit-items').fill('5');
+
+      await page.locator(AUTH_BUTTON).click();
+      await page.fill('#m-layerswitcher-auth-user', 'usuario');
+      await page.fill('#m-layerswitcher-auth-password', 'secret');
+      await page.click('.m-layerswitcher-auth-save');
+      await expect(page.locator(AUTH_BUTTON)).toHaveClass(/m-layerswitcher-auth-locked/);
+      await expect(options).toHaveCount(3);
+      await expect(page.locator(LAYER_SELECT)).toHaveValue('local:farmacias');
+      await expect(page.locator('#m-layerswitcher-ogc-limit-items')).toHaveValue('5');
+    });
+
+    test('Estándar guardado con sesión: /collections una vez y sin el token', async ({ page }) => {
+      const calls = await mockService(page, { login: true });
+      await openService(page, impl, `${ROOT}/collections`, {
+        [ROOT]: { mode: 'ogcapifeatures', session: { accessToken: jwt(3600) } },
+      });
+      await expect(page.locator(`${LAYER_SELECT} option[value]:not([value=""])`)).toHaveCount(2);
+      expect(calls.filter((c) => c.path === '/api/collections').map((c) => c.authorization))
+        .toEqual([undefined]);
+    });
+
+    test('Servicio {base}/ogc: detecta el login con {base}/auth/me sin probar antes auth-api', async ({ page }) => {
+      const base = 'https://split.test/data-idee-api';
+      const calls = [];
+      await page.route(`${base}/**`, (route) => {
+        const url = new URL(route.request().url());
+        if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
+        calls.push(url.pathname);
+        const json = (status, body) => route.fulfill({
+          status, headers: { ...CORS, 'content-type': 'application/json' }, body: JSON.stringify(body),
+        });
+        if (url.pathname === '/data-idee-api/ogc/collections') {
+          return json(200, { links: [], collections: [collection('local:farmacias', 'Farmacias')] });
+        }
+        if (url.pathname === '/data-idee-api/auth/me') return json(401, { status: 401 });
+        return json(404, { status: 404 });
+      });
+      await openService(page, impl, `${base}/ogc/collections`);
+
+      await expect(page.locator(MODE_SELECT)).toHaveValue('dataidee');
+      await expect(page.locator(AUTH_CONTAINER)).toBeVisible();
+      await expect(page.locator(`${LAYER_SELECT} option[value]:not([value=""])`)).toHaveCount(1);
+      expect(calls.filter((path) => path.includes('/auth'))).toEqual(['/data-idee-api/auth/me']);
+      expect(calls.filter((path) => path === '/data-idee-api/ogc/collections')).toHaveLength(1);
+    });
+
+    test('Nº de elementos vacío por defecto: solo se envía "limit" si el usuario lo indica', async ({ page }) => {
+      const calls = await mockService(page);
+      await openService(page, impl, `${ROOT}/collections/local:rutas`);
+      const items = () => calls.filter((c) => c.path.endsWith('/collections/local:rutas/items'));
+      const check = page.locator('#m-layerswitcher-ogcCContainer #m-layerswitcher-ogc-check-button');
+      const limit = page.locator('#m-layerswitcher-ogc-limit-items');
+
+      await page.click('#m-layerswitcher-ogcCContainer input[name="m-layerswitcher-ogc-filter"][value="others"]');
+      await expect(limit).toHaveValue('');
+
+      await check.click();
+      await expect.poll(() => items().length).toBe(1);
+      expect(items()[0].url.searchParams.has('limit')).toBe(false);
+
+      await limit.fill('5');
+      await check.click();
+      await expect.poll(() => items().length).toBe(2);
+      expect(items()[1].url.searchParams.get('limit')).toBe('5');
+
+      await limit.fill(' ');
+      await page.click(ADD_BUTTON);
+      await expect.poll(() => items().length).toBeGreaterThan(2);
+      expect(items().slice(2).some((c) => c.url.searchParams.has('limit'))).toBe(false);
     });
 
     test('DataIDEE sin login: oculta el candado y crea una capa DataIDEE sin "f" ni token', async ({ page }) => {

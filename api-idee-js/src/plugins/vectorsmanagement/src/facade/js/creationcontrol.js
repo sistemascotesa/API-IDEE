@@ -4,6 +4,7 @@
 import template from '../../templates/creation';
 import { getValue } from './i18n/language';
 import { renderSnapOptions, getToolSnapOptions } from './snapoptions';
+import openDataIDEEFormDialog from './dataideeformdialog';
 import {
   DRAWING,
   SNAPPING,
@@ -58,6 +59,7 @@ export default class CreationControl extends IDEE.Control {
      * Selected layer
      */
     this.layer_ = null;
+    this.dataideePreviewLayer_ = null;
 
     /**
      * Checks if point drawing tool is active.
@@ -127,7 +129,9 @@ export default class CreationControl extends IDEE.Control {
   active(html) {
     this.template = IDEE.template.compileSync(template, {
       vars: {
+        editingSession: this.managementControl_.isEditingLayer(),
         translations: {
+          editing_edit: getValue('editing_edit'),
           creationLayer: getValue('creationLayer'),
           creationPoint: getValue('creationPoint'),
           creationCoordPoint: getValue('creationCoordPoint'),
@@ -154,6 +158,7 @@ export default class CreationControl extends IDEE.Control {
     this.initializeLayers();
     this.addEvents();
     this.managementControl_.accessibilityTab(this.template);
+    this.managementControl_.mountEditingSection(this.template);
     this.managementControl_.updateEditingAvailability();
     this.template.querySelector('#multipointdrawing').addEventListener('click', this.onMultiPointSelected.bind(this));
     this.template.querySelector('#multilinedrawing').addEventListener('click', this.onMultiLineSelected.bind(this));
@@ -198,17 +203,22 @@ export default class CreationControl extends IDEE.Control {
     this.template.querySelector('#figuresSelector').addEventListener('change', (e) => this.getImpl().changeFigure(e));
   }
 
+  getMultipleGeometryType() { return this.multipleGeometryType_; }
+
   startMultipleGeometry(multipleType, drawType) {
-    this.deactivateDrawing();
-    this.multipleGeometryType_ = multipleType;
-    this.multipleCoordinates_ = [];
-    this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_start_status');
-    this.template.querySelector('#finishmultipledrawing').hidden = false;
     const drawing = {
       Point: { flag: 'isPointActive', button: 'multipointdrawing' },
       LineString: { flag: 'isLineActive', button: 'multilinedrawing' },
       Polygon: { flag: 'isPolygonActive', button: 'multipolygondrawing' },
     }[drawType];
+    const button = this.template.querySelector(`#${drawing.button}`);
+    if (button.hidden || button.disabled) return;
+    this.deactivateDrawing();
+    this.setDrawingSourceForCurrentMode_();
+    this.multipleGeometryType_ = multipleType;
+    this.multipleCoordinates_ = [];
+    this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_start_status');
+    this.managementControl_.updateEditingAvailability();
     this[drawing.flag] = true;
     this.geometry = drawType;
     this.template.querySelector(`#${drawing.button}`).classList.add('activated');
@@ -234,14 +244,84 @@ export default class CreationControl extends IDEE.Control {
     this.feature = this.getImpl()
       .createMultiGeometryFeature(this.multipleGeometryType_, this.multipleCoordinates_);
     this.geometry = this.multipleGeometryType_;
+    if (this.managementControl_.hasActiveEditingSession()) {
+      const feature = this.feature;
+      this.getImpl().addFeatureToVectorSource(feature);
+      this.openDataIDEECreationForm_(feature, () => this.finishMultipleGeometryAfterApply_());
+      return;
+    }
     this.addAttributesToFeature();
-    if (!this.validateNewFeature_(this.feature)) return;
     const isAddedAndSelected = this.addAndSelectFeature(this.feature);
     this.getImpl().clearVectorSource();
     this.multipleGeometryType_ = null;
     this.multipleCoordinates_ = [];
     this.template.querySelector('#multiple-drawing-status').textContent = isAddedAndSelected ? getValue('multiple_done') : '';
     this.template.querySelector('#finishmultipledrawing').hidden = true;
+    this.deactivateDrawing();
+  }
+
+  suspendDrawingForAttributeForm_() {
+    if (this.isFigureActive) this.getImpl().removeFigureDrawInteraction();
+    else this.getImpl().removeDrawInteraction();
+    this.template.querySelectorAll('.activated').forEach((button) => button.classList.remove('activated'));
+    this.managementControl_.removeSelectedFeatures();
+    this.isPointActive = false;
+    this.isLocatedPointActive = false;
+    this.isLineActive = false;
+    this.isPolygonActive = false;
+    this.isTextActive = false;
+    this.isFigureActive = false;
+  }
+
+  setDrawingSourceForCurrentMode_() {
+    if (!this.managementControl_.hasActiveEditingSession()) {
+      this.getImpl().setLayer(this.layer_);
+      return;
+    }
+    if (!this.dataideePreviewLayer_) {
+      this.dataideePreviewLayer_ = new IDEE.layer.Vector({
+        extract: false,
+        name: 'dataidee-creation-preview',
+      }, { displayInLayerSwitcher: false });
+      this.map_.addLayers(this.dataideePreviewLayer_);
+      this.dataideePreviewLayer_.setZIndex(1044);
+    }
+    this.getImpl().setLayer(this.dataideePreviewLayer_);
+  }
+
+  clearDataIDEEPreview_() {
+    if (this.dataideePreviewLayer_) {
+      this.dataideePreviewLayer_.getImpl().getLayer().getSource().clear(true);
+    }
+    this.setDrawingSourceForCurrentMode_();
+  }
+
+  openDataIDEECreationForm_(feature, onApplied = () => {}) {
+    this.suspendDrawingForAttributeForm_();
+    const opened = openDataIDEEFormDialog({
+      session: this.managementControl_.getActiveEditingSession(),
+      unavailableReason: this.managementControl_.getEditingCapabilities()?.form?.reason,
+      feature,
+      mode: 'create',
+      onApplied: (applied) => {
+        this.clearDataIDEEPreview_();
+        onApplied(applied);
+        this.layer_.addFeatures(applied);
+      },
+      onCancelled: () => this.clearDataIDEEPreview_(),
+    });
+    if (!opened) this.clearDataIDEEPreview_();
+  }
+
+  finishMultipleGeometryAfterApply_(feature) {
+    this.multipleGeometryType_ = null;
+    this.multipleCoordinates_ = [];
+    this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_done');
+    this.template.querySelector('#finishmultipledrawing').hidden = true;
+    this.deactivateDrawing();
+  }
+
+  finishMultipleGeometryAfterCancel_() {
     this.deactivateDrawing();
   }
 
@@ -301,7 +381,14 @@ export default class CreationControl extends IDEE.Control {
       if (!Number.isNaN(parsedX) && !Number.isNaN(parsedY)) {
         const coordinates = [parsedX, parsedY];
         this.feature = this.getImpl().createPointFeature(coordinates, srs);
-        this.addAndSelectFeature(this.feature);
+        if (this.managementControl_.hasActiveEditingSession()) {
+          this.setDrawingSourceForCurrentMode_();
+          this.getImpl().addFeatureToVectorSource(this.feature);
+          this.geometry = 'Point';
+          this.openDataIDEECreationForm_(this.feature);
+        } else {
+          this.addAndSelectFeature(this.feature);
+        }
         this.map_.setCenter(this.getImpl().getFeatureCoordinates(this.feature));
         // this.setFeatureStyle(this.feature, 'Point');
       } else {
@@ -442,6 +529,16 @@ export default class CreationControl extends IDEE.Control {
    * @param {String} geometry - clicked button geometry type
    */
   geometryBtnClick(geometry) {
+    const buttonId = {
+      Point: 'pointdrawing',
+      LocatedPoint: 'pointlocateddrawing',
+      LineString: 'linedrawing',
+      Polygon: 'polygondrawing',
+      Figure: 'figuredrawing',
+      Text: 'textdrawing',
+    }[geometry];
+    const button = this.template.querySelector(`#${buttonId}`);
+    if (!button || button.hidden || button.disabled) return;
     switch (geometry) {
       case 'Point':
         this.activationManager('isPointActive', 'pointdrawing', geometry);
@@ -462,6 +559,11 @@ export default class CreationControl extends IDEE.Control {
         this.activationManager('isTextActive', 'textdrawing', 'Point');
         break;
       default:
+    }
+
+    if (this.isPointActive || this.isLocatedPointActive || this.isLineActive
+      || this.isPolygonActive || this.isFigureActive || this.isTextActive) {
+      this.setDrawingSourceForCurrentMode_();
     }
 
     const tool = this.isFigureActive ? 'Figure' : this.geometry;
@@ -519,7 +621,7 @@ export default class CreationControl extends IDEE.Control {
    */
   setLayer(layer) {
     this.layer_ = layer;
-    this.getImpl().setLayer(layer);
+    this.clearDataIDEEPreview_();
   }
 
   /**
@@ -569,29 +671,12 @@ export default class CreationControl extends IDEE.Control {
     } /* else {
       this.setFeatureStyle(this.feature, this.geometry);
     } */
-    this.addAttributesToFeature();
-    if (!this.validateNewFeature_(this.feature)) {
-      this.deactivateDrawing();
+    if (this.managementControl_.hasActiveEditingSession()) {
+      this.openDataIDEECreationForm_(this.feature);
       return;
     }
+    this.addAttributesToFeature();
     this.addAndSelectFeature(this.feature);
-  }
-
-  /**
-   * Validates a new feature against the active editing session, if any.
-   * @private
-   * @function
-   * @param {IDEE.Feature} feature
-   * @returns {Boolean} true if there is no session or the feature is valid
-   */
-  validateNewFeature_(feature) {
-    if (!this.managementControl_.hasActiveEditingSession()) return true;
-    const values = {};
-    this.managementControl_.getEditingFields()
-      .querySelectorAll('#m-vectorsmanagement-editing-fields input').forEach((input) => {
-        values[input.name] = input.value;
-      });
-    return this.managementControl_.prepareNewFeature(feature, values);
   }
 
   /**
@@ -639,6 +724,10 @@ export default class CreationControl extends IDEE.Control {
   onDrawFigure(event) {
     this.feature = event.feature;
     this.geometry = this.feature.getGeometry().type;
+    if (this.managementControl_.hasActiveEditingSession()) {
+      this.openDataIDEECreationForm_(this.feature);
+      return;
+    }
     this.addAttributesToFeature();
     this.addAndSelectFeature(this.feature);
   }
@@ -769,7 +858,13 @@ export default class CreationControl extends IDEE.Control {
    * @function
    * @api stable
    */
-  destroy() {}
+  destroy() {
+    if (this.dataideePreviewLayer_) {
+      this.dataideePreviewLayer_.getImpl().getLayer().getSource().clear(true);
+      this.map_.getMapImpl().removeLayer(this.dataideePreviewLayer_.getImpl().getLayer());
+      this.dataideePreviewLayer_ = null;
+    }
+  }
 
   /**
    * This function is called on the control activation

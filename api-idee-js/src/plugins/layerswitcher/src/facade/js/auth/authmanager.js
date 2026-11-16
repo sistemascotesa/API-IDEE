@@ -61,6 +61,16 @@ export default class DataIDEEAuthManager {
   }
 
   /**
+   * Token de la sesión si no ha caducado. No intenta renovarlo.
+   * @param {String} root Raíz del servicio.
+   * @returns {String|undefined} Token de acceso vigente.
+   */
+  getValidToken(root) {
+    const session = this.getSession(root);
+    return session?.accessToken && !isSessionExpired(session) ? session.accessToken : undefined;
+  }
+
+  /**
    * Calcula el estado de autenticación del servicio. Si hay un token caducado
    * intenta refrescarlo; si no hay token, comprueba si el servicio tiene login.
    * @param {String} root Raíz del servicio.
@@ -87,6 +97,17 @@ export default class DataIDEEAuthManager {
       this.loginAvailable_[root] = this.client_.isLoginAvailable(root);
     }
     return this.loginAvailable_[root];
+  }
+
+  /**
+   * @param {String} root Raíz del servicio.
+   * @returns {Promise<Boolean>} Verdadero si el servicio publica la API de autenticación
+   * de DataIDEE. El contrato anterior no cuenta porque cualquier servidor lo cumple si
+   * responde algo distinto de 404 en esa ruta.
+   */
+  isDataIDEEService(root) {
+    return this.client_.getContract(root)
+      .then((contract) => contract?.identifiesDataIDEE === true);
   }
 
   /**

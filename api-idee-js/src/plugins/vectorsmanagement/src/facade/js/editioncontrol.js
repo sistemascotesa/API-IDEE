@@ -7,6 +7,7 @@ import editiontableTemplate from '../../templates/editiontable';
 
 import { getValue } from './i18n/language';
 import { renderSnapOptions, getToolSnapOptions } from './snapoptions';
+import openDataIDEEFormDialog from './dataideeformdialog';
 import {
   FEATURE_DATA,
   HOLE_INTERACTION,
@@ -127,7 +128,9 @@ export default class EditionControl extends IDEE.Control {
   active(html) {
     this.template = IDEE.template.compileSync(template, {
       vars: {
+        editingSession: this.managementControl_.isEditingLayer(),
         translations: {
+          editing_edit: getValue('editing_edit'),
           editgeometria: getValue('editgeometria'),
           clean: getValue('clean'),
           hole: getValue('hole'),
@@ -149,6 +152,7 @@ export default class EditionControl extends IDEE.Control {
     html.querySelector('#m-vectorsmanagement-controls').appendChild(this.template);
     this.addEvents();
     this.managementControl_.accessibilityTab(this.template);
+    this.managementControl_.mountEditingSection(this.template);
     this.managementControl_.updateEditingAvailability();
     this.updateToolsAvailability_();
   }
@@ -254,6 +258,8 @@ export default class EditionControl extends IDEE.Control {
    * @param {String} tool - clicked button tool type
    */
   editionBtnClick(tool) {
+    const button = this.template.querySelector(`#${tool}`);
+    if (!button || button.hidden || button.disabled) return;
     switch (tool) {
       case 'edit':
         this.activationManager('isEditActive', tool);
@@ -767,6 +773,15 @@ export default class EditionControl extends IDEE.Control {
    * @api stable
    */
   showFeatureAttributes() {
+    if (this.managementControl_.hasActiveEditingSession()) {
+      const selected = this.managementControl_.getSelectedFeatures();
+      if (selected.length !== 1) {
+        IDEE.dialog.info(getValue('dataidee_form.multiple_selection'));
+        return;
+      }
+      this.openDataIDEEAttributeForm(selected[0]);
+      return;
+    }
     let features = this.managementControl_.getSelectedFeatures();
     if (features.length === 0) {
       features = this.layer_.getFeatures();
@@ -783,6 +798,18 @@ export default class EditionControl extends IDEE.Control {
     } else {
       IDEE.dialog.info(getValue('exception.emptylayer'));
     }
+  }
+
+  openDataIDEEAttributeForm(feature) {
+    return openDataIDEEFormDialog({
+      session: this.managementControl_.getActiveEditingSession(),
+      unavailableReason: this.managementControl_.getEditingCapabilities()?.form?.reason,
+      feature,
+      onClosed: () => {
+        this.isEditAttributeActive = false;
+        this.template?.querySelector('#editattribute')?.classList.remove('activated');
+      },
+    });
   }
 
   /**

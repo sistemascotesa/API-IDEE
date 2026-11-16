@@ -226,8 +226,77 @@ test('DataIDEE editing authenticates service metadata, pages and writes with the
   expect(requests.filter(({ method }) => method === 'GET').every(({ auth }) => auth === 'Bearer second-token')).toBeTruthy();
   expect(requests.some(({ method, path }) => method === 'POST' && path.endsWith('/items'))).toBeTruthy();
   expect(requests.some(({ method, path }) => method === 'PATCH' && path.endsWith('/items/5'))).toBeTruthy();
-  ['conformance', 'queryables', 'schema', '/api', '/items/6'].forEach((suffix) => {
+  ['queryables', 'schema', '/api', '/items/6'].forEach((suffix) => {
     expect(requests.some(({ path }) => path.endsWith(suffix)), suffix).toBeTruthy();
   });
+  // The service description publishes the collection: conformance is not requested
+  expect(requests.some(({ path }) => path.endsWith('/conformance'))).toBe(false);
   expect(features.get('5').properties).toEqual({ nombre: 'Antes', category: 'field' });
+});
+
+test('DataIDEE reads templated OpenAPI paths and shares the description between collections', async ({ page }) => {
+  const reads = [];
+  const contents = (type) => ({ requestBody: { content: { [type]: {} } } });
+  await page.route('**/template-api/**', async (route) => {
+    const url = new URL(route.request().url());
+    const path = decodeURIComponent(url.pathname);
+    reads.push(path);
+    if (path === '/template-api/ogc/') {
+      await route.fulfill({ json: { links: [{ rel: 'service-desc', href: '/template-api/ogc/api' }] } });
+    } else if (path === '/template-api/ogc/api') {
+      // Like the real service: one templated path for every collection, relative to the server
+      await route.fulfill({
+        json: {
+          servers: [{ url: `${url.origin}/template-api` }],
+          paths: {
+            '/ogc/collections/{collectionId}/items': { get: {}, post: contents('application/geo+json') },
+            '/ogc/collections/{collectionId}/items/{featureId}': {
+              get: {},
+              delete: {},
+              put: contents('application/geo+json'),
+              patch: contents('application/merge-patch+json'),
+            },
+          },
+        },
+      });
+    } else if (path.endsWith('/queryables')) {
+      await route.fulfill({ json: { properties: { nombre: { type: 'string' } } } });
+    } else if (path.endsWith('/schema')) {
+      await route.fulfill({ json: { type: 'object', properties: { nombre: { type: 'string' } } } });
+    } else if (path.endsWith('/items')) {
+      await route.fulfill({ json: { type: 'FeatureCollection', features: [], links: [] } });
+    } else if (/\/collections\/[^/]+$/.test(path)) {
+      await route.fulfill({ json: { id: path.split('/').pop(), links: [] } });
+    } else await route.fulfill({ status: 404, json: {} });
+  });
+  await page.goto('/test/playwright/ol/basic-ol.html');
+  await page.evaluate(() => { window.map = IDEE.map({ container: 'map' }); });
+  await page.waitForFunction(() => window.map.isFinished());
+  const capabilities = await page.evaluate(async () => {
+    const url = `${window.location.origin}/template-api/ogc`;
+    const layers = ['local:farmacias', 'local:rutas']
+      .map((name) => new IDEE.layer.DataIDEE({ url, name, limit: 10 }));
+    window.map.addLayers(layers);
+    const result = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const layer of layers) {
+      // eslint-disable-next-line no-await-in-loop
+      const caps = await layer.getEditingCapabilities();
+      result.push({
+        create: caps.create,
+        update: caps.update,
+        delete: caps.delete,
+        updateMethod: caps.updateMethod,
+        put: caps.updateMethods.put,
+      });
+    }
+    return result;
+  });
+  const expected = {
+    create: true, update: true, delete: true, updateMethod: 'PUT', put: ['application/geo+json'],
+  };
+  expect(capabilities).toEqual([expected, expected]);
+  expect(reads.filter((path) => path === '/template-api/ogc/')).toHaveLength(1);
+  expect(reads.filter((path) => path === '/template-api/ogc/api')).toHaveLength(1);
+  expect(reads.some((path) => path.endsWith('/conformance'))).toBe(false);
 });

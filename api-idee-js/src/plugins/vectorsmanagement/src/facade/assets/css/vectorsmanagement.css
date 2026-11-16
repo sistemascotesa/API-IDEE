@@ -1250,55 +1250,50 @@ div#popup-box {
 #options-content input[type=number] {
     width: 50px;
 }
-.m-vectorsmanagement-editing {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  padding: 0.5rem;
-}
-
-.m-vectorsmanagement-editing[hidden],
-.m-vectorsmanagement-editing button[hidden] {
+#plugin-panel-vectorsmanagement #creationBtns > button[hidden],
+#plugin-panel-vectorsmanagement #editionBtns > button[hidden] {
   display: none;
 }
 
-.m-vectorsmanagement-editing p {
-  flex-basis: 100%;
+/**************************
+    EDITINGSESSION.HTML
+**************************/
+/* Sesión de edición de la capa (DataIDEE), al principio de los paneles Crear y Editar */
+.m-vectorsmanagement-editing {
+  padding-top: 1rem;
+}
+
+.m-vectorsmanagement-editing-content {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding: .5rem;
+  border: 1px solid var(--idee-color-neutral-40);
+  border-radius: var(--idee-shape-border-radius);
+  font-size: var(--idee-font-size-body-s);
+}
+
+.m-vectorsmanagement-editing[aria-busy="true"] {
+  cursor: progress;
+}
+
+.m-vectorsmanagement-editing-status {
   margin: 0;
 }
 
-.m-vectorsmanagement-editing #m-vectorsmanagement-editing-fields {
+.m-vectorsmanagement-editing-status:empty {
+  display: none;
+}
+
+.m-vectorsmanagement-editing-actions {
   display: flex;
-  flex: 1 1 100%;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: .5rem;
 }
 
-.m-vectorsmanagement-editing #m-vectorsmanagement-editing-fields label {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.m-vectorsmanagement-editing #m-vectorsmanagement-editing-fields input {
-  box-sizing: border-box;
-  max-width: 9rem;
-  min-width: 4.5rem;
-}
-
-.m-vectorsmanagement-editing button {
+/* Solo distribución: el aspecto lo aporta la regla global de botones de idee.css */
+.m-vectorsmanagement-editing-actions > button {
   flex: 1 1 auto;
-  min-height: 2rem;
-  color: #263746;
-  background: #fff;
-  border: 1px solid #7c8994;
-  border-radius: var(--idee-shape-border-radius);
-  cursor: pointer;
-}
-
-.m-vectorsmanagement-editing button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
 }
 
 /**************************
@@ -1629,4 +1624,330 @@ div#popup-box {
 .m-vectorsmanagement-turf-result td {
     padding: .25rem .5rem;
     text-align: left;
+}
+
+/**************************
+    FORMULARIO DATAIDEE
+**************************/
+.m-vectorsmanagement-dataidee-form {
+  position: relative;
+  box-sizing: border-box;
+  min-width: min(44rem, 78vw);
+  max-height: min(70vh, 42rem);
+  overflow: auto;
+  padding: 0 .5rem;
+  color: var(--idee-color-neutral-90);
+  font-family: var(--idee-font-family);
+  font-size: var(--idee-font-size-body-s);
+  text-align: left;
+}
+
+.m-vectorsmanagement-dataidee-identity,
+.m-vectorsmanagement-dataidee-legend {
+  margin: 0 0 .25rem;
+  color: var(--idee-color-neutral-70);
+  font-size: var(--idee-font-size-caption);
+}
+
+.m-vectorsmanagement-dataidee-identity {
+  font-weight: var(--idee-font-weight-bold);
+  overflow-wrap: anywhere;
+}
+
+/* Rejilla: dos columnas si caben; los campos extensos ocupan toda la fila */
+.m-vectorsmanagement-dataidee-fields,
+.m-vectorsmanagement-dataidee-field.is-object>.m-vectorsmanagement-dataidee-value {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  gap: .25rem 1rem;
+  align-items: start;
+}
+
+.m-vectorsmanagement-dataidee-field {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  min-width: 0;
+  margin: 0;
+  padding: .25rem 0;
+  border: 0;
+}
+
+.m-vectorsmanagement-dataidee-field.is-wide,
+.m-vectorsmanagement-dataidee-field.is-object,
+.m-vectorsmanagement-dataidee-field.is-array {
+  grid-column: 1 / -1;
+}
+
+.m-vectorsmanagement-dataidee-field.is-object,
+.m-vectorsmanagement-dataidee-field.is-array {
+  margin: .25rem 0;
+  padding: .5rem .75rem;
+  border: 1px solid var(--idee-color-neutral-40);
+  border-radius: var(--idee-shape-border-radius);
+}
+
+.m-vectorsmanagement-dataidee-field.is-array>.m-vectorsmanagement-dataidee-value {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.m-vectorsmanagement-dataidee-field>label,
+.m-vectorsmanagement-dataidee-field>legend {
+  padding: 0;
+  font-weight: var(--idee-font-weight-bold);
+  overflow-wrap: anywhere;
+}
+
+.m-vectorsmanagement-dataidee-field>legend {
+  padding: 0 .25rem;
+}
+
+.m-vectorsmanagement-dataidee-required {
+  color: var(--idee-color-danger);
+}
+
+.m-vectorsmanagement-dataidee-tag {
+  display: inline-block;
+  margin-left: .5rem;
+  padding: 0 .25rem;
+  border: 1px solid var(--idee-color-neutral-50);
+  border-radius: var(--idee-shape-border-radius);
+  color: var(--idee-color-neutral-70);
+  font-size: var(--idee-font-size-caption);
+  font-weight: var(--idee-font-weight-regular);
+}
+
+/* Controles */
+.m-vectorsmanagement-dataidee-field input:not([type="checkbox"]),
+.m-vectorsmanagement-dataidee-field select,
+.m-vectorsmanagement-dataidee-field textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  min-height: 2rem;
+  margin: 0;
+  padding: .25rem .5rem;
+  border: 1px solid var(--idee-color-neutral-50);
+  border-radius: var(--idee-shape-border-radius);
+  background-color: var(--idee-color-white);
+  color: var(--idee-color-neutral-90);
+  font-family: var(--idee-font-family);
+  font-size: var(--idee-font-size-body-m);
+}
+
+.m-vectorsmanagement-dataidee-field textarea {
+  max-height: 14rem;
+  resize: vertical;
+  field-sizing: content;
+}
+
+.m-vectorsmanagement-dataidee-field.is-wide textarea {
+  min-height: 3.5rem;
+}
+
+.m-vectorsmanagement-dataidee-field input:not([type="checkbox"]):hover:not(:disabled),
+.m-vectorsmanagement-dataidee-field select:hover:not(:disabled),
+.m-vectorsmanagement-dataidee-field textarea:hover:not(:disabled) {
+  border-color: var(--idee-color-links);
+}
+
+.m-vectorsmanagement-dataidee-form input:focus-visible,
+.m-vectorsmanagement-dataidee-form select:focus-visible,
+.m-vectorsmanagement-dataidee-form textarea:focus-visible,
+.m-vectorsmanagement-dataidee-form button:focus-visible,
+.m-vectorsmanagement-dataidee-form summary:focus-visible {
+  outline: 2px solid var(--idee-color-primary-dark);
+  outline-offset: 1px;
+}
+
+.m-vectorsmanagement-dataidee-field input:disabled,
+.m-vectorsmanagement-dataidee-field select:disabled,
+.m-vectorsmanagement-dataidee-field textarea:disabled {
+  border-color: var(--idee-color-neutral-30);
+  background-color: var(--idee-color-neutral-10);
+  color: var(--idee-color-neutral-70);
+  cursor: not-allowed;
+}
+
+/* Booleanos */
+.m-vectorsmanagement-dataidee-boolean {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem 1rem;
+  min-height: 2rem;
+}
+
+.m-vectorsmanagement-dataidee-boolean-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+  padding-left: .25rem;
+  cursor: pointer;
+}
+
+.m-vectorsmanagement-dataidee-boolean-toggle>input {
+  margin: 0;
+}
+
+.m-vectorsmanagement-dataidee-boolean-state {
+  font-size: var(--idee-font-size-body-m);
+}
+
+.m-vectorsmanagement-dataidee-feedback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 .75rem;
+  min-height: 1.125rem;
+  color: var(--idee-color-neutral-70);
+  font-size: var(--idee-font-size-caption);
+}
+
+.m-vectorsmanagement-dataidee-hint,
+.m-vectorsmanagement-dataidee-description,
+.m-vectorsmanagement-dataidee-error,
+.m-vectorsmanagement-dataidee-warning {
+  margin: 0;
+}
+
+.m-vectorsmanagement-dataidee-description {
+  color: var(--idee-color-neutral-70);
+  font-size: var(--idee-font-size-caption);
+}
+
+.m-vectorsmanagement-dataidee-counter {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.m-vectorsmanagement-dataidee-error,
+.m-vectorsmanagement-dataidee-warning {
+  flex: 1 1 0;
+  min-width: 60%;
+  color: var(--idee-color-neutral-90);
+  font-size: var(--idee-font-size-caption);
+}
+
+.m-vectorsmanagement-dataidee-error {
+  font-weight: var(--idee-font-weight-bold);
+}
+
+.m-vectorsmanagement-dataidee-error::before,
+.m-vectorsmanagement-dataidee-warning::before,
+.m-vectorsmanagement-dataidee-field.is-valid>.m-vectorsmanagement-dataidee-feedback::before {
+  margin-right: .25rem;
+  font-weight: var(--idee-font-weight-bold);
+}
+
+.m-vectorsmanagement-dataidee-error::before {
+  content: "\26A0\FE0E";
+  color: var(--idee-color-danger);
+}
+
+.m-vectorsmanagement-dataidee-warning::before {
+  content: "\2139\FE0E";
+  color: var(--idee-color-warning);
+}
+
+.m-vectorsmanagement-dataidee-field.is-valid>.m-vectorsmanagement-dataidee-feedback::before {
+  content: "\2713\FE0E";
+  color: var(--idee-color-neutral-70);
+}
+
+.m-vectorsmanagement-dataidee-field.is-invalid>.m-vectorsmanagement-dataidee-feedback>.m-vectorsmanagement-dataidee-hint,
+.m-vectorsmanagement-dataidee-field.is-warning>.m-vectorsmanagement-dataidee-feedback>.m-vectorsmanagement-dataidee-hint {
+  display: none;
+}
+
+.m-vectorsmanagement-dataidee-field.is-invalid>.m-vectorsmanagement-dataidee-value input:not([type="checkbox"]),
+.m-vectorsmanagement-dataidee-field.is-invalid>.m-vectorsmanagement-dataidee-value select,
+.m-vectorsmanagement-dataidee-field.is-invalid>.m-vectorsmanagement-dataidee-value textarea {
+  border-color: var(--idee-color-danger);
+  border-left-width: 4px;
+}
+
+.m-vectorsmanagement-dataidee-field.is-warning>.m-vectorsmanagement-dataidee-value input:not([type="checkbox"]),
+.m-vectorsmanagement-dataidee-field.is-warning>.m-vectorsmanagement-dataidee-value select,
+.m-vectorsmanagement-dataidee-field.is-warning>.m-vectorsmanagement-dataidee-value textarea {
+  border-color: var(--idee-color-warning);
+  border-left-width: 4px;
+}
+
+.m-vectorsmanagement-dataidee-field.is-valid>.m-vectorsmanagement-dataidee-value input:not([type="checkbox"]),
+.m-vectorsmanagement-dataidee-field.is-valid>.m-vectorsmanagement-dataidee-value select,
+.m-vectorsmanagement-dataidee-field.is-valid>.m-vectorsmanagement-dataidee-value textarea {
+  border-left: 4px solid var(--idee-color-success);
+}
+
+.m-vectorsmanagement-dataidee-errors {
+  margin-bottom: .5rem;
+  padding: .5rem .75rem;
+  border: 1px solid var(--idee-color-danger);
+  border-left-width: 4px;
+  border-radius: var(--idee-shape-border-radius);
+  background-color: var(--idee-color-neutral-05);
+}
+
+.m-vectorsmanagement-dataidee-errors:empty {
+  display: none;
+}
+
+.m-vectorsmanagement-dataidee-errors summary {
+  font-weight: var(--idee-font-weight-bold);
+  cursor: pointer;
+}
+
+.m-vectorsmanagement-dataidee-errors ul {
+  margin: .25rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.m-vectorsmanagement-dataidee-errors button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--idee-color-primary-dark);
+  font-size: var(--idee-font-size-body-s);
+  text-align: left;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.m-vectorsmanagement-dataidee-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.m-vectorsmanagement-dataidee-array-add,
+.m-vectorsmanagement-dataidee-array-remove,
+.m-vectorsmanagement-dataidee-boolean-clear {
+  align-self: flex-start;
+  padding: 0 .75rem;
+}
+
+.m-vectorsmanagement-dataidee-stored-value {
+  max-height: 12rem;
+  overflow: auto;
+  font-size: var(--idee-font-size-caption);
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .m-vectorsmanagement-dataidee-form {
+    min-width: min(20rem, 70vw);
+    max-height: 65vh;
+  }
 }

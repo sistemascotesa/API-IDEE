@@ -362,6 +362,7 @@ export default class SelectionControl extends IDEE.Control {
   onSelect(e) {
     const selection = this.managementControl_.getFeatureSelection();
     selection.select(e.features);
+    this.managementControl_.updateEditingAvailability();
 
     const features = selection.getFeatures();
     if (features.length === 1 && document.querySelector('.m-vectorsmanagement-analysis') !== null) {

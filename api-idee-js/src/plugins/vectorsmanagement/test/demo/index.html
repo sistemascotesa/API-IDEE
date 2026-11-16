@@ -17,9 +17,15 @@
   </head>
   <body>
     <div class="demo-mode">
+      <a href="/teunesco.html">Editar Todos los tipos · TEUNESCO</a>
       <label for="demo-mode">Servicio</label>
       <select id="demo-mode">
         <option value="local">Local (escritura disponible)</option>
+        <option value="form">Local (formulario con objetos y arrays)</option>
+        <option value="patch-only">Local (actualización solo PATCH)</option>
+        <option value="missing-queryables">Local (sin queryables)</option>
+        <option value="malformed-schema">Local (esquema no válido para formularios)</option>
+        <option value="missing-schema">Local (sin esquema)</option>
         <option value="readonly">Local (solo lectura)</option>
         <option value="dense">Local (zona que supera entidades)</option>
         <option value="complex">Local (geometría que supera coordenadas)</option>
