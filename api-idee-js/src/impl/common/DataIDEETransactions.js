@@ -1,4 +1,5 @@
 import { normalizeDataIDEESchema } from './DataIDEEFormSchema';
+import exceptionMessage from './exceptionMessage';
 
 /** DataIDEE-only OGC API Features transaction client. */
 const normalizedPath = (pathname) => pathname.split('/').map((part) => {
@@ -10,7 +11,9 @@ function advertisedLink(links, rel, fallback, baseUrl, allowedOrigin) {
   const link = (links || []).find((candidate) => candidate.rel === rel
     || candidate.rel === `http://www.opengis.net/def/rel/ogc/1.0/${rel}`);
   const url = new URL(link?.href || fallback, baseUrl);
-  if (url.origin !== allowedOrigin) throw new Error(`DataIDEE ${rel} link escaped the configured origin.`);
+  if (url.origin !== allowedOrigin) {
+    throw new Error(exceptionMessage('dataidee_link_origin', { rel }));
+  }
   return url.href;
 }
 
@@ -105,7 +108,9 @@ export default class DataIDEETransactions {
       },
     });
     if (!response.ok) {
-      const error = new Error(`DataIDEE transaction failed (HTTP ${response.status}).`);
+      const error = new Error(exceptionMessage('dataidee_transaction_failed', {
+        status: response.status,
+      }));
       error.status = response.status;
       throw error;
     }
@@ -157,7 +162,7 @@ export default class DataIDEETransactions {
           if (!descriptionLink) return null;
           const descriptionUrl = new URL(descriptionLink.href, root);
           if (descriptionUrl.origin !== new URL(root).origin) {
-            throw new Error('DataIDEE service description escaped the configured origin.');
+            throw new Error(exceptionMessage('dataidee_service_description_origin'));
           }
           const document = await (await this.request(descriptionUrl.href)).json();
           return { document, descriptionUrl: descriptionUrl.href };
@@ -244,7 +249,7 @@ export default class DataIDEETransactions {
     const featureMethods = new Set(Object.keys(operations?.feature || {})
       .map((method) => method.toUpperCase()));
     const writableFromApi = operations !== null;
-    let form = { available: false, reason: 'The collection schema is unavailable.' };
+    let form = { available: false, reason: exceptionMessage('dataidee_schema_unavailable') };
     if (schema) {
       try {
         const normalized = normalizeDataIDEESchema(schema);
@@ -252,14 +257,18 @@ export default class DataIDEETransactions {
           .filter((key) => Object.hasOwn(normalized.schema, key));
         form = {
           available: unsupportedRoot.length === 0,
-          ...(unsupportedRoot.length ? { reason: `Unsupported collection schema keywords: ${unsupportedRoot.join(', ')}` } : {}),
+          ...(unsupportedRoot.length ? {
+            reason: exceptionMessage('dataidee_schema_keywords', {
+              keywords: unsupportedRoot.join(', '),
+            }),
+          } : {}),
           ...normalized,
           defaults: Object.fromEntries(normalized.properties
             .filter((field) => field.default !== undefined)
             .map((field) => [field.name, field.default])),
         };
       } catch (error) {
-        form.reason = `The collection schema cannot be used for editing: ${error.message}`;
+        form.reason = exceptionMessage('dataidee_schema_unusable', { error: error.message });
       }
     }
     const capability = (method, standard) => writable && (writableFromApi
@@ -333,7 +342,7 @@ export default class DataIDEETransactions {
       const collectionUrl = new URL(this.collectionUrl_);
       if (itemUrl.origin !== collectionUrl.origin
         || !normalizedPath(itemUrl.pathname).startsWith(`${normalizedPath(collectionUrl.pathname)}/items/`)) {
-        throw new Error('DataIDEE returned a Location outside the configured collection.');
+        throw new Error(exceptionMessage('dataidee_location_outside'));
       }
       const itemResponse = await this.request(itemUrl.href);
       created = await itemResponse.json();

@@ -3,7 +3,7 @@
  */
 import DataIDEEImpl from 'impl/layer/DataIDEE';
 import {
-  isUndefined, isNullOrEmpty, isString, normalize, isObject,
+  isUndefined, isNullOrEmpty, isString, normalize, isObject, escapeXSS,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import Vector from './Vector';
@@ -12,12 +12,15 @@ import * as parameter from '../parameter/parameter';
 import { getValue } from '../i18n/language';
 import * as EventType from '../event/eventtype';
 import * as Dialog from '../dialog';
+import * as Toast from '../toast';
 import normalizeDataIDEEOptions from '../../../impl/common/DataIDEEOptions';
 
 /**
  * @classdesc
  * Capa DataIDEE para consultar y editar entidades GeoJSON mediante OGC API Features.
  * Admite filtros CQL2 en texto o JSON a través de las opciones del proveedor.
+ * Si una carga falla, dispara el evento load:error y avisa al usuario con un toast,
+ * una sola vez hasta la siguiente carga correcta.
  *
  * @property {String} idLayer Identificador de la capa.
  * @property {String} legend Indica el nombre que queremos que aparezca en el
@@ -285,7 +288,18 @@ class DataIDEE extends Vector {
      */
     this.notifiedToken_ = null;
 
+    /**
+     * Indica si ya se ha avisado del fallo de carga en curso. Se rearma tras una carga
+     * correcta o al retirar la capa, para no repetir el aviso en cada desplazamiento.
+     * @private
+     * @type {Boolean}
+     */
+    this.loadErrorNotified_ = false;
+
     impl.on(EventType.LOAD_UNAUTHORIZED, this.notifyUnauthorized_, this);
+    this.on(EventType.LOAD_ERROR, this.notifyLoadError_, this);
+    this.on(EventType.LOAD, this.resetLoadErrorNotice_, this);
+    this.on(EventType.REMOVED_FROM_MAP, this.resetLoadErrorNotice_, this);
   }
 
   /**
@@ -432,7 +446,7 @@ class DataIDEE extends Vector {
     if (isNullOrEmpty(newId)) {
       this.getImpl().id = this.id;
     } else if (this.bboxStrategy_) {
-      throw new TypeError('DataIDEE bboxStrategy requires a collection, without an item id.');
+      throw new TypeError(getValue('exception').dataidee_bbox_strategy_item);
     } else {
       this.getImpl().id = newId;
     }
@@ -550,7 +564,7 @@ class DataIDEE extends Vector {
   getEditingImpl_() {
     const impl = this.getImpl();
     if (typeof impl.getEditingCapabilities !== 'function') {
-      throw new Error('DataIDEE spatial editing is only available in OpenLayers.');
+      throw new Error(getValue('exception').dataidee_editing_openlayers);
     }
     return impl;
   }
@@ -591,6 +605,34 @@ class DataIDEE extends Vector {
       this.notifiedToken_ = token;
       Dialog.error(getValue('dialog').dataidee_unauthorized);
     }
+  }
+
+  /**
+   * Avisa al usuario con un toast de que la capa no se ha podido cargar. Se muestra una
+   * vez hasta la siguiente carga correcta; el evento load:error se dispara siempre.
+   * Las cancelaciones, las respuestas obsoletas y los rechazos del token (que ya
+   * muestran su propio diálogo) no llegan a este aviso.
+   * @private
+   * @function
+   * @param {Error} error Error de carga.
+   */
+  notifyLoadError_(error) {
+    if (this.loadErrorNotified_) return;
+    this.loadErrorNotified_ = true;
+    const layer = escapeXSS(String(this.legend || this.name || ''));
+    const detail = escapeXSS(String(error?.message || error || ''));
+    Toast.error(getValue('toast').dataidee_load_error
+      .replace('{layer}', () => layer)
+      .replace('{error}', () => detail));
+  }
+
+  /**
+   * Permite volver a avisar de un fallo de carga posterior.
+   * @private
+   * @function
+   */
+  resetLoadErrorNotice_() {
+    this.loadErrorNotified_ = false;
   }
 
   /**

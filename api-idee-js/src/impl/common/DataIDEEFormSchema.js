@@ -1,3 +1,5 @@
+import exceptionMessage from './exceptionMessage';
+
 /** Helpers for the JSON Schema subset used by DataIDEE attribute forms. */
 const UNSUPPORTED_KEYWORDS = new Set([
   'anyOf', 'allOf', 'not', 'if', 'then', 'else', 'patternProperties',
@@ -214,7 +216,7 @@ function fieldFor(name, schema, required = false, path = '') {
 
 export function normalizeDataIDEESchema(schema) {
   if (!schema || schema.type !== 'object' || !schema.properties) {
-    throw new TypeError('The collection schema must be a JSON Schema object with properties.');
+    throw new TypeError(exceptionMessage('dataidee_schema_object'));
   }
   const resolved = resolveSchema(schema, schema);
   const fields = Object.entries(resolved.properties).map(([name, property]) => (

@@ -107,7 +107,9 @@ test('DataIDEE rejects an oversized edit area without replacing loaded features'
       return exception.message;
     }
   });
-  expect(error).toContain('feature limit');
+  expect(error).toBe(await page.evaluate(() => (
+    IDEE.language.getValue('exception').dataidee_edit_feature_limit
+  )));
   expect(await page.evaluate(() => window.limitLayer.getFeatures().length)).toBe(before);
 });
 

@@ -2,6 +2,7 @@ import { isNullOrEmpty } from 'IDEE/util/Utils';
 import { get as getRemote } from 'IDEE/util/Remote';
 import { getValue } from 'IDEE/i18n/language';
 import { RequestCancelledError } from './RequestManager';
+import exceptionMessage from './exceptionMessage';
 
 /** True when the service rejected the request credentials (HTTP 401/403). */
 export function isUnauthorizedError(error) {
@@ -11,17 +12,24 @@ export function isUnauthorizedError(error) {
 function validateGeoJSON(response) {
   if (!response || !Number.isInteger(response.code) || response.code < 200
     || response.code >= 300 || typeof response.text !== 'string') {
-    const error = new Error(`DataIDEE request failed${response ? ` (HTTP ${response.code})` : '.'}`);
+    const error = new Error(response
+      ? exceptionMessage('dataidee_request_failed_http', { status: response.code })
+      : exceptionMessage('dataidee_request_failed'));
     error.status = response?.code;
     throw error;
   }
   if (isNullOrEmpty(response.text)) throw new Error(getValue('exception').no_service_response);
-  const geoJSON = JSON.parse(response.text);
+  let geoJSON;
+  try {
+    geoJSON = JSON.parse(response.text);
+  } catch (error) {
+    throw new Error(exceptionMessage('dataidee_invalid_geojson'));
+  }
   const isFeature = geoJSON?.type === 'Feature' && geoJSON.geometry !== undefined;
   const isCollection = geoJSON?.type === 'FeatureCollection'
     && Array.isArray(geoJSON.features)
     && geoJSON.features.every((feature) => feature?.type === 'Feature');
-  if (!isFeature && !isCollection) throw new Error('DataIDEE returned invalid GeoJSON.');
+  if (!isFeature && !isCollection) throw new Error(exceptionMessage('dataidee_invalid_geojson'));
 }
 
 /**

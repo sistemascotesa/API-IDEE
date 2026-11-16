@@ -1,3 +1,5 @@
+import exceptionMessage from './exceptionMessage';
+
 const MAX_TIMEOUT_MS = 2147483647;
 const DEFAULT_CACHE = Object.freeze({
   ttlMs: 60000,
@@ -50,20 +52,20 @@ class RequestManager {
       Object.entries(normalizedCache).forEach(([name, value]) => {
         const maximum = name === 'ttlMs' ? MAX_TIMEOUT_MS : Number.MAX_SAFE_INTEGER;
         if (!Number.isSafeInteger(value) || value < 1 || value > maximum) {
-          throw new TypeError(`RequestManager cache ${name} must be a positive safe integer no greater than ${maximum}.`);
+          throw new TypeError(exceptionMessage('request_manager_cache_limit', { name, maximum }));
         }
       });
     } else if (cache !== undefined && cache !== false) {
-      throw new TypeError('RequestManager cache must be false, true, or a configuration object.');
+      throw new TypeError(exceptionMessage('request_manager_cache_type'));
     }
 
     const throttleMs = options.throttleMs === undefined ? 0 : options.throttleMs;
     if (!Number.isSafeInteger(throttleMs) || throttleMs < 0 || throttleMs > MAX_TIMEOUT_MS) {
-      throw new TypeError(`RequestManager throttleMs must be a non-negative safe integer no greater than ${MAX_TIMEOUT_MS}.`);
+      throw new TypeError(exceptionMessage('request_manager_throttle', { maximum: MAX_TIMEOUT_MS }));
     }
     const pendingPolicy = options.pendingPolicy === undefined ? 'all' : options.pendingPolicy;
     if (pendingPolicy !== 'all' && pendingPolicy !== 'latest') {
-      throw new TypeError('RequestManager pendingPolicy must be all or latest.');
+      throw new TypeError(exceptionMessage('request_manager_pending_policy'));
     }
     return { cache: normalizedCache, throttleMs, pendingPolicy };
   }

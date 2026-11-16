@@ -17,6 +17,7 @@ import { isUnauthorizedError } from '../../../common/DataIDEERequest';
 import DataIDEEEditingSession from '../../../common/DataIDEEEditingSession';
 import normalizeDataIDEEOptions from '../../../common/DataIDEEOptions';
 import DataIDEEViewport from '../../../common/DataIDEEViewport';
+import exceptionMessage from '../../../common/exceptionMessage';
 
 /**
  * Puntos por lado al transformar la extensión visible a CRS84: en proyecciones no
@@ -251,14 +252,14 @@ class DataIDEE extends OGCAPIFeatures {
 
   async beginEditing({ bbox }) {
     if (this.editing_ || this.preparingEditing_) {
-      throw new Error('DataIDEE editing is already active or being prepared.');
+      throw new Error(exceptionMessage('dataidee_editing_active'));
     }
     if (!Array.isArray(bbox) || bbox.length !== 4 || !bbox.every(Number.isFinite)) {
-      throw new TypeError('A valid CRS84 bbox is required to edit DataIDEE.');
+      throw new TypeError(exceptionMessage('dataidee_edit_bbox_required'));
     }
     if (bbox[0] < -180 || bbox[2] > 180 || bbox[1] < -90 || bbox[3] > 90
       || bbox[0] > bbox[2] || bbox[1] > bbox[3]) {
-      throw new RangeError('The edit bbox must be a valid CRS84 area; zoom in and retry.');
+      throw new RangeError(exceptionMessage('dataidee_edit_bbox_invalid'));
     }
     this.preparingEditing_ = true;
     this.editing_ = true;
@@ -267,10 +268,10 @@ class DataIDEE extends OGCAPIFeatures {
     try {
       capabilities = await this.getEditingCapabilities();
       if (this.destroyed_ || !this.map) {
-        throw new Error('The DataIDEE layer was removed during edit preparation.');
+        throw new Error(exceptionMessage('dataidee_edit_layer_removed'));
       }
       if (!capabilities.create && !capabilities.update && !capabilities.delete) {
-        throw new Error('This DataIDEE collection is read-only.');
+        throw new Error(exceptionMessage('dataidee_read_only'));
       }
     } catch (error) {
       this.editing_ = false;
@@ -314,7 +315,7 @@ class DataIDEE extends OGCAPIFeatures {
       // Each validated next link determines the following page, so requests stay sequential.
       // eslint-disable-next-line no-await-in-loop
       while (nextUrl) {
-        if (seen.has(nextUrl.href)) throw new Error('DataIDEE pagination contains a repeated link.');
+        if (seen.has(nextUrl.href)) throw new Error(exceptionMessage('dataidee_pagination_repeated'));
         seen.add(nextUrl.href);
         const expectedCollection = new URL(collectionUrl);
         const normalizedPath = (pathname) => pathname.split('/').map((part) => {
@@ -324,7 +325,7 @@ class DataIDEE extends OGCAPIFeatures {
         const nextPath = normalizedPath(nextUrl.pathname);
         const validPath = nextPath === expectedPath || nextPath.startsWith(`${expectedPath}/`);
         if (nextUrl.origin !== expectedCollection.origin || !validPath) {
-          throw new Error('DataIDEE pagination link escaped the collection.');
+          throw new Error(exceptionMessage('dataidee_pagination_escaped'));
         }
         const pageUrl = new URL(nextUrl.href);
         const ticket = window.IDEE?.config?.TICKET;
@@ -346,16 +347,16 @@ class DataIDEE extends OGCAPIFeatures {
             ...(this.getToken() ? { Authorization: `Bearer ${this.getToken()}` } : {}),
           },
         });
-        if (!response.ok) throw new Error(`DataIDEE preparation failed (HTTP ${response.status}).`);
+        if (!response.ok) throw new Error(exceptionMessage('dataidee_edit_preparation_failed', { status: response.status }));
         // eslint-disable-next-line no-await-in-loop
         const text = await response.text();
         bytes += new Blob([text]).size;
         if (bytes > this.editingLimits_.maxBytes) {
-          throw new Error('DataIDEE edit area exceeds the GeoJSON size limit; reduce the area.');
+          throw new Error(exceptionMessage('dataidee_edit_size_limit'));
         }
         const page = JSON.parse(text);
         if (page.type !== 'FeatureCollection' || !Array.isArray(page.features)) {
-          throw new Error('DataIDEE returned an incomplete page.');
+          throw new Error(exceptionMessage('dataidee_incomplete_page'));
         }
         const next = page.links?.find((link) => link.rel === 'next')?.href;
         const pageFeatures = loadLimit
@@ -367,7 +368,7 @@ class DataIDEE extends OGCAPIFeatures {
         }
         documents.push(...pageFeatures);
         if (documents.length > this.editingLimits_.maxFeatures) {
-          throw new Error('DataIDEE edit area exceeds the feature limit; reduce the area.');
+          throw new Error(exceptionMessage('dataidee_edit_feature_limit'));
         }
         const count = (value) => {
           if (!Array.isArray(value)) return 0;
@@ -378,22 +379,20 @@ class DataIDEE extends OGCAPIFeatures {
           'Point', 'MultiPoint', 'LineString', 'MultiLineString', 'Polygon', 'MultiPolygon',
         ]);
         if (pageFeatures.some((feature) => !supportedGeometry.has(feature.geometry?.type))) {
-          throw new Error('DataIDEE edit area contains an unsupported or missing geometry type.');
+          throw new Error(exceptionMessage('dataidee_edit_geometry_type'));
         }
         const oversizedFeature = pageFeatures.find((feature) => (
           count(feature.geometry?.coordinates) > this.editingLimits_.maxCoordinates
           || new Blob([JSON.stringify(feature)]).size > this.editingLimits_.maxBytes
         ));
         if (oversizedFeature) {
-          throw new Error('One DataIDEE feature exceeds the edit budget. Zooming in will not '
-            + 'reduce its vertex count; edit a simpler feature or ask for a larger limit.');
+          throw new Error(exceptionMessage('dataidee_edit_feature_budget'));
         }
         coordinates += pageFeatures.reduce((sum, feature) => (
           sum + count(feature.geometry?.coordinates)
         ), 0);
         if (coordinates > this.editingLimits_.maxCoordinates) {
-          throw new Error('DataIDEE edit area exceeds the coordinate limit; reduce the area '
-            + 'or use simpler geometries.');
+          throw new Error(exceptionMessage('dataidee_edit_coordinate_limit'));
         }
         if (next && !reachedLimit) {
           nextUrl = new URL(next, nextUrl);
@@ -408,7 +407,7 @@ class DataIDEE extends OGCAPIFeatures {
         featureProjection: getProj(this.map.getProjection().code),
       });
       if (features.some((feature) => feature.getId() === undefined || feature.getId() === null)) {
-        throw new Error('DataIDEE returned an entity without a server identifier.');
+        throw new Error(exceptionMessage('dataidee_missing_identifier'));
       }
       this.facadeVector_.removeFeatures(this.facadeVector_.getFeatures(true));
       this.facadeVector_.addFeatures(features);

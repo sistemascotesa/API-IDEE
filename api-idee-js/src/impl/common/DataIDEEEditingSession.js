@@ -5,6 +5,7 @@ import {
   readDataIDEEPointer,
   validateDataIDEEValues,
 } from './DataIDEEFormSchema';
+import exceptionMessage from './exceptionMessage';
 
 const sameJson = (left, right) => JSON.stringify(left) === JSON.stringify(right);
 const blockingIssues = (issues) => issues.filter((issue) => !issue.preexisting);
@@ -45,7 +46,7 @@ export default class DataIDEEEditingSession {
     this.replaying_ = false;
     features.forEach((feature) => {
       const id = feature.getId();
-      if (id === undefined || id === null) throw new Error('A DataIDEE feature has no server identifier.');
+      if (id === undefined || id === null) throw new Error(exceptionMessage('dataidee_missing_identifier'));
       this.original_.set(String(id), this.serialize_(feature));
       this.currentCosts_.set(String(id), this.cost_(this.original_.get(String(id))));
     });
@@ -144,7 +145,7 @@ export default class DataIDEEEditingSession {
     const featureCount = this.currentCosts_.size + (previous.bytes === 0 ? 1 : 0);
     if (featureCount > this.limits_.maxFeatures
       || coordinates > this.limits_.maxCoordinates || bytes > this.limits_.maxBytes) {
-      throw new Error('La sesión supera sus límites. Deshaz este cambio o inicia otra zona de menor tamaño.');
+      throw new Error(exceptionMessage('dataidee_session_limits'));
     }
     return nextCost;
   }
@@ -172,11 +173,12 @@ export default class DataIDEEEditingSession {
 
   getAttributeForm(feature, { mode = 'update' } = {}) {
     if (!this.isSupportedForm()) {
-      throw new Error(this.capabilities_.form?.reason || 'The collection schema is unavailable.');
+      throw new Error(this.capabilities_.form?.reason
+        || exceptionMessage('dataidee_schema_unavailable'));
     }
     const native = feature?.getImpl?.().getFeature?.();
     if (!native || (mode === 'update' && !this.source_.hasFeature(native))) {
-      throw new TypeError('Select a feature in the active DataIDEE editing area.');
+      throw new TypeError(exceptionMessage('dataidee_select_feature'));
     }
     const values = mode === 'create' ? {} : JSON.parse(JSON.stringify(feature.getAttributes?.() || {}));
     const idField = this.capabilities_.form.idField;
@@ -290,7 +292,7 @@ export default class DataIDEEEditingSession {
 
   applyAttributes(feature, values) {
     if (this.saving_ || this.uncertain_) {
-      throw new Error('Attributes cannot be applied while this editing session is locked.');
+      throw new Error(exceptionMessage('dataidee_session_locked'));
     }
     const issues = blockingIssues(this.validateAttributes(feature, values));
     if (issues.length) throw Object.assign(new Error(issues[0].message), { issues });
@@ -454,8 +456,11 @@ export default class DataIDEEEditingSession {
 
   prepareFeature(feature, values = {}, { applyDefaults = true } = {}) {
     const nativeFeature = feature?.getImpl?.().getFeature?.();
-    if (!nativeFeature) throw new TypeError('A valid vector feature is required.');
-    if (!this.isSupportedForm()) throw new Error(this.capabilities_.form?.reason || 'The collection schema is unavailable.');
+    if (!nativeFeature) throw new TypeError(exceptionMessage('dataidee_vector_feature_required'));
+    if (!this.isSupportedForm()) {
+      throw new Error(this.capabilities_.form?.reason
+        || exceptionMessage('dataidee_schema_unavailable'));
+    }
     const defaults = mergeFormDefaults(
       this.capabilities_.form.defaults,
       this.layerImpl_?.options?.dataideeDefaultProperties || {},
@@ -472,7 +477,7 @@ export default class DataIDEEEditingSession {
     const geometry = nativeFeature.getGeometry()?.getType()?.toLowerCase();
     if (this.capabilities_.geometryTypes?.length
       && !this.capabilities_.geometryTypes.includes(geometry)) {
-      throw new Error(`Geometry type '${geometry}' is not supported by this collection.`);
+      throw new Error(exceptionMessage('dataidee_geometry_unsupported', { geometry }));
     }
     if (this.capabilities_.clientAssignedId) {
       const idName = this.capabilities_.form.idField?.name || 'id';
@@ -482,7 +487,7 @@ export default class DataIDEEEditingSession {
           String(item.feature.getId()) === String(idValue)
         ));
       if (idValue !== undefined && idValue !== '' && duplicateId) {
-        throw new Error('That identifier is already in the editing area.');
+        throw new Error(exceptionMessage('dataidee_duplicate_identifier'));
       }
       let normalizedId = idValue;
       if (idValue === '') normalizedId = undefined;
@@ -543,7 +548,9 @@ export default class DataIDEEEditingSession {
       if (change.type === 'delete') return;
       const issues = this.validatePendingChange_(key, change);
       if (issues.length) {
-        throw Object.assign(new Error(`DataIDEE feature ${key} has invalid attributes: ${issues[0].message}`), {
+        throw Object.assign(new Error(exceptionMessage('dataidee_invalid_attributes', {
+          feature: key, message: issues[0].message,
+        })), {
           code: 'VALIDATION', issues, featureKey: key,
         });
       }
@@ -552,9 +559,9 @@ export default class DataIDEEEditingSession {
 
   async save() {
     if (this.uncertain_) {
-      throw new Error('Una escritura tiene resultado incierto. Recarga y revisa el servidor antes de continuar.');
+      throw new Error(exceptionMessage('dataidee_uncertain_write'));
     }
-    if (this.saving_) throw new Error('DataIDEE save already in progress.');
+    if (this.saving_) throw new Error(exceptionMessage('dataidee_save_in_progress'));
     this.assertPendingChangesValid_();
     this.saving_ = true;
     const completed = [];
@@ -591,8 +598,7 @@ export default class DataIDEEEditingSession {
             if (cost) this.currentCosts_.set(committedKey, cost);
           } else {
             this.uncertain_ = true;
-            throw new Error('The server accepted the create without returning a feature ID; '
-              + 'review it before retrying.');
+            throw new Error(exceptionMessage('dataidee_create_without_id'));
           }
         } else {
           const id = change.feature.getId();
@@ -600,7 +606,7 @@ export default class DataIDEEEditingSession {
           const { feature: remote, etag } = await this.layer_.getEditingFeature(id);
           const original = this.original_.get(key);
           if (!this.equivalent_(remote, original)) {
-            const error = new Error(`DataIDEE feature ${id} changed on the server.`);
+            const error = new Error(exceptionMessage('dataidee_feature_changed', { id }));
             error.code = 'CONFLICT';
             throw error;
           }
@@ -631,7 +637,7 @@ export default class DataIDEEEditingSession {
               && (this.capabilities_.updateMethods?.patch?.includes('application/merge-patch+json')
               || this.capabilities_.updateMethods?.patch?.length === 0);
             const canPut = this.capabilities_.updateMethods?.put?.includes('application/geo+json');
-            if (hasNull && !canPut) throw new Error('This service cannot safely store an explicit null value.');
+            if (hasNull && !canPut) throw new Error(exceptionMessage('dataidee_explicit_null'));
             let method = this.capabilities_.updateMethod;
             if (canMergePatch) method = 'PATCH';
             // Replace the complete editable feature when GeoJSON PUT is advertised.

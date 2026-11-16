@@ -1,5 +1,6 @@
 import { isNullOrEmpty } from 'IDEE/util/Utils';
 import RequestManager from './RequestManager';
+import exceptionMessage from './exceptionMessage';
 
 /** Límites predeterminados de una zona de edición DataIDEE. */
 export const DEFAULT_EDITING_LIMITS = Object.freeze({
@@ -14,13 +15,13 @@ const TOKEN_LOCATIONS = ['header', 'query'];
 function normalizeEditingLimits(editingLimits) {
   if (editingLimits !== undefined && (editingLimits === null
     || typeof editingLimits !== 'object' || Array.isArray(editingLimits))) {
-    throw new TypeError('DataIDEE editingLimits must be an object.');
+    throw new TypeError(exceptionMessage('dataidee_editing_limits_object'));
   }
   return Object.fromEntries(Object.entries(DEFAULT_EDITING_LIMITS).map(([key, fallback]) => {
     const value = editingLimits?.[key];
     if (value === undefined) return [key, fallback];
     if (!Number.isSafeInteger(value) || value <= 0) {
-      throw new TypeError(`DataIDEE editing limit '${key}' must be a positive integer.`);
+      throw new TypeError(exceptionMessage('dataidee_editing_limit_integer', { key }));
     }
     return [key, value];
   }));
@@ -41,17 +42,17 @@ function normalizeEditingLimits(editingLimits) {
 export default function normalizeDataIDEEOptions(options = {}, vendorOptions = {}, { id } = {}) {
   const { bboxStrategy = false } = options;
   if (typeof bboxStrategy !== 'boolean') {
-    throw new TypeError('DataIDEE bboxStrategy must be a boolean.');
+    throw new TypeError(exceptionMessage('dataidee_bbox_strategy_boolean'));
   }
   if (bboxStrategy && !isNullOrEmpty(id)) {
-    throw new TypeError('DataIDEE bboxStrategy requires a collection, without an item id.');
+    throw new TypeError(exceptionMessage('dataidee_bbox_strategy_item'));
   }
   if (bboxStrategy && !isNullOrEmpty(vendorOptions?.source)) {
-    throw new TypeError('DataIDEE bboxStrategy is not compatible with an external vendorOpts.source.');
+    throw new TypeError(exceptionMessage('dataidee_bbox_strategy_source'));
   }
   const tokenLocation = vendorOptions?.tokenLocation;
   if (tokenLocation !== undefined && !TOKEN_LOCATIONS.includes(tokenLocation)) {
-    throw new TypeError("DataIDEE tokenLocation must be 'header' or 'query'.");
+    throw new TypeError(exceptionMessage('dataidee_token_location'));
   }
   const { throttleMs } = RequestManager.normalizeOptions({
     cache: options.cache, throttleMs: options.throttleMs,

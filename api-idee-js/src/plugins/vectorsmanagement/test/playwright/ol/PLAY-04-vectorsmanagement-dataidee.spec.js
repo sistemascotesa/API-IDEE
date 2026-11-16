@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { openLocalDataIDEE } from './dataidee-pages';
 
+// Mensajes de error del núcleo en el idioma configurado de la página
+const exceptionText = (page, key) => page.evaluate(
+  (name) => IDEE.language.getValue('exception')[name],
+  key,
+);
+// Patrón de un mensaje con marcadores {x}: cada marcador admite cualquier valor
+const exceptionPattern = async (page, key) => new RegExp((await exceptionText(page, key))
+  .split(/\{\w+\}/)
+  .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  .join('.+'));
+
 // Cada test abre el ejemplo de edición local con su propio servicio DataIDEE en memoria
 
 test('DataIDEE form validates and saves typed nested attributes through OGC feature updates', async ({ page }) => {
@@ -195,8 +206,11 @@ test('DataIDEE nested objects and arrays validate live and keep the keyboard foc
 });
 
 test('DataIDEE save reports conflicts and service errors in the editing panel', async ({ page }) => {
-  for (const [mode, message] of [['conflict', 'changed on the server'], ['partial', 'HTTP 422']]) {
+  for (const mode of ['conflict', 'partial']) {
     await openLocalDataIDEE(page, mode);
+    // El conflicto usa el mensaje traducido; el fallo parcial muestra el estado HTTP del servicio
+    const message = mode === 'conflict'
+      ? await exceptionPattern(page, 'dataidee_feature_changed') : 'HTTP 422';
     await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
     await page.locator('#vectorsmanagement-button').click();
     await page.locator('#m-vectorsmanagement-layer-selector').click();
@@ -271,7 +285,7 @@ test('DataIDEE forms discover schema independently from queryables and keep geom
       return result;
     }
   });
-  expect(patchOnly.error).toContain('explicit null');
+  expect(patchOnly.error).toBe(await exceptionText(page, 'dataidee_explicit_null'));
   expect(patchOnly.pending).toBe(1);
 });
 
@@ -429,7 +443,7 @@ test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain
       return error.message;
     }
   });
-  expect(preparationError).toContain('feature limit');
+  expect(preparationError).toBe(await exceptionText(page, 'dataidee_edit_feature_limit'));
   expect(await page.evaluate(() => window.dataideeDemo.layer.getEditingSession())).toBeNull();
 
   await openLocalDataIDEE(page, 'conflict');
@@ -448,7 +462,7 @@ test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain
       return message;
     }
   });
-  expect(conflict).toContain('changed on the server');
+  expect(conflict).toMatch(await exceptionPattern(page, 'dataidee_feature_changed'));
 
   await openLocalDataIDEE(page, 'partial');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
@@ -494,7 +508,7 @@ test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain
     return state;
   });
   expect(duplicateSave.successCount).toBe(1);
-  expect(duplicateSave.duplicateError).toContain('already in progress');
+  expect(duplicateSave.duplicateError).toBe(await exceptionText(page, 'dataidee_save_in_progress'));
   expect(duplicateSave.savedId).toBe(0);
 
   await openLocalDataIDEE(page, 'uncertain');
