@@ -24,19 +24,6 @@
          <organizationUrl>www.guadaltel.com</organizationUrl>
       </developer>
    </developers>
-   <!-- <repositories>
-  		<repository>
-         <releases>
-                 <enabled>true</enabled>
-         </releases>
-         <snapshots>
-                 <enabled>true</enabled>
-         </snapshots>
-         <id>guadaltel-repo</id>
-         <name>Guadaltel Maven Repository</name>
-         <url>http://maven.guadaltel.es/nexus/content/groups/public</url>
-      </repository>
-   </repositories> -->
    <build>
       <finalName>api-idee</finalName>
       <defaultGoal>install</defaultGoal>
@@ -56,8 +43,6 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
             <configuration>
-               <!-- DO NOT include log4j.properties file in your Jar -->
-               <!-- <excludes> <exclude>**/log4j.properties</exclude> </excludes> -->
                <archive>
                   <manifest>
                      <!-- Jar file entry point -->
