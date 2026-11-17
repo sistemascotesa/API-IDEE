@@ -62,6 +62,7 @@ export default class DataIDEETransactions {
     defaultProperties = {},
     getToken = () => undefined,
     tokenLocation = 'header',
+    decorateUrl = (target) => target,
   }) {
     const base = new URL(url, window.location?.href || 'http://localhost/');
     ['bbox', 'limit', 'offset', 'f', 'filter', 'filter-lang', '_ideeRefresh']
@@ -83,6 +84,7 @@ export default class DataIDEETransactions {
     this.defaultProperties_ = defaultProperties;
     this.getToken_ = getToken;
     this.tokenLocation_ = tokenLocation;
+    this.decorateUrl_ = decorateUrl;
   }
 
   async request(url, options = {}) {
@@ -94,7 +96,7 @@ export default class DataIDEETransactions {
     }
     const token = this.getToken_();
     if (token && this.tokenLocation_ === 'query') target.searchParams.set('token', token);
-    const response = await window.fetch(target.href, {
+    const response = await window.fetch(await this.decorateUrl_(target.href), {
       cache: 'no-store',
       ...options,
       headers: {

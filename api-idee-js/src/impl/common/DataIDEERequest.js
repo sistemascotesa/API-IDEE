@@ -39,16 +39,20 @@ function validateGeoJSON(response) {
  * parameters (HTTP 400), so no cache-busting parameter is added, and its responses are
  * not stored by the browser (Cache-Control: no-store).
  * Validation (including asynchronous consumer validation) completes before caching text.
+ * decorateUrl adds per-request parameters (contextToken) at execution time, outside the key.
  */
 export default function createDataIDEERequest({
   url, context, requestOptions, force = false, validateResponse, shouldExecute = () => true,
+  decorateUrl = (target) => target,
 }) {
   return {
     key: JSON.stringify(['GET', url, context]),
     force,
     execute: async () => {
       if (!shouldExecute()) throw new RequestCancelledError('obsolete viewport');
-      const response = await getRemote(url, null, requestOptions);
+      const requestUrl = await decorateUrl(url);
+      if (!shouldExecute()) throw new RequestCancelledError('obsolete viewport');
+      const response = await getRemote(requestUrl, null, requestOptions);
       validateGeoJSON(response);
       await validateResponse?.(response.text);
       const cacheControl = Object.entries(response.headers || {})

@@ -133,6 +133,14 @@ class DataIDEE extends Vector {
    *   Authorization: Bearer <token>, o 'query', que lo envía como ?token=<token>.
    *   Cualquier otro valor lanza TypeError.
    *   Si se rechaza (HTTP 401/403), la capa queda vacía y dispara LOAD_UNAUTHORIZED.
+   * - contextToken: Token de contexto de la plataforma que integra la capa (por ejemplo,
+   *   permisos sobre capas compartidas). Admite una cadena o una función que devuelva una
+   *   cadena, undefined o una promesa de ellas. La función se invoca en cada petición:
+   *   quien la aporta gestiona su caché y su renovación. Se envía siempre en la URL como
+   *   contextToken=<token>, una sola vez y solo a peticiones del origen del servicio, con
+   *   independencia de getFeature.token y de tokenLocation. Un valor vacío no se envía.
+   *   No forma parte de la caché ni de getRestLayer(). Si la función falla, la petición
+   *   no se hace y la carga termina en load:error. Otro tipo lanza TypeError.
    * Ejemplo vendorOptions:
    * <pre><code>
    * {
@@ -140,6 +148,7 @@ class DataIDEE extends Vector {
    *   filterLang: 'cql2-json',
    *   getFeature: { token: tokenAutenticacion },
    *   // tokenLocation: 'query', // Alternativa de compatibilidad.
+   *   contextToken: () => obtenerTokenContexto(),
    * }
    * </code></pre>
    * @api
@@ -590,6 +599,31 @@ class DataIDEE extends Vector {
    */
   setToken(token) {
     this.getImpl().setToken(token);
+  }
+
+  /**
+   * Devuelve el token de contexto que se enviará en la siguiente petición. Si se
+   * configuró una función, la invoca.
+   *
+   * @function
+   * @returns {Promise<String|undefined>} Token de contexto, o undefined si no hay.
+   * @api
+   */
+  getContextToken() {
+    return this.getImpl().getContextToken();
+  }
+
+  /**
+   * Cambia el token de contexto (vendorOpts.contextToken), descarta las respuestas
+   * guardadas y recarga la capa.
+   *
+   * @function
+   * @param {String|Function} contextToken Token o función que lo devuelve en cada
+   * petición. Si es vacío, se elimina. Otro tipo lanza TypeError.
+   * @api
+   */
+  setContextToken(contextToken) {
+    this.getImpl().setContextToken(contextToken);
   }
 
   /**

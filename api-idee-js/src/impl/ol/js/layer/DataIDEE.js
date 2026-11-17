@@ -15,7 +15,10 @@ import RequestManager, { RequestCancelledError } from '../../../common/RequestMa
 import DataIDEETransactions from '../../../common/DataIDEETransactions';
 import { isUnauthorizedError } from '../../../common/DataIDEERequest';
 import DataIDEEEditingSession from '../../../common/DataIDEEEditingSession';
-import normalizeDataIDEEOptions from '../../../common/DataIDEEOptions';
+import normalizeDataIDEEOptions, { validateContextToken } from '../../../common/DataIDEEOptions';
+import {
+  CONTEXT_TOKEN_PARAMETER, createContextTokenSource, createUrlDecorator,
+} from '../../../common/DataIDEEContextToken';
 import DataIDEEViewport from '../../../common/DataIDEEViewport';
 import exceptionMessage from '../../../common/exceptionMessage';
 
@@ -51,6 +54,7 @@ class DataIDEE extends OGCAPIFeatures {
     this.editingLimits_ = normalized.editingLimits;
     this.transactions_ = null;
     this.transactionCollectionUrl_ = null;
+    this.contextTokenSource_ = createContextTokenSource(vendorOptions.contextToken);
   }
 
   /**
@@ -80,6 +84,47 @@ class DataIDEE extends OGCAPIFeatures {
     this.vendorOptions_.getFeature = getFeature;
     this.clearCache();
     if (this.map) this.refresh(true);
+  }
+
+  /**
+   * Devuelve el token de contexto que se enviará en la siguiente petición.
+   * Si es una función, la invoca.
+   * @returns {Promise<String|undefined>} Token de contexto.
+   * @public
+   * @api
+   */
+  getContextToken() {
+    return this.contextTokenSource_.resolve();
+  }
+
+  /**
+   * Cambia el token de contexto, descarta la caché y recarga la capa si está en un mapa.
+   * @param {String|Function} contextToken Token o función que lo devuelve. Si es vacío,
+   * se elimina.
+   * @public
+   * @api
+   */
+  setContextToken(contextToken) {
+    validateContextToken(contextToken);
+    const value = contextToken === '' ? undefined : contextToken;
+    if (value === this.vendorOptions_.contextToken) return;
+    if (value === undefined) delete this.vendorOptions_.contextToken;
+    else this.vendorOptions_.contextToken = value;
+    this.contextTokenSource_ = createContextTokenSource(value);
+    this.transactionCollectionUrl_ = null;
+    this.clearCache();
+    if (this.map) this.refresh(true);
+  }
+
+  /**
+   * Añade el token de contexto a una URL del servicio de la capa.
+   * @param {String} url URL de la petición.
+   * @returns {Promise<String>} URL decorada.
+   * @private
+   */
+  decorateUrl_(url) {
+    const origin = new URL(this.url, window.location.href).origin;
+    return createUrlDecorator(this.contextTokenSource_, origin)(url);
   }
 
   /**
@@ -127,6 +172,7 @@ class DataIDEE extends OGCAPIFeatures {
       },
       this.getToken() !== undefined,
       this.service_.getRequestHeaders(),
+      (url) => this.decorateUrl_(url),
     );
     const loader = this.loader_;
     loader.on(EventType.LOAD_UNAUTHORIZED, (error) => {
@@ -340,7 +386,7 @@ class DataIDEE extends OGCAPIFeatures {
         }
         lastPageStarted = Date.now();
         // eslint-disable-next-line no-await-in-loop
-        const response = await window.fetch(pageUrl.href, {
+        const response = await window.fetch(await this.decorateUrl_(pageUrl.href), {
           cache: 'no-store',
           headers: {
             Accept: 'application/geo+json, application/json',
@@ -396,6 +442,7 @@ class DataIDEE extends OGCAPIFeatures {
         }
         if (next && !reachedLimit) {
           nextUrl = new URL(next, nextUrl);
+          nextUrl.searchParams.delete(CONTEXT_TOKEN_PARAMETER);
           const initialUrl = new URL(collectionUrl);
           const pageTarget = nextUrl;
           initialUrl.searchParams.forEach((value, key) => {
@@ -462,6 +509,7 @@ class DataIDEE extends OGCAPIFeatures {
         defaultProperties: this.options.dataideeDefaultProperties,
         getToken: () => this.getToken(),
         tokenLocation: this.vendorOptions_.tokenLocation,
+        decorateUrl: (url) => this.decorateUrl_(url),
       });
       this.transactionCollectionUrl_ = collectionUrl;
     }

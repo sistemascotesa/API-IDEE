@@ -11,6 +11,7 @@ const PAGE = '/test/playwright/ol/basic-ol.html';
 const TILES = 'https://tiles.switcher.test';
 const WMS = 'https://wms.switcher.test/wms';
 const TILESET = 'https://tiles3d.switcher.test/tileset.json';
+const DATAIDEE = 'https://dataidee.switcher.test';
 const CHANGE_TIMEOUT = 60000;
 
 test.describe.configure({ timeout: 180000 });
@@ -120,8 +121,22 @@ test.describe('IDEE.control.ImplementationSwitcher', () => {
       if (match) cores.push(match[1]);
     });
     await mockServices(page);
+    const contextTokens = [];
+    await page.route(`${DATAIDEE}/**`, (route) => {
+      contextTokens.push(new URL(route.request().url()).searchParams.getAll('contextToken'));
+      return route.fulfill({
+        headers: CORS,
+        contentType: 'application/geo+json',
+        body: JSON.stringify({
+          type: 'FeatureCollection',
+          features: [{
+            type: 'Feature', id: 'd', geometry: { type: 'Point', coordinates: [-3.7, 40.4] }, properties: {},
+          }],
+        }),
+      });
+    });
     await openMap(page);
-    await page.evaluate(async (tiles) => {
+    await page.evaluate(async ({ tiles, dataidee }) => {
       IDEE.config('TEST_SWITCHER', 'conservado');
       IDEE.language.setLang('en');
       const kmz = await (await fetch('/test/playwright/fixtures/kmz/basic.kmz')).arrayBuffer();
@@ -138,8 +153,11 @@ test.describe('IDEE.control.ImplementationSwitcher', () => {
           transparent: true,
           maxExtent: [-1113194.9, 4163881.1, 556597.5, 5465442.2],
         }),
+        new IDEE.layer.DataIDEE({ url: `${dataidee}/`, name: 'dataidee', legend: 'dataidee' }, {}, {
+          contextToken: () => 'ctx-switch',
+        }),
       ]);
-    }, TILES);
+    }, { tiles: TILES, dataidee: DATAIDEE });
     const localLayers = () => page.evaluate(() => {
       const find = (name) => window.map.getLayers().find((l) => l.name === name);
       const extent = find('recortada').getMaxExtent();
@@ -156,9 +174,14 @@ test.describe('IDEE.control.ImplementationSwitcher', () => {
     await expect.poll(localLayers, { timeout: CHANGE_TIMEOUT }).toEqual(metres);
     const before = await summary(page);
     expect(before.layers.map((l) => l.name))
-      .toEqual(['gpx_local', 'kmz_local', 'oculta', 'puntos', 'recortada', 'unidades']);
+      .toEqual(['dataidee', 'gpx_local', 'kmz_local', 'oculta', 'puntos', 'recortada', 'unidades']);
+    await expect.poll(() => contextTokens.length, { timeout: CHANGE_TIMEOUT }).toBeGreaterThan(0);
+    let previousRequests = contextTokens.length;
 
     await switchTo(page, 1, 1);
+    await expect.poll(() => contextTokens.length, { timeout: CHANGE_TIMEOUT })
+      .toBeGreaterThan(previousRequests);
+    previousRequests = contextTokens.length;
     await expect.poll(localLayers, { timeout: CHANGE_TIMEOUT })
       .toEqual({ ...metres, extent: [-10, 35, 5, 44] });
     const in3D = await summary(page);
@@ -171,6 +194,9 @@ test.describe('IDEE.control.ImplementationSwitcher', () => {
 
     await switchTo(page, 0, 2);
     await expect.poll(localLayers, { timeout: CHANGE_TIMEOUT }).toEqual(metres);
+    await expect.poll(() => contextTokens.length, { timeout: CHANGE_TIMEOUT })
+      .toBeGreaterThan(previousRequests);
+    contextTokens.forEach((values) => expect(values).toEqual(['ctx-switch']));
     const back = await summary(page);
     expect(back).toEqual(before);
     // La vista vuelve a la zona de partida

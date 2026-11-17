@@ -12,6 +12,18 @@ export const DEFAULT_EDITING_LIMITS = Object.freeze({
 
 const TOKEN_LOCATIONS = ['header', 'query'];
 
+/**
+ * Comprueba el tipo del token de contexto: cadena, función o undefined.
+ * @param {*} contextToken Valor de vendorOptions.contextToken.
+ * @throws {TypeError} Si el tipo no es válido.
+ */
+export function validateContextToken(contextToken) {
+  if (contextToken !== undefined && typeof contextToken !== 'string'
+    && typeof contextToken !== 'function') {
+    throw new TypeError(exceptionMessage('dataidee_context_token_type'));
+  }
+}
+
 function normalizeEditingLimits(editingLimits) {
   if (editingLimits !== undefined && (editingLimits === null
     || typeof editingLimits !== 'object' || Array.isArray(editingLimits))) {
@@ -54,6 +66,7 @@ export default function normalizeDataIDEEOptions(options = {}, vendorOptions = {
   if (tokenLocation !== undefined && !TOKEN_LOCATIONS.includes(tokenLocation)) {
     throw new TypeError(exceptionMessage('dataidee_token_location'));
   }
+  validateContextToken(vendorOptions?.contextToken);
   const { throttleMs } = RequestManager.normalizeOptions({
     cache: options.cache, throttleMs: options.throttleMs,
   });

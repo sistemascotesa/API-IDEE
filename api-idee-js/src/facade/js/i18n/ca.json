@@ -583,6 +583,8 @@
     "dataidee_bbox_strategy_item": "DataIDEE: bboxStrategy només admet consultes de col·lecció, sense identificador d'entitat (id).",
     "dataidee_bbox_strategy_source": "DataIDEE: bboxStrategy no és compatible amb una font externa a vendorOpts.source.",
     "dataidee_token_location": "DataIDEE: tokenLocation ha de ser 'header' o 'query'.",
+    "dataidee_context_token_type": "DataIDEE: contextToken ha de ser una cadena o una funció.",
+    "dataidee_context_token_failed": "DataIDEE: no s'ha pogut obtenir el contextToken.",
     "request_manager_cache_limit": "RequestManager: el valor {name} de la memòria cau ha de ser un enter segur positiu no superior a {maximum}.",
     "request_manager_cache_type": "RequestManager: cache ha de ser false, true o un objecte de configuració.",
     "request_manager_throttle": "RequestManager: throttleMs ha de ser un enter segur no negatiu no superior a {maximum}.",

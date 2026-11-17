@@ -5,11 +5,13 @@ import registerDataIDEECacheLayerTests from '../common/dataidee-layer-cache';
 import registerDataIDEEViewportTests from '../common/dataidee-viewport';
 import registerDataIDEEAuthTests from '../common/dataidee-auth';
 import registerDataIDEEOptionsTests from '../common/dataidee-options';
+import registerDataIDEEContextTokenTests from '../common/dataidee-context-token';
 
 registerDataIDEECacheLayerTests('/test/playwright/ol/basic-ol.html');
 registerDataIDEEViewportTests('/test/playwright/ol/basic-ol.html');
 registerDataIDEEAuthTests('/test/playwright/ol/basic-ol.html');
 registerDataIDEEOptionsTests('/test/playwright/ol/basic-ol.html');
+registerDataIDEEContextTokenTests('/test/playwright/ol/basic-ol.html');
 
 const geoJSON = {
   type: 'FeatureCollection',

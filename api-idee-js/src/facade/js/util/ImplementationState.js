@@ -138,11 +138,15 @@ const isInternalLayer = (layer) => INTERNAL_LAYERS.includes(layer.name)
 
 const captureLayer = (layer) => {
   const key = getClassKey(window.IDEE.layer, layer) || layer.type;
-  const args = Object.values(layer.constructorParameters || {}).slice(0, 3)
-    .map((arg, index) => {
-      const plain = toPlain(arg, index < 2);
-      return plain === DROP ? undefined : plain;
-    });
+  const parameters = Object.values(layer.constructorParameters || {}).slice(0, 3);
+  const args = parameters.map((arg, index) => {
+    const plain = toPlain(arg, index < 2);
+    return plain === DROP ? undefined : plain;
+  });
+  const contextToken = parameters[2]?.contextToken;
+  if (key === 'DataIDEE' && typeof contextToken === 'function') {
+    args[2] = { ...args[2], contextToken };
+  }
   const entry = {
     key,
     params: args,

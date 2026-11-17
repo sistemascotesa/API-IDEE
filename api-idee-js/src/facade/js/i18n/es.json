@@ -583,6 +583,8 @@
     "dataidee_bbox_strategy_item": "DataIDEE: bboxStrategy solo admite consultas de colección, sin identificador de entidad (id).",
     "dataidee_bbox_strategy_source": "DataIDEE: bboxStrategy no es compatible con una fuente externa en vendorOpts.source.",
     "dataidee_token_location": "DataIDEE: tokenLocation debe ser 'header' o 'query'.",
+    "dataidee_context_token_type": "DataIDEE: contextToken debe ser una cadena o una función.",
+    "dataidee_context_token_failed": "DataIDEE: no se ha podido obtener el contextToken.",
     "request_manager_cache_limit": "RequestManager: el valor {name} de la caché debe ser un entero seguro positivo no mayor que {maximum}.",
     "request_manager_cache_type": "RequestManager: cache debe ser false, true o un objeto de configuración.",
     "request_manager_throttle": "RequestManager: throttleMs debe ser un entero seguro no negativo no mayor que {maximum}.",

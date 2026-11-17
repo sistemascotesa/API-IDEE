@@ -31,6 +31,8 @@ class DataIDEE extends MObject {
     * @param {Boolean} authenticated La petición lleva token: un HTTP 401/403 se
     * trata como fallo de autenticación.
     * @param {Object} requestHeaders Cabeceras de la petición.
+    * @param {Function} decorateUrl Añade a la URL los parámetros de cada petición
+    * (contextToken) sin alterar la clave de caché.
     * @api
     */
   constructor(
@@ -41,6 +43,7 @@ class DataIDEE extends MObject {
     shouldExecute = () => true,
     authenticated = false,
     requestHeaders = {},
+    decorateUrl = (target) => target,
   ) {
     super();
 
@@ -73,6 +76,7 @@ class DataIDEE extends MObject {
     this.requestManager_ = requestManager;
     this.shouldExecute_ = shouldExecute;
     this.authenticated_ = authenticated;
+    this.decorateUrl_ = decorateUrl;
   }
 
   /**
@@ -145,6 +149,7 @@ class DataIDEE extends MObject {
       requestOptions: this.requestOptions_,
       force,
       shouldExecute: this.shouldExecute_,
+      decorateUrl: this.decorateUrl_,
       validateResponse: (text) => this.format_.read(text, { featureProjection: projection }),
     })).then((text) => {
       const features = this.format_.read(text, { featureProjection: projection });
