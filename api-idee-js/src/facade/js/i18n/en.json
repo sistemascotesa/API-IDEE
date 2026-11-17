@@ -582,6 +582,8 @@
     "dataidee_bbox_strategy_item": "DataIDEE bboxStrategy requires a collection, without an item id.",
     "dataidee_bbox_strategy_source": "DataIDEE bboxStrategy is not compatible with an external vendorOpts.source.",
     "dataidee_token_location": "DataIDEE tokenLocation must be 'header' or 'query'.",
+    "dataidee_context_token_type": "DataIDEE contextToken must be a string or a function.",
+    "dataidee_context_token_failed": "DataIDEE could not obtain the contextToken.",
     "request_manager_cache_limit": "RequestManager cache {name} must be a positive safe integer no greater than {maximum}.",
     "request_manager_cache_type": "RequestManager cache must be false, true, or a configuration object.",
     "request_manager_throttle": "RequestManager throttleMs must be a non-negative safe integer no greater than {maximum}.",

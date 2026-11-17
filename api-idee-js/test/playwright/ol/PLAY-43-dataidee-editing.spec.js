@@ -23,6 +23,12 @@ const pageTwo = {
 
 test('DataIDEE prepares every page, fixes the edit bbox and suppresses reads while editing', async ({ page }) => {
   const itemReads = [];
+  const externalReads = [];
+  let firstPageNext = 'items?offset=1&contextToken=stale';
+  await page.route('https://external-dataidee.test/**', async (route) => {
+    externalReads.push(route.request().url());
+    await route.fulfill({ json: pageTwo });
+  });
   await page.route('**/edit-api/**', async (route) => {
     const requestUrl = new URL(route.request().url());
     const path = requestUrl.pathname;
@@ -34,7 +40,10 @@ test('DataIDEE prepares every page, fixes the edit bbox and suppresses reads whi
       await route.fulfill({ json: { id: 'places', writable: true } });
     } else if (path.endsWith('/items')) {
       itemReads.push(requestUrl.href);
-      await route.fulfill({ json: Number(requestUrl.searchParams.get('offset')) > 0 ? pageTwo : pageOne });
+      await route.fulfill({
+        json: Number(requestUrl.searchParams.get('offset')) > 0
+          ? pageTwo : { ...pageOne, links: [{ rel: 'next', href: firstPageNext }] },
+      });
     } else {
       await route.fulfill({ status: 404 });
     }
@@ -47,7 +56,7 @@ test('DataIDEE prepares every page, fixes the edit bbox and suppresses reads whi
   await page.evaluate(() => {
     window.editLayer = new IDEE.layer.DataIDEE({
       url: `${window.location.origin}/edit-api`, name: 'places', limit: 10,
-    }, { bboxStrategy: true, editingLimits: { pageSize: 1, maxFeatures: 4 } });
+    }, { bboxStrategy: true, editingLimits: { pageSize: 1, maxFeatures: 4 } }, { contextToken: 'ctx-page' });
     window.map.addLayers(window.editLayer);
   });
   await page.waitForFunction(() => window.editLayer.getFeatures().length === 1);
@@ -59,6 +68,9 @@ test('DataIDEE prepares every page, fixes the edit bbox and suppresses reads whi
   expect(count, JSON.stringify(itemReads)).toBe(2);
   const editRequests = itemReads.length;
   expect(editRequests).toBeGreaterThanOrEqual(3);
+  itemReads.forEach((href) => {
+    expect(new URL(href).searchParams.getAll('contextToken'), href).toEqual(['ctx-page']);
+  });
   await page.evaluate(() => {
     window.map.getMapImpl().getView().setCenter([100000, 100000]);
     window.editLayer.refresh();
@@ -70,6 +82,14 @@ test('DataIDEE prepares every page, fixes the edit bbox and suppresses reads whi
   await page.waitForLoadState('networkidle');
   expect(itemReads).toHaveLength(editRequests);
   await page.evaluate(() => window.editLayer.endEditing());
+
+  firstPageNext = 'https://external-dataidee.test/collections/places/items?offset=1';
+  const escaped = await page.evaluate(() => window.editLayer.beginEditing({ bbox: [-2, -2, 2, 2] })
+    .then(() => '', (error) => error.message));
+  expect(escaped).toBe(await page.evaluate(() => (
+    IDEE.language.getValue('exception').dataidee_pagination_escaped
+  )));
+  expect(externalReads).toEqual([]);
 });
 
 test('DataIDEE rejects an oversized edit area without replacing loaded features', async ({ page }) => {
@@ -130,6 +150,7 @@ test('DataIDEE editing authenticates service metadata, pages and writes with the
       path: url.pathname,
       method: request.method(),
       auth: request.headers().authorization,
+      context: url.searchParams.getAll('contextToken'),
     });
     if (request.headers().authorization !== 'Bearer second-token') {
       await route.fulfill({ status: 401, json: { error: 'Unauthorized' } });
@@ -197,7 +218,9 @@ test('DataIDEE editing authenticates service metadata, pages and writes with the
   await page.evaluate(() => {
     window.protectedLayer = new IDEE.layer.DataIDEE({
       url: `${window.location.origin}/protected-api`, name: 'externa:puntos',
-    }, {}, { getFeature: { token: 'first-token' }, tokenLocation: 'header' });
+    }, {}, {
+      getFeature: { token: 'first-token' }, tokenLocation: 'header', contextToken: () => 'ctx-edit',
+    });
     window.map.addLayers(window.protectedLayer);
   });
   await initialRead;
@@ -234,6 +257,9 @@ test('DataIDEE editing authenticates service metadata, pages and writes with the
   // The service description publishes the collection: conformance is not requested
   expect(requests.some(({ path }) => path.endsWith('/conformance'))).toBe(false);
   expect(features.get('5').properties).toEqual({ nombre: 'Antes', category: 'field' });
+  requests.forEach(({ method, path, context }) => {
+    expect(context, `${method} ${path}`).toEqual(['ctx-edit']);
+  });
 });
 
 test('DataIDEE reads templated OpenAPI paths and shares the description between collections', async ({ page }) => {

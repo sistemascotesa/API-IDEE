@@ -11,7 +11,8 @@ import OGCAPIFeatures from './OGCAPIFeatures';
 import ImplUtils from '../util/Utils';
 import RequestManager, { RequestCancelledError } from '../../../common/RequestManager';
 import { isUnauthorizedError } from '../../../common/DataIDEERequest';
-import normalizeDataIDEEOptions from '../../../common/DataIDEEOptions';
+import normalizeDataIDEEOptions, { validateContextToken } from '../../../common/DataIDEEOptions';
+import { createContextTokenSource, createUrlDecorator } from '../../../common/DataIDEEContextToken';
 import DataIDEEViewport from '../../../common/DataIDEEViewport';
 
 /**
@@ -32,6 +33,7 @@ class DataIDEE extends OGCAPIFeatures {
       getProjectionCode: () => this.map?.getProjection().code,
       listen: (onChange) => this.listenViewport_(onChange),
     }) : null;
+    this.contextTokenSource_ = createContextTokenSource(vendorOptions.contextToken);
   }
 
   /**
@@ -61,6 +63,46 @@ class DataIDEE extends OGCAPIFeatures {
     this.vendorOptions_.getFeature = getFeature;
     this.clearCache();
     if (this.map) this.refresh(true);
+  }
+
+  /**
+   * Devuelve el token de contexto que se enviará en la siguiente petición.
+   * Si es una función, la invoca.
+   * @returns {Promise<String|undefined>} Token de contexto.
+   * @public
+   * @api
+   */
+  getContextToken() {
+    return this.contextTokenSource_.resolve();
+  }
+
+  /**
+   * Cambia el token de contexto, descarta la caché y recarga la capa si está en un mapa.
+   * @param {String|Function} contextToken Token o función que lo devuelve. Si es vacío,
+   * se elimina.
+   * @public
+   * @api
+   */
+  setContextToken(contextToken) {
+    validateContextToken(contextToken);
+    const value = contextToken === '' ? undefined : contextToken;
+    if (value === this.vendorOptions_.contextToken) return;
+    if (value === undefined) delete this.vendorOptions_.contextToken;
+    else this.vendorOptions_.contextToken = value;
+    this.contextTokenSource_ = createContextTokenSource(value);
+    this.clearCache();
+    if (this.map) this.refresh(true);
+  }
+
+  /**
+   * Añade el token de contexto a una URL del servicio de la capa.
+   * @param {String} url URL de la petición.
+   * @returns {Promise<String>} URL decorada.
+   * @private
+   */
+  decorateUrl_(url) {
+    const origin = new URL(this.url, window.location.href).origin;
+    return createUrlDecorator(this.contextTokenSource_, origin)(url);
   }
 
   /**
@@ -106,6 +148,7 @@ class DataIDEE extends OGCAPIFeatures {
         && isZoneCurrent()),
       this.getToken() !== undefined,
       this.service_.getRequestHeaders(),
+      (url) => this.decorateUrl_(url),
     );
     const loader = this.loader_;
     loader.on(EventType.LOAD_UNAUTHORIZED, (error) => {

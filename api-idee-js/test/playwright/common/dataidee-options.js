@@ -25,6 +25,9 @@ export default function registerDataIDEEOptionsTests(pagePath) {
         strategyWithSource: [layerParams, { bboxStrategy: true }, { source: { external: true } }],
         tokenLocationUnknown: [layerParams, {}, { tokenLocation: 'Header' }],
         tokenLocationCookie: [layerParams, {}, { tokenLocation: 'cookie' }],
+        contextTokenNumber: [layerParams, {}, { contextToken: 1 }],
+        contextTokenObject: [layerParams, {}, { contextToken: {} }],
+        contextTokenNull: [layerParams, {}, { contextToken: null }],
         cacheString: [layerParams, { cache: 'yes' }],
         cacheZeroTtl: [layerParams, { cache: { ttlMs: 0 } }],
         throttleNegative: [layerParams, { throttleMs: -1 }],
@@ -37,8 +40,15 @@ export default function registerDataIDEEOptionsTests(pagePath) {
         editingLimitDecimal: [layerParams, { editingLimits: { maxCoordinates: 1.5 } }],
         editingLimitText: [layerParams, { editingLimits: { maxBytes: '10' } }],
       };
-      return Object.fromEntries(Object.entries(cases)
+      const outcomes = Object.fromEntries(Object.entries(cases)
         .map(([name, args]) => [name, attempt(...args)]));
+      try {
+        new IDEE.layer.DataIDEE(layerParams).setContextToken(5);
+        outcomes.contextTokenSetter = 'created';
+      } catch (error) {
+        outcomes.contextTokenSetter = error instanceof TypeError ? 'TypeError' : error.name;
+      }
+      return outcomes;
     }, params);
     Object.entries(results).forEach(([name, result]) => {
       expect(result, name).toBe('TypeError');
@@ -65,6 +75,11 @@ export default function registerDataIDEEOptionsTests(pagePath) {
         sourceWithoutStrategy: [layerParams, {}, { source: { external: true } }],
         headerToken: [layerParams, {}, { getFeature: { token: 'a' }, tokenLocation: 'header' }],
         queryToken: [layerParams, {}, { getFeature: { token: 'a' }, tokenLocation: 'query' }],
+        contextTokenString: [layerParams, {}, { contextToken: 'ctx' }],
+        contextTokenFunction: [layerParams, {}, { contextToken: () => 'ctx' }],
+        contextTokenWithAuth: [layerParams, {}, {
+          getFeature: { token: 'a' }, tokenLocation: 'query', contextToken: async () => 'ctx',
+        }],
         cacheObject: [layerParams, { cache: { ttlMs: 1000, maxEntries: 2, maxBytes: 1024 } }],
         partialEditingLimits: [layerParams, { editingLimits: { pageSize: 5 } }],
       };

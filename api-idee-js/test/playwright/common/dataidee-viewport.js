@@ -12,7 +12,7 @@ export default function registerDataIDEEViewportTests(pagePath) {
       properties: {},
     }],
   });
-  const setup = async (page, options = {}, controlledClock = false) => {
+  const setup = async (page, options = {}, controlledClock = false, rotateContextToken = false) => {
     await page.goto(pagePath);
     await page.evaluate((isCesium) => {
       if (isCesium) {
@@ -43,16 +43,23 @@ export default function registerDataIDEEViewportTests(pagePath) {
     await page.waitForFunction(() => !window.map.getMapImpl().getView || window.map.isFinished());
     await page.evaluate(() => window.moveView(0));
     if (controlledClock) await page.clock.install();
-    await page.evaluate((opts) => {
+    await page.evaluate(({ opts, rotate }) => {
       window.viewportLoads = 0;
       window.viewportErrors = 0;
+      window.viewportContextCalls = 0;
+      const vendor = rotate ? {
+        contextToken: () => {
+          window.viewportContextCalls += 1;
+          return `ctx-${window.viewportContextCalls}`;
+        },
+      } : {};
       window.viewportLayer = new IDEE.layer.DataIDEE({
         url: 'https://viewport.test/', name: 'places', bbox: [1, 2, 3, 4],
-      }, { bboxStrategy: true, cache: true, ...opts });
+      }, { bboxStrategy: true, cache: true, ...opts }, vendor);
       window.viewportLayer.on('load', () => { window.viewportLoads += 1; });
       window.viewportLayer.on('load:error', () => { window.viewportErrors += 1; });
       window.map.addLayers(window.viewportLayer);
-    }, options);
+    }, { opts: options, rotate: rotateContextToken });
   };
   const applied = async (page, ids) => {
     await expect.poll(() => page.evaluate(() => {
@@ -77,7 +84,7 @@ export default function registerDataIDEEViewportTests(pagePath) {
         urls.push(route.request().url());
         return route.fulfill({ json: payload(`response-${urls.length}`) });
       });
-      await setup(page, { cache });
+      await setup(page, { cache }, false, true);
       await applied(page, ['response-1']);
       const firstBbox = new URL(urls[0]).searchParams.get('bbox').split(',').map(Number);
       expect(firstBbox[0]).toBeLessThan(-6);
@@ -91,8 +98,16 @@ export default function registerDataIDEEViewportTests(pagePath) {
       await move(page, 0);
       await applied(page, [cache ? 'response-1' : 'response-4']);
       expect(urls).toHaveLength(cache ? 3 : 4);
-      expect(new Set(urls.slice(0, 3)).size).toBe(3);
-      if (!cache) expect(urls[3]).toBe(urls[0]);
+      const withoutContext = urls.map((url) => {
+        const target = new URL(url);
+        target.searchParams.delete('contextToken');
+        return target.href;
+      });
+      expect(new Set(withoutContext.slice(0, 3)).size).toBe(3);
+      if (!cache) expect(withoutContext[3]).toBe(withoutContext[0]);
+      const contextTokens = urls.map((url) => new URL(url).searchParams.getAll('contextToken'));
+      contextTokens.forEach((values) => expect(values).toHaveLength(1));
+      expect(new Set(contextTokens.flat()).size).toBe(urls.length);
       await page.setViewportSize({ width: 1000, height: 700 });
       await applied(page, [`response-${cache ? 4 : 5}`]);
     });
