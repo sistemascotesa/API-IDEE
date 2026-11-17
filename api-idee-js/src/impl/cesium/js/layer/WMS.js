@@ -193,16 +193,7 @@ class WMS extends LayerBase {
    * @api stable
    */
   setVisible(visibility) {
-    this.visibility = visibility;
-    // if this layer is base then it hides all base layers
-    if ((visibility === true) && (this.isBase !== false)) {
-      // set this layer visible
-      if (!isNullOrEmpty(this.cesiumLayer)) {
-        this.cesiumLayer.show = visibility;
-      }
-    } else if (!isNullOrEmpty(this.cesiumLayer)) {
-      this.cesiumLayer.show = visibility;
-    }
+    this.setBaseLayerVisible_(visibility);
   }
 
   /**
@@ -309,10 +300,8 @@ class WMS extends LayerBase {
       source,
       extend({
         show: visible,
-        minimumTerrainLevel: this.minZoom,
-        maximumTerrainLevel: this.maxZoom - 1,
         rectangle: Rectangle.fromDegrees(extent[0], extent[1], extent[2], extent[3]),
-        alpha: opacity || 1,
+        alpha: opacity ?? 1,
       }, this.vendorOptions_, true),
     );
 

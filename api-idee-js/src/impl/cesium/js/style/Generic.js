@@ -330,7 +330,8 @@ class Generic extends Simple {
         r = Math.min(imageCanvas.width, imageCanvas.height) / 2;
       }
     } else {
-      r = this.olStyleFn_()[0].pixelSize;
+      const size = this.olStyleFn_()[0].pixelSize;
+      r = Number.isFinite(size) ? size / 2 : size;
     }
 
     return r;

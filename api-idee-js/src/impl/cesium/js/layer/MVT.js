@@ -127,8 +127,6 @@ class MVT extends Layer {
     const vendorOptions = { ...this.vendorOptions_ };
     delete vendorOptions.tileLoadFunction;
     this.cesiumLayer = new ImageryLayer(this.createProvider_(), extend({
-      minimumTerrainLevel: this.minZoom,
-      maximumTerrainLevel: this.maxZoom - 1,
       alpha: this.opacity_,
       show: this.visibility,
       ...(isNullOrEmpty(extent) ? {} : { rectangle: Rectangle.fromDegrees(...extent) }),

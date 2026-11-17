@@ -13,7 +13,10 @@ import { isUrl } from './Utils';
 import * as EventType from '../event/eventtype';
 import Vector from '../layer/Vector';
 import GeoTIFF from '../layer/GeoTIFF';
+import KML from '../layer/KML';
 import KMZ from '../layer/KMZ';
+import GPX from '../layer/GPX';
+import GeoPackage from '../layer/GeoPackage';
 
 /**
  * Valor para el parámetro blob de GeoTIFF según el origen (URL, File/Blob u otro).
@@ -129,6 +132,50 @@ export const loadGeotiffLayer = (
   map.addLayers(geoTiffLayer);
 };
 
+const LOCAL_LAYERS = { kml: KML, kmz: KMZ, gpx: GPX };
+
+/**
+ * Capa nativa con la que se carga un fichero local: KML (salvo los exportados con
+ * etiquetas de texto lbl_txt, que se dibujan como objetos geográficos), KMZ y GPX.
+ * @param {String} fileExt Extensión del fichero.
+ * @param {String|ArrayBuffer} source Contenido del fichero.
+ * @returns {Function|undefined} Clase de la capa.
+ */
+const nativeLayerFor = (fileExt, source) => {
+  if (fileExt === 'kml' && typeof source === 'string' && source.includes('lbl_txt')) {
+    return undefined;
+  }
+  return LOCAL_LAYERS[fileExt];
+};
+
+/**
+ * Añade una capa local al mapa y encuadra su extensión cuando carga.
+ * @param {IDEE.Map} map Mapa.
+ * @param {IDEE.layer.Vector} layer Capa.
+ */
+const addLocalLayer = (map, layer) => {
+  layer.once(EventType.LOAD, () => {
+    Promise.resolve(layer.calculateMaxExtent()).then((extent) => {
+      if (Array.isArray(extent) && extent.every(Number.isFinite)) map.setBbox(extent);
+    });
+  });
+  map.addLayers(layer);
+};
+
+/**
+ * Carga un GeoPackage local completo (tablas vectoriales y de teselas).
+ * @param {IDEE.Map} map Mapa.
+ * @param {File} file Fichero.
+ * @param {String} name Nombre.
+ * @returns {Promise<void>} Se resuelve al añadirlo.
+ */
+export const loadGeoPackageFile = (map, file, name) => {
+  const geopackage = new GeoPackage({ source: file, name });
+  return geopackage.whenReady()
+    .then(() => map.addGeoPackage(geopackage))
+    .catch((error) => Dialog.error(String(error?.message || error)));
+};
+
 /**
  * Esta función añade al mapa una capa vector con los features
  * de un fichero
@@ -142,18 +189,11 @@ export const loadGeotiffLayer = (
 export const loadFeaturesFromSource = async (map, source, layerName, fileExt) => {
   try {
     const projection = LoadFilesImpl.getFileProjection(map);
-    if (fileExt === 'kmz') {
-      const url = URL.createObjectURL(new Blob([source]));
-      const layer = new KMZ({
-        name: layerName, legend: layerName, url, extract: true,
-      });
-      const release = () => URL.revokeObjectURL(url);
-      layer.once('load:error', release);
-      layer.once('removed:map', release);
-      layer.once('load', () => {
-        layer.calculateMaxExtent().then((extent) => map.setBbox(extent));
-      });
-      map.addLayers(layer);
+    const NativeLayer = nativeLayerFor(fileExt, source);
+    if (NativeLayer) {
+      addLocalLayer(map, new NativeLayer({
+        name: layerName, legend: layerName, source, extract: true,
+      }));
     } else if (fileExt === 'zip') {
       shp.parseZip(source).then(async (data) => {
         const geojsonArray = [].concat(data);
@@ -272,6 +312,8 @@ export const addFileToMap = (map, file) => {
     } else if (file.size > getMaxFileSize()) {
       Dialog.info(getFileSizeMessage());
       return false;
+    } else if (fileExt === 'gpkg') {
+      loadGeoPackageFile(map, file, layerName);
     } else {
       const fileReader = new window.FileReader();
       fileReader.addEventListener('load', (e) => {

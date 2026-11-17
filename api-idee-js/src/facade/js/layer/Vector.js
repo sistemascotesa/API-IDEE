@@ -17,6 +17,7 @@ import StyleCluster from '../style/Cluster';
 import * as EventType from '../event/eventtype';
 import { getValue } from '../i18n/language';
 import Generic from '../style/Generic';
+import { normalizeElevation } from '../scene/options';
 
 // Conserva el contenido editable, sin estilos ni filtros de representación.
 const autoRefreshSnapshots = new WeakMap();
@@ -82,6 +83,18 @@ class Vector extends LayerBase {
    * - height: Define la altura del objeto geográfico. Puede ser un número o una propiedad.
    *   Si se define la altura será constante para todos los puntos del objeto geográfico.
    *   Solo disponible para Cesium.
+   * - elevation: Colocación en altura de los objetos geográficos en 3D (Cesium). Objeto
+   *   { mode, offset, heightSystem } o solo el nombre del modo. También se puede definir en
+   *   el estilo (point, line o polygon), que prevalece, y en cada tabla de un GeoPackage.
+   *   OpenLayers lo ignora al dibujar y la Z de los datos se conserva.
+   *   - mode: "auto" (por defecto: las geometrías 2D se pegan al terreno y las 3D usan su
+   *     cota), "clamp" (todo pegado al terreno), "absolute" (cota sobre el elipsoide) o
+   *     "relative" (cota sobre el terreno; las líneas, que Cesium no puede colocar sobre el
+   *     terreno, usan la cota como absoluta).
+   *   - offset: Desplazamiento vertical en metros. Por defecto 0. No se aplica con "clamp".
+   *   - heightSystem: "ellipsoid" (por defecto) o "geoid" (la cota es ortométrica y se
+   *     convierte con la rejilla de IDEE.config.GEOID_GRID_URL; sin rejilla, avisa y se usa
+   *     el elipsoide).
    * @param {Object} implParam Valores de la implementación por defecto.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
@@ -107,6 +120,12 @@ class Vector extends LayerBase {
 
     const optionsVars = options;
 
+    const elevation = !isUndefined(optionsVars.elevation) ? optionsVars.elevation
+      : (isObject(parameters) && parameters.elevation) || undefined;
+    if (!isUndefined(elevation)) {
+      normalizeElevation(elevation);
+    }
+
     if (typeof parameters !== 'string') {
       optionsVars.maxExtent = (parameters.maxExtent) ? parameters.maxExtent : options.maxExtent;
       optns.maxExtent = optionsVars.maxExtent;
@@ -118,8 +137,16 @@ class Vector extends LayerBase {
       Exception(getValue('exception').vectorlayer_method);
     }
     const impl = implParam || new VectorImpl(optionsVars, vendorOptions);
+    if (!isUndefined(elevation)) impl.elevation = elevation;
     // calls the super constructor
     super(optns, impl);
+
+    /**
+     * Colocación en altura de los objetos geográficos en 3D.
+     * @private
+     * @type {Object|String|undefined}
+     */
+    this.elevation_ = elevation;
     this.constructorParameters = {
       parameters, options, vendorOptions, implParam,
     };
@@ -541,10 +568,31 @@ class Vector extends LayerBase {
         }
         style.apply(this, applyToFeature);
         this.style_ = style;
+        this.warnUnsupportedStyleProperties_(style);
         this.fire(EventType.CHANGE_STYLE, [style, this]);
       }
     }
     this.fire(EventType.CHANGE_STYLE, [style, this]);
+  }
+
+  /**
+   * Avisa una sola vez por capa y propiedad de las propiedades del estilo que la
+   * implementación no puede representar.
+   *
+   * @function
+   * @private
+   * @param {IDEE.Style} style Estilo aplicado.
+   */
+  warnUnsupportedStyleProperties_(style) {
+    this.warnedStyleProperties_ = this.warnedStyleProperties_ || new Set();
+    const properties = this.getUnsupportedStyleProperties(style)
+      .filter((property) => !this.warnedStyleProperties_.has(property));
+    if (properties.length === 0) return;
+    properties.forEach((property) => this.warnedStyleProperties_.add(property));
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').unsupported_style_properties
+      .replace('{layer}', this.name)
+      .replace('{properties}', properties.join(', ')));
   }
 
   /**
@@ -780,6 +828,7 @@ class Vector extends LayerBase {
       template: isString(this.template) ? this.template : undefined,
       infoEventType: this.infoEventType !== 'click' ? this.infoEventType : undefined,
       style,
+      elevation: this.elevation_,
     };
   }
 }

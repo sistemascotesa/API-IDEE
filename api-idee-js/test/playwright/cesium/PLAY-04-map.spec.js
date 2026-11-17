@@ -31,6 +31,18 @@ test.describe('IDEE.Map en Cesium', () => {
     expect(await page.evaluate(() => window.map.getProjection().code)).toBe('EPSG:4979');
     await expect.poll(() => page.evaluate(() => window.completed), WAIT).toBeGreaterThan(0);
     expect(await page.evaluate(() => window.map.isFinished())).toBe(true);
+    expect(await page.evaluate(() => {
+      let resized = 0;
+      const viewer = window.map.getMapImpl();
+      const resize = viewer.resize.bind(viewer);
+      viewer.resize = () => {
+        resized += 1;
+        resize();
+      };
+      window.map.refresh();
+      viewer.resize = resize;
+      return resized;
+    })).toBe(1);
   });
 
   test('setBbox y getBbox trabajan en grados', async ({ page }) => {

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import registerLoadFilesTests from '../common/load-files';
 
 test.describe('Vector layers', () => {
   test.beforeEach(async ({ page }) => {
@@ -49,3 +50,5 @@ test.describe('Vector layers', () => {
     } */
   });
 });
+
+registerLoadFilesTests('ol');

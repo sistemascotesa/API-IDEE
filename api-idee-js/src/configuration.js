@@ -387,6 +387,17 @@
   IDEE.config('MAX_FILE_SIZE_MB', 20);
 
   /**
+   * URL de la rejilla de ondulación del geoide (GeoTIFF de una banda en grados, como la
+   * rejilla EGM08-REDNAP del IGN en formato PROJ, es_ign_egm08-rednap.tif). La usan las
+   * capas vectoriales con elevation: { heightSystem: 'geoid' } en 3D. Vacía por defecto:
+   * sin rejilla, las alturas se dejan sobre el elipsoide.
+   *
+   * @public
+   * @type {String}
+   */
+  IDEE.config('GEOID_GRID_URL', '');
+
+  /**
    * MAP Viewer - DPI OGC (Dots per inch for OGC services)
    *
    * @private

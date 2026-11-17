@@ -65,7 +65,9 @@ export default function registerGeoPackageRestTests(engine) {
           url: '/fixtures/geopackage/multivector.gpkg',
           name: 'm',
           loadStrategy: 'range',
-          tables: { routes: { opacity: 0.4, visibility: false } },
+          tables: {
+            routes: { opacity: 0.4, visibility: false, elevation: { mode: 'relative', offset: 5 } },
+          },
         });
         window.map = IDEE.map({
           container: 'map', controls: [], center: [0, 0], zoom: 2, layers: [],
@@ -79,19 +81,22 @@ export default function registerGeoPackageRestTests(engine) {
         return {
           rest,
           restored: window.describe(restored),
-          routes: [restored.getLayer('routes').isVisible(), restored.getLayer('routes').getOpacity()],
+          routes: [restored.getLayer('routes').isVisible(), restored.getLayer('routes').getOpacity(),
+            restored.getLayer('routes').getImpl().elevation],
           same: restored.getRestLayer() === rest,
         };
       });
 
       expect(decodeRestLayer(result.rest).options).toMatchObject({
         loadStrategy: 'range',
-        tables: { routes: { opacity: 0.4, visibility: false } },
+        tables: {
+          routes: { opacity: 0.4, visibility: false, elevation: { mode: 'relative', offset: 5 } },
+        },
       });
       expect(result.restored).toMatchObject({
         name: 'm', loadStrategy: 'range', layers: ['m:places', 'm:routes'], attached: true,
       });
-      expect(result.routes).toEqual([false, 0.4]);
+      expect(result.routes).toEqual([false, 0.4, { mode: 'relative', offset: 5 }]);
       expect(result.same).toBe(true);
     });
 

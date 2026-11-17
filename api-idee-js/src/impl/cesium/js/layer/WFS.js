@@ -109,7 +109,6 @@ class WFS extends Vector {
    * @api stable
    */
   addTo(map) {
-    this.facadeVector_.userMaxExtent = null;
     this.map = map;
     this.fireAddedToMap_();
     map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
@@ -204,6 +203,7 @@ class WFS extends Vector {
     this.formater_ = new FormatGeoJSON({
       defaultDataProjection: this.map.getProjection(),
       clampToGround: this.clampToGround,
+      elevation: this.elevation,
     });
 
     this.loader_ = new JSONPLoader(this.map, this.service_.getFeatureUrl(), this.formater_);

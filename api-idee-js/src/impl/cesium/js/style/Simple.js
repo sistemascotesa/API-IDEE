@@ -6,9 +6,11 @@ import {
   Entity, HeadingPitchRoll, JulianDate, ModelGraphics, PolylineGraphics, Transforms,
 } from 'cesium';
 import * as EventType from 'IDEE/event/eventtype';
+import { mergeElevation } from 'IDEE/scene/options';
 import ImplUtils from '../util/Utils';
 import Style from './Style';
 import Feature from '../feature/Feature';
+import { groundLabelReference, placeEntity } from '../scene/elevation';
 
 const templateRegexp = /^\{\{([^}]+)\}\}$/;
 
@@ -45,6 +47,7 @@ const syncGroundOutline = (entity) => {
     // eslint-disable-next-line no-param-reassign
     entity.polyline = undefined;
     groundOutlines.delete(entity);
+    polygon.outline = !!(color && color.alpha > 0);
   }
 };
 
@@ -171,7 +174,9 @@ class Simple extends Style {
               } else {
                 cesiumFeature.model = undefined;
                 cesiumFeature.billboard = icon;
-                cesiumFeature.billboard.disableDepthTestDistance = Number.POSITIVE_INFINITY;
+                if (cesiumFeature.billboard.disableDepthTestDistance === undefined) {
+                  cesiumFeature.billboard.disableDepthTestDistance = Number.POSITIVE_INFINITY;
+                }
               }
             // eslint-disable-next-line no-underscore-dangle
             } else if (!feature.getImpl().hasPropertyIcon_) {
@@ -180,12 +185,38 @@ class Simple extends Style {
             }
             cesiumFeature[cesiumType] = Object.assign(cesiumFeature[cesiumType], props);
             if (cesiumType === 'polygon') syncGroundOutline(cesiumFeature);
+            this.placeFeature_(feature, cesiumFeature, type);
             // eslint-disable-next-line no-underscore-dangle, no-param-reassign
             feature.getImpl().hasPropertyIcon_ = false;
             feature.fire(EventType.COMPLETED_CHANGE_STYLE_FEATURE);
           }
         });
       }
+    });
+  }
+
+  /**
+   * Coloca en altura un objeto geográfico con la elevación de su capa combinada con la
+   * del estilo (prevalece la del estilo) y pega al terreno las etiquetas de las líneas y
+   * los polígonos que están sobre él.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @private
+   * @param {IDEE.Feature} feature Objeto geográfico.
+   * @param {Entity} entity Entidad de Cesium.
+   * @param {String} type Tipo de geometría del estilo ("point", "line" o "polygon").
+   */
+  placeFeature_(feature, entity, type) {
+    const layer = this.layer_ || feature.getImpl().referenceFacadeLayer;
+    const styleElevation = this.options_?.[type]?.elevation ?? this.options_?.elevation;
+    const elevation = mergeElevation(layer?.getImpl?.()?.elevation, styleElevation);
+    if (entity.label && type !== 'point' && valueOf(entity.label.heightReference) === undefined) {
+      // eslint-disable-next-line no-param-reassign
+      entity.label.heightReference = groundLabelReference(entity);
+    }
+    placeEntity(entity, elevation).then(() => {
+      if (type === 'polygon') syncGroundOutline(entity);
     });
   }
 

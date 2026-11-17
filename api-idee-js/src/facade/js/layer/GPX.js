@@ -21,7 +21,9 @@ class GPX extends Vector {
    * - name, legend, extract, template: Opciones comunes de las capas vectoriales.
    * - refreshInterval: Intervalo de actualización de una fuente remota en milisegundos.
    * @param {Object} options Opciones vectoriales: style, visibility, opacity, hide, show,
-   * minZoom, maxZoom, minScale, maxScale, displayInLayerSwitcher y clampToGround (Cesium).
+   * minZoom, maxZoom, minScale, maxScale, displayInLayerSwitcher, clampToGround y elevation
+   * (Cesium; ver IDEE.layer.Vector). La "ele" de GPX suele ser ortométrica: con
+   * elevation: { heightSystem: 'geoid' } se convierte con la rejilla de GEOID_GRID_URL.
    * También se admiten opciones en parameters.options o en la configuración JSON plana.
    * @param {Object} vendorOptions Opciones de la biblioteca cartográfica.
    * @api

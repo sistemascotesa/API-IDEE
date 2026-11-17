@@ -158,8 +158,6 @@ class XYZ extends Layer {
     this.url = this.url.replace('{-y}', '{reverseY}');
 
     const optCesiumLayer = extend({
-      minimumTerrainLevel: this.minZoom,
-      maximumTerrainLevel: this.maxZoom - 1,
       rectangle: Rectangle.fromDegrees(extent[0], extent[1], extent[2], extent[3]),
       alpha: this.opacity_,
       show: this.visibility,

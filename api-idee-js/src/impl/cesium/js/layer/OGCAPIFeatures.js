@@ -114,7 +114,6 @@ class OGCAPIFeatures extends Vector {
   addTo(map) {
     this.loaded_ = false;
     this.facadeVector_.resetAutoRefresh();
-    this.facadeVector_.userMaxExtent = null;
     this.map = map;
     this.fireAddedToMap_();
     this.projectionListener_ = this.projectionListener_ || this.setProjection_.bind(this);
@@ -193,6 +192,7 @@ class OGCAPIFeatures extends Vector {
     this.formater_ = new FormatGeoJSON({
       defaultDataProjection: this.map.getProjection(),
       clampToGround: this.clampToGround,
+      elevation: this.elevation,
     });
     this.loader_ = new JSONPLoader(this.map, this.service_.getFeatureUrl(), this.formater_);
 

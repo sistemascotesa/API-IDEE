@@ -136,15 +136,13 @@ class OSM extends Layer {
       extend(
         {
           show: this.visibility,
-          minimumTerrainLevel: this.minZoom,
-          maximumTerrainLevel: this.maxZoom - 1,
           rectangle: Rectangle.fromDegrees(extent[0], extent[1], extent[2], extent[3]),
         },
         this.vendorOptions_,
         true,
       ),
     );
-    if (this.opacity_) {
+    if (!isNullOrEmpty(this.opacity_)) {
       this.setOpacity(this.opacity_);
     }
     const zIndex = this.facadeLayer_.isBase ? 0 : null;

@@ -154,10 +154,10 @@ class GeoJSON extends Vector {
       this.loadFeaturesPromise_ = null;
       this.facadeVector_.resetAutoRefresh();
     }
-    this.facadeVector_.userMaxExtent = null;
     this.formater_ = new GeoJSONFormat({
       defaultDataProjection: map.getProjection(),
       clampToGround: this.clampToGround,
+      elevation: this.elevation,
     });
     if (!isNullOrEmpty(this.url)) {
       this.loader_ = new JSONPLoader(map, this.url, this.formater_);

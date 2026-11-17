@@ -20,13 +20,12 @@ import {
   Color,
   Entity,
   HorizontalOrigin,
-  LabelGraphics,
-  LabelStyle,
   VerticalOrigin,
   HeightReference as CesiumHeightReference,
 } from 'cesium';
 import Simple from './Simple';
 import PointFontSymbol from '../point/FontSymbol';
+import { iconDisplayOptions, labelMarkerBuilder } from '../scene/markers';
 import { isUndefined, modifySVG } from '../../../../facade/js/util/Utils';
 
 /**
@@ -106,6 +105,18 @@ class Point extends Simple {
   }
 
   /**
+   * Este método devuelve el tipo de geometría al que se aplica el estilo.
+   *
+   * @public
+   * @function
+   * @returns {string} Tipo de geometría ("point").
+   * @api stable
+   */
+  getGeometryType() {
+    return 'point';
+  }
+
+  /**
    * Este método actualiza las opciones de la fachada
    * (patrón estructural como una capa de abstracción con un patrón de diseño).
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
@@ -164,42 +175,13 @@ class Point extends Simple {
           };
         }
       }
-      if (!isNullOrEmpty(options.label)) {
-        const textLabel = Simple.getValue(options.label.text, featureVariable, this.layer_);
-        const align = Simple.getValue(options.label.align, featureVariable, this.layer_);
-        const baseline = Simple.getValue(options.label.baseline, featureVariable, this.layer_);
-        const labelText = {
-          font: Simple.getValue(options.label.font, featureVariable, this.layer_) || '10px sans-serif',
-          scale: Simple.getValue(options.label.scale, featureVariable, this.layer_),
-          pixelOffset: new Cartesian2(
-            Simple.getValue(options.label.offset
-              ? options.label.offset[0] : undefined, featureVariable, this.layer_),
-            Simple.getValue(options.label.offset
-              ? options.label.offset[1] : undefined, featureVariable, this.layer_),
-          ),
-          fillColor: Color.fromCssColorString(
-            Simple.getValue(options.label.color || '#000000', featureVariable, this.layer_),
-          ),
-          verticalOrigin: Object.values(Baseline).includes(baseline)
-            ? VerticalOrigin[baseline.toUpperCase()] : VerticalOrigin.TOP,
-          horizontalOrigin: Object.values(Align).includes(align)
-            ? HorizontalOrigin[align.toUpperCase()] : HorizontalOrigin.CENTER,
-          text: textLabel === undefined ? undefined : String(textLabel),
-          style: LabelStyle.FILL,
-        };
-        if (!isNullOrEmpty(options.label.stroke)) {
-          // const { miterlimit, linedashoffset } = options.label.stroke;
-          extend(labelText, {
-            outlineColor: Color.fromCssColorString(
-              Simple.getValue(options.label.stroke.color, featureVariable, this.layer_) || '#000000',
-            ),
-            outlineWidth: Simple.getValue(options.label.stroke.width, featureVariable, this.layer_)
-              || undefined,
-            style: LabelStyle.FILL_AND_OUTLINE,
-          }, true);
-        }
-        style.label = new LabelGraphics(labelText);
-      }
+      const resolve = (value) => Simple.getValue(value, featureVariable, this.layer_);
+      const label = labelMarkerBuilder.buildLabel(options.label, {
+        resolve,
+        heightReference: style.heightReference,
+        defaultBaseline: VerticalOrigin.TOP,
+      });
+      if (label) style.label = label;
 
       let radius = Simple.getValue(options.radius, featureVariable, this.layer_);
       if (isArray(options.radius)) {
@@ -212,7 +194,7 @@ class Point extends Simple {
         };
         radius = Simple.getValue(func, featureVariable, this.layer_);
       }
-      style.pixelSize = radius;
+      style.pixelSize = Number.isFinite(Number(radius)) ? Number(radius) * 2 : radius;
 
       if (!isNullOrEmpty(options.icon)) {
         const anchorOptions = ['bottom-left', 'bottom-right', 'top-left', 'top-right', 'center-left'];
@@ -261,6 +243,7 @@ class Point extends Simple {
                 Simple.getValue(options.icon.size
                   ? options.icon.size[1] : undefined, featureVariable, this.layer_),
               ) : undefined,
+            ...iconDisplayOptions(options.icon, resolve),
           });
           style.icon.type = 'Image';
         } else if (!isNullOrEmpty(options.icon.form)) {
@@ -317,6 +300,7 @@ class Point extends Simple {
                 Simple.getValue(canvas.width
                   ? canvas.width : undefined, featureVariable, this.layer_),
               ) : undefined,
+            ...iconDisplayOptions(options.icon, resolve),
           });
           style.icon.type = 'PointFontSymbol';
         }
@@ -451,7 +435,8 @@ class Point extends Simple {
         r = Math.min(imageCanvas.width, imageCanvas.height) / 2;
       }
     } else {
-      r = this.olStyleFn_()[0].pixelSize;
+      const size = this.olStyleFn_()[0].pixelSize;
+      r = Number.isFinite(size) ? size / 2 : size;
     }
 
     return r;

@@ -181,6 +181,19 @@ test.describe('Capas nuevas en Cesium', () => {
     expect(state.roles).toBeNull();
     expect(state.pixels).toEqual([[255, 0, 0, 255], [0, 0, 0, 0]]);
 
+    const refreshed = await page.evaluate(async () => {
+      const before = window.layer.getImpl().getLayer();
+      window.layer.setOpacity(0.7);
+      await window.layer.getImpl().refresh();
+      const native = window.layer.getImpl().getLayer();
+      return {
+        replaced: native !== before,
+        inViewer: window.map.getMapImpl().imageryLayers.contains(native),
+        alpha: native.alpha,
+      };
+    });
+    expect(refreshed).toEqual({ replaced: true, inViewer: true, alpha: 0.7 });
+
     const after = await page.evaluate(() => {
       window.layer.setVisible(false);
       const hidden = window.layer.getImpl().getLayer().show;
@@ -319,6 +332,20 @@ test.describe('Capas nuevas en Cesium', () => {
       .forEach((value, i) => expect(state.rectangle[i]).toBeCloseTo(value, 1));
     expect(state.pixels[0][3]).toBeGreaterThan(0);
     expect(state.pixels[1]).toEqual([0, 0, 0, 0]);
+
+    const refreshed = await page.evaluate(async () => {
+      const before = window.layer.getImpl().getLayer();
+      await window.layer.getImpl().refreshSource();
+      const native = window.layer.getImpl().getLayer();
+      return {
+        replaced: native !== before,
+        inViewer: window.map.getMapImpl().imageryLayers.contains(native),
+        pixels: await window.tilePixels(window.layer, [1, 1, 2], [[128, 128]]),
+      };
+    });
+    expect(refreshed.replaced).toBe(true);
+    expect(refreshed.inViewer).toBe(true);
+    expect(refreshed.pixels[0][3]).toBeGreaterThan(0);
 
     const removed = await page.evaluate(() => {
       const native = window.layer.getImpl().getLayer();

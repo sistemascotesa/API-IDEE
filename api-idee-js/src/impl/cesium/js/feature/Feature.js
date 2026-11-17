@@ -14,12 +14,16 @@ import {
   PolylineOutlineMaterialProperty,
   ImageMaterialProperty,
   ModelGraphics,
+  Cartographic,
+  HeightReference,
+  JulianDate,
 } from 'cesium';
 import {
   getValue,
 } from 'IDEE/i18n/language';
 import FormatGeoJSON from '../format/GeoJSON';
 import ImplUtils from '../util/Utils';
+import { forgetSource } from '../scene/elevation';
 
 /**
  * @classdesc
@@ -71,7 +75,7 @@ class Feature {
       this.isLoadCesiumFeature_ = this.formatter_
         .readFeatureFromObject(
           geojsonVariable,
-          { clampToGround: this.clampToGround_ },
+          { clampToGround: this.clampToGround_, elevation: geojsonVariable.elevation },
         ).then((feature) => {
           this.cesiumFeature_ = feature[0];
           if (!isNullOrEmpty(id)) {
@@ -381,6 +385,7 @@ class Feature {
    * @api stable
    */
   setGeometry(geometry) {
+    forgetSource(this.cesiumFeature_);
     const type = geometry.type.toLowerCase();
     if (type === 'linestring') {
       let coordinates = [];
@@ -485,7 +490,7 @@ class Feature {
   /**
    * Este método modifica la altura del objeto geográfico según el valor de la
    * propiedad dada por el usuario.
-   * Sólo disponible para geometrías poligonales.
+   * En los polígonos fija su altura; en los puntos y las líneas, la de todos sus vértices.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    *
    * @param {Number|String} height Altura
@@ -503,8 +508,25 @@ class Feature {
     }
 
     if (!isNullOrEmpty(h)) {
-      if (this.cesiumFeature_.polygon) {
-        this.cesiumFeature_.polygon.height = h;
+      const entity = this.cesiumFeature_;
+      const time = JulianDate.now();
+      const value = Number(h && typeof h.getValue === 'function' ? h.getValue(time) : h);
+      const withHeight = (position) => {
+        const { longitude, latitude } = Cartographic.fromCartesian(position);
+        return Cartesian3.fromRadians(longitude, latitude, value);
+      };
+      if (entity.polygon) {
+        entity.polygon.height = h;
+      } else if (entity.polyline && Number.isFinite(value)) {
+        entity.polyline.positions = (entity.polyline.positions?.getValue(time) || [])
+          .map(withHeight);
+        entity.polyline.clampToGround = false;
+      } else if (entity.position && Number.isFinite(value)) {
+        entity.position = withHeight(entity.position.getValue(time));
+        [entity.point, entity.billboard, entity.model].filter(Boolean).forEach((graphics) => {
+          // eslint-disable-next-line no-param-reassign
+          graphics.heightReference = HeightReference.NONE;
+        });
       }
     }
   }

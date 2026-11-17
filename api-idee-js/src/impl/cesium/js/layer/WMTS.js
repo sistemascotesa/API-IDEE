@@ -206,16 +206,7 @@ class WMTS extends LayerBase {
    * @api stable
    */
   setVisible(visibility) {
-    this.visibility = visibility;
-    // if this layer is base then it hides all base layers
-    if ((visibility === true) && (this.isBase === true)) {
-      // set this layer visible
-      if (!isNullOrEmpty(this.cesiumLayer)) {
-        this.cesiumLayer.show = visibility;
-      }
-    } else if (!isNullOrEmpty(this.cesiumLayer)) {
-      this.cesiumLayer.show = visibility;
-    }
+    this.setBaseLayerVisible_(visibility);
   }
 
   /**
@@ -253,8 +244,6 @@ class WMTS extends LayerBase {
           ? Rectangle.fromDegrees(this.userMaxExtent[0], this.userMaxExtent[1], this.userMaxExtent[2], this.userMaxExtent[3])
           : undefined,
         alpha: this.opacity_,
-        minimumTerrainLevel: this.minZoom,
-        maximumTerrainLevel: this.maxZoom - 1,
       }, this.vendorOptions_, true));
 
       const zIndex = this.facadeLayer_.isBase ? 0 : null;
@@ -301,8 +290,6 @@ class WMTS extends LayerBase {
           ? Rectangle.fromDegrees(extent[0], extent[1], extent[2], extent[3])
           : undefined,
         alpha: this.opacity_,
-        minimumTerrainLevel: this.minZoom,
-        maximumTerrainLevel: this.maxZoom - 1,
       }, this.vendorOptions_, true));
 
       const zIndex = this.facadeLayer_.isBase ? 0 : null;

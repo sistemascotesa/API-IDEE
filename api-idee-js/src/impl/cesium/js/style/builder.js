@@ -18,8 +18,6 @@ import {
   Color,
   Entity,
   HorizontalOrigin,
-  LabelGraphics,
-  LabelStyle,
   PolylineOutlineMaterialProperty,
   VerticalOrigin,
   HeightReference as CesiumHeightReference,
@@ -29,6 +27,7 @@ import {
 import PointFontSymbol from '../point/FontSymbol';
 import Simple from './Simple';
 import CesiumStyleFillPattern from '../ext/CesiumStyleFillPattern';
+import { iconDisplayOptions, labelMarkerBuilder } from '../scene/markers';
 
 const baselineInCesium = [Baseline.TOP, Baseline.BOTTOM, Baseline.BASELINE, Baseline.CENTER];
 const alignInCesium = [Align.LEFT, Align.CENTER, Align.RIGHT];
@@ -200,57 +199,11 @@ export const getHeightReference = (options, featureVariable, layer) => {
  * @api stable
  */
 export const getLabel = (options, featureVariable, layer) => {
-  const DEFAULT_LABEL_COLOR = '#000';
-  const DEFAULT_ALIGN = HorizontalOrigin.CENTER;
-  const DEFAULT_BASELINE = VerticalOrigin.CENTER;
-
-  let label = {};
-  if (options.label) {
-    let labelText = {};
-    const textLabel = Simple.getValue(options.label.text, featureVariable, layer);
-    const align = Simple.getValue(options.label.align, featureVariable, layer);
-    const baseline = Simple.getValue(options.label.baseline, featureVariable, layer);
-    labelText = {
-      font: Simple.getValue(options.label.font, featureVariable, layer) || '10px sans-serif',
-      scale: Simple.getValue(options.label.scale, featureVariable, layer) || 1,
-      pixelOffset: new Cartesian2(
-        Simple.getValue(
-          options.label.offset ? options.label.offset[0] : 0,
-          featureVariable,
-          layer,
-        ),
-        Simple.getValue(
-          options.label.offset ? options.label.offset[1] : 0,
-          featureVariable,
-          layer,
-        ),
-      ),
-      fillColor: Color.fromCssColorString(Simple.getValue(
-        options.label.color || DEFAULT_LABEL_COLOR,
-        featureVariable,
-        layer,
-      )),
-      horizontalOrigin: alignInCesium.includes(align)
-        ? HorizontalOrigin[align.toUpperCase()] : DEFAULT_ALIGN,
-      verticalOrigin: baselineInCesium.includes(baseline)
-        ? VerticalOrigin[baseline.toUpperCase()] : DEFAULT_BASELINE,
-      text: textLabel === undefined ? undefined : String(textLabel),
-      style: LabelStyle.FILL,
-      heightReference: getHeightReference(options, featureVariable, layer).heightReference,
-    };
-
-    if (!isNullOrEmpty(options.label.stroke)) {
-      extend(labelText, {
-        outlineColor: Color.fromCssColorString(
-          Simple.getValue(options.label.stroke.color, featureVariable, layer) || '#000000',
-        ),
-        outlineWidth: Simple.getValue(options.label.stroke.width, featureVariable, layer) || 1,
-        style: LabelStyle.FILL_AND_OUTLINE,
-      }, true);
-    }
-    label = { label: new LabelGraphics(labelText) };
-  }
-  return label;
+  const label = labelMarkerBuilder.buildLabel(options.label, {
+    resolve: (value) => Simple.getValue(value, featureVariable, layer),
+    heightReference: getHeightReference(options, featureVariable, layer).heightReference,
+  });
+  return label ? { label } : {};
 };
 
 /**
@@ -296,7 +249,8 @@ export const getIconSrc = (options, featureVariable, layer) => {
 
   const index = src + anchor + anchorXUnits + anchorYUnits + opacity
     + scale + rotation + rotateWithView + snapToPixel
-    + offsetOrigin + offset + crossOrigin + anchorOrigin + anchorOrigin + size;
+    + offsetOrigin + offset + crossOrigin + anchorOrigin + anchorOrigin + size
+    + JSON.stringify(options.icon.marker3D);
   let styleIcon = iconCache[index];
 
   if (!styleIcon) {
@@ -324,7 +278,7 @@ export const getIconSrc = (options, featureVariable, layer) => {
           Simple.getValue(options.icon.opacity || 1, featureVariable, layer),
         ),
         minimumPixelSize: Simple.getValue(options.icon.minimumPixelSize, featureVariable, layer),
-        heightReference: getHeightReference(options, featureVariable, layer),
+        heightReference: getHeightReference(options, featureVariable, layer).heightReference,
       });
       styleIcon.rotation = rotation;
     } else {
@@ -362,6 +316,10 @@ export const getIconSrc = (options, featureVariable, layer) => {
         verticalOrigin: baselineInCesium.includes(baseline) && options.icon.anchor,
         horizontalOrigin: alignInCesium.includes(align) && options.icon.anchor,
         sizeInMeters: false,
+        ...iconDisplayOptions(
+          options.icon,
+          (value) => Simple.getValue(value, featureVariable, layer),
+        ),
       });
     }
     iconCache[index] = styleIcon;
@@ -451,6 +409,7 @@ export const getIconForm = (options, featureVariable, layer) => {
         Simple.getValue(canvas.width
           ? canvas.width : undefined, featureVariable, layer),
       ) : undefined,
+    ...iconDisplayOptions(options.icon, (value) => Simple.getValue(value, featureVariable, layer)),
   });
   styleIcon.type = 'PointFontSymbol';
   return styleIcon;
@@ -562,51 +521,12 @@ export const getLineStroke = (options, featureVariable, layer) => {
  * @api stable
  */
 export const getLineText = (options, featureVariable, layer) => {
-  const { label } = options;
-  const LABEL_FILL_COLOR = '#000';
-  const DEFAULT_ALIGN = HorizontalOrigin.CENTER;
-  const DEFAULT_BASELINE = VerticalOrigin.TOP;
-
-  let textPathStyle = {};
-  if (!isNullOrEmpty(label)) {
-    let labelText = {};
-    const textLabel = Simple.getValue(label.text, featureVariable, layer);
-    const align = Simple.getValue(label.align, featureVariable, layer);
-    const baseline = Simple.getValue(label.baseline, featureVariable, layer);
-    labelText = {
-      text: textLabel === undefined ? undefined : String(textLabel),
-      style: LabelStyle.FILL,
-      font: Simple.getValue(label.font, featureVariable, layer) || '10px sans-serif',
-      fillColor: Color.fromCssColorString(Simple.getValue(
-        label.color || LABEL_FILL_COLOR,
-        featureVariable,
-        layer,
-      )),
-      horizontalOrigin: Object.values(Align).includes(align)
-        ? HorizontalOrigin[align.toUpperCase()] : DEFAULT_ALIGN,
-      verticalOrigin: Object.values(Baseline).includes(baseline)
-        ? VerticalOrigin[baseline.toUpperCase()] : DEFAULT_BASELINE,
-      scale: Simple.getValue(label.scale, featureVariable, layer),
-      pixelOffset: new Cartesian2(
-        Simple.getValue(options.label.offset
-          ? options.label.offset[0] : undefined, featureVariable, layer),
-        Simple.getValue(options.label.offset
-          ? options.label.offset[1] : undefined, featureVariable, layer),
-      ),
-      heightReference: getHeightReference(options, featureVariable, layer).heightReference,
-    };
-    if (!isNullOrEmpty(label.stroke)) {
-      extend(labelText, {
-        outlineColor: Color.fromCssColorString(
-          Simple.getValue(label.stroke.color, featureVariable, layer) || '#000000',
-        ),
-        outlineWidth: Simple.getValue(label.stroke.width, featureVariable, layer) || 1,
-        style: LabelStyle.FILL_AND_OUTLINE,
-      }, true);
-    }
-    textPathStyle = { label: new LabelGraphics(labelText) };
-  }
-  return textPathStyle;
+  const label = labelMarkerBuilder.buildLabel(options.label, {
+    resolve: (value) => Simple.getValue(value, featureVariable, layer),
+    heightReference: getHeightReference(options, featureVariable, layer).heightReference,
+    defaultBaseline: VerticalOrigin.TOP,
+  });
+  return label ? { label } : {};
 };
 
 /**
@@ -724,7 +644,7 @@ export const getPointStyle = (options, featureVariable, layer) => {
   const label = getLabel(optionsVar, featureVariable, layer);
   const pointStyle = {
     type: 'point',
-    pixelSize: Simple.getValue(optionsVar.radius, featureVariable, layer) || 5,
+    pixelSize: (Simple.getValue(optionsVar.radius, featureVariable, layer) * 2) || 5,
   };
 
   if (!isNullOrEmpty(optionsVar.icon)) {
@@ -839,18 +759,28 @@ const STYLE_GEOMETRIES = ['point', 'line', 'polygon'];
 const readPath = (object, path) => path.split('.')
   .reduce((value, key) => (value === null || value === undefined ? undefined : value[key]), object);
 
+const callIfExists = (target, method) => (typeof target?.[method] === 'function'
+  ? target[method]() : undefined);
+
+const childStyles = (style) => [
+  ...Object.values(callIfExists(style, 'getCategories') || {}),
+  ...(callIfExists(style, 'getChoroplethStyles') || []),
+  ...(callIfExists(style, 'getStyles') || []),
+  ...(callIfExists(style, 'getRanges') || []).map((range) => range?.style),
+];
+
 const collectStyleOptions = (style, seen = new Set()) => {
   if (isNullOrEmpty(style) || seen.has(style)) return [];
   seen.add(style);
   const collected = [];
-  const options = typeof style.getOptions === 'function' ? style.getOptions() : null;
-  if (options && STYLE_GEOMETRIES.some((geometry) => !isNullOrEmpty(options[geometry]))) {
+  const options = callIfExists(style, 'getOptions');
+  const geometry = callIfExists(callIfExists(style, 'getImpl'), 'getGeometryType');
+  if (options && STYLE_GEOMETRIES.includes(geometry)) {
+    collected.push({ [geometry]: options });
+  } else if (options && STYLE_GEOMETRIES.some((key) => !isNullOrEmpty(options[key]))) {
     collected.push(options);
   }
-  if (typeof style.getCategories === 'function') {
-    Object.values(style.getCategories() || {})
-      .forEach((categoryStyle) => collected.push(...collectStyleOptions(categoryStyle, seen)));
-  }
+  childStyles(style).forEach((child) => collected.push(...collectStyleOptions(child, seen)));
   return collected;
 };
 

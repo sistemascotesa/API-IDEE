@@ -233,8 +233,6 @@ class GeoTIFF extends LayerBase {
     this.provider_ = provider;
     const extent = this.maxExtent_ || provider.extent;
     const options = extend({
-      minimumTerrainLevel: this.minZoom,
-      maximumTerrainLevel: this.maxZoom - 1,
       rectangle: Rectangle.fromDegrees(...extent),
       alpha: this.opacity_,
       show: this.visibility,
@@ -287,6 +285,18 @@ class GeoTIFF extends LayerBase {
       }
       return Object.keys(roles).length === 0 ? null : roles;
     });
+  }
+
+  /**
+   * Este método establece la visibilidad de esta capa. Si es una capa base, oculta las
+   * demás capas base.
+   *
+   * @function
+   * @param {Boolean} visibility Verdadero es visible, falso si no.
+   * @api stable
+   */
+  setVisible(visibility) {
+    this.setBaseLayerVisible_(visibility);
   }
 
   /**
@@ -358,6 +368,19 @@ class GeoTIFF extends LayerBase {
     }
     this.provider_ = provider;
     this.replaceAutoRefreshProvider(provider);
+  }
+
+  /**
+   * Este método actualiza la capa volviendo a leer el GeoTIFF remoto, como hace
+   * OpenLayers al refrescar su fuente. Un GeoTIFF local no cambia y no se vuelve a leer.
+   *
+   * @public
+   * @function
+   * @returns {Promise<void>} Fin de la recarga.
+   * @api
+   */
+  refresh() {
+    return this.refreshSource();
   }
 
   /**
