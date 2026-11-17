@@ -3302,6 +3302,23 @@ class Map extends MObject {
   }
 
   /**
+   * Este método actualiza el visor: recalcula su tamaño y vuelve a pintar la escena, como
+   * hace OpenLayers al actualizar el tamaño del mapa.
+   *
+   * @function
+   * @returns {IDEE.impl.Map} Mapa.
+   * @public
+   * @api
+   */
+  refresh() {
+    if (this.map_ && !this.map_.isDestroyed()) {
+      this.map_.resize();
+      this.map_.scene.requestRender();
+    }
+    return this;
+  }
+
+  /**
    * Este método elimina el "popup".
    *
    * @function

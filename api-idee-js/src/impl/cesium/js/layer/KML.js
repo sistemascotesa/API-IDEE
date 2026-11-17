@@ -13,6 +13,7 @@ import LoaderKML from '../loader/KML';
 import FormatKML from '../format/KML';
 import ImplUtils from '../util/Utils';
 import Feature from '../feature/Feature';
+import { placeEntity } from '../scene/elevation';
 
 /**
  * @classdesc
@@ -155,7 +156,6 @@ class KML extends Vector {
     this.fireAddedToMap_();
     this.changeProjectionHandler_ = this.setProjection_.bind(this);
     map.on(EventType.CHANGE_PROJ, this.changeProjectionHandler_, this);
-    this.facadeVector_.userMaxExtent = null;
     const screenOverlayContainer = !isNullOrEmpty(this.vendorOptions_)
       && this.vendorOptions_.screenOverlayContainer
       ? this.vendorOptions_.screenOverlayContainer : this.map.getMapImpl().container;
@@ -311,11 +311,12 @@ class KML extends Vector {
 
           // Modificar altura
           implFeature.setHeightGeometry(this.height);
+          placeEntity(implFeature.getFeature(), this.elevation);
 
           const entity = Feature.facade2Feature(newFeature);
           this.prepareAutoRefreshFeature_(entity);
 
-          if (isNullOrEmpty(featureStyle)) {
+          if (isNullOrEmpty(featureStyle) && this.extractStyles_ === false) {
             if (newFeature.getAttribute('vendor.api_idee.icon')) {
               // eslint-disable-next-line no-underscore-dangle, no-param-reassign
               newFeature.getImpl().hasPropertyIcon_ = true;

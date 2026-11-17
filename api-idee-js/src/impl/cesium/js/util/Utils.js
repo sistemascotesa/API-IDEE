@@ -1109,10 +1109,7 @@ class Utils {
         if (typeof baseH === 'number') topHeight = Math.max(topHeight, baseH);
       }
 
-      // Offset vertical adicional
-      const verticalOffset = 300; // metros
-
-      return Cartesian3.fromRadians(lon, lat, topHeight + verticalOffset);
+      return Cartesian3.fromRadians(lon, lat, topHeight);
     }
     return center;
   }

@@ -16,6 +16,7 @@ import {
   CustomDataSource,
   Entity,
   HorizontalOrigin,
+  JulianDate,
   LabelStyle,
   PointGraphics,
   PolygonGraphics,
@@ -30,6 +31,7 @@ import Utils from '../util/Utils';
 import Feature from '../feature/Feature';
 import coordinatesConvexHull from '../util/convexhull';
 import SelectCluster from '../interaction/SelectedCluster';
+import { labelPrimitiveOptions } from '../scene/markers';
 
 /**
  * @classdesc
@@ -235,17 +237,12 @@ class Cluster extends Style {
       if (!isNullOrEmpty(styleF.label)) {
         cluster.label.show = true;
         Object.assign(cluster.label, {
-          font: styleF.label.font,
-          scale: styleF.label.scale,
-          pixelOffset: styleF.label.pixelOffset.getValue(),
-          fillColor: styleF.label.fillColor.getValue(),
-          horizontalOrigin: styleF.label.horizontalOrigin.getValue() || HorizontalOrigin.CENTER,
-          verticalOrigin: styleF.label.verticalOrigin.getValue() || VerticalOrigin.CENTER,
+          horizontalOrigin: HorizontalOrigin.CENTER,
+          verticalOrigin: VerticalOrigin.CENTER,
+          outlineColor: Color.WHITE,
+          outlineWidth: 1,
+          ...labelPrimitiveOptions(styleF.label, JulianDate.now()),
           style: LabelStyle.FILL_AND_OUTLINE,
-          outlineColor: styleF.label.outlineColor ? styleF.label.outlineColor : Color.WHITE,
-          outlineWidth: styleF.label.outlineWidth ? styleF.label.outlineWidth : 1,
-          disableDepthTestDistance: styleF.label.disableDepthTestDistance
-            ? styleF.label.disableDepthTestDistance.getValue() : undefined,
         });
       }
     } else if (isNullOrEmpty(style)) {

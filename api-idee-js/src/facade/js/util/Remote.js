@@ -324,6 +324,9 @@ export const get = (url, data, options) => {
   } else {
     useProxyValue = useproxy;
   }
+  if (/^(blob|data):/i.test(newUrl)) {
+    useProxyValue = false;
+  }
 
   let headers = null;
   if (!isNullOrEmpty(options) && 'headers' in options) {

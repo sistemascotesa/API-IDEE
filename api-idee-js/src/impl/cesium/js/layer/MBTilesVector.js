@@ -1,7 +1,7 @@
 /**
  * @module IDEE/impl/layer/MBTilesVector
  */
-import { isNullOrEmpty } from 'IDEE/util/Utils';
+import { isNullOrEmpty, addParameters } from 'IDEE/util/Utils';
 import TileProvider from 'IDEE/provider/Tile';
 import { getValue } from 'IDEE/i18n/language';
 import MVT from './MVT';
@@ -146,7 +146,35 @@ class MBTilesVector extends MVT {
    * @function
    * @api
    */
-  refreshSource() {}
+  /**
+   * Recarga el MBTiles remoto (autorefresco) y vuelve a pintar sus teselas conservando la
+   * capa y sus opciones, como en OpenLayers.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @public
+   * @function
+   * @param {Function} isCurrent Indica si la recarga sigue vigente.
+   */
+  async refreshSource(isCurrent = () => true) {
+    const layer = this.cesiumLayer;
+    if (isNullOrEmpty(layer) || this.source_ || this.tileLoadFunction
+      || !this.isAutoRefreshRemoteURL(this.url_)) return;
+    const response = await window.fetch(addParameters(this.url_, { _ideeRefresh: Date.now() }));
+    if (!response.ok) throw new Error(`MBTiles: HTTP ${response.status}`);
+    const provider = new TileProvider(response);
+    let adopted = false;
+    try {
+      await provider.getMaxZoomLevel();
+      if (!isCurrent() || this.cesiumLayer !== layer) return;
+      const previous = this.tileProvider_;
+      this.tileProvider_ = provider;
+      adopted = true;
+      this.replaceAutoRefreshProvider(this.createProvider_());
+      previous?.dispose?.();
+    } finally {
+      if (!adopted) provider.dispose?.();
+    }
+  }
 
   /**
    * Extensión de la capa en grados.

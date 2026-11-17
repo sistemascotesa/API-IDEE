@@ -21,6 +21,8 @@ import {
 } from 'cesium';
 import proj4 from 'proj4';
 import ImplUtils from '../util/Utils';
+import { getSourceGeometry, markHasZ } from '../scene/elevation';
+import { createElevationPolicy } from '../../../common/scene/elevationPolicies';
 
 /**
   * @classdesc
@@ -43,6 +45,7 @@ class GeoJSON {
   constructor(options = {}) {
     this.mapProj = options.featureProjection;
     this.clampToGround = options.clampToGround;
+    this.elevation = options.elevation;
   }
 
   /**
@@ -71,10 +74,10 @@ class GeoJSON {
     // GeoJSON admite objetos sin geometría (geometry: null): Cesium los crea vacíos
     const is2D = isNullOrEmpty(geoJSONFeature.geometry)
       || this.is2D(geoJSONFeature.geometry.coordinates);
-    if (isUndefined(options.clampToGround) && is2D) {
-      opts.clampToGround = true;
-    } else if (isUndefined(options.clampToGround) && !is2D) {
-      opts.clampToGround = false;
+    const geometryType = geoJSONFeature.geometry?.type;
+    if (isUndefined(options.clampToGround)) {
+      opts.clampToGround = createElevationPolicy(options.elevation ?? this.elevation)
+        .resolve(geometryType, !is2D).clampToGround;
     }
 
     const promise = new GeoJsonDataSource().process(geoJSONFeature, opts);
@@ -83,6 +86,7 @@ class GeoJSON {
       const featuresResult = [];
       features.forEach((f) => {
         const feature = f;
+        markHasZ(feature, !is2D);
         if (!isUndefined(feature.billboard) && !object.isKMLBillboard) {
           feature.billboard = undefined;
           const obj = {
@@ -223,7 +227,7 @@ class GeoJSON {
     }
     const geometry = ImplUtils.getGeometryEntity(feature);
     if (geometry) {
-      object.geometry = this.writeGeometryObject(geometry);
+      object.geometry = getSourceGeometry(feature) || this.writeGeometryObject(geometry);
     } else {
       object.geometry = null;
     }
@@ -401,6 +405,8 @@ class GeoJSON {
       }
       // eslint-disable-next-line no-param-reassign
       geojsonFeature.clampToGround = this.clampToGround;
+      // eslint-disable-next-line no-param-reassign
+      geojsonFeature.elevation = this.elevation;
       const feature = new Feature(id, geojsonFeature);
 
       return feature;

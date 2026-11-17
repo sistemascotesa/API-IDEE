@@ -476,6 +476,10 @@ export const registerStylesTests = (impl) => {
     });
 
     test('propiedades que la implementación no puede dibujar: aviso en el selector y el estilo se aplica', async ({ page }) => {
+      const warnings = [];
+      page.on('console', (message) => {
+        if (message.type() === 'warning') warnings.push(message.text());
+      });
       await openMap(page, impl, { precharged: EXAMPLE });
       await waitPrecharged(page, 2, timeout);
       await addFromCatalog(page, 'Zonas de ejemplo', 'Zonas', timeout);
@@ -505,6 +509,22 @@ export const registerStylesTests = (impl) => {
       expect(await page.evaluate(() => window.mapjs.getLayers().find((l) => l.legend === 'Zonas')
         .getUnsupportedStyleProperties(window.mapjs.getLayers().find((l) => l.legend === 'Zonas').getStyle())))
         .toEqual(impl === 'cesium' ? ['polygon.stroke.linedash'] : []);
+      const corePrefix = await page.evaluate(() => IDEE.language.getValue('exception')
+        .unsupported_style_properties.split('{layer}')[0]);
+      expect(warnings.filter((text) => text.startsWith(corePrefix)
+        && text.includes('polygon.stroke.linedash'))).toHaveLength(impl === 'cesium' ? 1 : 0);
+      expect(await page.evaluate(() => {
+        const layer = window.mapjs.getLayers().find((l) => l.legend === 'Zonas');
+        return [
+          layer.getUnsupportedStyleProperties(new IDEE.style.Polygon({
+            fill: { color: '#ff0000' }, stroke: { color: '#ff0000', linedash: [4, 4] },
+          })),
+          layer.getUnsupportedStyleProperties(new IDEE.style.Category('nombre', {
+            'Zona Sur': new IDEE.style.Line({ stroke: { color: '#ff0000', linecap: 'round' } }),
+          })),
+        ];
+      })).toEqual(impl === 'cesium'
+        ? [['polygon.stroke.linedash'], ['line.stroke.linecap']] : [[], []]);
     });
   });
 };

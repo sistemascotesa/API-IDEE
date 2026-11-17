@@ -1,8 +1,6 @@
 /**
  * @module IDEE/impl/style/Polygon
  */
-import * as Baseline from 'IDEE/style/Baseline';
-import * as Align from 'IDEE/style/Align';
 import * as HeightReference from 'IDEE/style/HeightReference';
 import {
   isNullOrEmpty,
@@ -13,14 +11,11 @@ import {
 import {
   Entity,
   Color,
-  LabelGraphics,
-  LabelStyle,
-  Cartesian2,
-  HorizontalOrigin,
   VerticalOrigin,
   HeightReference as CesiumHeightReference,
 } from 'cesium';
 import Simple from './Simple';
+import { labelMarkerBuilder } from '../scene/markers';
 
 /**
  * @classdesc
@@ -61,6 +56,18 @@ class Polygon extends Simple {
   constructor(options) {
     super(options);
     this.olStyleFn_ = this.updateFacadeOptions(options);
+  }
+
+  /**
+   * Este método devuelve el tipo de geometría al que se aplica el estilo.
+   *
+   * @public
+   * @function
+   * @returns {string} Tipo de geometría ("polygon").
+   * @api stable
+   */
+  getGeometryType() {
+    return 'polygon';
   }
 
   /**
@@ -144,38 +151,11 @@ class Polygon extends Simple {
           outlineWidth: Simple.getValue(options.stroke.width, featureVariable, this.layer_),
         }, true);
       }
-      if (!isNullOrEmpty(options.label)) {
-        const textLabel = Simple.getValue(options.label.text, featureVariable, this.layer_);
-        const align = Simple.getValue(options.label.align, featureVariable, this.layer_);
-        const baseline = Simple.getValue(options.label.baseline, featureVariable, this.layer_);
-        const labelOptionsStyle = {
-          font: Simple.getValue(options.label.font, featureVariable, this.layer_) || '10px sans-serif',
-          scale: Simple.getValue(options.label.scale, featureVariable, this.layer_),
-          pixelOffset: new Cartesian2(
-            Simple.getValue(options.label.offset ? options.label.offset[0] : undefined),
-            Simple.getValue(options.label.offset ? options.label.offset[1] : undefined),
-          ),
-          fillColor: Color.fromCssColorString(
-            Simple.getValue(options.label.color || '#000000', featureVariable, this.layer_),
-          ),
-          horizontalOrigin: Object.values(Align).includes(align)
-            ? HorizontalOrigin[align.toUpperCase()] : HorizontalOrigin.CENTER,
-          verticalOrigin: Object.values(Baseline).includes(baseline)
-            ? VerticalOrigin[baseline.toUpperCase()] : VerticalOrigin.TOP,
-          text: textLabel === undefined ? undefined : String(textLabel),
-          style: LabelStyle.FILL,
-        };
-        if (!isNullOrEmpty(options.label.stroke)) {
-          extend(labelOptionsStyle, {
-            outlineColor: Color.fromCssColorString(
-              Simple.getValue(options.label.stroke.color, featureVariable, this.layer_),
-            ),
-            outlineWidth: Simple.getValue(options.label.stroke.width, featureVariable, this.layer_),
-            style: LabelStyle.FILL_AND_OUTLINE,
-          }, true);
-        }
-        style.label = new LabelGraphics(labelOptionsStyle);
-      }
+      const label = labelMarkerBuilder.buildLabel(options.label, {
+        resolve: (value) => Simple.getValue(value, featureVariable, this.layer_),
+        defaultBaseline: VerticalOrigin.TOP,
+      });
+      if (label) style.label = label;
       if (!isNullOrEmpty(options.fill)) {
         const fillColorValue = Simple.getValue(options.fill.color, featureVariable, this.layer_);
         let fill = {};

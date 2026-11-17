@@ -79,6 +79,8 @@ class GeoJSON extends LayerVector {
    * - clampToGround: Define si el objeto geográfico se debe ajustar al suelo. Si las coordenadas
    *   son 3D, por defecto es falso, en caso contrario es verdadero.
    *   Solo disponible para Cesium.
+   * - elevation: Colocación en altura en 3D ({ mode, offset, heightSystem }). Ver
+   *   IDEE.layer.Vector.
    * @api
    */
   constructor(parameters = {}, options = {}, vendorOptions = {}) {

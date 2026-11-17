@@ -121,14 +121,46 @@ test.describe('IDEE.control.ImplementationSwitcher', () => {
     });
     await mockServices(page);
     await openMap(page);
-    await page.evaluate(() => {
+    await page.evaluate(async (tiles) => {
       IDEE.config('TEST_SWITCHER', 'conservado');
       IDEE.language.setLang('en');
+      const kmz = await (await fetch('/test/playwright/fixtures/kmz/basic.kmz')).arrayBuffer();
+      const gpx = await (await fetch('/test/development/CP-0002-layers/fixtures/CP-035.gpx')).text();
+      window.map.addLayers([
+        new IDEE.layer.KMZ({ name: 'kmz_local', legend: 'kmz_local', source: kmz }),
+        new IDEE.layer.GPX({ name: 'gpx_local', legend: 'gpx_local', source: gpx }, {
+          style: new IDEE.style.Generic({ line: { stroke: { color: '#ff0000', width: 4 } } }),
+        }),
+        new IDEE.layer.XYZ({
+          url: `${tiles}/recortada/{z}/{x}/{y}.png`,
+          name: 'recortada',
+          legend: 'recortada',
+          transparent: true,
+          maxExtent: [-1113194.9, 4163881.1, 556597.5, 5465442.2],
+        }),
+      ]);
+    }, TILES);
+    const localLayers = () => page.evaluate(() => {
+      const find = (name) => window.map.getLayers().find((l) => l.name === name);
+      const extent = find('recortada').getMaxExtent();
+      return {
+        kmz: find('kmz_local').getFeatures().length > 0,
+        gpx: find('gpx_local').getFeatures().length > 0,
+        gpxStroke: find('gpx_local').getStyle()?.getOptions()?.line?.stroke?.color,
+        extent: Array.isArray(extent) ? extent.map((value) => Math.round(value)) : extent,
+      };
     });
+    const metres = {
+      kmz: true, gpx: true, gpxStroke: '#ff0000', extent: [-1113195, 4163881, 556598, 5465442],
+    };
+    await expect.poll(localLayers, { timeout: CHANGE_TIMEOUT }).toEqual(metres);
     const before = await summary(page);
-    expect(before.layers.map((l) => l.name)).toEqual(['oculta', 'puntos', 'unidades']);
+    expect(before.layers.map((l) => l.name))
+      .toEqual(['gpx_local', 'kmz_local', 'oculta', 'puntos', 'recortada', 'unidades']);
 
     await switchTo(page, 1, 1);
+    await expect.poll(localLayers, { timeout: CHANGE_TIMEOUT })
+      .toEqual({ ...metres, extent: [-10, 35, 5, 44] });
     const in3D = await summary(page);
     expect(in3D.implementation).toBe('cesium');
     expect(await page.evaluate(() => window.changes[0].previous)).toBe('ol');
@@ -138,6 +170,7 @@ test.describe('IDEE.control.ImplementationSwitcher', () => {
     await expect(page.locator('div.m-dialog')).toHaveCount(0);
 
     await switchTo(page, 0, 2);
+    await expect.poll(localLayers, { timeout: CHANGE_TIMEOUT }).toEqual(metres);
     const back = await summary(page);
     expect(back).toEqual(before);
     // La vista vuelve a la zona de partida
@@ -195,6 +228,9 @@ test.describe('IDEE.control.ImplementationSwitcher', () => {
   test('lo que la implementación de destino no admite se conserva y vuelve', async ({ page }) => {
     await mockServices(page);
     await openMap(page);
+    await page.evaluate(() => {
+      window.olMapPrototype = Object.getPrototypeOf(window.map);
+    });
     await switchTo(page, 1, 1);
     await page.evaluate((url) => {
       window.map.addLayers(new IDEE.layer.Tiles3D({ url, name: 'edificios', legend: 'Edificios' }));
@@ -210,5 +246,23 @@ test.describe('IDEE.control.ImplementationSwitcher', () => {
     expect(await page.evaluate(() => window.map.getLayers()
       .filter((l) => l.name === 'edificios').map((l) => l.type))).toEqual(['Tiles3D']);
     expect(await page.evaluate(() => window.IDEE_IMPLEMENTATIONS.parked.layers)).toEqual([]);
+
+    // Una sección que no se puede recrear queda aparcada y vuelve en el cambio siguiente
+    await page.evaluate(() => {
+      window.olAddSections = window.olMapPrototype.addSections;
+      window.olMapPrototype.addSections = () => {
+        throw new Error('sección no admitida');
+      };
+    });
+    await switchTo(page, 0, 4);
+    expect(await page.evaluate(() => [window.map.getSections().length,
+      window.IDEE_IMPLEMENTATIONS.parked.sections.map((entry) => entry.section.title)]))
+      .toEqual([0, ['Sección']]);
+    await page.evaluate(() => {
+      window.olMapPrototype.addSections = window.olAddSections;
+    });
+    await switchTo(page, 1, 5);
+    expect(await page.evaluate(() => [window.map.getSections().map((section) => section.title),
+      window.IDEE_IMPLEMENTATIONS.parked.sections])).toEqual([['Sección'], []]);
   });
 });

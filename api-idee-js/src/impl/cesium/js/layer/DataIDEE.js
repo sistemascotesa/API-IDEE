@@ -94,6 +94,7 @@ class DataIDEE extends OGCAPIFeatures {
     this.formater_ = new FormatGeoJSON({
       defaultDataProjection: this.map.getProjection(),
       clampToGround: this.clampToGround,
+      elevation: this.elevation,
     });
     const requestedLayer = this.cesiumLayer;
     this.loader_ = new JsonLoader(

@@ -107,16 +107,6 @@ class GenericRaster extends LayerBase {
       this.cesiumLayer.show = this.visibility;
     }
 
-    if (!isNullOrEmpty(this.maxZoom)) {
-      // eslint-disable-next-line no-underscore-dangle
-      this.cesiumLayer._maximumTerrainLevel = this.maxZoom - 1;
-    }
-
-    if (!isNullOrEmpty(this.minZoom)) {
-      // eslint-disable-next-line no-underscore-dangle
-      this.cesiumLayer._minimumTerrainLevel = this.minZoom;
-    }
-
     if (!isNullOrEmpty(this.visibility)) {
       this.cesiumLayer.show = this.visibility;
     }

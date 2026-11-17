@@ -4,8 +4,9 @@
 import KMLImpl from 'impl/layer/KML';
 import LayerVector from './Vector';
 import {
-  isUndefined, isNullOrEmpty, isObject, isBoolean,
+  isUndefined, isNullOrEmpty, isObject, isBoolean, isString,
 } from '../util/Utils';
+import * as EventType from '../event/eventtype';
 import Exception from '../exception/exception';
 import * as LayerType from './Type';
 import * as parameter from '../parameter/parameter';
@@ -36,6 +37,8 @@ class KML extends LayerVector {
    * @constructor
    * @param {string|Mx.parameters.KML} userParameters Parámetros especificados por el usuario.
    * - url: Url del fichero o servicio -> https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml
+   * - source: Contenido local en lugar de url: texto del KML, o bytes (Blob, File,
+   *   ArrayBuffer) del KML o del KMZ. Se conserva al cambiar de implementación.
    * - name: Nombre de la capa que aparecerá en la leyenda -> Delegaciones IGN
    * - extract: Opcional, activa la consulta por click en el objeto geográfico,
    * por defecto verdadero.
@@ -68,6 +71,8 @@ class KML extends LayerVector {
    * - clampToGround: Define si el objeto geográfico se debe ajustar al suelo. Si las coordenadas
    *   son 3D, por defecto es falso, en caso contrario es verdadero.
    *   Solo disponible para Cesium.
+   * - elevation: Colocación en altura en 3D ({ mode, offset, heightSystem }). Ver
+   *   IDEE.layer.Vector.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import OLSourceVector from 'ol/source/Vector';
@@ -105,6 +110,8 @@ class KML extends LayerVector {
     }
 
     const parameters = parameter.layer(userParameters, layerType);
+    const localUrl = KML.createLocalUrl(userParameters);
+    if (localUrl) parameters.url = localUrl;
     const optionsVar = options;
 
     optionsVar.label = parameters.label;
@@ -166,6 +173,30 @@ class KML extends LayerVector {
      * @type {Array<String>}
      */
     this.removeFolderChildren = optionsVar.removeFolderChildren;
+
+    if (localUrl) {
+      this.once(EventType.REMOVED_FROM_MAP, () => URL.revokeObjectURL(localUrl));
+    }
+  }
+
+  /**
+   * Crea la URL local de una capa con "source" (texto o bytes del fichero).
+   *
+   * @function
+   * @param {Object|String} userParameters Parámetros de la capa.
+   * @returns {String|undefined} URL local, o nada si la capa no tiene "source".
+   * @public
+   * @api
+   */
+  static createLocalUrl(userParameters) {
+    const source = isObject(userParameters) ? userParameters.source : undefined;
+    if (source === undefined || source === null) return undefined;
+    const isBytes = source instanceof Blob || source instanceof ArrayBuffer
+      || ArrayBuffer.isView(source);
+    if (!isString(source) && !isBytes) {
+      Exception(getValue('exception').invalid_kml_source);
+    }
+    return URL.createObjectURL(source instanceof Blob ? source : new Blob([source]));
   }
 
   /**

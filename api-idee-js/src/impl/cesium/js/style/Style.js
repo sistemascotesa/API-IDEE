@@ -96,6 +96,16 @@ class Style {
   drawGeometryToCanvas(vectorContext) {}
 
   /**
+   * Este método quita el estilo de la capa. Por defecto no hay nada que deshacer.
+   *
+   * @public
+   * @function
+   * @param {IDEE.layer.Vector} layer Capa.
+   * @api stable
+   */
+  unapply(layer) {}
+
+  /**
    * Esta función obtiene el tamaño del "canvas".
    *
    * @public

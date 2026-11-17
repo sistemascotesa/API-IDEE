@@ -8,7 +8,10 @@ import { isNullOrEmpty, isString } from 'IDEE/util/Utils';
 import FacadeLayer from 'IDEE/layer/Layer';
 import * as EventType from 'IDEE/event/eventtype';
 import { ImageryLayer, Resource } from 'cesium';
+import { isZoomInRange } from 'IDEE/scene/options';
 import ImplUtils from '../util/Utils';
+import ViewZoomRangePolicy from '../../../common/scene/ViewZoomRangePolicy';
+import { createCameraView } from '../scene/adapters';
 
 const autoRefreshProviders = new WeakMap();
 
@@ -80,7 +83,7 @@ class LayerBase extends MObject {
     /**
      * Layer opacity_. Opacidad de capa, por defecto 1.
      */
-    this.opacity_ = this.options.opacity || 1;
+    this.opacity_ = this.options.opacity ?? 1;
 
     /**
       * Layer legendUrl_. Leyenda URL de esta capa.
@@ -185,8 +188,6 @@ class LayerBase extends MObject {
     if (index < 0) return;
 
     const options = {
-      minimumTerrainLevel: this.minZoom,
-      maximumTerrainLevel: this.maxZoom - 1,
       ...this.vendorOptions_,
       rectangle: previous.rectangle,
     };
@@ -260,7 +261,77 @@ class LayerBase extends MObject {
     if (isNullOrEmpty(this.map) || typeof this.map.getZoom !== 'function') return true;
     const zoom = this.map.getZoom();
     if (isNullOrEmpty(zoom)) return true;
-    return zoom >= this.minZoom && zoom <= this.maxZoom;
+    return isZoomInRange(Number(zoom), this.minZoom, this.maxZoom);
+  }
+
+  /**
+   * Crea, actualiza o retira la política que muestra la capa solo dentro de su rango de
+   * zoom. Solo existe si la capa tiene minZoom o maxZoom.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @function
+   * @public
+   */
+  syncZoomRange_() {
+    const limited = Number.isFinite(Number(this.minZoom)) || Number.isFinite(Number(this.maxZoom));
+    if (!limited) {
+      if (this.zoomRange_) this.disposeZoomRange_();
+      return;
+    }
+    if (!this.zoomRange_) {
+      if (isNullOrEmpty(this.map) || typeof this.map.getMapImpl !== 'function') return;
+      const viewer = this.map.getMapImpl();
+      if (isNullOrEmpty(viewer?.scene)) return;
+      this.inZoomRange_ = true;
+      const view = createCameraView(viewer, this.map.zoom_meters, () => this.enforceZoomRange_());
+      this.zoomRange_ = new ViewZoomRangePolicy(view, (inRange) => {
+        this.inZoomRange_ = inRange;
+        this.applyShow_();
+      });
+    }
+    this.zoomRange_.setRange(this.minZoom, this.maxZoom);
+  }
+
+  /**
+   * Mantiene oculta una capa fuera de su rango de zoom aunque otro código la muestre, y
+   * retira la política cuando la capa ya no está en el mapa.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @function
+   * @public
+   */
+  enforceZoomRange_() {
+    if (isNullOrEmpty(this.map)) {
+      this.disposeZoomRange_();
+      return;
+    }
+    const target = this.cesiumLayer;
+    if (this.inZoomRange_ === false && !isNullOrEmpty(target) && target.show === true) {
+      target.show = false;
+    }
+  }
+
+  /**
+   * Retira la política de rango de zoom y vuelve a mostrar la capa si es visible.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @function
+   * @public
+   */
+  disposeZoomRange_() {
+    if (this.zoomRange_) this.zoomRange_.dispose();
+    this.zoomRange_ = null;
+    this.inZoomRange_ = true;
+    this.applyShow_();
+  }
+
+  /**
+   * Muestra la capa si es visible y está dentro de su rango de zoom.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @function
+   * @public
+   */
+  applyShow_() {
+    const target = this.cesiumLayer;
+    if (isNullOrEmpty(target) || !('show' in target)) return;
+    target.show = this.visibility !== false && this.inZoomRange_ !== false;
   }
 
   /**
@@ -273,6 +344,7 @@ class LayerBase extends MObject {
    * @api stable
    */
   fireAddedToMap_(args = []) {
+    this.syncZoomRange_();
     this.fire(EventType.ADDED_TO_MAP, args);
     const facadeLayer = this.facadeLayer_ || this.facadeVector_;
     if (!isNullOrEmpty(facadeLayer) && facadeLayer !== this) {
@@ -290,10 +362,26 @@ class LayerBase extends MObject {
    */
   setVisible(visibility) {
     this.visibility = visibility;
+    this.applyShow_();
+  }
 
-    if (!isNullOrEmpty(this.cesiumLayer)) {
-      this.cesiumLayer.show = visibility;
+  /**
+   * Muestra u oculta la capa y, si es una capa base que se muestra, oculta las demás
+   * capas base, como hacen en OpenLayers WMS, WMTS, MBTiles y GeoTIFF.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @public
+   * @param {Boolean} visibility Verdadero es visible, falso si no.
+   */
+  setBaseLayerVisible_(visibility) {
+    this.visibility = visibility;
+    if (visibility === true && this.isBase === true && !isNullOrEmpty(this.map)) {
+      this.map.getBaseLayers()
+        .filter((layer) => layer.getImpl() !== this && layer.isVisible())
+        .forEach((layer) => layer.setVisible(false));
     }
+    this.applyShow_();
   }
 
   /**
@@ -305,9 +393,6 @@ class LayerBase extends MObject {
    * @expose
    */
   getMinZoom() {
-    if (!isNullOrEmpty(this.getLayer())) {
-      this.minZoom = this.getLayer()._minimumTerrainLevel;
-    }
     return this.minZoom;
   }
 
@@ -321,12 +406,7 @@ class LayerBase extends MObject {
    */
   setMinZoom(zoom) {
     this.minZoom = zoom;
-    if (!isNullOrEmpty(this.getLayer())) {
-      this.getLayer()._minimumTerrainLevel = zoom;
-      const index = this.map.getMapImpl().imageryLayers.indexOf(this.getLayer());
-      this.map.getMapImpl().imageryLayers.remove(this.getLayer(), false);
-      this.map.getMapImpl().imageryLayers.add(this.getLayer(), index);
-    }
+    this.syncZoomRange_();
   }
 
   /**
@@ -338,9 +418,6 @@ class LayerBase extends MObject {
    * @expose
    */
   getMaxZoom() {
-    if (!isNullOrEmpty(this.getLayer())) {
-      this.maxZoom = this.getLayer()._maximumTerrainLevel;
-    }
     return this.maxZoom;
   }
 
@@ -355,12 +432,7 @@ class LayerBase extends MObject {
    */
   setMaxZoom(zoom) {
     this.maxZoom = zoom;
-    if (!isNullOrEmpty(this.getLayer())) {
-      this.getLayer()._maximumTerrainLevel = zoom - 1;
-      const index = this.map.getMapImpl().imageryLayers.indexOf(this.getLayer());
-      this.map.getMapImpl().imageryLayers.remove(this.getLayer(), false);
-      this.map.getMapImpl().imageryLayers.add(this.getLayer(), index);
-    }
+    this.syncZoomRange_();
   }
 
   /**

@@ -139,6 +139,34 @@ test.describe('Capas ráster en Cesium', () => {
       await page.evaluate(() => window.layer.setOpacity(0.4));
       expect(await imageryState(page, name))
         .toMatchObject({ show: true, alpha: 0.4, opacity: 0.4 });
+      await page.evaluate(() => window.layer.setOpacity(0));
+      expect(await imageryState(page, name)).toMatchObject({ alpha: 0, opacity: 0 });
+      await page.evaluate(() => window.layer.setOpacity(0.4));
+
+      await page.evaluate(() => window.layer.setMaxZoom(3));
+      await expect.poll(async () => (await imageryState(page, name)).show, WAIT).toBe(false);
+      expect(await page.evaluate(() => [window.layer.getMaxZoom(), window.layer.inRange()]))
+        .toEqual([3, false]);
+      await page.evaluate(() => window.layer.setMaxZoom(Number.POSITIVE_INFINITY));
+      await expect.poll(async () => (await imageryState(page, name)).show, WAIT).toBe(true);
+
+      if (['WMS', 'WMTS', 'MBTiles'].includes(type)) {
+        const exclusive = await page.evaluate((host) => {
+          const other = new IDEE.layer.XYZ({
+            url: `${host}/xyz/{z}/{x}/{y}.png`, name: 'otra_base', legend: 'Otra base', isBase: true,
+          });
+          window.map.addLayers(other);
+          window.layer.isBase = true;
+          window.layer.setVisible(false);
+          other.setVisible(true);
+          window.layer.setVisible(true);
+          const result = { other: other.isVisible(), layer: window.layer.isVisible() };
+          window.map.removeLayers(other);
+          window.layer.isBase = false;
+          return result;
+        }, HOST);
+        expect(exclusive).toEqual({ other: false, layer: true });
+      }
 
       const extentAndLegend = await page.evaluate(async () => ({
         extent: await window.layer.calculateMaxExtent(),

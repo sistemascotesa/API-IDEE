@@ -92,7 +92,6 @@ class GenericVector extends Vector {
    */
   addTo(map) {
     this.map = map;
-    this.facadeLayer_.userMaxExtent = null;
     this.facadeVector_ = this.facadeLayer_;
 
     this.once(EventType.LOAD_GENERIC_VECTOR, () => {

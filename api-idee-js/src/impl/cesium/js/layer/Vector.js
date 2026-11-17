@@ -30,6 +30,9 @@ import Layer from './Layer';
 import ImplUtils from '../util/Utils';
 import Feature from '../feature/Feature';
 import { findStyleProperties } from '../style/builder';
+import ItemExtentClipPolicy, { toExtentArray } from '../../../common/scene/ItemExtentClipPolicy';
+import { createEntityItems } from '../scene/adapters';
+import { placeEntity } from '../scene/elevation';
 
 /**
  * @classdesc
@@ -146,6 +149,12 @@ class Vector extends Layer {
     this.clampToGround = options.clampToGround;
 
     /**
+     * elevation. Colocación en altura de los objetos geográficos
+     * ({ mode, offset, heightSystem }); por defecto el modo "auto".
+     */
+    this.elevation = options.elevation;
+
+    /**
      * countFeatures_. Define el número de objetos geográficos de la capa.
      */
     this.countFeatures_ = 0;
@@ -165,7 +174,6 @@ class Vector extends Layer {
    * @api stable
    */
   addTo(map) {
-    this.facadeVector_.userMaxExtent = null;
     this.map = map;
     map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
     this.cesiumLayer = new CustomDataSource(this.name);
@@ -189,7 +197,7 @@ class Vector extends Layer {
       const [feature] = this.getFeatures(true);
       return feature?.getImpl().getFeatureOpacity() || 1;
     }
-    return this.opacity_ || 1;
+    return this.opacity_;
   }
 
   /**
@@ -347,16 +355,20 @@ class Vector extends Layer {
   }
 
   /**
-   * Este método indica si la capa tiene rango.
-   *
+   * Oculta los objetos geográficos que quedan fuera de la extensión máxima, sin
+   * borrarlos, igual que OpenLayers deja de dibujarlos.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
-   * @returns {Boolean} Verdadero.
-   * @api stable
-   * @expose
+   * @public
+   * @param {Array<Number>|Object|null} extent Extensión máxima en grados.
    */
-  inRange() {
-    // vectors are always in range
-    return true;
+  syncExtentClip_(extent) {
+    if (isNullOrEmpty(this.cesiumLayer)) return;
+    if (!this.extentClip_) {
+      if (toExtentArray(extent) === null) return;
+      this.extentClip_ = new ItemExtentClipPolicy(createEntityItems(() => this.cesiumLayer));
+    }
+    this.extentClip_.setExtent(extent);
   }
 
   /**
@@ -545,6 +557,7 @@ class Vector extends Layer {
 
           // Modificar altura
           implFeature.setHeightGeometry(this.height);
+          placeEntity(implFeature.getFeature(), this.elevation);
 
           const entity = Feature.facade2Feature(newFeature);
           this.prepareAutoRefreshFeature_(entity);
@@ -555,7 +568,7 @@ class Vector extends Layer {
               newFeature.getImpl().hasPropertyIcon_ = true;
             }
             newFeature.setStyle(styleLayer);
-          } else if (this.opacity_) {
+          } else if (!isNullOrEmpty(this.opacity_)) {
             this.setOpacity(this.opacity_, [entity]);
           }
 
@@ -568,7 +581,7 @@ class Vector extends Layer {
           }
 
           newFeature.on(EventType.COMPLETED_CHANGE_STYLE_FEATURE, () => {
-            if (this.opacity_) {
+            if (!isNullOrEmpty(this.opacity_)) {
               // Modificar opacidad
               this.setOpacity(this.opacity_, [entity]);
             }
@@ -581,6 +594,8 @@ class Vector extends Layer {
           this.facadeVector_.addFeatures(othersFacadeEntities);
         }
       });
+
+      this.syncExtentClip_(this.facadeVector_.userMaxExtent);
 
       if (this.countFeatures_ === this.countPromise_) {
         this.facadeVector_.initializeAutoRefresh();
@@ -679,6 +694,7 @@ class Vector extends Layer {
       const features = this.facadeVector_.getFeatures();
       features.forEach((feature) => {
         feature.getImpl().setHeightGeometry(this.height);
+        placeEntity(feature.getImpl().getFeature(), this.elevation);
       });
       const entities = features.map(Feature.facade2Feature);
       entities.forEach((entity) => {
@@ -933,49 +949,21 @@ class Vector extends Layer {
       cesiumMap.dataSources.remove(this.cesiumLayer, true);
       this.cesiumLayer = null;
     }
+    this.extentClip_ = null;
     this.map = null;
   }
 
   /**
-   * Este método establece el zoom mínimo de esta capa.
-   * No disponible para Cesium.
+   * Este método establece la extensión máxima de la capa: los objetos geográficos que
+   * quedan fuera dejan de dibujarse.
    *
    * @function
-   * @param {Number} zoom Zoom mínimo aplicable a la capa.
-   * @api stable
-   * @expose
-   */
-  setMinZoom(zoom) {
-    // eslint-disable-next-line no-console
-    console.warn(getValue('exception').setminzoom_method);
-  }
-
-  /**
-   * Este método establece el zoom máximo de esta capa.
-   * No disponible para Cesium.
-   *
-   * @function
-   * @param {Number} zoom Zoom máximo aplicable a la capa.
-   * @api stable
-   * @expose
-   */
-  setMaxZoom(zoom) {
-    // eslint-disable-next-line no-console
-    console.warn(getValue('exception').setmaxzoom_method);
-  }
-
-  /**
-   * Este método establece la extensión máxima de la capa.
-   * No disponible para Cesium.
-   *
-   * @function
-   * @param {Array<Number>} extent Extensión máxima.
+   * @param {Array<Number>|Object} extent Extensión máxima en grados.
    * @api stable
    * @expose
    */
   setMaxExtent(extent) {
-    // eslint-disable-next-line no-console
-    console.warn(getValue('exception').setmaxextent_method);
+    this.syncExtentClip_(extent);
   }
 }
 

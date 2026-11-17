@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import registerLoadFilesTests from '../common/load-files';
 
 /*
  * Capas vectoriales y 3D en Cesium: alta, objetos geográficos, visibilidad,
@@ -158,6 +159,31 @@ test.describe('Capas vectoriales y 3D en Cesium', () => {
       expect(miny).toBeGreaterThan(35);
       expect(maxy).toBeLessThan(44);
 
+      const entitiesShown = () => page.evaluate(() => window.layer.getImpl().getLayer()
+        .entities.values.map((entity) => entity.show));
+      await page.evaluate(() => window.layer.setMaxExtent([10, 10, 20, 20]));
+      expect(await entitiesShown()).not.toContain(true);
+      await page.evaluate(() => window.layer.setMaxExtent([-10, 35, 5, 44]));
+      expect(await entitiesShown()).not.toContain(false);
+      if (type !== 'GenericVector') {
+        expect(await page.evaluate(() => window.layer.getMaxExtent())).toEqual([-10, 35, 5, 44]);
+      }
+      await page.evaluate(() => window.layer.setMaxExtent(null));
+      expect(await entitiesShown()).not.toContain(false);
+
+      await page.evaluate(() => window.layer.setMaxZoom(3));
+      await expect.poll(async () => (await dataSourceState(page)).show, WAIT).toBe(false);
+      expect(await page.evaluate(() => window.layer.inRange())).toBe(false);
+      await page.evaluate(() => window.layer.setMaxZoom(Number.POSITIVE_INFINITY));
+      await expect.poll(async () => (await dataSourceState(page)).show, WAIT).toBe(true);
+      await page.evaluate(() => window.layer.setMinZoom(20));
+      await expect.poll(async () => (await dataSourceState(page)).show, WAIT).toBe(false);
+      await page.evaluate(() => window.layer.setVisible(true));
+      await expect.poll(async () => (await dataSourceState(page)).show, WAIT).toBe(false);
+      await page.evaluate(() => window.layer.setMinZoom(Number.NEGATIVE_INFINITY));
+      await expect.poll(async () => (await dataSourceState(page)).show, WAIT).toBe(true);
+      expect(await page.evaluate(() => window.layer.inRange())).toBe(true);
+
       await page.evaluate(() => window.map.removeLayers(window.layer));
       expect((await dataSourceState(page)).inViewer).toBe(false);
       expect(await page.evaluate(() => window.map.getLayers().includes(window.layer))).toBe(false);
@@ -205,38 +231,6 @@ test.describe('Capas vectoriales y 3D en Cesium', () => {
     expect(await page.evaluate(() => window.map.getLayers().includes(window.layer))).toBe(false);
   });
 
-  [
-    ['geojson', JSON.stringify(FEATURES), 2],
-    ['kml', null, 1],
-    ['gpx', null, 3],
-  ].forEach(([ext, inline, minFeatures]) => {
-    test(`IDEE.loadFiles carga un fichero ${ext} como capa vectorial`, async ({ page }) => {
-      const files = {
-        kml: '/test/playwright/fixtures/kmz/basic.kml',
-        gpx: '/test/development/CP-0002-layers/fixtures/CP-035.gpx',
-      };
-      await page.evaluate(async ({ fileExt, text, path }) => {
-        const source = text || await (await fetch(path)).text();
-        await IDEE.loadFiles.loadFeaturesFromSource(window.map, source, `fichero_${fileExt}`, fileExt);
-      }, { fileExt: ext, text: inline, path: files[ext] });
-      const layerName = `fichero_${ext}`;
-      await expect.poll(() => page.evaluate((name) => {
-        const layer = window.map.getLayers().find((l) => l.name === name);
-        return layer ? layer.getFeatures().length : 0;
-      }, layerName), WAIT).toBeGreaterThanOrEqual(minFeatures);
-      // Los objetos llegan en grados (en la península)
-      const [lon, lat] = await page.evaluate((name) => {
-        const first = (coords) => (typeof coords[0] === 'number' ? coords : first(coords[0]));
-        return first(window.map.getLayers().find((l) => l.name === name)
-          .getFeatures()[0].getGeometry().coordinates);
-      }, layerName);
-      expect(lon).toBeGreaterThan(-10);
-      expect(lon).toBeLessThan(5);
-      expect(lat).toBeGreaterThan(35);
-      expect(lat).toBeLessThan(44);
-      expect(await page.locator('div.m-dialog.error').count()).toBe(0);
-    });
-  });
   const POLYGON_SOURCE = {
     type: 'FeatureCollection',
     features: [{
@@ -250,14 +244,41 @@ test.describe('Capas vectoriales y 3D en Cesium', () => {
     }],
   };
 
-  test('Polígonos: el contorno se dibuja como línea pegada al terreno y se quita con un estilo sin contorno', async ({ page }) => {
+  test('Polígonos: el contorno se dibuja como línea pegada al terreno y se quita con un estilo sin contorno; etiquetas 3D', async ({ page }) => {
     await page.evaluate((source) => {
       window.layer = new IDEE.layer.GeoJSON({ name: 'poligonos', source });
       window.map.addLayers(window.layer);
       window.layer.setStyle(new IDEE.style.Generic({
-        polygon: { fill: { color: '#00ff00', opacity: 0.5 }, stroke: { color: '#ff0000', width: 3 } },
+        polygon: {
+          fill: { color: '#00ff00', opacity: 0.5 },
+          stroke: { color: '#ff0000', width: 3 },
+          label: { text: '{{nombre}}', baseline: 'alphabetic', align: 'end' },
+        },
       }));
     }, POLYGON_SOURCE);
+    const label = () => page.evaluate(() => {
+      const entity = window.layer.getFeatures()[0]?.getImpl().getFeature();
+      if (!entity?.label) return null;
+      const time = window.Cesium.JulianDate.now();
+      const value = (property) => property?.getValue(time);
+      const { VerticalOrigin, HorizontalOrigin } = window.Cesium;
+      return {
+        text: value(entity.label.text),
+        depth: value(entity.label.disableDepthTestDistance),
+        vertical: value(entity.label.verticalOrigin) === VerticalOrigin.BASELINE,
+        horizontal: value(entity.label.horizontalOrigin) === HorizontalOrigin.RIGHT,
+        far: value(entity.label.distanceDisplayCondition)?.far,
+        nearScale: value(entity.label.scaleByDistance)?.nearValue,
+      };
+    });
+    await expect.poll(label, WAIT).toEqual({
+      text: 'Uno',
+      depth: Number.POSITIVE_INFINITY,
+      vertical: true,
+      horizontal: true,
+      far: undefined,
+      nearScale: undefined,
+    });
     const outline = () => page.evaluate(() => {
       const entity = window.layer.getFeatures()[0]?.getImpl().getFeature();
       if (!entity) return null;
@@ -276,12 +297,23 @@ test.describe('Capas vectoriales y 3D en Cesium', () => {
       line: true, ground: true, width: 3, color: '#ff0000', polygonOutline: false, type: 'Polygon',
     });
     await page.evaluate(() => window.layer.setStyle(new IDEE.style.Generic({
-      polygon: { fill: { color: '#00ff00', opacity: 0.5 } },
+      polygon: {
+        fill: { color: '#00ff00', opacity: 0.5 },
+        label: {
+          text: 'cerca',
+          marker3D: {
+            alwaysOnTop: false, distance: [0, 5000], scaleByDistance: [100, 1.5, 10000, 0.5],
+          },
+        },
+      },
     })));
     await expect.poll(async () => (await outline())?.line, WAIT).toBe(false);
+    await expect.poll(label, WAIT).toEqual({
+      text: 'cerca', depth: 0, vertical: false, horizontal: false, far: 5000, nearScale: 1.5,
+    });
   });
 
-  test('Líneas en EPSG:3857: LineString y MultiLineString se reproyectan a grados', async ({ page }) => {
+  test('Líneas en EPSG:3857: LineString y MultiLineString se reproyectan a grados; elevación por capa y estilo', async ({ page }) => {
     const toMercator = ([lon, lat]) => [
       (lon * 20037508.342789244) / 180,
       (Math.log(Math.tan(((90 + lat) * Math.PI) / 360)) * 20037508.342789244) / Math.PI,
@@ -322,6 +354,90 @@ test.describe('Capas vectoriales y 3D en Cesium', () => {
         expect(lat).toBeCloseTo(line[index][1], 5);
       });
     });
+
+    const elevated = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature', id: 'z', properties: {}, geometry: { type: 'Point', coordinates: [-3.7, 40.4, 100] },
+        },
+        {
+          type: 'Feature', id: 'l', properties: {}, geometry: { type: 'LineString', coordinates: line },
+        },
+        {
+          type: 'Feature',
+          id: 'a',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[[-3.8, 40.3], [-3.6, 40.3], [-3.6, 40.5], [-3.8, 40.3]]],
+          },
+        },
+      ],
+    };
+    expect(await page.evaluate(() => {
+      try {
+        const empty = { type: 'FeatureCollection', features: [] };
+        return new IDEE.layer.GeoJSON({ name: 'mal', source: empty }, { elevation: 'flotar' })
+          && null;
+      } catch (error) {
+        return String(error?.message ?? error);
+      }
+    })).toBeTruthy();
+    await page.evaluate((data) => {
+      window.elevated = new IDEE.layer.GeoJSON({ name: 'elevacion', source: data }, {
+        elevation: { mode: 'absolute', offset: 10 },
+      });
+      window.map.addLayers(window.elevated);
+    }, elevated);
+    const placed = () => page.evaluate(() => {
+      const { Cartographic, HeightReference, JulianDate } = window.Cesium;
+      const time = JulianDate.now();
+      const entities = Object.fromEntries(window.elevated.getFeatures()
+        .map((feature) => [feature.getId(), feature.getImpl().getFeature()]));
+      if (!entities.z || !entities.l || !entities.a) return null;
+      const height = (position) => Math.round(Cartographic.fromCartesian(position).height);
+      const reference = (value) => Object.keys(HeightReference)
+        .find((key) => HeightReference[key] === value);
+      return {
+        point: [height(entities.z.position.getValue(time)),
+          reference(entities.z.point.heightReference?.getValue(time))],
+        line: [entities.l.polyline.positions.getValue(time).map(height),
+          entities.l.polyline.clampToGround.getValue(time)],
+        polygon: [entities.a.polygon.height?.getValue(time),
+          reference(entities.a.polygon.heightReference?.getValue(time))],
+        geometryZ: Math.round(window.elevated.getFeatures().find((f) => f.getId() === 'z')
+          .getGeometry().coordinates[2]),
+      };
+    });
+    await expect.poll(placed, WAIT).toEqual({
+      point: [110, 'NONE'],
+      line: [[10, 10], false],
+      polygon: [10, 'NONE'],
+      geometryZ: 100,
+    });
+    await page.evaluate(() => window.elevated.setStyle(new IDEE.style.Generic({
+      point: { radius: 5, fill: { color: '#ff0000' }, elevation: 'clamp' },
+      line: { stroke: { color: '#ff0000' }, elevation: { mode: 'relative', offset: 3 } },
+      polygon: { fill: { color: '#ff0000' }, elevation: { mode: 'relative' } },
+    })));
+    await expect.poll(placed, WAIT).toEqual({
+      point: [0, 'CLAMP_TO_GROUND'],
+      line: [[3, 3], false],
+      polygon: [10, 'RELATIVE_TO_GROUND'],
+      geometryZ: 100,
+    });
+    await page.evaluate(() => window.elevated.setStyle(new IDEE.style.Generic({
+      point: { radius: 5, fill: { color: '#ff0000' }, elevation: { mode: 'auto', offset: 0 } },
+      line: { stroke: { color: '#ff0000' }, elevation: 'auto' },
+      polygon: { fill: { color: '#ff0000' }, elevation: 'auto' },
+    })));
+    await expect.poll(placed, WAIT).toEqual({
+      point: [100, 'NONE'],
+      line: [[0, 0], true],
+      polygon: [undefined, undefined],
+      geometryZ: 100,
+    });
     expect(errors).toEqual([]);
   });
 
@@ -344,5 +460,132 @@ test.describe('Capas vectoriales y 3D en Cesium', () => {
     await expect.poll(fill, WAIT).toBe('#0000ff');
     await page.evaluate(() => window.map.setZoom(13));
     await expect.poll(fill, WAIT).toBe('#ff0000');
+
+    await page.evaluate((points) => {
+      window.points = new IDEE.layer.GeoJSON({ name: 'puntos', source: points });
+      window.map.addLayers(window.points);
+      window.points.setStyle(new IDEE.style.Generic({
+        point: {
+          radius: 6,
+          fill: { color: '#ff0000' },
+          label: { text: (feature) => feature.getAttribute('nombre').toUpperCase() },
+        },
+      }));
+    }, FEATURES);
+    const point = () => page.evaluate(() => {
+      const entity = window.points.getFeatures()[0]?.getImpl().getFeature();
+      if (!entity?.point) return null;
+      const time = window.Cesium.JulianDate.now();
+      const { Cartesian3, VerticalOrigin } = window.Cesium;
+      return {
+        pixelSize: entity.point.pixelSize?.getValue(time),
+        text: entity.label?.text?.getValue(time),
+        labelDepth: entity.label?.disableDepthTestDistance?.getValue(time),
+        labelCentered: entity.label?.verticalOrigin?.getValue(time) === VerticalOrigin.CENTER,
+        iconNorth: entity.billboard ? Cartesian3
+          .equals(entity.billboard.alignedAxis.getValue(time), Cartesian3.UNIT_Z) : null,
+        iconRotation: entity.billboard?.rotation?.getValue(time) ?? null,
+        iconDepth: entity.billboard?.disableDepthTestDistance?.getValue(time) ?? null,
+      };
+    });
+    await expect.poll(point, WAIT).toEqual({
+      pixelSize: 12,
+      text: 'UNO',
+      labelDepth: Number.POSITIVE_INFINITY,
+      labelCentered: true,
+      iconNorth: null,
+      iconRotation: null,
+      iconDepth: null,
+    });
+    await page.evaluate(() => window.points.setStyle(new IDEE.style.Point({
+      radius: 4,
+      icon: {
+        src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==',
+        rotate: true,
+        rotation: 0.5,
+        marker3D: { alwaysOnTop: false },
+      },
+      label: { text: 'icono' },
+    })));
+    await expect.poll(point, WAIT).toEqual({
+      pixelSize: 8,
+      text: 'icono',
+      labelDepth: Number.POSITIVE_INFINITY,
+      labelCentered: false,
+      iconNorth: true,
+      iconRotation: -0.5,
+      iconDepth: 0,
+    });
+  });
+
+  test('Heatmap, Chart y FlowLine: se simplifican con un aviso y sin errores', async ({ page }) => {
+    const errors = [];
+    const warnings = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+      if (message.type() === 'warning') warnings.push(message.text());
+    });
+    const source = {
+      type: 'FeatureCollection',
+      features: [
+        ...FEATURES.features.map((feature, index) => ({
+          ...feature,
+          properties: { ...feature.properties, peso: (index + 1) * 5, total: index + 3 },
+        })),
+        {
+          type: 'Feature',
+          id: 'f1',
+          properties: { flujo: 4 },
+          geometry: { type: 'LineString', coordinates: [[-3.7, 40.4], [-3.6, 40.5]] },
+        },
+      ],
+    };
+    await page.evaluate((data) => {
+      const point = (id) => new IDEE.layer.GeoJSON({
+        name: id,
+        source: { ...data, features: data.features.filter((f) => f.geometry.type === 'Point') },
+      });
+      window.heat = point('calor');
+      window.chart = point('grafico');
+      window.flow = new IDEE.layer.GeoJSON({
+        name: 'flujo',
+        source: { ...data, features: data.features.filter((f) => f.geometry.type !== 'Point') },
+      });
+      window.map.addLayers([window.heat, window.chart, window.flow]);
+      window.heat.setStyle(new IDEE.style.Heatmap('peso', { gradient: ['#0000ff', '#ff0000'], radius: 8 }));
+      window.chart.setStyle(new IDEE.style.Chart({ type: 'pie', variables: ['peso', 'total'] }));
+      window.flow.setStyle(new IDEE.style.FlowLine({
+        color: '#00ff00', color2: '#0000ff', width: '{{flujo}}', width2: 10,
+      }));
+    }, source);
+    const state = () => page.evaluate(() => {
+      const time = window.Cesium.JulianDate.now();
+      const entity = (layer, index = 0) => layer.getFeatures()[index]?.getImpl().getFeature();
+      const heat = [0, 1].map((index) => entity(window.heat, index)?.point?.color?.getValue(time));
+      const chart = entity(window.chart);
+      const flow = entity(window.flow);
+      return {
+        heat: heat.map((color) => (color
+          ? [color.withAlpha(1).toCssHexString(), color.alpha] : null)),
+        heatWeights: [window.heat.getStyle().getImpl().getMinWeight(),
+          window.heat.getStyle().getImpl().getMaxWeight()],
+        chartLabel: chart?.label?.text?.getValue(time) ?? null,
+        chartSize: chart?.point?.pixelSize?.getValue(time) ?? null,
+        flowWidth: flow?.polyline?.width?.getValue(time) ?? null,
+      };
+    });
+    await expect.poll(state, WAIT).toEqual({
+      heat: [['#ff0000', 0.5], ['#ff0000', 1]],
+      heatWeights: [5, 10],
+      chartLabel: '5 / 3',
+      chartSize: 40,
+      flowWidth: 7,
+    });
+    ['Heatmap', 'Chart', 'FlowLine'].forEach((name) => {
+      expect(warnings.some((text) => text.includes(name))).toBe(true);
+    });
+    expect(errors).toEqual([]);
   });
 });
+
+registerLoadFilesTests('cesium');

@@ -42,7 +42,9 @@ export const getRegistry = () => {
       namespaces: {},
       styles: {},
       scripts: [],
-      parked: { layers: [], controls: [], plugins: [] },
+      parked: {
+        layers: [], controls: [], plugins: [], sections: [], geopackages: [],
+      },
       views: {},
     };
   }
@@ -233,14 +235,26 @@ export const captureState = (map) => {
   };
   const layerIds = layers.map(layerId);
   const parkedLayers = registry.parked.layers.filter((entry) => !layerIds.includes(layerId(entry)));
+  const sections = map.getSections().map(captureSection);
+  const packages = geopackages.map((geopackage) => toPlain(geopackage.toJSON()));
   return {
     implementation,
     view: getViewState(map),
     bgColorContainer: attempt(() => map.getBGColorContainer()),
     layers: [...layers, ...parkedLayers]
       .sort((a, b) => (a.state.zIndex || 0) - (b.state.zIndex || 0)),
-    sections: map.getSections().map(captureSection),
-    geopackages: geopackages.map((geopackage) => toPlain(geopackage.toJSON())),
+    projection: projection.code,
+    sections: [
+      ...sections,
+      ...(registry.parked.sections || [])
+        .filter((entry) => !sections
+          .some((section) => section.section.title === entry.section.title)),
+    ],
+    geopackages: [
+      ...packages,
+      ...(registry.parked.geopackages || [])
+        .filter((json) => !packages.some((geopackage) => geopackage.name === json.name)),
+    ],
     controls: [
       ...controls,
       ...registry.parked.controls
@@ -252,6 +266,33 @@ export const captureState = (map) => {
         .filter((entry) => !plugins.some((plugin) => plugin.name === entry.name)),
     ],
   };
+};
+
+const DEGREE_CODES = ['EPSG:4326', 'EPSG:4979'];
+const sameUnits = (from, to) => from === to
+  || (DEGREE_CODES.includes(from) && DEGREE_CODES.includes(to));
+
+/** Pasa una extensión [minX, minY, maxX, maxY] de una proyección a otra. */
+const reprojectExtent = (extent, from, to) => {
+  const [minX, minY] = reproject([extent[0], extent[1]], from, to);
+  const [maxX, maxY] = reproject([extent[2], extent[3]], from, to);
+  return [minX, minY, maxX, maxY];
+};
+
+/**
+ * Copia de unos parámetros de capa con su maxExtent en las unidades del mapa nuevo
+ * (OpenLayers suele trabajar en metros y Cesium en grados).
+ */
+const withMapExtent = (params, from, to) => {
+  if (!isObject(params) || !from || sameUnits(from, to)) return params;
+  const { maxExtent } = params;
+  if (!Array.isArray(maxExtent) || maxExtent.length !== 4
+    || !maxExtent.every((value) => Number.isFinite(Number(value)))) {
+    return params;
+  }
+  const source = DEGREE_CODES.includes(from) ? 'EPSG:4326' : from;
+  const target = DEGREE_CODES.includes(to) ? 'EPSG:4326' : to;
+  return { ...params, maxExtent: reprojectExtent(maxExtent.map(Number), source, target) };
 };
 
 /** Pasa los objetos guardados en EPSG:4326 a la proyección del mapa nuevo. */
@@ -278,7 +319,9 @@ export const restoreState = (state, container) => {
   const registry = getRegistry();
   const implementation = getNamespaceImplementation(IDEE);
   const own = registry.views[implementation] || {};
-  const parked = { layers: [], controls: [], plugins: [] };
+  const parked = {
+    layers: [], controls: [], plugins: [], sections: [], geopackages: [],
+  };
   const created = [];
 
   const params = { container: container.id, layers: [], controls: [] };
@@ -299,7 +342,8 @@ export const restoreState = (state, container) => {
   const buildLayer = (entry) => {
     const LayerClass = IDEE.layer[entry.key];
     if (typeof LayerClass !== 'function') throw new Error(`${entry.key} no disponible`);
-    const [userParameters, options, vendorOptions] = fromPlain(entry.params);
+    const [userParameters, options, vendorOptions] = fromPlain(entry.params)
+      .map((values) => withMapExtent(values, state.projection, mapCode));
     let layer;
     if (entry.key === 'LayerGroup' && !isString(userParameters)) {
       const layers = (entry.children || []).map((child) => {
@@ -346,16 +390,14 @@ export const restoreState = (state, container) => {
     try {
       map.addSections(buildSection(entry));
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.warn('No se pudo recrear la sección', entry.section.title, error);
+      parked.sections.push(entry);
     }
   });
-  state.geopackages.forEach((json) => {
+  (state.geopackages || []).forEach((json) => {
     try {
       map.addLayers(fromPlain(json));
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.warn('No se pudo recrear el GeoPackage', json.name, error);
+      parked.geopackages.push(json);
     }
   });
 
