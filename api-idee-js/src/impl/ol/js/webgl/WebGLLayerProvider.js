@@ -20,6 +20,71 @@ const INITIAL_FLAT_STYLE = {
   'circle-stroke-width': 1.25,
 };
 
+const IDLE_RETRY_MS = 50;
+const IDLE_MAX_RETRIES = 200;
+const MAP_CHANGED_HANDLER = 'onMapChanged_';
+
+/**
+ * Ejecuta una función cuando el renderer está libre: en una tarea posterior a la actual
+ * (fuera de prepareFrame/renderFrame) y sin buffers pendientes (renderer.ready), con un
+ * máximo de IDLE_RETRY_MS * IDLE_MAX_RETRIES milisegundos.
+ * @param {ol.renderer.webgl.VectorLayer} renderer Renderer WebGL.
+ * @param {Function} fn Función a ejecutar.
+ */
+const whenRendererIdle = (renderer, fn) => {
+  let retries = 0;
+  const run = () => {
+    if (!renderer.ready && retries < IDLE_MAX_RETRIES) {
+      retries += 1;
+      setTimeout(run, IDLE_RETRY_MS);
+      return;
+    }
+    fn();
+  };
+  setTimeout(run, 0);
+};
+
+/**
+ * Protege los renderers de una capa WebGL vectorial frente a su liberación a destiempo.
+ * OpenLayers retira el contexto del renderer (removeHelper) en cuanto la capa sale del mapa
+ * (onMapChanged_) y libera el renderer (clearRenderer) al cambiar el estilo o al retirar la
+ * capa. Si eso ocurre dentro de su prepareFrame (un loader que aplica un estilo o un Cluster
+ * al terminar la carga) o mientras genera los buffers en segundo plano, el renderer se sigue
+ * usando y falla (this.helper o this.getLayer() indefinidos). Ambas operaciones se aplazan
+ * con whenRendererIdle. Depende del miembro interno onMapChanged_ de
+ * ol/renderer/webgl/Layer (OpenLayers 10.7).
+ * @param {ol.layer.WebGLVector} olLayer Capa WebGL.
+ * @returns {ol.layer.WebGLVector} La misma capa.
+ */
+const guardRenderer = (olLayer) => {
+  const { createRenderer } = olLayer;
+  return Object.assign(olLayer, {
+    createRenderer: () => {
+      const renderer = createRenderer.call(olLayer);
+      const { dispose } = renderer;
+      const onMapChanged = renderer[MAP_CHANGED_HANDLER];
+      if (typeof onMapChanged === 'function') {
+        const deferredOnMapChanged = () => whenRendererIdle(renderer, () => {
+          if (!renderer.disposed) {
+            onMapChanged();
+          }
+        });
+        olLayer.removeChangeListener('map', onMapChanged);
+        olLayer.addChangeListener('map', deferredOnMapChanged);
+        renderer[MAP_CHANGED_HANDLER] = deferredOnMapChanged;
+      }
+      let disposing = false;
+      renderer.dispose = () => {
+        if (!disposing) {
+          disposing = true;
+          whenRendererIdle(renderer, () => dispose.call(renderer));
+        }
+      };
+      return renderer;
+    },
+  });
+};
+
 /**
  * Libera el renderer de una capa WebGL cuando se elimina del mapa.
  * @param {ol.layer.Layer} olLayer Capa WebGL.
@@ -56,7 +121,7 @@ export const createVectorLayer = (options, renderer) => {
         olLayer.changed();
       }
     }));
-    return releaseRendererOnRemove(olLayer);
+    return releaseRendererOnRemove(guardRenderer(olLayer));
   }
   return new OLLayerVector(options);
 };

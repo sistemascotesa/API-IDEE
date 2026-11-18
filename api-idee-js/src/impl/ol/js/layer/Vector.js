@@ -162,7 +162,7 @@ class Vector extends Layer {
       if (isNullOrEmpty(source)) {
         return;
       }
-      this.featureStyleKeys_.push(source.on(['addfeature', 'changefeature'], (evt) => check([evt.feature])));
+      this.featureStyleKeys_.push(...source.on(['addfeature', 'changefeature'], (evt) => check([evt.feature])));
       check(source.getFeatures());
     };
     this.featureStyleKeys_.push(olLayer.on('change:source', watchSource));
