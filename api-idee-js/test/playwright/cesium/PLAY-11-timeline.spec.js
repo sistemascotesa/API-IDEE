@@ -17,7 +17,7 @@ const INTERVALS = [{
   id: 'gpx', init: '2020-01-01T00:00:00Z', end: '2020-12-31T23:59:59Z', layer: 'gpx_get', attributeParam: 'time',
 }];
 
-const openMap = async (page, timelineType, intervals) => {
+const openMap = async (page, timelineType, intervals, panel = 'collapsible=false;collapsed=false') => {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error));
   await page.goto(PAGE);
@@ -29,7 +29,7 @@ const openMap = async (page, timelineType, intervals) => {
     });
   }, {
     layers: [`GPX*gpx_get*${GPX}*true*true`],
-    controls: [`timeline*timelineType=${timelineType};collapsible=false;collapsed=false;intervals=base64~${encodeIntervals(intervals)}`],
+    controls: [`timeline*timelineType=${timelineType};${panel};intervals=base64~${encodeIntervals(intervals)}`],
   });
   await expect.poll(() => page.evaluate(() => window.map.getControls('timeline')[0]?.getElement()?.isConnected === true), WAIT).toBe(true);
   await expect.poll(() => page.evaluate(() => window.map.getGPX()[0].getFeatures(true).length), WAIT).toBeGreaterThan(0);
@@ -97,18 +97,26 @@ test.describe('IDEE.control.Timeline (Cesium)', () => {
     expect(errors).toEqual([]);
   });
 
-  test('absoluteSimple: se construye con el aviso y sin crear capas', async ({ page }) => {
+  test('absoluteSimple: se construye con el aviso y sin crear capas, también con el panel colapsado', async ({ page }) => {
     test.setTimeout(60000);
     const errors = await openMap(page, 'absoluteSimple', [
       ['GPX', '2020', 'gpx_get'],
       ['Otra', '2021', `GPX*gpx_otra*${GPX}*true*true`],
-    ]);
+    ], 'collapsible=true;collapsed=true');
     const result = await page.evaluate(() => {
       const timeline = window.map.getControls('timeline')[0];
+      const gpx = () => window.map.getGPX().map((layer) => [layer.name, layer.isVisible()]);
+      const panelButton = document.querySelector('.m-control-timeline button.m-control-panel-btn');
+      const collapsed = [timeline.getPanel().isCollapsed(), timeline.hideLayersOnCollapsed];
+      const initial = gpx();
+      panelButton.click();
       timeline.playTimeline(false);
+      const expanded = gpx();
+      panelButton.click();
       return {
         notice: !timeline.getElement().querySelector('.m-timeline-notice').hidden,
-        gpx: window.map.getGPX().map((layer) => [layer.name, layer.isVisible()]),
+        collapsed,
+        gpx: [initial, expanded, gpx()],
         valid: timeline.isValidLayer(window.map.getGPX()[0]),
         transport: [...timeline.getElement().querySelectorAll('[data-timeline-action], .m-timeline-speed')]
           .map((element) => element.disabled),
@@ -116,7 +124,12 @@ test.describe('IDEE.control.Timeline (Cesium)', () => {
       };
     });
     expect(result).toEqual({
-      notice: true, gpx: [['gpx_get', true]], valid: false, transport: [true, true, true, true], running: false,
+      notice: true,
+      collapsed: [true, true],
+      gpx: [[['gpx_get', true]], [['gpx_get', true]], [['gpx_get', true]]],
+      valid: false,
+      transport: [true, true, true, true],
+      running: false,
     });
     expect(errors).toEqual([]);
   });

@@ -294,6 +294,7 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
         speed: '3',
         collapsible: false,
         collapsed: false,
+        hideLayersOnCollapsed: false,
         layerPosition: '2',
         intervals: [{
           init: '2020', end: '2021', service: 'gpx', attributeParam: 'time',
@@ -318,6 +319,7 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
           title: t.title,
           collapsible: t.collapsible,
           collapsed: t.collapsed,
+          hideLayersOnCollapsed: t.hideLayersOnCollapsed,
           running: t.running,
           date: t.date,
           allLayersDinamic: t.allLayersDinamic,
@@ -339,6 +341,7 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
         dynamic: {
           speed: dynamic.speed,
           collapsed: dynamic.collapsed,
+          hideLayersOnCollapsed: dynamic.hideLayersOnCollapsed,
           layerPosition: dynamic.layerPosition,
           intervals: dynamic.intervals,
           noLayerProps: !('timelineId' in dynamic),
@@ -363,6 +366,7 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
       title: '',
       collapsible: true,
       collapsed: true,
+      hideLayersOnCollapsed: true,
       running: false,
       date: { init: 0, end: 0 },
       allLayersDinamic: { groupLayer: [], noGroupLayer: [] },
@@ -389,6 +393,7 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
     expect(result.runningEnumerable).toBe(true);
     expect(result.dynamic.speed).toBe(3);
     expect(result.dynamic.collapsed).toBe(true);
+    expect(result.dynamic.hideLayersOnCollapsed).toBe(false);
     expect(result.dynamic.layerPosition).toBe(2);
     expect(result.dynamic.intervals).toEqual([
       {
@@ -418,7 +423,7 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
 
   test('GET: GPX por layers y Timeline por controls; selección por posición sin duplicar capas', async ({ page }) => {
     const { errors } = await openPage(page);
-    const gpxCount = await createGetMap(page, 'relative', RANGE_INTERVALS, ';layerPosition=2');
+    const gpxCount = await createGetMap(page, 'relative', RANGE_INTERVALS, ';layerPosition=2;hideLayersOnCollapsed=false');
     expect(gpxCount).toBe(2);
     const state = await getState(page);
     expect(state.selectable).toEqual([
@@ -440,13 +445,15 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
       const select = t.getElement().querySelector('.m-timeline-layer-select');
       return {
         builderParams: Object.keys(t.builderParams).sort(),
+        hideLayersOnCollapsed: t.hideLayersOnCollapsed,
         options: [...select.options].map((option) => option.textContent),
         value: select.value,
         layerProps: window.map.getGPX().some((layer) => 'timelineId' in layer || 'layerTimeLine' in layer),
         ids: [...t.getElement().querySelectorAll('[id]')].map((element) => element.id),
       };
     });
-    expect(info.builderParams).toEqual(expect.arrayContaining(['collapsed', 'collapsible', 'intervals', 'layerPosition', 'timelineType']));
+    expect(info.builderParams).toEqual(expect.arrayContaining(['collapsed', 'collapsible', 'hideLayersOnCollapsed', 'intervals', 'layerPosition', 'timelineType']));
+    expect(info.hideLayersOnCollapsed).toBe(false);
     expect(info.options).toEqual(['Ninguna', '[1] gpx_definicion', '[2] gpx_nombre', 'gpx_creada']);
     expect(info.value).toBe('interval:por-nombre');
     expect(info.layerProps).toBe(false);
@@ -625,12 +632,92 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
     expect(errors).toEqual([]);
   });
 
+  test('hideLayersOnCollapsed: con el panel colapsado por defecto las capas empiezan ocultas, se pausa la reproducción y al desplegar se restaura el paso', async ({ page }) => {
+    const { errors } = await openPage(page);
+    const intervals = [
+      ['GPX por nombre', '2020', 'gpx_nombre'],
+      ['GPX por definición', '2021', `GPX*gpx_definicion*${GPX}*true*true`],
+      ['GPX creada', '2022', `GPX*gpx_creada*${GPX}*true*false`],
+    ];
+    await page.evaluate(async (params) => {
+      window.map = IDEE.map({
+        container: 'map', center: [-412305, 4926696], zoom: 13, ...params,
+      });
+      window.timeline = await window.whenTimeline(window.map);
+      await window.whenGPXLoaded(window.map);
+    }, {
+      layers: [`GPX*gpx_nombre*${GPX}*true*true`, `GPX*gpx_definicion*${GPX}*true*true`],
+      controls: [`timeline*timelineType=absoluteSimple;layerPosition=1;intervals=base64~${encodeIntervals(intervals)}`],
+    });
+    const panelButton = page.locator('.m-control-timeline button.m-control-panel-btn');
+    const visibility = () => page.evaluate(() => window.map.getGPX().map((layer) => [layer.name, layer.isVisible()]));
+    const stepLayers = (step) => ['gpx_nombre', 'gpx_definicion', 'gpx_creada'].map((name, index) => [name, index === step]);
+    const currentStep = () => page.evaluate(() => Number(window.timeline.getElement().querySelector('.m-timeline-slider-input').value));
+    const hidden = stepLayers(-1);
+
+    expect(await page.evaluate(() => ({
+      collapsed: window.timeline.collapsed,
+      hideLayersOnCollapsed: window.timeline.hideLayersOnCollapsed,
+      panel: window.timeline.getPanel().isCollapsed(),
+    }))).toEqual({ collapsed: true, hideLayersOnCollapsed: true, panel: true });
+    expect(await visibility()).toEqual(hidden);
+
+    await panelButton.click();
+    expect(await page.evaluate(() => window.timeline.collapsed)).toBe(false);
+    expect(await currentStep()).toBe(1);
+    expect(await visibility()).toEqual(stepLayers(1));
+
+    await page.evaluate(() => {
+      window.reasons = [];
+      window.timeline.on(IDEE.evt.CHANGE, ({ reason }) => window.reasons.push(reason));
+    });
+    await clickAction(page, 'play');
+    await panelButton.click();
+    const paused = await page.evaluate(() => ({ running: window.timeline.running, reasons: [...window.reasons] }));
+    expect(paused.running).toBe(false);
+    expect(paused.reasons.filter((reason) => reason === 'play')).toEqual(['play', 'play']);
+    expect(await visibility()).toEqual(hidden);
+    const pausedStep = await currentStep();
+
+    await panelButton.click();
+    expect(await visibility()).toEqual(stepLayers(pausedStep));
+    expect(await page.evaluate(() => window.reasons.filter((reason) => reason === 'play').length)).toBe(2);
+
+    await panelButton.click();
+    await page.evaluate(() => {
+      const slider = window.timeline.getElement().querySelector('.m-timeline-slider-input');
+      slider.value = 2;
+      window.timeline.changeSlider(slider);
+    });
+    expect(await visibility()).toEqual(hidden);
+    await panelButton.click();
+    expect(await visibility()).toEqual(stepLayers(2));
+
+    await panelButton.click();
+    await page.evaluate(() => window.map.removeControls(window.timeline));
+    expect(await visibility()).toEqual([['gpx_nombre', true], ['gpx_definicion', true]]);
+
+    await page.evaluate(async (list) => {
+      window.map.addControls(new IDEE.control.Timeline({
+        timelineType: 'absoluteSimple', layerPosition: 1, hideLayersOnCollapsed: false, intervals: list,
+      }));
+      window.timeline = await window.whenTimeline(window.map);
+    }, intervals);
+    const shown = await visibility();
+    expect(shown).toEqual(stepLayers(1));
+    await panelButton.click();
+    expect(await visibility()).toEqual(shown);
+    await panelButton.click();
+    expect(await visibility()).toEqual(shown);
+    expect(errors).toEqual([]);
+  });
+
   test('absoluteSimple histórico: WMS por cadena (también con !! y ¡¡) y WMTS en ambos órdenes', async ({ page }) => {
     const { errors } = await openPage(page);
     const result = await page.evaluate(async () => {
       const intervals = '!!!!"PNOA 2004","2004","WMS*PNOA 2004*https://www.ign.es/wms/pnoa-historico*pnoa2004"¡¡,!!"PNOA 2005","2005","WMS*PNOA 2005*https://www.ign.es/wms/pnoa-historico*pnoa2005"¡¡¡¡';
       window.map = IDEE.map({ container: 'map', controls: [] });
-      window.timeline = new IDEE.control.Timeline({ timelineType: 'absoluteSimple', intervals });
+      window.timeline = new IDEE.control.Timeline({ timelineType: 'absoluteSimple', collapsed: false, intervals });
       window.map.addControls(window.timeline);
       await window.whenTimeline(window.map);
       const t = window.timeline;
@@ -732,6 +819,7 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
       window.map = IDEE.map({ container: 'map', controls: [], layers: [kml] });
       const simple = new IDEE.control.Timeline({
         timelineType: 'absoluteSimple',
+        collapsed: false,
         intervals: [['KML', '2020', kml]],
       });
       window.map.addControls(simple);
@@ -750,6 +838,7 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
 
       const relative = new IDEE.control.Timeline({
         timelineType: 'relative',
+        collapsed: false,
         intervals: [{
           id: 'kml', init: '2020-01-01T00:00:00Z', end: '2020-12-31T23:59:59Z', layer: kml, attributeParam: 'time',
         }],
@@ -1913,6 +2002,63 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
     expect(await page.evaluate(() => window.timeline.selectLayer('penalara'))).toBe(true);
     expect(await trackOf(page)).toEqual(expect.objectContaining({ synchronized: true, time: Date.parse('2021-07-10T12:00:00Z') }));
     expect((await trackDom(page)).message).toBe('Sincronizado con la línea de tiempo.');
+    expect(errors).toEqual([]);
+  });
+
+  test('hideLayersOnCollapsed: relative oculta la capa seleccionada y el recorrido al colapsar y los restaura al desplegar con el mismo rango', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await openRoutesMap(page);
+    await addTimeline(page, {
+      timelineType: 'relative',
+      collapsible: true,
+      collapsed: false,
+      layerPosition: 2,
+      paramsDate: 'min',
+      stepValue: 30,
+      intervals: ROUTE_INTERVALS,
+      track: { layer: 'ruta_guadarrama', feature: 'trk-4' },
+    });
+    const panelButton = page.locator('.m-control-timeline button.m-control-panel-btn');
+    const routes = () => page.evaluate(() => window.map.getGPX()
+      .map((layer) => [layer.name, layer.isVisible(), layer.getFeatures().length]));
+    const view = async () => ({
+      routes: await routes(),
+      date: await page.evaluate(() => ({ ...window.timeline.date })),
+      selected: await page.evaluate(() => window.timeline.getSelectedLayer()?.name ?? null),
+      track: await olTrack(page),
+    });
+
+    await setRange(page, '2021-06-05T09:30:00Z', '2021-06-05T10:00:00Z');
+    await expect.poll(() => olTrack(page)).not.toBeNull();
+    const before = await view();
+    expect(before.selected).toBe('ruta_guadarrama');
+    expect(before.routes.map(([name, visible]) => [name, visible]))
+      .toEqual([['ruta_guadarrama', true], ['ruta_penalara', false]]);
+
+    await panelButton.click();
+    expect(await view()).toEqual({
+      ...before,
+      routes: before.routes.map(([name, , shown]) => [name, false, shown]),
+      track: null,
+    });
+
+    await panelButton.click();
+    expect(await view()).toEqual(before);
+
+    await page.evaluate(() => { window.timeline.hideLayersOnCollapsed = false; });
+    await panelButton.click();
+    expect(await view()).toEqual(before);
+    await panelButton.click();
+    expect(await view()).toEqual(before);
+
+    await page.evaluate(() => { window.timeline.hideLayersOnCollapsed = true; });
+    await panelButton.click();
+    expect((await view()).track).toBeNull();
+    await page.evaluate(() => window.map.removeControls(window.timeline));
+    expect(await page.evaluate(() => window.map.getGPX().map((layer) => [
+      layer.name, layer.isVisible(), layer.getFeatures().length === layer.getFeatures(true).length,
+    ]))).toEqual([['ruta_guadarrama', true, true], ['ruta_penalara', true, true]]);
+    expect(await olTrack(page)).toBeNull();
     expect(errors).toEqual([]);
   });
 

@@ -685,6 +685,8 @@ class TimelineLayers {
   constructor(host) {
     this.host_ = host;
     this.states_ = new Map();
+    this.wanted_ = new Map();
+    this.hidden_ = false;
     this.updating_ = false;
     this.listenedMap_ = null;
     this.onLayersAdded_ = null;
@@ -911,6 +913,7 @@ class TimelineLayers {
    */
   forget(layer) {
     this.states_.delete(layer);
+    this.wanted_.delete(layer);
   }
 
   /**
@@ -1060,6 +1063,10 @@ class TimelineLayers {
   attach(layer) {
     if (this.isOwned(layer) && this.map && !this.inMap(layer)) {
       this.silently(() => this.map.addLayers(layer));
+      if (this.hidden_) {
+        if (!this.wanted_.has(layer)) this.wanted_.set(layer, TimelineLayers.isVisible(layer));
+        this.applyVisibility_(layer, false);
+      }
     }
   }
 
@@ -1074,17 +1081,83 @@ class TimelineLayers {
   }
 
   /**
-   * Cambia la visibilidad de una capa si es necesario.
+   * Visibilidad actual de una capa.
+   * @param {IDEE.layer.Layer} layer Capa.
+   * @returns {Boolean} Verdadero si es visible.
+   */
+  static isVisible(layer) {
+    try {
+      return layer.isVisible() === true;
+    } catch (error) {
+      return true;
+    }
+  }
+
+  /**
+   * Cambia la visibilidad de una capa del flujo del timeline. Con las capas ocultas
+   * (panel plegado), solo se guarda para aplicarla al mostrarlas.
    * @param {IDEE.layer.Layer} layer Capa.
    * @param {Boolean} visible Visibilidad.
    */
   setVisible(layer, visible) {
     if (isNullOrEmpty(layer)) return;
+    this.wanted_.set(layer, visible);
+    this.applyVisibility_(layer, visible && !this.hidden_);
+  }
+
+  /**
+   * Cambia la visibilidad de una capa si es necesario.
+   * @private
+   * @param {IDEE.layer.Layer} layer Capa.
+   * @param {Boolean} visible Visibilidad.
+   */
+  applyVisibility_(layer, visible) {
     try {
       if (layer.isVisible() !== visible) layer.setVisible(visible);
     } catch (error) {
       layer.setVisible(visible);
     }
+  }
+
+  /**
+   * Indica si las capas del flujo están ocultas.
+   * @returns {Boolean} Verdadero si están ocultas.
+   */
+  isHidden() {
+    return this.hidden_;
+  }
+
+  /**
+   * Oculta las capas del flujo que están en el mapa y guarda su visibilidad. Mientras
+   * están ocultas, los cambios de visibilidad del timeline solo se guardan.
+   */
+  hideAll() {
+    if (this.hidden_) return;
+    this.hidden_ = true;
+    this.wanted_.forEach((visible, layer) => {
+      if (!this.inMap(layer)) return;
+      this.wanted_.set(layer, TimelineLayers.isVisible(layer));
+      this.applyVisibility_(layer, false);
+    });
+  }
+
+  /**
+   * Devuelve a las capas del flujo que siguen en el mapa la visibilidad guardada.
+   */
+  showAll() {
+    if (!this.hidden_) return;
+    this.hidden_ = false;
+    this.wanted_.forEach((visible, layer) => {
+      if (this.inMap(layer)) this.applyVisibility_(layer, visible);
+    });
+  }
+
+  /**
+   * Deja de ocultar las capas sin cambiar su visibilidad (al destruir el control).
+   */
+  resetHidden() {
+    this.hidden_ = false;
+    this.wanted_.clear();
   }
 
   /**
@@ -1139,7 +1212,7 @@ class TimelineLayers {
       if (state.owned) {
         this.detach(layer);
       } else {
-        this.setVisible(layer, state.visible);
+        this.applyVisibility_(layer, state.visible);
         if (layer.displayInLayerSwitcher !== state.displayInLayerSwitcher) {
           // eslint-disable-next-line no-param-reassign
           layer.displayInLayerSwitcher = state.displayInLayerSwitcher;
@@ -1147,6 +1220,7 @@ class TimelineLayers {
       }
     });
     this.states_.clear();
+    this.wanted_.clear();
   }
 
   /**
@@ -2297,6 +2371,7 @@ class TrackRenderer {
     this.path_ = null;
     this.position_ = null;
     this.shown_ = false;
+    this.suspended_ = false;
   }
 
   /**
@@ -2328,16 +2403,18 @@ class TrackRenderer {
    */
   update(position) {
     this.position_ = position;
+    if (this.suspended_) return;
     if (this.shown_) this.layers_.getImpl().updateTrack(TrackRenderer.toView(position));
     else if (this.path_) this.draw();
   }
 
   /**
    * Redibuja el estado actual (por ejemplo, cuando la implementación ya está en el mapa).
+   * Mientras está suspendido, el recorrido no se dibuja.
    */
   draw() {
     const impl = this.layers_.getImpl();
-    if (!this.path_) {
+    if (!this.path_ || this.suspended_) {
       impl?.hideTrack?.();
       this.shown_ = false;
       return;
@@ -2353,6 +2430,23 @@ class TrackRenderer {
   hide() {
     this.path_ = null;
     this.position_ = null;
+    this.draw();
+  }
+
+  /**
+   * Quita el recorrido del mapa conservando el recorrido y la posición.
+   */
+  suspend() {
+    this.suspended_ = true;
+    this.draw();
+  }
+
+  /**
+   * Vuelve a dibujar el recorrido y la posición conservados.
+   */
+  resume() {
+    if (!this.suspended_) return;
+    this.suspended_ = false;
     this.draw();
   }
 }
@@ -3238,6 +3332,20 @@ class TrackController {
       coordinate: position?.coordinate ?? null,
       fraction: position?.fraction ?? 0,
     };
+  }
+
+  /**
+   * Quita el recorrido del mapa sin perder su estado (panel plegado).
+   */
+  suspend() {
+    this.renderer_.suspend();
+  }
+
+  /**
+   * Vuelve a dibujar el recorrido.
+   */
+  resume() {
+    this.renderer_.resume();
   }
 
   /**
@@ -5004,6 +5112,82 @@ class TrackTimelineMode {
 }
 
 /**
+ * @classdesc
+ * Enlace con el panel del control. Con "hideLayersOnCollapsed", al plegar el panel se
+ * pausa la reproducción, se ocultan las capas del flujo y el recorrido y se cierran el
+ * perfil y la selección en el mapa; al desplegarlo vuelve a mostrarse lo que el timeline
+ * mostraba. El panel se pliega antes de crear el control, así que su estado inicial se
+ * aplica al enlazarlo.
+ *
+ * @private
+ */
+class TimelineCollapse {
+  /**
+   * @param {IDEE.control.Timeline} host Control.
+   * @param {Object} context Colaboradores del control.
+   * @param {TimelineLayers} context.layers Capas del control.
+   * @param {Function} context.pausePlayback Pausa la reproducción.
+   * @param {Function} context.getTrack Devuelve el seguimiento del recorrido.
+   * @param {Function} context.closeTools Cierra el perfil y la selección en el mapa.
+   */
+  constructor(host, context) {
+    this.host_ = host;
+    this.context_ = context;
+    this.panel_ = null;
+    this.onHide_ = () => this.collapse();
+    this.onShow_ = () => this.expand();
+  }
+
+  /**
+   * Escucha el panel y aplica su estado actual.
+   * @param {IDEE.ui.Panel|null} panel Panel del control.
+   */
+  bind(panel) {
+    this.unbind();
+    if (isNullOrEmpty(panel)) return;
+    this.panel_ = panel;
+    panel.on(EventType.HIDE, this.onHide_, this);
+    panel.on(EventType.SHOW, this.onShow_, this);
+    if (isFunction(panel.isCollapsed) && panel.isCollapsed() === true) this.collapse();
+  }
+
+  /**
+   * Panel plegado: oculta las capas y el recorrido si "hideLayersOnCollapsed" es verdadero.
+   */
+  collapse() {
+    this.host_.collapsed = true;
+    const { layers } = this.context_;
+    if (this.host_.hideLayersOnCollapsed !== true || layers.isHidden()) return;
+    this.context_.pausePlayback();
+    this.context_.closeTools();
+    layers.hideAll();
+    this.context_.getTrack()?.suspend();
+  }
+
+  /**
+   * Panel desplegado: vuelve a mostrar lo que se ocultó al plegarlo.
+   */
+  expand() {
+    this.host_.collapsed = false;
+    const { layers } = this.context_;
+    if (!layers.isHidden()) return;
+    layers.showAll();
+    this.context_.getTrack()?.resume();
+  }
+
+  /**
+   * Deja de escuchar el panel.
+   */
+  unbind() {
+    if (this.panel_) {
+      this.panel_.un(EventType.HIDE, this.onHide_, this);
+      this.panel_.un(EventType.SHOW, this.onShow_, this);
+    }
+    this.panel_ = null;
+  }
+}
+
+/**
  * Tipos de línea de tiempo: plantilla y estrategia de cada uno.
  * @const
  * @private
@@ -5062,6 +5246,10 @@ const typesTimeline = Object.keys(TIMELINE_MODES);
  * @property {Number} [order] Accesibilidad, z-index del control.
  * @property {Boolean} [collapsible] Indica si el panel puede colapsarse. Por defecto, true.
  * @property {Boolean} [collapsed] Indica si el panel empieza colapsado. Por defecto, true.
+ * @property {Boolean} [hideLayersOnCollapsed] Oculta las capas del timeline y el recorrido
+ * mientras el panel está colapsado, también al añadir el control con "collapsed" true; al
+ * desplegarlo vuelven a mostrarse como estaban. Con false, colapsar el panel no cambia
+ * las capas. Por defecto, true.
  * @property {Boolean} [animation] Muestra el botón de play/pausa y el selector de
  * velocidad. Por defecto, true; con false solo quedan avance y retroceso.
  * @property {Number} [speed] Segundos por paso de la reproducción en absoluteSimple y
@@ -5152,6 +5340,14 @@ const typesTimeline = Object.keys(TIMELINE_MODES);
  * KMZ, GeoJSON, WFS, OGCAPIFeatures, DataIDEE, Vector) por "attributeParam". Las capas
  * incompatibles se descartan con un aviso.
  *
+ * Panel colapsado: con "hideLayersOnCollapsed" (por defecto, true), colapsar el panel
+ * pausa la reproducción, oculta las capas que el timeline muestra (también las del
+ * visualizador que reutiliza) y el recorrido, y cierra el perfil y la selección en el
+ * mapa. Al desplegarlo, las capas y el recorrido vuelven a mostrarse como estaban, con
+ * el mismo paso, rango y capa seleccionada. Si el control se añade colapsado ("collapsed"
+ * true, por defecto), sus capas empiezan ocultas. Las capas de origen de los recorridos
+ * no se ocultan, porque el timeline no cambia su visibilidad.
+ *
  * La fachada no depende del motor cartográfico: la implementación decide la
  * compatibilidad de las capas y aplica los filtros temporales. En Cesium la
  * funcionalidad temporal todavía no está disponible: el panel lo indica y los controles
@@ -5181,6 +5377,9 @@ const typesTimeline = Object.keys(TIMELINE_MODES);
  * @property {Boolean} [collapsible=true] Indica si el panel puede colapsarse.
  * @property {Boolean} [collapsed=true] Indica si el panel está colapsado. Solo se aplica
  * si collapsible es true.
+ * @property {Boolean} [hideLayersOnCollapsed=true] Indica si las capas del timeline y el
+ * recorrido se ocultan mientras el panel está colapsado. Se consulta cada vez que se
+ * colapsa el panel.
  * @property {Boolean} [animation=true] Indica si se muestran play/pausa y el selector de
  * velocidad.
  * @property {Number} [speed=1] Segundos por paso de la reproducción en absoluteSimple y
@@ -5346,6 +5545,13 @@ class Timeline extends Control {
     this.trackTools_ = null;
 
     /**
+     * Enlace con el panel plegable (se crea en createView).
+     * @private
+     * @type {TimelineCollapse|null}
+     */
+    this.collapse_ = null;
+
+    /**
      * Recorrido que se muestra al añadir el control: {layer, feature, attributeParam}.
      * @type {Object|null}
      */
@@ -5463,6 +5669,14 @@ class Timeline extends Control {
     this.collapsed = (isBoolean(options.collapsed) && this.collapsible) ? options.collapsed : true;
 
     /**
+     * Indica si las capas del timeline se ocultan con el panel plegado.
+     * @type {Boolean}
+     */
+    this.hideLayersOnCollapsed = isBoolean(options.hideLayersOnCollapsed)
+      ? options.hideLayersOnCollapsed
+      : true;
+
+    /**
      * Identificador del temporizador de reproducción o false.
      * Propiedad propia y enumerable (como antes), delegada en el reproductor.
      * @type {Number|Boolean}
@@ -5561,6 +5775,16 @@ class Timeline extends Control {
           if (type === 'source') this.transport_?.refreshSpeedTitles();
         });
         this.track_.bind();
+        this.collapse_ = new TimelineCollapse(this, {
+          layers: this.layers_,
+          pausePlayback: context.pausePlayback,
+          getTrack: context.getTrack,
+          closeTools: () => {
+            this.picker_?.stop();
+            this.profile_?.close();
+          },
+        });
+        this.collapse_.bind(this.getPanel());
       } else {
         this.transport_.bind();
         this.transport_.setDisabled(true);
@@ -5921,14 +6145,17 @@ class Timeline extends Control {
    */
   destroy() {
     this.player_.stop();
+    this.collapse_?.unbind();
     this.trackTools_?.destroy();
     this.profile_?.destroy();
     this.track_?.destroy();
     this.picker_?.stop();
     this.layers_.unlisten();
     this.layers_.releaseAll();
+    this.layers_.resetHidden();
     this.mode_ = null;
     this.transport_ = null;
+    this.collapse_ = null;
     this.trackTools_ = null;
     this.track_ = null;
     this.profile_ = null;

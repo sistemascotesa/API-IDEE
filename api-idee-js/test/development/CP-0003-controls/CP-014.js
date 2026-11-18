@@ -657,7 +657,7 @@ const startManualScenario = () => {
     Object.entries(optional).forEach(([key, text]) => {
       if (text !== '') options[key] = text;
     });
-    ['selectCollapsible', 'selectCollapsed', 'selectAnimation'].forEach((id) => {
+    ['selectCollapsible', 'selectCollapsed', 'selectHideLayersOnCollapsed', 'selectAnimation'].forEach((id) => {
       if (value(id) !== '') options[field(id).name] = value(id) === 'true';
     });
     if (value('inputOrder') !== '') options.order = Number(value('inputOrder'));
@@ -697,8 +697,8 @@ const startManualScenario = () => {
   [
     'selectPosicion', 'inputIntervals', 'selectAnimation', 'inputSpeed', 'time', 'selectTime',
     'speedDate', 'paramsDate', 'stepValue', 'sizeWidthDinamic', 'formatValueDinamic', 'formatMove',
-    'inputTooltip', 'inputTitle', 'selectCollapsible', 'selectCollapsed', 'inputOrder',
-    'selectSnapMode', 'inputLayerPosition', 'selectTrack',
+    'inputTooltip', 'inputTitle', 'selectCollapsible', 'selectCollapsed', 'selectHideLayersOnCollapsed',
+    'inputOrder', 'selectSnapMode', 'inputLayerPosition', 'selectTrack',
   ].forEach((id) => field(id).addEventListener('change', changeTest));
 
   field('selectIntervals').addEventListener('change', () => {
