@@ -10,10 +10,11 @@ export const PAGE = '/src/plugins/vectorsmanagement/test/playwright/ol/vectorsma
 /**
  * Ejemplo de edición local (como test/demo/dataidee-demo.js) sobre un servicio DataIDEE en
  * memoria propio del test. El servicio responde en /local/** del origen de la página, así
- * que no hay CORS, y su estado se conserva al recargar.
+ * que no hay CORS, y su estado se conserva al remontar.
  * @param {Page} page Página de Playwright.
  * @param {String} [mode='local'] Colección del ejemplo ('local' es la colección demo).
- * @returns {Promise<{fake: Object, reload: Function}>} Servicio y recarga de la página.
+ * @returns {Promise<{fake: Object, remount: Function}>} Servicio y remontaje del ejemplo:
+ * destruye el mapa y crea mapa, capa y plugin nuevos en la misma página, sin volver a cargarla.
  */
 export async function openLocalDataIDEE(page, mode = 'local') {
   const fake = createDataIDEEFake();
@@ -30,45 +31,48 @@ export async function openLocalDataIDEE(page, mode = 'local') {
     if (result.abort) return route.abort();
     return route.fulfill({ status: result.status, headers: result.headers, body: result.body });
   });
-  const open = async () => {
-    await page.goto(PAGE, { waitUntil: 'domcontentloaded' });
-    await page.evaluate((collectionMode) => {
-      IDEE.config('terrain', { ...IDEE.config.terrain, default: '' });
-      IDEE.config('baseLayer', []);
-      const map = IDEE.map({
-        container: 'mapjs',
-        projection: 'EPSG:3857',
-        bbox: [-500000, -500000, 500000, 500000],
-      });
-      const collection = collectionMode === 'local' ? 'demo' : collectionMode;
-      const layer = new IDEE.layer.DataIDEE({
-        url: `${window.location.origin}/local`,
-        name: collection,
-        legend: `Colección local ${collection}`,
-        limit: 250,
-      }, {
-        bboxStrategy: false,
-        editingLimits: {
-          pageSize: 2, maxFeatures: 1000, maxCoordinates: 100000, maxBytes: 10 * 1024 * 1024,
-        },
-        dataideeDefaultProperties: { category: 'demo' },
-      });
-      map.addLayers(layer);
-      map.addPlugin(new IDEE.plugin.VectorsManagement({
-        selection: true,
-        creation: true,
-        edition: true,
-        download: false,
-        analysis: false,
-        style: false,
-        help: false,
-        addlayer: false,
-      }));
-      window.dataideeDemo = { map, layer };
-    }, mode);
-  };
-  await open();
-  return { fake, reload: open };
+  const mount = () => page.evaluate((collectionMode) => {
+    const previous = window.dataideeDemo;
+    if (previous) {
+      previous.map.removePlugins(previous.map.getPlugins());
+      previous.map.destroy();
+    }
+    IDEE.config('terrain', { ...IDEE.config.terrain, default: '' });
+    IDEE.config('baseLayer', []);
+    const map = IDEE.map({
+      container: 'mapjs',
+      projection: 'EPSG:3857',
+      bbox: [-500000, -500000, 500000, 500000],
+    });
+    const collection = collectionMode === 'local' ? 'demo' : collectionMode;
+    const layer = new IDEE.layer.DataIDEE({
+      url: `${window.location.origin}/local`,
+      name: collection,
+      legend: `Colección local ${collection}`,
+      limit: 250,
+    }, {
+      bboxStrategy: false,
+      editingLimits: {
+        pageSize: 2, maxFeatures: 1000, maxCoordinates: 100000, maxBytes: 10 * 1024 * 1024,
+      },
+      dataideeDefaultProperties: { category: 'demo' },
+    });
+    map.addLayers(layer);
+    map.addPlugin(new IDEE.plugin.VectorsManagement({
+      selection: true,
+      creation: true,
+      edition: true,
+      download: false,
+      analysis: false,
+      style: false,
+      help: false,
+      addlayer: false,
+    }));
+    window.dataideeDemo = { map, layer };
+  }, mode);
+  await page.goto(PAGE, { waitUntil: 'domcontentloaded' });
+  await mount();
+  return { fake, remount: mount };
 }
 
 /**
