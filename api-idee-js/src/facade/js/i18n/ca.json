@@ -251,7 +251,8 @@
   },
   "toast": {
     "close": "Tancar",
-    "dataidee_load_error": "No s'ha pogut carregar la capa «{layer}». {error}"
+    "dataidee_load_error": "No s'ha pogut carregar la capa «{layer}». {error}",
+    "tiles3d_load_error": "No s'ha pogut carregar la capa 3D «{layer}». {error}"
   },
   "feature": {
     "incorrect_attributes": "No s'han especificat correctament els atributs."
@@ -469,6 +470,12 @@
     "gettiles3d_method": "La implementació usada no posseeix el mètode getTiles3D.",
     "addtiles3d_method": "La implementació usada no posseeix el mètode addTiles3D.",
     "removetiles3d_method": "La implementació usada no posseeix el mètode removeTiles3D.",
+    "tiles3d_source": "La capa Tiles3D necessita una única font: «url» o «ionAssetId».",
+    "tiles3d_url": "L'opció «url» de Tiles3D ha de ser una cadena no buida.",
+    "tiles3d_ion_asset_id": "L'opció «ionAssetId» de Tiles3D ha de ser un nombre enter més gran que 0.",
+    "tiles3d_option_string": "L'opció «{key}» de Tiles3D ha de ser una cadena no buida.",
+    "tiles3d_option_string_map": "L'opció «{key}» de Tiles3D ha de ser un objecte amb valors de tipus cadena.",
+    "tiles3d_tile_failed": "No s'ha pogut carregar una tessel·la 3D:",
     "getterrain_method": "La implementació usada no posseeix el mètode getTerrain.",
     "addterrain_method": "La implementació usada no posseeix el mètode addTerrain.",
     "terrain_method": "La implementació usada no pot crear capes Terrain.",

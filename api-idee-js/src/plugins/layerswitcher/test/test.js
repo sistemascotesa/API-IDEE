@@ -36,6 +36,32 @@ const createMap = (is3D = IDEE.impl.Map.prototype.getImplementation() === 'cesiu
 
 const FIXTURES = `${window.location.origin}/api-idee-test`;
 const STYLE_EXAMPLES = new URL('styles/', window.location.href).href;
+
+const ION_TOKEN_KEY = 'idee-test-ion-access-token';
+const inputIonToken = document.getElementById('inputIonToken');
+try {
+  inputIonToken.value = window.sessionStorage.getItem(ION_TOKEN_KEY) || '';
+} catch (error) {
+  inputIonToken.value = '';
+}
+inputIonToken.addEventListener('change', () => {
+  try {
+    window.sessionStorage.setItem(ION_TOKEN_KEY, inputIonToken.value.trim());
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn('No se puede guardar el token de Cesium ion en sessionStorage', error);
+  }
+});
+const ionAccessToken = () => {
+  const token = inputIonToken.value.trim();
+  if (!token) throw new Error('escriba un token en el campo «Token de Cesium ion»');
+  return token;
+};
+const MADRID_VIEW = {
+  extent: [-3.697, 40.45, -3.68, 40.46],
+  options: { duration: 1, orientation: { heading: 0, pitch: -0.5, roll: 0 } },
+};
+const flyToTileset = (layer) => map.getMapImpl().flyTo(layer.getImpl().getLayer(), { duration: 1 });
 const SAMPLE_LAYERS = [
   {
     label: 'Masas de agua (GeoJSON local, para el SLD de IDEE)',
@@ -169,13 +195,34 @@ const SAMPLE_LAYERS = [
   },
   { label: 'MapLibre', only: 'ol', create: () => 'QUICK*BTN_Completa_MapLibre' },
   {
-    label: 'Tiles3D',
+    label: 'Tiles3D por URL (modelo de ejemplo de Cesium)',
     only: 'cesium',
     create: () => new IDEE.layer.Tiles3D({
       url: 'https://raw.githubusercontent.com/CesiumGS/3d-tiles-samples/main/1.0/TilesetWithDiscreteLOD/tileset.json',
-      name: 'Tiles3D de ejemplo',
-      legend: 'Tiles3D de ejemplo',
+      name: 'tiles3d_url',
+      legend: 'Tiles3D por URL (Cesium)',
     }),
+    onAdded: flyToTileset,
+  },
+  {
+    label: 'Tiles3D de Cesium ion (OSM Buildings en Madrid, requiere token)',
+    only: 'cesium',
+    create: () => new IDEE.layer.Tiles3D({
+      ionAssetId: 96188,
+      name: 'osm_buildings',
+      legend: 'Edificios OSM (Cesium ion)',
+    }, { ionAccessToken: ionAccessToken() }),
+    onAdded: () => map.getImpl().flyTo(MADRID_VIEW.extent, MADRID_VIEW.options),
+  },
+  {
+    label: 'Tiles3D de Cesium ion (fotogrametría de Melbourne, requiere token)',
+    only: 'cesium',
+    create: () => new IDEE.layer.Tiles3D({
+      ionAssetId: 69380,
+      name: 'melbourne',
+      legend: 'Fotogrametría de Melbourne (Cesium ion)',
+    }, { ionAccessToken: ionAccessToken() }),
+    onAdded: flyToTileset,
   },
   { label: 'Terrain', only: 'cesium', create: () => 'QUICK*MDT_TERRAIN' },
 ];
@@ -200,7 +247,9 @@ selectSampleLayer.addEventListener('change', () => {
     if (sample.add) {
       sample.add();
     } else {
-      map.addLayers(sample.create());
+      const layer = sample.create();
+      if (sample.onAdded) layer.once(IDEE.evt.ADDED_TO_MAP, () => sample.onAdded(layer));
+      map.addLayers(layer);
     }
   } catch (error) {
     // eslint-disable-next-line no-console

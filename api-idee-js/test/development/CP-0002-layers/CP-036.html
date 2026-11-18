@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="idee" content="yes">
+    <title>CP-036 — Tiles3D</title>
+    <style>
+        .cp036-log {
+            margin: 0;
+            padding: .5rem;
+            max-height: 10rem;
+            overflow: auto;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            font-size: var(--idee-font-size-caption);
+            background-color: var(--idee-color-neutral-05);
+            border-radius: var(--idee-shape-border-radius);
+        }
+
+        .cp036-form textarea {
+            min-height: 3rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form cp036-form">
+            <div>
+                <label for="source">Fuente</label>
+                <select id="source">
+                    <option value="discrete">URL pública: 3d-tiles-samples DiscreteLOD (b3dm)</option>
+                    <option value="pointcloud">URL pública: nube de puntos RGB (pnts)</option>
+                    <option value="fixture">Mismo origen con contenido en otro origen (cabeceras)</option>
+                    <option value="ion">Cesium ion: OSM Buildings en Madrid (requiere token)</option>
+                    <option value="ionMelbourne">Cesium ion: fotogrametría de Melbourne (requiere token)</option>
+                    <option value="custom">URL personalizada</option>
+                </select>
+            </div>
+            <div>
+                <label for="url" title="Excluyente con ionAssetId">URL del tileset "url"</label>
+                <input type="text" id="url">
+            </div>
+            <div>
+                <label for="ionAssetId" title="Entero mayor que 0; excluyente con url">Asset de ion "ionAssetId"</label>
+                <input type="number" id="ionAssetId" min="1" step="1">
+            </div>
+            <div>
+                <label for="ionAccessToken" title="Vacío: Ion.defaultAccessToken. Se guarda solo en esta pestaña (sessionStorage)">Token de ion "ionAccessToken"</label>
+                <input type="password" id="ionAccessToken" autocomplete="off">
+            </div>
+            <div>
+                <label for="ionServer" title="Vacío: servidor predeterminado de Cesium ion">Servidor de ion "ionServer"</label>
+                <input type="text" id="ionServer" placeholder="https://api.cesium.com/">
+            </div>
+            <div>
+                <label for="headers" title="Objeto JSON de cadenas; solo se envían al origen del tileset">Cabeceras "headers" (JSON)</label>
+                <textarea id="headers"></textarea>
+            </div>
+            <div>
+                <label for="queryParameters" title="Objeto JSON de cadenas; solo se envían al origen del tileset">Parámetros "queryParameters" (JSON)</label>
+                <textarea id="queryParameters"></textarea>
+            </div>
+            <div>
+                <label for="ticket" title="IDEE.config.TICKET; se añade como ticket a las peticiones del origen del tileset">Ticket IDEE</label>
+                <input type="text" id="ticket" autocomplete="off">
+            </div>
+            <div>
+                <label for="style">Estilo IDEE.style.Tiles3D</label>
+                <select id="style">
+                    <option value="none">Sin estilo</option>
+                    <option value="color">Color constante (naranja)</option>
+                    <option value="conditions">Color con conditions</option>
+                    <option value="defines">defines y meta</option>
+                    <option value="pointcloud">Color propio de la nube: ${COLOR} y pointSize (solo pnts)</option>
+                </select>
+            </div>
+            <div>
+                <label for="opacity">Opacidad "opacity" <output id="opacityValue">1</output></label>
+                <input type="range" id="opacity" min="0" max="1" step="0.05" value="1">
+            </div>
+            <div>
+                <label for="minZoom" title="Vacío: sin límite">Zoom mínimo "minZoom"</label>
+                <input type="number" id="minZoom" step="1">
+            </div>
+            <div>
+                <label for="maxZoom" title="Vacío: sin límite">Zoom máximo "maxZoom"</label>
+                <input type="number" id="maxZoom" step="1">
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button id="create" type="button">Crear capa</button>
+            <button id="remove" type="button" class="secondary">Retirar capa</button>
+            <button id="removeWhileLoading" type="button" class="secondary">Crear y retirar durante la carga</button>
+            <button id="applyStyle" type="button" class="secondary">Aplicar estilo</button>
+            <button id="applyZoom" type="button" class="secondary">Aplicar rango de zoom</button>
+            <button id="zoomTo" type="button" class="secondary">Encuadrar</button>
+            <button id="inspect" type="button" class="secondary">getRestLayer() y getStyle()</button>
+        </div>
+        <pre id="log" class="cp036-log" aria-live="polite"></pre>
+    </div>
+    <div id="map" class="map"></div>
+    <script src="/config.js" charset="utf-8"></script>
+    <script src="/CP-0002-layers/CP-036.js" charset="utf-8"></script>
+</body>
+
+</html>

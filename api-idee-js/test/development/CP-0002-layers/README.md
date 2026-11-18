@@ -93,4 +93,11 @@ CP-034
 Mapa básico para Prueba manual de capas KMZ en OpenLayers y Cesium: carga local y por URL, descompresión,
 errores, visibilidad, encuadre, refresco, cambio de URL, eliminación y regresión KML.
 
-
+CP-036
+Mapa 3D para prueba manual de capas Tiles3D (solo Cesium: npm run start:cesium -- --name=CP-0002-layers/CP-036).
+Al abrirse carga y encuadra el sample b3dm. Fuente por URL (sample b3dm, nube de puntos pnts, tileset del mismo origen
+con contenido en otro origen o URL propia) o Cesium ion (ionAssetId, ionAccessToken, ionServer; los ejemplos Cesium
+OSM Buildings, que vuela a Madrid, y fotogrametría de Melbourne necesitan un token de ion, que solo se guarda en la
+pestaña); cabeceras, parámetros de consulta y ticket, que solo viajan al origen del tileset (compruébelo en la pestaña
+Red); estilo IDEE.style.Tiles3D, opacidad, rango de zoom, eventos ADDED_TO_MAP y LOAD_ERROR, getRestLayer() sin datos
+de acceso y retirada de la capa durante la carga.

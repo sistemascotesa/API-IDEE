@@ -190,17 +190,92 @@ test.describe('Capas vectoriales y 3D en Cesium', () => {
     });
   });
 
-  test('Tiles3D: alta, visibilidad, extensión y baja', async ({ page }) => {
-    await page.evaluate((host) => {
+  test('Tiles3D: alta, estilo, opacidad, rango de zoom, visibilidad, extensión y baja', async ({ page }) => {
+    const styleBeforeLoad = await page.evaluate((host) => {
       window.events = [];
-      window.layer = new IDEE.layer.Tiles3D({ url: `${host}/3d/tileset.json`, name: 'teselas3d' });
+      window.style = new IDEE.style.Tiles3D({
+        color: "${Height} > 10 ? color('red') : color('blue', 0.8)",
+        defines: { Height: '${height} * 2' },
+        meta: { description: "'Altura: ' + ${Height}" },
+        labelText: "'Edificio'",
+        labelColor: 'yellow',
+        desconocida: 'se ignora',
+      });
+      window.layer = new IDEE.layer.Tiles3D({ url: `${host}/3d/tileset.json`, name: 'teselas3d' }, {
+        style: window.style, maxZoom: 20,
+      });
+      const before = window.layer.getStyle() === window.style;
       window.layer.on(IDEE.evt.ADDED_TO_MAP, () => window.events.push('added'));
       window.map.addLayers(window.layer);
+      return before;
     }, HOST);
+    expect(styleBeforeLoad).toBe(true);
     await expect.poll(() => page.evaluate(() => window.events.includes('added')), WAIT).toBe(true);
     const inScene = () => page.evaluate(() => window.map.getMapImpl().scene.primitives
       .contains(window.layer.getImpl().getLayer()));
     expect(await inScene()).toBe(true);
+
+    const styleState = () => page.evaluate(() => {
+      const { style } = window.layer.getImpl().getLayer();
+      const feature = (height) => ({
+        getPropertyInherited: (name) => (name === 'height' ? height : undefined),
+      });
+      const round = (value) => Math.round(value * 100) / 100;
+      const label = style.labelColor?.evaluateColor(feature(1));
+      return {
+        opacity: window.layer.getOpacity(),
+        sameStyle: window.layer.getStyle() === window.style,
+        color: style.style.color,
+        alphas: [round(style.color.evaluateColor(feature(10)).alpha),
+          round(style.color.evaluateColor(feature(1)).alpha)],
+        description: style.meta.description?.evaluate(feature(3)),
+        labelText: style.labelText?.evaluate(feature(3)),
+        labelColor: label ? [label.red, label.green, label.blue] : undefined,
+        unknown: 'desconocida' in style.style,
+      };
+    });
+    const original = "${Height} > 10 ? color('red') : color('blue', 0.8)";
+    expect(await styleState()).toEqual({
+      opacity: 1,
+      sameStyle: true,
+      color: original,
+      alphas: [1, 0.8],
+      description: 'Altura: 6',
+      labelText: 'Edificio',
+      labelColor: [1, 1, 0],
+      unknown: false,
+    });
+    await page.evaluate(() => window.layer.setOpacity(0.5));
+    expect(await styleState()).toMatchObject({
+      opacity: 0.5, color: `(${original}) * color('white', 0.5)`, alphas: [0.5, 0.4], description: 'Altura: 6',
+    });
+    await page.evaluate(() => window.layer.setStyle(new IDEE.style.Tiles3D({ color: 'green' })));
+    expect(await styleState()).toMatchObject({
+      opacity: 0.5, sameStyle: false, color: "(color('green')) * color('white', 0.5)", alphas: [0.5, 0.5],
+    });
+    await page.evaluate(() => {
+      window.layer.setStyle(window.style);
+      window.layer.setOpacity('1');
+    });
+    expect(await styleState()).toMatchObject({
+      opacity: 1, sameStyle: true, color: original, alphas: [1, 0.8],
+    });
+
+    const tilesetShown = () => page.evaluate(() => window.layer.getImpl().getLayer().show);
+    expect(await page.evaluate(() => [
+      window.layer.getMinZoom() === Number.NEGATIVE_INFINITY, window.layer.getMaxZoom()]))
+      .toEqual([true, 20]);
+    expect(await tilesetShown()).toBe(true);
+    await page.evaluate(() => window.layer.setMinZoom(12));
+    await expect.poll(tilesetShown, WAIT).toBe(false);
+    expect(await page.evaluate(() => window.layer.inRange())).toBe(false);
+    await page.evaluate(() => window.layer.setMinZoom(Number.NEGATIVE_INFINITY));
+    await expect.poll(tilesetShown, WAIT).toBe(true);
+    await page.evaluate(() => window.layer.setMaxZoom(5));
+    await expect.poll(tilesetShown, WAIT).toBe(false);
+    await page.evaluate(() => window.layer.setMaxZoom(Number.POSITIVE_INFINITY));
+    await expect.poll(tilesetShown, WAIT).toBe(true);
+
     await page.evaluate(() => window.layer.setVisible(false));
     expect(await page.evaluate(() => window.layer.getImpl().getLayer().show)).toBe(false);
     const extent = await page.evaluate(() => window.layer.getMaxExtent());
