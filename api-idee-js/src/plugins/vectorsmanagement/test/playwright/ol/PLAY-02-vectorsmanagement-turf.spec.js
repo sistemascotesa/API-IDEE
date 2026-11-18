@@ -864,19 +864,23 @@ test.describe('VectorsManagement Turf: operaciones entre capas', () => {
     };
 
     await page.locator('#m-vectorsmanagement-turf').click();
-    const catalog = await page.locator('.m-vectorsmanagement-turf-catalog button[data-op]')
-      .evaluateAll((buttons) => buttons.map((b) => b.dataset.op));
+    await expect(page.locator('.m-vectorsmanagement-turf-catalog')).toBeVisible();
+    const forms = await page.evaluate(() => [...document
+      .querySelectorAll('.m-vectorsmanagement-turf-catalog button[data-op]')].map((button) => {
+      button.click();
+      const title = document.querySelector('#m-vectorsmanagement-turf-opform-title').textContent.trim();
+      document.querySelector('#m-vectorsmanagement-turf-back').click();
+      return { id: button.dataset.op, name: button.textContent.trim(), title };
+    }));
+    const catalog = forms.map((form) => form.id);
     expect([...catalog].sort()).toEqual(Object.keys(CASES).sort());
+    forms.forEach(({ id, name, title }) => {
+      expect(title, id).not.toBe('');
+      expect(title, id).toBe(name);
+    });
 
     for (let i = 0; i < catalog.length; i += 1) {
       const id = catalog[i];
-      // eslint-disable-next-line no-await-in-loop
-      await openOperation(page, id);
-      // eslint-disable-next-line no-await-in-loop
-      await expect(page.locator('.m-vectorsmanagement-turf-opform-title')).not.toBeEmpty();
-      // eslint-disable-next-line no-await-in-loop
-      await page.locator('#m-vectorsmanagement-turf-back').click();
-
       const [inputs, expected] = CASES[id];
       // eslint-disable-next-line no-await-in-loop
       const result = await run(page, id, { inputs });
@@ -889,8 +893,6 @@ test.describe('VectorsManagement Turf: operaciones entre capas', () => {
           expect(result.features.map(expected.props).sort(), id).toEqual(['Z1', 'Z2', 'Z3']);
         }
       }
-      // eslint-disable-next-line no-await-in-loop
-      await closeDialogs(page);
     }
   });
 });
