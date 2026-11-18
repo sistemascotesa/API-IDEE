@@ -119,7 +119,7 @@ test('DataIDEE form validates and saves typed nested attributes through OGC feat
   });
   expect(JSON.parse(writes[0].body).properties).not.toHaveProperty('internalNote');
   expect(JSON.parse(writes[0].body).properties).not.toHaveProperty('updatedAt');
-  await demo.reload();
+  await demo.remount();
   await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 1);
   const saved = await page.evaluate(() => window.dataideeDemo.layer.getFeatures()[0].getAttributes());
   expect(saved.name).toBe('Casa restaurada');
@@ -338,7 +338,7 @@ test('local DataIDEE editing uses the shared VectorsManagement controls and pers
   await expect.poll(async () => page.evaluate(() => (
     window.dataideeDemo.layer.getFeatures().length
   ))).toBe(6);
-  await demo.reload();
+  await demo.remount();
   await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 6);
   const savedName = await page.evaluate(() => window.dataideeDemo.layer.getFeatures()
     .map((feature) => feature.getAttributes()?.name).find((name) => name === 'Created in UI'));
@@ -376,7 +376,7 @@ test('local DataIDEE editing uses the shared VectorsManagement controls and pers
   await expect.poll(pendingCount).toBe(1);
   await page.locator('#m-vectorsmanagement-editing-save').click();
   await expect(page.locator('#m-vectorsmanagement-editing-status')).toContainText('Guardadas 1');
-  await demo.reload();
+  await demo.remount();
   await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 5);
   const deletedName = await page.evaluate(() => window.dataideeDemo.layer.getFeatures()
     .map((feature) => feature.getAttributes()?.name).find((name) => name === 'Created in UI'));
