@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="idee" content="yes">
+
+    <title>Canvas ⇄ WebGL</title>
+    <style rel="stylesheet">
+        :root {
+            --bg: #f6f7f9;
+            --panel: #ffffff;
+            --ink: #1f2933;
+            --muted: #61707f;
+            --line: #d9dee4;
+            --accent: #1d4ed8;
+            --webgl: #047857;
+            --webgl-bg: #d1fae5;
+            --canvas: #475569;
+            --canvas-bg: #e2e8f0;
+            --warn: #b45309;
+            --warn-bg: #fef3c7;
+            --bad: #b91c1c;
+            --bad-bg: #fee2e2;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            font-size: 13px;
+            color: var(--ink);
+            background: var(--bg);
+        }
+
+        #app {
+            display: flex;
+            height: 100%;
+        }
+
+        #map {
+            flex: 1;
+            min-width: 0;
+            height: 100%;
+        }
+
+        #panel {
+            width: 440px;
+            flex: none;
+            overflow-y: auto;
+            box-sizing: border-box;
+            padding: 12px 14px 24px;
+            background: var(--panel);
+            border-left: 1px solid var(--line);
+            z-index: 1000;
+        }
+
+        h1 {
+            font-size: 17px;
+            margin: 0 0 4px;
+        }
+
+        details {
+            border-top: 1px solid var(--line);
+            padding: 8px 0;
+        }
+
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .support {
+            margin: 0 0 10px;
+            color: var(--muted);
+        }
+
+        .support.ko {
+            color: var(--bad);
+            font-weight: 600;
+        }
+
+        .controls {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .segmented {
+            display: inline-flex;
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            overflow: hidden;
+            width: fit-content;
+        }
+
+        .segmented button {
+            border: 0;
+            padding: 6px 18px;
+            font: inherit;
+            font-weight: 600;
+            background: transparent;
+            color: var(--accent);
+            cursor: pointer;
+        }
+
+        .segmented button[aria-pressed="true"] {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        button,
+        select {
+            font: inherit;
+        }
+
+        .actions button,
+        #bench-clear,
+        #log-clear {
+            padding: 4px 10px;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        button:disabled,
+        select:disabled,
+        input:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+        }
+
+        .status {
+            padding: 6px 8px;
+            border-radius: 4px;
+            background: var(--canvas-bg);
+            margin: 0;
+        }
+
+        .status.busy {
+            background: var(--warn-bg);
+            color: var(--warn);
+        }
+
+        dl {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            gap: 3px 10px;
+            margin: 8px 0 0;
+        }
+
+        dt {
+            color: var(--muted);
+        }
+
+        dd {
+            margin: 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .warning {
+            margin: 8px 0 0;
+            padding: 6px 8px;
+            background: var(--warn-bg);
+            color: var(--warn);
+            border-radius: 4px;
+        }
+
+        h3.group {
+            margin: 12px 0 4px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        h3.group small {
+            font-weight: 400;
+            color: var(--muted);
+            font-family: ui-monospace, monospace;
+            font-size: 11px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr auto 26px;
+            align-items: center;
+            gap: 4px 8px;
+            padding: 5px 6px;
+            border-radius: 4px;
+        }
+
+        .row.active {
+            background: #eef2ff;
+        }
+
+        .row .name {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .row .meta {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 4px 8px;
+            padding-left: 22px;
+        }
+
+        .source {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .fixed {
+            font-size: 11px;
+            color: var(--webgl);
+        }
+
+        .icon {
+            border: 1px solid var(--line);
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 1px 6px;
+            border-radius: 10px;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .badge.off {
+            color: var(--muted);
+        }
+
+        .badge.webgl {
+            background: var(--webgl-bg);
+            color: var(--webgl);
+        }
+
+        .badge.canvas {
+            background: var(--canvas-bg);
+            color: var(--canvas);
+        }
+
+        .badge.loading {
+            opacity: 0.7;
+        }
+
+        .badge.bad {
+            background: var(--bad-bg);
+            color: var(--bad);
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 3px 4px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: top;
+        }
+
+        th {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        tr.fail td,
+        tr.error td {
+            background: var(--bad-bg);
+        }
+
+        tr.warn td {
+            background: var(--warn-bg);
+        }
+
+        .note {
+            color: var(--muted);
+            font-size: 12px;
+            margin: 6px 0 0;
+        }
+
+        #bench-summary {
+            font-weight: 600;
+            margin: 6px 0 0;
+        }
+
+        #log {
+            list-style: none;
+            margin: 6px 0 0;
+            padding: 0;
+            max-height: 220px;
+            overflow-y: auto;
+            font-family: ui-monospace, monospace;
+            font-size: 11px;
+        }
+
+        #log li {
+            padding: 2px 0;
+            border-bottom: 1px solid var(--line);
+            word-break: break-word;
+        }
+
+        #log li.warn {
+            color: var(--warn);
+        }
+
+        #log li.error {
+            color: var(--bad);
+        }
+
+        #log time {
+            color: var(--muted);
+            margin-right: 6px;
+        }
+
+        @media (max-width: 800px) {
+            html,
+            body {
+                overflow: auto;
+            }
+
+            #app {
+                flex-direction: column;
+                height: auto;
+            }
+
+            #map {
+                height: 60vh;
+                flex: none;
+            }
+
+            #panel {
+                width: 100%;
+                border-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="map" class="map"></div>
+        <aside id="panel">
+            <h1>Canvas ⇄ WebGL</h1>
+            <p id="support" class="support"></p>
+
+            <div class="controls">
+                <div class="segmented" role="group" aria-label="Modo de renderizado global">
+                    <button type="button" data-mode="canvas" aria-pressed="true">Canvas</button>
+                    <button type="button" data-mode="webgl" aria-pressed="false">WebGL</button>
+                </div>
+                <label><input type="checkbox" id="use-config"> Aplicar mediante <code>IDEE.config.WEBGL</code> (sin opción <code>renderer</code>)</label>
+                <label>Puntos sintéticos <select id="points"></select></label>
+                <div class="actions">
+                    <button type="button" id="home">Vista inicial</button>
+                    <button type="button" id="bench">Medir animación</button>
+                    <button type="button" id="check">Comprobar todas las capas</button>
+                </div>
+                <p id="status" class="status">Cargando…</p>
+            </div>
+
+            <details open>
+                <summary>Métricas en vivo</summary>
+                <dl id="metrics"></dl>
+                <p id="metrics-warning" class="warning" hidden>Hay 16 o más capas WebGL: el navegador puede perder contextos WebGL.</p>
+            </details>
+
+            <details open>
+                <summary>Capas</summary>
+                <div id="layers"></div>
+            </details>
+
+            <details open>
+                <summary>Comparativa (Medir animación)</summary>
+                <table id="bench-table"></table>
+                <p id="bench-summary"></p>
+                <p class="note">Mide la misma animación de 6 s en cada modo. «Recarga» incluye la red y la caché del navegador favorece al segundo modo; los FPS y los ms por fotograma comparan solo el renderizado. * = animación interrumpida.</p>
+                <button type="button" id="bench-clear">Limpiar</button>
+            </details>
+
+            <details open>
+                <summary>Comprobación automática</summary>
+                <p id="check-summary" class="note"></p>
+                <table id="check-table"></table>
+            </details>
+
+            <details open>
+                <summary>Registro (avisos y errores)</summary>
+                <button type="button" id="log-clear">Limpiar</button>
+                <ol id="log"></ol>
+            </details>
+        </aside>
+    </div>
+    <script src="/config.js" charset="utf-8"></script>
+    <script src="/CP-0008-webgl/CP-001.js" charset="utf-8"></script>
+</body>
+
+</html>

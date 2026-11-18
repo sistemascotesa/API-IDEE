@@ -8,6 +8,30 @@
     <meta name="idee" content="yes">
     <title>ShareMap TEST</title>
     <link href="http://localhost:8080/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <link href="http://localhost:8080/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
+    <link href="http://localhost:8080/api-idee/plugins/backimglayer/backimglayer.ol.min.css" rel="stylesheet" />
+    <style>
+        .sharemap-test-panels { display: flex; flex-wrap: wrap; align-items: flex-start; gap: .5rem; }
+        .sharemap-test-panels>details { flex: 1 1 24rem; min-width: 0; border: 1px solid rgb(168, 168, 168); border-radius: 4px; font-size: 13px; }
+        .sharemap-test-panels summary { cursor: pointer; padding: .25rem .5rem; font-weight: bold; }
+        .sharemap-test-panels summary span { font-weight: normal; }
+        .sharemap-test-panels details>div { max-height: 15rem; overflow: auto; padding: 0 .5rem .5rem; }
+        .sharemap-test-panels h3 { font-size: 13px; margin: .5rem 0 .15rem; }
+        .sharemap-test-catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: .1rem .75rem; }
+        .sharemap-report-summary { display: flex; flex-wrap: wrap; align-items: flex-start; gap: .5rem .75rem; }
+        .sharemap-report-qr { flex: 0 0 180px; }
+        .sharemap-report-qr svg { width: 100% !important; max-width: 100%; }
+        .sharemap-report-qr>p { margin: .25rem 0 0; font-size: 11px; }
+        .sharemap-report-main { flex: 1 1 16rem; min-width: 0; display: flex; flex-direction: column; gap: .25rem; }
+        .sharemap-report-main textarea { width: 100%; box-sizing: border-box; font: 11px monospace; }
+        .sharemap-report-main p { margin: 0; }
+        .sharemap-report-table { border-collapse: collapse; width: 100%; }
+        .sharemap-report-table th, .sharemap-report-table td { border: 1px solid #ccc; padding: 1px 4px; text-align: left; vertical-align: top; }
+        .sharemap-report-table code { word-break: break-all; font-size: 11px; }
+        .sharemap-report-checks { list-style: none; padding: 0; margin: 0; }
+        .sharemap-report-checks .ok { color: #1a7f37; }
+        .sharemap-report-checks .ko { color: #c62828; }
+    </style>
 </head>
 
 <body>
@@ -38,7 +62,7 @@
                 <label for="inputBaseUrl"
                     title="URL base que se usará para construir el enlace compartido. Se emplea cuando urlAPI es true">URL
                     base "baseUrl"</label>
-                <input type="text" id="inputBaseUrl" list="baseUrlSug">
+                <input type="text" id="inputBaseUrl" list="baseUrlSug" value="http://localhost:8080/api-idee/">
                 <datalist id="baseUrlSug">
                     <option value="https://componentes.idee.es/api-idee/"></option>
                     <option value="https://componentes-desarrollo.idee.es/api-idee/"></option>
@@ -89,8 +113,8 @@
                     capas "shareLayer"</label>
                 <select name="shareLayer" id="selectShareLayer">
                     <option value=""></option>
-                    <option value="true">true</option>
-                    <option value="false" selected="selected">false</option>
+                    <option value="true" selected="selected">true</option>
+                    <option value="false">false</option>
                 </select>
             </div>
             <div>
@@ -98,10 +122,7 @@
                     title="Lista de nombres de capas (separados por coma) que se incluirán en el enlace. Solo aplica cuando shareLayer es false o no está definido">Filtro
                     de capas "filterLayers"</label>
                 <input type="text" id="inputFilterLayers" list="filterLayersSug">
-                <datalist id="filterLayersSug">
-                    <option value="cosas1_poligono"></option>
-                    <option value="cosas1_poligono,Capa KML"></option>
-                </datalist>
+                <datalist id="filterLayersSug"></datalist>
             </div>
             <div>
                 <label for="inputBtn"
@@ -175,15 +196,40 @@
                     secundario "styles.secondaryColor"</label>
                 <input type="color" id="inputSecondaryColor" value="#ffffff">
             </div>
+            <div>
+                <label for="selectBaseSelector" title="Quién elige la capa base que se comparte en baselayer: el control backgroundlayers o el plugin backimglayer. Recarga la página">Selector de capa base "selector"</label>
+                <select id="selectBaseSelector">
+                    <option value="backgroundlayers">Control backgroundlayers</option>
+                    <option value="backimglayer">Plugin backimglayer</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectStartBaseLayer" title="Recarga la página con el parámetro GET baselayer para arrancar con esa capa base">Capa base de arranque "baselayer"</label>
+                <select id="selectStartBaseLayer"></select>
+            </div>
         </div>
         <div class="m-test-buttons">
             <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+            <button type="button" class="m-test-button" id="reportButton">Generar URL y QR</button>
+        </div>
+        <div class="sharemap-test-panels">
+            <details>
+                <summary>Capas de prueba <span id="catalogCount"></span></summary>
+                <div id="layerCatalog" class="sharemap-test-catalog"></div>
+            </details>
+            <details>
+                <summary>URL y QR <span id="reportStatus"></span></summary>
+                <div id="reportOutput" aria-live="polite"></div>
+            </details>
         </div>
     </div>
 
     <div id="mapjs" class="container"></div>
+
     <script type="text/javascript" src="http://localhost:8080/api-idee/js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="http://localhost:8080/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/api-idee/plugins/backimglayer/backimglayer.ol.min.js"></script>
     <script type="text/javascript" src="/main.js"></script>
 </body>
 
