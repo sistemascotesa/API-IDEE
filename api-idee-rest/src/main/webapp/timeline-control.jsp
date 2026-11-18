@@ -105,6 +105,14 @@
                             </select>
                         </div>
                         <div>
+                            <label for="selectHideLayersOnCollapsed" title="Con true (por defecto), al colapsar el panel se ocultan las capas del timeline y el recorrido; al desplegarlo vuelven a mostrarse">Ocultar capas con el panel colapsado "hideLayersOnCollapsed"</label>
+                            <select name="hideLayersOnCollapsed" id="selectHideLayersOnCollapsed">
+                                <option value='' selected="selected"></option>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+                        <div>
                             <label for="typeTimeLine">Tipo de línea de tiempo "timelineType"</label>
                             <select name="typeTimeLine" id="typeTimeLine">
                                 <option value="absoluteSimple" selected="selected">absoluteSimple</option>
@@ -758,7 +766,7 @@
                                     Object.entries(optional).forEach(([key, text]) => {
                                         if (text !== '') options[key] = text;
                                     });
-                                    ['selectCollapsible', 'selectCollapsed', 'selectAnimation'].forEach((id) => {
+                                    ['selectCollapsible', 'selectCollapsed', 'selectHideLayersOnCollapsed', 'selectAnimation'].forEach((id) => {
                                         if (value(id) !== '') options[field(id).name] = value(id) === 'true';
                                     });
                                     if (value('inputOrder') !== '') options.order = Number(value('inputOrder'));
@@ -798,8 +806,8 @@
                                 [
                                     'selectPosicion', 'inputIntervals', 'selectAnimation', 'inputSpeed', 'time', 'selectTime',
                                     'speedDate', 'paramsDate', 'stepValue', 'sizeWidthDinamic', 'formatValueDinamic', 'formatMove',
-                                    'inputTooltip', 'inputTitle', 'selectCollapsible', 'selectCollapsed', 'inputOrder',
-                                    'selectSnapMode', 'inputLayerPosition', 'selectTrack',
+                                    'inputTooltip', 'inputTitle', 'selectCollapsible', 'selectCollapsed', 'selectHideLayersOnCollapsed',
+                                    'inputOrder', 'selectSnapMode', 'inputLayerPosition', 'selectTrack',
                                 ].forEach((id) => field(id).addEventListener('change', changeTest));
 
                                 field('selectTime').addEventListener('change', () => {
