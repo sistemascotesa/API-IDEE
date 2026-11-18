@@ -10,13 +10,15 @@ export const PAGE = '/src/plugins/vectorsmanagement/test/playwright/ol/vectorsma
 /**
  * Ejemplo de edición local (como test/demo/dataidee-demo.js) sobre un servicio DataIDEE en
  * memoria propio del test. El servicio responde en /local/** del origen de la página, así
- * que no hay CORS, y su estado se conserva al remontar.
+ * que no hay CORS, y su estado se conserva al remontar. Si la página ya está abierta, monta
+ * el ejemplo en ella sin volver a cargarla.
  * @param {Page} page Página de Playwright.
  * @param {String} [mode='local'] Colección del ejemplo ('local' es la colección demo).
+ * @param {Object} [editingLimits] Límites de edición de la capa que sustituyen a los del ejemplo.
  * @returns {Promise<{fake: Object, remount: Function}>} Servicio y remontaje del ejemplo:
  * destruye el mapa y crea mapa, capa y plugin nuevos en la misma página, sin volver a cargarla.
  */
-export async function openLocalDataIDEE(page, mode = 'local') {
+export async function openLocalDataIDEE(page, mode = 'local', editingLimits = {}) {
   const fake = createDataIDEEFake();
   // Un test que recorre varios modos abre otro servicio: sustituye al anterior
   await page.unroute('**/local/**');
@@ -31,7 +33,7 @@ export async function openLocalDataIDEE(page, mode = 'local') {
     if (result.abort) return route.abort();
     return route.fulfill({ status: result.status, headers: result.headers, body: result.body });
   });
-  const mount = () => page.evaluate((collectionMode) => {
+  const mount = () => page.evaluate(({ collectionMode, limits }) => {
     const previous = window.dataideeDemo;
     if (previous) {
       previous.map.removePlugins(previous.map.getPlugins());
@@ -53,7 +55,11 @@ export async function openLocalDataIDEE(page, mode = 'local') {
     }, {
       bboxStrategy: false,
       editingLimits: {
-        pageSize: 2, maxFeatures: 1000, maxCoordinates: 100000, maxBytes: 10 * 1024 * 1024,
+        pageSize: 2,
+        maxFeatures: 1000,
+        maxCoordinates: 100000,
+        maxBytes: 10 * 1024 * 1024,
+        ...limits,
       },
       dataideeDefaultProperties: { category: 'demo' },
     });
@@ -69,8 +75,8 @@ export async function openLocalDataIDEE(page, mode = 'local') {
       addlayer: false,
     }));
     window.dataideeDemo = { map, layer };
-  }, mode);
-  await page.goto(PAGE, { waitUntil: 'domcontentloaded' });
+  }, { collectionMode: mode, limits: editingLimits });
+  if (!page.url().endsWith(PAGE)) await page.goto(PAGE, { waitUntil: 'domcontentloaded' });
   await mount();
   return { fake, remount: mount };
 }

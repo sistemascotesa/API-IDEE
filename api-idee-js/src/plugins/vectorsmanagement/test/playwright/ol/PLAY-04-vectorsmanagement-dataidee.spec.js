@@ -431,7 +431,7 @@ test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain
   await expect(page.locator('#m-vectorsmanagement-edition'))
     .toHaveAttribute('title', 'La colección no permite esta operación.');
 
-  await openLocalDataIDEE(page, 'dense');
+  await openLocalDataIDEE(page, 'dense', { pageSize: 1000 });
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   const preparationError = await page.evaluate(async () => {
     // Without a layer limit the whole zone is loaded: its 1001 features exceed the budget

@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 import path from 'path';
 import { prepareGeoPackagePage } from './fixtures/geopackage';
 
+test.describe.configure({ mode: 'default' });
+
 test.beforeEach(async ({ page }) => {
   await page.route('**/gdal3WebAssembly.*', (route) => {
     const file = path.basename(new URL(route.request().url()).pathname);
