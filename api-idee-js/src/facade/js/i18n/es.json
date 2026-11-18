@@ -251,7 +251,8 @@
   },
   "toast": {
     "close": "Cerrar",
-    "dataidee_load_error": "No se ha podido cargar la capa «{layer}». {error}"
+    "dataidee_load_error": "No se ha podido cargar la capa «{layer}». {error}",
+    "tiles3d_load_error": "No se ha podido cargar la capa 3D «{layer}». {error}"
   },
   "feature": {
     "incorrect_attributes": "No se han especificado correctamente los atributos."
@@ -469,6 +470,12 @@
     "gettiles3d_method": "La implementación usada no posee el método getTiles3D.",
     "addtiles3d_method": "La implementación usada no posee el método addTiles3D.",
     "removetiles3d_method": "La implementación usada no posee el método removeTiles3D.",
+    "tiles3d_source": "La capa Tiles3D necesita una única fuente: «url» o «ionAssetId».",
+    "tiles3d_url": "La opción «url» de Tiles3D debe ser una cadena no vacía.",
+    "tiles3d_ion_asset_id": "La opción «ionAssetId» de Tiles3D debe ser un número entero mayor que 0.",
+    "tiles3d_option_string": "La opción «{key}» de Tiles3D debe ser una cadena no vacía.",
+    "tiles3d_option_string_map": "La opción «{key}» de Tiles3D debe ser un objeto con valores de tipo cadena.",
+    "tiles3d_tile_failed": "No se ha podido cargar una tesela 3D:",
     "getterrain_method": "La implementación usada no posee el método getTerrain.",
     "addterrain_method": "La implementación usada no posee el método addTerrain.",
     "terrain_method": "La implementación usada no puede crear capas Terrain.",

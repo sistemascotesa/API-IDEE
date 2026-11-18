@@ -1052,7 +1052,7 @@ class Map extends Base {
           layer = new LayerGroup(layerParam, constructorOptions);
           break;
         case 'Tiles3D':
-          layer = new Tiles3D(parameters, constructorOptions);
+          layer = new Tiles3D(parameters, { ...layerParam.options, ...constructorOptions });
           break;
         case 'Terrain':
           layer = new Terrain(parameters, constructorOptions);

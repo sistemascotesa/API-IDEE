@@ -1,0 +1,24 @@
+{
+  "asset": {
+    "version": "1.0"
+  },
+  "geometricError": 1000,
+  "root": {
+    "boundingVolume": {
+      "sphere": [1215107.7612304366, -4736682.902037748, 4081926.095098698, 1000]
+    },
+    "geometricError": 1000,
+    "refine": "ADD",
+    "children": [
+      {
+        "boundingVolume": {
+          "sphere": [1215107.7612304366, -4736682.902037748, 4081926.095098698, 1000]
+        },
+        "geometricError": 500,
+        "content": {
+          "uri": "https://raw.githubusercontent.com/CesiumGS/3d-tiles-samples/main/1.0/TilesetWithDiscreteLOD/tileset.json"
+        }
+      }
+    ]
+  }
+}

@@ -204,6 +204,46 @@ export const resolveTiles3DPointSizeOption = (pointSize) => {
   return undefined;
 };
 
+const identity = (value) => value;
+
+/**
+ * Propiedades de Cesium3DTileStyle (Cesium 1.134) y el resolutor que convierte la opción de
+ * fachada al valor del estilo 3D Tiles. Las propiedades no registradas se ignoran.
+ *
+ * @const
+ * @type {Object<String, Function>}
+ */
+export const TILES3D_STYLE_RESOLVERS = Object.freeze({
+  show: resolveTiles3DShowOption,
+  color: resolveTiles3DColorOption,
+  pointSize: resolveTiles3DPointSizeOption,
+  pointOutlineColor: resolveTiles3DColorOption,
+  pointOutlineWidth: identity,
+  labelColor: resolveTiles3DColorOption,
+  labelOutlineColor: resolveTiles3DColorOption,
+  labelOutlineWidth: identity,
+  font: identity,
+  labelStyle: identity,
+  labelText: identity,
+  backgroundColor: resolveTiles3DColorOption,
+  backgroundPadding: identity,
+  backgroundEnabled: resolveTiles3DShowOption,
+  scaleByDistance: identity,
+  translucencyByDistance: identity,
+  distanceDisplayCondition: identity,
+  heightOffset: identity,
+  anchorLineEnabled: resolveTiles3DShowOption,
+  anchorLineColor: resolveTiles3DColorOption,
+  image: identity,
+  disableDepthTestDistance: identity,
+  horizontalOrigin: identity,
+  verticalOrigin: identity,
+  labelHorizontalOrigin: identity,
+  labelVerticalOrigin: identity,
+  defines: identity,
+  meta: identity,
+});
+
 /**
  * @classdesc
  * Implementación del estilo 3D Tiles.
@@ -232,27 +272,16 @@ class Tiles3D extends Style {
    * @api stable
    */
   toCesiumStyle() {
-    const cesiumStyle = {};
     const { options_ } = this;
-    if (Object.hasOwn(options_, 'color')) {
-      const colorExpr = resolveTiles3DColorOption(options_.color);
-      if (!isNullOrEmpty(colorExpr)) {
-        cesiumStyle.color = colorExpr;
+    return Object.entries(TILES3D_STYLE_RESOLVERS).reduce((cesiumStyle, [key, resolve]) => {
+      if (Object.hasOwn(options_, key)) {
+        const value = resolve(options_[key]);
+        if (value !== undefined && value !== null) {
+          return { ...cesiumStyle, [key]: value };
+        }
       }
-    }
-    if (Object.hasOwn(options_, 'show')) {
-      const showExpr = resolveTiles3DShowOption(options_.show);
-      if (!isUndefined(showExpr)) {
-        cesiumStyle.show = showExpr;
-      }
-    }
-    if (Object.hasOwn(options_, 'pointSize')) {
-      const pointSizeExpr = resolveTiles3DPointSizeOption(options_.pointSize);
-      if (!isUndefined(pointSizeExpr)) {
-        cesiumStyle.pointSize = pointSizeExpr;
-      }
-    }
-    return cesiumStyle;
+      return cesiumStyle;
+    }, {});
   }
 }
 

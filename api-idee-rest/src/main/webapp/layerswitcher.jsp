@@ -186,6 +186,7 @@
             <select name="sampleLayer" id="selectSampleLayer" title="Capas de ejemplo para probar el plugin en 2D y 3D">
                 <option value="" selected="selected">Añadir capa de ejemplo…</option>
             </select>
+            <input type="password" name="ionToken" id="inputIonToken" autocomplete="off" placeholder="Token de Cesium ion" aria-label="Token de Cesium ion" title="Token de acceso de Cesium ion para la capa de ejemplo Tiles3D de ion. Se guarda solo en esta pestaña (sessionStorage)">
             <select name="sampleSld" id="selectSampleSld" aria-label="Descargar un .sld" title="SLD de ejemplo de IDEE y del IGN (GetStyles): al elegir uno se descarga como .sld para cargarlo con el botón SLD de una capa vectorial">
                 <option value="" selected="selected">Descargar un .sld</option>
             </select>
@@ -241,6 +242,31 @@
 
         const stylemanager = new IDEE.plugin.StyleManager();
         map.addPlugin(stylemanager);
+
+        const ION_TOKEN_KEY = 'idee-test-ion-access-token';
+        const inputIonToken = document.getElementById('inputIonToken');
+        try {
+            inputIonToken.value = window.sessionStorage.getItem(ION_TOKEN_KEY) || '';
+        } catch (error) {
+            inputIonToken.value = '';
+        }
+        inputIonToken.addEventListener('change', () => {
+            try {
+                window.sessionStorage.setItem(ION_TOKEN_KEY, inputIonToken.value.trim());
+            } catch (error) {
+                console.warn('No se puede guardar el token de Cesium ion en sessionStorage', error);
+            }
+        });
+        const ionAccessToken = () => {
+            const token = inputIonToken.value.trim();
+            if (!token) throw new Error('escriba un token en el campo «Token de Cesium ion»');
+            return token;
+        };
+        const MADRID_VIEW = {
+            extent: [-3.697, 40.45, -3.68, 40.46],
+            options: { duration: 1, orientation: { heading: 0, pitch: -0.5, roll: 0 } },
+        };
+        const flyToTileset = (layer) => map.getMapImpl().flyTo(layer.getImpl().getLayer(), { duration: 1 });
 
         // Capas de ejemplo de cada tipo; "only" limita las que solo admite una implementación
         const SAMPLE_WATER_BODIES = {
@@ -354,13 +380,34 @@
             },
             { label: 'MapLibre', only: 'ol', create: () => 'QUICK*BTN_Completa_MapLibre' },
             {
-                label: 'Tiles3D',
+                label: 'Tiles3D por URL (modelo de ejemplo de Cesium)',
                 only: 'cesium',
                 create: () => new IDEE.layer.Tiles3D({
                     url: 'https://raw.githubusercontent.com/CesiumGS/3d-tiles-samples/main/1.0/TilesetWithDiscreteLOD/tileset.json',
-                    name: 'Tiles3D de ejemplo',
-                    legend: 'Tiles3D de ejemplo',
+                    name: 'tiles3d_url',
+                    legend: 'Tiles3D por URL (Cesium)',
                 }),
+                onAdded: flyToTileset,
+            },
+            {
+                label: 'Tiles3D de Cesium ion (OSM Buildings en Madrid, requiere token)',
+                only: 'cesium',
+                create: () => new IDEE.layer.Tiles3D({
+                    ionAssetId: 96188,
+                    name: 'osm_buildings',
+                    legend: 'Edificios OSM (Cesium ion)',
+                }, { ionAccessToken: ionAccessToken() }),
+                onAdded: () => map.getImpl().flyTo(MADRID_VIEW.extent, MADRID_VIEW.options),
+            },
+            {
+                label: 'Tiles3D de Cesium ion (fotogrametría de Melbourne, requiere token)',
+                only: 'cesium',
+                create: () => new IDEE.layer.Tiles3D({
+                    ionAssetId: 69380,
+                    name: 'melbourne',
+                    legend: 'Fotogrametría de Melbourne (Cesium ion)',
+                }, { ionAccessToken: ionAccessToken() }),
+                onAdded: flyToTileset,
             },
             { label: 'Terrain', only: 'cesium', create: () => 'QUICK*MDT_TERRAIN' },
         ];
@@ -385,7 +432,9 @@
                 if (sample.add) {
                     sample.add();
                 } else {
-                    map.addLayers(sample.create());
+                    const layer = sample.create();
+                    if (sample.onAdded) layer.once(IDEE.evt.ADDED_TO_MAP, () => sample.onAdded(layer));
+                    map.addLayers(layer);
                 }
             } catch (error) {
                 console.error('No se pudo añadir la capa ' + sample.label, error);

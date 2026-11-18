@@ -2340,6 +2340,11 @@ class Map extends MObject {
             if (!isNullOrEmpty(filterLayer.url)) {
               layerMatched = (layerMatched && (filterLayer.url === tiles3DLayer.url));
             }
+            ['ionAssetId', 'ionServer'].forEach((key) => {
+              if (!isNullOrEmpty(filterLayer[key])) {
+                layerMatched = (layerMatched && (filterLayer[key] === tiles3DLayer[key]));
+              }
+            });
             // name
             if (!isNullOrEmpty(filterLayer.name)) {
               layerMatched = (layerMatched && (filterLayer.name === tiles3DLayer.name));

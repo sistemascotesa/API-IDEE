@@ -3,8 +3,8 @@
  * @module IDEE/impl/layer/Tiles3D
  */
 import {
-  Resource, ClippingPlane, ClippingPlaneCollection,
-  Cesium3DTileStyle, Cesium3DTileset, Rectangle, Math as CesiumMath, // Expression,
+  ClippingPlane, ClippingPlaneCollection,
+  Cesium3DTileStyle, Rectangle, Math as CesiumMath,
 } from 'cesium';
 import ClusteredFeature from 'IDEE/feature/Clustered';
 import {
@@ -15,9 +15,14 @@ import {
 } from 'IDEE/util/Utils';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import Popup from 'IDEE/Popup';
+import * as EventType from 'IDEE/event/eventtype';
 
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import Layer from './Layer';
+import normalizeTiles3DOptions from '../../../common/Tiles3DOptions';
+import { createTilesetSource } from '../scene/tiles3d/Tiles3DSource';
+import composeTiles3DOpacityStyle from '../scene/tiles3d/Tiles3DOpacityStyle';
+import Tiles3DLoadGuard from '../scene/tiles3d/Tiles3DLoadGuard';
 
 /**
  * Resuelve un estilo de fachada o un objeto plano al formato de Cesium3DTileStyle.
@@ -28,7 +33,10 @@ import Layer from './Layer';
  */
 const resolveCesium3DTileStyle = (style) => {
   if (isNullOrEmpty(style)) {
-    return style;
+    return undefined;
+  }
+  if (style instanceof Cesium3DTileStyle) {
+    return style.style;
   }
   if (isFunction(style.getImpl)) {
     const styleImpl = style.getImpl();
@@ -37,6 +45,11 @@ const resolveCesium3DTileStyle = (style) => {
     }
   }
   return style;
+};
+
+const toOpacity = (opacity) => {
+  const value = Number(opacity);
+  return Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : undefined;
 };
 
 /**
@@ -61,6 +74,7 @@ class Tiles3D extends Layer {
    * @constructor
    * @param {Mx.parameters.Tiles3D} userParameters Parámetros para la construcción de la capa.
    * - url: Url del servicio de la capa.
+   * - ionAssetId: Identificador del asset de Cesium ion (alternativa a url).
    * - name: Nombre de la capa en la leyenda.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
    * - visibility: Indica si la capa estará por defecto visible o no.
@@ -71,6 +85,8 @@ class Tiles3D extends Layer {
    * - extract: Activa la consulta por click en el objeto geográfico, por defecto, falso.
    * - maximumScreenSpaceError: Error máximo de espacio en pantalla.
    * - clippingPlanes: Planos de recorte.
+   * - ionAccessToken, ionServer, headers, queryParameters: Opciones de acceso.
+   * - opacity, minZoom, maxZoom: Opacidad y rango de zoom.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * @api stable
    */
@@ -78,10 +94,26 @@ class Tiles3D extends Layer {
     super(options, vendorOptions);
 
     /**
+     * Fuente y opciones de acceso normalizadas.
+     * @private
+     */
+    this.normalized_ = normalizeTiles3DOptions(userParameters, options);
+
+    /**
       * Tiles3D url.
       * La URL de origen de la capa Tiles3D.
       */
-    this.url = userParameters.url;
+    this.url = this.normalized_.url;
+
+    /**
+     * Identificador del asset de Cesium ion.
+     */
+    this.ionAssetId = this.normalized_.ionAssetId;
+
+    /**
+     * Servidor de Cesium ion.
+     */
+    this.ionServer = this.normalized_.ionServer;
 
     /**
      * Tiles3D visibility.
@@ -99,13 +131,25 @@ class Tiles3D extends Layer {
      * Tiles3D opacity_.
      * Opacidad de la capa.
      */
-    this.opacity_ = typeof options.opacity === 'number' ? options.opacity : 1;
+    this.opacity_ = toOpacity(options.opacity) ?? 1;
 
     /**
      * Tiles3D style.
      * Estilo de la capa.
      */
     this.style = !isNullOrEmpty(options.style) ? options.style : undefined;
+
+    /**
+     * Revisiones de carga del tileset.
+     * @private
+     */
+    this.loadGuard_ = new Tiles3DLoadGuard();
+
+    /**
+     * Fuente del tileset.
+     * @private
+     */
+    this.source_ = null;
   }
 
   /**
@@ -125,20 +169,56 @@ class Tiles3D extends Layer {
 
     const { maximumScreenSpaceError, clippingPlanes } = this.options;
 
-    const promise = Cesium3DTileset.fromUrl(this.url, {
-      maximumScreenSpaceError,
-      clippingPlanes,
-      ...optCesiumLayer,
+    const source = createTilesetSource(this.normalized_, { ticket: IDEE.config.TICKET });
+    this.source_ = source;
+    const revision = this.loadGuard_.begin();
+    source.load({
+      tilesetOptions: {
+        maximumScreenSpaceError,
+        clippingPlanes,
+        ...optCesiumLayer,
+      },
+    }).then((tileset) => {
+      if (this.loadGuard_.settle(revision, tileset)) {
+        this.adoptTileset_(tileset);
+      }
+    }).catch((error) => {
+      if (this.loadGuard_.isCurrent(revision)) {
+        this.facadeLayer_?.fire(EventType.LOAD_ERROR, [source.sanitizeError(error)]);
+      }
     });
-    promise.then((tile3d) => {
-      this.cesiumLayer = tile3d;
-      this.map.getMapImpl().scene.primitives.add(tile3d);
-      this.setStyle(this.style);
-      this.setOpacity(this.opacity_);
-      this.fireAddedToMap_();
+  }
 
-      // this.map.getMapImpl().zoomTo(this.cesiumLayer);
-    });
+  /**
+   * Incorpora a la escena el tileset cargado con el estilo y la opacidad de la capa.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @param {Cesium3DTileset} tileset Tileset cargado.
+   */
+  adoptTileset_(tileset) {
+    this.cesiumLayer = tileset;
+    try {
+      this.applyStyle_();
+    } catch (error) {
+      this.cesiumLayer = null;
+      tileset.destroy();
+      throw error;
+    }
+    this.map.getMapImpl().scene.primitives.add(tileset);
+    this.fireAddedToMap_();
+  }
+
+  /**
+   * Aplica al tileset el estilo del usuario combinado con la opacidad de la capa.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   */
+  applyStyle_() {
+    if (isNullOrEmpty(this.cesiumLayer)) return;
+    const style = composeTiles3DOpacityStyle(resolveCesium3DTileStyle(this.style), this.opacity_);
+    this.cesiumLayer.style = isNullOrEmpty(style) ? undefined : new Cesium3DTileStyle(style);
   }
 
   /**
@@ -198,47 +278,6 @@ class Tiles3D extends Layer {
   }
 
   /**
-   * Este método devuelve el zoom mínimo de esta capa.
-   *
-   * @function
-   * @returns {Number} Devuelve el zoom mínimo aplicable a la capa.
-   * @api stable
-   * @expose
-   */
-  getMinZoom() {}
-
-  /**
-   * Este método establece el zoom mínimo de esta capa.
-   *
-   * @function
-   * @param {Number} zoom Zoom mínimo aplicable a la capa.
-   * @api stable
-   * @expose
-   */
-  setMinZoom(zoom) {}
-
-  /**
-   * Este método devuelve el zoom máximo de esta capa.
-   *
-   * @function
-   * @returns {Number} Zoom máximo aplicable a la capa.
-   * @api stable
-   * @expose
-   */
-  getMaxZoom() {}
-
-  /**
-   * Este método establece el zoom máximo de esta capa.
-   *
-   *
-   * @function
-   * @param {Number} zoom Zoom máximo aplicable a la capa.
-   * @api stable
-   * @expose
-   */
-  setMaxZoom(zoom) {}
-
-  /**
    * Este método devuelve el índice z de esta capa.
    *
    * @function
@@ -276,18 +315,24 @@ class Tiles3D extends Layer {
     * @expose
     */
   getOpacity() {
-    return 1;
+    return this.opacity_;
   }
 
   /**
-   * Este método establece la opacidad de esta capa.
+   * Este método establece la opacidad de esta capa, que se aplica como alfa del color
+   * del estilo.
    *
    * @function
    * @param {Number} opacity Opacidad (0, 1). Predeterminado 1.
    * @api stable
    * @expose
    */
-  setOpacity(opacity) {}
+  setOpacity(opacity) {
+    const value = toOpacity(opacity);
+    if (value === undefined) return;
+    this.opacity_ = value;
+    this.applyStyle_();
+  }
 
   /**
    * Este método establece la máxima extensión de la capa.
@@ -393,7 +438,7 @@ class Tiles3D extends Layer {
    * @api
    */
   getStyle() {
-    return this.cesiumLayer.style._style;
+    return this.style;
   }
 
   /**
@@ -406,10 +451,7 @@ class Tiles3D extends Layer {
    */
   setStyle(style) {
     this.style = style;
-    if (!isNullOrEmpty(this.cesiumLayer)) {
-      const cesiumStyle = resolveCesium3DTileStyle(style);
-      this.cesiumLayer.style = new Cesium3DTileStyle(cesiumStyle);
-    }
+    this.applyStyle_();
   }
 
   /**
@@ -422,12 +464,19 @@ class Tiles3D extends Layer {
    */
   destroy() {
     this.facadeLayer_?.stopAutoRefresh();
-    const cesiumMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.cesiumLayer)) {
-      cesiumMap.scene.primitives.destroyPrimitives = true;
-      cesiumMap.scene.primitives.remove(this.cesiumLayer);
-      this.cesiumLayer = null;
+    this.loadGuard_.invalidate();
+    const tileset = this.cesiumLayer;
+    if (!isNullOrEmpty(tileset)) {
+      const primitives = this.map?.getMapImpl()?.scene?.primitives;
+      if (primitives?.contains(tileset)) {
+        primitives.destroyPrimitives = true;
+        primitives.remove(tileset);
+      } else if (!tileset.isDestroyed()) {
+        tileset.destroy();
+      }
     }
+    this.cesiumLayer = null;
+    this.source_ = null;
     this.map = null;
   }
 
@@ -445,6 +494,8 @@ class Tiles3D extends Layer {
 
     if (obj instanceof Tiles3D) {
       equals = (this.url === obj.url);
+      equals = equals && (this.ionAssetId === obj.ionAssetId);
+      equals = equals && (this.ionServer === obj.ionServer);
       equals = equals && (this.name === obj.name);
     }
 
@@ -459,16 +510,23 @@ class Tiles3D extends Layer {
    */
   async refreshSource(isCurrent = () => true) {
     const previous = this.cesiumLayer;
+    const source = this.source_;
     if (!previous || !previous.tilesLoaded) return;
-    if (!this.isAutoRefreshRemoteURL(this.url)) return;
-    const url = Resource.createIfNeeded(this.url);
-    url.setQueryParameters({ _ideeRefresh: Date.now() });
-    const next = await Cesium3DTileset.fromUrl(url, {
-      ...this.vendorOptions_,
-      maximumScreenSpaceError: previous.maximumScreenSpaceError,
-      modelMatrix: previous.modelMatrix,
-      show: previous.show,
-    });
+    if (!source || !source.canRefresh()) return;
+    let next;
+    try {
+      next = await source.load({
+        tilesetOptions: {
+          ...this.vendorOptions_,
+          maximumScreenSpaceError: previous.maximumScreenSpaceError,
+          modelMatrix: previous.modelMatrix,
+          show: previous.show,
+        },
+        queryParameters: { _ideeRefresh: Date.now() },
+      });
+    } catch (error) {
+      throw source.sanitizeError(error);
+    }
     if (!isCurrent() || this.cesiumLayer !== previous) {
       next.destroy();
       return;

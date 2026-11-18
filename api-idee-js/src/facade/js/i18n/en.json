@@ -250,7 +250,8 @@
   },
   "toast": {
     "close": "Cerrar",
-    "dataidee_load_error": "The layer '{layer}' could not be loaded. {error}"
+    "dataidee_load_error": "The layer '{layer}' could not be loaded. {error}",
+    "tiles3d_load_error": "The 3D layer '{layer}' could not be loaded. {error}"
   },
   "feature": {
     "incorrect_attributes": "The attributes were not specified correctly."
@@ -468,6 +469,12 @@
     "gettiles3d_method": "The implementation used does not have the getTiles3D method.",
     "addtiles3d_method": "The implementation used does not have the addTiles3D method.",
     "removetiles3d_method": "The implementation used does not have the removeTiles3D method.",
+    "tiles3d_source": "A Tiles3D layer needs exactly one source: 'url' or 'ionAssetId'.",
+    "tiles3d_url": "The Tiles3D 'url' option must be a non-empty string.",
+    "tiles3d_ion_asset_id": "The Tiles3D 'ionAssetId' option must be an integer greater than 0.",
+    "tiles3d_option_string": "The Tiles3D '{key}' option must be a non-empty string.",
+    "tiles3d_option_string_map": "The Tiles3D '{key}' option must be an object with string values.",
+    "tiles3d_tile_failed": "A 3D tile could not be loaded:",
     "getterrain_method": "The implementation used does not have the getTerrain method.",
     "addterrain_method": "The implementation used does not have the addTerrain method",
     "terrain_method": "The used implementation can not create Terrain layers.",

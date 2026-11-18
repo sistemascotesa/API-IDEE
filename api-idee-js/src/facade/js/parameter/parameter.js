@@ -4842,8 +4842,8 @@ export const getLegendTiles3D = (parameter) => {
  * @public
  * @function
  * @param {string|Mx.parameters.Tiles3D} parameter Parámetro para obtener la
- * URL del servicio de la capa Tiles3D.
- * @returns {string} URL del servicio.
+ * URL del servicio de la capa Tiles3D. La URL es opcional si se indica ionAssetId.
+ * @returns {string|undefined} URL del servicio.
  * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
@@ -4985,11 +4985,13 @@ export const tiles3d = (userParameters) => {
     const name = getNameTiles3D(userParam);
     const visibility = getVisibilityTiles3D(userParam);
     const displayInLayerSwitcher = getDisplayInLayerSwitcherTiles3D(userParam);
+    const ionAssetId = isObject(userParam) ? userParam.ionAssetId : undefined;
 
     return {
       type,
       legend,
       url,
+      ionAssetId,
       name,
       visibility,
       displayInLayerSwitcher,

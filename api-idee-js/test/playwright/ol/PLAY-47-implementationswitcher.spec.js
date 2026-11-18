@@ -11,28 +11,61 @@ const PAGE = '/test/playwright/ol/basic-ol.html';
 const TILES = 'https://tiles.switcher.test';
 const WMS = 'https://wms.switcher.test/wms';
 const TILESET = 'https://tiles3d.switcher.test/tileset.json';
+const ION = 'https://ion.switcher.test';
+const ION_ASSETS = 'https://assets.switcher.test';
 const DATAIDEE = 'https://dataidee.switcher.test';
 const CHANGE_TIMEOUT = 60000;
 
 test.describe.configure({ timeout: 180000 });
 
+const TILESET_JSON = JSON.stringify({
+  asset: { version: '1.0' },
+  geometricError: 0,
+  root: {
+    boundingVolume: { region: [-0.07, 0.7, -0.06, 0.71, 0, 10] },
+    geometricError: 0,
+    refine: 'ADD',
+  },
+});
+
+/** Responde a un preflight CORS con las cabeceras que pide el navegador. */
+const preflight = (route) => route.fulfill({
+  status: 204,
+  headers: {
+    ...CORS,
+    'access-control-allow-headers': route.request().headers()['access-control-request-headers'] || '*',
+  },
+});
+
 const mockServices = async (page) => {
+  const requests = { tileset: [], ion: [] };
   await routePng(page, `${TILES}/**`);
   await routePng(page, `${WMS}**`);
-  await page.route(TILESET, (route) => route.fulfill({
-    status: 200,
-    headers: CORS,
-    contentType: 'application/json',
-    body: JSON.stringify({
-      asset: { version: '1.0' },
-      geometricError: 0,
-      root: {
-        boundingVolume: { region: [-0.07, 0.7, -0.06, 0.71, 0, 10] },
-        geometricError: 0,
-        refine: 'ADD',
-      },
-    }),
-  }));
+  await page.route(TILESET, (route) => {
+    if (route.request().method() === 'OPTIONS') return preflight(route);
+    requests.tileset.push(route.request().headers()['x-api-key']);
+    return route.fulfill({
+      status: 200, headers: CORS, contentType: 'application/json', body: TILESET_JSON,
+    });
+  });
+  await page.route(`${ION}/**`, (route) => {
+    if (route.request().method() === 'OPTIONS') return preflight(route);
+    requests.ion.push(new URL(route.request().url()).searchParams.get('access_token'));
+    return route.fulfill({
+      status: 200,
+      headers: CORS,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        type: '3DTILES', url: `${ION_ASSETS}/7/tileset.json`, accessToken: 'asset', attributions: [],
+      }),
+    });
+  });
+  await page.route(`${ION_ASSETS}/**`, (route) => (route.request().method() === 'OPTIONS'
+    ? preflight(route)
+    : route.fulfill({
+      status: 200, headers: CORS, contentType: 'application/json', body: TILESET_JSON,
+    })));
+  return requests;
 };
 
 /** Abre un mapa OL sin capa base ni terreno (sin red) con el control de cambio. */
@@ -252,26 +285,52 @@ test.describe('IDEE.control.ImplementationSwitcher', () => {
   });
 
   test('lo que la implementación de destino no admite se conserva y vuelve', async ({ page }) => {
-    await mockServices(page);
+    const requests = await mockServices(page);
     await openMap(page);
     await page.evaluate(() => {
       window.olMapPrototype = Object.getPrototypeOf(window.map);
     });
     await switchTo(page, 1, 1);
-    await page.evaluate((url) => {
-      window.map.addLayers(new IDEE.layer.Tiles3D({ url, name: 'edificios', legend: 'Edificios' }));
-    }, TILESET);
+    await page.evaluate(({ url, ion }) => {
+      const buildings = new IDEE.layer.Tiles3D({ url, name: 'edificios', legend: 'Edificios' }, {
+        headers: { 'X-Api-Key': 'clave' },
+      });
+      window.map.addLayers([buildings, new IDEE.layer.Tiles3D({ ionAssetId: 7, name: 'ion', legend: 'Ion' }, {
+        ionAccessToken: 'token-ion', ionServer: `${ion}/`,
+      })]);
+      buildings.setOpacity(0.5);
+      buildings.setStyle(new IDEE.style.Tiles3D({ color: 'red', labelText: "'Edificio'" }));
+    }, { url: TILESET, ion: ION });
+    const tiles3D = () => page.evaluate(() => window.map.getTiles3D()
+      .map((layer) => {
+        const style = layer.getStyle();
+        const tileset = layer.getImpl().getLayer();
+        return {
+          name: layer.name,
+          loaded: !!tileset && window.map.getMapImpl().scene.primitives.contains(tileset),
+          opacity: layer.getOpacity(),
+          style: style instanceof IDEE.style.Tiles3D ? style.getOptions() : style,
+        };
+      }).sort((a, b) => a.name.localeCompare(b.name)));
+    const expected = [
+      { name: 'edificios', loaded: true, opacity: 0.5, style: { color: 'red', labelText: "'Edificio'" } },
+      {
+        name: 'ion', loaded: true, opacity: 1, style: undefined,
+      },
+    ];
+    await expect.poll(tiles3D, { timeout: CHANGE_TIMEOUT }).toEqual(expected);
 
     await switchTo(page, 0, 2);
-    expect(await page.evaluate(() => window.map.getLayers().some((l) => l.name === 'edificios')))
-      .toBe(false);
+    expect(await page.evaluate(() => window.map.getLayers()
+      .some((l) => ['edificios', 'ion'].includes(l.name)))).toBe(false);
     expect(await page.evaluate(() => window.IDEE_IMPLEMENTATIONS.parked.layers.map((e) => e.key)))
-      .toEqual(['Tiles3D']);
+      .toEqual(['Tiles3D', 'Tiles3D']);
 
     await switchTo(page, 1, 3);
-    expect(await page.evaluate(() => window.map.getLayers()
-      .filter((l) => l.name === 'edificios').map((l) => l.type))).toEqual(['Tiles3D']);
+    await expect.poll(tiles3D, { timeout: CHANGE_TIMEOUT }).toEqual(expected);
     expect(await page.evaluate(() => window.IDEE_IMPLEMENTATIONS.parked.layers)).toEqual([]);
+    expect(requests.tileset).toEqual(['clave', 'clave']);
+    expect(requests.ion).toEqual(['token-ion', 'token-ion']);
 
     // Una sección que no se puede recrear queda aparcada y vuelve en el cambio siguiente
     await page.evaluate(() => {
