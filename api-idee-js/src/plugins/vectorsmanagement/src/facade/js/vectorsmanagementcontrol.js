@@ -638,15 +638,14 @@ export default class VectorsManagementControl extends IDEE.Control {
           button.disabled = !updateAllowed || !compatible;
         }
       });
+      const deleteAllowed = !isEditing
+        || Boolean(this.editingSession_ && this.editingCapabilities_?.delete);
       ['cleanAll', 'm-vectorsmanagement-deletegeom-btn'].forEach((id) => {
         const button = editionTemplate.querySelector(`#${id}`);
-        if (button) {
-          button.disabled = isEditing
-            && (!this.editingSession_ || !this.editingCapabilities_?.delete);
-        }
+        if (button) button.disabled = !deleteAllowed;
       });
       const cleanAll = editionTemplate.querySelector('#cleanAll');
-      if (cleanAll) cleanAll.hidden = isEditing;
+      if (cleanAll) cleanAll.hidden = !deleteAllowed;
       const attributes = editionTemplate.querySelector('#editattribute');
       if (attributes) {
         attributes.hidden = false;

@@ -407,8 +407,6 @@ button#m-vectorsmanagement-download-btn,
 button#m-vectorsmanagement-deletegeom-btn,
 button#add-attribute-btn,
 button#vectorsmanagement-analysis-btn,
-button#confirm-clear-btn,
-button#cancel-clear-btn,
 button#set-style-btn {
     cursor: pointer;
     width: 8rem;
@@ -429,17 +427,6 @@ button#m-vectorsmanagement-deletegeom-btn,
 button#add-attribute-btn,
 button#vectorsmanagement-analysis-btn {
     display: block;
-}
-
-button#confirm-clear-btn,
-button#cancel-clear-btn {
-    display: inline;
-}
-
-#clean-modal-btns {
-    display: flex;
-    justify-content: space-evenly;
-    margin-top: 1.5rem;
 }
 
 #layerdrawing,
@@ -1146,28 +1133,14 @@ th .vectorsmanagement-icon-papelera {
     height: fit-content;
 }
 
-#clear-layer-modal {
-    position: fixed !important;
-    top: calc(50vh - 62px);
-    right: calc(50vw - 370px);
-    transform: translate(-50%, -50%) !important;
-    z-index: 999999;
-    background-color: var(--idee-color-white);
-    width: fit-content;
-    height: fit-content;
-}
-
-.clear-layer-modal p {
-    text-align: center;
-}
-
-#clear-layer-modal>.popup-title {
-    margin-top: 0;
-}
-
 .m-modal::after,
 .m-modal::before {
     content: none;
+}
+
+.m-dialog[data-choice="m-vectorsmanagement-clean"]>div.m-modal>div.m-content {
+    min-width: min(30%, 28rem);
+    max-width: min(85%, 28rem);
 }
 
 /* Help content */
@@ -1182,7 +1155,6 @@ th .vectorsmanagement-icon-papelera {
 
 #vectorsmanagement-point-profile-container .popup-title,
 #edition-attributes-container .popup-title,
-#clear-layer-modal .popup-title,
 .m-plugin-vectorsmanagement.opened #popup-box>div>div.popup-title {
     background-color: var(--idee-color-primary);
     border-radius: var(--idee-shape-border-radius);

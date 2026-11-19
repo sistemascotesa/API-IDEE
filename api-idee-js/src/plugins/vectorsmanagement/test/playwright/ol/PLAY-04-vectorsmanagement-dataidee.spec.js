@@ -690,7 +690,7 @@ test('DataIDEE editing starts with Creation or Edition and survives switching to
   expect(await sameSession()).toBe(false);
 });
 
-test('DataIDEE form deletes the feature when the session is saved and the clean tool is hidden', async ({ page }) => {
+test('DataIDEE form deletes the feature when the session is saved and the clean tool is available', async ({ page }) => {
   const itemCalls = [];
   page.on('request', (request) => {
     if (new URL(request.url()).pathname === '/local/collections/form/items/7') {
@@ -704,7 +704,7 @@ test('DataIDEE form deletes the feature when the session is saved and the clean 
   await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
   await page.locator('#m-vectorsmanagement-edition').click();
   await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
-  await expect(page.locator('#cleanAll')).toBeHidden();
+  await expect(page.locator('#cleanAll')).toBeVisible();
 
   const form = page.locator('.m-vectorsmanagement-dataidee-fields');
   const deleteButton = page.locator('#m-vectorsmanagement-dataidee-delete');
@@ -743,7 +743,7 @@ test('DataIDEE form deletes the feature when the session is saved and the clean 
   await expect(page.locator('#m-vectorsmanagement-editing-status')).toContainText('Guardadas 1');
   expect(itemCalls).toEqual(['GET', 'DELETE']);
 
-  await demo.reload();
+  await demo.remount();
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   expect(await featureCount()).toBe(0);
 });
