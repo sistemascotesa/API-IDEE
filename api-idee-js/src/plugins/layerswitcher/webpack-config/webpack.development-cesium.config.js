@@ -73,9 +73,15 @@ module.exports = {
     // open: true,
     port: 6123,
     open: 'test/dev.html',
-    static: {
-      directory: path.join(__dirname, '/../'),
-    },
+    static: [
+      {
+        directory: path.join(__dirname, '/../'),
+      },
+      {
+        directory: path.join(__dirname, '..', '..', '..', '..', 'test'),
+        publicPath: '/api-idee-test',
+      },
+    ],
   },
   watchOptions: {
     poll: 1000,

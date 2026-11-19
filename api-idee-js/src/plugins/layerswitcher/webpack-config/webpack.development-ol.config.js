@@ -82,6 +82,10 @@ module.exports = {
         directory: path.join(__dirname, '..', '..', '..', '..', 'dist'),
         publicPath: '/api-idee-dist',
       },
+      {
+        directory: path.join(__dirname, '..', '..', '..', '..', 'test'),
+        publicPath: '/api-idee-test',
+      },
     ],
     // Servicio DataIDEE de pruebas sin CORS: se sirve a través de localhost
     proxy: {
