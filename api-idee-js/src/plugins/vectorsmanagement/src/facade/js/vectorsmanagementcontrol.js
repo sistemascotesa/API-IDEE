@@ -645,6 +645,8 @@ export default class VectorsManagementControl extends IDEE.Control {
             && (!this.editingSession_ || !this.editingCapabilities_?.delete);
         }
       });
+      const cleanAll = editionTemplate.querySelector('#cleanAll');
+      if (cleanAll) cleanAll.hidden = isEditing;
       const attributes = editionTemplate.querySelector('#editattribute');
       if (attributes) {
         attributes.hidden = false;
