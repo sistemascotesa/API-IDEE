@@ -24,12 +24,14 @@ El renderer de una capa se fija al construirla (opción `renderer: 'canvas' | 'w
 | Grupo | Capas |
 |---|---|
 | Ráster teselado (`WebGLTile`) | OSM, XYZ PNOA-MA, TMS IGN Base, WMTS PNOA, WMS teselado, MBTiles, GeoPackage ráster |
-| Vectorial (`WebGLVector`) | GeoJSON con puntos sintéticos (`Generic {{color}}`), GeoJSON con `Category`, `IDEE.layer.Vector` (1000 polígonos), GeoJSON remoto, WFS, OGC API Features, DataIDEE, KML y KMZ (`extractStyles: false`), GPX |
-| Vectorial teselado (`WebGLVectorTile`) | MVT, MBTilesVector |
-| Solo WebGL | GeoTIFF/COG (no tiene alternativa Canvas) |
+| Vectorial (`WebGLVector`) | GeoJSON con puntos sintéticos (`Generic {{color}}`), GeoJSON con `Category`, `IDEE.layer.Vector` (1000 polígonos), GeoJSON remoto, WFS, OGC API Features, KML y KMZ (`extractStyles: false`), GPX |
+| Vectorial teselado (`WebGLVectorTile`) | MVT, MBTilesVector (Camino de Santiago, `OUTPUT.mbtiles` de la galería) |
+| Solo WebGL | GeoTIFF/COG: ortofoto PNOA 2021 de la Costa Brava en EPSG:25831 (no tiene alternativa Canvas) |
 | Caídas a Canvas esperadas | WMS `tiled: false`, XYZ con `crossOrigin: false` (`webgl_fallback_cors`), KML con estilos propios (`webgl_fallback_feature_style`), `Cluster`, `IDEE.style.Point` (`webgl_fallback_style`) |
 
-Los fixtures MBTiles y GeoPackage cubren el mundo con zoom bajo. GPX, KMZ y COG tienen botón de encuadre (⌖). El COG está fuera de España.
+Los fixtures MBTiles y GeoPackage cubren el mundo con zoom bajo. GPX, KMZ, MBTilesVector y COG tienen botón de encuadre (⌖). El COG solo cubre unos 3 × 6 km, así que a la vista inicial apenas se ve.
+
+El COG usa una proyección que IDEE registra (EPSG:25831). Un COG en una proyección no registrada, por ejemplo el UTM 36N (EPSG:32636) de Sentinel-2, no se puede reproyectar y no muestra nada.
 
 ## Medidas
 
@@ -53,18 +55,7 @@ Los fixtures MBTiles y GeoPackage cubren el mundo con zoom bajo. GPX, KMZ y COG 
 
 ## Versión de galería (API compilada)
 
-`galeria/webgl-canvas.html` y `galeria/webgl-canvas.js` reproducen la misma demo con el formato de los ejemplos de la galería. Cargan la API compilada desde `http://localhost:8080/api-idee/` y usan el espacio de nombres global `IDEE`. Los dos ficheros tienen que estar en la misma carpeta, y el Tomcat tiene que servir una API compilada desde esta rama.
-
-Diferencias de datos respecto a CP-001 (que usa fixtures locales):
-
-| Capa | Datos en la versión de galería |
-|---|---|
-| MBTiles | `componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles` (isla de Cabrera, z11-16; usa ⌖ para verla) |
-| MBTilesVector | `componentes.idee.es/GaleriaEjemplos_API-IDEE/datos/OUTPUT.mbtiles` (Camino de Santiago) |
-| GeoPackage ráster | `componentes.idee.es/estaticos/Datos/gpkg/rivers.gpkg`, solo la tabla `rivers_tiles` |
-| KMZ y GPX | Incrustados en el JS (los mismos fixtures de prueba) |
-
-Los ficheros MBTiles y GeoPackage (de 0,7 a 9 MB) se descargan una sola vez y se pasan a la capa como `File`, de modo que los tiempos de recarga no incluyen esa descarga.
+`galeria/webgl-canvas.html` y `galeria/webgl-canvas.js` reproducen la misma demo con el formato de los ejemplos de la galería. Usan la API compilada desde un servidor, por defecto `https://api-ideedes.grupotecopy.es/api-idee/`, y se pueden abrir como fichero o por http. Cómo usarla, cómo cambiar de servidor y qué datos usa en lugar de los fixtures locales: [galeria/README.md](galeria/README.md).
 
 ## Consola
 

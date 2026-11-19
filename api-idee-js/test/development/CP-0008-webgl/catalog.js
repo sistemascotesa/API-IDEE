@@ -26,7 +26,6 @@ import GeoJSON from 'IDEE/layer/GeoJSON';
 import Vector from 'IDEE/layer/Vector';
 import WFS from 'IDEE/layer/WFS';
 import OGCAPIFeatures from 'IDEE/layer/OGCAPIFeatures';
-import DataIDEE from 'IDEE/layer/DataIDEE';
 import KML from 'IDEE/layer/KML';
 import KMZ from 'IDEE/layer/KMZ';
 import GPX from 'IDEE/layer/GPX';
@@ -45,17 +44,16 @@ const URLS = {
   wmtsPnoa: 'https://www.ign.es/wmts/pnoa-ma?',
   wmsUA: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
   mbtilesRaster: '/test/playwright/fixtures/refresh/raster.mbtiles',
-  mbtilesVector: '/test/playwright/fixtures/refresh/vector.mbtiles',
+  mbtilesVector: 'https://componentes.idee.es/GaleriaEjemplos_API-IDEE/datos/OUTPUT.mbtiles',
   gpkgRaster: '/test/development/CP-0002-layers/data/geopackage-raster.gpkg',
   sptr: 'https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
   wfs: 'https://www.ign.es/wfs/redes-geodesicas',
   ogcapi: 'https://api-features.idee.es/collections/',
-  dataidee: 'https://api-features.ign.es',
   kml: 'https://www.ign.es/resources/CaminoDeSantiago_PRE/rutas/04/04-Via%20de%20la%20Plata%20-%20Camino%20Moz%C3%A1rabe%20a%20Santiago.kml',
   kmz: '/test/playwright/fixtures/kmz/basic.kmz',
   gpx: '/test/development/CP-0002-layers/fixtures/CP-035.gpx',
   mvt: 'https://vt-fedme.idee.es/vt.senderogr/{z}/{x}/{y}.pbf',
-  cog: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/36/Q/WD/2020/7/S2A_36QWD_20200701_0_L2A/TCI.tif',
+  cog: 'https://ftpcdd.cnig.es/Vuelos_2021/Vuelos_2021/catalunya_2021/Costa/01.VF/01.08_PNOA_2021_CAT_COSTA_22cm_VF_img8c_rgb_hu31/h50_0219_fot_002-0001_cog.tif',
 };
 
 export const GROUPS = [
@@ -366,16 +364,6 @@ export const CATALOG = [
     }, withRenderer(renderer)),
   },
   {
-    id: 'dataidee',
-    group: 'vector',
-    label: 'DataIDEE · núcleos',
-    source: 'api-features.ign.es · nuc',
-    expected: SUPPORTED,
-    create: (renderer) => new DataIDEE({
-      url: URLS.dataidee, name: 'nuc', legend: 'Núcleos (DataIDEE)', limit: 100,
-    }, withRenderer(renderer)),
-  },
-  {
     id: 'kml',
     group: 'vector',
     label: 'KML · Vía de la Plata',
@@ -420,23 +408,24 @@ export const CATALOG = [
   {
     id: 'mbtilesvector',
     group: 'vectortile',
-    label: 'MBTilesVector',
-    source: 'fixture vector.mbtiles (mundo, z0-3)',
+    label: 'MBTilesVector · Camino de Santiago',
+    source: 'Galería API-IDEE · OUTPUT.mbtiles',
+    fit: [-8.54451, 42.2582, -1.81797, 42.931],
     expected: SUPPORTED,
     create: (renderer) => new MBTilesVector({
-      url: URLS.mbtilesVector, name: 'webgl_mbtilesvector', legend: 'MBTilesVector (fixture)',
+      url: URLS.mbtilesVector, name: 'webgl_mbtilesvector', legend: 'Camino de Santiago (MBTilesVector)',
     }, withRenderer(renderer)),
   },
   {
     id: 'cog',
     group: 'webglonly',
-    label: 'GeoTIFF · COG Sentinel-2',
-    source: 'sentinel-cogs (TCI.tif, fuera de España)',
+    label: 'GeoTIFF · COG PNOA 2021',
+    source: 'ftpcdd.cnig.es · Costa Brava, EPSG:25831',
     fixed: 'webgl',
-    fit: 'layer',
+    fit: [2.7624, 42.4408, 2.8025, 42.4932],
     create: () => new GeoTIFF({
-      url: URLS.cog, name: 'webgl_cog', legend: 'Sentinel-2 (COG)', isBase: false,
-    }, { convertToRGB: 'auto' }),
+      url: URLS.cog, name: 'webgl_cog', legend: 'PNOA 2021 (COG)', isBase: false,
+    }, { nodata: 0 }),
   },
   {
     id: 'wms_single',
