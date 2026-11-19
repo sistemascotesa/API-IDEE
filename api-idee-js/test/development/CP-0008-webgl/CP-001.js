@@ -30,6 +30,22 @@ const GROUP_Z = {
 const WEBGL_KEYS = ['webgl_not_supported', 'webgl_fallback_cors', 'webgl_fallback_style', 'webgl_fallback_feature_style'];
 const CHECK_MAX_POINTS = 10000;
 const MODE_LABEL = { canvas: 'Canvas', webgl: 'WebGL' };
+const GPKG_READY_TIMEOUT = 60000;
+
+/**
+ * Rechaza la promesa si no se resuelve en el tiempo indicado.
+ * @param {Promise} promise Promesa.
+ * @param {number} ms Tiempo máximo en milisegundos.
+ * @param {string} message Mensaje del error.
+ * @returns {Promise} Promesa con tiempo máximo.
+ */
+const withTimeout = (promise, ms, message) => {
+  let timer;
+  const timeout = new Promise((resolve, reject) => {
+    timer = setTimeout(() => reject(new Error(message)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+};
 
 const mapa = Mmap({
   container: 'map',
@@ -160,7 +176,11 @@ const createLayer = (entry, requested, points = state.points) => {
 
 const addToMap = async (entry, layer) => {
   if (entry.kind === 'geopackage') {
-    await layer.whenReady();
+    await withTimeout(
+      layer.whenReady(),
+      GPKG_READY_TIMEOUT,
+      'El GeoPackage no ha terminado de cargar; revisa SQL_WASM_URL y la consola.',
+    );
     mapa.addGeoPackage(layer);
   } else {
     mapa.addLayers(layer);
@@ -506,13 +526,19 @@ ui.updateBadge = (id) => {
   }
   const entry = entryOf(id);
   const st = stateOf(id);
-  if (!st.layer) {
+  if (!st.layer || st.error) {
     badge.className = 'badge off';
     badge.textContent = st.error ? `error: ${st.error}` : 'sin cargar';
     badge.title = '';
     return;
   }
   const effective = rendererOf(entry, st.layer);
+  if (effective === undefined) {
+    badge.className = 'badge loading';
+    badge.textContent = `${st.requested} → … · ${st.ms === null ? 'cargando…' : `${st.ms} ms`}`;
+    badge.title = '';
+    return;
+  }
   const expected = expectedRenderer(entry, st.requested);
   const parts = [`${st.requested} → ${effective}`];
   if (effective !== st.requested) parts[0] += ' ⚠';
