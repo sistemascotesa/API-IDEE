@@ -63,7 +63,7 @@
    padding: .5rem;
 }
 
-.m-dialog div.m-message > :first-child {
+.m-dialog div.m-message> :first-child {
    width: 100%;
 }
 
@@ -78,7 +78,7 @@
    box-shadow: none;
    cursor: pointer;
    padding: 5px;
-   width: 64px;
+   width: max-content !important;
    transition: all 0.3s ease;
 }
 
@@ -94,9 +94,9 @@
 /* OK */
 
 .m-dialog div.m-button {
-   text-align: right;
+   height: fit-content;
    padding: 8px;
-   height: 32px;
+   text-align: right;
 }
 
 /* Acciones añadidas con IDEE.dialog.addAction */
