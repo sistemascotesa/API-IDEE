@@ -2,6 +2,7 @@
   "dataidee_form": {
     "title": "Feature attributes",
     "apply": "Apply",
+    "delete": "Delete",
     "cancel": "Cancel",
     "required": "Required",
     "add_item": "Add item",

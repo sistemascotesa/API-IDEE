@@ -95,6 +95,9 @@ function confirmDiscard(onDiscard) {
  * - onApplied: Called once the values have been accepted by the session.
  * - onCancelled: Called when the form is abandoned.
  * - onClosed: Called whenever the dialog closes.
+ * - onDelete: In "update" mode, adds a "Delete" button that closes the form, drops its
+ *   unapplied values and calls it with the feature, which the caller removes from the
+ *   session (the deletion is sent when the session is saved).
  * @returns {boolean} Whether the dialog has been opened.
  */
 export default function openDataIDEEFormDialog({
@@ -105,6 +108,7 @@ export default function openDataIDEEFormDialog({
   onApplied = noop,
   onCancelled = noop,
   onClosed = noop,
+  onDelete,
 }) {
   const definition = loadDefinition(session, unavailableReason, feature, mode);
   if (!definition) return false;
@@ -181,6 +185,16 @@ export default function openDataIDEEFormDialog({
   };
   // Cancel and Escape share this path: unapplied changes are confirmed first.
   const requestClose = () => (isDirty() ? confirmDiscard(cancel) : cancel());
+  if (mode === 'update' && typeof onDelete === 'function') {
+    IDEE.dialog.addAction({
+      id: 'm-vectorsmanagement-dataidee-delete',
+      label: getValue('dataidee_form.delete'),
+      onClick: () => {
+        closeModal();
+        onDelete(feature);
+      },
+    }, modal);
+  }
   IDEE.dialog.addAction({
     id: 'm-vectorsmanagement-dataidee-cancel',
     label: getValue('dataidee_form.cancel'),

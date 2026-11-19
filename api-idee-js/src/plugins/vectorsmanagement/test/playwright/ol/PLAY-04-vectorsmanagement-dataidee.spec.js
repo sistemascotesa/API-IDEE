@@ -410,6 +410,7 @@ test('cancelling DataIDEE creation clears its preview without staging a feature'
   });
   await page.mouse.click(pixel[0], pixel[1]);
   await expect(page.locator('#m-vectorsmanagement-dataidee-cancel')).toBeVisible();
+  await expect(page.locator('#m-vectorsmanagement-dataidee-delete')).toHaveCount(0);
   await page.locator('#m-vectorsmanagement-dataidee-cancel').click();
   await expect.poll(() => page.evaluate(() => ({
     pending: window.dataideeDemo.layer.getEditingSession().count,
@@ -687,4 +688,62 @@ test('DataIDEE editing starts with Creation or Edition and survives switching to
   await page.locator('#m-vectorsmanagement-creation').click();
   await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
   expect(await sameSession()).toBe(false);
+});
+
+test('DataIDEE form deletes the feature when the session is saved and the clean tool is hidden', async ({ page }) => {
+  const itemCalls = [];
+  page.on('request', (request) => {
+    if (new URL(request.url()).pathname === '/local/collections/form/items/7') {
+      itemCalls.push(request.method());
+    }
+  });
+  const demo = await openLocalDataIDEE(page, 'form');
+  await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 1);
+  await page.locator('#vectorsmanagement-button').click();
+  await page.locator('#m-vectorsmanagement-layer-selector').click();
+  await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
+  await page.locator('#m-vectorsmanagement-edition').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
+  await expect(page.locator('#cleanAll')).toBeHidden();
+
+  const form = page.locator('.m-vectorsmanagement-dataidee-fields');
+  const deleteButton = page.locator('#m-vectorsmanagement-dataidee-delete');
+  const featureCount = () => page.evaluate(() => window.dataideeDemo.layer.getFeatures().length);
+  const pending = () => page.evaluate(() => window.dataideeDemo.layer.getEditingSession().count);
+  const openForm = async () => {
+    const pixel = await page.evaluate(() => {
+      const map = window.dataideeDemo.map.getMapImpl();
+      const bounds = map.getTargetElement().getBoundingClientRect();
+      const feature = window.dataideeDemo.layer.getFeatures()[0].getImpl().getFeature();
+      const point = map.getPixelFromCoordinate(feature.getGeometry().getCoordinates());
+      return [bounds.left + point[0], bounds.top + point[1]];
+    });
+    await page.mouse.click(pixel[0], pixel[1]);
+    await expect(page.locator('#editattribute')).toBeEnabled();
+    await page.locator('#editattribute').click();
+    await expect(form).toBeVisible();
+  };
+
+  await openForm();
+  await expect(deleteButton).toBeVisible();
+  await deleteButton.click();
+  await expect(form).toBeHidden();
+  await expect.poll(featureCount).toBe(0);
+  await expect.poll(pending).toBe(1);
+  expect(itemCalls).toEqual([]);
+
+  await page.locator('#m-vectorsmanagement-editing-discard').click();
+  await expect.poll(featureCount).toBe(1);
+  await expect.poll(pending).toBe(0);
+
+  await openForm();
+  await deleteButton.click();
+  await expect.poll(pending).toBe(1);
+  await page.locator('#m-vectorsmanagement-editing-save').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-status')).toContainText('Guardadas 1');
+  expect(itemCalls).toEqual(['GET', 'DELETE']);
+
+  await demo.reload();
+  await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
+  expect(await featureCount()).toBe(0);
 });

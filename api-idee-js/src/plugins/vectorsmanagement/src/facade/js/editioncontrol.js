@@ -420,12 +420,14 @@ export default class EditionControl extends IDEE.Control {
   }
 
   /**
-   * Show window to confirm delete features
+   * Show window to confirm delete features. Not available for layers edited through a
+   * session (DataIDEE), whose clean button is hidden.
    * @public
    * @function
    * @api
    */
   showModalCleanGeometries() {
+    if (this.managementControl_.isEditingLayer()) return;
     const total = this.layer_.getFeatures().length;
     const cleanMessage = getValue('clear_geometries_msg').replace('{count}', String(total));
     const templateModal = IDEE.template.compileSync(removeLayerTemplate, {
@@ -800,11 +802,22 @@ export default class EditionControl extends IDEE.Control {
     }
   }
 
+  /**
+   * Opens the attribute form of a feature of the editing session. With delete permission
+   * the form also offers to delete the feature, which stays pending until it is saved.
+   * @public
+   * @function
+   * @param {IDEE.Feature} feature Feature to edit.
+   * @returns {Boolean} Whether the form has been opened.
+   * @api
+   */
   openDataIDEEAttributeForm(feature) {
+    const capabilities = this.managementControl_.getEditingCapabilities();
     return openDataIDEEFormDialog({
       session: this.managementControl_.getActiveEditingSession(),
-      unavailableReason: this.managementControl_.getEditingCapabilities()?.form?.reason,
+      unavailableReason: capabilities?.form?.reason,
       feature,
+      onDelete: capabilities?.delete ? (target) => this.removeFeatures_([target]) : undefined,
       onClosed: () => {
         this.isEditAttributeActive = false;
         this.template?.querySelector('#editattribute')?.classList.remove('activated');
