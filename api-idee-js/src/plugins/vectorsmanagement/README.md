@@ -120,7 +120,9 @@ mantienen mientras el proceso esté activo; restaura la colección con
 la independencia entre esquema y queryables, las restricciones de escritura y
 la ausencia de metadatos. Los modos `readonly`, `dense`, `complex`, `conflict`,
 `partial`, `write-error` y `uncertain` cubren permisos, límites, conflictos,
-éxitos parciales, validación y respuestas de escritura perdidas.
+éxitos parciales, validación y respuestas de escritura perdidas. El modo
+`multipolygon` solo admite multipolígonos, como las colecciones de polígonos del
+servicio real.
 
 Los tests de Playwright de esta edición (`PLAY-04` y `PLAY-05` en
 `test/playwright/ol`) no necesitan este servidor. Usan la página de prueba del
@@ -142,7 +144,10 @@ editor muestra solo las herramientas compatibles con esa geometría principal:
 en esta colección permite crear puntos (en el mapa o por coordenadas) y editar
 su posición. No ofrece líneas, polígonos, geometrías múltiples, huecos, giro ni
 escala. Las geometrías secundarias no amplían los tipos de entidad que se pueden
-crear. Al cambiar de capa, se recalculan las herramientas disponibles. El
+crear. Al cambiar de capa, se recalculan las herramientas disponibles. Una
+colección multiparte (por ejemplo, `geometry-multipolygon`) usa las mismas
+herramientas que su tipo simple, y cada dibujo se guarda como una geometría
+multiparte de una sola parte. El
 formulario usa `/schema` para los campos de texto, números, booleanos,
 enumeraciones y fechas; `/queryables` no limita los campos editables. Las siete
 geometrías secundarias se conservan al modificar otros campos. Ningún campo

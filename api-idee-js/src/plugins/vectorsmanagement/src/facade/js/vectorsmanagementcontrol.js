@@ -453,6 +453,25 @@ export default class VectorsManagementControl extends IDEE.Control {
   }
 
   /**
+   * Geometry type that the selected layer stores for a drawn geometry. A layer edited through
+   * a session (DataIDEE) only stores the types of its collection: the drawn type or, when the
+   * collection only accepts its multipart type, that one (a drawn polygon is then stored as a
+   * single-part multipolygon).
+   *
+   * @public
+   * @function
+   * @param {String} type Drawn geometry type: Point, LineString or Polygon
+   * @returns {String|null} Type to store, or null when the layer accepts neither
+   * @api
+   */
+  getEditingGeometryType(type) {
+    const geometryTypes = this.isEditingLayer() ? this.editingCapabilities_?.geometryTypes : null;
+    if (!geometryTypes?.length || geometryTypes.includes(type.toLowerCase())) return type;
+    const multipart = `Multi${type}`;
+    return geometryTypes.includes(multipart.toLowerCase()) ? multipart : null;
+  }
+
+  /**
    * Fills the editing section of the Creation or Edition panel that has just opened and
    * starts the session if there is none: its fixed area is the current map view. The
    * session stays active while the panels close and open.
@@ -559,8 +578,6 @@ export default class VectorsManagementControl extends IDEE.Control {
     const isEditing = this.isEditingLayer();
     const attributeFormAvailable = Boolean(this.editingCapabilities_?.form?.available);
     const geometryTypes = this.editingCapabilities_?.geometryTypes;
-    const acceptsGeometry = (type) => !isEditing || !geometryTypes?.length
-      || geometryTypes.includes(type);
     // Opening Creation or Edition starts the session, so they follow the permissions
     const permissions = {
       creation: this.editingCapabilities_?.create,
@@ -576,20 +593,16 @@ export default class VectorsManagementControl extends IDEE.Control {
     const creationTemplate = this.creationControl?.template;
     if (creationTemplate) {
       const geometryButtons = {
-        pointdrawing: 'point',
-        pointlocateddrawing: 'point',
-        linedrawing: 'linestring',
-        polygondrawing: 'polygon',
-        figuredrawing: 'polygon',
-        multipointdrawing: 'multipoint',
-        multilinedrawing: 'multilinestring',
-        multipolygondrawing: 'multipolygon',
+        pointdrawing: 'Point',
+        pointlocateddrawing: 'Point',
+        linedrawing: 'LineString',
+        polygondrawing: 'Polygon',
+        figuredrawing: 'Polygon',
       };
       Object.entries(geometryButtons).forEach(([id, type]) => {
         const button = creationTemplate.querySelector(`#${id}`);
         if (button) {
-          button.hidden = !acceptsGeometry(type)
-            || (type.startsWith('multi') && (!isEditing || !this.editingSession_));
+          button.hidden = this.getEditingGeometryType(type) === null;
           button.disabled = isEditing
             && (!this.editingSession_ || !this.editingCapabilities_?.create
               || !attributeFormAvailable || button.hidden);
@@ -599,14 +612,6 @@ export default class VectorsManagementControl extends IDEE.Control {
       if (textButton) {
         textButton.hidden = isEditing;
         textButton.disabled = isEditing;
-      }
-      const finishMultiple = creationTemplate.querySelector('#finishmultipledrawing');
-      if (finishMultiple) {
-        const multipleType = this.creationControl.getMultipleGeometryType()?.toLowerCase();
-        finishMultiple.hidden = !isEditing || !this.editingSession_
-          || !multipleType || !acceptsGeometry(multipleType);
-        finishMultiple.disabled = finishMultiple.hidden
-          || !this.editingCapabilities_?.create || !attributeFormAvailable;
       }
     }
     const editionTemplate = this.editionControl?.template;
@@ -629,7 +634,7 @@ export default class VectorsManagementControl extends IDEE.Control {
         if (button) {
           let compatible = true;
           if (id === 'holedrawing') {
-            compatible = acceptsGeometry('polygon') || acceptsGeometry('multipolygon');
+            compatible = this.getEditingGeometryType('Polygon') !== null;
           } else if (id === 'rotatedrawing' || id === 'scaledrawing') {
             compatible = !isEditing || !geometryTypes?.length
               || geometryTypes.some((type) => type !== 'point');

@@ -91,6 +91,15 @@ const initialCollections = () => new Map([
       coordinates: Array.from({ length: 100001 }, (_, index) => [index / 100000, 0]),
     },
   }]],
+  ['multipolygon', [{
+    type: 'Feature',
+    id: 0,
+    properties: { name: 'Término municipal' },
+    geometry: {
+      type: 'MultiPolygon',
+      coordinates: [[[[2, 2], [3, 2], [3, 3], [2, 3], [2, 2]]]],
+    },
+  }]],
   ['form', initialFormFeatures()],
   ['patch-only', initialFormFeatures()],
   ['missing-queryables', initialFormFeatures()],
@@ -312,15 +321,19 @@ function createDataIDEEFake() {
       if (FORM_COLLECTIONS.includes(name)) {
         return json(200, formSchema(name, url.origin), { 'Content-Type': 'application/schema+json' });
       }
+      const multipolygonOnly = name === 'multipolygon';
       return json(200, {
         type: 'object',
         required: [],
-        'x-ogc-geometry-types': [
+        'x-ogc-geometry-types': multipolygonOnly ? ['multipolygon'] : [
           'point', 'multipoint', 'linestring', 'multilinestring', 'polygon', 'multipolygon',
         ],
         properties: {
           id: { type: 'integer', 'x-ogc-role': 'id', readOnly: true },
-          geometry: { format: 'geometry-point', 'x-ogc-role': 'primary-geometry' },
+          geometry: {
+            format: multipolygonOnly ? 'geometry-multipolygon' : 'geometry-point',
+            'x-ogc-role': 'primary-geometry',
+          },
           name: { type: 'string' },
           category: { type: 'string' },
         },

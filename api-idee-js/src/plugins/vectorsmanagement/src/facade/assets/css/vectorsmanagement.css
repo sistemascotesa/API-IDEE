@@ -979,34 +979,6 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     min-width: 2rem;
 }
 
-#plugin-panel-vectorsmanagement #creationBtns>#multipointdrawing,
-#plugin-panel-vectorsmanagement #creationBtns>#multilinedrawing,
-#plugin-panel-vectorsmanagement #creationBtns>#multipolygondrawing,
-#plugin-panel-vectorsmanagement #creationBtns>#finishmultipledrawing {
-    flex: 1 1 calc(50% - .2rem);
-    min-width: 6.5rem;
-    height: auto;
-    padding: .35rem .25rem;
-    border: 1px solid #ced4da;
-    border-radius: var(--idee-shape-border-radius);
-    background-color: #f5f5f5 !important;
-    color: #343a40;
-    white-space: normal;
-}
-
-#plugin-panel-vectorsmanagement #creationBtns>#multipointdrawing:hover,
-#plugin-panel-vectorsmanagement #creationBtns>#multilinedrawing:hover,
-#plugin-panel-vectorsmanagement #creationBtns>#multipolygondrawing:hover,
-#plugin-panel-vectorsmanagement #creationBtns>#finishmultipledrawing:hover {
-    background-color: #e9f2fa !important;
-    color: var(--idee-color-primary, #71a7d3);
-}
-
-#plugin-panel-vectorsmanagement #creationBtns>#multiple-drawing-status {
-    flex: 1 0 100%;
-    text-align: center;
-}
-
 #plugin-panel-vectorsmanagement #creationBtns,
 #plugin-panel-vectorsmanagement #creationBtns>button,
 #plugin-panel-vectorsmanagement #creationBtns>button.activated,

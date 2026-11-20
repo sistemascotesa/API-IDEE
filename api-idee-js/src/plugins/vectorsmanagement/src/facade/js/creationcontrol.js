@@ -147,10 +147,6 @@ export default class CreationControl extends IDEE.Control {
           triangulo: getValue('triangulo'),
           pentagono: getValue('pentagono'),
           hexagono: getValue('hexagono'),
-          multiplePoint: getValue('multiplePoint'),
-          multipleLine: getValue('multipleLine'),
-          multiplePolygon: getValue('multiplePolygon'),
-          finishMultiple: getValue('finishMultiple'),
         },
       },
     });
@@ -160,10 +156,6 @@ export default class CreationControl extends IDEE.Control {
     this.managementControl_.accessibilityTab(this.template);
     this.managementControl_.mountEditingSection(this.template);
     this.managementControl_.updateEditingAvailability();
-    this.template.querySelector('#multipointdrawing').addEventListener('click', this.onMultiPointSelected.bind(this));
-    this.template.querySelector('#multilinedrawing').addEventListener('click', this.onMultiLineSelected.bind(this));
-    this.template.querySelector('#multipolygondrawing').addEventListener('click', this.onMultiPolygonSelected.bind(this));
-    this.template.querySelector('#finishmultipledrawing').addEventListener('click', this.onFinishMultipleSelected.bind(this));
   }
 
   /**
@@ -203,63 +195,6 @@ export default class CreationControl extends IDEE.Control {
     this.template.querySelector('#figuresSelector').addEventListener('change', (e) => this.getImpl().changeFigure(e));
   }
 
-  getMultipleGeometryType() { return this.multipleGeometryType_; }
-
-  startMultipleGeometry(multipleType, drawType) {
-    const drawing = {
-      Point: { flag: 'isPointActive', button: 'multipointdrawing' },
-      LineString: { flag: 'isLineActive', button: 'multilinedrawing' },
-      Polygon: { flag: 'isPolygonActive', button: 'multipolygondrawing' },
-    }[drawType];
-    const button = this.template.querySelector(`#${drawing.button}`);
-    if (button.hidden || button.disabled) return;
-    this.deactivateDrawing();
-    this.setDrawingSourceForCurrentMode_();
-    this.multipleGeometryType_ = multipleType;
-    this.multipleCoordinates_ = [];
-    this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_start_status');
-    this.managementControl_.updateEditingAvailability();
-    this[drawing.flag] = true;
-    this.geometry = drawType;
-    this.template.querySelector(`#${drawing.button}`).classList.add('activated');
-    this.getImpl().addDrawInteraction(
-      this.geometry,
-      getToolSnapOptions(this.geometry, this.managementControl_.snapOptions),
-    );
-  }
-
-  onMultiPointSelected() { this.startMultipleGeometry('MultiPoint', 'Point'); }
-
-  onMultiLineSelected() { this.startMultipleGeometry('MultiLineString', 'LineString'); }
-
-  onMultiPolygonSelected() { this.startMultipleGeometry('MultiPolygon', 'Polygon'); }
-
-  onFinishMultipleSelected() { this.finishMultipleGeometry(); }
-
-  finishMultipleGeometry() {
-    if (!this.multipleCoordinates_?.length) {
-      this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_no_parts');
-      return;
-    }
-    this.feature = this.getImpl()
-      .createMultiGeometryFeature(this.multipleGeometryType_, this.multipleCoordinates_);
-    this.geometry = this.multipleGeometryType_;
-    if (this.managementControl_.hasActiveEditingSession()) {
-      const feature = this.feature;
-      this.getImpl().addFeatureToVectorSource(feature);
-      this.openDataIDEECreationForm_(feature, () => this.finishMultipleGeometryAfterApply_());
-      return;
-    }
-    this.addAttributesToFeature();
-    const isAddedAndSelected = this.addAndSelectFeature(this.feature);
-    this.getImpl().clearVectorSource();
-    this.multipleGeometryType_ = null;
-    this.multipleCoordinates_ = [];
-    this.template.querySelector('#multiple-drawing-status').textContent = isAddedAndSelected ? getValue('multiple_done') : '';
-    this.template.querySelector('#finishmultipledrawing').hidden = true;
-    this.deactivateDrawing();
-  }
-
   suspendDrawingForAttributeForm_() {
     if (this.isFigureActive) this.getImpl().removeFigureDrawInteraction();
     else this.getImpl().removeDrawInteraction();
@@ -296,7 +231,8 @@ export default class CreationControl extends IDEE.Control {
     this.setDrawingSourceForCurrentMode_();
   }
 
-  openDataIDEECreationForm_(feature, onApplied = () => {}) {
+  openDataIDEECreationForm_(drawn) {
+    const feature = this.toEditingGeometry_(drawn);
     this.suspendDrawingForAttributeForm_();
     const opened = openDataIDEEFormDialog({
       session: this.managementControl_.getActiveEditingSession(),
@@ -305,7 +241,6 @@ export default class CreationControl extends IDEE.Control {
       mode: 'create',
       onApplied: (applied) => {
         this.clearDataIDEEPreview_();
-        onApplied(applied);
         this.layer_.addFeatures(applied);
       },
       onCancelled: () => this.clearDataIDEEPreview_(),
@@ -313,16 +248,24 @@ export default class CreationControl extends IDEE.Control {
     if (!opened) this.clearDataIDEEPreview_();
   }
 
-  finishMultipleGeometryAfterApply_(feature) {
-    this.multipleGeometryType_ = null;
-    this.multipleCoordinates_ = [];
-    this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_done');
-    this.template.querySelector('#finishmultipledrawing').hidden = true;
-    this.deactivateDrawing();
-  }
-
-  finishMultipleGeometryAfterCancel_() {
-    this.deactivateDrawing();
+  /**
+   * Feature with the geometry type that the layer of the session stores: a drawn point, line
+   * or polygon becomes a single-part multipoint, multiline or multipolygon when its
+   * collection only accepts the multipart type. The preview keeps the drawn feature, which
+   * has the same shape, until the form is applied or cancelled.
+   * @private
+   * @function
+   * @param {IDEE.Feature} feature Drawn feature
+   * @returns {IDEE.Feature} Feature to create
+   */
+  toEditingGeometry_(feature) {
+    const type = feature.getGeometry().type;
+    const editingType = this.managementControl_.getEditingGeometryType(type);
+    if (!editingType || editingType === type) return feature;
+    return this.getImpl().createMultiGeometryFeature(
+      editingType,
+      [this.getImpl().getFeatureCoordinates(feature)],
+    );
   }
 
   /**
@@ -457,13 +400,6 @@ export default class CreationControl extends IDEE.Control {
    * @api
    */
   deactivateDrawing() {
-    if (this.multipleGeometryType_) {
-      this.multipleGeometryType_ = null;
-      this.multipleCoordinates_ = [];
-      this.getImpl().clearVectorSource();
-      this.template.querySelector('#finishmultipledrawing').hidden = true;
-      this.template.querySelector('#multiple-drawing-status').textContent = '';
-    }
     if (this.isPointActive || this.isLocatedPointActive || this.isLineActive
       || this.isPolygonActive || this.isTextActive || this.isFigureActive) {
       if (this.isLocatedPointActive) {
@@ -645,15 +581,6 @@ export default class CreationControl extends IDEE.Control {
    * @param {{feature: IDEE.Feature}} event - feature drawn by the implementation
    */
   onDraw(event) {
-    if (this.multipleGeometryType_) {
-      const coordinates = this.getImpl().getFeatureCoordinates(event.feature);
-      if (this.multipleGeometryType_ === 'MultiPoint') {
-        this.multipleCoordinates_.push(coordinates);
-      } else this.multipleCoordinates_.push(coordinates);
-      this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_part_count')
-        .replace('{count}', String(this.multipleCoordinates_.length));
-      return;
-    }
     // const lastFeature = this.feature;
     this.hideTextPoint();
     this.feature = event.feature;
