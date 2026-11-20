@@ -63,13 +63,10 @@ div.m-control.m-rotate-container {
 }
 
 .m-rotate-exterior-svg {
-  position: absolute;
-  width: 85px;
   overflow: hidden;
-}
-
-.m-rotate-exterior-svg.g-cartografia-exterior:before {
-  margin-bottom: 4px;
+  position: absolute;
+  left: -6.5%;
+  width: 102px;
 }
 
 .m-rotate-exterior-svg.g-cartografia-exterior:before,
