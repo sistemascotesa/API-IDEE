@@ -12,7 +12,7 @@ const createMap = (is3D = IDEE.impl.Map.prototype.getImplementation() === 'cesiu
     container: 'mapjs',
     zoom: 5,
     center: is3D ? [-4.1957, 39.4] : [-467062.8225, 4783459.6216],
-    controls: ['location', 'implementationswitcher'],
+    controls: ['location', 'rotate', 'implementationswitcher'],
     ...(is3D ? {} : { maxZoom: 20, minZoom: 2 }),
   });
   window.map = map;
@@ -124,8 +124,9 @@ const SAMPLE_LAYERS = [
   {
     label: 'KML',
     create: () => new IDEE.layer.KML({
-      url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
-      name: 'Delegaciones IGN',
+      url: 'https://www.ign.es/resources/CaminoDeSantiago_PRE/rutas/04/04-Via%20de%20la%20Plata%20-%20Camino%20Moz%C3%A1rabe%20a%20Santiago.kml',
+      name: 'Vía de la Plata',
+      legend: 'Vía de la Plata (KML del IGN)',
       extract: false,
     }),
   },
@@ -155,7 +156,7 @@ const SAMPLE_LAYERS = [
   {
     label: 'GeoPackage (ríos, con CORS)',
     create: () => new IDEE.layer.GeoPackage({
-      url: 'https://raw.githubusercontent.com/ngageoint/geopackage-js/master/test/fixtures/rivers.gpkg',
+      url: 'https://cdn.jsdelivr.net/gh/ngageoint/geopackage-js@master/test/fixtures/rivers.gpkg',
       name: 'rivers',
       legend: 'Ríos (GeoPackage)',
       tables: { TILESosmds: { visibility: false } },
@@ -198,7 +199,7 @@ const SAMPLE_LAYERS = [
     label: 'Tiles3D por URL (modelo de ejemplo de Cesium)',
     only: 'cesium',
     create: () => new IDEE.layer.Tiles3D({
-      url: 'https://raw.githubusercontent.com/CesiumGS/3d-tiles-samples/main/1.0/TilesetWithDiscreteLOD/tileset.json',
+      url: 'https://cdn.jsdelivr.net/gh/CesiumGS/3d-tiles-samples@main/1.0/TilesetWithDiscreteLOD/tileset.json',
       name: 'tiles3d_url',
       legend: 'Tiles3D por URL (Cesium)',
     }),

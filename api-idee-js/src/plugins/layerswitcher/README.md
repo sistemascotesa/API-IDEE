@@ -417,7 +417,7 @@ La página de pruebas (`test/dev.html`) usa el núcleo compilado en local, así 
 npm run build:ol-core
 ```
 
-El servidor de desarrollo reenvía `/data-idee-api` al servicio DataIDEE de pruebas (configurable con la variable de entorno `DATAIDEE_PROXY_TARGET`). Así se puede probar aunque el servicio no permita CORS, introduciendo en el buscador `http://localhost:6123/data-idee-api/ogc/collections`.
+Si se define la variable de entorno `DATAIDEE_PROXY_TARGET` con la URL de un servidor DataIDEE, el servidor de desarrollo reenvía `/data-idee-api` a ese servidor. Así se puede probar aunque el servicio no permita CORS, introduciendo en el buscador `http://localhost:6123/data-idee-api/ogc/collections`.
 
 ## 📂 Estructura del código / *Code scaffolding*
 

@@ -129,7 +129,7 @@
                     <option value='Servicio MVT con estilo único sin serializar' data-precharged='{"services":[{"type":"MVT","name":"Unidades administrativas (MVT)","url":"https://vt-unidades-administrativas.ign.es/1.0.0/uadministrativa/{z}/{x}/{y}.pbf","styles":[{"name":"Contorno rojo","polygon":{"fill":{"color":"red","opacity":0.1},"stroke":{"color":"red","width":2}}}]}]}'></option>
                     <option value='Servicio MVT con varios estilos serializados' data-precharged='{"services":[{"type":"MVT","name":"Unidades administrativas (MVT)","url":"https://vt-unidades-administrativas.ign.es/1.0.0/uadministrativa/{z}/{x}/{y}.pbf","styles":["eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiQ29udG9ybm8gYXp1bCBzZXJpYWxpemFkbyIsInBvbHlnb24iOnsiZmlsbCI6eyJjb2xvciI6ImJsdWUiLCJvcGFjaXR5IjowLjF9LCJzdHJva2UiOnsiY29sb3IiOiJibHVlIiwid2lkdGgiOjJ9fX1dLCJkZXNlcmlhbGl6ZWRNZXRob2QiOiIoKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzKSA9PiBJREVFLnN0eWxlLlNpbXBsZS5kZXNlcmlhbGl6ZShzZXJpYWxpemVkUGFyYW1ldGVycywgJ0lERUUuc3R5bGUuR2VuZXJpYycpKSJ9","eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiUmVsbGVubyB2ZXJkZSBzZXJpYWxpemFkbyIsInBvbHlnb24iOnsiZmlsbCI6eyJjb2xvciI6ImdyZWVuIiwib3BhY2l0eSI6MC40fSwic3Ryb2tlIjp7ImNvbG9yIjoiZ3JlZW4iLCJ3aWR0aCI6MX19fV0sImRlc2VyaWFsaXplZE1ldGhvZCI6Iigoc2VyaWFsaXplZFBhcmFtZXRlcnMpID0+IElERUUuc3R5bGUuU2ltcGxlLmRlc2VyaWFsaXplKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzLCAnSURFRS5zdHlsZS5HZW5lcmljJykpIn0=","eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiQ29udG9ybm8gbmVncm8gZ3J1ZXNvIHNlcmlhbGl6YWRvIiwicG9seWdvbiI6eyJmaWxsIjp7ImNvbG9yIjoiYmxhY2siLCJvcGFjaXR5IjowfSwic3Ryb2tlIjp7ImNvbG9yIjoiYmxhY2siLCJ3aWR0aCI6NH19fV0sImRlc2VyaWFsaXplZE1ldGhvZCI6Iigoc2VyaWFsaXplZFBhcmFtZXRlcnMpID0+IElERUUuc3R5bGUuU2ltcGxlLmRlc2VyaWFsaXplKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzLCAnSURFRS5zdHlsZS5HZW5lcmljJykpIn0="]}]}'></option>
                     <option value='Servicio WFS con varios estilos sin serializar' data-precharged='{"services":[{"type":"WFS","name":"Redes geodésicas (WFS)","url":"https://www.ign.es/wfs/redes-geodesicas","styles":[{"name":"Puntos rojos","point":{"radius":6,"fill":{"color":"red"},"stroke":{"color":"white","width":1}}},{"name":"Puntos azules grandes","point":{"radius":10,"fill":{"color":"blue"},"stroke":{"color":"white","width":1}}},{"name":"Puntos amarillos con borde negro","point":{"radius":7,"fill":{"color":"yellow"},"stroke":{"color":"black","width":2}}}]}]}'></option>
-                    <option value='Servicio KML con varios estilos sin serializar' data-precharged='{"services":[{"type":"KML","name":"Delegaciones del IGN (KML)","url":"https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml","styles":[{"name":"Puntos verdes","point":{"radius":7,"fill":{"color":"green"},"stroke":{"color":"white","width":1}}},{"name":"Puntos morados grandes","point":{"radius":11,"fill":{"color":"purple"},"stroke":{"color":"white","width":1}}},{"name":"Puntos naranjas con borde negro","point":{"radius":8,"fill":{"color":"orange"},"stroke":{"color":"black","width":2}}}]}]}'></option>
+                    <option value='Servicio KML con varios estilos sin serializar' data-precharged='{"services":[{"type":"KML","name":"Vía de la Plata (KML)","url":"https://www.ign.es/resources/CaminoDeSantiago_PRE/rutas/04/04-Via%20de%20la%20Plata%20-%20Camino%20Moz%C3%A1rabe%20a%20Santiago.kml","styles":[{"name":"Líneas verdes","line":{"stroke":{"color":"green","width":3}}},{"name":"Líneas moradas gruesas","line":{"stroke":{"color":"purple","width":6}}},{"name":"Líneas naranjas discontinuas","line":{"stroke":{"color":"orange","width":3,"linedash":[8,6]}}}]}]}'></option>
                 </datalist>
             </div>
             <div>
@@ -220,7 +220,7 @@
             maxZoom: 20,
             minZoom: 2,
             center: [-467062.8225, 4783459.6216],
-            controls: ['attributions', 'implementationswitcher']
+            controls: ['attributions', 'rotate', 'implementationswitcher']
         });
         window.map = map;
 
@@ -332,15 +332,16 @@
             {
                 label: 'KML',
                 create: () => new IDEE.layer.KML({
-                    url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
-                    name: 'Delegaciones IGN',
+                    url: 'https://www.ign.es/resources/CaminoDeSantiago_PRE/rutas/04/04-Via%20de%20la%20Plata%20-%20Camino%20Moz%C3%A1rabe%20a%20Santiago.kml',
+                    name: 'Vía de la Plata',
+                    legend: 'Vía de la Plata (KML del IGN)',
                     extract: false,
                 }),
             },
             {
                 label: 'GeoPackage (ríos, con CORS)',
                 create: () => new IDEE.layer.GeoPackage({
-                    url: 'https://raw.githubusercontent.com/ngageoint/geopackage-js/master/test/fixtures/rivers.gpkg',
+                    url: 'https://cdn.jsdelivr.net/gh/ngageoint/geopackage-js@master/test/fixtures/rivers.gpkg',
                     name: 'rivers',
                     legend: 'Ríos (GeoPackage)',
                     tables: { TILESosmds: { visibility: false } },
@@ -383,7 +384,7 @@
                 label: 'Tiles3D por URL (modelo de ejemplo de Cesium)',
                 only: 'cesium',
                 create: () => new IDEE.layer.Tiles3D({
-                    url: 'https://raw.githubusercontent.com/CesiumGS/3d-tiles-samples/main/1.0/TilesetWithDiscreteLOD/tileset.json',
+                    url: 'https://cdn.jsdelivr.net/gh/CesiumGS/3d-tiles-samples@main/1.0/TilesetWithDiscreteLOD/tileset.json',
                     name: 'tiles3d_url',
                     legend: 'Tiles3D por URL (Cesium)',
                 }),

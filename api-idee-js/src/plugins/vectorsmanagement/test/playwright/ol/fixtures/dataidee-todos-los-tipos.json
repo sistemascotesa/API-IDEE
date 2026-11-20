@@ -3,22 +3,22 @@
     "id": "local:todos_los_tipos",
     "links": [
       {
-        "href": "https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos",
+        "href": "https://dataidee.test/data-idee-api/collections/local:todos_los_tipos",
         "rel": "self",
         "type": "application/json"
       },
       {
-        "href": "https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos/items",
+        "href": "https://dataidee.test/data-idee-api/collections/local:todos_los_tipos/items",
         "rel": "items",
         "type": "application/geo+json"
       },
       {
-        "href": "https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos/queryables",
+        "href": "https://dataidee.test/data-idee-api/collections/local:todos_los_tipos/queryables",
         "rel": "http://www.opengis.net/def/rel/ogc/1.0/queryables",
         "type": "application/schema+json"
       },
       {
-        "href": "https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos/schema",
+        "href": "https://dataidee.test/data-idee-api/collections/local:todos_los_tipos/schema",
         "rel": "http://www.opengis.net/def/rel/ogc/1.0/schema",
         "type": "application/schema+json"
       }
@@ -38,7 +38,7 @@
   },
   "schema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos/schema",
+    "$id": "https://dataidee.test/data-idee-api/collections/local:todos_los_tipos/schema",
     "type": "object",
     "properties": {
       "id": {
@@ -155,7 +155,7 @@
   },
   "queryables": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos/queryables",
+    "$id": "https://dataidee.test/data-idee-api/collections/local:todos_los_tipos/queryables",
     "type": "object",
     "properties": {
       "punto": {
@@ -412,7 +412,7 @@
         "id": 1,
         "links": [
           {
-            "href": "https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos/items/1",
+            "href": "https://dataidee.test/data-idee-api/collections/local:todos_los_tipos/items/1",
             "rel": "self",
             "type": "application/geo+json"
           }
@@ -623,7 +623,7 @@
         "id": 2,
         "links": [
           {
-            "href": "https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos/items/2",
+            "href": "https://dataidee.test/data-idee-api/collections/local:todos_los_tipos/items/2",
             "rel": "self",
             "type": "application/geo+json"
           }
@@ -826,7 +826,7 @@
         "id": 3,
         "links": [
           {
-            "href": "https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos/items/3",
+            "href": "https://dataidee.test/data-idee-api/collections/local:todos_los_tipos/items/3",
             "rel": "self",
             "type": "application/geo+json"
           }
@@ -835,7 +835,7 @@
     ],
     "links": [
       {
-        "href": "https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos/items?limit=3&offset=0",
+        "href": "https://dataidee.test/data-idee-api/collections/local:todos_los_tipos/items?limit=3&offset=0",
         "rel": "self",
         "type": "application/geo+json"
       }

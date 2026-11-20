@@ -209,8 +209,9 @@ class MapLibre extends LayerBase {
     this.handlerStyleLoad_().then(() => {
       const mapLibreMap = this.olLayer.mapLibreMap;
 
-      const layers = mapLibreMap.getStyle().layers;
-      const idBackground = layers.find(({ type }) => type === 'background').id;
+      const background = mapLibreMap.getStyle().layers.find(({ type }) => type === 'background');
+      if (!background) return;
+      const idBackground = background.id;
 
       if (this.disableBackgroundColor === true) {
         mapLibreMap.setPaintProperty(idBackground, 'background-color', 'transparent');

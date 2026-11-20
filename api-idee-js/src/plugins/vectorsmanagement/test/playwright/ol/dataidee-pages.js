@@ -1,17 +1,16 @@
 /**
  * Páginas de los tests de edición DataIDEE de VectorsManagement. Usan la página de prueba
  * del plugin (servidor de pruebas de Playwright y compilaciones locales, como el resto de
- * tests) y montan lo mismo que las demos manuales de test/demo, sin su servidor.
+ * tests).
  */
-import { createDataIDEEFake } from '../../demo/dataidee-fake';
+import { createDataIDEEFake } from './dataidee-fake';
 
 export const PAGE = '/src/plugins/vectorsmanagement/test/playwright/ol/vectorsmanagement-ol.html';
 
 /**
- * Ejemplo de edición local (como test/demo/dataidee-demo.js) sobre un servicio DataIDEE en
- * memoria propio del test. El servicio responde en /local/** del origen de la página, así
- * que no hay CORS, y su estado se conserva al remontar. Si la página ya está abierta, monta
- * el ejemplo en ella sin volver a cargarla.
+ * Ejemplo de edición local sobre un servicio DataIDEE en memoria propio del test. El servicio
+ * responde en /local/** del origen de la página, así que no hay CORS, y su estado se conserva
+ * al remontar. Si la página ya está abierta, monta el ejemplo en ella sin volver a cargarla.
  * @param {Page} page Página de Playwright.
  * @param {String} [mode='local'] Colección del ejemplo ('local' es la colección demo).
  * @param {Object} [editingLimits] Límites de edición de la capa que sustituyen a los del ejemplo.
@@ -82,12 +81,12 @@ export async function openLocalDataIDEE(page, mode = 'local', editingLimits = {}
 }
 
 /**
- * Editor de la colección local:todos_los_tipos de TEUNESCO (como test/demo/teunesco-demo.js,
- * sin la capa base OSM ni el formulario de token). El servicio lo simula el test con
- * page.route antes de abrirla. Espera a que la capa cargue sus 3 entidades.
+ * Editor de una colección DataIDEE local:todos_los_tipos, con todos los tipos de campo. El
+ * servicio lo simula el test con page.route antes de abrirla. Espera a que la capa cargue
+ * sus 3 entidades.
  * @param {Page} page Página de Playwright.
  */
-export async function openTeunesco(page) {
+export async function openAllTypes(page) {
   await page.goto(PAGE, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => {
     IDEE.config('terrain', { ...IDEE.config.terrain, default: '' });
@@ -100,9 +99,9 @@ export async function openTeunesco(page) {
       bbox: ol.proj.transformExtent([-7.35, 38.65, -5.95, 39.75], 'EPSG:4326', 'EPSG:3857'),
     });
     const layer = new IDEE.layer.DataIDEE({
-      url: 'https://teunescodes.grupotecopy.es/data-idee-api',
+      url: 'https://dataidee.test/data-idee-api',
       name: 'local:todos_los_tipos',
-      legend: 'Todos los tipos · TEUNESCO',
+      legend: 'Todos los tipos',
       limit: 250,
       extract: false,
     }, {
@@ -133,7 +132,7 @@ export async function openTeunesco(page) {
     plugin.minPanelWidth = 360;
     plugin.maxPanelWidth = 440;
     map.addPlugin(plugin);
-    window.teunescoDemo = { map, layer, plugin };
+    window.allTypesEditor = { map, layer, plugin };
   });
-  await page.waitForFunction(() => window.teunescoDemo?.layer.getFeatures().length === 3);
+  await page.waitForFunction(() => window.allTypesEditor?.layer.getFeatures().length === 3);
 }

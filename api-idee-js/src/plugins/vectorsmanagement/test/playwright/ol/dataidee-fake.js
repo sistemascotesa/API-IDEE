@@ -1,7 +1,7 @@
 /*
- * In-memory DataIDEE (OGC API Features) service under /local/. It is shared by the editing
- * demo server (dataidee-server.js) and the Playwright tests of VectorsManagement, which
- * create one instance per test: every instance keeps its own collections.
+ * In-memory DataIDEE (OGC API Features) service under /local/ for the Playwright tests of
+ * VectorsManagement, which create one instance per test: every instance keeps its own
+ * collections.
  */
 
 const initialFormFeatures = () => [{
