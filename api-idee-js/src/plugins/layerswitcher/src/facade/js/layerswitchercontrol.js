@@ -35,6 +35,10 @@ import {
   parseOGCAPIUrl, isCollectionsPath, isSameService, isDataFileUrl,
 } from './ogcapi/ogcapiurl';
 import detectOGCAPIFeatures from './ogcapi/ogcapidetector';
+import DataIDEEService, {
+  DATAIDEE_FOUND, DATAIDEE_PROTECTED, DATAIDEE_NOT_FOUND, DATAIDEE_UNREACHABLE,
+  DATAIDEE_COLLECTIONS_ERROR,
+} from './ogcapi/dataideeservice';
 import {
   createOGCAPIModes, getModeByLayerType, MODE_STANDARD, MODE_DATAIDEE,
 } from './ogcapi/ogcapimodes';
@@ -2281,9 +2285,12 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   /**
    * Detecta si la URL es un servicio OGC API Features (raíz, /collections o
-   * /collections/{id}) y, si lo es, muestra el selector de modo y sus capas.
+   * /collections/{id}) y, si lo es, muestra el selector de modo y sus capas. Si no lo es,
+   * la busca como URL base de un servicio DataIDEE (openDataIDEEService_).
    * @param {String} url URL introducida.
-   * @returns {Promise<Boolean>} Verdadero si es un servicio OGC API Features.
+   * @returns {Promise<Boolean>} Verdadero si es un servicio OGC API Features o DataIDEE.
+   * Se rechaza con ServiceUnreachableError si /collections no responde y la URL tampoco
+   * es la base de un servicio DataIDEE.
    */
   openOGCAPIService_(url) {
     // Si el servicio se abre en modo DataIDEE con una sesión vigente, la detección ya pide
@@ -2295,7 +2302,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     const requestOptions = authorization
       ? { headers: { Authorization: authorization } } : undefined;
     return detectOGCAPIFeatures(url, requestOptions).then(async (service) => {
-      if (!service) return false;
+      if (!service) return this.openDataIDEEService_(url);
       // Detectar el login de DataIDEE solo sirve para elegir el modo inicial: si ya se
       // conoce, se omite (y con él sus peticiones de prueba)
       if (service.isProtected || (!this.getKnownOGCMode_(service.root)
@@ -2308,7 +2315,66 @@ export default class LayerswitcherControl extends IDEE.Control {
         ? { root: service.root, json: service.collectionsJson, authorization } : null;
       this.printOGCModal(url);
       return true;
-    });
+    }, (error) => this.openDataIDEEService_(url).then((isDataIDEE) => {
+      if (!isDataIDEE) throw error;
+      return true;
+    }));
+  }
+
+  /**
+   * Busca un servicio DataIDEE a partir de su URL base (DataIDEEService: su API OGC en
+   * {base}/ogc). Si lo encuentra, abre sus capas en modo DataIDEE con el listado ya leído
+   * e informa al usuario de las colecciones encontradas; si el listado exige sesión, lo
+   * avisa la carga del servicio (auth_required); si no se puede leer, muestra el error.
+   * @private
+   * @param {String} url URL introducida.
+   * @returns {Promise<Boolean>} Verdadero si la URL es la base de un servicio DataIDEE,
+   * aunque no se hayan podido leer sus colecciones.
+   */
+  async openDataIDEEService_(url) {
+    const service = new DataIDEEService(url);
+    const { root } = service;
+    const knownMode = this.getKnownOGCMode_(root);
+    const token = !knownMode || knownMode === MODE_DATAIDEE
+      ? this.authManager_.getValidToken(root) : undefined;
+    const authorization = token ? `Bearer ${token}` : undefined;
+    const result = await service.discover(authorization
+      ? { headers: { Authorization: authorization } } : undefined);
+    if (result.status === DATAIDEE_NOT_FOUND) return false;
+    if ([DATAIDEE_COLLECTIONS_ERROR, DATAIDEE_UNREACHABLE].includes(result.status)) {
+      const message = result.status === DATAIDEE_UNREACHABLE
+        ? getValue('exception.unreachable')
+        : getValue('exception.dataidee_collections').replace('{root}', () => IDEE.utils.escapeXSS(root));
+      IDEE.dialog.error(message, undefined, this.order);
+      this.removeLoading();
+      return true;
+    }
+    this.dataIDEEServices_.add(root);
+    this.ogcPrefetch_ = result.collectionsJson
+      ? { root, json: result.collectionsJson, authorization } : null;
+    this.printOGCModal(root);
+    if (result.status !== DATAIDEE_PROTECTED) {
+      IDEE.toast.info(await this.getDataIDEEMessage_(result), this.order, 6000);
+    }
+    return true;
+  }
+
+  /**
+   * Mensaje con las colecciones que se han encontrado en un servicio DataIDEE: cuántas o,
+   * si no hay ninguna visible, que se inicie sesión (o que no publica colecciones si el
+   * servicio no tiene login).
+   * @private
+   * @param {Object} result Resultado de DataIDEEService#discover (DATAIDEE_FOUND o
+   * DATAIDEE_EMPTY).
+   * @returns {Promise<String>} Mensaje.
+   */
+  async getDataIDEEMessage_({ status, root, count }) {
+    if (status === DATAIDEE_FOUND) {
+      return count === 1 ? getValue('dataidee_collection_found')
+        : getValue('dataidee_collections_found').replace('{count}', String(count));
+    }
+    return getValue(await this.authManager_.isLoginAvailable(root)
+      ? 'dataidee_collections_login' : 'dataidee_no_collections');
   }
 
   // Registra los checks de las capas
