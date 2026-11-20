@@ -82,18 +82,24 @@ module.exports = {
         directory: path.join(__dirname, '..', '..', '..', '..', 'dist'),
         publicPath: '/api-idee-dist',
       },
+      {
+        directory: path.join(__dirname, '..', '..', '..', '..', 'test'),
+        publicPath: '/api-idee-test',
+      },
     ],
     // Servicio DataIDEE de pruebas sin CORS: se sirve a través de localhost
-    proxy: {
-      '/data-idee-api': {
-        target: process.env.DATAIDEE_PROXY_TARGET || 'https://teunescodataideedes.grupotecopy.es',
-        changeOrigin: true,
-        secure: true,
-        // La raíz redirige a http://<servidor>/...: se reescribe a localhost
-        autoRewrite: true,
-        protocolRewrite: 'http',
+    ...(process.env.DATAIDEE_PROXY_TARGET ? {
+      proxy: {
+        '/data-idee-api': {
+          target: process.env.DATAIDEE_PROXY_TARGET,
+          changeOrigin: true,
+          secure: true,
+          // La raíz redirige a http://<servidor>/...: se reescribe a localhost
+          autoRewrite: true,
+          protocolRewrite: 'http',
+        },
       },
-    },
+    } : {}),
   },
   watchOptions: {
     poll: 1000,

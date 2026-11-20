@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
-import fixture from './fixtures/teunesco-todos-los-tipos';
-import { openTeunesco } from './dataidee-pages';
+import fixture from './fixtures/dataidee-todos-los-tipos';
+import { openAllTypes } from './dataidee-pages';
 
-const serviceUrl = 'https://teunescodes.grupotecopy.es/data-idee-api';
+const serviceUrl = 'https://dataidee.test/data-idee-api';
 const collectionPath = '/collections/local:todos_los_tipos';
 
-// The public collection contract is recorded in the fixture. Every API request is
-// intercepted, including writes: these tests never modify the TEUNESCO service.
+// The collection contract is recorded in the fixture. Every API request is
+// intercepted, including writes: these tests never reach a real service.
 async function mockService(page, geometryType) {
   const features = structuredClone(fixture.items.features);
   const schema = structuredClone(fixture.schema);
@@ -34,7 +34,7 @@ async function mockService(page, geometryType) {
     contentType: 'image/png',
     body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aN1cAAAAASUVORK5CYII=', 'base64'),
   }));
-  await page.route('https://teunescodes.grupotecopy.es/**', async (route) => {
+  await page.route('https://dataidee.test/**', async (route) => {
     const request = route.request();
     const path = decodeURIComponent(new URL(request.url()).pathname)
       .replace('/data-idee-api', '').replace(/\/$/, '');
@@ -79,7 +79,7 @@ async function mockService(page, geometryType) {
 }
 
 async function openEditor(page, tool = 'edition') {
-  await openTeunesco(page);
+  await openAllTypes(page);
   await expect(page.locator('#m-vectorsmanagement-layer-selector-options')).toBeHidden();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
   await page.locator('#m-vectorsmanagement-layer-selector-options span')
@@ -91,7 +91,7 @@ async function openEditor(page, tool = 'edition') {
 
 async function featurePixel(page) {
   return page.evaluate(() => {
-    const { map, layer } = window.teunescoDemo;
+    const { map, layer } = window.allTypesEditor;
     const native = map.getMapImpl();
     const bounds = native.getTargetElement().getBoundingClientRect();
     const feature = layer.getFeatures().find((item) => item.getId() === 1);
@@ -105,7 +105,7 @@ async function openAttributeForm(page) {
   await openEditor(page);
   await page.mouse.click(...await featurePixel(page));
   await expect.poll(() => page.evaluate(() => (
-    window.teunescoDemo.plugin.controls[0].getSelectedFeatures().length
+    window.allTypesEditor.plugin.controls[0].getSelectedFeatures().length
   ))).toBe(1);
   await page.locator('#editattribute').click();
   return page.locator('.m-vectorsmanagement-dataidee-fields');
@@ -114,10 +114,10 @@ async function openAttributeForm(page) {
 const fieldError = (form, path) => form.locator(`[data-field-path="${path}"] .m-vectorsmanagement-dataidee-error`);
 const fieldWarning = (form, path) => form.locator(`[data-field-path="${path}"] .m-vectorsmanagement-dataidee-warning`);
 const pendingChanges = (page) => page.evaluate(() => (
-  window.teunescoDemo.layer.getEditingSession().count
+  window.allTypesEditor.layer.getEditingSession().count
 ));
 
-test('TEUNESCO editor stages geometry and typed attributes together and retains secondary geometries', async ({ page }) => {
+test('All-types collection editor stages geometry and typed attributes together and retains secondary geometries', async ({ page }) => {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   const { features, writes } = await mockService(page);
@@ -129,17 +129,17 @@ test('TEUNESCO editor stages geometry and typed attributes together and retains 
   const pixel = await featurePixel(page);
   await page.mouse.click(...pixel);
   await expect.poll(() => page.evaluate(() => (
-    window.teunescoDemo.plugin.controls[0].getSelectedFeatures().length
+    window.allTypesEditor.plugin.controls[0].getSelectedFeatures().length
   ))).toBe(1);
   await page.locator('#movedrawing').click();
-  await page.evaluate(() => window.teunescoDemo.map.getMapImpl().renderSync());
+  await page.evaluate(() => window.allTypesEditor.map.getMapImpl().renderSync());
   const dragPixel = await featurePixel(page);
   await page.mouse.move(...dragPixel);
   await page.mouse.down();
   await page.mouse.move(dragPixel[0] + 40, dragPixel[1] - 25, { steps: 10 });
   await page.mouse.up();
   await expect.poll(() => page.evaluate(() => (
-    window.teunescoDemo.layer.getEditingSession().count
+    window.allTypesEditor.layer.getEditingSession().count
   ))).toBe(1);
   await page.locator('#editattribute').click();
   const form = page.locator('.m-vectorsmanagement-dataidee-fields');
@@ -158,7 +158,7 @@ test('TEUNESCO editor stages geometry and typed attributes together and retains 
   await page.locator('#m-vectorsmanagement-dataidee-apply').click();
   await expect(form).toBeHidden();
   await expect.poll(() => page.evaluate(() => (
-    window.teunescoDemo.layer.getEditingSession().count
+    window.allTypesEditor.layer.getEditingSession().count
   ))).toBe(1);
   await page.locator('#m-vectorsmanagement-editing-save').click();
   await expect(page.locator('#m-vectorsmanagement-editing-status')).toContainText('Guardadas 1');
@@ -183,8 +183,8 @@ test('TEUNESCO editor stages geometry and typed attributes together and retains 
   expect(features[0].properties.fecha_hora_zona)
     .toBe(fixture.items.features[0].properties.fecha_hora_zona);
   // The page is opened again over the same mocked service, which keeps the saved feature
-  await openTeunesco(page);
-  const saved = await page.evaluate(() => window.teunescoDemo.layer.getFeatures()
+  await openAllTypes(page);
+  const saved = await page.evaluate(() => window.allTypesEditor.layer.getFeatures()
     .find((feature) => feature.getId() === 1).getAttributes());
   expect(saved).toMatchObject({
     nombre: 'Mérida editada', entero: 60001, booleano: false, entero_corto: 2,
@@ -192,13 +192,13 @@ test('TEUNESCO editor stages geometry and typed attributes together and retains 
   expect(errors).toEqual([]);
 });
 
-test('TEUNESCO form opens and cancels without a false dirty prompt, and fits a narrow viewport', async ({ page }) => {
+test('All-types collection form opens and cancels without a false dirty prompt, and fits a narrow viewport', async ({ page }) => {
   await mockService(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openEditor(page);
   await page.mouse.click(...await featurePixel(page));
   await expect.poll(() => page.evaluate(() => (
-    window.teunescoDemo.plugin.controls[0].getSelectedFeatures().length
+    window.allTypesEditor.plugin.controls[0].getSelectedFeatures().length
   ))).toBe(1);
   await page.locator('#editattribute').click();
   const prompts = [];
@@ -212,7 +212,7 @@ test('TEUNESCO form opens and cancels without a false dirty prompt, and fits a n
   await expect(modal).toBeVisible();
   await expect(page.locator('#m-vectorsmanagement-dataidee-apply')).toBeInViewport();
   await expect(page.locator('#m-vectorsmanagement-dataidee-cancel')).toBeInViewport();
-  await page.screenshot({ path: test.info().outputPath('teunesco-mobile-form.png') });
+  await page.screenshot({ path: test.info().outputPath('all-types-mobile-form.png') });
   const bounds = await page.evaluate(() => ({
     width: window.innerWidth, document: document.documentElement.scrollWidth,
   }));
@@ -223,12 +223,12 @@ test('TEUNESCO form opens and cancels without a false dirty prompt, and fits a n
   expect(prompts).toEqual([]);
 });
 
-test('TEUNESCO form asks in an API dialog before discarding unapplied changes', async ({ page }) => {
+test('All-types collection form asks in an API dialog before discarding unapplied changes', async ({ page }) => {
   await mockService(page);
   await openEditor(page);
   await page.mouse.click(...await featurePixel(page));
   await expect.poll(() => page.evaluate(() => (
-    window.teunescoDemo.plugin.controls[0].getSelectedFeatures().length
+    window.allTypesEditor.plugin.controls[0].getSelectedFeatures().length
   ))).toBe(1);
   await page.locator('#editattribute').click();
   const prompts = [];
@@ -257,7 +257,7 @@ test('TEUNESCO form asks in an API dialog before discarding unapplied changes', 
   expect(prompts).toEqual([]);
 });
 
-test('TEUNESCO exposes the complete styled VectorsManagement toolbar', async ({ page }) => {
+test('All-types collection exposes the complete styled VectorsManagement toolbar', async ({ page }) => {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   const { writes } = await mockService(page);
@@ -303,7 +303,7 @@ const buttonsDifferingFromApi = (page, selectors) => page.evaluate((list) => {
   });
 }, selectors);
 
-test('TEUNESCO editing buttons share the API button style', async ({ page }) => {
+test('All-types collection editing buttons share the API button style', async ({ page }) => {
   await mockService(page);
   await openEditor(page);
   // The pointer may rest on a session button: hover would change its style.
@@ -315,7 +315,7 @@ test('TEUNESCO editing buttons share the API button style', async ({ page }) => 
   ])).toEqual([]);
 });
 
-test('TEUNESCO form buttons follow the API dialog and button styles', async ({ page }) => {
+test('All-types collection form buttons follow the API dialog and button styles', async ({ page }) => {
   const { features, schema } = await mockService(page);
   schema.properties.opcional = { title: 'Opcional', type: 'boolean' };
   schema.properties.lista = { title: 'Lista', type: 'array', items: { type: 'string' } };
@@ -345,12 +345,12 @@ test('TEUNESCO form buttons follow the API dialog and button styles', async ({ p
   ])).toEqual([]);
 });
 
-test('TEUNESCO creates a feature when the edition tool is not available', async ({ page }) => {
+test('All-types collection creates a feature when the edition tool is not available', async ({ page }) => {
   await mockService(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openEditor(page, 'creation');
   // Same state as the plugin option edition: false, without another demo page.
-  await page.evaluate(() => { delete window.teunescoDemo.plugin.controls[0].editionControl; });
+  await page.evaluate(() => { delete window.allTypesEditor.plugin.controls[0].editionControl; });
   await page.locator('#pointdrawing').click();
   await page.mouse.click(...await featurePixel(page));
   const form = page.locator('.m-vectorsmanagement-dataidee-fields');
@@ -362,10 +362,10 @@ test('TEUNESCO creates a feature when the edition tool is not available', async 
   await page.locator('#m-vectorsmanagement-dataidee-apply').click();
   await expect(form).toBeHidden();
   await expect.poll(() => pendingChanges(page)).toBe(1);
-  expect(await page.evaluate(() => window.teunescoDemo.layer.getFeatures().length)).toBe(4);
+  expect(await page.evaluate(() => window.allTypesEditor.layer.getFeatures().length)).toBe(4);
 });
 
-test('TEUNESCO date pickers and unset fields preserve zero, false and untouched timestamps', async ({ page }) => {
+test('All-types collection date pickers and unset fields preserve zero, false and untouched timestamps', async ({ page }) => {
   const { features, writes } = await mockService(page);
   const offsetTimestamp = '2026-10-25T02:30:45.123+02:00';
   features[0].properties.fecha_hora = offsetTimestamp;
@@ -373,7 +373,7 @@ test('TEUNESCO date pickers and unset fields preserve zero, false and untouched 
   await openEditor(page);
   await page.mouse.click(...await featurePixel(page));
   await expect.poll(() => page.evaluate(() => (
-    window.teunescoDemo.plugin.controls[0].getSelectedFeatures().length
+    window.allTypesEditor.plugin.controls[0].getSelectedFeatures().length
   ))).toBe(1);
   await page.locator('#editattribute').click();
   const form = page.locator('.m-vectorsmanagement-dataidee-fields');
@@ -398,12 +398,12 @@ test('TEUNESCO date pickers and unset fields preserve zero, false and untouched 
   await form.locator('[data-value-path="/decimal_simple"]').fill('');
   await form.locator('[data-value-path="/entero_corto"]').selectOption('');
   await form.locator('[data-value-path="/fecha_hora_zona"]').scrollIntoViewIfNeeded();
-  await page.screenshot({ path: test.info().outputPath('teunesco-date-pickers.png') });
+  await page.screenshot({ path: test.info().outputPath('all-types-date-pickers.png') });
   await page.setViewportSize({ width: 390, height: 844 });
   await form.locator('[data-value-path="/fecha_hora_zona"]').scrollIntoViewIfNeeded();
   await expect(form.locator('[data-value-path="/fecha_hora_zona"]')).toBeInViewport();
   await expect(page.locator('#m-vectorsmanagement-dataidee-apply')).toBeInViewport();
-  await page.screenshot({ path: test.info().outputPath('teunesco-date-pickers-mobile.png') });
+  await page.screenshot({ path: test.info().outputPath('all-types-date-pickers-mobile.png') });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.locator('#m-vectorsmanagement-dataidee-apply').click();
   await expect(form).toBeHidden();
@@ -444,8 +444,8 @@ test('TEUNESCO date pickers and unset fields preserve zero, false and untouched 
   expect(writes[1].feature.properties).toEqual(expectedProperties);
   expect(writes[1].headers['if-match']).toBe('"2"');
   // The page is opened again over the same mocked service, which keeps the saved feature
-  await openTeunesco(page);
-  const saved = await page.evaluate(() => window.teunescoDemo.layer.getFeatures()
+  await openAllTypes(page);
+  const saved = await page.evaluate(() => window.allTypesEditor.layer.getFeatures()
     .find((feature) => feature.getId() === 1).getAttributes());
   expect(saved).toMatchObject({ entero: 0, booleano: false, fecha_hora_zona: '2026-11-04T15:20:00Z' });
   ['texto', 'decimal_simple', 'entero_corto', 'fecha', 'fecha_hora'].forEach((name) => {
@@ -453,7 +453,7 @@ test('TEUNESCO date pickers and unset fields preserve zero, false and untouched 
   });
 });
 
-test('TEUNESCO form reports errors while typing and clears them without reopening', async ({ page }) => {
+test('All-types collection form reports errors while typing and clears them without reopening', async ({ page }) => {
   await mockService(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   const form = await openAttributeForm(page);
@@ -473,7 +473,7 @@ test('TEUNESCO form reports errors while typing and clears them without reopenin
   await expect(form.locator('[data-field-path="/nombre"]')).toHaveClass(/is-valid/);
 });
 
-test('TEUNESCO form cannot apply invalid values and locates the first error', async ({ page }) => {
+test('All-types collection form cannot apply invalid values and locates the first error', async ({ page }) => {
   const { writes } = await mockService(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   const form = await openAttributeForm(page);
@@ -495,7 +495,7 @@ test('TEUNESCO form cannot apply invalid values and locates the first error', as
   expect(writes[0].feature.properties.entero).toBe(0);
 });
 
-test('TEUNESCO form rejects unreadable numbers instead of dropping the attribute', async ({ page }) => {
+test('All-types collection form rejects unreadable numbers instead of dropping the attribute', async ({ page }) => {
   await mockService(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   const form = await openAttributeForm(page);
@@ -508,7 +508,7 @@ test('TEUNESCO form rejects unreadable numbers instead of dropping the attribute
   expect(await pendingChanges(page)).toBe(0);
 });
 
-test('TEUNESCO booleans are checkboxes that tell false from not set', async ({ page }) => {
+test('All-types collection booleans are checkboxes that tell false from not set', async ({ page }) => {
   const { features, schema, writes } = await mockService(page);
   delete features[0].properties.booleano;
   schema.properties.opcional = { title: 'Opcional', type: 'boolean' };
@@ -544,7 +544,7 @@ test('TEUNESCO booleans are checkboxes that tell false from not set', async ({ p
   expect(Object.hasOwn(writes[1].feature.properties, 'opcional')).toBe(false);
 });
 
-test('TEUNESCO keeps stored values that break the schema while they stay untouched', async ({ page }) => {
+test('All-types collection keeps stored values that break the schema while they stay untouched', async ({ page }) => {
   const { features, writes } = await mockService(page);
   Object.assign(features[0].properties, {
     entero_corto: 9,
@@ -575,7 +575,7 @@ test('TEUNESCO keeps stored values that break the schema while they stay untouch
   });
 });
 
-test('TEUNESCO blocks a stored invalid value once the user changes it to another invalid one', async ({ page }) => {
+test('All-types collection blocks a stored invalid value once the user changes it to another invalid one', async ({ page }) => {
   const { features } = await mockService(page);
   features[0].properties.fecha = '2024-02-31';
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -587,7 +587,7 @@ test('TEUNESCO blocks a stored invalid value once the user changes it to another
   expect(await pendingChanges(page)).toBe(0);
 });
 
-test('TEUNESCO text limits count characters without truncating what was typed', async ({ page }) => {
+test('All-types collection text limits count characters without truncating what was typed', async ({ page }) => {
   const { schema } = await mockService(page);
   schema.properties.nombre.maxLength = 10;
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -603,7 +603,7 @@ test('TEUNESCO text limits count characters without truncating what was typed', 
   expect(await pendingChanges(page)).toBe(0);
 });
 
-test('TEUNESCO applies date limits from the schema', async ({ page }) => {
+test('All-types collection applies date limits from the schema', async ({ page }) => {
   const { schema } = await mockService(page);
   schema.properties.fecha.formatMinimum = '2020-01-01';
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -616,12 +616,12 @@ test('TEUNESCO applies date limits from the schema', async ({ page }) => {
   await expect(fieldError(form, '/fecha')).toHaveCount(0);
 });
 
-test('TEUNESCO save refuses a value changed outside the form and sends nothing', async ({ page }) => {
+test('All-types collection save refuses a value changed outside the form and sends nothing', async ({ page }) => {
   const { writes } = await mockService(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openEditor(page);
   await page.evaluate(() => {
-    const feature = window.teunescoDemo.layer.getFeatures().find((item) => item.getId() === 1);
+    const feature = window.allTypesEditor.layer.getFeatures().find((item) => item.getId() === 1);
     feature.getImpl().getFeature().set('entero', -5);
   });
   await expect.poll(() => pendingChanges(page)).toBe(1);
@@ -631,7 +631,7 @@ test('TEUNESCO save refuses a value changed outside the form and sends nothing',
   expect(await pendingChanges(page)).toBe(1);
 });
 
-test('TEUNESCO form is labelled, keyboard reachable and adapts to narrow windows', async ({ page }) => {
+test('All-types collection form is labelled, keyboard reachable and adapts to narrow windows', async ({ page }) => {
   await mockService(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   const form = await openAttributeForm(page);
@@ -646,12 +646,12 @@ test('TEUNESCO form is labelled, keyboard reachable and adapts to narrow windows
   const fits = () => page.locator('.m-vectorsmanagement-dataidee-form').evaluate((node) => node.scrollWidth <= node.clientWidth);
   expect(await position('/entero')).not.toBe(await position('/entero_largo'));
   expect(await fits()).toBe(true);
-  await page.screenshot({ path: test.info().outputPath('teunesco-form-desktop.png') });
+  await page.screenshot({ path: test.info().outputPath('all-types-form-desktop.png') });
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await position('/entero')).toBe(await position('/entero_largo'));
   expect(await fits()).toBe(true);
   await expect(page.locator('#m-vectorsmanagement-dataidee-apply')).toBeInViewport();
-  await page.screenshot({ path: test.info().outputPath('teunesco-form-mobile.png') });
+  await page.screenshot({ path: test.info().outputPath('all-types-form-mobile.png') });
 });
 
 [
@@ -679,20 +679,20 @@ test('TEUNESCO form is labelled, keyboard reachable and adapts to narrow windows
     await expect(page.locator('#creationBtns > button:not([class^="vectorsmanagement-icon-"])'))
       .toHaveCount(0);
     if (geometryType.startsWith('Multi')) {
-      expect(await page.evaluate((drawnType) => window.teunescoDemo.plugin.controls[0]
+      expect(await page.evaluate((drawnType) => window.allTypesEditor.plugin.controls[0]
         .getEditingGeometryType(drawnType), geometryType.slice('Multi'.length)))
         .toBe(geometryType);
     } else if (geometryType === 'Point') {
       // A stale/programmatic click must not activate an incompatible interaction either.
       await page.locator('#linedrawing').evaluate((button) => button.click());
-      expect(await page.evaluate(() => window.teunescoDemo.plugin.controls[0]
+      expect(await page.evaluate(() => window.allTypesEditor.plugin.controls[0]
         .creationControl.isLineActive)).toBe(false);
       await page.locator('#pointdrawing').click();
       await page.mouse.click(...await featurePixel(page));
       await expect(page.locator('.m-vectorsmanagement-dataidee-fields')).toBeVisible();
       await page.locator('#m-vectorsmanagement-dataidee-cancel').click();
       await expect.poll(() => page.evaluate(() => (
-        window.teunescoDemo.layer.getEditingSession().count
+        window.allTypesEditor.layer.getEditingSession().count
       ))).toBe(0);
     }
     await page.locator('#m-vectorsmanagement-edition').click();
@@ -718,7 +718,7 @@ test('TEUNESCO form is labelled, keyboard reachable and adapts to narrow windows
       await page.screenshot({ path: test.info().outputPath('point-creation-tools-mobile.png') });
       await page.setViewportSize({ width: 1440, height: 1000 });
       await page.locator('#m-vectorsmanagement-editing-end').click();
-      await page.evaluate(() => window.teunescoDemo.map.addLayers(new IDEE.layer.Vector({
+      await page.evaluate(() => window.allTypesEditor.map.addLayers(new IDEE.layer.Vector({
         name: 'Local geometry test', legend: 'Local geometry test',
       })));
       await page.locator('#m-vectorsmanagement-layer-selector').click();

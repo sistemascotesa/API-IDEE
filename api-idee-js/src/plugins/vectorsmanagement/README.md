@@ -122,54 +122,28 @@ Ambos paneles muestran al principio el estado de la sesión y los botones
 cambiar de herramienta y termina con **Finalizar edición**, al cambiar de capa
 o si se retira la capa del mapa; al terminar se cierra el panel.
 
-Para probar los cambios sin dependencias adicionales, compila el núcleo y el
-plugin, y arranca el servicio local:
-
-```sh
-npm run build:ol-core
-npm run build --prefix src/plugins/vectorsmanagement
-node src/plugins/vectorsmanagement/test/demo/dataidee-server.js
-```
-
-Abre `http://127.0.0.1:8787` para editar la colección local. Los cambios se
-mantienen mientras el proceso esté activo; restaura la colección con
-`POST /local/reset`. Los modos `form`, `patch-only`, `missing-queryables`,
-`missing-schema` y `malformed-schema` sirven para probar formularios anidados,
-la independencia entre esquema y queryables, las restricciones de escritura y
-la ausencia de metadatos. Los modos `readonly`, `dense`, `complex`, `conflict`,
-`partial`, `write-error` y `uncertain` cubren permisos, límites, conflictos,
-éxitos parciales, validación y respuestas de escritura perdidas. El modo
-`multipolygon` solo admite multipolígonos, como las colecciones de polígonos del
-servicio real.
-
 Los tests de Playwright de esta edición (`PLAY-04` y `PLAY-05` en
-`test/playwright/ol`) no necesitan este servidor. Usan la página de prueba del
-plugin y el mismo servicio en memoria (`test/demo/dataidee-fake.js`), con uno
-propio por test. Como el resto de tests de Playwright, necesitan las compilaciones
-del núcleo y del plugin.
+`test/playwright/ol`) simulan el servicio DataIDEE en la página de prueba del
+plugin. `PLAY-04` usa el servicio en memoria `dataidee-fake.js`, uno propio por
+test. Sus modos `form`, `patch-only`, `missing-queryables`, `missing-schema` y
+`malformed-schema` prueban formularios anidados, la independencia entre esquema
+y queryables, las restricciones de escritura y la ausencia de metadatos. Los
+modos `readonly`, `dense`, `complex`, `conflict`, `partial`, `write-error` y
+`uncertain` cubren permisos, límites, conflictos, éxitos parciales, validación y
+respuestas de escritura perdidas. Como el resto de tests de Playwright,
+necesitan las compilaciones del núcleo y del plugin.
 
-Abre `http://127.0.0.1:8787/teunesco.html` para editar la colección real
-[`local:todos_los_tipos`](https://teunescodes.grupotecopy.es/data-idee-api/collections/local:todos_los_tipos).
-La demo carga los municipios sobre OpenStreetMap y abre VectorsManagement con
-selección, creación, edición, estilos, análisis, Turf, descarga, añadir capa y
-ayuda habilitados. Sirve el núcleo, el plugin y sus estilos desde las mismas
-compilaciones locales que el ejemplo anterior; las peticiones de datos y
-metadatos van directamente al servicio TEUNESCO.
-
-Selecciona **Todos los tipos · TEUNESCO** y abre **Editar** o **Crear**. La
-geometría principal `punto` se modifica con las herramientas del mapa. El
-editor muestra solo las herramientas compatibles con esa geometría principal:
-en esta colección permite crear puntos (en el mapa o por coordenadas) y editar
-su posición. No ofrece líneas, polígonos, geometrías múltiples, huecos, giro ni
-escala. Las geometrías secundarias no amplían los tipos de entidad que se pueden
-crear. Al cambiar de capa, se recalculan las herramientas disponibles. Una
-colección multiparte (por ejemplo, `geometry-multipolygon`) usa las mismas
-herramientas que su tipo simple, y cada dibujo se guarda como una geometría
-multiparte de una sola parte. El
-formulario usa `/schema` para los campos de texto, números, booleanos,
-enumeraciones y fechas; `/queryables` no limita los campos editables. Las siete
-geometrías secundarias se conservan al modificar otros campos. Ningún campo
-geométrico se muestra en el formulario. El identificador lo genera el servicio.
+La geometría principal de la colección se modifica con las herramientas del
+mapa. El editor muestra solo las herramientas compatibles con esa geometría
+principal: en una colección de puntos permite crear puntos (en el mapa o por
+coordenadas) y editar su posición, pero no ofrece líneas, polígonos, geometrías
+múltiples, huecos, giro ni escala. Las geometrías secundarias no amplían los
+tipos de entidad que se pueden crear. Al cambiar de capa, se recalculan las
+herramientas disponibles. El formulario usa `/schema` para los campos de texto,
+números, booleanos, enumeraciones y fechas; `/queryables` no limita los campos
+editables. Las geometrías secundarias se conservan al modificar otros campos.
+Ningún campo geométrico se muestra en el formulario. El identificador lo genera
+el servicio.
 
 Los campos de fecha usan un selector de fecha y los de fecha-hora un selector
 de fecha y hora en UTC, indicado junto al control. Las fechas-hora sin cambios
@@ -179,12 +153,9 @@ No hay un selector adicional para definir valores: los desplegables incluyen
 Los valores `0` y `false` se conservan. Los campos obligatorios siguen sujetos
 a la validación del esquema; un campo obligatorio nullable puede quedar `null`.
 
-Si el servicio requiere autenticación para escribir, abre **Cómo editar y
-configurar el acceso** y aplica el token de tu sesión DataIDEE. La demo utiliza
-`layer.setToken()` y `Authorization: Bearer`; no almacena el token en URL,
-cookies ni almacenamiento del navegador. Recargar la página elimina ese token.
-**Guardar** escribe en la colección real; **Descartar** solo revierte la sesión
-local. El servidor de la demo no actúa como proxy ni modifica CORS del servicio.
+Si el servicio requiere autenticación para escribir, el token de la sesión
+DataIDEE se aplica a la capa con `layer.setToken()` y se envía como
+`Authorization: Bearer`. **Descartar** solo revierte la sesión local.
 
 Para crear una
 entidad, dibuja primero su geometría y completa después el formulario basado en
@@ -227,14 +198,14 @@ aviso y se conserva intacto mientras no se modifique; si cambia, el nuevo valor
 debe ser válido. Las fechas y horas se muestran y se escriben en UTC, y las que no
 se editan conservan su zona horaria y su precisión.
 
-La prueba `PLAY-05-vectorsmanagement-teunesco` usa una copia del contrato público
-de esta colección e intercepta todas las peticiones a TEUNESCO, incluidas las
-escrituras. Comprueba el desplazamiento de un punto y los atributos tipados en
+La prueba `PLAY-05-vectorsmanagement-todos-los-tipos` simula una colección
+`local:todos_los_tipos` con todos los tipos de campo e intercepta todas las
+peticiones, incluidas las escrituras. Comprueba el desplazamiento de un punto y los atributos tipados en
 un único PUT completo, la conservación de geometrías secundarias y fechas, la
 recarga, la reapertura del formulario y el diálogo en pantalla estrecha:
 
 ```sh
-./node_modules/.bin/playwright test src/plugins/vectorsmanagement/test/playwright/ol/PLAY-05-vectorsmanagement-teunesco.spec.js --config=playwright-config/playwright-ol.config.js --workers=1
+./node_modules/.bin/playwright test src/plugins/vectorsmanagement/test/playwright/ol/PLAY-05-vectorsmanagement-todos-los-tipos.spec.js --config=playwright-config/playwright-ol.config.js --workers=1
 ```
 
 Las reglas de validación se comprueban aparte, sin navegador ni servicio, en
