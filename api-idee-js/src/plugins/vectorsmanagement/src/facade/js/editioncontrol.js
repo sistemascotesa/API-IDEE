@@ -813,9 +813,9 @@ export default class EditionControl extends IDEE.Control {
   }
 
   /**
-   * Opens the attribute form of a feature of the editing session. With delete permission
-   * the form also offers to delete the feature, which stays pending until it is saved. In a
-   * read-only collection, which has no session, the form only shows the attributes.
+   * Opens the attribute form of a feature of the editing session. Features are deleted with
+   * the clean tool (#cleanAll), not from the form. In a read-only collection, which has no
+   * session, the form only shows the attributes.
    * @public
    * @function
    * @param {IDEE.Feature} feature Feature to edit or consult.
@@ -830,7 +830,6 @@ export default class EditionControl extends IDEE.Control {
       capabilities,
       unavailableReason: capabilities?.form?.reason,
       feature,
-      onDelete: capabilities?.delete ? (target) => this.removeFeatures_([target]) : undefined,
       onClosed: () => {
         this.isEditAttributeActive = false;
         this.template?.querySelector('#editattribute')?.classList.remove('activated');

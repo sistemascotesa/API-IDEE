@@ -2,7 +2,6 @@
   "dataidee_form": {
     "title": "Atributos de entidad",
     "apply": "Aplicar",
-    "delete": "Borrar",
     "cancel": "Cancelar",
     "required": "Obligatorio",
     "add_item": "Añadir elemento",

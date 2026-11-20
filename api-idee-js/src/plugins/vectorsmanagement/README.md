@@ -105,10 +105,10 @@ deshabilitados con el motivo.
 Cuando la capa está en `{base}/ogc`, los permisos salen del registro de la
 colección en la API de mantenimiento de DataIDEE
 (`{base}/collections?q={"name":…}&d=1`, el de su origen: el identificador OGC
-es `origen:nombre`). La colección se puede modificar y borrar si es `writable`,
-y crear entidades si además el servicio genera sus identificadores
-(`idGenerated`). Sin ese registro, los permisos salen de la descripción OpenAPI
-o de las clases de conformidad del servicio.
+es `origen:nombre`). `writable` es el único parámetro que decide los permisos:
+si es verdadero, se pueden crear, modificar y borrar entidades; si es falso, la
+colección es de solo lectura. Sin ese registro, los permisos salen de la
+descripción OpenAPI o de las clases de conformidad del servicio.
 
 En una colección de solo lectura (no permite crear, modificar ni borrar),
 **Editar** se muestra si su esquema permite el formulario de atributos y abre

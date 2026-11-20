@@ -3,7 +3,8 @@ import { PAGE } from './dataidee-pages';
 
 /**
  * Colecciones del servicio simulado: identificador OGC → leyenda y registro de la API de
- * mantenimiento (sin writable, la colección no tiene registro).
+ * mantenimiento (sin writable, la colección no tiene registro). Solo writable decide los
+ * permisos: idGenerated no los cambia.
  */
 const LAYERS = {
   'local:escritura': { legend: 'Escritura', writable: true, idGenerated: true },
@@ -141,7 +142,7 @@ const expectButtons = (page, { creation, edition }) => Promise.all(
 
 [
   ['local:escritura', { creation: true, edition: true }],
-  ['externa:estaciones', { creation: false, edition: true }],
+  ['externa:estaciones', { creation: true, edition: true }],
   ['nuts:lectura', { creation: false, edition: true }],
   ['local:sin_registro', { creation: true, edition: true }],
 ].forEach(([collection, buttons]) => {
