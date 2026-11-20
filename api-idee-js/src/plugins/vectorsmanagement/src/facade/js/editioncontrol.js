@@ -136,7 +136,8 @@ export default class EditionControl extends IDEE.Control {
   active(html) {
     this.template = IDEE.template.compileSync(template, {
       vars: {
-        editingSession: this.managementControl_.isEditingLayer(),
+        editingSession: this.managementControl_.isEditingLayer()
+          && !this.managementControl_.isReadOnlyEditingLayer(),
         translations: {
           editing_edit: getValue('editing_edit'),
           editgeometria: getValue('editgeometria'),
@@ -782,7 +783,8 @@ export default class EditionControl extends IDEE.Control {
    * @api stable
    */
   showFeatureAttributes() {
-    if (this.managementControl_.hasActiveEditingSession()) {
+    if (this.managementControl_.hasActiveEditingSession()
+      || this.managementControl_.isReadOnlyEditingLayer()) {
       const selected = this.managementControl_.getSelectedFeatures();
       if (selected.length !== 1) {
         IDEE.dialog.info(getValue('dataidee_form.multiple_selection'));
@@ -811,10 +813,11 @@ export default class EditionControl extends IDEE.Control {
 
   /**
    * Opens the attribute form of a feature of the editing session. With delete permission
-   * the form also offers to delete the feature, which stays pending until it is saved.
+   * the form also offers to delete the feature, which stays pending until it is saved. In a
+   * read-only collection, which has no session, the form only shows the attributes.
    * @public
    * @function
-   * @param {IDEE.Feature} feature Feature to edit.
+   * @param {IDEE.Feature} feature Feature to edit or consult.
    * @returns {Boolean} Whether the form has been opened.
    * @api
    */
@@ -822,6 +825,8 @@ export default class EditionControl extends IDEE.Control {
     const capabilities = this.managementControl_.getEditingCapabilities();
     return openDataIDEEFormDialog({
       session: this.managementControl_.getActiveEditingSession(),
+      readOnly: this.managementControl_.isReadOnlyEditingLayer(),
+      capabilities,
       unavailableReason: capabilities?.form?.reason,
       feature,
       onDelete: capabilities?.delete ? (target) => this.removeFeatures_([target]) : undefined,

@@ -453,6 +453,22 @@ export default class VectorsManagementControl extends IDEE.Control {
   }
 
   /**
+   * Indicates whether the selected layer is edited through a session (DataIDEE) but its
+   * collection does not allow any change. Its features are only consulted: Edition opens
+   * without a session and shows their attributes in a read-only form.
+   *
+   * @public
+   * @function
+   * @returns {Boolean} true when the permissions are known and allow nothing
+   * @api
+   */
+  isReadOnlyEditingLayer() {
+    const capabilities = this.editingCapabilities_;
+    return this.isEditingLayer() && Boolean(capabilities)
+      && !capabilities.create && !capabilities.update && !capabilities.delete;
+  }
+
+  /**
    * Geometry type that the selected layer stores for a drawn geometry. A layer edited through
    * a session (DataIDEE) only stores the types of its collection: the drawn type or, when the
    * collection only accepts its multipart type, that one (a drawn polygon is then stored as a
@@ -578,10 +594,12 @@ export default class VectorsManagementControl extends IDEE.Control {
     const isEditing = this.isEditingLayer();
     const attributeFormAvailable = Boolean(this.editingCapabilities_?.form?.available);
     const geometryTypes = this.editingCapabilities_?.geometryTypes;
+    const readOnly = this.isReadOnlyEditingLayer();
     // Opening Creation or Edition starts the session, so they follow the permissions
     const permissions = {
       creation: this.editingCapabilities_?.create,
-      edition: this.editingCapabilities_?.update || this.editingCapabilities_?.delete,
+      edition: this.editingCapabilities_?.update || this.editingCapabilities_?.delete
+        || (readOnly && attributeFormAvailable),
     };
     Object.entries(permissions).forEach(([id, allowed]) => {
       const button = this.html.querySelector(`#m-vectorsmanagement-${id}`);
@@ -589,6 +607,7 @@ export default class VectorsManagementControl extends IDEE.Control {
       const blocked = isEditing && !allowed;
       button.disabled = blocked;
       button.title = blocked ? this.getEditingBlockedReason_() : getValue(id);
+      button.hidden = blocked && Boolean(this.editingCapabilities_);
     });
     const creationTemplate = this.creationControl?.template;
     if (creationTemplate) {
@@ -639,7 +658,7 @@ export default class VectorsManagementControl extends IDEE.Control {
             compatible = !isEditing || !geometryTypes?.length
               || geometryTypes.some((type) => type !== 'point');
           }
-          button.hidden = !compatible;
+          button.hidden = !compatible || readOnly;
           button.disabled = !updateAllowed || !compatible;
         }
       });
@@ -656,14 +675,16 @@ export default class VectorsManagementControl extends IDEE.Control {
         attributes.hidden = false;
         const selectedCount = this.getSelectedFeatures().length;
         const formAvailable = attributeFormAvailable;
-        attributes.disabled = isEditing && (!this.editingSession_
-          || !this.editingCapabilities_?.update || !formAvailable || selectedCount !== 1);
+        const canOpenForm = readOnly
+          || Boolean(this.editingSession_ && this.editingCapabilities_?.update);
+        attributes.disabled = isEditing
+          && (!canOpenForm || !formAvailable || selectedCount !== 1);
         attributes.title = getValue('attributes');
         if (isEditing && selectedCount !== 1) {
           attributes.title = getValue('dataidee_form.multiple_selection');
-        } else if (isEditing && !this.editingSession_) {
+        } else if (isEditing && !readOnly && !this.editingSession_) {
           attributes.title = getValue('dataidee_form.editing_not_started');
-        } else if (isEditing && !this.editingCapabilities_?.update) {
+        } else if (isEditing && !readOnly && !this.editingCapabilities_?.update) {
           attributes.title = getValue('dataidee_form.collection_readonly');
         } else if (isEditing && !formAvailable) {
           attributes.title = this.editingCapabilities_?.form?.reason

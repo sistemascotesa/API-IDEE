@@ -1195,7 +1195,8 @@ div#popup-box {
     width: 50px;
 }
 #plugin-panel-vectorsmanagement #creationBtns > button[hidden],
-#plugin-panel-vectorsmanagement #editionBtns > button[hidden] {
+#plugin-panel-vectorsmanagement #editionBtns > button[hidden],
+.m-vectorsmanagement-toolsContent > button[hidden] {
   display: none;
 }
 

@@ -474,10 +474,10 @@ test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain
   await page.locator('#vectorsmanagement-button').click();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
   await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
-  await expect(page.locator('#m-vectorsmanagement-creation')).toBeDisabled();
-  await expect(page.locator('#m-vectorsmanagement-edition')).toBeDisabled();
-  await expect(page.locator('#m-vectorsmanagement-edition'))
+  await expect(page.locator('#m-vectorsmanagement-creation'))
     .toHaveAttribute('title', 'La colección no permite esta operación.');
+  await expect(page.locator('#m-vectorsmanagement-creation')).toBeHidden();
+  await expect(page.locator('#m-vectorsmanagement-edition')).toBeVisible();
 
   await openLocalDataIDEE(page, 'dense', { pageSize: 1000 });
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());

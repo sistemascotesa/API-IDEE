@@ -26,6 +26,7 @@
     "collection_readonly": "Aquesta col·lecció no permet actualitzar atributs.",
     "read_only": "Només lectura",
     "legend": "* Camp obligatori. La resta de camps són opcionals.",
+    "readonly_legend": "Col·lecció només de lectura: els atributs només es poden consultar.",
     "out_of_domain": "{value} (fora del domini)",
     "hint_range": "Entre {min} i {max}",
     "hint_minimum": "Mínim {min}",

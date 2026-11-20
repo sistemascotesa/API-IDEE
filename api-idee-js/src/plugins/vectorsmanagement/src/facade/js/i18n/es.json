@@ -26,6 +26,7 @@
     "collection_readonly": "Esta colección no permite actualizar atributos.",
     "read_only": "Solo lectura",
     "legend": "* Campo obligatorio. El resto de campos son opcionales.",
+    "readonly_legend": "Colección de solo lectura: los atributos solo se pueden consultar.",
     "out_of_domain": "{value} (fuera del dominio)",
     "hint_range": "Entre {min} y {max}",
     "hint_minimum": "Mínimo {min}",

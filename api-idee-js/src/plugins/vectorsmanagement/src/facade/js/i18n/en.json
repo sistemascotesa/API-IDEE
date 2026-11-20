@@ -26,6 +26,7 @@
     "collection_readonly": "This collection does not allow attribute updates.",
     "read_only": "Read-only",
     "legend": "* Required field. All other fields are optional.",
+    "readonly_legend": "Read-only collection: the attributes can only be consulted.",
     "out_of_domain": "{value} (outside the domain)",
     "hint_range": "Between {min} and {max}",
     "hint_minimum": "Minimum {min}",
