@@ -1,6 +1,6 @@
 # GeoPackage: fuente de datos, estrategias de carga y lectura por rangos
 
-Documentación técnica interna del requisito «Fuente de datos IDEE.layer.GeoPackage» (PPT TEUNESCO, apdo. 2.2.5). El contrato público está en el JSDoc de `IDEE.layer.GeoPackage` (`api-idee-js/src/facade/js/layer/GeoPackage.js`).
+Documentación técnica interna de la fuente de datos `IDEE.layer.GeoPackage`. El contrato público está en el JSDoc de `IDEE.layer.GeoPackage` (`api-idee-js/src/facade/js/layer/GeoPackage.js`).
 
 ## Qué es
 

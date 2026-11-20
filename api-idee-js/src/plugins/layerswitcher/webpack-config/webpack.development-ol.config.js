@@ -88,16 +88,18 @@ module.exports = {
       },
     ],
     // Servicio DataIDEE de pruebas sin CORS: se sirve a través de localhost
-    proxy: {
-      '/data-idee-api': {
-        target: process.env.DATAIDEE_PROXY_TARGET || 'https://teunescodes.grupotecopy.es',
-        changeOrigin: true,
-        secure: true,
-        // La raíz redirige a http://<servidor>/...: se reescribe a localhost
-        autoRewrite: true,
-        protocolRewrite: 'http',
+    ...(process.env.DATAIDEE_PROXY_TARGET ? {
+      proxy: {
+        '/data-idee-api': {
+          target: process.env.DATAIDEE_PROXY_TARGET,
+          changeOrigin: true,
+          secure: true,
+          // La raíz redirige a http://<servidor>/...: se reescribe a localhost
+          autoRewrite: true,
+          protocolRewrite: 'http',
+        },
       },
-    },
+    } : {}),
   },
   watchOptions: {
     poll: 1000,
