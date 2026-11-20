@@ -431,8 +431,9 @@ export default class EditionControl extends IDEE.Control {
   /**
    * Asks to confirm the deletion of the features selected when it opens or, without
    * selection, of all the features of the layer, and deletes them if confirmed. The question
-   * is a standard API dialog (choicedialog). In a session (DataIDEE) it only deletes the
-   * selected features, and its button follows the permissions of the session.
+   * is a standard API dialog (choicedialog). In a session (DataIDEE) all the features are
+   * those of its fixed area, and the deletions stay pending until the session is saved. The
+   * button follows the permissions of the session.
    * @public
    * @function
    * @api
@@ -441,10 +442,6 @@ export default class EditionControl extends IDEE.Control {
     const cleanAll = this.template.querySelector('#cleanAll');
     if (!cleanAll || cleanAll.hidden || cleanAll.disabled) return;
     const selected = [...this.managementControl_.getSelectedFeatures()];
-    if (selected.length === 0 && this.managementControl_.isEditingLayer()) {
-      IDEE.dialog.info(getValue('exception.featuresel'), getValue('title_clear_geometries'));
-      return;
-    }
     askChoice({
       id: CLEAN_DIALOG_ID,
       title: getValue('title_clear_geometries'),
@@ -463,7 +460,9 @@ export default class EditionControl extends IDEE.Control {
 
   /**
    * Message that confirms the deletion of the selected features or, without selection, of
-   * all the features of the layer. The dialog shows HTML, so the layer name is escaped.
+   * all the features of the layer. In a session they are those of its edit area, and the
+   * message tells that the deletions are sent on saving. The dialog shows HTML, so the
+   * layer name is escaped.
    * @private
    * @function
    * @param {Array<IDEE.Feature>} selected features selected when the deletion is requested
@@ -474,7 +473,9 @@ export default class EditionControl extends IDEE.Control {
       return getValue('clear_selected_msg').replace('{count}', String(selected.length));
     }
     const layerName = IDEE.utils.escapeXSS(String(this.layer_.legend || this.layer_.name));
-    return getValue('clear_geometries_msg')
+    const messageKey = this.managementControl_.hasActiveEditingSession()
+      ? 'clear_session_geometries_msg' : 'clear_geometries_msg';
+    return getValue(messageKey)
       .replace('{count}', String(this.layer_.getFeatures().length))
       .replace('{layer}', () => layerName);
   }

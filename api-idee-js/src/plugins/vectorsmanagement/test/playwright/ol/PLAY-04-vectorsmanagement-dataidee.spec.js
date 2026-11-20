@@ -794,3 +794,33 @@ test('DataIDEE form deletes the feature when the session is saved and the clean 
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   expect(await featureCount()).toBe(0);
 });
+
+test('DataIDEE: «Limpiar» sin selección borra la zona de edición, pendiente hasta guardar', async ({ page }) => {
+  const deletes = [];
+  page.on('request', (request) => {
+    if (request.method() === 'DELETE') deletes.push(request.url());
+  });
+  await openLocalDataIDEE(page);
+  await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 5);
+  await page.locator('#vectorsmanagement-button').click();
+  await page.locator('#m-vectorsmanagement-layer-selector').click();
+  await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
+  await page.locator('#m-vectorsmanagement-edition').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
+  const featureCount = () => page.evaluate(() => window.dataideeDemo.layer.getFeatures().length);
+  const pending = () => page.evaluate(() => window.dataideeDemo.layer.getEditingSession().count);
+  const message = await page.evaluate(() => IDEE.language
+    .getTranslation(IDEE.language.getLang()).vectorsmanagement.clear_session_geometries_msg);
+
+  await page.locator('#cleanAll').click();
+  await expect(page.locator('.m-dialog.info .m-message'))
+    .toHaveText(message.replace('{count}', '5').replace('{layer}', 'Colección local demo'));
+  await page.locator('#m-vectorsmanagement-clean-confirm').click();
+  await expect.poll(featureCount).toBe(0);
+  await expect.poll(pending).toBe(5);
+  expect(deletes).toEqual([]);
+
+  await page.locator('#m-vectorsmanagement-editing-discard').click();
+  await expect.poll(featureCount).toBe(5);
+  await expect.poll(pending).toBe(0);
+});
