@@ -136,6 +136,62 @@ const isInternalLayer = (layer) => INTERNAL_LAYERS.includes(layer.name)
   || (isString(layer.name) && layer.name.endsWith('_attributions'))
   || (layer.displayInLayerSwitcher === false && layer.isBase !== true);
 
+const captureStyleList = (styles) => {
+  if (!Array.isArray(styles)) return undefined;
+  const plain = attempt(() => toPlain(styles));
+  return Array.isArray(plain) && plain.length === styles.length ? plain : undefined;
+};
+
+const captureLayerState = (layer) => {
+  const state = {
+    visible: attempt(() => layer.isVisible(), true),
+    opacity: attempt(() => layer.getOpacity()),
+    zIndex: attempt(() => layer.getZIndex()),
+    legend: layer.legend,
+    isBase: layer.isBase,
+    displayInLayerSwitcher: layer.displayInLayerSwitcher,
+  };
+  if (typeof layer.getStyles === 'function') {
+    state.styles = attempt(() => toPlain(layer.getStyles()));
+  }
+  // Los KML y KMZ traen sus propios estilos: no se pisan con el que tengan aplicado
+  if (typeof layer.getStyle === 'function' && !['KML', 'KMZ'].includes(layer.type)) {
+    const style = attempt(() => layer.getStyle());
+    if (style instanceof Style) state.style = toPlain(style);
+    const predefinedStyles = captureStyleList(layer.predefinedStyles);
+    if (predefinedStyles) state.predefinedStyles = predefinedStyles;
+  }
+  return state;
+};
+
+const applyLayerState = (target, layerState, withZIndex) => {
+  const layer = target;
+  attempt(() => {
+    if (layerState.legend !== undefined) layer.legend = layerState.legend;
+  });
+  attempt(() => {
+    if (layerState.displayInLayerSwitcher !== undefined) {
+      layer.displayInLayerSwitcher = layerState.displayInLayerSwitcher;
+    }
+  });
+  if (withZIndex && !layerState.isBase && typeof layerState.zIndex === 'number') {
+    attempt(() => layer.setZIndex(layerState.zIndex));
+  }
+  // La opacidad se aplica después de crear: Cesium toma `opacity: 0` como 1
+  if (typeof layerState.opacity === 'number') attempt(() => layer.setOpacity(layerState.opacity));
+  if (layerState.styles && typeof layer.setStyles === 'function') {
+    attempt(() => layer.setStyles(fromPlain(layerState.styles)));
+  }
+  if (layerState.style && typeof layer.setStyle === 'function') {
+    attempt(() => layer.setStyle(fromPlain(layerState.style)));
+  }
+  if (Array.isArray(layerState.predefinedStyles) && Array.isArray(layer.predefinedStyles)) {
+    attempt(() => {
+      layer.predefinedStyles = fromPlain(layerState.predefinedStyles);
+    });
+  }
+};
+
 const captureLayer = (layer) => {
   const key = getClassKey(window.IDEE.layer, layer) || layer.type;
   const parameters = Object.values(layer.constructorParameters || {}).slice(0, 3);
@@ -150,23 +206,8 @@ const captureLayer = (layer) => {
   const entry = {
     key,
     params: args,
-    state: {
-      visible: attempt(() => layer.isVisible(), true),
-      opacity: attempt(() => layer.getOpacity()),
-      zIndex: attempt(() => layer.getZIndex()),
-      legend: layer.legend,
-      isBase: layer.isBase,
-      displayInLayerSwitcher: layer.displayInLayerSwitcher,
-    },
+    state: captureLayerState(layer),
   };
-  if (typeof layer.getStyles === 'function') {
-    entry.state.styles = attempt(() => toPlain(layer.getStyles()));
-  }
-  // Los KML y KMZ traen sus propios estilos: no se pisan con el que tengan aplicado
-  if (typeof layer.getStyle === 'function' && !['KML', 'KMZ'].includes(layer.type)) {
-    const style = attempt(() => layer.getStyle());
-    if (style instanceof Style) entry.state.style = toPlain(style);
-  }
   if (key === 'Vector') {
     entry.features = attempt(() => layer.toGeoJSON().features, []);
   }
@@ -174,6 +215,17 @@ const captureLayer = (layer) => {
     entry.children = layer.getLayers().map(captureLayer);
   }
   return entry;
+};
+
+const captureGeoPackage = (geopackage) => {
+  const json = toPlain(geopackage.toJSON());
+  const tables = Object.keys(json.properties?.tables || {}).reduce((states, tableName) => {
+    const layer = attempt(() => geopackage.getLayer(tableName), null);
+    // eslint-disable-next-line no-param-reassign
+    if (layer) states[tableName] = captureLayerState(layer);
+    return states;
+  }, {});
+  return { json, tables };
 };
 
 const captureSection = (section) => ({
@@ -240,7 +292,7 @@ export const captureState = (map) => {
   const layerIds = layers.map(layerId);
   const parkedLayers = registry.parked.layers.filter((entry) => !layerIds.includes(layerId(entry)));
   const sections = map.getSections().map(captureSection);
-  const packages = geopackages.map((geopackage) => toPlain(geopackage.toJSON()));
+  const packages = geopackages.map(captureGeoPackage);
   return {
     implementation,
     view: getViewState(map),
@@ -257,7 +309,8 @@ export const captureState = (map) => {
     geopackages: [
       ...packages,
       ...(registry.parked.geopackages || [])
-        .filter((json) => !packages.some((geopackage) => geopackage.name === json.name)),
+        .filter((entry) => !packages
+          .some((geopackage) => geopackage.json.name === entry.json.name)),
     ],
     controls: [
       ...controls,
@@ -397,37 +450,26 @@ export const restoreState = (state, container) => {
       parked.sections.push(entry);
     }
   });
-  (state.geopackages || []).forEach((json) => {
+  (state.geopackages || []).forEach((entry) => {
     try {
-      map.addLayers(fromPlain(json));
+      const geopackage = new IDEE.layer.GeoPackage(fromPlain(entry.json));
+      geopackage.once(IDEE.evt.LOAD_LAYERS, () => {
+        Object.entries(entry.tables || {}).forEach(([tableName, tableState]) => {
+          const layer = geopackage.getLayer(tableName);
+          if (!layer) return;
+          applyLayerState(layer, tableState, true);
+          attempt(() => layer.setVisible(tableState.visible !== false));
+        });
+      });
+      map.addLayers(geopackage);
     } catch (error) {
-      parked.geopackages.push(json);
+      parked.geopackages.push(entry);
     }
   });
 
-  created.forEach(([createdLayer, entry]) => {
-    const layer = createdLayer;
+  created.forEach(([layer, entry]) => {
     const layerState = entry.state || {};
-    const isTopLevel = state.layers.includes(entry);
-    attempt(() => {
-      if (layerState.legend !== undefined) layer.legend = layerState.legend;
-    });
-    attempt(() => {
-      if (layerState.displayInLayerSwitcher !== undefined) {
-        layer.displayInLayerSwitcher = layerState.displayInLayerSwitcher;
-      }
-    });
-    if (isTopLevel && !layerState.isBase && typeof layerState.zIndex === 'number') {
-      attempt(() => layer.setZIndex(layerState.zIndex));
-    }
-    // La opacidad se aplica después de crear: Cesium toma `opacity: 0` como 1
-    if (typeof layerState.opacity === 'number') attempt(() => layer.setOpacity(layerState.opacity));
-    if (layerState.styles && typeof layer.setStyles === 'function') {
-      attempt(() => layer.setStyles(fromPlain(layerState.styles)));
-    }
-    if (layerState.style && typeof layer.setStyle === 'function') {
-      attempt(() => layer.setStyle(fromPlain(layerState.style)));
-    }
+    applyLayerState(layer, layerState, state.layers.includes(entry));
     if (Array.isArray(entry.features) && entry.features.length > 0) {
       const inDegrees = mapCode === 'EPSG:4326' || mapCode === 'EPSG:4979';
       const toMapGeometry = (geometry) => (geometry && !inDegrees
