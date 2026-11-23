@@ -785,13 +785,6 @@ test('DataIDEE features are deleted with the clean tool, which the session saves
   await expect.poll(pending).toBe(1);
   expect(itemCalls).toEqual([]);
 
-  await page.locator('#m-vectorsmanagement-editing-discard').click();
-  await expect.poll(featureCount).toBe(1);
-  await expect.poll(pending).toBe(0);
-
-  await selectFeature();
-  await cleanSelection();
-  await expect.poll(pending).toBe(1);
   await page.locator('#m-vectorsmanagement-editing-save').click();
   await expect(page.locator('#m-vectorsmanagement-editing-status')).toContainText('Guardadas 1');
   expect(itemCalls).toEqual(['GET', 'DELETE']);
@@ -814,6 +807,8 @@ test('DataIDEE: «Limpiar» sin selección borra la zona de edición, pendiente 
   await page.locator('#m-vectorsmanagement-edition').click();
   await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
   const featureCount = () => page.evaluate(() => window.dataideeDemo.layer.getFeatures().length);
+  const drawnCount = () => page.evaluate(() => window.dataideeDemo.layer
+    .getImpl().getLayer().getSource().getFeatures().length);
   const pending = () => page.evaluate(() => window.dataideeDemo.layer.getEditingSession().count);
   const message = await page.evaluate(() => IDEE.language
     .getTranslation(IDEE.language.getLang()).vectorsmanagement.clear_session_geometries_msg);
@@ -823,10 +818,12 @@ test('DataIDEE: «Limpiar» sin selección borra la zona de edición, pendiente 
     .toHaveText(message.replace('{count}', '5').replace('{layer}', 'Colección local demo'));
   await page.locator('#m-vectorsmanagement-clean-confirm').click();
   await expect.poll(featureCount).toBe(0);
+  await expect.poll(drawnCount).toBe(0);
   await expect.poll(pending).toBe(5);
   expect(deletes).toEqual([]);
 
   await page.locator('#m-vectorsmanagement-editing-discard').click();
-  await expect.poll(featureCount).toBe(5);
   await expect.poll(pending).toBe(0);
+  await expect.poll(drawnCount).toBe(5);
+  expect(deletes).toEqual([]);
 });

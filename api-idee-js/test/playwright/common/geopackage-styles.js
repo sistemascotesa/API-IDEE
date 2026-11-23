@@ -33,37 +33,38 @@ export default function registerGeoPackageStyleTests(engine) {
           const style = layer.getStyle();
           return style ? { type: style.constructor.name, serialized: style.serialize() } : null;
         };
+        window.tableStyles = () => {
+          const gpkg = window.map.geopackages[0];
+          const places = gpkg.getLayer('places').getStyle();
+          const routes = gpkg.getLayer('routes').getStyle();
+          return {
+            places: places instanceof IDEE.style.Category ? places.serialize() : null,
+            routes: routes instanceof IDEE.style.Generic ? routes.serialize() : null,
+          };
+        };
       });
     });
 
     test('configuración JSON con instancias de estilo comunes y por tabla', async ({ page }) => {
-      const result = await page.evaluate(async () => {
+      const expected = await page.evaluate(async () => {
         const { common, category } = window.createStyles();
-        const gpkg = await window.mapWith({
+        await window.mapWith({
           type: 'GeoPackage',
           url: '/fixtures/geopackage/multivector.gpkg',
           name: 'm',
           style: common,
           tables: { places: { style: category } },
         });
-        return {
-          expected: { common: common.serialize(), category: category.serialize() },
-          places: gpkg.getLayer('places').getStyle() instanceof IDEE.style.Category,
-          routes: gpkg.getLayer('routes').getStyle() instanceof IDEE.style.Generic,
-        };
+        return { common: common.serialize(), category: category.serialize() };
       });
-      expect(result.places).toBe(true);
-      expect(result.routes).toBe(true);
-      await expect.poll(() => page.evaluate(() => ({
-        places: window.map.geopackages[0].getLayer('places').getStyle().serialize(),
-        routes: window.map.geopackages[0].getLayer('routes').getStyle().serialize(),
-      }))).toEqual({ places: result.expected.category, routes: result.expected.common });
+      await expect.poll(() => page.evaluate(() => window.tableStyles()))
+        .toEqual({ places: expected.category, routes: expected.common });
     });
 
     test('configuración JSON con estilos serializados', async ({ page }) => {
-      const result = await page.evaluate(async () => {
+      const expected = await page.evaluate(async () => {
         const { common, category } = window.createStyles();
-        const gpkg = await window.mapWith({
+        await window.mapWith({
           type: 'GeoPackage',
           url: '/fixtures/geopackage/multivector.gpkg',
           name: 'm',
@@ -72,14 +73,10 @@ export default function registerGeoPackageStyleTests(engine) {
             tables: { places: { style: category.serialize() } },
           },
         });
-        return {
-          expected: { common: common.serialize(), category: category.serialize() },
-          places: window.styleOf(gpkg.getLayer('places')),
-          routes: window.styleOf(gpkg.getLayer('routes')),
-        };
+        return { common: common.serialize(), category: category.serialize() };
       });
-      expect(result.places).toEqual({ type: expect.any(String), serialized: result.expected.category });
-      expect(result.routes).toEqual({ type: expect.any(String), serialized: result.expected.common });
+      await expect.poll(() => page.evaluate(() => window.tableStyles()))
+        .toEqual({ places: expected.category, routes: expected.common });
     });
 
     test('toJSON y el constructor conservan los estilos, también Proportional y Cluster', async ({ page }) => {
