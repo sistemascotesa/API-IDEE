@@ -2,12 +2,12 @@
  * @module IDEE/control/EditionControl
  */
 import template from '../../templates/edition';
-import removeLayerTemplate from '../../templates/clearlayer';
 import editiontableTemplate from '../../templates/editiontable';
 
 import { getValue } from './i18n/language';
 import { renderSnapOptions, getToolSnapOptions } from './snapoptions';
 import openDataIDEEFormDialog from './dataideeformdialog';
+import askChoice from './choicedialog';
 import {
   FEATURE_DATA,
   HOLE_INTERACTION,
@@ -24,6 +24,14 @@ const TOOL_INTERACTION_REMOVERS = {
   isScaleActive: 'removeScaleInteraction',
   isMoveActive: 'removeMoveInteraction',
 };
+
+/**
+ * Identifier of the dialog that confirms the deletion of features (#cleanAll). Its confirm
+ * button gets the id `${CLEAN_DIALOG_ID}-confirm`.
+ * @const
+ * @type {String}
+ */
+const CLEAN_DIALOG_ID = 'm-vectorsmanagement-clean';
 
 const DISABLED_BUTTON_ID_POINT = ['holedrawing', 'rotatedrawing', 'scaledrawing'];
 const DISABLED_BUTTON_ID_LINE = ['holedrawing'];
@@ -128,7 +136,8 @@ export default class EditionControl extends IDEE.Control {
   active(html) {
     this.template = IDEE.template.compileSync(template, {
       vars: {
-        editingSession: this.managementControl_.isEditingLayer(),
+        editingSession: this.managementControl_.isEditingLayer()
+          && !this.managementControl_.isReadOnlyEditingLayer(),
         translations: {
           editing_edit: getValue('editing_edit'),
           editgeometria: getValue('editgeometria'),
@@ -420,55 +429,55 @@ export default class EditionControl extends IDEE.Control {
   }
 
   /**
-   * Show window to confirm delete features. Not available for layers edited through a
-   * session (DataIDEE), whose clean button is hidden.
+   * Asks to confirm the deletion of the features selected when it opens or, without
+   * selection, of all the features of the layer, and deletes them if confirmed. The question
+   * is a standard API dialog (choicedialog). In a session (DataIDEE) all the features are
+   * those of its fixed area, and the deletions stay pending until the session is saved. The
+   * button follows the permissions of the session.
    * @public
    * @function
    * @api
    */
   showModalCleanGeometries() {
-    if (this.managementControl_.isEditingLayer()) return;
-    const total = this.layer_.getFeatures().length;
-    const cleanMessage = getValue('clear_geometries_msg').replace('{count}', String(total));
-    const templateModal = IDEE.template.compileSync(removeLayerTemplate, {
-      vars: {
-        translations: {
-          title_clear_geometries: getValue('title_clear_geometries'),
-          clear_geometries_msg: cleanMessage,
-          confirm: getValue('confirm'),
-          cancel: getValue('cancel'),
-        },
-      },
+    const cleanAll = this.template.querySelector('#cleanAll');
+    if (!cleanAll || cleanAll.hidden || cleanAll.disabled) return;
+    const selected = [...this.managementControl_.getSelectedFeatures()];
+    askChoice({
+      id: CLEAN_DIALOG_ID,
+      title: getValue('title_clear_geometries'),
+      message: this.getCleanMessage_(selected),
+      choices: [{ value: 'confirm', label: getValue('confirm') }],
+      cancelLabel: getValue('cancel'),
+    }).then((choice) => {
+      if (choice !== 'confirm') return;
+      if (selected.length > 0) {
+        this.removeFeatures_(selected);
+      } else {
+        this.cleanGeometries();
+      }
     });
-    this.managementControl_.accessibilityTab(templateModal);
-    IDEE.dialog.info(templateModal.innerHTML, getValue('title_attribute_table'));
-
-    // this.template.querySelector('#clear-layer-modal').classList.remove('closed');
-    document.querySelector('#confirm-clear-btn').onclick = () => this.closeModalCleanGeometries(true);
-    document.querySelector('#cancel-clear-btn').onclick = () => this.closeModalM();
-    this.changeStyleModalClean();
-  }
-
-  changeStyleModalClean() {
-    document.querySelector('.m-modal .m-content .m-message').style.borderBottom = 'none';
-    document.querySelector('.m-modal .m-content .m-button').style.display = 'none';
-  }
-
-  closeModalM() {
-    document.querySelector('.m-modal .m-content .m-button button').click();
   }
 
   /**
-   * Close window to confirm delete features
-   * @public
+   * Message that confirms the deletion of the selected features or, without selection, of
+   * all the features of the layer. In a session they are those of its edit area, and the
+   * message tells that the deletions are sent on saving. The dialog shows HTML, so the
+   * layer name is escaped.
+   * @private
    * @function
-   * @api
+   * @param {Array<IDEE.Feature>} selected features selected when the deletion is requested
+   * @returns {String} message
    */
-  closeModalCleanGeometries(clean) {
-    if (clean) {
-      this.cleanGeometries();
+  getCleanMessage_(selected) {
+    if (selected.length > 0) {
+      return getValue('clear_selected_msg').replace('{count}', String(selected.length));
     }
-    this.closeModalM();
+    const layerName = IDEE.utils.escapeXSS(String(this.layer_.legend || this.layer_.name));
+    const messageKey = this.managementControl_.hasActiveEditingSession()
+      ? 'clear_session_geometries_msg' : 'clear_geometries_msg';
+    return getValue(messageKey)
+      .replace('{count}', String(this.layer_.getFeatures().length))
+      .replace('{layer}', () => layerName);
   }
 
   /**
@@ -775,7 +784,8 @@ export default class EditionControl extends IDEE.Control {
    * @api stable
    */
   showFeatureAttributes() {
-    if (this.managementControl_.hasActiveEditingSession()) {
+    if (this.managementControl_.hasActiveEditingSession()
+      || this.managementControl_.isReadOnlyEditingLayer()) {
       const selected = this.managementControl_.getSelectedFeatures();
       if (selected.length !== 1) {
         IDEE.dialog.info(getValue('dataidee_form.multiple_selection'));
@@ -803,11 +813,12 @@ export default class EditionControl extends IDEE.Control {
   }
 
   /**
-   * Opens the attribute form of a feature of the editing session. With delete permission
-   * the form also offers to delete the feature, which stays pending until it is saved.
+   * Opens the attribute form of a feature of the editing session. Features are deleted with
+   * the clean tool (#cleanAll), not from the form. In a read-only collection, which has no
+   * session, the form only shows the attributes.
    * @public
    * @function
-   * @param {IDEE.Feature} feature Feature to edit.
+   * @param {IDEE.Feature} feature Feature to edit or consult.
    * @returns {Boolean} Whether the form has been opened.
    * @api
    */
@@ -815,9 +826,10 @@ export default class EditionControl extends IDEE.Control {
     const capabilities = this.managementControl_.getEditingCapabilities();
     return openDataIDEEFormDialog({
       session: this.managementControl_.getActiveEditingSession(),
+      readOnly: this.managementControl_.isReadOnlyEditingLayer(),
+      capabilities,
       unavailableReason: capabilities?.form?.reason,
       feature,
-      onDelete: capabilities?.delete ? (target) => this.removeFeatures_([target]) : undefined,
       onClosed: () => {
         this.isEditAttributeActive = false;
         this.template?.querySelector('#editattribute')?.classList.remove('activated');

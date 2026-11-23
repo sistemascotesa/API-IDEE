@@ -1,6 +1,7 @@
 /**
  * Dialog of the DataIDEE attribute form: live feedback, error summary, focus and
  * the Apply and Cancel actions. Every rule comes from the injected editing session.
+ * The form of a read-only collection, which has no session, only shows the attributes.
  */
 import askChoice, { keepTabInside } from './choicedialog';
 import renderDataIDEEAttributeForm from './dataideeattributeform';
@@ -23,6 +24,34 @@ function loadDefinition(session, unavailableReason, feature, mode) {
     IDEE.dialog.info(error.message);
     return null;
   }
+}
+
+/**
+ * Form of a feature of a read-only collection, which has no editing session. Its fields
+ * and values come from the capabilities of the layer, as in the "update" mode of the
+ * session: without the identifier field, which the title already shows.
+ *
+ * @param {Object} capabilities Editing capabilities of the layer.
+ * @param {String} unavailableReason Text shown when the collection has no usable schema.
+ * @param {IDEE.Feature} feature Feature to consult.
+ * @returns {Object|null} Form definition, or null when there is none.
+ */
+function loadReadOnlyDefinition(capabilities, unavailableReason, feature) {
+  const form = capabilities?.form;
+  if (!form?.available) {
+    IDEE.dialog.info(unavailableReason || 'The DataIDEE collection schema is unavailable.');
+    return null;
+  }
+  const values = JSON.parse(JSON.stringify(feature.getAttributes?.() || {}));
+  delete values[form.idField?.name || ''];
+  return {
+    mode: 'update',
+    title: form.title,
+    collection: capabilities.collection?.id || capabilities.collection?.name || '',
+    fields: form.properties,
+    identifier: feature.getId(),
+    values,
+  };
 }
 
 function createSkeleton() {
@@ -89,28 +118,32 @@ function confirmDiscard(onDiscard) {
  *
  * @param {Object} options
  * - session: Active editing session.
+ * - readOnly: Only shows the attributes of a feature of a read-only collection, which has
+ *   no session: the form comes from capabilities, its fields are read-only and the only
+ *   action is "Close".
+ * - capabilities: Editing capabilities of the layer, for the read-only form.
  * - unavailableReason: Text shown when the session cannot provide a form.
  * - feature: Feature being edited or created.
  * - mode: "update" (default) or "create".
  * - onApplied: Called once the values have been accepted by the session.
  * - onCancelled: Called when the form is abandoned.
  * - onClosed: Called whenever the dialog closes.
- * - onDelete: In "update" mode, adds a "Delete" button that closes the form, drops its
- *   unapplied values and calls it with the feature, which the caller removes from the
- *   session (the deletion is sent when the session is saved).
  * @returns {boolean} Whether the dialog has been opened.
  */
 export default function openDataIDEEFormDialog({
   session,
+  readOnly = false,
+  capabilities,
   unavailableReason,
   feature,
   mode = 'update',
   onApplied = noop,
   onCancelled = noop,
   onClosed = noop,
-  onDelete,
 }) {
-  const definition = loadDefinition(session, unavailableReason, feature, mode);
+  const definition = readOnly
+    ? loadReadOnlyDefinition(capabilities, unavailableReason, feature)
+    : loadDefinition(session, unavailableReason, feature, mode);
   if (!definition) return false;
   const title = mode === 'create'
     ? getValue('dataidee_form.create_title')
@@ -122,7 +155,8 @@ export default function openDataIDEEFormDialog({
   const status = modal.querySelector('.m-vectorsmanagement-dataidee-status');
   modal.querySelector('.m-vectorsmanagement-dataidee-identity').textContent = mode === 'create'
     ? definition.collection : `${definition.collection} · ${definition.identifier}`;
-  modal.querySelector('.m-vectorsmanagement-dataidee-legend').textContent = getValue('dataidee_form.legend');
+  modal.querySelector('.m-vectorsmanagement-dataidee-legend').textContent = getValue(readOnly
+    ? 'dataidee_form.readonly_legend' : 'dataidee_form.legend');
   modal.setAttribute('role', 'dialog');
   modal.setAttribute('aria-modal', 'true');
   modal.setAttribute('aria-label', title);
@@ -156,12 +190,16 @@ export default function openDataIDEEFormDialog({
     definition,
     definition.values,
     createFormStrings(),
-    { formatIssue, onInteraction: () => showIssues(evaluate().issues) },
+    {
+      formatIssue,
+      onInteraction: readOnly ? noop : () => showIssues(evaluate().issues),
+      readOnly,
+    },
   );
   const initialFormValues = JSON.stringify(form.collect());
   const isDirty = () => JSON.stringify(form.collect()) !== initialFormValues;
   // Stored values that break the schema are reported as soon as the form opens.
-  showIssues(evaluate().issues);
+  if (!readOnly) showIssues(evaluate().issues);
 
   errorSummary.addEventListener('click', (event) => {
     const button = event.target.closest('button[data-issue-path]');
@@ -185,43 +223,35 @@ export default function openDataIDEEFormDialog({
   };
   // Cancel and Escape share this path: unapplied changes are confirmed first.
   const requestClose = () => (isDirty() ? confirmDiscard(cancel) : cancel());
-  if (mode === 'update' && typeof onDelete === 'function') {
+  IDEE.dialog.addAction({
+    id: 'm-vectorsmanagement-dataidee-cancel',
+    label: getValue(readOnly ? 'close' : 'dataidee_form.cancel'),
+    onClick: requestClose,
+  }, modal);
+  if (!readOnly) {
     IDEE.dialog.addAction({
-      id: 'm-vectorsmanagement-dataidee-delete',
-      label: getValue('dataidee_form.delete'),
+      id: 'm-vectorsmanagement-dataidee-apply',
+      label: getValue('dataidee_form.apply'),
       onClick: () => {
-        closeModal();
-        onDelete(feature);
+        attempted = true;
+        const { values, issues } = evaluate();
+        if (issues.some(isBlocking)) {
+          reportFailure(issues);
+          return;
+        }
+        try {
+          if (mode === 'create') {
+            session.prepareFeature(feature, values, { applyDefaults: false });
+          } else session.applyAttributes(feature, values);
+          isApplied = true;
+          onApplied(feature);
+          closeModal();
+        } catch (error) {
+          reportFailure(error.issues || [{ path: '', message: error.message }]);
+        }
       },
     }, modal);
   }
-  IDEE.dialog.addAction({
-    id: 'm-vectorsmanagement-dataidee-cancel',
-    label: getValue('dataidee_form.cancel'),
-    onClick: requestClose,
-  }, modal);
-  IDEE.dialog.addAction({
-    id: 'm-vectorsmanagement-dataidee-apply',
-    label: getValue('dataidee_form.apply'),
-    onClick: () => {
-      attempted = true;
-      const { values, issues } = evaluate();
-      if (issues.some(isBlocking)) {
-        reportFailure(issues);
-        return;
-      }
-      try {
-        if (mode === 'create') {
-          session.prepareFeature(feature, values, { applyDefaults: false });
-        } else session.applyAttributes(feature, values);
-        isApplied = true;
-        onApplied(feature);
-        closeModal();
-      } catch (error) {
-        reportFailure(error.issues || [{ path: '', message: error.message }]);
-      }
-    },
-  }, modal);
   closeButton.remove();
   formContainer.addEventListener('submit', (event) => event.preventDefault());
   modal.addEventListener('keydown', (event) => {

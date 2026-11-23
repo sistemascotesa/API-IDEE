@@ -198,6 +198,55 @@ const searchService = async (page, serviceUrl) => {
   await page.press('#m-layerswitcher-addservices-search-input', 'Enter');
 };
 
+const DATAIDEE_BASE = 'https://base.test/data-idee-api';
+const TOAST = '.m-toast.info .m-toast-message';
+
+/**
+ * Servicio DataIDEE simulado a partir de su URL base, como el servicio real: /collections
+ * es su API de gestión (no OGC) y la API OGC está en /ogc, con conformidad y colecciones.
+ * El login es el de {base}/auth/me. Devuelve las rutas pedidas.
+ */
+const mockDataIDEEBase = async (page, {
+  collections = [collection('local:farmacias', 'Farmacias'), collection('local:rutas', 'Rutas')],
+  collectionsStatus = 200,
+  login = false,
+} = {}) => {
+  const calls = [];
+  const ogc = `${DATAIDEE_BASE}/ogc`;
+  await page.route('https://base.test/**', (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
+    calls.push(url.pathname);
+    const json = (status, body) => route.fulfill({
+      status, headers: { ...CORS, 'content-type': 'application/json' }, body: JSON.stringify(body),
+    });
+    if (url.pathname === '/data-idee-api/collections') return json(200, { data: [] });
+    if (url.pathname === '/data-idee-api/ogc') {
+      return json(200, {
+        links: [
+          { rel: 'self', href: ogc },
+          { rel: 'conformance', href: `${ogc}/conformance` },
+          { rel: 'data', href: `${ogc}/collections` },
+        ],
+      });
+    }
+    if (url.pathname === '/data-idee-api/ogc/conformance') {
+      return json(200, {
+        conformsTo: ['http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core'],
+      });
+    }
+    if (url.pathname === '/data-idee-api/ogc/collections') {
+      return collectionsStatus === 200
+        ? json(200, { links: [], collections })
+        : json(collectionsStatus, { status: collectionsStatus });
+    }
+    if (url.pathname === '/data-idee-api/auth/me' && login) return json(401, { status: 401 });
+    return json(404, { status: 404 });
+  });
+  return calls;
+};
+
 /**
  * Añadir capas de servicios OGC API Features y DataIDEE (con autenticación) y de
  * resultados de capacidades, común a 2D y 3D.
@@ -398,6 +447,72 @@ export const registerOGCAPITests = (impl) => {
       await expect(page.locator(`${LAYER_SELECT} option[value]:not([value=""])`)).toHaveCount(1);
       expect(calls.filter((path) => path.includes('/auth'))).toEqual(['/data-idee-api/auth/me']);
       expect(calls.filter((path) => path === '/data-idee-api/ogc/collections')).toHaveLength(1);
+    });
+
+    test('DataIDEE desde la URL base: busca la API en /ogc, abre sus colecciones y avisa de cuántas hay', async ({ page }) => {
+      const calls = await mockDataIDEEBase(page);
+      await openService(page, impl, DATAIDEE_BASE);
+
+      await expect(page.locator(MODE_SELECT)).toHaveValue('dataidee');
+      await expect(page.locator(`${LAYER_SELECT} option[value]:not([value=""])`)).toHaveCount(2);
+      await expect(page.locator(TOAST))
+        .toHaveText('Servicio DataIDEE: se han encontrado 2 colecciones');
+      await expect(page.locator('#m-layerswitcher-addservices-search-input'))
+        .toHaveValue(`${DATAIDEE_BASE}/ogc`);
+      expect(calls).toEqual(expect.arrayContaining([
+        '/data-idee-api/ogc', '/data-idee-api/ogc/conformance',
+      ]));
+      expect(calls.filter((path) => path === '/data-idee-api/ogc/collections')).toHaveLength(1);
+    });
+
+    test('DataIDEE desde la URL base sin colecciones visibles: candado y aviso para iniciar sesión', async ({ page }) => {
+      await mockDataIDEEBase(page, { collections: [], login: true });
+      await openService(page, impl, DATAIDEE_BASE);
+
+      await expect(page.locator(MODE_SELECT)).toHaveValue('dataidee');
+      await expect(page.locator(AUTH_CONTAINER)).toBeVisible();
+      await expect(page.locator(TOAST)).toHaveText('Servicio DataIDEE: no hay colecciones visibles sin sesión. '
+        + 'Inicie sesión con el candado para ver las suyas');
+    });
+
+    test('DataIDEE desde la URL base con el listado protegido: candado y aviso de que requiere sesión', async ({ page }) => {
+      await mockDataIDEEBase(page, { collectionsStatus: 401, login: true });
+      await openService(page, impl, DATAIDEE_BASE);
+
+      await expect(page.locator(MODE_SELECT)).toHaveValue('dataidee');
+      await expect(page.locator(AUTH_CONTAINER)).toBeVisible();
+      await expect(page.locator('div.m-dialog.error'))
+        .toContainText('El servicio requiere iniciar sesión para consultar sus capas');
+      await expect(page.locator('.m-toast')).toHaveCount(0);
+    });
+
+    test('DataIDEE desde la URL base con un listado que no se puede leer: error y no se abre', async ({ page }) => {
+      await mockDataIDEEBase(page, { collectionsStatus: 500 });
+      await openService(page, impl, DATAIDEE_BASE);
+
+      await expect(page.locator('div.m-dialog.error')).toContainText(
+        `Se ha encontrado la API OGC del servicio DataIDEE (${DATAIDEE_BASE}/ogc)`,
+      );
+      await expect(page.locator(MODE_SELECT)).toHaveCount(0);
+      await expect(page.locator('.m-toast')).toHaveCount(0);
+    });
+
+    test('Una URL sin API OGC en /ogc sigue el flujo genérico y no avisa de DataIDEE', async ({ page }) => {
+      const calls = [];
+      await page.route('https://other.test/**', (route) => {
+        if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
+        calls.push(new URL(route.request().url()).pathname);
+        return route.fulfill({
+          status: 404, headers: { ...CORS, 'content-type': 'application/json' }, body: '{"status":404}',
+        });
+      });
+      await openService(page, impl, 'https://other.test/app');
+
+      await expect(page.locator('div.m-dialog.error')).toBeVisible();
+      await expect(page.locator('div.m-dialog.error')).not.toContainText('DataIDEE');
+      await expect(page.locator(MODE_SELECT)).toHaveCount(0);
+      await expect(page.locator('.m-toast')).toHaveCount(0);
+      expect(calls).toContain('/app/ogc');
     });
 
     test('Nº de elementos vacío por defecto: solo se envía "limit" si el usuario lo indica', async ({ page }) => {

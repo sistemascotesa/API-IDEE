@@ -421,16 +421,63 @@ test('cancelling DataIDEE creation clears its preview without staging a feature'
   }))).toEqual({ pending: 0, features: 5, preview: 0 });
 });
 
+test('a multipolygon collection creates with the polygon icons and saves single-part multipolygons', async ({ page }) => {
+  const posts = [];
+  page.on('request', (request) => {
+    if (request.method() === 'POST'
+      && new URL(request.url()).pathname === '/local/collections/multipolygon/items') {
+      posts.push(request.postDataJSON());
+    }
+  });
+  await openLocalDataIDEE(page, 'multipolygon');
+  await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 1);
+  await page.locator('#vectorsmanagement-button').click();
+  await page.locator('#m-vectorsmanagement-layer-selector').click();
+  await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
+  await page.locator('#m-vectorsmanagement-creation').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
+  await Promise.all(['polygondrawing', 'figuredrawing']
+    .map((id) => expect(page.locator(`#${id}`)).toBeVisible()));
+  await Promise.all(['pointdrawing', 'pointlocateddrawing', 'linedrawing', 'textdrawing']
+    .map((id) => expect(page.locator(`#${id}`)).toBeHidden()));
+  await expect(page.locator('#creationBtns > button:not([class^="vectorsmanagement-icon-"])'))
+    .toHaveCount(0);
+
+  await page.locator('#polygondrawing').click();
+  const vertices = await page.evaluate(() => {
+    const map = window.dataideeDemo.map.getMapImpl();
+    const bounds = map.getTargetElement().getBoundingClientRect();
+    const [x, y] = map.getPixelFromCoordinate(map.getView().getCenter());
+    return [[-60, -60], [60, -60], [60, 60]]
+      .map(([dx, dy]) => [bounds.left + x + dx, bounds.top + y + dy]);
+  });
+  await [...vertices, vertices[0]].reduce((previous, vertex) => previous
+    .then(() => page.mouse.click(vertex[0], vertex[1])), Promise.resolve());
+  await expect(page.locator('#m-vectorsmanagement-dataidee-apply')).toBeVisible();
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect.poll(() => page.evaluate(() => (
+    window.dataideeDemo.layer.getEditingSession().count
+  ))).toBe(1);
+  await page.locator('#m-vectorsmanagement-editing-save').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-status')).toContainText('Guardadas 1');
+  expect(posts).toHaveLength(1);
+  expect(posts[0].geometry.type).toBe('MultiPolygon');
+  expect(posts[0].geometry.coordinates).toHaveLength(1);
+
+  await page.locator('#m-vectorsmanagement-edition').click();
+  await expect(page.locator('#holedrawing')).toBeVisible();
+});
+
 test('local DataIDEE handles read-only, limits, conflicts, partial and uncertain writes', async ({ page }) => {
   await openLocalDataIDEE(page, 'readonly');
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   await page.locator('#vectorsmanagement-button').click();
   await page.locator('#m-vectorsmanagement-layer-selector').click();
   await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
-  await expect(page.locator('#m-vectorsmanagement-creation')).toBeDisabled();
-  await expect(page.locator('#m-vectorsmanagement-edition')).toBeDisabled();
-  await expect(page.locator('#m-vectorsmanagement-edition'))
+  await expect(page.locator('#m-vectorsmanagement-creation'))
     .toHaveAttribute('title', 'La colección no permite esta operación.');
+  await expect(page.locator('#m-vectorsmanagement-creation')).toBeHidden();
+  await expect(page.locator('#m-vectorsmanagement-edition')).toBeVisible();
 
   await openLocalDataIDEE(page, 'dense', { pageSize: 1000 });
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
@@ -690,7 +737,7 @@ test('DataIDEE editing starts with Creation or Edition and survives switching to
   expect(await sameSession()).toBe(false);
 });
 
-test('DataIDEE form deletes the feature when the session is saved and the clean tool is hidden', async ({ page }) => {
+test('DataIDEE features are deleted with the clean tool, which the session saves, and not from the form', async ({ page }) => {
   const itemCalls = [];
   page.on('request', (request) => {
     if (new URL(request.url()).pathname === '/local/collections/form/items/7') {
@@ -704,13 +751,12 @@ test('DataIDEE form deletes the feature when the session is saved and the clean 
   await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
   await page.locator('#m-vectorsmanagement-edition').click();
   await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
-  await expect(page.locator('#cleanAll')).toBeHidden();
+  await expect(page.locator('#cleanAll')).toBeVisible();
 
   const form = page.locator('.m-vectorsmanagement-dataidee-fields');
-  const deleteButton = page.locator('#m-vectorsmanagement-dataidee-delete');
   const featureCount = () => page.evaluate(() => window.dataideeDemo.layer.getFeatures().length);
   const pending = () => page.evaluate(() => window.dataideeDemo.layer.getEditingSession().count);
-  const openForm = async () => {
+  const selectFeature = async () => {
     const pixel = await page.evaluate(() => {
       const map = window.dataideeDemo.map.getMapImpl();
       const bounds = map.getTargetElement().getBoundingClientRect();
@@ -720,30 +766,64 @@ test('DataIDEE form deletes the feature when the session is saved and the clean 
     });
     await page.mouse.click(pixel[0], pixel[1]);
     await expect(page.locator('#editattribute')).toBeEnabled();
-    await page.locator('#editattribute').click();
-    await expect(form).toBeVisible();
+  };
+  const cleanSelection = async () => {
+    await page.locator('#cleanAll').click();
+    await page.locator('#m-vectorsmanagement-clean-confirm').click();
   };
 
-  await openForm();
-  await expect(deleteButton).toBeVisible();
-  await deleteButton.click();
+  await selectFeature();
+  await page.locator('#editattribute').click();
+  await expect(form).toBeVisible();
+  await expect(page.locator('#m-vectorsmanagement-dataidee-apply')).toBeVisible();
+  await expect(page.locator('#m-vectorsmanagement-dataidee-delete')).toHaveCount(0);
+  await page.locator('#m-vectorsmanagement-dataidee-cancel').click();
   await expect(form).toBeHidden();
+
+  await cleanSelection();
   await expect.poll(featureCount).toBe(0);
   await expect.poll(pending).toBe(1);
   expect(itemCalls).toEqual([]);
 
-  await page.locator('#m-vectorsmanagement-editing-discard').click();
-  await expect.poll(featureCount).toBe(1);
-  await expect.poll(pending).toBe(0);
-
-  await openForm();
-  await deleteButton.click();
-  await expect.poll(pending).toBe(1);
   await page.locator('#m-vectorsmanagement-editing-save').click();
   await expect(page.locator('#m-vectorsmanagement-editing-status')).toContainText('Guardadas 1');
   expect(itemCalls).toEqual(['GET', 'DELETE']);
 
-  await demo.reload();
+  await demo.remount();
   await page.waitForFunction(() => window.dataideeDemo?.layer.getImpl().isLoaded());
   expect(await featureCount()).toBe(0);
+});
+
+test('DataIDEE: «Limpiar» sin selección borra la zona de edición, pendiente hasta guardar', async ({ page }) => {
+  const deletes = [];
+  page.on('request', (request) => {
+    if (request.method() === 'DELETE') deletes.push(request.url());
+  });
+  await openLocalDataIDEE(page);
+  await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 5);
+  await page.locator('#vectorsmanagement-button').click();
+  await page.locator('#m-vectorsmanagement-layer-selector').click();
+  await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
+  await page.locator('#m-vectorsmanagement-edition').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
+  const featureCount = () => page.evaluate(() => window.dataideeDemo.layer.getFeatures().length);
+  const drawnCount = () => page.evaluate(() => window.dataideeDemo.layer
+    .getImpl().getLayer().getSource().getFeatures().length);
+  const pending = () => page.evaluate(() => window.dataideeDemo.layer.getEditingSession().count);
+  const message = await page.evaluate(() => IDEE.language
+    .getTranslation(IDEE.language.getLang()).vectorsmanagement.clear_session_geometries_msg);
+
+  await page.locator('#cleanAll').click();
+  await expect(page.locator('.m-dialog.info .m-message'))
+    .toHaveText(message.replace('{count}', '5').replace('{layer}', 'Colección local demo'));
+  await page.locator('#m-vectorsmanagement-clean-confirm').click();
+  await expect.poll(featureCount).toBe(0);
+  await expect.poll(drawnCount).toBe(0);
+  await expect.poll(pending).toBe(5);
+  expect(deletes).toEqual([]);
+
+  await page.locator('#m-vectorsmanagement-editing-discard').click();
+  await expect.poll(pending).toBe(0);
+  await expect.poll(drawnCount).toBe(5);
+  expect(deletes).toEqual([]);
 });

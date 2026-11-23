@@ -292,13 +292,28 @@ function controlHasValue(control) {
 }
 
 /**
+ * Leaves the controls of a form only for consultation. Text fields become read-only, so
+ * their values can still be selected and copied. The controls without a read-only state
+ * (selectors, checkboxes, radio buttons and buttons) are disabled.
+ *
+ * @param {HTMLElement} container Form element.
+ */
+function makeReadOnly(container) {
+  container.querySelectorAll('input,textarea').forEach((control) => {
+    control.setAttribute(['checkbox', 'radio'].includes(control.type) ? 'disabled' : 'readonly', '');
+  });
+  container.querySelectorAll('select,button').forEach((control) => control.setAttribute('disabled', ''));
+}
+
+/**
  * Renders the attribute form of a DataIDEE feature.
  *
  * @param {HTMLElement} container Form element.
  * @param {Object} definition Definition returned by the editing session.
  * @param {Object} initialValues Current values of the feature.
  * @param {Object} strings Translated texts.
- * @param {Object} options formatIssue(issue) and onInteraction() callbacks.
+ * @param {Object} options formatIssue(issue) and onInteraction() callbacks, and readOnly:
+ * the form only shows the values (makeReadOnly).
  * @returns {Object} Form operations.
  */
 export default function renderDataIDEEAttributeForm(
@@ -306,7 +321,7 @@ export default function renderDataIDEEAttributeForm(
   definition,
   initialValues,
   strings,
-  { formatIssue = (issue) => issue.message, onInteraction = () => {} } = {},
+  { formatIssue = (issue) => issue.message, onInteraction = () => {}, readOnly = false } = {},
 ) {
   let currentValues = clone(initialValues || {});
   const touched = new Set();
@@ -327,6 +342,7 @@ export default function renderDataIDEEAttributeForm(
         field,
       ));
     });
+    if (readOnly) makeReadOnly(container);
   };
   const read = () => {
     const state = { container, inputIssues: [] };

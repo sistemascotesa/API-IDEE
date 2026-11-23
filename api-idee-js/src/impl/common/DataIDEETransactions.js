@@ -74,6 +74,7 @@ export default class DataIDEETransactions {
       base.pathname = `${base.pathname.replace(/\/+$/, '')}${collectionPath}`;
     }
     this.collectionUrl_ = base.href.replace(/\/$/, '');
+    this.collection_ = String(collection);
     const readOnlyParameters = new Set([
       'bbox', 'limit', 'offset', 'f', 'filter', 'filter-lang', '_ieerefresh',
     ]);
@@ -182,6 +183,35 @@ export default class DataIDEETransactions {
     return serviceDescriptions.get(key);
   }
 
+  /**
+   * Record of the collection in the DataIDEE maintenance API ({base}/collections, next to
+   * the OGC API at {base}/ogc): whether its features can be added, changed and removed
+   * (writable), the only parameter that decides the write permissions. It is searched by
+   * its name with the references resolved (d=1) and chosen by its source, because the OGC
+   * identifier is "{source}:{name}".
+   * @private
+   * @returns {Promise<{writable: Boolean}|null>} null when the service root is not
+   * {base}/ogc or the API does not answer or does not list the collection.
+   */
+  async maintenanceCollection_() {
+    const root = this.serviceRoot_();
+    const separator = this.collection_.indexOf(':');
+    if (!root.endsWith('/ogc/') || separator < 0) return null;
+    const source = this.collection_.slice(0, separator);
+    const name = this.collection_.slice(separator + 1);
+    const url = new URL(`${root.slice(0, -'ogc/'.length)}collections`);
+    url.searchParams.set('q', JSON.stringify({ name }));
+    url.searchParams.set('d', '1');
+    try {
+      const { data } = await (await this.request(url.href)).json();
+      const record = (Array.isArray(data) ? data : [])
+        .find((item) => item?.name === name && item.source?.name === source);
+      return typeof record?.writable === 'boolean' ? { writable: record.writable } : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
   async loadCapabilities_() {
     const root = `${this.collectionUrl_.split('/collections/')[0]}/`;
     const collectionBase = new URL(this.collectionUrl_);
@@ -239,13 +269,15 @@ export default class DataIDEETransactions {
     };
     const [{
       collection, queryables, schema, queryablesUrl, schemaUrl,
-    }, operations] = await Promise.all([collectionDetails(), serviceOperations()]);
+    }, operations, maintenance] = await Promise.all([
+      collectionDetails(), serviceOperations(), this.maintenanceCollection_(),
+    ]);
     // The conformance classes only decide the capabilities when the description does
     // not publish the collection
     const conformance = operations === null ? await optionalJson(`${root}conformance`) : null;
     const conformanceValues = conformance?.conformsTo || conformance?.conforms || [];
     const conforms = conformanceValues.join(' ').toLowerCase();
-    const writable = collection.writable !== false;
+    const writable = collection.writable !== false && maintenance?.writable !== false;
     const methods = new Set(Object.keys(operations?.items || {})
       .map((method) => method.toUpperCase()));
     const featureMethods = new Set(Object.keys(operations?.feature || {})

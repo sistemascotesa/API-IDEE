@@ -453,6 +453,41 @@ export default class VectorsManagementControl extends IDEE.Control {
   }
 
   /**
+   * Indicates whether the selected layer is edited through a session (DataIDEE) but its
+   * collection does not allow any change. Its features are only consulted: Edition opens
+   * without a session and shows their attributes in a read-only form.
+   *
+   * @public
+   * @function
+   * @returns {Boolean} true when the permissions are known and allow nothing
+   * @api
+   */
+  isReadOnlyEditingLayer() {
+    const capabilities = this.editingCapabilities_;
+    return this.isEditingLayer() && Boolean(capabilities)
+      && !capabilities.create && !capabilities.update && !capabilities.delete;
+  }
+
+  /**
+   * Geometry type that the selected layer stores for a drawn geometry. A layer edited through
+   * a session (DataIDEE) only stores the types of its collection: the drawn type or, when the
+   * collection only accepts its multipart type, that one (a drawn polygon is then stored as a
+   * single-part multipolygon).
+   *
+   * @public
+   * @function
+   * @param {String} type Drawn geometry type: Point, LineString or Polygon
+   * @returns {String|null} Type to store, or null when the layer accepts neither
+   * @api
+   */
+  getEditingGeometryType(type) {
+    const geometryTypes = this.isEditingLayer() ? this.editingCapabilities_?.geometryTypes : null;
+    if (!geometryTypes?.length || geometryTypes.includes(type.toLowerCase())) return type;
+    const multipart = `Multi${type}`;
+    return geometryTypes.includes(multipart.toLowerCase()) ? multipart : null;
+  }
+
+  /**
    * Fills the editing section of the Creation or Edition panel that has just opened and
    * starts the session if there is none: its fixed area is the current map view. The
    * session stays active while the panels close and open.
@@ -559,12 +594,12 @@ export default class VectorsManagementControl extends IDEE.Control {
     const isEditing = this.isEditingLayer();
     const attributeFormAvailable = Boolean(this.editingCapabilities_?.form?.available);
     const geometryTypes = this.editingCapabilities_?.geometryTypes;
-    const acceptsGeometry = (type) => !isEditing || !geometryTypes?.length
-      || geometryTypes.includes(type);
+    const readOnly = this.isReadOnlyEditingLayer();
     // Opening Creation or Edition starts the session, so they follow the permissions
     const permissions = {
       creation: this.editingCapabilities_?.create,
-      edition: this.editingCapabilities_?.update || this.editingCapabilities_?.delete,
+      edition: this.editingCapabilities_?.update || this.editingCapabilities_?.delete
+        || (readOnly && attributeFormAvailable),
     };
     Object.entries(permissions).forEach(([id, allowed]) => {
       const button = this.html.querySelector(`#m-vectorsmanagement-${id}`);
@@ -572,24 +607,21 @@ export default class VectorsManagementControl extends IDEE.Control {
       const blocked = isEditing && !allowed;
       button.disabled = blocked;
       button.title = blocked ? this.getEditingBlockedReason_() : getValue(id);
+      button.hidden = blocked && Boolean(this.editingCapabilities_);
     });
     const creationTemplate = this.creationControl?.template;
     if (creationTemplate) {
       const geometryButtons = {
-        pointdrawing: 'point',
-        pointlocateddrawing: 'point',
-        linedrawing: 'linestring',
-        polygondrawing: 'polygon',
-        figuredrawing: 'polygon',
-        multipointdrawing: 'multipoint',
-        multilinedrawing: 'multilinestring',
-        multipolygondrawing: 'multipolygon',
+        pointdrawing: 'Point',
+        pointlocateddrawing: 'Point',
+        linedrawing: 'LineString',
+        polygondrawing: 'Polygon',
+        figuredrawing: 'Polygon',
       };
       Object.entries(geometryButtons).forEach(([id, type]) => {
         const button = creationTemplate.querySelector(`#${id}`);
         if (button) {
-          button.hidden = !acceptsGeometry(type)
-            || (type.startsWith('multi') && (!isEditing || !this.editingSession_));
+          button.hidden = this.getEditingGeometryType(type) === null;
           button.disabled = isEditing
             && (!this.editingSession_ || !this.editingCapabilities_?.create
               || !attributeFormAvailable || button.hidden);
@@ -599,14 +631,6 @@ export default class VectorsManagementControl extends IDEE.Control {
       if (textButton) {
         textButton.hidden = isEditing;
         textButton.disabled = isEditing;
-      }
-      const finishMultiple = creationTemplate.querySelector('#finishmultipledrawing');
-      if (finishMultiple) {
-        const multipleType = this.creationControl.getMultipleGeometryType()?.toLowerCase();
-        finishMultiple.hidden = !isEditing || !this.editingSession_
-          || !multipleType || !acceptsGeometry(multipleType);
-        finishMultiple.disabled = finishMultiple.hidden
-          || !this.editingCapabilities_?.create || !attributeFormAvailable;
       }
     }
     const editionTemplate = this.editionControl?.template;
@@ -629,37 +653,38 @@ export default class VectorsManagementControl extends IDEE.Control {
         if (button) {
           let compatible = true;
           if (id === 'holedrawing') {
-            compatible = acceptsGeometry('polygon') || acceptsGeometry('multipolygon');
+            compatible = this.getEditingGeometryType('Polygon') !== null;
           } else if (id === 'rotatedrawing' || id === 'scaledrawing') {
             compatible = !isEditing || !geometryTypes?.length
               || geometryTypes.some((type) => type !== 'point');
           }
-          button.hidden = !compatible;
+          button.hidden = !compatible || readOnly;
           button.disabled = !updateAllowed || !compatible;
         }
       });
+      const deleteAllowed = !isEditing
+        || Boolean(this.editingSession_ && this.editingCapabilities_?.delete);
       ['cleanAll', 'm-vectorsmanagement-deletegeom-btn'].forEach((id) => {
         const button = editionTemplate.querySelector(`#${id}`);
-        if (button) {
-          button.disabled = isEditing
-            && (!this.editingSession_ || !this.editingCapabilities_?.delete);
-        }
+        if (button) button.disabled = !deleteAllowed;
       });
       const cleanAll = editionTemplate.querySelector('#cleanAll');
-      if (cleanAll) cleanAll.hidden = isEditing;
+      if (cleanAll) cleanAll.hidden = !deleteAllowed;
       const attributes = editionTemplate.querySelector('#editattribute');
       if (attributes) {
         attributes.hidden = false;
         const selectedCount = this.getSelectedFeatures().length;
         const formAvailable = attributeFormAvailable;
-        attributes.disabled = isEditing && (!this.editingSession_
-          || !this.editingCapabilities_?.update || !formAvailable || selectedCount !== 1);
+        const canOpenForm = readOnly
+          || Boolean(this.editingSession_ && this.editingCapabilities_?.update);
+        attributes.disabled = isEditing
+          && (!canOpenForm || !formAvailable || selectedCount !== 1);
         attributes.title = getValue('attributes');
         if (isEditing && selectedCount !== 1) {
           attributes.title = getValue('dataidee_form.multiple_selection');
-        } else if (isEditing && !this.editingSession_) {
+        } else if (isEditing && !readOnly && !this.editingSession_) {
           attributes.title = getValue('dataidee_form.editing_not_started');
-        } else if (isEditing && !this.editingCapabilities_?.update) {
+        } else if (isEditing && !readOnly && !this.editingCapabilities_?.update) {
           attributes.title = getValue('dataidee_form.collection_readonly');
         } else if (isEditing && !formAvailable) {
           attributes.title = this.editingCapabilities_?.form?.reason

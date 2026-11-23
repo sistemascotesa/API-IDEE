@@ -98,7 +98,25 @@ descartarse o revisarse.
 
 La sesión se inicia al abrir **Crear** o **Editar** con una capa DataIDEE: la
 zona fija es la vista del mapa en ese momento. Esos dos botones solo se
-habilitan si la colección permite crear, o modificar o borrar, respectivamente.
+muestran si la colección permite crear, o modificar o borrar, respectivamente;
+mientras se comprueban los permisos, o si no se pueden comprobar, aparecen
+deshabilitados con el motivo.
+
+Cuando la capa está en `{base}/ogc`, los permisos salen del registro de la
+colección en la API de mantenimiento de DataIDEE
+(`{base}/collections?q={"name":…}&d=1`, el de su origen: el identificador OGC
+es `origen:nombre`). `writable` es el único parámetro que decide los permisos:
+si es verdadero, se pueden crear, modificar y borrar entidades; si es falso, la
+colección es de solo lectura. Sin ese registro, los permisos salen de la
+descripción OpenAPI o de las clases de conformidad del servicio.
+
+En una colección de solo lectura (no permite crear, modificar ni borrar),
+**Editar** se muestra si su esquema permite el formulario de atributos y abre
+sin sesión de edición: solo aparece **Atributos**. Con una entidad
+seleccionada, abre su formulario en modo consulta. Los campos de texto son de
+solo lectura (`readonly`), y los selectores, casillas y botones están
+deshabilitados. No hay **Aplicar**, solo **Cerrar**.
+
 Ambos paneles muestran al principio el estado de la sesión y los botones
 **Guardar**, **Descartar** y **Finalizar edición**. La sesión sigue activa al
 cambiar de herramienta y termina con **Finalizar edición**, al cambiar de capa

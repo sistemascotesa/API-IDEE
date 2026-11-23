@@ -658,9 +658,9 @@ test('All-types collection form is labelled, keyboard reachable and adapts to na
   ['Point', ['pointdrawing', 'pointlocateddrawing']],
   ['LineString', ['linedrawing']],
   ['Polygon', ['polygondrawing', 'figuredrawing']],
-  ['MultiPoint', ['multipointdrawing']],
-  ['MultiLineString', ['multilinedrawing']],
-  ['MultiPolygon', ['multipolygondrawing']],
+  ['MultiPoint', ['pointdrawing', 'pointlocateddrawing']],
+  ['MultiLineString', ['linedrawing']],
+  ['MultiPolygon', ['polygondrawing', 'figuredrawing']],
 ].forEach(([geometryType, compatibleButtons]) => {
   test(`geometry tools match the collection primary ${geometryType}`, async ({ page }) => {
     const { writes } = await mockService(page, geometryType);
@@ -668,8 +668,7 @@ test('All-types collection form is labelled, keyboard reachable and adapts to na
     await openEditor(page, 'creation');
     const creationButtons = [
       'pointdrawing', 'pointlocateddrawing', 'linedrawing', 'polygondrawing',
-      'figuredrawing', 'multipointdrawing', 'multilinedrawing', 'multipolygondrawing',
-      'textdrawing', 'finishmultipledrawing',
+      'figuredrawing', 'textdrawing',
     ];
     await Promise.all(creationButtons.map(async (id) => {
       if (compatibleButtons.includes(id)) {
@@ -677,15 +676,17 @@ test('All-types collection form is labelled, keyboard reachable and adapts to na
         await expect(page.locator(`#${id}`)).toBeEnabled();
       } else await expect(page.locator(`#${id}`)).toBeHidden();
     }));
+    await expect(page.locator('#creationBtns > button:not([class^="vectorsmanagement-icon-"])'))
+      .toHaveCount(0);
     if (geometryType.startsWith('Multi')) {
-      await page.locator(`#${compatibleButtons[0]}`).click();
-      await expect(page.locator('#finishmultipledrawing')).toBeVisible();
-      await expect(page.locator('#finishmultipledrawing')).toBeEnabled();
+      expect(await page.evaluate((drawnType) => window.allTypesEditor.plugin.controls[0]
+        .getEditingGeometryType(drawnType), geometryType.slice('Multi'.length)))
+        .toBe(geometryType);
     } else if (geometryType === 'Point') {
       // A stale/programmatic click must not activate an incompatible interaction either.
-      await page.locator('#multilinedrawing').evaluate((button) => button.click());
+      await page.locator('#linedrawing').evaluate((button) => button.click());
       expect(await page.evaluate(() => window.allTypesEditor.plugin.controls[0]
-        .creationControl.getMultipleGeometryType())).toBeFalsy();
+        .creationControl.isLineActive)).toBe(false);
       await page.locator('#pointdrawing').click();
       await page.mouse.click(...await featurePixel(page));
       await expect(page.locator('.m-vectorsmanagement-dataidee-fields')).toBeVisible();
@@ -708,7 +709,6 @@ test('All-types collection form is labelled, keyboard reachable and adapts to na
       await page.screenshot({ path: test.info().outputPath('point-edition-tools.png') });
     }
     await page.locator('#m-vectorsmanagement-creation').click();
-    await expect(page.locator('#finishmultipledrawing')).toBeHidden();
     await Promise.all(creationButtons.filter((id) => !compatibleButtons.includes(id))
       .map((id) => expect(page.locator(`#${id}`)).toBeHidden()));
     if (geometryType === 'Point') {
