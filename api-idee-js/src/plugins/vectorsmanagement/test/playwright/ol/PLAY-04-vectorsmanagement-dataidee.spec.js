@@ -394,6 +394,71 @@ test('local DataIDEE editing uses the shared VectorsManagement controls and pers
   expect(viewport.mapWidth).toBeGreaterThan(0);
 });
 
+test('DataIDEE creates with PUT on the feature URL when the client assigns the identifiers', async ({ page }) => {
+  const writes = [];
+  page.on('request', (request) => {
+    if (['POST', 'PATCH', 'PUT', 'DELETE'].includes(request.method())) {
+      writes.push(`${request.method()} ${new URL(request.url()).pathname}`);
+    }
+  });
+  const pendingCount = () => page.evaluate(() => (
+    window.dataideeDemo.layer.getEditingSession().count
+  ));
+  const { fake } = await openLocalDataIDEE(page, 'client-id');
+  const itemUrl = (id) => new URL(`/local/collections/client-id/items/${id}`, page.url()).href;
+  await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 1);
+  const capabilities = await page.evaluate(async () => {
+    const result = await window.dataideeDemo.layer.getEditingCapabilities();
+    return { create: result.create, clientAssignedId: result.clientAssignedId };
+  });
+  expect(capabilities).toEqual({ create: true, clientAssignedId: true });
+  await page.locator('#vectorsmanagement-button').click();
+  await page.locator('#m-vectorsmanagement-layer-selector').click();
+  await page.locator('#m-vectorsmanagement-layer-selector-options span').first().click();
+  await page.locator('#m-vectorsmanagement-creation').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
+  await page.locator('#pointdrawing').click();
+  const pixel = await page.evaluate(() => {
+    const map = window.dataideeDemo.map.getMapImpl();
+    const bounds = map.getTargetElement().getBoundingClientRect();
+    const position = map.getPixelFromCoordinate([100000, 100000]);
+    return [bounds.left + position[0], bounds.top + position[1]];
+  });
+  await page.mouse.click(pixel[0], pixel[1]);
+  const form = page.locator('.m-vectorsmanagement-dataidee-fields');
+  const idError = form.locator('[data-field-path="/id"] > .m-vectorsmanagement-dataidee-feedback > .m-vectorsmanagement-dataidee-error');
+  await form.locator('[data-value-path="/name"]').fill('oceano');
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect(idError).toBeVisible();
+  await form.locator('[data-value-path="/id"]').fill('7');
+  await page.locator('#m-vectorsmanagement-dataidee-apply').click();
+  await expect.poll(pendingCount).toBe(1);
+  fake.handle({
+    method: 'PUT',
+    url: itemUrl(7),
+    body: JSON.stringify({
+      type: 'Feature',
+      properties: { name: 'Creada por otro usuario' },
+      geometry: { type: 'Point', coordinates: [5, 5] },
+    }),
+  });
+  await page.locator('#m-vectorsmanagement-editing-save').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-status'))
+    .toContainText(await exceptionText(page, 'dataidee_identifier_exists'));
+  await expect(page.locator('#m-vectorsmanagement-editing-save')).toBeEnabled();
+  expect(writes).toEqual([]);
+  expect(await pendingCount()).toBe(1);
+  fake.handle({ method: 'DELETE', url: itemUrl(7) });
+  await page.locator('#m-vectorsmanagement-editing-save').click();
+  await expect(page.locator('#m-vectorsmanagement-editing-status')).toContainText('Guardadas 1');
+  expect(writes).toEqual(['PUT /local/collections/client-id/items/7']);
+  const saved = fake.handle({ method: 'GET', url: itemUrl(7) });
+  expect(saved.status).toBe(200);
+  expect(JSON.parse(saved.body).properties.name).toBe('oceano');
+  expect(await page.evaluate(() => window.dataideeDemo.layer.getFeatures()
+    .some((feature) => feature.getId() === 7))).toBe(true);
+});
+
 test('cancelling DataIDEE creation clears its preview without staging a feature', async ({ page }) => {
   await openLocalDataIDEE(page);
   await page.waitForFunction(() => window.dataideeDemo?.layer.getFeatures().length === 5);

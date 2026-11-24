@@ -622,6 +622,7 @@
     "dataidee_vector_feature_required": "Se necesita una entidad vectorial válida.",
     "dataidee_geometry_unsupported": "La colección no admite el tipo de geometría '{geometry}'.",
     "dataidee_duplicate_identifier": "Ese identificador ya existe en la zona de edición.",
+    "dataidee_identifier_exists": "Ese identificador ya existe en la colección.",
     "dataidee_invalid_attributes": "La entidad DataIDEE {feature} tiene atributos no válidos: {message}",
     "dataidee_uncertain_write": "Una escritura tiene resultado incierto. Recarga y revisa el servidor antes de continuar.",
     "dataidee_save_in_progress": "Ya hay un guardado DataIDEE en curso.",
