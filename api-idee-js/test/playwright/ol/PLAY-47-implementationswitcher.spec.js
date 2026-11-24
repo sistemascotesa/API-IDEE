@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { CORS, routePng } from '../common/mocks';
+import { createGeoPackage } from './fixtures/geopackage';
 
 /*
  * Control ImplementationSwitcher: cambia el mapa entre OpenLayers y Cesium en la misma
@@ -14,6 +15,7 @@ const TILESET = 'https://tiles3d.switcher.test/tileset.json';
 const ION = 'https://ion.switcher.test';
 const ION_ASSETS = 'https://assets.switcher.test';
 const DATAIDEE = 'https://dataidee.switcher.test';
+const GEOPACKAGE = 'https://gpkg.switcher.test/datos.gpkg';
 const CHANGE_TIMEOUT = 60000;
 
 test.describe.configure({ timeout: 180000 });
@@ -168,8 +170,17 @@ test.describe('IDEE.control.ImplementationSwitcher', () => {
         }),
       });
     });
+    await page.route('**/sql-wasm.wasm', (route) => route.fulfill({
+      path: require.resolve('sql.js/dist/sql-wasm.wasm'),
+      contentType: 'application/wasm',
+    }));
+    await page.route(GEOPACKAGE, async (route) => route.fulfill({
+      headers: CORS,
+      contentType: 'application/geopackage+sqlite3',
+      body: await createGeoPackage('vector'),
+    }));
     await openMap(page);
-    await page.evaluate(async ({ tiles, dataidee }) => {
+    await page.evaluate(async ({ tiles, dataidee, geopackage }) => {
       IDEE.config('TEST_SWITCHER', 'conservado');
       IDEE.language.setLang('en');
       const kmz = await (await fetch('/test/playwright/fixtures/kmz/basic.kmz')).arrayBuffer();
@@ -190,24 +201,49 @@ test.describe('IDEE.control.ImplementationSwitcher', () => {
           contextToken: () => 'ctx-switch',
         }),
       ]);
-    }, { tiles: TILES, dataidee: DATAIDEE });
+      window.map.getLayers().find((l) => l.name === 'gpx_local').predefinedStyles
+        .push(new IDEE.style.Generic({ line: { stroke: { color: '#00ff00', width: 2 } } }));
+      const gpkg = new IDEE.layer.GeoPackage({ url: geopackage, name: 'paquete' });
+      const loaded = new Promise((resolve) => { gpkg.once(IDEE.evt.LOAD_LAYERS, resolve); });
+      window.map.addLayers(gpkg);
+      await loaded;
+      const places = gpkg.getLayer('places');
+      places.setStyle(new IDEE.style.Generic({
+        point: {
+          radius: 6, fill: { color: '#ffffff', opacity: 0.4 }, stroke: { color: '#000000', width: 2 },
+        },
+      }));
+      places.setOpacity(0.6);
+    }, { tiles: TILES, dataidee: DATAIDEE, geopackage: GEOPACKAGE });
     const localLayers = () => page.evaluate(() => {
       const find = (name) => window.map.getLayers().find((l) => l.name === name);
       const extent = find('recortada').getMaxExtent();
+      const places = find('paquete:places');
       return {
         kmz: find('kmz_local').getFeatures().length > 0,
         gpx: find('gpx_local').getFeatures().length > 0,
         gpxStroke: find('gpx_local').getStyle()?.getOptions()?.line?.stroke?.color,
+        gpxStyles: find('gpx_local').predefinedStyles.length,
+        gpkgStroke: places?.getStyle()?.getOptions()?.point?.stroke?.color,
+        gpkgOpacity: places ? Math.round(places.getOpacity() * 100) / 100 : undefined,
         extent: Array.isArray(extent) ? extent.map((value) => Math.round(value)) : extent,
       };
     });
     const metres = {
-      kmz: true, gpx: true, gpxStroke: '#ff0000', extent: [-1113195, 4163881, 556598, 5465442],
+      kmz: true,
+      gpx: true,
+      gpxStroke: '#ff0000',
+      gpxStyles: 2,
+      gpkgStroke: '#000000',
+      gpkgOpacity: 0.6,
+      extent: [-1113195, 4163881, 556598, 5465442],
     };
     await expect.poll(localLayers, { timeout: CHANGE_TIMEOUT }).toEqual(metres);
     const before = await summary(page);
     expect(before.layers.map((l) => l.name))
-      .toEqual(['dataidee', 'gpx_local', 'kmz_local', 'oculta', 'puntos', 'recortada', 'unidades']);
+      .toEqual([
+        'dataidee', 'gpx_local', 'kmz_local', 'oculta', 'paquete:places', 'puntos', 'recortada', 'unidades',
+      ]);
     await expect.poll(() => contextTokens.length, { timeout: CHANGE_TIMEOUT }).toBeGreaterThan(0);
     let previousRequests = contextTokens.length;
 
