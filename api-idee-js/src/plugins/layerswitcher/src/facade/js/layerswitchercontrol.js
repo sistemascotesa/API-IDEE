@@ -37,7 +37,7 @@ import {
 import detectOGCAPIFeatures from './ogcapi/ogcapidetector';
 import DataIDEEService, {
   DATAIDEE_FOUND, DATAIDEE_PROTECTED, DATAIDEE_NOT_FOUND, DATAIDEE_UNREACHABLE,
-  DATAIDEE_COLLECTIONS_ERROR,
+  DATAIDEE_COLLECTIONS_ERROR, DATAIDEE_URL_BASE, DATAIDEE_URL_OGC, getDataIDEEPathKind,
 } from './ogcapi/dataideeservice';
 import {
   createOGCAPIModes, getModeByLayerType, MODE_STANDARD, MODE_DATAIDEE,
@@ -1320,7 +1320,8 @@ export default class LayerswitcherControl extends IDEE.Control {
             return this.openFileFromUrl(fileUrl, 'gpkg');
           }
           this.showLoading();
-          if (isCollectionsPath(url)) {
+          const dataIDEEKind = this.getDataIDEEUrlKind_(url);
+          if (isCollectionsPath(url) || dataIDEEKind === DATAIDEE_URL_OGC) {
             this.openOGCAPIService_(url).then((isOGC) => {
               if (!isOGC) {
                 IDEE.dialog.error(getValue('exception.ogcfeatures'), undefined, this.order);
@@ -1330,6 +1331,15 @@ export default class LayerswitcherControl extends IDEE.Control {
               // Sin respuesta del servicio (red o CORS)
               IDEE.dialog.error(getValue('exception.unreachable'), undefined, this.order);
               this.removeLoading();
+            });
+            return undefined;
+          }
+          if (dataIDEEKind === DATAIDEE_URL_BASE) {
+            this.openDataIDEEService_(url, { checkConformance: false }).then((isDataIDEE) => {
+              if (!isDataIDEE) {
+                IDEE.dialog.error(getValue('exception.ogcfeatures'), undefined, this.order);
+                this.removeLoading();
+              }
             });
             return undefined;
           }
@@ -2322,16 +2332,39 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   /**
+   * Reconoce, sin pedir nada al servicio, una URL de DataIDEE: por su ruta
+   * (getDataIDEEPathKind) o porque ese servicio ya se abrió en modo DataIDEE en esta
+   * sesión, se guardó en ese modo o está precargado como DataIDEE. Así no se prueban con
+   * ella WMTS, WMS ni WFS, ni se lee {base}/collections, que en DataIDEE es su API de
+   * gestión.
+   * @private
+   * @param {String} url URL introducida.
+   * @returns {String|null} DATAIDEE_URL_BASE si es la base del servicio, DATAIDEE_URL_OGC
+   * si es la raíz de su API OGC, o null si no se reconoce.
+   */
+  getDataIDEEUrlKind_(url) {
+    const { root } = parseOGCAPIUrl(url);
+    const isKnown = (candidate) => this.dataIDEEServices_.has(candidate)
+      || this.getKnownOGCMode_(candidate) === MODE_DATAIDEE;
+    let kind = getDataIDEEPathKind(url);
+    if (!kind && isKnown(root)) kind = DATAIDEE_URL_OGC;
+    else if (!kind && isKnown(`${root}/ogc`)) kind = DATAIDEE_URL_BASE;
+    return kind;
+  }
+
+  /**
    * Busca un servicio DataIDEE a partir de su URL base (DataIDEEService: su API OGC en
    * {base}/ogc). Si lo encuentra, abre sus capas en modo DataIDEE con el listado ya leído
    * e informa al usuario de las colecciones encontradas; si el listado exige sesión, lo
    * avisa la carga del servicio (auth_required); si no se puede leer, muestra el error.
    * @private
    * @param {String} url URL introducida.
+   * @param {Object} [discoverOptions] Opciones de DataIDEEService#discover
+   * (checkConformance).
    * @returns {Promise<Boolean>} Verdadero si la URL es la base de un servicio DataIDEE,
    * aunque no se hayan podido leer sus colecciones.
    */
-  async openDataIDEEService_(url) {
+  async openDataIDEEService_(url, discoverOptions = {}) {
     const service = new DataIDEEService(url);
     const { root } = service;
     const knownMode = this.getKnownOGCMode_(root);
@@ -2339,7 +2372,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       ? this.authManager_.getValidToken(root) : undefined;
     const authorization = token ? `Bearer ${token}` : undefined;
     const result = await service.discover(authorization
-      ? { headers: { Authorization: authorization } } : undefined);
+      ? { headers: { Authorization: authorization } } : undefined, discoverOptions);
     if (result.status === DATAIDEE_NOT_FOUND) return false;
     if ([DATAIDEE_COLLECTIONS_ERROR, DATAIDEE_UNREACHABLE].includes(result.status)) {
       const message = result.status === DATAIDEE_UNREACHABLE

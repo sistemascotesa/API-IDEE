@@ -25,6 +25,31 @@ export const DATAIDEE_COLLECTIONS_ERROR = 'collections-error';
 /** Hay una API en {base}/ogc, pero su listado de colecciones no responde (red o CORS). */
 export const DATAIDEE_UNREACHABLE = 'unreachable';
 
+/** La URL es la base de un servicio DataIDEE ({…}/data-idee-api). */
+export const DATAIDEE_URL_BASE = 'base';
+
+/** La URL es la raíz de la API OGC de un servicio DataIDEE ({…}/data-idee-api/ogc). */
+export const DATAIDEE_URL_OGC = 'ogc';
+
+const BASE_PATH = /\/data-idee-api$/i;
+const OGC_ROOT_PATH = /\/data-idee-api\/ogc$/i;
+
+/**
+ * Reconoce por su ruta, sin pedir nada al servicio, la base de un servicio DataIDEE
+ * ({…}/data-idee-api) o la raíz de su API OGC ({…}/data-idee-api/ogc). Se ignoran la
+ * consulta, las barras finales y la parte /collections de la URL.
+ * @param {String} url URL introducida.
+ * @returns {String|null} DATAIDEE_URL_BASE, DATAIDEE_URL_OGC o null si la ruta no es de
+ * DataIDEE.
+ */
+export const getDataIDEEPathKind = (url) => {
+  const { root } = parseOGCAPIUrl(url);
+  let kind = null;
+  if (BASE_PATH.test(root)) kind = DATAIDEE_URL_BASE;
+  else if (OGC_ROOT_PATH.test(root)) kind = DATAIDEE_URL_OGC;
+  return kind;
+};
+
 const OGC_PATH = 'ogc';
 const UNAUTHORIZED_CODES = [401, 403];
 const FEATURES_CORE = /\/ogcapi-features-1\/1\.0\/conf\/core$/;
@@ -75,11 +100,14 @@ export default class DataIDEEService {
    *
    * @param {Object} [requestOptions] Opciones de IDEE.remote para el listado de colecciones
    * (p. ej. la cabecera Authorization de la sesión del servicio).
+   * @param {Object} [options] Opciones de la búsqueda.
+   * @param {Boolean} [options.checkConformance=true] Si se pide la conformidad. Sobra cuando
+   * la ruta ya identifica el servicio como DataIDEE (getDataIDEEPathKind).
    * @returns {Promise<{status: String, root: String, count: (Number|undefined),
    * collectionsJson: (Object|undefined)}>} Estado (DATAIDEE_*), raíz de la API y, con un
    * listado válido, su número de colecciones y su JSON.
    */
-  async discover(requestOptions) {
+  async discover(requestOptions, { checkConformance = true } = {}) {
     const result = (status, extra = {}) => ({ status, root: this.root, ...extra });
     const landing = await request(this.root);
     if (!Array.isArray(landing.json?.links)) return result(DATAIDEE_NOT_FOUND);
@@ -87,7 +115,7 @@ export default class DataIDEEService {
     const conformanceUrl = this.getLinkUrl_(landing.json.links, 'conformance');
     const [collections, conformance] = await Promise.all([
       request(getCollectionsUrl(this.root), requestOptions),
-      conformanceUrl ? request(conformanceUrl) : null,
+      conformanceUrl && checkConformance ? request(conformanceUrl) : null,
     ]);
     const conformsTo = conformance?.json?.conformsTo;
     if (Array.isArray(conformsTo) && !conformsTo.some((uri) => FEATURES_CORE.test(uri))) {

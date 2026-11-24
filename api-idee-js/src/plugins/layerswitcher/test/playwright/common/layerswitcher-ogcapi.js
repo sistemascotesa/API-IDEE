@@ -207,13 +207,15 @@ const TOAST = '.m-toast.info .m-toast-message';
  * El login es el de {base}/auth/me. Devuelve las rutas pedidas.
  */
 const mockDataIDEEBase = async (page, {
+  base = DATAIDEE_BASE,
   collections = [collection('local:farmacias', 'Farmacias'), collection('local:rutas', 'Rutas')],
   collectionsStatus = 200,
   login = false,
 } = {}) => {
   const calls = [];
-  const ogc = `${DATAIDEE_BASE}/ogc`;
-  await page.route('https://base.test/**', (route) => {
+  const ogc = `${base}/ogc`;
+  const path = new URL(base).pathname;
+  await page.route(`${new URL(base).origin}/**`, (route) => {
     const request = route.request();
     const url = new URL(request.url());
     if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
@@ -221,8 +223,8 @@ const mockDataIDEEBase = async (page, {
     const json = (status, body) => route.fulfill({
       status, headers: { ...CORS, 'content-type': 'application/json' }, body: JSON.stringify(body),
     });
-    if (url.pathname === '/data-idee-api/collections') return json(200, { data: [] });
-    if (url.pathname === '/data-idee-api/ogc') {
+    if (url.pathname === `${path}/collections`) return json(200, { data: [] });
+    if (url.pathname === `${path}/ogc`) {
       return json(200, {
         links: [
           { rel: 'self', href: ogc },
@@ -231,17 +233,17 @@ const mockDataIDEEBase = async (page, {
         ],
       });
     }
-    if (url.pathname === '/data-idee-api/ogc/conformance') {
+    if (url.pathname === `${path}/ogc/conformance`) {
       return json(200, {
         conformsTo: ['http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core'],
       });
     }
-    if (url.pathname === '/data-idee-api/ogc/collections') {
+    if (url.pathname === `${path}/ogc/collections`) {
       return collectionsStatus === 200
         ? json(200, { links: [], collections })
         : json(collectionsStatus, { status: collectionsStatus });
     }
-    if (url.pathname === '/data-idee-api/auth/me' && login) return json(401, { status: 401 });
+    if (url.pathname === `${path}/auth/me` && login) return json(401, { status: 401 });
     return json(404, { status: 404 });
   });
   return calls;
@@ -449,7 +451,7 @@ export const registerOGCAPITests = (impl) => {
       expect(calls.filter((path) => path === '/data-idee-api/ogc/collections')).toHaveLength(1);
     });
 
-    test('DataIDEE desde la URL base: busca la API en /ogc, abre sus colecciones y avisa de cuántas hay', async ({ page }) => {
+    test('DataIDEE desde la URL base: busca la API en /ogc sin probar WMTS, WMS ni WFS y avisa de cuántas colecciones hay', async ({ page }) => {
       const calls = await mockDataIDEEBase(page);
       await openService(page, impl, DATAIDEE_BASE);
 
@@ -459,10 +461,36 @@ export const registerOGCAPITests = (impl) => {
         .toHaveText('Servicio DataIDEE: se han encontrado 2 colecciones');
       await expect(page.locator('#m-layerswitcher-addservices-search-input'))
         .toHaveValue(`${DATAIDEE_BASE}/ogc`);
-      expect(calls).toEqual(expect.arrayContaining([
-        '/data-idee-api/ogc', '/data-idee-api/ogc/conformance',
-      ]));
+      expect(calls.filter((path) => path === '/data-idee-api/ogc')).toHaveLength(1);
       expect(calls.filter((path) => path === '/data-idee-api/ogc/collections')).toHaveLength(1);
+      expect(calls).not.toContain('/data-idee-api');
+      expect(calls).not.toContain('/data-idee-api/');
+      expect(calls).not.toContain('/data-idee-api/collections');
+      expect(calls).not.toContain('/data-idee-api/ogc/conformance');
+    });
+
+    test('DataIDEE desde la raíz {base}/ogc: no prueba WMTS, WMS ni WFS', async ({ page }) => {
+      const calls = await mockDataIDEEBase(page, { login: true });
+      await openService(page, impl, `${DATAIDEE_BASE}/ogc`);
+
+      await expect(page.locator(MODE_SELECT)).toHaveValue('dataidee');
+      await expect(page.locator(`${LAYER_SELECT} option[value]:not([value=""])`)).toHaveCount(2);
+      expect(calls.filter((path) => path === '/data-idee-api/ogc/collections')).toHaveLength(1);
+      expect(calls).not.toContain('/data-idee-api/ogc');
+      expect(calls).not.toContain('/data-idee-api/ogc/');
+    });
+
+    test('DataIDEE ya abierto en otra ruta: va directo a /ogc sin probar WMTS, WMS ni WFS', async ({ page }) => {
+      const base = 'https://known.test/svc';
+      const calls = await mockDataIDEEBase(page, { base });
+      await openService(page, impl, base, { [`${base}/ogc`]: { mode: 'dataidee' } });
+
+      await expect(page.locator(MODE_SELECT)).toHaveValue('dataidee');
+      await expect(page.locator(`${LAYER_SELECT} option[value]:not([value=""])`)).toHaveCount(2);
+      expect(calls.filter((path) => path === '/svc/ogc/collections')).toHaveLength(1);
+      expect(calls).not.toContain('/svc');
+      expect(calls).not.toContain('/svc/');
+      expect(calls).not.toContain('/svc/collections');
     });
 
     test('DataIDEE desde la URL base sin colecciones visibles: candado y aviso para iniciar sesión', async ({ page }) => {
