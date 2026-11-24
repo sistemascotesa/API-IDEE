@@ -621,6 +621,7 @@
     "dataidee_vector_feature_required": "A valid vector feature is required.",
     "dataidee_geometry_unsupported": "Geometry type '{geometry}' is not supported by this collection.",
     "dataidee_duplicate_identifier": "That identifier is already in the editing area.",
+    "dataidee_identifier_exists": "That identifier already exists in the collection.",
     "dataidee_invalid_attributes": "DataIDEE feature {feature} has invalid attributes: {message}",
     "dataidee_uncertain_write": "A write has an uncertain result. Reload and check the server before continuing.",
     "dataidee_save_in_progress": "DataIDEE save already in progress.",

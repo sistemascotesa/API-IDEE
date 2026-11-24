@@ -82,12 +82,16 @@ Al introducir la URL de un servicio OGC API Features (raíz, `/collections` o `/
 
 Se recuerda el último modo usado con cada servicio. Si no hay ninguno, se abren en modo DataIDEE los servicios precargados con `type: 'DataIDEE'`, aquellos cuyas colecciones exigen autenticación y los que publican la API de autenticación de DataIDEE.
 
-Un servicio DataIDEE también se puede abrir con su URL base (por ejemplo, `https://servidor/data-idee-api`). Si la URL no es un servicio OGC API Features, `DataIDEEService` (`ogcapi/dataideeservice.js`) busca su API en `{base}/ogc`. Lee la página de inicio (`/ogc`), la conformidad (`/ogc/conformance`, que debe declarar OGC API - Features Core) y el listado de colecciones (`/ogc/collections`, con el token si hay sesión). No pide la URL base, que en el servicio real redirige por `http` a la documentación de la API. Con el resultado:
+Un servicio DataIDEE también se puede abrir con su URL base (por ejemplo, `https://servidor/data-idee-api`). `DataIDEEService` (`ogcapi/dataideeservice.js`) busca su API en `{base}/ogc`: lee la página de inicio (`/ogc`) y el listado de colecciones (`/ogc/collections`, con el token si hay sesión). Con el resultado:
 - **Hay colecciones**: se abren en modo DataIDEE y un aviso indica cuántas se han encontrado.
 - **No hay colecciones visibles**: se abre el servicio con el candado y un aviso pide iniciar sesión, o indica que no publica colecciones si no tiene login.
 - **El listado exige autenticación**: se abre con el candado y el aviso habitual de que el servicio requiere iniciar sesión.
 - **Existe `/ogc`, pero su listado no se puede leer**: se muestra un error.
-- **No hay API en `{base}/ogc`**: la URL se trata como cualquier otra.
+- **No hay API en `{base}/ogc`**: se muestra un error.
+
+Una URL de DataIDEE se reconoce sin pedir nada al servicio en estos casos: si su ruta termina en `/data-idee-api` o `/data-idee-api/ogc`, o si ese servicio ya se abrió en modo DataIDEE (en la misma sesión, guardado en el `localStorage` o precargado). Con esas URL no se prueban WMTS, WMS ni WFS. Tampoco se lee `{base}/collections`, que en DataIDEE es su API de gestión, ni se pide la URL base, que en el servicio real redirige por `http` a la documentación de la API. La raíz `…/data-idee-api/ogc` se abre como cualquier servicio OGC API Features. Desde la URL base solo se piden `/ogc`, `/ogc/collections` y la comprobación del login (`auth/me`).
+
+Cualquier otra URL sigue el flujo general: primero WMTS, WMS y WFS, y después OGC API Features. Si no es un servicio OGC API Features, se busca la API en `{url}/ogc`. En ese caso también se pide la conformidad (`/ogc/conformance`, que debe declarar OGC API - Features Core), y si no hay API la URL se trata como cualquier otra.
 
 Las URL de la API OGC (`…/data-idee-api/ogc` y `…/data-idee-api/ogc/collections`) se siguen admitiendo.
 El número de elementos a obtener está vacío por defecto. Si el usuario no lo indica (ni filtra por ID):

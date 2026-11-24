@@ -222,10 +222,9 @@ export default class DataIDEEEditingSession {
     const idField = mode === 'create' ? this.capabilities_.form.idField : null;
     if (idField && this.capabilities_.clientAssignedId) {
       const idValue = values[idField.name];
-      const idRequired = (schema.required || []).includes(idField.name);
-      if (idRequired && (idValue === undefined || idValue === '')) {
+      if (idValue === undefined || idValue === '') {
         issues.push(createDataIDEEIssue(`/${idField.name}`, 'identifierRequired'));
-      } else if (idValue !== undefined && idValue !== '') {
+      } else {
         const idIssues = validateDataIDEEValues({ [idField.name]: idValue }, {
           type: 'object', properties: { [idField.name]: idField.schema }, required: [],
         }, 'create');

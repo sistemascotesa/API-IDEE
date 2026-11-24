@@ -622,6 +622,7 @@
     "dataidee_vector_feature_required": "Cal una entitat vectorial vàlida.",
     "dataidee_geometry_unsupported": "La col·lecció no admet el tipus de geometria '{geometry}'.",
     "dataidee_duplicate_identifier": "Aquest identificador ja existeix a la zona d'edició.",
+    "dataidee_identifier_exists": "Aquest identificador ja existeix a la col·lecció.",
     "dataidee_invalid_attributes": "L'entitat DataIDEE {feature} té atributs no vàlids: {message}",
     "dataidee_uncertain_write": "Una escriptura té un resultat incert. Recarrega i revisa el servidor abans de continuar.",
     "dataidee_save_in_progress": "Ja hi ha un desament DataIDEE en curs.",
