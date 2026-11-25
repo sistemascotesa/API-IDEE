@@ -90,6 +90,7 @@ class GPX extends GeoJSON {
     loading.catch((error) => {
       if (this.map && generation === this.generation_) {
         Dialog.error(escapeXSS(String(error)));
+        this.facadeVector_.fire(EventType.LOAD_ERROR, [error]);
       }
     });
     this.loading_ = loading;

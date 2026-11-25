@@ -237,10 +237,12 @@ class KML extends Vector {
    *
    * @public
    * @function
+   * @returns {Promise} Carga de la fuente; conserva el rechazo para quien la consulte.
    * @api stable
    */
   updateSource_() {
-    return this.requestFeatures_().then((response) => {
+    const loading = this.requestFeatures_();
+    const update = loading.then((response) => {
       if (this.cesiumLayer) {
         const screenOverlay = response.screenOverlay;
         // removes previous features
@@ -260,6 +262,13 @@ class KML extends Vector {
         this.facadeVector_.addFeatures(response.features);
       }
     });
+    update.catch((error) => {
+      if (this.map && loading === this.loadFeaturesPromise_) {
+        this.loadFeaturesPromise_ = null;
+        this.facadeVector_.fire(EventType.LOAD_ERROR, [error]);
+      }
+    });
+    return update;
   }
 
   /**
@@ -408,7 +417,7 @@ class KML extends Vector {
 
   /**
    * Este método devuelve la extensión de todos los objetos geográficos, se le puede
-   * pasar un filtro. Este método es asincrono.
+   * pasar un filtro. Este método es asincrono y propaga los errores de la carga.
    *
    * @function
    * @param {boolean} skipFilter Indica si se utilizará el filtro de tipo "skip".
@@ -417,7 +426,7 @@ class KML extends Vector {
    * @api stable
    */
   getFeaturesExtentPromise(skipFilter, filter) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const codeProj = this.map.getProjection().code;
       if (this.isLoaded() === true) {
         const features = this.getFeatures(skipFilter, filter);
@@ -429,7 +438,7 @@ class KML extends Vector {
             const extent = ImplUtils.getFeaturesExtent(response.features, codeProj);
             resolve(extent);
           });
-        });
+        }, reject);
       }
     });
   }
@@ -446,20 +455,14 @@ class KML extends Vector {
    */
   requestFeatures_() {
     if (isNullOrEmpty(this.loadFeaturesPromise_)) {
-      this.loadFeaturesPromise_ = new Promise((resolve) => {
-        this.loader_.getLoaderFn((features) => {
-          resolve(features);
-        })(
-          null,
-          null,
-          this.map.getProjection(),
-          this.scaleLabel,
-          this.layers,
-          this.removeFolderChildren,
-          this.label_,
-          this.clampToGround,
-        );
-      });
+      this.loadFeaturesPromise_ = this.loader_.loadStrict(
+        this.map.getProjection(),
+        this.scaleLabel,
+        this.layers,
+        this.removeFolderChildren,
+        this.label_,
+        this.clampToGround,
+      );
     }
     return this.loadFeaturesPromise_;
   }

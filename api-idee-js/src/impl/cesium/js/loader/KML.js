@@ -115,6 +115,33 @@ class KML extends MObject {
   }
 
   /**
+   * Carga los objetos geográficos de la URL del cargador. La promesa se rechaza si la
+   * respuesta es un error HTTP, no es un XML válido o está vacía.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   * @param {Object} projection Proyección.
+   * @param {Number} scaleLabel Escala de la etiqueta.
+   * @param {Array} layers Listado de nombres de carpetas para filtrar KML.
+   * @param {boolean} removeFolderChildren Especifica si mostrar o no los hijos de las carpetas.
+   * @param {boolean} showLabel Especifica si mostrar o no las etiquetas.
+   * @param {boolean} clampToGround Indica si la capa se ajusta al terreno.
+   * @returns {Promise} Promesa con la obtención de los objetos geográficos.
+   */
+  loadStrict(projection, scaleLabel, layers, removeFolderChildren, showLabel, clampToGround) {
+    return this.loadInternal_(
+      projection,
+      scaleLabel,
+      layers,
+      removeFolderChildren,
+      showLabel,
+      clampToGround,
+      this.url_,
+      true,
+    );
+  }
+
+  /**
    * Este método obtiene los objetos geográficos a partir de los parámetros
    * especificados.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.

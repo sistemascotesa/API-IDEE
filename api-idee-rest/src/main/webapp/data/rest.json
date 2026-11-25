@@ -153,5 +153,30 @@
         "name": "Parámetro baselayer sin capa base",
         "description": "baselayer=none crea el mapa sin capa base",
         "url": "/api-idee/?baselayer=none&layers=WMS*name=AU.AdministrativeUnit;url=https://www.ign.es/wms-inspire/unidades-administrativas?&center=-400000,4800000&zoom=6"
+    },
+    {
+        "name": "Parámetros capa KML (clave=valor)",
+        "description": "Capa KML con parámetros nombrados (IDEE, Sevilla)",
+        "url": "/api-idee/?layers=QUICK*Base_IGNBaseTodo_TMS,KML*name=las_huertas;url=https://componentes.idee.es/estaticos/Datos/KML/las_huertas_n1.kml;extract=true;visibility=true&center=-664321,4494589&zoom=12"
+    },
+    {
+        "name": "Parámetros capa KML con URL codificada (clave=valor)",
+        "description": "Capa KML del IGN cuya URL contiene %20 y %C3%A1, escritos como %2520 y %25C3%25A1 en la petición",
+        "url": "/api-idee/?layers=QUICK*Base_IGNBaseTodo_TMS,KML*name=via_de_la_plata;url=https://www.ign.es/resources/CaminoDeSantiago_PRE/rutas/04/04-Via%2520de%2520la%2520Plata%2520-%2520Camino%2520Moz%25C3%25A1rabe%2520a%2520Santiago.kml;extract=true;visibility=true&center=-667917,4865942&zoom=6"
+    },
+    {
+        "name": "Parámetros capa KMZ (clave=valor)",
+        "description": "Capa KMZ con parámetros nombrados (ejemplo de OpenLayers, Islandia)",
+        "url": "/api-idee/?layers=OSM,KMZ*name=islandia;url=https://openlayers.org/en/latest/examples/data/kmz/iceland.kmz;extract=true;visibility=true&center=-2059411,9582080&zoom=6"
+    },
+    {
+        "name": "Parámetros capa GPX (clave=valor)",
+        "description": "Capa GPX con parámetros nombrados (ejemplo de OpenLayers, Boston)",
+        "url": "/api-idee/?layers=OSM,GPX*name=fells_loop;url=https://openlayers.org/en/latest/examples/data/gpx/fells_loop.gpx;extract=true;visibility=true&center=-7916964,5226953&zoom=13"
+    },
+    {
+        "name": "Parámetros capas KML + KMZ + GPX (clave=valor)",
+        "description": "Varias capas con parámetros nombrados en una misma petición",
+        "url": "/api-idee/?layers=OSM,KML*name=las_huertas;url=https://componentes.idee.es/estaticos/Datos/KML/las_huertas_n1.kml;extract=true;visibility=true,KMZ*name=islandia;url=https://openlayers.org/en/latest/examples/data/kmz/iceland.kmz;extract=true;visibility=true,GPX*name=fells_loop;url=https://openlayers.org/en/latest/examples/data/gpx/fells_loop.gpx;extract=true;visibility=true&center=-4230141,6800125&zoom=3"
     }
   ]
