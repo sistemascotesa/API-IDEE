@@ -61,12 +61,8 @@ class KMZ extends KML {
     // La promesa conserva el rechazo para quien consulte la carga.
     // eslint-disable-next-line no-underscore-dangle
     const loading = super.updateSource_(force);
-    loading?.catch((error) => {
+    loading?.catch(() => {
       facade.un(EventType.LOAD, onLoad);
-      if (this.map && generation === this.loadGeneration_) {
-        this.loadFeaturesPromise_ = null;
-        this.facadeVector_.fire(EventType.LOAD_ERROR, [error]);
-      }
     });
   }
 

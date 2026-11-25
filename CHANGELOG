@@ -11,6 +11,9 @@ Versión 2.0.0
 - Se soluciona toGeoJSON de GeoPackage con tableNames y el zoom de Layerswitcher a capas GeoPackageTile.
 - Se soluciona en Cesium la reproyección de líneas de capas GeoJSON con un sistema de referencia distinto de EPSG:4326.
 - Se soluciona el error al asignar cql a una capa WMS antes de recibir su GetCapabilities.
+- KML: la primera carga comprueba la respuesta como KMZ (error HTTP, respuesta vacía o XML no válido) y, si falla, la capa emite LOAD_ERROR en OpenLayers y Cesium en lugar de quedarse sin notificar o emitir LOAD sin objetos geográficos. Un KML con XML defectuoso que antes se mostraba en parte ya no se carga.
+- GPX: los errores de carga también emiten LOAD_ERROR, además del diálogo de error.
+- API-REST: se añaden a rest.json ejemplos de capas KML, KMZ y GPX con parámetros nombrados (clave=valor).
 
 
 21/10/26 - Versión 1.2.0

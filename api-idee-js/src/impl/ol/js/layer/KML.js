@@ -267,7 +267,8 @@ class KML extends Vector {
    */
   updateSource_(force) {
     if (isNullOrEmpty(this.vendorOptions_.source)) {
-      this.requestFeatures_(force).then((response) => {
+      const loading = this.requestFeatures_(force);
+      loading.then((response) => {
         this.olLayer.setSource(new OLSourceVector({
           loader: () => {
             const screenOverlay = response.screenOverlay;
@@ -282,6 +283,11 @@ class KML extends Vector {
             }
           },
         }));
+      }).catch((error) => {
+        if (this.map && loading === this.loadFeaturesPromise_) {
+          this.loadFeaturesPromise_ = null;
+          this.facadeVector_.fire(EventType.LOAD_ERROR, [error]);
+        }
       });
     }
   }
@@ -398,7 +404,7 @@ class KML extends Vector {
    * @api stable
    */
   getFeaturesExtentPromise(skipFilter, filter) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const codeProj = this.map.getProjection().code;
       if (this.isLoaded() === true) {
         const features = this.getFeatures(skipFilter, filter);
@@ -408,7 +414,7 @@ class KML extends Vector {
         this.requestFeatures_().then((response) => {
           const extent = ImplUtils.getFeaturesExtent(response.features, codeProj);
           resolve(extent);
-        });
+        }, reject);
       }
     });
   }
@@ -422,23 +428,18 @@ class KML extends Vector {
    * @param {boolean} force Indica si se debe forzar la solicitud
    * de objetos geográficos.
    * @returns {IDEE.layer.GeoJSON.impl.loadFeaturesPromise_} Devuelve los objetos geográficos
-   * tras realizar la petición, asincrono.
+   * tras realizar la petición, asincrono. Se rechaza si la respuesta es un error HTTP,
+   * no es un XML válido o está vacía.
    * @api stable
    */
   requestFeatures_(force) {
     if (force || isNullOrEmpty(this.loadFeaturesPromise_)) {
-      this.loadFeaturesPromise_ = new Promise((resolve) => {
-        this.loader_.getLoaderFn((features) => {
-          resolve(features);
-        })(
-          null,
-          null,
-          getProj(this.map.getProjection().code),
-          this.scaleLabel,
-          this.layers,
-          this.removeFolderChildren,
-        );
-      });
+      this.loadFeaturesPromise_ = this.loader_.loadStrict(
+        getProj(this.map.getProjection().code),
+        this.scaleLabel,
+        this.layers,
+        this.removeFolderChildren,
+      );
     }
     return this.loadFeaturesPromise_;
   }
